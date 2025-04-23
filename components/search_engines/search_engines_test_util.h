@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+
 struct TemplateURLData;
 
 namespace sync_preferences {
@@ -34,5 +36,45 @@ void SetExtensionDefaultSearchInPrefs(
 // |prefs|.
 void RemoveExtensionDefaultSearchFromPrefs(
     sync_preferences::TestingPrefServiceSyncable* prefs);
+
+class FakeSearchEngineChoiceServiceClient
+    : public search_engines::SearchEngineChoiceService::Client {
+ public:
+  explicit FakeSearchEngineChoiceServiceClient(
+      country_codes::CountryId variations_country = country_codes::CountryId(),
+      bool is_profile_eligible_for_dse_guest_propagation = false,
+      bool is_device_restore_detected_in_current_session = false,
+      bool does_choice_predate_device_restore = false);
+  ~FakeSearchEngineChoiceServiceClient() override;
+
+  // `SearchEngineChoiceService::Client` implementation.
+  country_codes::CountryId GetVariationsCountry() override;
+  bool IsProfileEligibleForDseGuestPropagation() override;
+  bool IsDeviceRestoreDetectedInCurrentSession() override;
+  bool DoesChoicePredateDeviceRestore(
+      const search_engines::ChoiceCompletionMetadata& choice_metadata) override;
+
+  void set_variations_country(country_codes::CountryId variations_country) {
+    variations_country_ = variations_country;
+  }
+
+  void set_is_profile_eligible_for_dse_guest_propagation(bool eligible) {
+    is_profile_eligible_for_dse_guest_propagation_ = eligible;
+  }
+
+  void set_is_device_restore_detected_in_current_session(bool is_detected) {
+    is_device_restore_detected_in_current_session_ = is_detected;
+  }
+
+  void set_does_choice_predate_device_restore(bool does_predate) {
+    does_choice_predate_device_restore_ = does_predate;
+  }
+
+ private:
+  country_codes::CountryId variations_country_;
+  bool is_profile_eligible_for_dse_guest_propagation_ = false;
+  bool is_device_restore_detected_in_current_session_ = false;
+  bool does_choice_predate_device_restore_ = false;
+};
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_TEST_UTIL_H_

@@ -297,5 +297,3 @@ void FollowTabHelper::PresentFollowIPH(NSURL* recommended_url) {
     RemoveLastFollowIPHDisplayEvent();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)

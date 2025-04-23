@@ -137,7 +137,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-std::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
+std::optional<SkPath> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -546,7 +546,10 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
                               : content_rect();
   gfx::Rect unoccluded_output_rect =
       occlusion_in_content_space().GetUnoccludedContentRect(output_rect);
-  if (unoccluded_output_rect.IsEmpty()) {
+  // Contributions to the output rect from a reference filter are not included
+  // in the unoccluded_output_rect, so do not skip the quad or the target
+  // surface will be missing the reference filter content.
+  if (unoccluded_output_rect.IsEmpty() && !Filters().HasReferenceFilter()) {
     return;
   }
 

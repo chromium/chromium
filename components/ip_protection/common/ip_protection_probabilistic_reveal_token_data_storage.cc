@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
@@ -22,7 +23,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
 
 // clang-format off
 static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
@@ -30,7 +31,7 @@ static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
       "version INTEGER NOT NULL,"
       "u BLOB NOT NULL,"
       "e BLOB NOT NULL,"
-      "epoch_id INTEGER NOT NULL,"
+      "epoch_id TEXT NOT NULL,"
       "expiration INTEGER NOT NULL,"
       "num_tokens_with_signal INTEGER NOT NULL,"
       "public_key TEXT NOT NULL,"
@@ -190,9 +191,14 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
     statement.BindInt64(0, token.version);
     statement.BindBlob(1, token.u);
     statement.BindBlob(2, token.e);
-    statement.BindInt64(3,
-                        base::U64FromBigEndian(
-                            base::as_byte_span(outcome.epoch_id).first<8u>()));
+
+    std::string epoch_id_base64url;
+    // Align with server side's absl::WebSafeBase64Escape().
+    base::Base64UrlEncode(outcome.epoch_id,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &epoch_id_base64url);
+    statement.BindString(3, epoch_id_base64url);
+
     statement.BindInt64(4, outcome.expiration_time_seconds);
     statement.BindInt64(5, outcome.num_tokens_with_signal);
     statement.BindString(6, base::Base64Encode(outcome.public_key));

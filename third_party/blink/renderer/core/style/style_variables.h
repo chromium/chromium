@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 
@@ -14,6 +9,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -181,11 +177,13 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
     // We test with memcmp first as a fast path; the common case is
     // that we are entirely equal, since the hash check will
     // instantly reject most _true_ inequalities.
-    if (memcmp(keys_.data(), other.keys_.data(), sizeof(keys_)) != 0) {
+    if (UNSAFE_TODO(memcmp(keys_.data(), other.keys_.data(), sizeof(keys_))) !=
+        0) {
       // For AtomicString keys, memcmp() is sufficient as a test.
       return false;
     }
-    if (memcmp(values_.data(), other.values_.data(), sizeof(values_)) != 0) {
+    if (UNSAFE_TODO(memcmp(values_.data(), other.values_.data(),
+                           sizeof(values_))) != 0) {
       for (unsigned i = 0; i < kNumSlots; ++i) {
         // NOTE: base::ValuesEquivalent() decompresses the pointers before
         // comparing, which is normally fine, but not when the by far
@@ -200,8 +198,8 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
         }
       }
     }
-    if (memcmp(children_.data(), other.children_.data(), sizeof(children_)) !=
-        0) {
+    if (UNSAFE_TODO(memcmp(children_.data(), other.children_.data(),
+                           sizeof(children_))) != 0) {
       for (unsigned i = 0; i < kNumSlots; ++i) {
         if (children_[i] != other.children_[i]) {
           if (!children_[i] || !other.children_[i]) {
@@ -273,8 +271,8 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
     // It is legal to copy Member<> with memcpy() here, since we are in a
     // constructor. (We could use an initializer, but Clang doesn't
     // manage to combine the loads and stores into larger parts.)
-    memcpy(&values_, &other.values_, sizeof(values_));
-    memcpy(&children_, &other.children_, sizeof(children_));
+    UNSAFE_TODO(memcpy(&values_, &other.values_, sizeof(values_)));
+    UNSAFE_TODO(memcpy(&children_, &other.children_, sizeof(children_)));
   }
 
  private:

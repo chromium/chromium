@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TriggerTypeAndEagerness">
+  <variant name="Embedder" summary="Embedder trigger"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
   <variant name="SpeculationRule_Eager"
@@ -129,7 +130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -273,7 +274,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -501,7 +502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2025-08-10">
+    enum="HttpResponseCode" expires_after="2025-10-12">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

@@ -112,7 +112,7 @@ class SearchTest : public BrowserWithTestWindowTest {
   // Note that we need to define this here because the flags needed to check
   // content::CanSameSiteMainFrameNavigationsChangeSiteInstances() etc might not
   // be set yet if we define this immediately (e.g. outside of the test class).
-  const struct ProcessIsolationTestCase {
+  struct ProcessIsolationTestCase {
     const char* description;
     const char* start_url;
     bool start_in_instant_process;
@@ -121,7 +121,8 @@ class SearchTest : public BrowserWithTestWindowTest {
     bool same_site_instance;
     bool same_rvh;
     bool same_process;
-  } kProcessIsolationTestCases[5] = {
+  };
+  const std::array<ProcessIsolationTestCase, 5> kProcessIsolationTestCases = {{
       {"Remote NTP -> SRP", "https://foo.com/newtab", true,
        "https://foo.com/url", false, false, false, false},
       {"Remote NTP -> Regular", "https://foo.com/newtab", true,
@@ -137,7 +138,7 @@ class SearchTest : public BrowserWithTestWindowTest {
       {"Regular -> SRP", "https://foo.com/other", false, "https://foo.com/url",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
        !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
-  };
+  }};
 
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {

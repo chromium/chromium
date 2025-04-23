@@ -69,7 +69,10 @@ source_set("google") {
 
   if (is_mac) {
     sources += [ "google_brand_mac.mm" ]
-    deps += [ "//chrome/common:channel_info" ]
+    deps += [
+      "//chrome/common:channel_info",
+      "//chrome/updater:tagging",
+    ]
   }
 
   if (is_posix) {

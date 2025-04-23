@@ -20,6 +20,8 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 
+class SkPath;
+
 namespace base {
 class Value;
 namespace trace_event {
@@ -282,6 +284,9 @@ class CC_BASE_EXPORT MathUtil {
                                base::trace_event::TracedValue* res);
   static void AddToTracedValue(const char* name,
                                const gfx::RRectF& rect,
+                               base::trace_event::TracedValue* res);
+  static void AddToTracedValue(const char* name,
+                               const SkPath&,
                                base::trace_event::TracedValue* res);
   static void AddCornerRadiiToTracedValue(const char* name,
                                           const gfx::RRectF& rect,

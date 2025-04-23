@@ -21,3 +21,9 @@ include_rules = [
   "+chrome/browser/sessions",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "arc_provisioning_throttle_observer_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+}

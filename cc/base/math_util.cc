@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
 #endif
@@ -14,12 +15,14 @@
 #include "base/numerics/angle_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -949,6 +952,21 @@ void MathUtil::AddToTracedValue(const char* name,
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).y());
   res->EndArray();
+}
+
+void MathUtil::AddToTracedValue(const char* name,
+                                const SkPath& path,
+                                base::trace_event::TracedValue* res) {
+  SkRRect rrect;
+  if (path.isRRect(&rrect)) {
+    AddToTracedValue(name, gfx::RRectF(rrect), res);
+  } else {
+    res->BeginDictionary(name);
+    AddToTracedValue("bounds", gfx::SkRectToRectF(path.getBounds()), res);
+    res->SetInteger("num_points", path.countPoints());
+    res->SetInteger("num_verbs", path.countVerbs());
+    res->EndDictionary();
+  }
 }
 
 void MathUtil::AddCornerRadiiToTracedValue(

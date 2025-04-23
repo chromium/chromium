@@ -19,16 +19,31 @@
 namespace {
 constexpr char kDragAmongTabsPresentationTimeHistogram[] =
     "Browser.TabDragging.DragAmongTabsPresentationTime";
+
+int CalculateMouseOffset(const DragSessionData& drag_data_,
+                         float offset_to_width_ratio_) {
+  std::vector<TabSlotView*> tabs_to_source(drag_data_.attached_views());
+  TabSlotView* source_view = drag_data_.source_view_drag_data()->attached_view;
+  tabs_to_source.erase(
+      tabs_to_source.begin() + drag_data_.source_view_index_ + 1,
+      tabs_to_source.end());
+  const int new_x =
+      TabStrip::GetSizeNeededForViews(tabs_to_source) - source_view->width() +
+      base::ClampRound(offset_to_width_ratio_ * source_view->width());
+
+  return new_x;
 }
+
+}  // namespace
 
 DraggingTabsSession::DraggingTabsSession(DragSessionData drag_data,
                                          TabDragContext* attached_context,
-                                         int mouse_offset,
+                                         float offset_to_width_ratio_,
                                          bool initial_move,
                                          gfx::Point start_point_in_screen)
     : drag_data_(drag_data),
       attached_context_(attached_context),
-      mouse_offset_(mouse_offset),
+      mouse_offset_(CalculateMouseOffset(drag_data_, offset_to_width_ratio_)),
       initial_move_(initial_move),
       last_move_attached_context_loc_(
           views::View::ConvertPointFromScreen(attached_context,

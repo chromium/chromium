@@ -7,6 +7,7 @@ package org.chromium.android_webview.metrics;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Applies metrics filtering before forwarding to the base log uploader. */
+@NullMarked
 public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     private static final String TAG = "MetricsFiltering";
     private final AndroidMetricsLogConsumer mLogUploader;

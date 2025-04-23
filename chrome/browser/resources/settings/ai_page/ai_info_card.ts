@@ -33,7 +33,7 @@ export class SettingsAiInfoCardElement extends PolymerElement {
     };
   }
 
-  private icon3_: string;
+  declare private icon3_: string;
 
   private isManaged_(): boolean {
     return loadTimeData.getBoolean('isManaged');

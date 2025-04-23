@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import android.content.ClipDescription;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -34,7 +35,7 @@ public class ChromeTabDropDataAndroid extends ChromeDropDataAndroid {
     }
 
     @Override
-    public String buildTabClipDataText() {
+    public String buildTabClipDataText(Context context) {
         return tab.getUrl().getSpec();
     }
 

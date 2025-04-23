@@ -6,12 +6,15 @@ package org.chromium.android_webview;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Callback for WebView app initiated prefetching. */
+@NullMarked
 public interface AwPrefetchCallback {
 
     @IntDef({

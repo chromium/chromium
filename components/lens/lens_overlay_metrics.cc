@@ -63,6 +63,8 @@ std::string MimeTypeToMetricString(lens::MimeType mime_type) {
       return "Html";
     case lens::MimeType::kPlainText:
       return "PlainText";
+    case lens::MimeType::kAnnotatedPageContent:
+      return "AnnotatedPageContent";
     case lens::MimeType::kImage:
       return "Image";
     case lens::MimeType::kVideo:

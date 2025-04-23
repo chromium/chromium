@@ -77,16 +77,16 @@ enum class SystemTheme { kDefault, kCustom };
 class ThemeScoper {
  public:
   ThemeScoper() = default;
-  ThemeScoper(extensions::ExtensionService* extension_service,
+  ThemeScoper(extensions::ExtensionRegistrar* extension_registrar,
               extensions::ExtensionRegistry* extension_registry)
-      : extension_service_(extension_service),
+      : extension_registrar_(extension_registrar),
         extension_registry_(extension_registry) {}
   ThemeScoper(ThemeScoper&&) noexcept = default;
   ThemeScoper& operator=(ThemeScoper&&) = default;
   ~ThemeScoper() {
     if (!extension_id_.empty() &&
         extension_registry_->GetInstalledExtension(extension_id_)) {
-      extension_service_->UninstallExtension(
+      extension_registrar_->UninstallExtension(
           extension_id_, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
     }
   }
@@ -102,7 +102,7 @@ class ThemeScoper {
   }
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   extensions::ExtensionId extension_id_;
   base::ScopedTempDir temp_dir_;
@@ -150,7 +150,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
   ThemeScoper LoadUnpackedTheme(const std::string& source_file_path =
                                     "extensions/theme_minimal/manifest.json") {
-    ThemeScoper scoper(service_, registry_);
+    ThemeScoper scoper(registrar(), registry_);
     test::ThemeServiceChangedWaiter waiter(theme_service_);
     base::FilePath temp_dir = scoper.GetTempPath();
     base::FilePath dst_manifest_path = temp_dir.AppendASCII("manifest.json");
@@ -161,7 +161,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     EXPECT_TRUE(base::CopyFile(src_manifest_path, dst_manifest_path));
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
-        extensions::UnpackedInstaller::Create(service_));
+        extensions::UnpackedInstaller::Create(profile()));
     extensions::TestExtensionRegistryObserver observer(registry_);
     installer->Load(temp_dir);
     std::string extenson_id = observer.WaitForExtensionLoaded()->id();
@@ -184,7 +184,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
         registry_->GetInstalledExtension(extension_id)->path();
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
-        extensions::UnpackedInstaller::Create(service_));
+        extensions::UnpackedInstaller::Create(profile()));
 
     extensions::TestExtensionRegistryObserver observer(registry_);
     installer->Load(path);
@@ -376,7 +376,7 @@ TEST_F(ThemeServiceTest, ThemeInstallUninstall) {
   EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
 
   // Now uninstall the extension, should revert to the default theme.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       scoper.extension_id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   EXPECT_FALSE(theme_service_->UsingExtensionTheme());

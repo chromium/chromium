@@ -48,6 +48,6 @@ class ScopedTaskRunnerObserver
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-}  // namespace media.
+}  // namespace media
 
 #endif  // MEDIA_AUDIO_SCOPED_TASK_RUNNER_OBSERVER_H_

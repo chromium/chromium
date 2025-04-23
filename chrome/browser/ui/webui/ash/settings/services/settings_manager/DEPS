@@ -29,3 +29,9 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/services/metrics",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "os_settings_manager_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ]
+}

@@ -125,6 +125,20 @@ void NdkMediaCodecWrapper::Stop() {
   AMediaCodec_stop(media_codec_.get());
 }
 
+base::span<uint8_t> NdkMediaCodecWrapper::GetInputBuffer(size_t idx) {
+  size_t capacity = 0;
+  uint8_t* buf_data = AMediaCodec_getInputBuffer(codec(), idx, &capacity);
+  // SAFETY: `AMediaCodec_getInputBuffer` returns buffer size as the out param.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
+}
+
+base::span<uint8_t> NdkMediaCodecWrapper::GetOutputBuffer(size_t idx) {
+  size_t capacity = 0;
+  // SAFETY: `AMediaCodec_getOutputBuffer` returns buffer size as the out param.
+  uint8_t* buf_data = AMediaCodec_getOutputBuffer(codec(), idx, &capacity);
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
+}
+
 void NdkMediaCodecWrapper::OnAsyncInputAvailable(AMediaCodec* codec,
                                                  void* userdata,
                                                  int32_t index) {

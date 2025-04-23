@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -16,6 +18,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -30,14 +34,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * <p>Note: The progress bar dialog only shows a negative button which dismisses the dialog.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillProgressDialogBridge {
     private static final int SUCCESS_VIEW_DURATION_MILLIS = 500;
 
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private long mNativeAutofillProgressDialogView;
-    private PropertyModel mDialogModel;
-    private View mProgressDialogContentView;
+    private @Nullable PropertyModel mDialogModel;
+    private @Nullable View mProgressDialogContentView;
 
     private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
@@ -70,8 +75,8 @@ public class AutofillProgressDialogBridge {
             long nativeAutofillProgressDialogView, WindowAndroid windowAndroid) {
         return new AutofillProgressDialogBridge(
                 nativeAutofillProgressDialogView,
-                windowAndroid.getModalDialogManager(),
-                windowAndroid.getActivity().get());
+                assertNonNull(windowAndroid.getModalDialogManager()),
+                assertNonNull(windowAndroid.getActivity().get()));
     }
 
     /**

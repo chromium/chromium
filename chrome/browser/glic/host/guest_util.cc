@@ -65,6 +65,16 @@ url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
 }
 
+bool IsGlicWebUI(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  if (web_contents->GetLastCommittedURL() != chrome::kChromeUIGlicURL) {
+    return false;
+  }
+  return true;
+}
+
 bool OnGuestAdded(content::WebContents* guest_contents) {
   // Only handle the glic webview. Explicitly check the guest type here in case
   // glic's web content happens to load a mime handler.
@@ -75,8 +85,7 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
   CHECK(top);
-
-  if (top->GetLastCommittedURL() != chrome::kChromeUIGlicURL) {
+  if (!IsGlicWebUI(top)) {
     return false;
   }
   GlicKeyedService* service =

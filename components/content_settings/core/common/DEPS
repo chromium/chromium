@@ -6,6 +6,7 @@ include_rules = [
   "+net/cookies/cookie_util.h",
   "+net/cookies/cookie_constants.h",
   "+net/cookies/cookie_setting_override.h",
+  "+net/cookies/cookie_partition_key.h",
   "+net/cookies/static_cookie_policy.h",
   "+net/cookies/site_for_cookies.h",
   "+testing",

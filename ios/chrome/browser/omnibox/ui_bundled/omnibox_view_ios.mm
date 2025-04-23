@@ -26,11 +26,11 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -405,94 +405,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   OnBeforePossibleChange();
 }
 
-void OmniboxViewIOS::OnAccept() {
-  base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
-  base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
-
-  if (model()) {
-    // The omnibox edit model doesn't support accepting input with no text.
-    // Delegate the call to the client instead.
-    if (OmniboxClient* client = controller()->client();
-        client && !field_.text.length) {
-      client->OnThumbnailOnlyAccept();
-    } else {
-      model()->OpenSelection();
-    }
-  }
-  RevertAll();
-}
-
-void OmniboxViewIOS::OnClear() {
-  [field_ clearAutocompleteText];
-  [field_ exitPreEditState];
-}
-
-void OmniboxViewIOS::OnCopy() {
-  NSString* selectedText = nil;
-  NSInteger start_location = 0;
-  if ([field_ isPreEditing]) {
-    selectedText = field_.text;
-    start_location = 0;
-  } else {
-    UITextRange* selected_range = [field_ selectedTextRange];
-    selectedText = [field_ textInRange:selected_range];
-    UITextPosition* start = [field_ beginningOfDocument];
-    // The following call to `-offsetFromPosition:toPosition:` gives the offset
-    // in terms of the number of "visible characters."  The documentation does
-    // not specify whether this means glyphs or UTF16 chars.  This does not
-    // matter for the current implementation of AdjustTextForCopy(), but it may
-    // become an issue at some point.
-    start_location = [field_ offsetFromPosition:start
-                                     toPosition:[selected_range start]];
-  }
-  std::u16string text = base::SysNSStringToUTF16(selectedText);
-
-  GURL url;
-  bool write_url = false;
-  // Model can be nullptr in tests.
-  if (model()) {
-    model()->AdjustTextForCopy(start_location, &text, &url, &write_url);
-  }
-
-  // Create the pasteboard item manually because the pasteboard expects a single
-  // item with multiple representations.  This is expressed as a single
-  // NSDictionary with multiple keys, one for each representation.
-  NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:2];
-  [item setObject:base::SysUTF16ToNSString(text)
-           forKey:UTTypePlainText.identifier];
-
-  if (write_url && url.is_valid()) {
-    [item setObject:net::NSURLWithGURL(url) forKey:UTTypeURL.identifier];
-  }
-
-  StoreItemInPasteboard(item);
-}
-
-void OmniboxViewIOS::WillPaste() {
-  if (model()) {
-    model()->OnPaste();
-  }
-
-  [field_ exitPreEditState];
-}
-
-void OmniboxViewIOS::UpdateAppearance() {
-  // If Siri is thinking, treat that as user input being in progress.  It is
-  // unsafe to modify the text field while voice entry is pending.
-  if (model() && model()->ResetDisplayTexts()) {
-    // Revert everything to the baseline look.
-    RevertAll();
-  } else if (model() && !model()->has_focus()) {
-    // Even if the change wasn't "user visible" to the model, it still may be
-    // necessary to re-color to the URL string.  Only do this if the omnibox is
-    // not currently focused.
-    NSAttributedString* as = [[NSMutableAttributedString alloc]
-        initWithString:base::SysUTF16ToNSString(
-                           model()->GetPermanentDisplayText())];
-    [field_ setText:as userTextLength:[as length]];
-  }
-}
-
 void OmniboxViewIOS::OnDeleteBackward() {
   if (field_.text.length == 0) {
     // If the user taps backspace while the pre-edit text is showing,
@@ -521,49 +433,6 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
-void OmniboxViewIOS::ClearText() {
-  // Ensure omnibox is first responder. This will bring up the keyboard so the
-  // user can start typing a new query.
-  if (![field_ isFirstResponder]) {
-    [field_ becomeFirstResponder];
-  }
-  if (field_.text.length != 0) {
-    // Remove the text in the omnibox.
-    // Calling -[UITextField setText:] does not trigger
-    // -[id<UITextFieldDelegate> textDidChange] so it must be called explicitly.
-    OnClear();
-    [field_ setText:@""];
-    OnDidChange(YES);
-  }
-  // Calling OnDidChange() can trigger a scroll event, which removes focus from
-  // the omnibox.
-  [field_ becomeFirstResponder];
-}
-
-void OmniboxViewIOS::EndEditing() {
-  if (model() && model()->has_focus()) {
-    CloseOmniboxPopup();
-
-    RecordSuggestionsListScrolled(model()->GetPageClassification(),
-                                  suggestions_list_scrolled_);
-    suggestions_list_scrolled_ = false;
-
-    model()->OnWillKillFocus();
-    model()->OnKillFocus();
-    if ([field_ isPreEditing]) {
-      [field_ exitPreEditState];
-    }
-
-    // The controller looks at the current pre-edit state, so the call to
-    // OnKillFocus() must come after exiting pre-edit.
-    [focus_delegate_ omniboxDidResignFirstResponder];
-
-    // Blow away any in-progress edits.
-    RevertAll();
-    DCHECK(![field_ hasAutocompleteText]);
-  }
-}
-
 void OmniboxViewIOS::HideKeyboard() {
   [field_ resignFirstResponder];
 }
@@ -588,11 +457,6 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 }
 
 #pragma mark - OmniboxAutocompleteController interactions
-
-void OmniboxViewIOS::OnPopupDidScroll() {
-  this->HideKeyboard();
-  suggestions_list_scrolled_ = true;
-}
 
 void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
   // Exit preedit state and append the match. Refocus if necessary.

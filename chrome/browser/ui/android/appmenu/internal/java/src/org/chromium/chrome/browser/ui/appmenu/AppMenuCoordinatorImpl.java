@@ -9,40 +9,19 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A UI coordinator the app menu. */
+@NullMarked
 class AppMenuCoordinatorImpl implements AppMenuCoordinator {
-    private static Boolean sHasPermanentMenuKeyForTesting;
-
-    /** Factory which creates the AppMenuHandlerImpl. */
-    @VisibleForTesting
-    interface AppMenuHandlerFactory {
-        /**
-         * @param delegate Delegate used to check the desired AppMenu properties on show.
-         * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
-         * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the
-         *         containing activity.
-         * @param menuResourceId Resource Id that should be used as the source for the menu items.
-         *            It is assumed to have back_menu_id, forward_menu_id, bookmark_this_page_id.
-         * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the
-         *         containing activity.
-         * @return AppMenuHandlerImpl for the given activity and menu resource id.
-         */
-        AppMenuHandlerImpl get(
-                AppMenuPropertiesDelegate delegate,
-                AppMenuDelegate appMenuDelegate,
-                int menuResourceId,
-                View decorView,
-                ActivityLifecycleDispatcher activityLifecycleDispatcher);
-    }
+    private static @Nullable Boolean sHasPermanentMenuKeyForTesting;
 
     private final Context mContext;
     private final MenuButtonDelegate mButtonDelegate;
@@ -143,14 +122,16 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
 
     /**
      * @param hasPermanentMenuKey Overrides {@link ViewConfiguration#hasPermanentMenuKey()} for
-     *         testing. Pass null to reset.
+     *     testing. Pass null to reset.
      */
     static void setHasPermanentMenuKeyForTesting(Boolean hasPermanentMenuKey) {
         sHasPermanentMenuKeyForTesting = hasPermanentMenuKey;
         ResettersForTesting.register(() -> sHasPermanentMenuKeyForTesting = null);
     }
 
-    /** @param reporter A means of reporting an exception without crashing. */
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         AppMenuHandlerImpl.setExceptionReporter(reporter);
     }

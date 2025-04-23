@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
@@ -60,6 +61,12 @@ constexpr char kHistogramDeletedTileType[] =
     "Omnibox.SuggestTiles.DeletedTileType";
 constexpr char kHistogramDeletedTileIndex[] =
     "Omnibox.SuggestTiles.DeletedTileIndex";
+constexpr char kHistogramQueryMostVisitedURLsNumRequested[] =
+    "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumRequested";
+constexpr char kHistogramQueryMostVisitedURLsNumReceived[] =
+    "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived";
+constexpr char kHistogramQueryMostVisitedURLsDuration[] =
+    "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration";
 
 constexpr auto kMostVisitedBlocklist =
     base::MakeFixedFlatSet<std::string_view>({
@@ -81,6 +88,15 @@ bool IsURLBlocklisted(GURL url) {
   }
 
   return false;
+}
+
+GURL StripURL(AutocompleteProviderClient* client,
+              const GURL& url,
+              const GURL::Replacements& replacements) {
+  return AutocompleteMatch::GURLToStrippedGURL(
+      url.ReplaceComponents(replacements), AutocompleteInput(),
+      client->GetTemplateURLService(), std::u16string(),
+      /*keep_search_intent_params=*/false);
 }
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
@@ -128,18 +144,30 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     return false;
   }
 
+  // Sets to ensure uniqueness of titles and urls for returned suggestions.
+  std::unordered_set<std::u16string> match_titles;
+  std::unordered_set<std::string> match_urls;
+
   const TabMatcher& tab_matcher = client->GetTabMatcher();
+  // Explicitly clear the query since this isn't done in the
+  // `GURLToStrippedGURL()`.
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
 
   TemplateURLService* const url_service = client->GetTemplateURLService();
   int relevance = kMostVisitedTilesIndividualHighRelevance;
   for (const auto& url : urls) {
+    GURL stripped_url = StripURL(client, url.url, replacements);
     // Skip the match if the following is true:
     // - It is an SRP result from DSP
-    // - A tab already exists with the match url
+    // - A tab already exists with the same title or stripped URL
+    // - Match with the same title already exists
+    // - Match with the same stripped url already exists
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
-        tab_matcher.IsTabOpenWithURL(url.url, &input,
-                                     /*exclude_active_tab =*/false) ||
-        IsURLBlocklisted(url.url)) {
+        tab_matcher.IsTabOpenWithSameTitleOrSimilarURL(
+            url.title, url.url, replacements, /*exclude_active_tab=*/false) ||
+        IsURLBlocklisted(url.url) || match_titles.contains(url.title) ||
+        match_urls.contains(stripped_url.spec())) {
       continue;
     }
     auto match = BuildMatch(provider, client, url.title, url.url, relevance,
@@ -149,6 +177,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
     match.subtypes.emplace(omnibox::SUBTYPE_URL_BASED);
     matches.emplace_back(std::move(match));
+    match_titles.insert(url.title);
+    match_urls.insert(stripped_url.spec());
     --relevance;
   }
   return true;
@@ -288,11 +318,12 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
   if (url_suggestions_on_focus_config.enabled &&
       url_suggestions_on_focus_config.directly_query_history_service) {
-    CHECK(url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled() ||
-          cached_sites_.empty());
-    // If there are cached results, use them.
-    if (!cached_sites_.empty()) {
-      OnMostVisitedUrlsFromHistoryAvailable(input, cached_sites_);
+    bool prefetching_enabled =
+        url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled();
+    CHECK(prefetching_enabled || cached_sites_.empty());
+    // Used cached sites if prefetching is enabled.
+    if (prefetching_enabled) {
+      OnMostVisitedUrlsAvailable(input, cached_sites_);
     }
     // Queries the HistoryService for sites. If prefetching is enabled, this
     // updates `cached_sites_`, otherwise this updates the provider's matches.
@@ -378,12 +409,22 @@ void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
   }
 }
 
-void MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable(
+void MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryServiceAvailable(
     AutocompleteInput input,
+    base::ElapsedTimer query_timer,
     history::MostVisitedURLList sites) {
-  done_ = true;
-  if (BuildAutocompleteMatches(this, client_, sites, matches_, input)) {
-    NotifyListeners(true);
+  // Record history query duration and number of results received from
+  //`QueryMostVisitedURLs()`.
+  base::UmaHistogramTimes(kHistogramQueryMostVisitedURLsDuration,
+                          query_timer.Elapsed());
+  base::UmaHistogramCounts1000(kHistogramQueryMostVisitedURLsNumReceived,
+                               sites.size());
+
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
+          .MostVisitedPrefetchingEnabled()) {
+    UpdateCachedSites(sites);
+  } else {
+    OnMostVisitedUrlsAvailable(input, sites);
   }
 }
 
@@ -529,17 +570,17 @@ void MostVisitedSitesProvider::RequestSitesFromHistoryService(
   auto url_suggestions_on_focus_config =
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
 
-  QueryMostVisitedURLsCallback callback =
-      url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled()
-          ? base::BindOnce(&MostVisitedSitesProvider::UpdateCachedSites,
-                           request_weak_ptr_factory_.GetWeakPtr())
-          : base::BindOnce(&MostVisitedSitesProvider::
-                               OnMostVisitedUrlsFromHistoryAvailable,
-                           request_weak_ptr_factory_.GetWeakPtr(), input);
+  size_t requested_result_size = GetRequestedResultSize(input);
+  base::UmaHistogramCounts1000(kHistogramQueryMostVisitedURLsNumRequested,
+                               requested_result_size);
+
+  base::ElapsedTimer query_timer;
+  QueryMostVisitedURLsCallback callback = base::BindOnce(
+      &MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryServiceAvailable,
+      request_weak_ptr_factory_.GetWeakPtr(), input, std::move(query_timer));
 
   client_->GetHistoryService()->QueryMostVisitedURLs(
-      GetRequestedResultSize(input), std::move(callback),
-      &cancelable_task_tracker_,
+      requested_result_size, std::move(callback), &cancelable_task_tracker_,
       url_suggestions_on_focus_config.most_visited_recency_factor,
       url_suggestions_on_focus_config.most_visited_recency_window);
 }

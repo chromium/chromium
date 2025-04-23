@@ -141,18 +141,19 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     };
   }
 
-  private headerString_: string;
-  private subheaderString_: string|null;
-  private headerIconString_: string;
-  private toastText_: string|null;
-  private sites_: UnusedSitePermissionsDisplay[]|null;
-  private shouldShowCompletionInfo_: boolean;
-  private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
-  private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|null;
-  private lastUnusedSitePermissionsListAcknowledged_: UnusedSitePermissions[]|
+  declare private headerString_: string;
+  declare private subheaderString_: string|null;
+  declare private headerIconString_: string;
+  declare private toastText_: string|null;
+  declare private sites_: UnusedSitePermissionsDisplay[]|null;
+  declare private shouldShowCompletionInfo_: boolean;
+  declare private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
+  declare private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|
       null;
-  private renderedOrigins_: string[];
-  private lastUserAction_: Action|null;
+  declare private lastUnusedSitePermissionsListAcknowledged_:
+      UnusedSitePermissions[]|null;
+  declare private renderedOrigins_: string[];
+  declare private lastUserAction_: Action|null;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();

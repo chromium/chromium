@@ -277,8 +277,7 @@ class CastViewsDelegate : public views::ViewsDelegate {
 
 base::FilePath GetApplicationFontsDir() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string fontconfig_sysroot;
-  if (env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot)) {
+  if (env->HasVar("FONTCONFIG_SYSROOT")) {
     // Running with hermetic fontconfig; using the full path will not work.
     // Assume the root is base::DIR_ASSETS as set by
     // test_fonts::SetUpFontconfig().

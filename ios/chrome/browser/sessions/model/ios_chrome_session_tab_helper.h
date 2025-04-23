@@ -34,8 +34,6 @@ class IOSChromeSessionTabHelper
 
   // Unique identifier of the window the tab is in.
   SessionID window_id_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_IOS_CHROME_SESSION_TAB_HELPER_H_

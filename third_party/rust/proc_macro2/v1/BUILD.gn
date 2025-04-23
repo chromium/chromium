@@ -43,6 +43,7 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/unicode_ident/v1:lib" ]
   features = [
+    "default",
     "proc-macro",
     "span-locations",
   ]

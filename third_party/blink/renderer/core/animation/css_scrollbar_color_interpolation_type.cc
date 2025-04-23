@@ -147,7 +147,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   // https://drafts.csswg.org/css-scrollbars/#scrollbar-color
   // scrollbar-color: auto | <color>{2}

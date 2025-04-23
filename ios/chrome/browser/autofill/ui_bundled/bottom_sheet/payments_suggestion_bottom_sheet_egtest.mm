@@ -43,6 +43,24 @@ const char kFormCardNumber[] = "CCNo";
 const char kFormCardExpirationMonth[] = "CCExpiresMonth";
 const char kFormCardExpirationYear[] = "CCExpiresYear";
 
+// Matcher for the credit card suggestion chip.
+id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
+  // Represents the masked server card that was saved.
+  autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
+
+  NSString* username = base::SysUTF16ToNSString(serverCard.GetInfo(
+      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the
+    // obfuscated credit card on the 2nd line.
+    NSString* network = base::SysUTF16ToNSString(
+        serverCard.NetworkAndLastFourDigits(/*obfuscation_length=*/2));
+    return grey_text([NSString stringWithFormat:@"%@\n%@", username, network]);
+  } else {
+    return grey_text(username);
+  }
+}
+
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetEGTest : ChromeTestCase
@@ -86,6 +104,7 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   if ([self isRunningTest:@selector
             (testOpenPaymentsBottomSheetShowDetailsEditNickname)] ||
       [self
@@ -804,13 +823,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       manual_fill::FormSuggestionViewMatcher()];
 
-  // Represents the masked server card that was saved.
-  autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
-
   // Tap on the card chip in the KA.
-  id<GREYMatcher> serverCardChip =
-      grey_text(base::SysUTF16ToNSString(serverCard.GetInfo(
-          autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  id<GREYMatcher> serverCardChip = KeyboardAccessoryCreditCardSuggestionChip();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCardChip];
   [[EarlGrey selectElementWithMatcher:serverCardChip] performAction:grey_tap()];
 
@@ -827,7 +841,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(500));
 
   // Verify that the sheet didn't pop up after filling from the KA on the
-  // autofucsed field. Use the continue button of the sheet as a proxy.
+  // autofocused field. Use the continue button of the sheet as a proxy.
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_nil()];
 }
@@ -864,13 +878,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       manual_fill::FormSuggestionViewMatcher()];
 
-  // Represents the masked server card that was saved.
-  autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
-
   // Tap on the card chip in the KA.
-  id<GREYMatcher> serverCardChip =
-      grey_text(base::SysUTF16ToNSString(serverCard.GetInfo(
-          autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  id<GREYMatcher> serverCardChip = KeyboardAccessoryCreditCardSuggestionChip();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCardChip];
   [[EarlGrey selectElementWithMatcher:serverCardChip] performAction:grey_tap()];
 

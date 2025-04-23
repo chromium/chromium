@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -134,6 +135,9 @@ TEST_F(AddressEditorControllerTest, GetCountryComboboxModel) {
 // TODO(crbug.com/40263955): remove this test once unsupported countries
 // filtering is removed.
 TEST_F(AddressEditorControllerTest, NonZeroCountriesFiltered) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillEnableAccountStorageForIneligibleCountries);
   auto non_validatable_controller = std::make_unique<AddressEditorController>(
       profile_, &pdm_, /*is_validatable=*/false);
   auto validatable_controller = std::make_unique<AddressEditorController>(

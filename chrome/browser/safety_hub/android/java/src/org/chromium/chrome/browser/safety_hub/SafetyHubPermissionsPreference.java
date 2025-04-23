@@ -15,12 +15,9 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
-
-import java.util.stream.IntStream;
 
 class SafetyHubPermissionsPreference extends ChromeBasePreference implements View.OnClickListener {
     private final @NonNull PermissionsData mPermissionsData;
@@ -83,12 +80,25 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
     }
 
     private String createSummary() {
-        if (IntStream.of(mPermissionsData.getPermissions())
-                .anyMatch(x -> x == ContentSettingsType.NOTIFICATIONS)) {
-            return getContext()
-                    .getString(R.string.safety_hub_abusive_notification_permissions_sublabel);
+        // TODO(crbug.com/406473591): Consider adding separate string for mixed (unused +
+        // notifications revocation) cases.
+        switch (mPermissionsData.getRevocationType()) {
+            case PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS:
+            case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS:
+                return getContext()
+                        .getString(R.string.safety_hub_abusive_notification_permissions_sublabel);
+            case PermissionsRevocationType.DISRUPTIVE_NOTIFICATION_PERMISSIONS:
+            case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_DISRUPTIVE_NOTIFICATIONS:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_disruptive_notification_permissions_sublabel);
         }
+        assert mPermissionsData.getRevocationType() == PermissionsRevocationType.UNUSED_PERMISSIONS;
+        return createUnusedPermissionsSummary();
+    }
 
+    private String createUnusedPermissionsSummary() {
+        assert mPermissionsData.getRevocationType() == PermissionsRevocationType.UNUSED_PERMISSIONS;
         String[] permissionNames =
                 UnusedSitePermissionsBridge.contentSettingsTypeToString(
                         mPermissionsData.getPermissions());

@@ -66,8 +66,9 @@ void ProfileInteractionManager::OnAdsViolationTriggered(
   // for the intervention duration, however, a page that began a navigation
   // before the intervention duration and was still alive after the duration
   // could re-trigger an ads intervention.
-  if (ads_violation_triggered_for_last_committed_navigation_)
+  if (ads_violation_triggered_for_last_committed_navigation_) {
     return;
+  }
 
   // If the feature is disabled, simulate ads interventions as if we were
   // enforcing on ads: do not record new interventions if we would be enforcing

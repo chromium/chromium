@@ -62,4 +62,34 @@ void RecordBabelOrcaTranslationLanguageSwitched() {
       base::UserMetricsAction(kBocaBabelorcaActionOfStudentSwitchLanguage));
 }
 
+void RecordOnTaskPodNavigateBackClicked() {
+  base::RecordAction(
+      base::UserMetricsAction(kBocaOnTaskActionOfStudentNavigateBack));
+}
+
+void RecordOnTaskPodNavigateForwardClicked() {
+  base::RecordAction(
+      base::UserMetricsAction(kBocaOnTaskActionOfStudentNavigateForward));
+}
+
+void RecordOnTaskPodReloadPageClicked() {
+  base::RecordAction(
+      base::UserMetricsAction(kBocaOnTaskActionOfStudentReloadPage));
+}
+
+void RecordOnTaskPodToggleTabStripVisibilityClicked() {
+  base::RecordAction(base::UserMetricsAction(
+      kBocaOnTaskActionOfStudentToggleTabStripVisibility));
+}
+
+void RecordOnTaskPodSetSnapLocationClicked(bool is_left) {
+  if (is_left) {
+    base::RecordAction(base::UserMetricsAction(
+        kBocaOnTaskActionOfStudentSetSnapLocationToLeft));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        kBocaOnTaskActionOfStudentSetSnapLocationToRight));
+  }
+}
+
 }  // namespace ash::boca

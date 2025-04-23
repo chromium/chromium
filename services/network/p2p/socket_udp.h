@@ -40,14 +40,14 @@ class ThrottlingP2PNetworkInterceptor;
 struct P2PPendingPacket {
   P2PPendingPacket(const net::IPEndPoint& to,
                    base::span<const uint8_t> content,
-                   const rtc::PacketOptions& options,
+                   const webrtc::AsyncSocketPacketOptions& options,
                    uint64_t id);
   P2PPendingPacket(const P2PPendingPacket& other);
   ~P2PPendingPacket();
   net::IPEndPoint to;
   scoped_refptr<net::IOBuffer> data;
   size_t size;
-  rtc::PacketOptions packet_options;
+  webrtc::AsyncSocketPacketOptions packet_options;
   uint64_t id;
 };
 

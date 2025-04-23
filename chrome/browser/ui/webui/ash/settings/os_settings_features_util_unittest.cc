@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/reset/reset_section.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -54,7 +55,8 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashAllowedForRegularUser) {
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  auto* user = fake_chrome_user_manager_->AddUser(account_id);
+  const auto& user =
+      CHECK_DEREF(fake_chrome_user_manager_->AddUser(account_id));
   fake_chrome_user_manager_->LoginUser(account_id);
 
   EXPECT_TRUE(IsPowerwashAllowed(user));
@@ -62,8 +64,8 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashAllowedForRegularUser) {
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForGuestUser) {
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  auto* user = fake_chrome_user_manager_->AddGuestUser();
-  fake_chrome_user_manager_->LoginUser(user->GetAccountId());
+  const auto& user = CHECK_DEREF(fake_chrome_user_manager_->AddGuestUser());
+  fake_chrome_user_manager_->LoginUser(user.GetAccountId());
 
   EXPECT_FALSE(IsPowerwashAllowed(user));
 }
@@ -71,7 +73,8 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForGuestUser) {
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForChildUser) {
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  auto* user = fake_chrome_user_manager_->AddChildUser(account_id);
+  const auto& user =
+      CHECK_DEREF(fake_chrome_user_manager_->AddChildUser(account_id));
   fake_chrome_user_manager_->set_current_user_child(true);
   fake_chrome_user_manager_->LoginUser(account_id);
 
@@ -83,7 +86,8 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForManagedUser) {
 
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  auto* user = fake_chrome_user_manager_->AddUser(account_id);
+  const auto& user =
+      CHECK_DEREF(fake_chrome_user_manager_->AddUser(account_id));
   fake_chrome_user_manager_->LoginUser(account_id);
 
   EXPECT_FALSE(IsPowerwashAllowed(user));

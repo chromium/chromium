@@ -181,7 +181,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   std::unique_ptr<ExternalUseClient::ImageContext> CreateImageContext(
       const TransferableResource& resource,
       bool maybe_concurrent_reads,
-      bool raw_draw_if_possible) override;
+      bool raw_draw_if_possible,
+      uint32_t client_id) override;
 
   void InitDelegatedInkPointRendererReceiver(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>

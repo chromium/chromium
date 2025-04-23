@@ -23,15 +23,11 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -294,8 +290,8 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
             backing_input_buffer->getChannelData(channel)->buffer()->Data());
         float* destination = static_cast<float*>(
             external_input_buffer_->getChannelData(channel)->buffer()->Data());
-        memcpy(destination, source,
-               backing_input_buffer->length() * sizeof(float));
+        UNSAFE_TODO(memcpy(destination, source,
+                           backing_input_buffer->length() * sizeof(float)));
       }
     }
   }
@@ -334,8 +330,8 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
             external_output_buffer_->getChannelData(channel)->buffer()->Data());
         float* destination = static_cast<float*>(
             backing_output_buffer->getChannelData(channel)->buffer()->Data());
-        memcpy(destination, source,
-               backing_output_buffer->length() * sizeof(float));
+        UNSAFE_TODO(memcpy(destination, source,
+                           backing_output_buffer->length() * sizeof(float)));
       }
     }
   }

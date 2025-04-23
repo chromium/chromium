@@ -13,6 +13,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -38,9 +39,6 @@ constexpr uint64_t PackAlignWakeUpsAndLeeway(bool align_wake_ups,
 // because the value is queried from multiple threads.
 std::atomic<uint64_t> g_align_wake_ups_and_leeway =
     PackAlignWakeUpsAndLeeway(false, kDefaultLeeway);
-#if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = true;
-#endif  // BUILDFLAG(IS_WIN)
 
 MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
 
@@ -118,7 +116,8 @@ class IOWatcherForCurrentIOThread : public IOWatcher {
     return watch;
   }
 #endif
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD))
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS))
   bool WatchMachReceivePortImpl(
       mach_port_t port,
       MessagePumpForIO::MachPortWatchController* controller,
@@ -216,8 +215,6 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 void MessagePump::InitializeFeatures() {
   ResetAlignWakeUpsState();
 #if BUILDFLAG(IS_WIN)
-  g_explicit_high_resolution_timer_win =
-      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
   MessagePumpWin::InitializeFeatures();
 #elif BUILDFLAG(IS_ANDROID)
   MessagePumpAndroid::InitializeFeatures();
@@ -263,21 +260,30 @@ TimeDelta MessagePump::GetLeewayForCurrentThread() {
 TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
                                             TimeTicks run_time,
                                             TimeTicks latest_time) {
-  // Windows relies on the low resolution timer rather than manual wake up
-  // alignment when the leeway is less than the OS default timer resolution.
+  const TimeDelta leeway = GetLeewayForCurrentThread();
+
 #if BUILDFLAG(IS_WIN)
-  if (g_explicit_high_resolution_timer_win &&
-      GetLeewayForCurrentThread() <=
-          Milliseconds(Time::kMinLowResolutionThresholdMs)) {
-    return earliest_time;
+  // On Windows, we can rely on the low-res clock if we want the wakeup within
+  // kMinLowResolutionThresholdMs (16ms).
+  if (GetAlignWakeUpsEnabled() &&
+      leeway > Milliseconds(Time::kMinLowResolutionThresholdMs)) {
+    TimeTicks aligned_run_time =
+        earliest_time.SnappedToNextTick(TimeTicks(), leeway);
+    return std::min(aligned_run_time, latest_time);
   }
-#endif  // BUILDFLAG(IS_WIN)
+  // We need to return `earliest_time` to honor the above dependency on the
+  // low-res clock. Note: If this wakeup has a DelayPolicy::kPrecise, then
+  // `earliest_time == run_time` and we're thus fine returning `earliest_time`
+  // even though `run_time` is semantically what we want...
+  return earliest_time;
+#else
   if (GetAlignWakeUpsEnabled()) {
-    TimeTicks aligned_run_time = earliest_time.SnappedToNextTick(
-        TimeTicks(), GetLeewayForCurrentThread());
+    TimeTicks aligned_run_time =
+        earliest_time.SnappedToNextTick(TimeTicks(), leeway);
     return std::min(aligned_run_time, latest_time);
   }
   return run_time;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 IOWatcher* MessagePump::GetIOWatcher() {

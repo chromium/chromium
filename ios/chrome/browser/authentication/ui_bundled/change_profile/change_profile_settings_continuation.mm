@@ -23,7 +23,9 @@ void ChangeProfileSettingsContinuation(SceneState* scene_state,
 
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler showSettingsFromViewController:nil];
+  // The history promo may be opened first, in which case, don’t open the
+  // settings.
+  [applicationHandler maybeShowSettingsFromViewController];
 
   std::move(closure).Run();
 }

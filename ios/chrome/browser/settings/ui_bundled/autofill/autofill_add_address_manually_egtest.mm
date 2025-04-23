@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -44,6 +45,12 @@ NSString* const kZipLabel =
     base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
         autofill::ADDRESS_HOME_ZIP));
 
+NSString* const kNameLabel = base::SysUTF8ToNSString(
+    autofill::FieldTypeToDeveloperRepresentationString(autofill::NAME_FULL));
+
+NSString* const kCompanyNameLabel = base::SysUTF8ToNSString(
+    autofill::FieldTypeToDeveloperRepresentationString(autofill::COMPANY_NAME));
+
 // Matcher for the "Save Address" button.
 id<GREYMatcher> SaveAddressButton() {
   return ButtonWithAccessibilityLabelId(
@@ -68,6 +75,19 @@ void OpenAddressSettings() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
+}
+
+// Gets the top presented view controller, in this case the bottom sheet view
+// controller.
+UIViewController* TopPresentedViewController() {
+  UIViewController* top_controller =
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
+  for (UIViewController* controller = [top_controller presentedViewController];
+       controller && ![controller isBeingDismissed];
+       controller = [controller presentedViewController]) {
+    top_controller = controller;
+  }
+  return top_controller;
 }
 
 }  // namespace
@@ -162,7 +182,7 @@ void OpenAddressSettings() {
                   @"Profile should have been saved.");
 
   // Confirm saved profile is a local profile.
-  GREYAssertEqual(NO, [AutofillAppInterface isAccountProfileAtIndex:0],
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
                   @"Profile should have been saved locally.");
 }
 
@@ -183,8 +203,8 @@ void OpenAddressSettings() {
                   @"Profile should have been saved.");
 
   // Confirm saved profile is an account profile.
-  GREYAssertEqual(YES, [AutofillAppInterface isAccountProfileAtIndex:0],
-                  @"Profile should have been saved to account.");
+  GREYAssertTrue([AutofillAppInterface isAccountProfileAtIndex:0],
+                 @"Profile should have been saved to account.");
 
   // Exit settings.
   [self exitSettingsMenu];
@@ -215,13 +235,12 @@ void OpenAddressSettings() {
 // Tests the 'Save' button enabled state when manually adding an address to the
 // account.
 - (void)testButtonEnabledStateAtStartForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
+
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Ensure the 'Save' button is initially disabled for an account address.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
@@ -233,11 +252,6 @@ void OpenAddressSettings() {
 
 // Tests the 'Save' button enabled state when manually adding a local address.
 - (void)testButtonEnabledStateAtStartForLocalAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   [self openAddAddressView:NO];
 
   // Ensure the 'Save' button is initially enabled for a local address (user is
@@ -249,16 +263,15 @@ void OpenAddressSettings() {
 // Tests the 'Save' button's enabled state when manually adding an address to
 // the account, validating it against required field population.
 - (void)testButtonEnabledStateForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
 
   // Fill the required fields.
   [self fillRequiredFields];
+
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Ensure the 'Save' button's status changes to enabled.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
@@ -287,11 +300,6 @@ void OpenAddressSettings() {
 // Tests that the correct error message is displayed based on the completeness
 // of required address fields during manual address addition.
 - (void)testErrorMessageForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
 
@@ -354,6 +362,85 @@ void OpenAddressSettings() {
 
   // Sign out.
   [SigninEarlGrey signOut];
+}
+
+// Tests adding a local address manually through settings, filling only
+// non-required fields.
+- (void)testAddLocalAddressManuallyWithOptionalFields {
+  [self openAddAddressView:NO];
+
+  // Fill the non-required fields.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kNameLabel)]
+      performAction:grey_replaceText(@"Custom Name")];
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCompanyNameLabel)]
+      performAction:grey_replaceText(@"Custom Company Name")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+}
+
+// Tests adding a local address manually through settings, filling some of the
+// required fields.
+- (void)testAddLocalAddressWithSomeRequiredFields {
+  [self openAddAddressView:NO];
+
+  // Fill a required field.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCityLabel)]
+      performAction:grey_replaceText(@"Montreal")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+}
+
+// Tests that the 'Save' button enabled state on iPads is being correctly
+// updated, even when the button is not visible in the view. See
+// crbug.com/410609782.
+// TODO(crbug.com/411171102): Improve EGTest to correctly handle UI layout
+// variations on different screen sizes.
+- (void)testButtonEnabledStateLargeTextForAccountAddress {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
+  }
+
+  if (@available(iOS 17.0, *)) {
+    [self openAddAddressView:YES];
+
+    // Change trait collection to use extra large content size so that the
+    // 'Save' button becomes hidden.
+    ScopedTraitOverrider overrider(TopPresentedViewController());
+    overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
+    [ChromeEarlGreyUI waitForAppToIdle];
+
+    // Fill the required fields.
+    [self fillRequiredFields];
+
+    // Scroll down to show the 'Save' button.
+    [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+    // Ensure the 'Save' button's status changed to enabled.
+    [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+        assertWithMatcher:grey_enabled()];
+  }
 }
 
 @end

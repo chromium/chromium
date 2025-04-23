@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace ash {
 class WindowState;
 }
@@ -29,8 +31,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
 
   // ash::ShellDelegate:
   bool CanShowWindowForUser(const aura::Window* window) const override;
-  std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate()
-      const override;
+  std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate(
+      PrefService* local_state) const override;
   std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
   std::unique_ptr<ash::CoralDelegate> CreateCoralDelegate() const override;
@@ -102,7 +104,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::string GetVersionString() override;
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;
-  ash::DeskProfilesDelegate* GetDeskProfilesDelegate() override;
   void OpenMultitaskingSettings() override;
   bool IsNoFirstRunSwitchOn() const override;
 };

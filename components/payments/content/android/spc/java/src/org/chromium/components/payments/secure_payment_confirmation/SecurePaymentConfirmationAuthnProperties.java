@@ -69,6 +69,14 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
     /* package */ static final ReadableObjectPropertyKey<Drawable> NETWORK_ICON =
             new ReadableObjectPropertyKey<>();
 
+    /** The title text for the UI. */
+    /* package */ static final ReadableObjectPropertyKey<String> TITLE =
+            new ReadableObjectPropertyKey<>();
+
+    /** The label for the continue button. */
+    /* package */ static final ReadableObjectPropertyKey<String> CONTINUE_BUTTON_LABEL =
+            new ReadableObjectPropertyKey<>();
+
     /* package */ static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 STORE_LABEL,
@@ -81,7 +89,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
                 CANCEL_BUTTON_CALLBACK,
                 SHOWS_ISSUER_NETWORK_ICONS,
                 ISSUER_ICON,
-                NETWORK_ICON
+                NETWORK_ICON,
+                TITLE,
+                CONTINUE_BUTTON_LABEL,
             };
 
     // Prevent instantiation.

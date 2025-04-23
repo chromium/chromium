@@ -344,6 +344,9 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
   x11_binary = 'Xorg' if use_xorg else 'Xvfb'
   xorg_config_file = _make_xorg_config(xvfb_whd) if use_xorg else None
 
+  if 'XDG_CURRENT_DESKTOP' in env:
+    del env['XDG_CURRENT_DESKTOP']
+
   with dbus_session(env):
     try:
       _setup_signals()

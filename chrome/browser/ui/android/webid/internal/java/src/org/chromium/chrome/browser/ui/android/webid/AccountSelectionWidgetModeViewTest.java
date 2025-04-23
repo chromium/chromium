@@ -44,6 +44,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
             };
 
+    // The title does not change depending on RP context in a dialog involving multiple IDPs.
     private final RpContextEntry[] mMultiIdpRpContexts =
             new RpContextEntry[] {
                 new RpContextEntry(
@@ -51,13 +52,13 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                         R.string.account_selection_multi_idp_sheet_title_explicit_signin),
                 new RpContextEntry(
                         RpContext.SIGN_UP,
-                        R.string.account_selection_multi_idp_sheet_title_explicit_signup),
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
                 new RpContextEntry(
                         RpContext.USE,
-                        R.string.account_selection_multi_idp_sheet_title_explicit_use),
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
                 new RpContextEntry(
                         RpContext.CONTINUE,
-                        R.string.account_selection_multi_idp_sheet_title_explicit_continue),
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
                 // Test an invalid value.
                 new RpContextEntry(
                         0xCAFE, R.string.account_selection_multi_idp_sheet_title_explicit_signin)

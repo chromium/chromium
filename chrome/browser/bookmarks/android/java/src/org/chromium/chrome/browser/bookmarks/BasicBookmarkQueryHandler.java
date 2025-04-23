@@ -21,14 +21,20 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private final BookmarkModel mBookmarkModel;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
+    private final @BookmarkNodeMaskBit int mRootFolderForceVisibleMask;
 
     /**
      * @param bookmarkModel The underlying source of bookmark data.
      * @param bookmarkUiPrefs Stores display preferences for bookmarks.
+     * @param rootFolderForceVisibleMask The bitmask used to force visibility of root folder nodes.
      */
-    public BasicBookmarkQueryHandler(BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
+    public BasicBookmarkQueryHandler(
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            @BookmarkNodeMaskBit int rootFolderForceVisibleMask) {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
+        mRootFolderForceVisibleMask = rootFolderForceVisibleMask;
     }
 
     @Override
@@ -36,7 +42,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
             BookmarkId parentId, Set<PowerBookmarkType> powerFilter) {
         final List<BookmarkId> childIdList =
                 parentId.equals(mBookmarkModel.getRootFolderId())
-                        ? mBookmarkModel.getTopLevelFolderIds()
+                        ? mBookmarkModel.getTopLevelFolderIds(mRootFolderForceVisibleMask)
                         : mBookmarkModel.getChildIds(parentId);
 
         final List<BookmarkListEntry> bookmarkListEntries =
@@ -70,7 +76,8 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
         List<BookmarkId> childIdList =
                 parentId.equals(mBookmarkModel.getRootFolderId())
-                        ? mBookmarkModel.getTopLevelFolderIds(/* ignoreVisibility= */ true)
+                        ? mBookmarkModel.getTopLevelFolderIds(
+                                /* forceVisibleMask= */ BookmarkNodeMaskBit.ALL)
                         : mBookmarkModel.getChildIds(parentId);
         List<BookmarkListEntry> bookmarkListEntries =
                 bookmarkIdListToBookmarkListEntryList(childIdList);

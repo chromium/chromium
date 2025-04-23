@@ -112,18 +112,6 @@ const CGFloat kLabelOffset = 3;
   [self updateTabCountLabelTextColor];
 }
 
-#pragma mark - ToolbarButton
-
-// TODO(crbug.com/40265763): Rename all the references of 'iphHighlighted' to
-// 'customHighlighted' as the highlighting UI wont be limited to IPH cases.
-- (void)setIphHighlighted:(BOOL)iphHighlighted {
-  if (self.iphHighlighted == iphHighlighted) {
-    return;
-  }
-  [super setIphHighlighted:iphHighlighted];
-  [self updateTabCountLabelTextColor];
-}
-
 #pragma mark - Private
 
 // Loads the tab count label lazily.

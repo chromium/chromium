@@ -93,7 +93,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     resource_ = ScriptResource::Fetch(
         params, fetcher, nullptr, isolate, ScriptResource::kNoStreaming,
         kNoCompileHintsProducer, kNoCompileHintsConsumer,
-        v8_compile_hints::MagicCommentMode::kNever);
+        v8_compile_hints::MagicCommentMode::kNone);
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);

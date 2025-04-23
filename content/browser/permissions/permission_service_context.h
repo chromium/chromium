@@ -67,7 +67,7 @@ class CONTENT_EXPORT PermissionServiceContext
       mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
 
   void CreateSubscription(
-      blink::PermissionType permission_type,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& origin,
       PermissionStatus current_status,
       PermissionStatus last_known_status,

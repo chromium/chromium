@@ -44,9 +44,12 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
 
   ScriptPromiseResolverBase* Resolver() { return resolver_.Get(); }
   void DidFetchDataLoadFailed() override {
-    ScriptState::Scope scope(Resolver()->GetScriptState());
-    resolver_->Reject(V8ThrowException::CreateTypeError(
-        Resolver()->GetScriptState()->GetIsolate(), "Failed to fetch"));
+    ScriptState* state = resolver_->GetScriptState();
+    if (state->ContextIsValid()) {
+      ScriptState::Scope scope(state);
+      resolver_->Reject(V8ThrowException::CreateTypeError(
+          Resolver()->GetScriptState()->GetIsolate(), "Failed to fetch"));
+    }
   }
 
   void Abort() override {

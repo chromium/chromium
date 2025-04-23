@@ -70,6 +70,7 @@ absl_cc_test(
   DEPS
     absl::bits
     absl::cord_test_helpers
+    absl::flat_hash_map
     absl::flat_hash_set
     absl::hash
     absl::hash_testing

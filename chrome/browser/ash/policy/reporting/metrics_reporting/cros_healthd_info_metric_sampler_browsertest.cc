@@ -392,24 +392,32 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   static constexpr int kDisplayModelId = 54321;
   static constexpr char kExternalDisplayName[] = "External display";
   static constexpr char kInternalDisplayName[] = "Internal display";
+  static constexpr char kEdidVersion1[] = "V1.0";
+  static constexpr uint32_t kSerialNumber1 = 1231245324;
+  static constexpr char kEdidVersion2[] = "V1.4";
+  static constexpr uint32_t kSerialNumber2 = 1231245325;
+  static constexpr char kEdidVersion3[] = "V2.0";
+  static constexpr uint32_t kSerialNumber3 = 1231245326;
 
   // Create display results
   std::vector<cros_healthd::ExternalDisplayInfoPtr> external_displays;
   external_displays.push_back(::reporting::test::CreateExternalDisplay(
       kDisplayWidth, kDisplayHeight, /*resolution_horizontal*/ 1000,
       /*resolution_vertical*/ 500, /*refresh_rate*/ 100, kDisplayManufacture,
-      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName));
+      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName,
+      kEdidVersion1, kSerialNumber1));
   external_displays.push_back(::reporting::test::CreateExternalDisplay(
       kDisplayWidth, kDisplayHeight, /*resolution_horizontal*/ 1000,
       /*resolution_vertical*/ 500, /*refresh_rate*/ 100, kDisplayManufacture,
-      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName));
+      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName,
+      kEdidVersion2, kSerialNumber2));
   auto display_result = ::reporting::test::CreateDisplayResult(
       ::reporting::test::CreateEmbeddedDisplay(
           kPrivacyScreenSupported, kDisplayWidth, kDisplayHeight,
           /*resolution_horizontal*/ 1000,
           /*resolution_vertical*/ 500, /*refresh_rate*/ 100,
           kDisplayManufacture, kDisplayModelId, kDisplayManufactureYear,
-          kInternalDisplayName),
+          kInternalDisplayName, kEdidVersion3, kSerialNumber3),
       std::move(external_displays));
   ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(display_result);
@@ -437,6 +445,8 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(internal_display.display_height(), kDisplayHeight);
   EXPECT_EQ(internal_display.model_id(), kDisplayModelId);
   EXPECT_EQ(internal_display.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(internal_display.edid_version(), kEdidVersion3);
+  EXPECT_EQ(internal_display.serial_number(), kSerialNumber3);
 
   auto external_display_1 = info_data.display_info().display_device(1);
   EXPECT_EQ(external_display_1.display_name(), kExternalDisplayName);
@@ -445,6 +455,8 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(external_display_1.display_height(), kDisplayHeight);
   EXPECT_EQ(external_display_1.model_id(), kDisplayModelId);
   EXPECT_EQ(external_display_1.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(external_display_1.edid_version(), kEdidVersion1);
+  EXPECT_EQ(external_display_1.serial_number(), kSerialNumber1);
 
   auto external_display_2 = info_data.display_info().display_device(2);
   EXPECT_EQ(external_display_2.display_name(), kExternalDisplayName);
@@ -453,5 +465,7 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(external_display_2.display_height(), kDisplayHeight);
   EXPECT_EQ(external_display_2.model_id(), kDisplayModelId);
   EXPECT_EQ(external_display_2.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(external_display_2.edid_version(), kEdidVersion2);
+  EXPECT_EQ(external_display_2.serial_number(), kSerialNumber2);
 }
 }  // namespace reporting

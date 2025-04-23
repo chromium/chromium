@@ -42,7 +42,9 @@ bool OnDeviceContext::SetInput(MultimodalMessageReadView request) {
   if (!input) {
     return false;
   }
-  session_.reset();
+  // Keep the old session alive until the new session is ready. This prevents
+  // the model from freeing resources that may be needed in the new session.
+  auto old_session = std::move(session_);
   client_.reset();
   input_ = std::move(input->input);
   GetOrCreateSession();  // Start processing
@@ -62,6 +64,7 @@ OnDeviceContext::GetOrCreateSession() {
   opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver(),
                                    std::move(params));
   session_.reset_on_disconnect();
+  session_->SetPriority(priority_);
   if (input_ && input_->pieces.size() > 0) {
     AddContext();
   }
@@ -84,8 +87,16 @@ std::unique_ptr<OnDeviceContext> OnDeviceContext::Clone() {
   context->input_ = input_.Clone();
   CloneSession(context->session_.BindNewPipeAndPassReceiver(),
                /*logged_request=*/nullptr, /*ignore_context=*/false);
+  context->SetPriority(priority_);
   context->session_.reset_on_disconnect();
   return context;
+}
+
+void OnDeviceContext::SetPriority(on_device_model::mojom::Priority priority) {
+  priority_ = priority;
+  if (session_) {
+    session_->SetPriority(priority);
+  }
 }
 
 void OnDeviceContext::AddContext() {

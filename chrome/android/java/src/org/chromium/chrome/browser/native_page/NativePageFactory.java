@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
 import org.chromium.chrome.browser.pdf.PdfInfo;
@@ -76,7 +76,7 @@ public class NativePageFactory {
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
-    private NewTabPageUma mNewTabPageUma;
+    private NewTabPageCreationTracker mNewTabPageCreationTracker;
 
     private NativePageBuilder mNativePageBuilder;
     private static NativePage sTestPage;
@@ -123,7 +123,7 @@ public class NativePageFactory {
             mNativePageBuilder =
                     new NativePageBuilder(
                             mActivity,
-                            this::getNewTabPageUma,
+                            this::getNewTabPageCreationTracker,
                             mBottomSheetController,
                             mBrowserControlsManager,
                             mCurrentTabSupplier,
@@ -144,19 +144,19 @@ public class NativePageFactory {
         return mNativePageBuilder;
     }
 
-    private NewTabPageUma getNewTabPageUma() {
-        if (mNewTabPageUma == null) {
-            mNewTabPageUma = new NewTabPageUma(mTabModelSelector);
-            mNewTabPageUma.monitorNtpCreation();
+    private NewTabPageCreationTracker getNewTabPageCreationTracker() {
+        if (mNewTabPageCreationTracker == null) {
+            mNewTabPageCreationTracker = new NewTabPageCreationTracker(mTabModelSelector);
+            mNewTabPageCreationTracker.monitorNtpCreation();
         }
-        return mNewTabPageUma;
+        return mNewTabPageCreationTracker;
     }
 
     @VisibleForTesting
     static class NativePageBuilder {
         private final Activity mActivity;
         private final BottomSheetController mBottomSheetController;
-        private final Supplier<NewTabPageUma> mUma;
+        private final Supplier<NewTabPageCreationTracker> mNewTabPageCreationTracker;
         private final BrowserControlsManager mBrowserControlsManager;
         private final Supplier<Tab> mCurrentTabSupplier;
         private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
@@ -175,7 +175,7 @@ public class NativePageFactory {
 
         public NativePageBuilder(
                 Activity activity,
-                Supplier<NewTabPageUma> uma,
+                Supplier<NewTabPageCreationTracker> newTabPageCreationTracker,
                 BottomSheetController sheetController,
                 BrowserControlsManager browserControlsManager,
                 Supplier<Tab> currentTabSupplier,
@@ -193,7 +193,7 @@ public class NativePageFactory {
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 StartupMetricsTracker startupMetricsTracker) {
             mActivity = activity;
-            mUma = uma;
+            mNewTabPageCreationTracker = newTabPageCreationTracker;
             mBottomSheetController = sheetController;
             mBrowserControlsManager = browserControlsManager;
             mCurrentTabSupplier = currentTabSupplier;
@@ -228,7 +228,7 @@ public class NativePageFactory {
                     mLifecycleDispatcher,
                     mTabModelSelector,
                     DeviceFormFactor.isWindowOnTablet(mWindowAndroid),
-                    mUma.get(),
+                    mNewTabPageCreationTracker.get(),
                     ColorUtils.inNightMode(mActivity),
                     nativePageHost,
                     tab,
@@ -480,7 +480,7 @@ public class NativePageFactory {
 
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
-        if (mNewTabPageUma != null) mNewTabPageUma.destroy();
+        if (mNewTabPageCreationTracker != null) mNewTabPageCreationTracker.destroy();
     }
 
     public static void setPdfPageForTesting(PdfPage pdfPage) {

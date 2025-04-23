@@ -4,13 +4,19 @@
 
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 
+#include <optional>
+
+#include "base/callback_list.h"
+#include "base/state_transitions.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -25,7 +31,10 @@ void GlicAnnotationManager::ScrollTo(
     mojom::ScrollToParamsPtr params,
     mojom::WebClientHandler::ScrollToCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
-  MaybeFailAndResetTask(glic::mojom::ScrollToErrorReason::kNewerScrollToCall);
+  if (annotation_task_ && annotation_task_->IsRunning()) {
+    annotation_task_->FailTask(mojom::ScrollToErrorReason::kNewerScrollToCall);
+  }
+  annotation_task_.reset();
 
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
@@ -85,25 +94,28 @@ void GlicAnnotationManager::ScrollTo(
   // this must have a non-empty value.
   CHECK(text_fragment.has_value());
 
-  if (!annotation_agent_container_.is_bound()) {
-    auto focused_tab_data = service_->GetFocusedTabData();
-    if (focused_tab_data.focus()) {
-      focused_primary_page_ =
-          focused_tab_data.focus()->GetPrimaryPage().GetWeakPtr();
-    }
-    if (!focused_primary_page_) {
-      std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
-      return;
-    }
-    // Using base::Unretained is safe here because `service_` will outlive
-    // `this`.
-    tab_change_subscription_ = service_->AddFocusedTabChangedCallback(
-        base::BindRepeating(&GlicAnnotationManager::OnFocusedTabChanged,
-                            base::Unretained(this)));
-    focused_primary_page_->GetMainDocument()
-        .GetRemoteInterfaces()
-        ->GetInterface(
-            annotation_agent_container_.BindNewPipeAndPassReceiver());
+  auto focused_tab_data = service_->GetFocusedTabData();
+  content::Page* focused_primary_page = nullptr;
+  if (focused_tab_data.focus()) {
+    focused_primary_page = &focused_tab_data.focus()->GetPrimaryPage();
+  }
+  if (!focused_primary_page) {
+    std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    return;
+  }
+
+  if (annotation_agent_container_.has_value() &&
+      annotation_agent_container_->document.AsRenderFrameHostIfValid() !=
+          &focused_primary_page->GetMainDocument()) {
+    annotation_agent_container_ = std::nullopt;
+  }
+
+  if (!annotation_agent_container_.has_value()) {
+    annotation_agent_container_.emplace();
+    annotation_agent_container_->document =
+        focused_primary_page->GetMainDocument().GetWeakDocumentPtr();
+    focused_primary_page->GetMainDocument().GetRemoteInterfaces()->GetInterface(
+        annotation_agent_container_->remote.BindNewPipeAndPassReceiver());
   }
 
   // Verifies that the document_id parameter (if set) refers to the primary
@@ -112,7 +124,7 @@ void GlicAnnotationManager::ScrollTo(
   // always set.
   if (params->document_id) {
     // We only support scrolling the currently focused tab's main frame.
-    content::RenderFrameHost& rfh = focused_primary_page_->GetMainDocument();
+    content::RenderFrameHost& rfh = focused_primary_page->GetMainDocument();
     auto* document_identifier_user_data =
         optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
             &rfh);
@@ -127,7 +139,7 @@ void GlicAnnotationManager::ScrollTo(
 
   mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> agent_host_receiver;
   mojo::Remote<blink::mojom::AnnotationAgent> agent_remote;
-  annotation_agent_container_->CreateAgent(
+  annotation_agent_container_->remote->CreateAgent(
       agent_host_receiver.InitWithNewPipeAndPassRemote(),
       agent_remote.BindNewPipeAndPassReceiver(),
       blink::mojom::AnnotationType::kGlic,
@@ -136,83 +148,178 @@ void GlicAnnotationManager::ScrollTo(
               kWithoutTextDirective),
       search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
-      std::move(agent_remote), std::move(agent_host_receiver),
-      std::move(callback));
+      this, std::move(agent_remote), std::move(agent_host_receiver),
+      std::move(callback), *focused_primary_page);
 }
 
 GlicAnnotationManager::AnnotationTask::AnnotationTask(
+    GlicAnnotationManager* annotation_manager,
     mojo::Remote<blink::mojom::AnnotationAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
         agent_host_pending_receiver,
-    mojom::WebClientHandler::ScrollToCallback callback)
-    : annotation_agent_(std::move(agent_remote)),
+    mojom::WebClientHandler::ScrollToCallback callback,
+    content::Page& page)
+    : annotation_manager_(*annotation_manager),
+      annotation_agent_(std::move(agent_remote)),
       annotation_agent_host_receiver_(this,
                                       std::move(agent_host_pending_receiver)),
-      scroll_to_callback_(std::move(callback)) {}
+      scroll_to_callback_(std::move(callback)),
+      page_(page.GetWeakPtr()) {
+  // Using base::Unretained is safe here because `this` owns the subscription.
+  tab_change_subscription_ =
+      annotation_manager_->service_->AddFocusedTabChangedCallback(
+          base::BindRepeating(&AnnotationTask::OnFocusedTabChanged,
+                              base::Unretained(this)));
+
+  // Using base::Unretained is safe because `this` owns the receiver.
+  annotation_agent_host_receiver_.set_disconnect_handler(base::BindOnce(
+      &AnnotationTask::RemoteDisconnected, base::Unretained(this)));
+}
 
 GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
-  if (scroll_to_callback_) {
+  CHECK_EQ(IsRunning(), !scroll_to_callback_.is_null());
+  if (IsRunning()) {
     std::move(scroll_to_callback_)
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
 }
 
-void GlicAnnotationManager::AnnotationTask::MaybeFailTask(
+bool GlicAnnotationManager::AnnotationTask::IsRunning() const {
+  return state_ == State::kRunning;
+}
+
+void GlicAnnotationManager::AnnotationTask::FailTask(
     mojom::ScrollToErrorReason error_reason) {
-  if (!scroll_to_callback_) {
-    return;
-  }
+  SetState(State::kFailed);
   std::move(scroll_to_callback_).Run(error_reason);
+  ResetConnections();
+}
+
+std::string GlicAnnotationManager::AnnotationTask::ToString(State state) {
+  switch (state) {
+    case State::kRunning:
+      return "Running";
+    case State::kFailed:
+      return "Failed";
+    case State::kActive:
+      return "Active";
+    case State::kInactive:
+      return "Inactive";
+  }
+}
+
+void GlicAnnotationManager::AnnotationTask::SetState(State new_state) {
+  State old_state = state_;
+  static const base::NoDestructor<base::StateTransitions<State>>
+      allowed_transitions(base::StateTransitions<State>(
+          {{State::kRunning, {State::kFailed, State::kActive}},
+           {State::kFailed, {}},
+           {State::kActive, {State::kInactive}},
+           {State::kInactive, {}}}));
+  CHECK_STATE_TRANSITION(allowed_transitions, old_state, new_state);
+  state_ = new_state;
+}
+
+void GlicAnnotationManager::AnnotationTask::RemoteDisconnected() {
+  switch (state_) {
+    case State::kRunning:
+      FailTask(mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
+      return;
+    case State::kActive:
+      DropAnnotation();
+      return;
+    case State::kFailed:
+    case State::kInactive:
+      NOTREACHED();
+  }
+}
+
+void GlicAnnotationManager::AnnotationTask::DropAnnotation() {
+  SetState(State::kInactive);
+  ResetConnections();
+}
+
+void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   annotation_agent_.reset();
   annotation_agent_host_receiver_.reset();
+  tab_change_subscription_ = base::CallbackListSubscription();
+  content::WebContentsObserver::Observe(nullptr);
 }
 
 void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
     const gfx::Rect& document_relative_rect,
     blink::mojom::AttachmentResult attachment_result) {
+  CHECK_EQ(state_, State::kRunning);
+
+  // At this point, we're relying on `OnFocusedTabChanged()` to observe `page_`
+  // being navigated from. But that notification can be delayed, so we could be
+  // in a situation where page_ is nullptr, but we haven't received a
+  // notification yet. We fail the task in that situation.
+  if (!page_) {
+    FailTask(mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
+    return;
+  }
+
   switch (attachment_result) {
     case blink::mojom::AttachmentResult::kSelectorNotMatched:
-      std::move(scroll_to_callback_)
-          .Run(mojom::ScrollToErrorReason::kNoMatchFound);
-      break;
+      FailTask(mojom::ScrollToErrorReason::kNoMatchFound);
+      return;
     case blink::mojom::AttachmentResult::kRangeInvalid:
-      std::move(scroll_to_callback_)
-          .Run(mojom::ScrollToErrorReason::kSearchRangeInvalid);
-      break;
+      FailTask(mojom::ScrollToErrorReason::kSearchRangeInvalid);
+      return;
     case blink::mojom::AttachmentResult::kSuccess:
+      SetState(State::kActive);
       annotation_agent_->ScrollIntoView(/*applies_focus=*/true);
       std::move(scroll_to_callback_).Run(std::nullopt);
+
+      // After attachment, we only want to dismiss the active highlight when
+      // the `page_`'s tab changes its primary page (i.e. navigates away from
+      // `page_`), and not if the currently focused tab changes. We cannot rely
+      // on FocusedTabManager to observe this, and observe
+      // `WebContentsObserver::PrimaryPageChanged` from this point instead.
+      tab_change_subscription_ = base::CallbackListSubscription();
+      content::WebContentsObserver::Observe(
+          content::WebContents::FromRenderFrameHost(&page_->GetMainDocument()));
       break;
   }
 }
 
-void GlicAnnotationManager::MaybeFailAndResetTask(
-    glic::mojom::ScrollToErrorReason error_reason) {
-  if (annotation_task_) {
-    annotation_task_->MaybeFailTask(error_reason);
-    annotation_task_.reset();
-  }
+// Note: We explicitly listen for `PrimaryPageChanged` to drop the highlight
+// after the page gets put into the BackForwardCache.
+void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
+    content::Page& page) {
+  DropAnnotation();
 }
 
 // Note: In addition to when the focused tab changes, this gets called when
 // the currently focused tab navigates its primary page (i.e.
 // PrimaryPageChanged). We also want to perform these steps in that scenario.
-void GlicAnnotationManager::OnFocusedTabChanged(
+void GlicAnnotationManager::AnnotationTask::OnFocusedTabChanged(
     FocusedTabData focused_tab_data) {
-  content::Page* prev_focused_primary_page = focused_primary_page_.get();
+  CHECK_EQ(state_, State::kRunning);
+  // We've navigated away from the page this (in-progress) task was supposed to
+  // run in, so we fail the task.
+  if (!page_.get()) {
+    FailTask(mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
+    return;
+  }
+
   content::Page* new_focused_primary_page = nullptr;
   if (focused_tab_data.focus()) {
     new_focused_primary_page = &focused_tab_data.focus()->GetPrimaryPage();
   }
-  // If the focused tab hasn't changed and it's primary page hasn't changed, we
+  // If the focused tab hasn't changed and its primary page hasn't changed, we
   // don't need to do anything.
-  if (prev_focused_primary_page == new_focused_primary_page) {
+  if (page_.get() == new_focused_primary_page) {
     return;
   }
-  MaybeFailAndResetTask(
-      mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
-  annotation_agent_container_.reset();
-  tab_change_subscription_ = base::CallbackListSubscription();
+  FailTask(mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
 }
+
+GlicAnnotationManager::AnnotationAgentContainer::AnnotationAgentContainer() =
+    default;
+
+GlicAnnotationManager::AnnotationAgentContainer::~AnnotationAgentContainer() =
+    default;
 
 }  // namespace glic

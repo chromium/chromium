@@ -5,7 +5,6 @@
 #ifndef UI_GFX_MAC_IO_SURFACE_H_
 #define UI_GFX_MAC_IO_SURFACE_H_
 
-#include <IOKit/IOReturn.h>
 #include <IOSurface/IOSurfaceRef.h>
 #include <mach/mach.h>
 

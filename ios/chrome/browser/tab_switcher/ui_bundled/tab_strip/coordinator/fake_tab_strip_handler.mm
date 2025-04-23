@@ -49,4 +49,9 @@
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
 }
 
+- (void)startLeaveOrDeleteSharedGroupItem:(TabGroupItem*)tabGroupItem
+                                forAction:(TabGroupActionType)actionType
+                               sourceView:(UIView*)sourceView {
+}
+
 @end

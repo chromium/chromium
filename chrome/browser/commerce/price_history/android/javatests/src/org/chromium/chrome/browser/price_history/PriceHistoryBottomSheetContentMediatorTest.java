@@ -117,6 +117,7 @@ public class PriceHistoryBottomSheetContentMediatorTest {
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        doReturn(true).when(mMockShoppingService).isPriceInsightsEligible();
 
         mMediator =
                 new PriceHistoryBottomSheetContentMediator(
@@ -128,13 +129,28 @@ public class PriceHistoryBottomSheetContentMediatorTest {
     }
 
     @Test
+    public void testRequestShowContent_PriceInsightsNotEligible() {
+        doReturn(false).when(mMockShoppingService).isPriceInsightsEligible();
+        mMediator.requestShowContent(mMockCallback);
+        verify(mMockCallback).onResult(false);
+    }
+
+    @Test
+    public void testRequestShowContent_PriceInsightsInfoNotAvailable() {
+        setUpGetPriceInsightsInfoForUrl(null);
+        mMediator.requestShowContent(mMockCallback);
+        verify(mMockCallback).onResult(false);
+    }
+
+    @Test
     public void testRequestShowContent_PriceHistorySingleCatalog() {
         doReturn(mMockPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
-        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
+        setUpGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mMediator.requestShowContent(mMockCallback);
 
+        verify(mMockCallback).onResult(true);
         assertEquals(PRODUCT_TITLE, mPropertyModel.get(PRICE_HISTORY_CHART_CONTENT_DESCRIPTION));
         assertEquals(PRICE_HISTORY_SINGLE_CATALOGS_TITLE, mPropertyModel.get(PRICE_HISTORY_TITLE));
         assertFalse(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION_VISIBLE));
@@ -147,9 +163,10 @@ public class PriceHistoryBottomSheetContentMediatorTest {
         doReturn(mMockPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
-        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
+        setUpGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
         mMediator.requestShowContent(mMockCallback);
 
+        verify(mMockCallback).onResult(true);
         assertEquals(PRODUCT_TITLE, mPropertyModel.get(PRICE_HISTORY_CHART_CONTENT_DESCRIPTION));
         assertEquals(
                 PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE, mPropertyModel.get(PRICE_HISTORY_TITLE));
@@ -160,9 +177,10 @@ public class PriceHistoryBottomSheetContentMediatorTest {
 
     @Test
     public void testRequestShowContent_OpenUrlButton() {
-        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
+        setUpGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mMediator.requestShowContent(mMockCallback);
 
+        verify(mMockCallback).onResult(true);
         assertTrue(mPropertyModel.get(OPEN_URL_BUTTON_VISIBLE));
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -181,7 +199,7 @@ public class PriceHistoryBottomSheetContentMediatorTest {
         watcher.assertExpected();
     }
 
-    private void setShoppingServiceGetPriceInsightsInfoForUrl(PriceInsightsInfo info) {
+    private void setUpGetPriceInsightsInfoForUrl(PriceInsightsInfo info) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))

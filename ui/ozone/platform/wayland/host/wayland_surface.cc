@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
@@ -23,6 +18,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -832,7 +828,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   if (viewport() && !std::ranges::equal(src_to_set, src_set_)) {
     wp_viewport_set_source(viewport(), src_to_set[0], src_to_set[1],
                            src_to_set[2], src_to_set[3]);
-    memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set));
+    UNSAFE_TODO(memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set)));
     needs_commit = true;
   }
 
@@ -856,7 +852,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
                               : static_cast<int>(dst_to_set[1]));
       needs_commit = true;
     }
-    memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
+    UNSAFE_TODO(memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set)));
   }
 
   DCHECK_LE(pending_state_.damage_px.size(), 1u);

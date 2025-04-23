@@ -27,6 +27,7 @@
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/spinning_mutex.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
@@ -1150,29 +1151,20 @@ void PartitionRoot::Init(PartitionOptions opts) {
         (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
-    settings.zapping_by_free_flags =
-        opts.zapping_by_free_flags == PartitionOptions::kEnabled;
     settings.eventually_zero_freed_memory =
         opts.eventually_zero_freed_memory == PartitionOptions::kEnabled;
     settings.fewer_memory_regions =
         opts.fewer_memory_regions == PartitionOptions::kEnabled;
 
-    settings.scheduler_loop_quarantine =
-        opts.scheduler_loop_quarantine == PartitionOptions::kEnabled;
-    if (settings.scheduler_loop_quarantine) {
-      internal::LightweightQuarantineBranchConfig global_config = {
-          .lock_required = true,
-          .branch_capacity_in_bytes =
-              opts.scheduler_loop_quarantine_branch_capacity_in_bytes,
-      };
-      scheduler_loop_quarantine_branch_capacity_in_bytes =
-          opts.scheduler_loop_quarantine_branch_capacity_in_bytes;
-      scheduler_loop_quarantine.emplace(
-          scheduler_loop_quarantine_root.CreateBranch(global_config));
-    } else {
-      // Deleting a running quarantine is not supported.
-      PA_CHECK(!scheduler_loop_quarantine.has_value());
-    }
+    // If quarantine is enabled, it should be guarded with locks.
+    PA_CHECK(!opts.scheduler_loop_quarantine_global_config.enable_quarantine ||
+             opts.scheduler_loop_quarantine_global_config.quarantine_config
+                 .lock_required);
+    scheduler_loop_quarantine.Configure(
+        scheduler_loop_quarantine_root,
+        opts.scheduler_loop_quarantine_global_config);
+    settings.scheduler_loop_quarantine_thread_local_config =
+        opts.scheduler_loop_quarantine_thread_local_config;
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
@@ -1322,10 +1314,11 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 PartitionRoot::Settings::Settings() = default;
 
-PartitionRoot::PartitionRoot() : scheduler_loop_quarantine_root(*this) {}
+PartitionRoot::PartitionRoot()
+    : scheduler_loop_quarantine_root(*this), scheduler_loop_quarantine(this) {}
 
 PartitionRoot::PartitionRoot(PartitionOptions opts)
-    : scheduler_loop_quarantine_root(*this) {
+    : scheduler_loop_quarantine_root(*this), scheduler_loop_quarantine(this) {
   Init(opts);
 }
 
@@ -1769,7 +1762,9 @@ void PartitionRoot::DumpStats(const char* partition_name,
                                                 &stats.all_thread_caches_stats);
     }
 
-    stats.has_scheduler_loop_quarantine = settings.scheduler_loop_quarantine;
+    stats.has_scheduler_loop_quarantine =
+        settings.scheduler_loop_quarantine_thread_local_config
+            .enable_quarantine;
     if (stats.has_scheduler_loop_quarantine) {
       memset(
           reinterpret_cast<void*>(&stats.scheduler_loop_quarantine_stats_total),
@@ -1983,7 +1978,11 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
   if (hook) [[unlikely]] {
     hook(object, usable_size);
   } else {
+// TODO(https://crbug.com/371135823): Enable zapping again once finished
+// investigation.
+#if !PA_BUILDFLAG(IS_IOS)
     internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
+#endif  // !PA_BUILDFLAG(IS_IOS)
   }
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

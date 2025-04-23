@@ -345,7 +345,12 @@ JsSandboxIsolate::JsSandboxIsolate(
                                 base::Unretained(this)));
 }
 
-JsSandboxIsolate::~JsSandboxIsolate() {}
+JsSandboxIsolate::~JsSandboxIsolate() {
+  if (context_holder_) {
+    v8::HandleScope handle_scope(isolate_holder_->isolate());
+    context_holder_.reset();
+  }
+}
 
 // Called from Binder thread.
 // This method posts evaluation tasks to the control_task_runner_. The

@@ -175,17 +175,6 @@ CA_NAME="req_ca_dn" \
   openssl ca \
     -batch \
     -extensions user_cert \
-    -subj "/CN=Leaf Certificate/" \
-    -startdate 00010101000000Z \
-    -enddate   00010101000000Z \
-    -in out/ok_cert.req \
-    -out out/bad_validity.pem \
-    -config ca.cnf
-
-CA_NAME="req_ca_dn" \
-  openssl ca \
-    -batch \
-    -extensions user_cert \
     -days ${CERT_LIFETIME} \
     -in out/test_names.req \
     -out out/test_names.pem \
@@ -201,8 +190,6 @@ CA_NAME="req_ca_dn" \
     > ../certificates/expired_cert.pem"
 /bin/sh -c "cat out/2048-sha256-root.key out/2048-sha256-root.pem \
     > ../certificates/root_ca_cert.pem"
-/bin/sh -c "cat out/ok_cert.key out/bad_validity.pem \
-    > ../certificates/bad_validity.pem"
 /bin/sh -c "cat out/ok_cert.key out/int/ok_cert.pem \
     out/int/2048-sha256-int.pem \
     > ../certificates/ok_cert_by_intermediate.pem"

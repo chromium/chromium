@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,12 +93,18 @@ using ServiceWorkerScriptExecutionCallback =
 // synchronously with changes in //content.
 class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
  public:
+  // Called after the message to start the service worker has been sent.
+  virtual void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) {
+  }
   // Called when the service worker with id `version_id` will be stopped.
   virtual void OnStopping(int64_t version_id,
                           const ServiceWorkerRunningInfo& worker_info) {}
   // Called when the service worker with id `version_id` has stopped running.
   virtual void OnStopped(int64_t version_id,
                          const ServiceWorkerRunningInfo& worker_info) {}
+  // Called before the URLLoaderFactory used to fetch the worker script is
+  // constructed.
+  virtual void OnWillCreateURLLoaderFactory(const GURL& scope) {}
 
   // TODO(crbug.com/334940006): Add the rest of the extensions methods
   // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt
@@ -343,5 +350,38 @@ class CONTENT_EXPORT ServiceWorkerContext {
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<content::ServiceWorkerContext,
+                               content::ServiceWorkerContextObserver> {
+  static void AddObserver(content::ServiceWorkerContext* source,
+                          content::ServiceWorkerContextObserver* observer) {
+    source->AddObserver(observer);
+  }
+  static void RemoveObserver(content::ServiceWorkerContext* source,
+                             content::ServiceWorkerContextObserver* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<
+    content::ServiceWorkerContext,
+    content::ServiceWorkerContextObserverSynchronous> {
+  static void AddObserver(
+      content::ServiceWorkerContext* source,
+      content::ServiceWorkerContextObserverSynchronous* observer) {
+    source->AddSyncObserver(observer);
+  }
+  static void RemoveObserver(
+      content::ServiceWorkerContext* source,
+      content::ServiceWorkerContextObserverSynchronous* observer) {
+    source->RemoveSyncObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CONTEXT_H_

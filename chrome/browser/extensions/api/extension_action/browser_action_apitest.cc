@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
@@ -272,7 +273,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
   // TODO(crbug.com/40123818): Service Workers currently don't support loading
   // SVG images.
-  const bool expect_failure = IsContextTypeForServiceWorker();
+  const bool expect_failure =
+      browser_test_util::IsServiceWorkerContext(context_type_);
   ASSERT_NO_FATAL_FAILURE(
       RunUpdateTest("browser_action/update_svg", expect_failure));
 }

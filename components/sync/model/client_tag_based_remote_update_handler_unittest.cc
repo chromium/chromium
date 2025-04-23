@@ -111,7 +111,9 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
       : ClientTagBasedRemoteUpdateHandlerTest(PREFERENCES) {}
 
   explicit ClientTagBasedRemoteUpdateHandlerTest(DataType type)
-      : processor_entity_tracker_(GenerateDataTypeState(), EntityMetadataMap()),
+      : processor_entity_tracker_(type,
+                                  GenerateDataTypeState(),
+                                  EntityMetadataMap()),
         data_type_sync_bridge_(type,
                                change_processor_.CreateForwardingProcessor()),
         remote_update_handler_(type,

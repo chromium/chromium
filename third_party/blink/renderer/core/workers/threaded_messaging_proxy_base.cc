@@ -66,6 +66,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
     const std::optional<const blink::DedicatedWorkerToken>& token,
     std::unique_ptr<WorkerDevToolsParams> client_provided_devtools_params) {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   KURL script_url = global_scope_creation_params->script_url;
 
@@ -111,6 +112,7 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
     const String& message,
     std::unique_ptr<SourceLocation> location) {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (asked_to_terminate_)
     return;
   execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -119,6 +121,7 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
 
 void ThreadedMessagingProxyBase::ParentObjectDestroyed() {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (worker_thread_) {
     // Request to terminate the global scope. This will eventually call
     // WorkerThreadTerminated().
@@ -130,6 +133,7 @@ void ThreadedMessagingProxyBase::ParentObjectDestroyed() {
 
 void ThreadedMessagingProxyBase::WorkerThreadTerminated() {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This method is always the last to be performed, so the proxy is not
   // needed for communication in either side any more. However, the parent
@@ -160,6 +164,7 @@ void ThreadedMessagingProxyBase::WorkerThreadTerminated() {
 
 void ThreadedMessagingProxyBase::TerminateGlobalScope() {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (asked_to_terminate_)
     return;
@@ -197,6 +202,7 @@ ThreadedMessagingProxyBase::GetParentAgentGroupTaskRunner() const {
 
 WorkerThread* ThreadedMessagingProxyBase::GetWorkerThread() const {
   DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_thread_.get();
 }
 

@@ -31,9 +31,6 @@ class RendererClient;
 // implementation.
 //
 // All methods are pass-through except Initialize() and SetCdm().
-//
-// The caller must guarantee that DecryptingRenderer will never be initialized
-// with a |media_resource| of type MediaResource::Type::URL.
 class MEDIA_EXPORT DecryptingRenderer : public Renderer {
  public:
   DecryptingRenderer(

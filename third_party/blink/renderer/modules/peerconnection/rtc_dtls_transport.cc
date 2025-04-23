@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -71,7 +67,7 @@ std::unique_ptr<DtlsTransportProxy> CreateProxy(
 
 RTCDtlsTransport::RTCDtlsTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport,
+    webrtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport,
     RTCIceTransport* ice_transport)
     : ExecutionContextClient(context),
       current_state_(webrtc::DtlsTransportState::kNew),
@@ -141,12 +137,13 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
   // If the certificates have changed, copy them as DOMArrayBuffers.
   // This makes sure that getRemoteCertificates() == getRemoteCertificates()
   if (current_state_.remote_ssl_certificates()) {
-    const rtc::SSLCertChain* certs = current_state_.remote_ssl_certificates();
+    const webrtc::SSLCertChain* certs =
+        current_state_.remote_ssl_certificates();
     if (certs->GetSize() != remote_certificates_.size()) {
       remote_certificates_.clear();
       for (size_t i = 0; i < certs->GetSize(); i++) {
         auto& cert = certs->Get(i);
-        rtc::Buffer der_cert;
+        webrtc::Buffer der_cert;
         cert.ToDER(&der_cert);
         DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(der_cert);
         remote_certificates_.push_back(dab_cert);
@@ -155,14 +152,15 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
       // Replace certificates that have changed, if any
       for (WTF::wtf_size_t i = 0; i < certs->GetSize(); i++) {
         auto& cert = certs->Get(i);
-        rtc::Buffer der_cert;
+        webrtc::Buffer der_cert;
         cert.ToDER(&der_cert);
         DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(der_cert);
         // Don't replace the certificate if it's unchanged.
         // Should have been "if (*dab_cert != *remote_certificates_[i])"
         if (dab_cert->ByteLength() != remote_certificates_[i]->ByteLength() ||
-            memcmp(dab_cert->Data(), remote_certificates_[i]->Data(),
-                   dab_cert->ByteLength()) != 0) {
+            UNSAFE_TODO(memcmp(dab_cert->Data(),
+                               remote_certificates_[i]->Data(),
+                               dab_cert->ByteLength())) != 0) {
           remote_certificates_[i] = dab_cert;
         }
       }

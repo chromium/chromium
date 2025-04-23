@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -863,13 +865,13 @@ TEST_F(OopPixelTest, DrawGainmapImageCubic) {
 
   auto info = SkImageInfo::MakeN32Premul(kSrcSize, kSrcSize,
                                          SkColorSpace::MakeSRGBLinear());
-  sk_sp<FakePaintImageGenerator> generators[2];
-  uint8_t pixel_values[2][2] = {
-      {100, 20},
-      {static_cast<uint8_t>(
-           std::round(255.f * std::log(2.f) / std::log(kRatioMax))),
-       static_cast<uint8_t>(
-           std::round(255.f * std::log(3.f) / std::log(kRatioMax)))}};
+  std::array<sk_sp<FakePaintImageGenerator>, 2> generators;
+  std::array<std::array<uint8_t, 2>, 2> pixel_values = {
+      {{100, 20},
+       {static_cast<uint8_t>(
+            std::round(255.f * std::log(2.f) / std::log(kRatioMax))),
+        static_cast<uint8_t>(
+            std::round(255.f * std::log(3.f) / std::log(kRatioMax)))}}};
   for (int i = 0; i < 2; ++i) {
     generators[i] = sk_make_sp<FakePaintImageGenerator>(info);
     SkPixmap pm = generators[i]->GetPixmap();
@@ -2239,7 +2241,7 @@ class OopTextBlobPixelTest
       surface = SkSurfaces::RenderTarget(
           context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
           kTopLeft_GrSurfaceOrigin, &surface_props);
-    } else if (context_state->graphite_context()) {
+    } else if (context_state->graphite_shared_context()) {
       surface = SkSurfaces::RenderTarget(
           context_state->gpu_main_graphite_recorder(), image_info,
           skgpu::Mipmapped::kNo, &surface_props);
@@ -2258,9 +2260,9 @@ class OopTextBlobPixelTest
       context_state->gr_context()->flushAndSubmit(surface.get(),
                                                   GrSyncCpu::kNo);
       success = surface->readPixels(expected, 0, 0);
-    } else if (context_state->graphite_context()) {
+    } else if (context_state->graphite_shared_context()) {
       success = gpu::GraphiteReadPixelsSync(
-          context_state->graphite_context(),
+          context_state->graphite_shared_context(),
           context_state->gpu_main_graphite_recorder(), surface.get(),
           image_info, expected.pixmap().writable_addr(),
           expected.pixmap().rowBytes(), 0, 0);

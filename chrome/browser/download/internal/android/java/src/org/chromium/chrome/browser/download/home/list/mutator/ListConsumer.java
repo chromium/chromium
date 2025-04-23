@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * processes the list, modifies it, and passes it or a new list to the next consumer in the
  * chain.
  */
+@NullMarked
 public interface ListConsumer {
     /**
      * Called to notify that the underlying list has changed.

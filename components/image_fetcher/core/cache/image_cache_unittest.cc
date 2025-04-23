@@ -178,7 +178,7 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  MOCK_METHOD2(DataCallback, void(bool, std::string));
+  MOCK_METHOD(void, DataCallback, (bool, std::string), ());
 
  private:
   scoped_refptr<ImageCache> image_cache_;

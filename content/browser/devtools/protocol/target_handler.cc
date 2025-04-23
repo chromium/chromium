@@ -200,10 +200,14 @@ class BrowserToPageConnector {
     BrowserConnectorHostClientPermissions permissions_;
   };
 
-  BrowserToPageConnector(const std::string& binding_name,
-                         DevToolsAgentHost* page_host,
-                         BrowserConnectorHostClientPermissions permissions)
-      : binding_name_(binding_name), page_host_(page_host) {
+  BrowserToPageConnector(
+      const std::string& binding_name,
+      DevToolsAgentHost* page_host,
+      BrowserConnectorHostClientPermissions permissions,
+      std::unique_ptr<Target::Backend::ExposeDevToolsProtocolCallback> callback)
+      : binding_name_(binding_name),
+        page_host_(page_host),
+        pending_callback_(std::move(callback)) {
     browser_host_ = BrowserDevToolsAgentHost::CreateForDiscovery();
     browser_host_client_ = std::make_unique<BrowserConnectorHostClient>(
         this, browser_host_.get(), permissions);
@@ -228,8 +232,8 @@ class BrowserToPageConnector {
 
     base::Value::Dict evaluate_params;
     evaluate_params.Set("expression", initializer_script);
-    SendProtocolMessageToPage("Runtime.evaluate",
-                              base::Value(std::move(evaluate_params)));
+    pending_request_id_ = SendProtocolMessageToPage(
+        "Runtime.evaluate", base::Value(std::move(evaluate_params)));
     GetInstanceMap()[page_host_.get()].reset(this);
   }
 
@@ -245,9 +249,10 @@ class BrowserToPageConnector {
   }
 
  private:
-  void SendProtocolMessageToPage(const char* method, base::Value params) {
+  int SendProtocolMessageToPage(const char* method, base::Value params) {
     base::Value::Dict message_dict;
-    message_dict.Set("id", page_message_id_++);
+    int id = page_message_id_++;
+    message_dict.Set("id", id);
     message_dict.Set("method", method);
     message_dict.Set("params", std::move(params));
     base::Value message(std::move(message_dict));
@@ -255,6 +260,7 @@ class BrowserToPageConnector {
     base::JSONWriter::Write(message, &json_message);
     page_host_->DispatchProtocolMessage(page_host_client_.get(),
                                         base::as_byte_span(json_message));
+    return id;
   }
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
@@ -265,6 +271,14 @@ class BrowserToPageConnector {
       std::optional<base::Value::Dict> value =
           base::JSONReader::ReadDict(message_sp);
       if (!value) {
+        return;
+      }
+
+      std::optional<int> id = value->FindInt("id");
+      if (id && *id == pending_request_id_ && pending_callback_) {
+        pending_callback_->sendSuccess();
+        pending_callback_.reset();
+        pending_request_id_ = -1;
         return;
       }
 
@@ -324,6 +338,9 @@ class BrowserToPageConnector {
   std::unique_ptr<BrowserConnectorHostClient> browser_host_client_;
   std::unique_ptr<BrowserConnectorHostClient> page_host_client_;
   int page_message_id_ = 0;
+  std::unique_ptr<Target::Backend::ExposeDevToolsProtocolCallback>
+      pending_callback_;
+  int pending_request_id_ = -1;
 };
 
 }  // namespace
@@ -1181,25 +1198,28 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
   return Response::Success();
 }
 
-Response TargetHandler::ExposeDevToolsProtocol(
+void TargetHandler::ExposeDevToolsProtocol(
     const std::string& target_id,
     std::optional<std::string> binding_name,
-    std::optional<bool> inherit_permissions) {
-  if (access_mode_ != AccessMode::kBrowser)
-    return Response::InvalidParams(kNotAllowedError);
+    std::optional<bool> inherit_permissions,
+    std::unique_ptr<ExposeDevToolsProtocolCallback> callback) {
+  if (access_mode_ != AccessMode::kBrowser) {
+    callback->sendFailure(Response::InvalidParams(kNotAllowedError));
+  }
   scoped_refptr<DevToolsAgentHost> agent_host =
       DevToolsAgentHost::GetForId(target_id);
-  if (!agent_host)
-    return Response::InvalidParams(kTargetNotFound);
+  if (!agent_host) {
+    callback->sendFailure(Response::InvalidParams(kTargetNotFound));
+  }
 
   if (BrowserToPageConnector::GetInstanceMap()[agent_host.get()]) {
-    return Response::ServerError(base::StringPrintf(
+    callback->sendFailure(Response::ServerError(base::StringPrintf(
         "Target with id %s is already granted remote debugging bindings.",
-        target_id.c_str()));
+        target_id.c_str())));
   }
   if (!agent_host->GetWebContents()) {
-    return Response::ServerError(
-        "RemoteDebuggingBinding can be granted only to page targets");
+    callback->sendFailure(Response::ServerError(
+        "RemoteDebuggingBinding can be granted only to page targets"));
   }
 
   BrowserConnectorHostClientPermissions permissions;
@@ -1209,8 +1229,7 @@ Response TargetHandler::ExposeDevToolsProtocol(
   }
 
   new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get(),
-                             permissions);
-  return Response::Success();
+                             permissions, std::move(callback));
 }
 
 Response TargetHandler::CreateTarget(

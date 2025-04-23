@@ -136,6 +136,9 @@
 // Stops the action sheet coordinator currently showned and nullifies the
 // instance.
 - (void)dismissActionSheetCoordinator {
+  if (self.dismissAction) {
+    self.dismissAction();
+  }
   [_actionSheetCoordinator stop];
   _actionSheetCoordinator = nil;
 }

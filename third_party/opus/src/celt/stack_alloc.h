@@ -140,8 +140,9 @@ extern char *global_stack_top;
 
 #else
 
+#include "arch.h"
 #define ALIGN(stack, size) ((stack) += ((size) - (long)(stack)) & ((size) - 1))
-#define PUSH(stack, size, type) (ALIGN((stack),sizeof(type)/sizeof(char)),(stack)+=(size)*(sizeof(type)/sizeof(char)),(type*)((stack)-(size)*(sizeof(type)/sizeof(char))))
+#define PUSH(stack, size, type) (ALIGN((stack),sizeof(type)/(sizeof(char))),(void)(((int)((size)*(sizeof(type)/(sizeof(char)))) <= (scratch_ptr)+GLOBAL_STACK_SIZE-(stack))?0:CELT_FATAL("pseudostack overflow")),(stack)+=(size)*(sizeof(type)/(sizeof(char))),(type*)((stack)-(size)*(sizeof(type)/(sizeof(char)))))
 #if 0 /* Set this to 1 to instrument pseudostack usage */
 #define RESTORE_STACK (printf("%ld %s:%d\n", global_stack-scratch_ptr, __FILE__, __LINE__),global_stack = _saved_stack)
 #else

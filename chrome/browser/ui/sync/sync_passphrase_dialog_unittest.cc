@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

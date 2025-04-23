@@ -155,7 +155,11 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void InitModalType(ui::mojom::ModalType modal_type) override;
-  void SetColorMode(ui::ColorProviderKey::ColorMode color_mode) override;
+  // Suppress warning about hiding virtual WidgetObserver::OnWidgetThemeChanged.
+  // TODO(kerenzhu): Do not observe Widget in this class.
+  using WidgetObserver::OnWidgetThemeChanged;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;

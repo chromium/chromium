@@ -1,0 +1,249 @@
+تح
+#ar:
+"Geeza Pro" : 2
+
+ՀՁ
+#hy-am:
+"Noto Sans Armenian" : 2
+
+সম
+#bn:
+"Kohinoor Bangla" : 2
+
+⡰⡱
+#en-us-brai:
+"Apple Braille" : 2
+
+ᨀᨁ
+#bug:
+"Noto Sans Buginese" : 2
+
+ᐐᐑ
+#cans:
+"Euphemia UCAS" : 2
+
+𐊠𐊡
+#xcr:
+"Noto Sans Carian" : 2
+
+ᎡᎢ
+#chr:
+"Galvji" : 2
+
+ⲁⲂ
+#copt:
+"Noto Sans Coptic" : 2
+
+𒀀𒀌
+#akk:
+"Noto Sans Cuneiform" : 2
+
+𐠀𐠁
+#ecy:
+"Noto Sans Cypriot" : 2
+
+АБВ
+#ru:
+"Times" : 3
+
+𐐀𐐁
+#en:
+"Apple Symbols" : 2
+
+अआ
+#hi:
+"ITF Devanagari" : 2
+
+ሁሂ
+#am:
+"Kefa" : 2
+
+ႠႡ
+#ka:
+"Arial Unicode MS" : 2
+
+ΑΒ
+#el:
+"Times" : 2
+
+ਡਢ
+#pa:
+"MuktaMahee Regular" : 2
+
+我
+#zh-CN:
+"Songti SC" : 1
+
+我
+#zh-HK:
+"Songti SC" : 1
+
+我
+#zh-Hans:
+"Songti SC" : 1
+
+我
+#zh-Hant:
+"Songti SC" : 1
+
+我
+#ja:
+"Songti SC" : 1
+
+ᄀᄁ
+#ko:
+"AppleMyungjo" : 2
+
+בג
+#he:
+"Lucida Grande" : 2
+
+កខ
+#km:
+"Khmer MN" : 2
+
+𐡁𐡂
+#arc:
+"Noto Sans ImpAramaic" : 2
+
+𐭡𐭢
+#pal:
+"Noto Sans InsPahlavi" : 2
+
+𐭁𐭂
+#xpr:
+"Noto Sans InsParthi" : 2
+
+ꦑꦒ
+#jv:
+"Noto Sans Javanese" : 2
+
+ಡಢ
+#kn:
+"Kannada MN" : 2
+
+𐨐𐨑
+#sa:
+"Noto Sans Kharoshthi" : 2
+
+໐໑
+#lo:
+"Lao MN" : 2
+
+ꓐꓑ
+#lis:
+"Noto Sans Lisu" : 2
+
+𐊁𐊂
+#xlc:
+"Noto Sans Lycian" : 2
+
+𐤡𐤢
+#xld:
+"Noto Sans Lydian" : 2
+
+ഡഢ
+#ml:
+"Malayalam MN" : 2
+
+𐦡𐦢
+#script_meroitic:
+"Noto Sans Meroitic" : 2
+
+ကခ
+#my:
+"Noto Serif Myanmar" : 2
+
+ᦁᦂ
+#script_new_tai_lue:
+"Noto Sans NewTaiLue" : 2
+
+߁߂
+#nko:
+"Noto Sans NKo" : 2
+
+ᚁ
+#script_ogham:
+"Apple Symbols" : 2
+
+᱑᱒
+#script_ol_chiki:
+"Noto Sans Ol Chiki" : 2
+
+𐌁𐌂
+#script_old_italic:
+"Noto Sans Old Italic" : 2
+
+𐎡𐎢
+#peo:
+"Noto Sans OldPersian" : 2
+
+𐩡𐩢
+#script_old_south_arabian:
+"Noto Sans OldSouArab" : 2
+
+ଡଢ
+#or:
+"Oriya MN" : 2
+
+ꡁꡂ
+#script_phags_pa:
+"Noto Sans PhagsPa" : 2
+
+ᚠᚡ
+#script_runic:
+"Apple Symbols" : 2
+
+𐑑𐑒
+#script_shavian:
+"Apple Symbols" : 2
+
+එඒ
+#si:
+"Sinhala MN" : 2
+
+𑃑𑃒
+#script_sora_sompeng:
+"Noto Sans SoraSomp" : 2
+
+ܑܒ
+#syr:
+"Noto Sans Syriac" : 2
+
+ᥑᥒ
+#script_tai_le:
+"Noto Sans Tai Le" : 2
+
+றல
+#ta:
+"Tamil Sangam MN" : 2
+
+డఢ
+#te:
+"Kohinoor Telugu" : 2
+
+ށނ
+#script_thaana:
+"Noto Sans Thaana" : 2
+
+กข
+#th:
+"Thonburi" : 2
+
+༁༂
+#bo:
+"Kokonor" : 2
+
+ⴱⴲ
+#script_tifinagh:
+"Noto Sans Tifinagh" : 2
+
+ꔁꔂ
+#vai:
+"Noto Sans Vai" : 2
+
+ꀀꀁ
+#yi:
+"Songti SC" : 2
+
+

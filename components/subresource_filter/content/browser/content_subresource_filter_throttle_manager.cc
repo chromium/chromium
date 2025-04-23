@@ -62,8 +62,9 @@ void ContentSubresourceFilterThrottleManager::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::SubresourceFilterHost>
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
-  if (auto* manager = FromPage(render_frame_host->GetPage()))
+  if (auto* manager = FromPage(render_frame_host->GetPage())) {
     manager->receiver_.Bind(render_frame_host, std::move(pending_receiver));
+  }
 }
 
 // static
@@ -77,8 +78,9 @@ ContentSubresourceFilterThrottleManager::CreateForNewPage(
   CHECK(IsInSubresourceFilterRoot(&initiating_navigation_handle),
         base::NotFatalUntil::M129);
 
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
     return nullptr;
+  }
 
   return std::make_unique<ContentSubresourceFilterThrottleManager>(
       profile_context, database_manager, dealer_handle, web_contents_helper,
@@ -187,20 +189,23 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
 mojom::ActivationState
 ContentSubresourceFilterThrottleManager::ActivationStateForNextCommittedLoad(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->GetNetErrorCode() != net::OK)
+  if (navigation_handle->GetNetErrorCode() != net::OK) {
     return mojom::ActivationState();
+  }
 
   auto it =
       ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
-  if (it == ongoing_activation_throttles_.end())
+  if (it == ongoing_activation_throttles_.end()) {
     return mojom::ActivationState();
+  }
 
   // Main frame throttles with disabled page-level activation will not have
   // associated filters.
   ActivationStateComputingNavigationThrottle* throttle = it->second;
   AsyncDocumentSubresourceFilter* filter = throttle->filter();
-  if (!filter)
+  if (!filter) {
     return mojom::ActivationState();
+  }
 
   // A filter with DISABLED activation indicates a corrupted ruleset.
   if (filter->activation_state().activation_level ==
@@ -243,8 +248,9 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
           ? navigation_handle->GetRenderFrameHost()
           : content::RenderFrameHost::FromID(
                 navigation_handle->GetPreviousRenderFrameHostId());
-  if (!frame_host)
+  if (!frame_host) {
     return;
+  }
 
   const content::FrameTreeNodeId frame_tree_node_id =
       navigation_handle->GetFrameTreeNodeId();
@@ -436,8 +442,9 @@ void ContentSubresourceFilterThrottleManager::
 void ContentSubresourceFilterThrottleManager::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!statistics_ || render_frame_host != &page_->GetMainDocument())
+  if (!statistics_ || render_frame_host != &page_->GetMainDocument()) {
     return;
+  }
   statistics_->OnDidFinishLoad();
 }
 
@@ -447,8 +454,9 @@ void ContentSubresourceFilterThrottleManager::DidBecomePrimaryPage() {
   // If we tried to notify while non-primary, we didn't show UI so do that now
   // that the page became primary. This also leads to reattempting notification
   // if a page transitioned from primary to non-primary and back (BFCache).
-  if (current_committed_load_has_notified_disallowed_load_)
+  if (current_committed_load_has_notified_disallowed_load_) {
     profile_interaction_manager_->MaybeShowNotification();
+  }
 }
 
 void ContentSubresourceFilterThrottleManager::OnPageCreated(
@@ -472,8 +480,9 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
 
   auto it =
       ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
-  if (it == ongoing_activation_throttles_.end())
+  if (it == ongoing_activation_throttles_.end()) {
     return;
+  }
 
   // The subresource filter normally operates in DryRun mode, disabled
   // activation should only be supplied in cases where DryRun mode is not
@@ -497,8 +506,9 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
     LoadPolicy load_policy) {
   CHECK(!IsInSubresourceFilterRoot(navigation_handle),
         base::NotFatalUntil::M129);
-  if (!navigation_handle->GetParentFrameOrOuterDocument())
+  if (!navigation_handle->GetParentFrameOrOuterDocument()) {
     return;
+  }
 
   content::FrameTreeNodeId frame_tree_node_id =
       navigation_handle->GetFrameTreeNodeId();
@@ -531,8 +541,9 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
         database_manager_));
   }
 
-  if (!dealer_handle_)
+  if (!dealer_handle_) {
     return;
+  }
   if (auto filtering_throttle =
           MaybeCreateChildNavigationThrottle(navigation_handle)) {
     throttles->push_back(std::move(filtering_throttle));
@@ -556,8 +567,9 @@ bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
 
 bool ContentSubresourceFilterThrottleManager::IsRenderFrameHostTaggedAsAd(
     content::RenderFrameHost* frame_host) const {
-  if (!frame_host)
+  if (!frame_host) {
     return false;
+  }
 
   return IsFrameTaggedAsAd(frame_host->GetFrameTreeNodeId());
 }
@@ -566,8 +578,9 @@ std::optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
     content::FrameTreeNodeId frame_tree_node_id) const {
   auto it = navigation_load_policies_.find(frame_tree_node_id);
-  if (it == navigation_load_policies_.end())
+  if (it == navigation_load_policies_.end()) {
     return std::nullopt;
+  }
   return it->second;
 }
 
@@ -593,21 +606,21 @@ void ContentSubresourceFilterThrottleManager::LogAction(
 std::unique_ptr<SafeBrowsingChildNavigationThrottle>
 ContentSubresourceFilterThrottleManager::MaybeCreateChildNavigationThrottle(
     content::NavigationHandle* navigation_handle) {
-  if (IsInSubresourceFilterRoot(navigation_handle))
+  if (IsInSubresourceFilterRoot(navigation_handle)) {
     return nullptr;
+  }
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
-  return parent_filter
-             ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
-                   navigation_handle, parent_filter,
-                   profile_interaction_manager_->AsWeakPtr(),
-                   base::BindRepeating([](const GURL& url) {
-                     return base::StringPrintf(
-                         kDisallowChildFrameConsoleMessageFormat,
-                         url.possibly_invalid_spec().c_str());
-                   }),
-                   EnsureFrameAdEvidence(navigation_handle))
-             : nullptr;
+  return parent_filter ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
+                             navigation_handle, parent_filter,
+                             profile_interaction_manager_->AsWeakPtr(),
+                             base::BindRepeating([](const GURL& url) {
+                               return base::StringPrintf(
+                                   kDisallowChildFrameConsoleMessageFormat,
+                                   url.possibly_invalid_spec().c_str());
+                             }),
+                             EnsureFrameAdEvidence(navigation_handle))
+                       : nullptr;
 }
 
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
@@ -631,8 +644,9 @@ ContentSubresourceFilterThrottleManager::
   // parents.
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
-  if (!parent_filter)
+  if (!parent_filter) {
     return nullptr;
+  }
   CHECK(ruleset_handle_, base::NotFatalUntil::M129);
   return ActivationStateComputingNavigationThrottle::CreateForChild(
       navigation_handle, ruleset_handle_.get(),
@@ -651,8 +665,9 @@ ContentSubresourceFilterThrottleManager::GetParentFrameFilter(
 const std::optional<subresource_filter::mojom::ActivationState>
 ContentSubresourceFilterThrottleManager::GetFrameActivationState(
     content::RenderFrameHost* frame_host) {
-  if (AsyncDocumentSubresourceFilter* filter = GetFrameFilter(frame_host))
+  if (AsyncDocumentSubresourceFilter* filter = GetFrameFilter(frame_host)) {
     return filter->activation_state();
+  }
   return std::nullopt;
 }
 
@@ -662,8 +677,9 @@ ContentSubresourceFilterThrottleManager::GetFrameFilter(
   CHECK(frame_host, base::NotFatalUntil::M129);
 
   auto it = frame_host_filter_map_.find(frame_host);
-  if (it == frame_host_filter_map_.end())
+  if (it == frame_host_filter_map_.end()) {
     return nullptr;
+  }
 
   CHECK(it->second, base::NotFatalUntil::M129);
   return it->second.get();
@@ -675,8 +691,9 @@ void ContentSubresourceFilterThrottleManager::MaybeShowNotification(
   CHECK_EQ(&GetSubresourceFilterRootPage(frame_host), page_,
            base::NotFatalUntil::M129);
 
-  if (current_committed_load_has_notified_disallowed_load_)
+  if (current_committed_load_has_notified_disallowed_load_) {
     return;
+  }
 
   auto it = frame_host_filter_map_.find(&page_->GetMainDocument());
   if (it == frame_host_filter_map_.end() ||
@@ -690,14 +707,16 @@ void ContentSubresourceFilterThrottleManager::MaybeShowNotification(
   // Non-primary pages shouldn't affect UI. When the page becomes primary we'll
   // check |current_committed_load_has_notified_disallowed_load_| and try
   // again.
-  if (page_->IsPrimary())
+  if (page_->IsPrimary()) {
     profile_interaction_manager_->MaybeShowNotification();
+  }
 }
 
 VerifiedRuleset::Handle*
 ContentSubresourceFilterThrottleManager::EnsureRulesetHandle() {
-  if (!ruleset_handle_)
+  if (!ruleset_handle_) {
     ruleset_handle_ = std::make_unique<VerifiedRuleset::Handle>(dealer_handle_);
+  }
   return ruleset_handle_.get();
 }
 
@@ -733,8 +752,9 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
         base::NotFatalUntil::M129);
 
   // `ad_frames_` does not need updating.
-  if (is_ad_frame == base::Contains(ad_frames_, frame_tree_node_id))
+  if (is_ad_frame == base::Contains(ad_frames_, frame_tree_node_id)) {
     return;
+  }
 
   if (is_ad_frame) {
     ad_frames_.insert(frame_tree_node_id);
@@ -782,8 +802,9 @@ ContentSubresourceFilterThrottleManager::GetAdEvidenceForFrame(
     content::RenderFrameHost* render_frame_host) {
   auto tracked_ad_evidence_it =
       tracked_ad_evidence_.find(render_frame_host->GetFrameTreeNodeId());
-  if (tracked_ad_evidence_it == tracked_ad_evidence_.end())
+  if (tracked_ad_evidence_it == tracked_ad_evidence_.end()) {
     return std::nullopt;
+  }
   return tracked_ad_evidence_it->second;
 }
 
@@ -809,8 +830,9 @@ void ContentSubresourceFilterThrottleManager::FrameIsAd() {
 
 void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
     mojom::DocumentLoadStatisticsPtr statistics) {
-  if (statistics_)
+  if (statistics_) {
     statistics_->OnDocumentLoadStatistics(*statistics);
+  }
 }
 
 void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
@@ -853,8 +875,9 @@ void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
   auto* fenced_frame_root = content::RenderFrameHost::FromPlaceholderToken(
       owner_frame->GetProcess()->GetDeprecatedID(), placeholder_token);
 
-  if (!fenced_frame_root)
+  if (!fenced_frame_root) {
     return;
+  }
 
   if (!fenced_frame_root->IsFencedFrameRoot()) {
     mojo::ReportBadMessage(

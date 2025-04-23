@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -76,8 +77,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(embedded_test_server()->GetURL("/accessibility/lines/lines.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -118,8 +120,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/lines/lines-inline-nested.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -131,7 +133,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
       web_contents->GetRootBrowserAccessibilityManager();
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
-                                          ui::kAXModeComplete,
                                           ax::mojom::Event::kTreeChanged);
   manager->LoadInlineTextBoxes(*manager->GetBrowserAccessibilityRoot());
   ASSERT_TRUE(waiter2.WaitForNotification());

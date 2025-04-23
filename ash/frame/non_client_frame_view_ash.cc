@@ -339,20 +339,16 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
   }
 
   aura::Window* frame_window = GetWidget()->GetNativeWindow();
-
-  const int corner_radius = chromeos::GetWindowCornerRadius(frame_window);
+  const gfx::RoundedCornersF window_radii =
+      chromeos::GetWindowRadii(frame_window);
   frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                            corner_radius);
+                            window_radii.upper_left());
 
   if (frame_enabled_) {
-    header_view_->SetHeaderCornerRadius(corner_radius);
+    header_view_->SetHeaderCornerRadius(window_radii.upper_left());
   }
 
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
-  GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
 base::RepeatingCallback<void()>

@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace mojo_base {
 
@@ -139,6 +140,12 @@ size_t BigBuffer::size() const {
     default:
       NOTREACHED();
   }
+}
+
+void BigBuffer::WriteIntoTrace(perfetto::TracedValue context) const {
+  // Don't write the data, otherwise traces become enormous, and crash the UI.
+  auto dict = std::move(context).WriteDictionary();
+  perfetto::WriteIntoTracedValue(dict.AddItem("size"), size());
 }
 
 BigBufferView::BigBufferView() = default;

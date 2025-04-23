@@ -49,6 +49,29 @@ class InteractionTestUtilMouse {
   using MouseGesture = std::variant<MouseMoveGesture, MouseButtonGesture>;
   using MouseGestures = std::list<MouseGesture>;
 
+  // Parameters for performing a sequence of gestures.
+  struct GestureParams {
+    GestureParams();
+    GestureParams(gfx::NativeWindow window_hint, bool force_async);
+    GestureParams(const GestureParams&);
+    GestureParams& operator=(const GestureParams&);
+    GestureParams(GestureParams&&) noexcept;
+    GestureParams& operator=(GestureParams&&) noexcept;
+    ~GestureParams();
+
+    // The native window the input will be sent to. If null, the OS decides.
+    //
+    // Note: explicit init is required on Aura platforms, but not on Mac.
+    gfx::NativeWindow window_hint = gfx::NativeWindow();  // NOLINT
+
+    // If true, mouse input will be sent asynchronously, which may be required
+    // if the input would put the system into an OS-based message pump; this
+    // happens for native context menus on Mac and drag-drop on Windows.
+    //
+    // For all other cases, this should be `false`.
+    bool force_async = false;
+  };
+
   // These factory methods create individual or compound gestures. They can be
   // chained together. Prefer these to directly constructing a MouseGesture.
   static MouseGesture MoveTo(gfx::Point point);
@@ -90,7 +113,7 @@ class InteractionTestUtilMouse {
 
   // Perform the gesture or gestures specified, returns true on success.
   template <typename... Args>
-  bool PerformGestures(gfx::NativeWindow window_hint, Args... gestures);
+  bool PerformGestures(const GestureParams& window_hint, Args... gestures);
 
   // Cancels any pending actions and cleans up any resulting mouse state (i.e.
   // releases any buttons which were pressed).
@@ -103,20 +126,17 @@ class InteractionTestUtilMouse {
   static void AddGestures(MouseGestures& gestures, MouseGesture to_add);
   static void AddGestures(MouseGestures& gestures, MouseGestures to_add);
 
-  bool PerformGesturesImpl(MouseGestures gestures,
-                           gfx::NativeWindow window_hint);
+  bool PerformGesturesImpl(const GestureParams& params, MouseGestures gestures);
 
   bool ShouldCancelDrag() const;
   void CancelFutureDrag();
   void CancelDragNow();
 
   bool SendButtonPress(const MouseButtonGesture& gesture,
-                       gfx::NativeWindow window_hint,
-                       bool sync,
+                       const GestureParams& params,
                        base::OnceClosure on_complete);
   bool SendMove(const MouseMoveGesture& gesture,
-                gfx::NativeWindow window_hint,
-                bool sync,
+                const GestureParams& params,
                 base::OnceClosure on_complete);
 
   // The set of mouse buttons currently depressed. Used to clean up on abort.
@@ -153,11 +173,11 @@ class InteractionTestUtilMouse {
 };
 
 template <typename... Args>
-bool InteractionTestUtilMouse::PerformGestures(gfx::NativeWindow window_hint,
+bool InteractionTestUtilMouse::PerformGestures(const GestureParams& params,
                                                Args... gestures) {
   MouseGestures gesture_list;
   (AddGestures(gesture_list, std::move(gestures)), ...);
-  return PerformGesturesImpl(std::move(gesture_list), window_hint);
+  return PerformGesturesImpl(params, std::move(gesture_list));
 }
 
 }  // namespace test

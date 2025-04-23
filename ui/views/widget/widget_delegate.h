@@ -10,8 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -21,16 +23,252 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+class AutoPipSettingView;
+class DesktopMediaPickerDialogView;
+class DigitalIdentityMultiStepDialogDelegate;
+class DownloadBubbleContentsViewTest;
+class DownloadBubbleSecurityViewTest;
+class DownloadToolbarUIController;
+class ExtensionsMenuCoordinator;
+class ExternalProtocolNoHandlersTelSchemeDialog;
+class ForceInstalledDeprecatedAppsDialogView;
+class ForceInstalledPreinstalledDeprecatedAppDialogView;
+class HoverDetectionBubbleView;
+class ImmersiveModeControllerMacInteractiveTest;
+class JavaScriptTabModalDialogViewViews;
+class LoginHandlerViewsDialog;
+class MediaGalleriesDialogTest;
+class MediaGalleriesDialogViews;
+class MessageBoxDialog;
+class OverlayWindowWidgetDelegate;
+class ParentAccessView;
+class PresentationReceiverWindowView;
+class PrivacySandboxDialog;
+class ProcessSharingInfobarDelegate;
+class ProfilePickerView;
+class SSLClientCertificateSelector;
+class ScheduledRebootDialog;
+class ScreenCaptureNotificationUIViews;
+class SearchEngineChoiceDialog;
+class ShareThisTabDialogView;
+class SigninViewControllerDelegateViews;
+class TabModalConfirmDialogViews;
+class TestBaseWidgetDelegate;
+class UpdateRecommendedMessageBox;
+class WebDialogBrowserTest;
+FORWARD_DECLARE_TEST(AcceleratorCommandsFullscreenBrowserTest,
+                     ToggleFullscreen);
+FORWARD_DECLARE_TEST(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll);
+
+namespace arc {
+class ArcTaskWindowBuilder;
+class ArcVmDataMigrationConfirmationDialog;
+}  // namespace arc
+
+namespace ash {
+class AccessibilityPanel;
+class ActiveSessionAuthControllerImpl;
+class AmbientWidgetDelegate;
+class AppListView;
+class AppsCollectionsDismissDialog;
+class AssistantWebContainerView;
+class AuthDialogContentsViewPixelTest;
+class AuthDialogContentsViewTest;
+class BootingAnimationController;
+class CaptureModeSessionFocusCycler;
+class ClientControlledStateTestWidgetDelegate;
+class ConnectionErrorDialogDelegateView;
+class DeferredUpdateDialog;
+class DeskButtonWidgetDelegateView;
+class DisclaimerView;
+class DockedMagnifierTest;
+class DropSenderView;
+class DropTargetView;
+class ExitWarningWidgetDelegateView;
+class FrameCaptionButtonContainerViewTest;
+class FrameSizeButtonTestWidgetDelegate;
+class GuestSessionConfirmationDialog;
+class HotseatWidgetDelegateView;
+class IdleAppNameNotificationDelegateView;
+class InSessionAuthDialog;
+class InSessionAuthDialogControllerImpl;
+class InformedRestoreController;
+class KioskExternalUpdateNotificationView;
+class LayoutWidgetDelegateView;
+class LocalAuthenticationWithPinControllerImpl;
+class LockDebugView;
+class LockDebugViewDataDispatcherTransformer;
+class LockScreen;
+class LoginShelfWidgetDelegate;
+class LoginTestBase;
+class LoginTestWidgetDelegate;
+class MahiPanelWidget;
+class MaximizeDelegateView;
+class NonClientFrameViewAshTestWidgetDelegate;
+class PipTest;
+class QuickInsertSubmenuView;
+class QuickInsertView;
+class ResizableWidgetDelegate;
+class RootWindowControllerTest;
+class ShelfNavigationWidgetDelegate;
+class ShelfWidgetDelegateView;
+class ShellTest;
+class SimpleWebViewDialog;
+class StatusAreaWidgetDelegate;
+class StuckWidgetDelegate;
+class SystemDialogDelegateView;
+class SystemUIComponentsStyleViewerView;
+class TestChildModalParent;
+class TestTextInputView;
+class TestWidgetBuilderDelegate;
+class TestWidgetDelegateAsh;
+class TestWindow;
+class VirtualTrackpadView;
+class WallpaperWidgetDelegate;
+class WideFrameView;
+class WidgetWithSystemUIComponentView;
+class WindowCycleView;
+FORWARD_DECLARE_TEST(ExtendedDesktopTest, SystemModal);
+FORWARD_DECLARE_TEST(MruWindowTrackerOrderTest, Basic);
+FORWARD_DECLARE_TEST(ShellTest, CreateWindowWithPreferredSize);
+
+namespace hud_display {
+class HUDDisplayView;
+}
+
+namespace sharesheet {
+class TestWidgetDelegate;
+}
+
+namespace shell {
+class ToplevelWindow;
+}
+}  // namespace ash
+
+namespace autofill {
+class PopupBaseView;
+
+namespace payments {
+class PaymentsWindowUserConsentDialogView;
+}
+}  // namespace autofill
+
+namespace constrained_window {
+class BrowserModalHelper;
+}
+
+namespace content {
+class ShellPlatformDelegate;
+}
+
+namespace crostini {
+class AppRestartDialog;
+}
+
+namespace data_controls {
+class DesktopDataControlsDialog;
+}
+
+namespace enterprise_connectors {
+class ContentAnalysisDialog;
+class ContentAnalysisDialogBehaviorBrowserTest;
+}  // namespace enterprise_connectors
+
+namespace exo {
+class ShellSurfaceBase;
+}
+
+namespace extensions {
+class WebFileHandlersPermissionHandler;
+}
+
+namespace eye_dropper {
+class EyeDropperView;
+}
+
 namespace gfx {
 class Rect;
-}  // namespace gfx
+}
+
+namespace glic {
+class GlicWidgetDelegate;
+}
+
+namespace javascript_dialogs {
+class AppModalDialogViewViews;
+}
+
+namespace message_center {
+class MessagePopupView;
+}
+
+namespace native_app_window {
+class NativeAppWindowViews;
+}
+
+namespace plus_addresses {
+class PlusAddressCreationDialogDelegate;
+}
+
+namespace remoting {
+class MessageBoxCore;
+}
+
+namespace ui::ime {
+class CandidateViewTest;
+}
 
 namespace views {
 class BubbleDialogDelegate;
+class BubbleDialogModelHost;
 class ClientView;
+class DefaultWidgetDelegate;
 class DialogDelegate;
+class FocusTraversalTest;
+class MoveTestWidgetDelegate;
 class NonClientFrameView;
+class ShapedWidgetDelegate;
+class TableViewFocusTest;
 class View;
+class WebDialogView;
+FORWARD_DECLARE_TEST(BubbleUmaLoggerTest, LogMetricFromDelegate);
+FORWARD_DECLARE_TEST(FocusManagerTest, AdvanceFocusStaysInWidget);
+FORWARD_DECLARE_TEST(NativeWidgetAuraTest, TestPropertiesWhenAddedToLayout);
+FORWARD_DECLARE_TEST(NativeWidgetAuraTest, TransientChildModalWindowVisibility);
+FORWARD_DECLARE_TEST(NativeViewHostAuraTest,
+                     FocusManagerUpdatedDuringDestruction);
+
+namespace borealis {
+class BorealisDisallowedDialog;
+class BorealisLaunchErrorDialog;
+}  // namespace borealis
+
+namespace examples {
+class ExamplesWindowContents;
+}
+
+namespace test {
+FORWARD_DECLARE_TEST(DesktopWidgetTest, LockPaintAsActiveAndCloseParent);
+}
+}  // namespace views
+
+namespace web_app {
+class IsolatedWebAppInstallerViewController;
+class SubAppsInstallDialogController;
+}  // namespace web_app
+
+namespace webid {
+class AccountSelectionModalView;
+class TestAccountSelectionView;
+}  // namespace webid
+
+namespace views {
+
+namespace test {
+class GetNativeThemeFromDestructorView;
+class TestingWidgetDelegateView;
+FORWARD_DECLARE_TEST(WidgetOwnsNativeWidgetTest, WidgetDelegateView);
+}  // namespace test
 
 using TitleChangedCallback = base::RepeatingCallback<void()>;
 using AccessibleTitleChangedCallback = base::RepeatingCallback<void()>;
@@ -131,12 +369,130 @@ class VIEWS_EXPORT WidgetDelegate {
     std::u16string title;
   };
 
+  class OwnedByWidgetPassKey {
+   private:
+    // DO NOT ADD TO THIS LIST!
+    // These existing cases are "grandfathered in", but there shouldn't be more.
+    // See comments atop `SetOwnedByWidget()`.
+    friend class ::AutoPipSettingView;
+    friend class ::DigitalIdentityMultiStepDialogDelegate;
+    friend class ::DownloadBubbleContentsViewTest;
+    friend class ::DownloadBubbleSecurityViewTest;
+    friend class ::DownloadToolbarUIController;
+    friend class ::ExtensionsMenuCoordinator;
+    friend class ::ExternalProtocolNoHandlersTelSchemeDialog;
+    friend class ::ForceInstalledDeprecatedAppsDialogView;
+    friend class ::ForceInstalledPreinstalledDeprecatedAppDialogView;
+    friend class ::HoverDetectionBubbleView;
+    friend class ::LoginHandlerViewsDialog;
+    friend class ::MediaGalleriesDialogTest;
+    friend class ::MessageBoxDialog;
+    friend class ::OverlayWindowWidgetDelegate;
+    friend class ::ParentAccessView;
+    friend class ::PrivacySandboxDialog;
+    friend class ::ProcessSharingInfobarDelegate;
+    friend class ::ProfilePickerView;
+    friend class ::ScheduledRebootDialog;
+    friend class ::SearchEngineChoiceDialog;
+    friend class ::TabModalConfirmDialogViews;
+    friend class ::TestBaseWidgetDelegate;
+    friend class ::UpdateRecommendedMessageBox;
+    friend class ::WebDialogBrowserTest;
+    FRIEND_TEST_ALL_PREFIXES(::TabStripScrollContainerTest,
+                             AnchoredWidgetHidesOnScroll);
+    friend class ::arc::ArcTaskWindowBuilder;
+    friend class ::arc::ArcVmDataMigrationConfirmationDialog;
+    friend class ::ash::AccessibilityPanel;
+    friend class ::ash::ActiveSessionAuthControllerImpl;
+    friend class ::ash::AmbientWidgetDelegate;
+    friend class ::ash::AuthDialogContentsViewPixelTest;
+    friend class ::ash::AuthDialogContentsViewTest;
+    friend class ::ash::BootingAnimationController;
+    friend class ::ash::CaptureModeSessionFocusCycler;
+    friend class ::ash::DeferredUpdateDialog;
+    friend class ::ash::DisclaimerView;
+    friend class ::ash::GuestSessionConfirmationDialog;
+    friend class ::ash::InSessionAuthDialog;
+    friend class ::ash::InSessionAuthDialogControllerImpl;
+    friend class ::ash::LocalAuthenticationWithPinControllerImpl;
+    friend class ::ash::LockDebugView;
+    friend class ::ash::LockDebugViewDataDispatcherTransformer;
+    friend class ::ash::LockScreen;
+    friend class ::ash::LoginShelfWidgetDelegate;
+    friend class ::ash::LoginTestBase;
+    friend class ::ash::LoginTestWidgetDelegate;
+    friend class ::ash::MahiPanelWidget;
+    friend class ::ash::ShelfNavigationWidgetDelegate;
+    friend class ::ash::ShelfWidgetDelegateView;
+    friend class ::ash::ShellTest;
+    friend class ::ash::SimpleWebViewDialog;
+    friend class ::ash::StatusAreaWidgetDelegate;
+    friend class ::ash::StuckWidgetDelegate;
+    friend class ::ash::SystemUIComponentsStyleViewerView;
+    friend class ::ash::VirtualTrackpadView;
+    friend class ::ash::hud_display::HUDDisplayView;
+    friend class ::constrained_window::BrowserModalHelper;
+    friend class ::content::ShellPlatformDelegate;
+    friend class ::crostini::AppRestartDialog;
+    friend class ::data_controls::DesktopDataControlsDialog;
+    friend class ::enterprise_connectors::ContentAnalysisDialog;
+    friend class ::enterprise_connectors::
+        ContentAnalysisDialogBehaviorBrowserTest;
+    friend class ::exo::ShellSurfaceBase;
+    friend class ::extensions::WebFileHandlersPermissionHandler;
+    friend class ::javascript_dialogs::AppModalDialogViewViews;
+    friend class ::remoting::MessageBoxCore;
+    friend class BubbleDialogModelHost;
+    friend class FocusTraversalTest;
+    FRIEND_TEST_ALL_PREFIXES(BubbleUmaLoggerTest, LogMetricFromDelegate);
+    friend class borealis::BorealisDisallowedDialog;
+    friend class borealis::BorealisLaunchErrorDialog;
+    friend class ::web_app::IsolatedWebAppInstallerViewController;
+    friend class ::web_app::SubAppsInstallDialogController;
+    friend class ::webid::AccountSelectionModalView;
+    friend class ::webid::TestAccountSelectionView;
+
+    OwnedByWidgetPassKey() = default;
+  };
   class RegisterWillCloseCallbackPassKey {
-   public:
+   private:
+    // DO NOT ADD TO THIS LIST!
+    // These existing cases are "grandfathered in", but there shouldn't be more.
+    // See comments atop `RegisterWindowWillCloseCallback()`.
+    friend class ::JavaScriptTabModalDialogViewViews;
+    friend class ::autofill::payments::PaymentsWindowUserConsentDialogView;
+    friend class DialogDelegate;
+    friend class WebDialogView;
+
     RegisterWillCloseCallbackPassKey() = default;
   };
   class RegisterDeleteCallbackPassKey {
-   public:
+   private:
+    // DO NOT ADD TO THIS LIST!
+    // These existing cases are "grandfathered in", but there shouldn't be more.
+    // See comments atop `RegisterDeleteDelegateCallback()`.
+    friend class ::DesktopMediaPickerDialogView;
+    friend class ::MediaGalleriesDialogViews;
+    friend class ::PresentationReceiverWindowView;
+    friend class ::SSLClientCertificateSelector;
+    friend class ::ScreenCaptureNotificationUIViews;
+    friend class ::ShareThisTabDialogView;
+    friend class ::SigninViewControllerDelegateViews;
+    friend class ::ash::InformedRestoreController;
+    friend class ::glic::GlicWidgetDelegate;
+    friend class ::native_app_window::NativeAppWindowViews;
+    friend class ::plus_addresses::PlusAddressCreationDialogDelegate;
+    friend class ::remoting::MessageBoxCore;
+    friend class DefaultWidgetDelegate;
+    friend class TableViewFocusTest;
+    FRIEND_TEST_ALL_PREFIXES(FocusManagerTest, AdvanceFocusStaysInWidget);
+    FRIEND_TEST_ALL_PREFIXES(NativeWidgetAuraTest,
+                             TestPropertiesWhenAddedToLayout);
+    FRIEND_TEST_ALL_PREFIXES(NativeWidgetAuraTest,
+                             TransientChildModalWindowVisibility);
+    FRIEND_TEST_ALL_PREFIXES(test::DesktopWidgetTest,
+                             LockPaintAsActiveAndCloseParent);
+
     RegisterDeleteCallbackPassKey() = default;
   };
 
@@ -276,10 +632,6 @@ class VIEWS_EXPORT WidgetDelegate {
   // through RegisterDeleteDelegateCallback() and then either deletes `this` or
   // not depending on SetOwnedByWidget(). If `this` is owned by Widget then the
   // delegate is destructed at the end.
-  //
-  // WARNING: Use SetOwnedByWidget(true) and use delete-delegate callbacks to do
-  // pre-destruction cleanup instead of using self-deleting callbacks. The
-  // latter may become a DCHECK in the future.
   void DeleteDelegate();
 
   // When the ownership of the Widget is CLIENT_OWNS_WIDGET and the client also
@@ -391,7 +743,6 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::mojom::ModalType modal_type);
-  void SetOwnedByWidget(bool delete_self);
   void SetShowCloseButton(bool show_close_button);
   void SetShowIcon(bool show_icon);
   void SetShowTitle(bool show_title);
@@ -400,6 +751,12 @@ class VIEWS_EXPORT WidgetDelegate {
 #if defined(USE_AURA)
   void SetCenterTitle(bool center_title);
 #endif
+
+  // DEPRECATED: Instead of having the Widget own the Delegate, the client
+  // should directly own both (note: this implies the Widget is using the
+  // CLIENT_OWNS_WIDGET ownership model and the Delegate is not also a View),
+  // and should delete the delegate after deleting the Widget.
+  void SetOwnedByWidget(OwnedByWidgetPassKey);
 
   template <typename T>
   T* SetContentsView(std::unique_ptr<T> contents) {
@@ -535,11 +892,22 @@ class VIEWS_EXPORT WidgetDelegate {
 // to call View's GetWidget() for the common case where a WidgetDelegate
 // implementation is-a View. Note that WidgetDelegateView is not owned by
 // view's hierarchy and is expected to be deleted on DeleteDelegate call.
+//
+// DEPRECATED: Using this class makes it more challenging to reason about object
+// ownership/lifetimes and promotes writing "fat" views that also contain
+// business logic. Instead, use DialogModel if possible; otherwise, use separate
+// subclasses of WidgetDelegate and View to handle those interfaces' respective
+// concerns.
 class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   METADATA_HEADER(WidgetDelegateView, View)
 
  public:
-  WidgetDelegateView();
+  // Not named `PassKey` as `View::PassKey` already exists in this hierarchy.
+  using WdvPassKey = base::PassKey<WidgetDelegateView>;
+
+  // For use with std::make_unique<>(). Callers still must be in the friend list
+  // below, just as with the private constructor.
+  explicit WidgetDelegateView(WdvPassKey) {}
   WidgetDelegateView(const WidgetDelegateView&) = delete;
   WidgetDelegateView& operator=(const WidgetDelegateView&) = delete;
   ~WidgetDelegateView() override;
@@ -548,6 +916,75 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
+
+ private:
+  // DO NOT ADD TO THIS LIST!
+  // These existing cases are "grandfathered in", but there shouldn't be more.
+  // See comments atop class.
+  friend class ::ImmersiveModeControllerMacInteractiveTest;
+  friend class ::PresentationReceiverWindowView;
+  friend class ::ProfilePickerView;
+  friend class ::ScreenCaptureNotificationUIViews;
+  FRIEND_TEST_ALL_PREFIXES(::AcceleratorCommandsFullscreenBrowserTest,
+                           ToggleFullscreen);
+  friend class ::ash::AppListView;
+  friend class ::ash::AppsCollectionsDismissDialog;
+  friend class ::ash::AssistantWebContainerView;
+  friend class ::ash::ClientControlledStateTestWidgetDelegate;
+  friend class ::ash::ConnectionErrorDialogDelegateView;
+  friend class ::ash::DeskButtonWidgetDelegateView;
+  friend class ::ash::DockedMagnifierTest;
+  friend class ::ash::DropSenderView;
+  friend class ::ash::DropTargetView;
+  friend class ::ash::ExitWarningWidgetDelegateView;
+  friend class ::ash::FrameCaptionButtonContainerViewTest;
+  friend class ::ash::FrameSizeButtonTestWidgetDelegate;
+  friend class ::ash::HotseatWidgetDelegateView;
+  friend class ::ash::IdleAppNameNotificationDelegateView;
+  friend class ::ash::KioskExternalUpdateNotificationView;
+  friend class ::ash::LayoutWidgetDelegateView;
+  friend class ::ash::MaximizeDelegateView;
+  friend class ::ash::NonClientFrameViewAshTestWidgetDelegate;
+  friend class ::ash::PipTest;
+  friend class ::ash::QuickInsertSubmenuView;
+  friend class ::ash::QuickInsertView;
+  friend class ::ash::ResizableWidgetDelegate;
+  friend class ::ash::RootWindowControllerTest;
+  friend class ::ash::ShellTest;
+  friend class ::ash::SystemDialogDelegateView;
+  friend class ::ash::SystemUIComponentsStyleViewerView;
+  friend class ::ash::TestChildModalParent;
+  friend class ::ash::TestTextInputView;
+  friend class ::ash::TestWidgetBuilderDelegate;
+  friend class ::ash::TestWidgetDelegateAsh;
+  friend class ::ash::TestWindow;
+  friend class ::ash::WallpaperWidgetDelegate;
+  friend class ::ash::WideFrameView;
+  friend class ::ash::WidgetWithSystemUIComponentView;
+  friend class ::ash::WindowCycleView;
+  FRIEND_TEST_ALL_PREFIXES(::ash::ExtendedDesktopTest, SystemModal);
+  FRIEND_TEST_ALL_PREFIXES(::ash::MruWindowTrackerOrderTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(::ash::ShellTest, CreateWindowWithPreferredSize);
+  friend class ::ash::sharesheet::TestWidgetDelegate;
+  friend class ::ash::shell::ToplevelWindow;
+  friend class ::autofill::PopupBaseView;
+  friend class ::eye_dropper::EyeDropperView;
+  friend class ::message_center::MessagePopupView;
+  friend class ::native_app_window::NativeAppWindowViews;
+  friend class ::ui::ime::CandidateViewTest;
+  friend class MoveTestWidgetDelegate;
+  friend class ShapedWidgetDelegate;
+  FRIEND_TEST_ALL_PREFIXES(NativeViewHostAuraTest,
+                           FocusManagerUpdatedDuringDestruction);
+  friend class examples::ExamplesWindowContents;
+  friend class test::GetNativeThemeFromDestructorView;
+  friend class test::TestingWidgetDelegateView;
+  FRIEND_TEST_ALL_PREFIXES(test::WidgetOwnsNativeWidgetTest,
+                           WidgetDelegateView);
+
+  WidgetDelegateView();
+
+  static WdvPassKey CreatePassKey() { return WdvPassKey(); }
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, WidgetDelegateView, View)

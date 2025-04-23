@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -105,6 +106,11 @@ public class ChromeActivityUnitTest {
 
         @Override
         protected LaunchCauseMetrics createLaunchCauseMetrics() {
+            return null;
+        }
+
+        @Override
+        public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
             return null;
         }
 

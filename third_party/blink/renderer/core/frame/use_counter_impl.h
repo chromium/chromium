@@ -77,6 +77,9 @@ class CORE_EXPORT UseCounterImpl final {
     kExtensionContext,
     // Context for file:// URLs.
     kFileContext,
+    // Counters for about:blank and about:srcdoc pages, which can host
+    // non-trivial html content.
+    kAboutBlankOrSrcdoc,
     // Context when counters should be disabled (eg, internal pages such as
     // about, devtools, etc).
     kDisabledContext

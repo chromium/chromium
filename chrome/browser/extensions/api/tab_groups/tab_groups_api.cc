@@ -78,6 +78,8 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
+  DCHECK(params.has_value());
+
   EXTENSION_FUNCTION_VALIDATE(params);
   int group_id = params->group_id;
 
@@ -165,6 +167,12 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       if (params->query_info.color != api::tab_groups::Color::kNone &&
           params->query_info.color !=
               ExtensionTabUtil::ColorIdToColor(visual_data->color())) {
+        continue;
+      }
+
+      if (params->query_info.shared.has_value() &&
+          ExtensionTabUtil::GetSharedStateOfGroup(id) !=
+              params->query_info.shared.value()) {
         continue;
       }
 
@@ -389,33 +397,11 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
     return false;
   }
 
-  // When moving a group between windows, Saved Tab Groups must pause
-  // listening since the group is in an invalid state. Since Extensions
-  // implements it's own bulk move action, pausing must be performed here.
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          target_browser->profile());
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
-      tab_groups_sync_movement_obseration;
-  if (tab_group_sync_service) {
-    tab_groups_sync_movement_obseration =
-        tab_group_sync_service->CreateScopedLocalObserverPauser();
-  }
-
-  target_tab_strip->AddTabGroup(group, visual_data);
-
   TabStripModel* source_tab_strip = source_browser->tab_strip_model();
-
-  for (size_t i = 0; i < tabs.length(); ++i) {
-    // Detach tabs from the same index each time, since each detached tab is
-    // removed from the model, and groups are always contiguous.
-    std::unique_ptr<TabModel> detached_tab =
-        source_tab_strip->DetachTabAtForInsertion(tabs.start());
-
-    // Attach tabs in consecutive indices, to insert them in the same order.
-    target_tab_strip->InsertDetachedTabAt(
-        new_index + i, std::move(detached_tab), AddTabTypes::ADD_NONE, group);
-  }
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      source_tab_strip->DetachTabGroupForInsertion(group);
+  target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
+                                             new_index);
 
   return true;
 }

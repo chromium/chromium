@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(GFX) SurfaceControl {
   // Returns true if OnCommit callback is supported.
   static bool SupportsOnCommit();
 
+  // kAtLeast will be treated as kFixedSource when not supported.
+  static bool SupportsFrameRateCompatAtLeast();
+
   // Returns true if tagging a transaction with vsync id is supported.
   static COMPONENT_EXPORT(GFX) bool SupportsSetFrameTimeline();
 

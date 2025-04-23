@@ -112,7 +112,7 @@ struct GroupData {
             std::vector<GroupMember> members,
             std::vector<GroupMember> former_members,
             std::string access_token,
-            GroupEnabledStatus enabled_status = GroupEnabledStatus::kUnknown);
+            GroupEnabledStatus enabled_status = GroupEnabledStatus::kEnabled);
 
   GroupData(const GroupData&);
   GroupData& operator=(const GroupData&);
@@ -126,7 +126,7 @@ struct GroupData {
   std::string display_name;
   std::vector<GroupMember> members;
   std::vector<GroupMember> former_members;
-  GroupEnabledStatus enabled_status = GroupEnabledStatus::kUnknown;
+  GroupEnabledStatus enabled_status = GroupEnabledStatus::kEnabled;
 };
 
 struct GroupEvent {

@@ -19,11 +19,13 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -39,6 +41,7 @@ namespace extensions {
 
 class CrxInstaller;
 class Extension;
+class ExtensionRegistry;
 struct InstallApproval;
 
 // Downloads and installs extensions from the web store.

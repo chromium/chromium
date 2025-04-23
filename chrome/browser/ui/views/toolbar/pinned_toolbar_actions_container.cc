@@ -111,8 +111,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   // (which has a different margin than the default). This ensures the container
   // is the same size regardless of where and if the divider is in the
   // container.
-  layout->SetInteriorMargin(
-      gfx::Insets::VH(0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  layout->SetInteriorMargin(gfx::Insets::TLBR(
+      0, 0, 0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
 
   // Animations.
   GetAnimatingLayoutManager()->SetDefaultFadeMode(
@@ -133,9 +133,14 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   toolbar_divider->SetPreferredSize(
       gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
                 GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+  // The divider only exists if there are pinned buttons, which have padding on
+  // the right. Remove that amount of padding to compensate.
   toolbar_divider->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+      gfx::Insets::TLBR(0,
+                        GetLayoutConstant(TOOLBAR_DIVIDER_SPACING) -
+                            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN),
+                        0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   toolbar_divider_ = AddChildView(std::move(toolbar_divider));
 
   // Initialize the pinned action buttons.
@@ -256,6 +261,10 @@ void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
 void PinnedToolbarActionsContainer::UpdateAllIcons() {
   for (PinnedActionToolbarButton* const pinned_button : pinned_buttons_) {
     pinned_button->UpdateIcon();
+  }
+  for (PinnedActionToolbarButton* const popped_out_button :
+       popped_out_buttons_) {
+    popped_out_button->UpdateIcon();
   }
 }
 
@@ -436,6 +445,11 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
   auto popped_out_button = CreateOrGetButtonForAction(id);
   auto* button = popped_out_button.get();
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
+  // If the added button was previously a cached permanent button then the icon
+  // may not be correct for the current state (i.e. touch ui).
+  if (button->IsPermanent()) {
+    button->UpdateIcon();
+  }
   ReorderViews();
   return button;
 }
@@ -475,8 +489,11 @@ PinnedToolbarActionsContainer::CreatePermanentButtonFor(actions::ActionId id) {
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     actions::ActionId id) {
-  // Pinned buttons shouldn't appear in web apps.
-  if (browser_view_->browser() && browser_view_->browser()->app_controller()) {
+  // Pinned buttons shouldn't appear in web apps or browsers without a tabstrip
+  // (like popups).
+  if (auto* browser = browser_view_->browser();
+      browser && (browser->app_controller() ||
+                  !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))) {
     return;
   }
 
@@ -497,9 +514,15 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
   } else {
-    auto button = CreateOrGetButtonForAction(id);
-    button->SetPinned(true);
-    pinned_buttons_.push_back(AddChildView(std::move(button)));
+    auto pinned_button = CreateOrGetButtonForAction(id);
+    auto* button = pinned_button.get();
+    pinned_button->SetPinned(true);
+    pinned_buttons_.push_back(AddChildView(std::move(pinned_button)));
+    // If the added button was previously a cached permanent button then the
+    // icon may not be correct for the current state (i.e. touch ui).
+    if (button->IsPermanent()) {
+      button->UpdateIcon();
+    }
   }
 }
 

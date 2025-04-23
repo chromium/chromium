@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -55,6 +56,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            DesktopProviderDoesNotAllowChromeSites);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, BlocklistedURLs);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, DuplicateSuggestions);
 
   ~MostVisitedSitesProvider() override;
 
@@ -68,8 +70,10 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   // Unlike `OnMostVisitedUrlsAvailable` which gets called through a request
   // to TopSites, this callback is invoked when HistoryService is queried
   // directly in the provider.
-  void OnMostVisitedUrlsFromHistoryAvailable(AutocompleteInput input,
-                                             history::MostVisitedURLList sites);
+  void OnMostVisitedUrlsFromHistoryServiceAvailable(
+      AutocompleteInput input,
+      base::ElapsedTimer query_timer,
+      history::MostVisitedURLList sites);
 
   void BlockURL(const GURL& site_url);
 

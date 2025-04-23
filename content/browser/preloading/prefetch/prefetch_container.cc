@@ -276,8 +276,7 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
 
 bool CalculateIsLikelyAheadOfPrerender(
     const PreloadPipelineInfoImpl& preload_pipeline_info) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (!features::UsePrefetchPrerenderIntegration()) {
     return false;
   }
 
@@ -380,6 +379,7 @@ PrefetchContainer::PrefetchContainer(
               referring_render_frame_host.GetLastCommittedURL().spec()),
           PrefetchContainer::Key(referring_document_token, url),
           prefetch_type,
+          /*embedder_histogram_suffix=*/std::nullopt,
           referrer,
           std::move(speculation_rules_tags),
           std::move(no_vary_search_hint),
@@ -404,6 +404,7 @@ PrefetchContainer::PrefetchContainer(
     WebContents& referring_web_contents,
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -418,6 +419,7 @@ PrefetchContainer::PrefetchContainer(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           prefetch_type,
+          embedder_histogram_suffix,
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
@@ -435,12 +437,14 @@ PrefetchContainer::PrefetchContainer(
           /*should_append_variations_header=*/true) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+  CHECK(!embedder_histogram_suffix_.value().empty());
 }
 
 PrefetchContainer::PrefetchContainer(
     BrowserContext* browser_context,
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     bool javascript_enabled,
     const std::optional<url::Origin>& referring_origin,
@@ -458,6 +462,7 @@ PrefetchContainer::PrefetchContainer(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           prefetch_type,
+          embedder_histogram_suffix,
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
@@ -476,6 +481,7 @@ PrefetchContainer::PrefetchContainer(
           should_append_variations_header) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+  CHECK(!embedder_histogram_suffix_.value().empty());
 }
 
 PrefetchContainer::PrefetchContainer(
@@ -484,6 +490,7 @@ PrefetchContainer::PrefetchContainer(
     const std::optional<size_t>& referring_url_hash,
     const PrefetchContainer::Key& key,
     const PrefetchType& prefetch_type,
+    const std::optional<std::string>& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -504,6 +511,7 @@ PrefetchContainer::PrefetchContainer(
       referring_url_hash_(referring_url_hash),
       key_(key),
       prefetch_type_(prefetch_type),
+      embedder_histogram_suffix_(embedder_histogram_suffix),
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
@@ -545,6 +553,10 @@ PrefetchContainer::PrefetchContainer(
     //
     // TODO(crbug.com/40064891): Remove this once `kPrefetchReusable` is
     // launched.
+    //
+    // Note that we keep the check instead of
+    // `features::UsePrefetchPrerenderIntegration()` as `PrefetchReusable` is
+    // enabled on Desktop and the difference doesn't affect `SearchPreload2`.
     if (base::FeatureList::IsEnabled(
             features::kPrerender2FallbackPrefetchSpecRules)) {
       switch (features::kPrerender2FallbackPrefetchReusablePolicy.Get()) {
@@ -1013,6 +1025,21 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
     }
   }
 
+  // Sec-Speculation-Tags is set only when the prefetch is triggered
+  // by speculation rules and it is not cross-site prefetch redirection.
+  // To see more details:
+  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
+  headers_to_remove.push_back(blink::kSecSpeculationTagsHeaderName);
+  if (speculation_rules_tags_.has_value() &&
+      !IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url))) {
+    CHECK(IsSpeculationRuleType(prefetch_type_.trigger_type()));
+    std::optional<std::string> serialized_list =
+        speculation_rules_tags_->ConvertStringToHeaderString();
+    CHECK(serialized_list.has_value());
+    updated_headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
+                              serialized_list.value());
+  }
+
   // Then add the client hints that are appropriate for the redirect.
   AddClientHintsHeaders(url::Origin::Create(redirect_info.new_url),
                         &updated_headers);
@@ -1479,8 +1506,7 @@ bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (features::UsePrefetchPrerenderIntegration()) {
     // If `PrefetchResponseReader` of the initial navigation is reusable, it is
     // reusable.
     if (redirect_chain_[0]->response_reader_->is_reusable()) {
@@ -1512,8 +1538,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     return ServableState::kShouldBlockUntilHeadReceived;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (features::UsePrefetchPrerenderIntegration()) {
     switch (load_state_) {
       case LoadState::kNotStarted:
       case LoadState::kEligible:
@@ -1798,8 +1823,10 @@ void PrefetchContainer::MakeResourceRequest(
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
   // Sec-Speculation-Tags is set only when the prefetch is triggered
-  // by speculation rules.
-  if (speculation_rules_tags_.has_value()) {
+  // by speculation rules and it is not cross-site prefetch.
+  // To see more details:
+  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
+  if (speculation_rules_tags_.has_value() && !IsCrossSiteRequest(origin)) {
     CHECK(IsSpeculationRuleType(prefetch_type_.trigger_type()));
     std::optional<std::string> serialized_list =
         speculation_rules_tags_->ConvertStringToHeaderString();
@@ -2293,7 +2320,7 @@ void PrefetchContainer::RecordDurationFromAdded() {
 
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
-                              "AddedToHeaderDeterminedSuccesfully.",
+                              "AddedToHeaderDeterminedSuccessfully.",
                               GetMetricsSuffixTriggerTypeAndEagerness(),
                               ".NoEmbedderSuffix",
                           }),

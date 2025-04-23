@@ -62,10 +62,10 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
     public boolean maybeSelectTabWithUrl(GURL keyUrl) {
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
 
-        boolean laxSchemeHost = ChromeFeatureList.mMostVisitedTilesReselectLaxSchemeHost.getValue();
-        boolean laxRef = ChromeFeatureList.mMostVisitedTilesReselectLaxRef.getValue();
-        boolean laxQuery = ChromeFeatureList.mMostVisitedTilesReselectLaxQuery.getValue();
-        boolean laxPath = ChromeFeatureList.mMostVisitedTilesReselectLaxPath.getValue();
+        boolean laxSchemeHost = ChromeFeatureList.sMostVisitedTilesReselectLaxSchemeHost.getValue();
+        boolean laxRef = ChromeFeatureList.sMostVisitedTilesReselectLaxRef.getValue();
+        boolean laxQuery = ChromeFeatureList.sMostVisitedTilesReselectLaxQuery.getValue();
+        boolean laxPath = ChromeFeatureList.sMostVisitedTilesReselectLaxPath.getValue();
         UrlSimilarityScorer scorer =
                 new UrlSimilarityScorer(keyUrl, laxSchemeHost, laxRef, laxQuery, laxPath);
         MatchResult result = scorer.findTabWithMostSimilarUrl(tabModel);

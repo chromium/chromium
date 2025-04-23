@@ -111,6 +111,12 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     if (!content_scrim_widget_) {
       scoped_ignore_input_events_ =
           web_contents()->IgnoreInputEvents(std::nullopt);
+      // Creating the widget will display it. That's why we create it only if
+      // the tab can show modal UI.
+      tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(web_contents());
+      scoped_tab_modal_ui_ = tab->ShowModalUI();
+
       content_scrim_widget_ =
           EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
               weak_factory_.GetWeakPtr(),
@@ -372,6 +378,8 @@ void EmbeddedPermissionPrompt::CloseViewAndScrim() {
     content_scrim_widget_ = nullptr;
     scoped_ignore_input_events_.reset();
   }
+
+  scoped_tab_modal_ui_.reset();
 }
 
 void EmbeddedPermissionPrompt::FinalizePrompt() {

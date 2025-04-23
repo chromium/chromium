@@ -12,6 +12,7 @@ build_with_chromium = false
 # configuration.
 use_partition_alloc_as_malloc_default = false
 use_allocator_shim_default = false
+shim_supports_sized_dealloc_default = false
 enable_backup_ref_ptr_support_default = false
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false

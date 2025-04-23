@@ -263,5 +263,3 @@ void SnapshotTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SnapshotTabHelper)

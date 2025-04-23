@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -737,6 +738,11 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   if (manifest.scope.is_valid())
     web_app_info->scope = manifest.scope;
+  // Ensure scope is derived if empty after processing manifest.
+  if (web_app_info->scope.is_empty()) {
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
+  }
+  CHECK(!web_app_info->scope.is_empty());
 
   if (manifest.has_theme_color) {
     web_app_info->theme_color =
@@ -1075,9 +1081,6 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
     case webapps::WebappInstallSource::MICROSOFT_365_SETUP:
       return WebAppManagement::kOneDriveIntegration;
-
-    case webapps::WebappInstallSource::COUNT:
-      NOTREACHED();
   }
 }
 
@@ -1106,7 +1109,13 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description));
   web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
-  web_app.SetScope(web_app_info.scope);
+  if (web_app_info.scope.is_valid()) {
+    web_app.SetScope(web_app_info.scope);
+  } else {
+    web_app.SetScope(web_app_info.start_url().GetWithoutFilename());
+  }
+  CHECK(!web_app.scope().is_empty());
+
   DCHECK(!web_app_info.theme_color.has_value() ||
          SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);
   web_app.SetThemeColor(web_app_info.theme_color);

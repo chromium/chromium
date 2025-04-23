@@ -15,7 +15,7 @@ build_webui("build") {
   extra_grdp_deps = [ "icons:build_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/icons/resources.grdp" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "appearance.html.ts",

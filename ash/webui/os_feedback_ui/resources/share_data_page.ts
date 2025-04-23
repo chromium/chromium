@@ -120,9 +120,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     if (!this.feedbackContext) {
       return true;
     }
-    return !this.feedbackContext.fromSettingsSearch ||
-        (this.feedbackContext.fromSettingsSearch &&
-         this.feedbackContext.isQueryFingerprint);
+    return !this.feedbackContext.settingsSearchDoNotRecordMetrics;
   }
 
   shouldShowPerformanceTraceCheckbox(): boolean {
@@ -310,8 +308,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const report: Report = ({
       feedbackContext: {
         assistantDebugInfoAllowed: false,
-        fromSettingsSearch: false,
-        isQueryFingerprint: false,
+        settingsSearchDoNotRecordMetrics: false,
         isInternalAccount: false,
         wifiDebugLogsAllowed: false,
         traceId: 0,

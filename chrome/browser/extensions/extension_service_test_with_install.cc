@@ -352,7 +352,7 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
   // once it's uninstalled.
   std::string extension_id = id;
   // Uninstall it.
-  EXPECT_TRUE(service()->UninstallExtension(
+  EXPECT_TRUE(registrar()->UninstallExtension(
       id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr));
   --expected_extensions_count_;
 
@@ -384,7 +384,7 @@ void ExtensionServiceTestWithInstall::TerminateExtension(
     ADD_FAILURE();
     return;
   }
-  service()->TerminateExtension(id);
+  registrar()->TerminateExtension(id);
 }
 
 void ExtensionServiceTestWithInstall::BlockAllExtensions() {

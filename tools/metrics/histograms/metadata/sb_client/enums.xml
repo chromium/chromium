@@ -151,18 +151,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/referring_app_info.h:GetReferringAppInfoResult) -->
 
-<!-- LINT.IfChange(SafeBrowsingVerifyAppsEnabledResult) -->
-
-<enum name="SafeBrowsingVerifyAppsEnabledResult">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Request timed out"/>
-  <int value="3" label="Request failed"/>
-  <int value="4" label="Already enabled"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/safe_browsing/android/safe_browsing_api_handler_util.h:VerifyAppsEnabledResult) -->
-
 <enum name="SBClientDetectionClassifyThresholdsResult">
   <int value="0" label="Success"/>
   <int value="1" label="Model size was mismatched"/>

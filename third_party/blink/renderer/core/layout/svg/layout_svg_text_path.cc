@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_text_path_element.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
 namespace blink {
 
@@ -71,7 +72,7 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
   if (!path_element)
     return nullptr;
 
-  Path path_data = path_element->AsPath();
+  PathBuilder path_data = path_element->AsMutablePath();
   if (path_data.IsEmpty())
     return nullptr;
 
@@ -84,10 +85,12 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
   path_data.Transform(
       path_element->CalculateTransform(SVGElement::kIncludeMotionTransform));
 
+  const Path path = path_data.Finalize();
+
   // Determine the length to resolve any percentage 'startOffset'
   // against - either 'pathLength' (author path length) or the
   // computed length of the path.
-  float computed_path_length = path_data.length();
+  float computed_path_length = path.length();
   float author_path_length = path_element->AuthorPathLength();
   float offset_scale = 1;
   if (!std::isnan(author_path_length)) {
@@ -103,7 +106,7 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
           conversion_data, author_path_length);
   path_start_offset *= offset_scale;
 
-  return std::make_unique<PathPositionMapper>(path_data, computed_path_length,
+  return std::make_unique<PathPositionMapper>(path, computed_path_length,
                                               path_start_offset);
 }
 

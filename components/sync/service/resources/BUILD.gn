@@ -17,7 +17,7 @@ build_webui("build") {
     "traffic_log.css",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "about.ts",
     "chrome_sync.ts",
     "data.ts",

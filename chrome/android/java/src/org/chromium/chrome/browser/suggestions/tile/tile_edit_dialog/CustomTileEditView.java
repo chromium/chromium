@@ -123,8 +123,16 @@ class CustomTileEditView extends FrameLayout
     }
 
     @Override
-    public void focusOnUrl() {
+    public void focusOnName() {
+        mNameField.requestFocus();
+    }
+
+    @Override
+    public void focusOnUrl(boolean selectAll) {
         mUrlField.requestFocus();
+        if (selectAll) {
+            mUrlField.selectAll();
+        }
     }
 
     PropertyModel getDialogModel() {

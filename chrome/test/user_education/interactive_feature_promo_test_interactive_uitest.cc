@@ -19,10 +19,22 @@
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace {
+
 BASE_FEATURE(kTestIphFeature,
              "TestIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-}
+BASE_FEATURE_PARAM(std::string,
+                   kTestIphFeatureParam1,
+                   &kTestIphFeature,
+                   "x_foo",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kTestIphFeatureParam2,
+                   &kTestIphFeature,
+                   "x_bar",
+                   "");
+
+}  // namespace
 
 class InteractiveFeaturePromoTestUiTest : public InteractiveFeaturePromoTest {
  public:
@@ -178,4 +190,19 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
   RegisterTestFeature(browser(), std::move(spec));
 
   RunTestSequence(ShowPromo(), InAnyContext(WaitForPromo(kTestIphFeature)));
+}
+
+class InteractiveFeaturePromoTestParamUiTest
+    : public InteractiveFeaturePromoTest {
+ public:
+  InteractiveFeaturePromoTestParamUiTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromosWithParams(
+            {{kTestIphFeature, {{"x_foo", "foo"}, {"x_bar", "bar"}}}})) {}
+  ~InteractiveFeaturePromoTestParamUiTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestParamUiTest, SetsParams) {
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestIphFeature));
+  EXPECT_EQ("foo", kTestIphFeatureParam1.Get());
+  EXPECT_EQ("bar", kTestIphFeatureParam2.Get());
 }

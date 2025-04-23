@@ -26,6 +26,13 @@
 // The text to share.
 @property(nonatomic, copy) NSString* sharedText;
 
+// Whether to display the max limit at the end of the `sharedText`.
+@property(nonatomic, assign) BOOL displayMaxLimit;
+
+// Whether the sheet was dismissed for an action within itself (close button or
+// primary/secondary buttons were tapped).
+@property(nonatomic, assign) BOOL dismissedFromSheetAction;
+
 // The delegate for interactions in `ShareExtensionSheet`.
 @property(nonatomic, weak) id<ShareExtensionDelegate> delegate;
 

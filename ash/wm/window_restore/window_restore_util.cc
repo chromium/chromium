@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"

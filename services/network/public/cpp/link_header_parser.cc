@@ -181,17 +181,17 @@ std::vector<mojom::LinkHeaderPtr> ParseLinkHeaders(
   std::vector<mojom::LinkHeaderPtr> parsed_headers;
   std::string link_header =
       headers.GetNormalizedHeader("link").value_or(std::string());
-  for (const auto& pair : link_header_util::SplitLinkHeader(link_header)) {
-    std::string url;
+  for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
     std::unordered_map<std::string, std::optional<std::string>> attrs;
-    if (!link_header_util::ParseLinkHeaderValue(pair.first, pair.second, &url,
-                                                &attrs)) {
+    std::optional<std::string> url =
+        link_header_util::ParseLinkHeaderValue(value, attrs);
+    if (!url) {
       continue;
     }
 
     auto parsed = mojom::LinkHeader::New();
 
-    parsed->href = base_url.Resolve(url);
+    parsed->href = base_url.Resolve(*url);
     if (!parsed->href.is_valid())
       continue;
 

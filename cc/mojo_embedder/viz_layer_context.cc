@@ -164,6 +164,7 @@ void ComputePropertyTreeNodeUpdate(
       old_node->backdrop_filter_bounds == new_node.backdrop_filter_bounds &&
       old_node->backdrop_filter_quality == new_node.backdrop_filter_quality &&
       old_node->backdrop_mask_element_id == new_node.backdrop_mask_element_id &&
+      old_node->mask_filter_info == new_node.mask_filter_info &&
       old_node->cache_render_surface == new_node.cache_render_surface &&
       old_node->hidden_by_backface_visibility ==
           new_node.hidden_by_backface_visibility &&
@@ -216,6 +217,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->backdrop_filter_bounds = new_node.backdrop_filter_bounds;
   wire->backdrop_filter_quality = new_node.backdrop_filter_quality;
   wire->backdrop_mask_element_id = new_node.backdrop_mask_element_id;
+  wire->mask_filter_info = new_node.mask_filter_info;
 
   wire->cache_render_surface = new_node.cache_render_surface;
   wire->double_sided = new_node.double_sided;
@@ -400,7 +402,7 @@ viz::mojom::TileResourcePtr SerializeTileResource(
 
   auto wire = viz::mojom::TileResource::New();
   wire->resource = resources[0];
-  wire->is_premultiplied = draw_info.is_premultiplied();
+
   wire->is_checkered = draw_info.is_checker_imaged();
   return wire;
 }
@@ -522,6 +524,7 @@ void SerializeLayer(LayerImpl& layer,
   wire.is_drawable = layer.draws_content();
   wire.contents_opaque = layer.contents_opaque();
   wire.contents_opaque_for_text = layer.contents_opaque_for_text();
+  wire.hit_test_opaqueness = layer.hit_test_opaqueness();
   wire.background_color = layer.background_color();
   wire.safe_opaque_background_color = layer.safe_opaque_background_color();
   wire.update_rect = layer.update_rect();
@@ -530,6 +533,8 @@ void SerializeLayer(LayerImpl& layer,
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
+  wire.should_check_backface_visibility =
+      layer.should_check_backface_visibility();
   switch (layer.GetLayerType()) {
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();

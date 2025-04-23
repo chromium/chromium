@@ -31,6 +31,7 @@ group("api_implementations") {
   public_deps = [
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/declarative_net_request",
+    "//extensions/browser/api/file_handlers",
     "//extensions/browser/api/i18n",
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
@@ -61,7 +62,6 @@ group("api_implementations") {
       "//extensions/browser/api/content_settings",
       "//extensions/browser/api/dns",
       "//extensions/browser/api/feedback_private",
-      "//extensions/browser/api/file_handlers",
       "//extensions/browser/api/file_system",
       "//extensions/browser/api/messaging:native_messaging",
       "//extensions/browser/api/mime_handler_private",
@@ -139,5 +139,32 @@ function_registration("api_registration") {
     "//extensions/browser/api:api_implementations",
     "//extensions/common/api",
     "//skia",
+  ]
+}
+
+# Glue layer for API-specific stuff.
+source_set("extensions_api_client") {
+  sources = [
+    "extensions_api_client.cc",
+    "extensions_api_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/guest_view/buildflags",
+    "//extensions/browser/api/storage:settings_namespace",
+    "//extensions/browser/api/storage:settings_observer",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/clipboard:clipboard_types" ]
+  }
+
+  deps = [
+    "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/browser/api/system_display:display_info_provider",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
   ]
 }

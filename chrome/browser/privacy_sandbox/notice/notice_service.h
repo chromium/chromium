@@ -6,18 +6,21 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+class Profile;
+class PrefService;
+
 namespace privacy_sandbox {
+
+class NoticeCatalog;
 
 // This class will:
 // 1. Communicate with the Notice Storage Service
@@ -26,10 +29,12 @@ namespace privacy_sandbox {
 // 4. Keeps an internal registry to keep track of when notices were shown,
 // what actions were taken on them and how
 class PrivacySandboxNoticeService
-    : public KeyedService,
-      public PrivacySandboxNoticeServiceInterface {
+    : public PrivacySandboxNoticeServiceInterface {
  public:
-  explicit PrivacySandboxNoticeService(Profile* profile);
+  PrivacySandboxNoticeService(Profile* profile,
+                              std::unique_ptr<NoticeCatalog> catalog,
+                              std::unique_ptr<NoticeStorage> storage);
+
   ~PrivacySandboxNoticeService() override;
 
   // NoticeServiceInterface:
@@ -40,22 +45,23 @@ class PrivacySandboxNoticeService
                      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Service Accessors.
-  PrivacySandboxNoticeStorage* GetNoticeStorage();
+  NoticeStorage* GetNoticeStorage();
   PrefService* GetPrefService();
   NoticeCatalog* GetCatalog();
 
 #if !BUILDFLAG(IS_ANDROID)
-  DesktopViewManager* GetDesktopViewManager();
+  DesktopViewManager* GetDesktopViewManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // KeyedService:
   void Shutdown() override;
 
  private:
+  void EmitStartupHistograms();
   // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
   raw_ptr<Profile> profile_;
   std::unique_ptr<NoticeCatalog> catalog_;
-  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
+  std::unique_ptr<NoticeStorage> notice_storage_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DesktopViewManager> desktop_view_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)

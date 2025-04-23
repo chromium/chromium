@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -36,7 +35,6 @@
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/url_util.h"
@@ -105,15 +103,6 @@ struct AllowlistedComponentExtensionIME {
 
 const char kImePathKeyName[] = "ime_path";
 
-extensions::ComponentLoader* GetComponentLoader(
-    content::BrowserContext* context) {
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(context);
-  extensions::ExtensionService* extension_service =
-      extension_system->extension_service();
-  return extension_service->component_loader();
-}
-
 void DoLoadExtension(content::BrowserContext* context,
                      const std::string& extension_id,
                      const std::string& manifest,
@@ -128,7 +117,7 @@ void DoLoadExtension(content::BrowserContext* context,
     return;
   }
   const std::string loaded_extension_id =
-      GetComponentLoader(context)->Add(manifest, file_path);
+      extensions::ComponentLoader::Get(context)->Add(manifest, file_path);
   if (loaded_extension_id.empty()) {
     LOG(ERROR) << "Failed to add an IME extension(id=\"" << extension_id
                << ", path=\"" << file_path.LossyDisplayName()

@@ -58,12 +58,13 @@ class ControllerDelegate : public DataTypeControllerDelegate {
     GetBridgeDelegate()->OnSyncStopping(metadata_fate);
   }
 
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override {
+  void GetUnsyncedDataCount(
+      base::OnceCallback<void(size_t)> callback) override {
     if (!bridge_) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(/*count=*/0);
       return;
     }
-    GetBridgeDelegate()->HasUnsyncedData(std::move(callback));
+    GetBridgeDelegate()->GetUnsyncedDataCount(std::move(callback));
   }
 
   void GetAllNodesForDebugging(AllNodesCallback callback) override {

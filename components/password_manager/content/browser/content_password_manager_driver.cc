@@ -245,21 +245,30 @@ void ContentPasswordManagerDriver::FillField(
   }
 }
 
-void ContentPasswordManagerDriver::SubmitChangePasswordForm(
+void ContentPasswordManagerDriver::FillChangePasswordForm(
     autofill::FieldRendererId password_element_id,
     autofill::FieldRendererId new_password_element_id,
     autofill::FieldRendererId confirm_password_element_id,
     const std::u16string& old_password,
     const std::u16string& new_password,
-    base::OnceCallback<void(const autofill::FormData&)> form_data_callback) {
+    base::OnceCallback<void(const std::optional<autofill::FormData>&)>
+        form_data_callback) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
     LogFilledFieldType();
-    agent->SubmitChangePasswordForm(
+    agent->FillChangePasswordForm(
         password_element_id, new_password_element_id,
         confirm_password_element_id, old_password, new_password,
         base::BindOnce(
             &ContentPasswordManagerDriver::OnChangePasswordFormFilled,
             weak_factory_.GetWeakPtr(), std::move(form_data_callback)));
+  }
+}
+
+void ContentPasswordManagerDriver::SubmitFormWithEnter(
+    autofill::FieldRendererId field,
+    base::OnceCallback<void(bool)> success_callback) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->SubmitFormWithEnter(field, std::move(success_callback));
   }
 }
 
@@ -595,6 +604,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestionsForField(
       triggering_field.element_id, triggering_field.trigger_source,
       triggering_field.text_direction, triggering_field.typed_username,
       ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
+      ShowIdentityCredentials(triggering_field.show_identity_credentials),
       TransformToRootCoordinates(render_frame_host_, triggering_field.bounds));
 }
 
@@ -672,8 +682,9 @@ ContentPasswordManagerDriver::GetPasswordGenerationAgent() {
 }
 
 void ContentPasswordManagerDriver::OnChangePasswordFormFilled(
-    base::OnceCallback<void(const autofill::FormData&)> form_data_callback,
-    const autofill::FormData& raw_form) {
+    base::OnceCallback<void(const std::optional<autofill::FormData>&)>
+        form_data_callback,
+    const std::optional<autofill::FormData>& raw_form) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_)) {
     return;
@@ -684,9 +695,10 @@ void ContentPasswordManagerDriver::OnChangePasswordFormFilled(
   if (!HasValidURL(render_frame_host_)) {
     return;
   }
-
   std::move(form_data_callback)
-      .Run(GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
+      .Run(raw_form ? GetFormWithFrameAndFormMetaData(render_frame_host_,
+                                                      raw_form.value())
+                    : raw_form);
 }
 
 }  // namespace password_manager

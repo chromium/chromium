@@ -37,11 +37,13 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -230,6 +232,24 @@ public class TabListCoordinator
                         return group;
                     },
                     TabGridViewBinder::bindTab);
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+                // If the need arises based on diverging functionality between tabs and tab
+                // groups, an alternative view binder and model can be implemented.
+                mAdapter.registerType(
+                        UiType.TAB_GROUP,
+                        parent -> {
+                            ViewGroup group =
+                                    (ViewGroup)
+                                            LayoutInflater.from(activity)
+                                                    .inflate(
+                                                            R.layout.tab_grid_card_item,
+                                                            parentView,
+                                                            false);
+                            group.setClickable(true);
+                            return group;
+                        },
+                        TabGridViewBinder::bindTab);
+            }
 
             recyclerListener =
                     (holder) -> {
@@ -243,7 +263,8 @@ public class TabListCoordinator
                             view.removeAllViews();
                         }
 
-                        if (holderItemViewType != UiType.TAB) {
+                        if (holderItemViewType != UiType.TAB
+                                || holderItemViewType != UiType.TAB_GROUP) {
                             return;
                         }
 

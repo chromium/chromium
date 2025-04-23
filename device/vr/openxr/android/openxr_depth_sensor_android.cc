@@ -302,6 +302,20 @@ OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
     } else {
       depth_config_->depth_data_format = mojom::XRDepthDataFormat::kFloat32;
     }
+
+    // We can support all of the current depth types, so just grab the first if
+    // they were specified. If none were, use `raw` unless overridden by the
+    // feature flag. Note that this also allows us to simply use if/else when
+    // parsing the depth_type in this file.
+    static_assert(static_cast<int>(mojom::XRDepthType::kMaxValue) == 2);
+    if (!depth_options.depth_type_request.empty()) {
+      depth_config_->depth_type = depth_options.depth_type_request[0];
+    } else {
+      depth_config_->depth_type =
+          base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
+              ? mojom::XRDepthType::kSmooth
+              : mojom::XRDepthType::kRaw;
+    }
   } else {
     DVLOG(1) << __func__ << " Cannot support depth";
   }
@@ -368,7 +382,7 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
   XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
       XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
   swapchain_create_info.resolution = depth_camera_resolution_;
-  if (base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)) {
+  if (depth_config_->depth_type == mojom::XRDepthType::kSmooth) {
     swapchain_create_info.createFlags =
         XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID;
   } else {
@@ -482,7 +496,7 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
 
   size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
   auto* depth_image_ptr =
-      base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
+      depth_config_->depth_type == mojom::XRDepthType::kSmooth
           ? depth_image.smoothDepthImage
           : depth_image.rawDepthImage;
 

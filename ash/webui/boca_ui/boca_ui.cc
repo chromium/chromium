@@ -108,10 +108,7 @@ BocaUI::BocaUI(content::WebUI* web_ui,
 #endif  // !DCHECK_IS_ON()
 }
 
-BocaUI::~BocaUI() {
-  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
-      /*is_app_opened=*/false);
-}
+BocaUI::~BocaUI() = default;
 
 void BocaUI::BindInterface(
     mojo::PendingReceiver<boca::mojom::BocaPageHandlerFactory> factory) {
@@ -145,8 +142,7 @@ void BocaUI::Create(
       on_task_session_manager
           ? on_task_session_manager->GetOnTaskSystemWebAppManager()
           : nullptr;
-  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
-      /*is_app_opened=*/true);
+  BocaAppClient::Get()->GetSessionManager()->OnAppWindowOpened();
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
       std::move(auth_handler), std::make_unique<ClassroomPageHandlerImpl>(),

@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StitchDocumentTree) {
       )HTML";
 
   content::AccessibilityNotificationWaiter load_waiter(
-      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
+      browser()->tab_strip_model()->GetActiveWebContents(),
       ax::mojom::Event::kLoadComplete);
   GURL html_data_url("data:text/html," +
                      base::EscapeQueryParamValue(html, /*use_plus=*/false));
@@ -1212,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StitchDocumentTree) {
                   ui::AXPropertyFilter("name", ui::AXPropertyFilter::ALLOW)}));
 
   content::AccessibilityNotificationWaiter child_tree_added_waiter(
-      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
+      browser()->tab_strip_model()->GetActiveWebContents(),
       ui::AXEventGenerator::Event::CHILDREN_CHANGED);
   const size_t kTestNumPages = 1u;
   std::vector<PageMetadataPtr> fake_metadata =

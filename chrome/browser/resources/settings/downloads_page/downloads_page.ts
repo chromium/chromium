@@ -73,13 +73,13 @@ export class SettingsDownloadsPageElement extends
   // </if>
 
 
-  private autoOpenDownloads_: boolean;
+  declare private autoOpenDownloads_: boolean;
 
   // <if expr="chromeos_ash">
-  private downloadLocation_: string;
+  declare private downloadLocation_: string;
   // </if>
 
-  private downloadBubblePartialViewControlledByPref_: boolean;
+  declare private downloadBubblePartialViewControlledByPref_: boolean;
 
   private browserProxy_: DownloadsBrowserProxy =
       DownloadsBrowserProxyImpl.getInstance();

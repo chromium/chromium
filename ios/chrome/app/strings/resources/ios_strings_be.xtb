@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Капіраваць відарыс</translation>
 <translation id="1612754831519568745">Бяспечны прагляд зараз выключаны. Ён можа абараніць вас ад небяспечных сайтаў, спамповак і пашырэнняў.</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="1622195983844804153">Існуючыя даныя пра работу ў браўзеры не будуць перамешчаны ў ваш працоўны ўліковы запіс. Каб атрымаць доступ да іх, вам трэба выйсці з уліковага запісу ці дадаць асабісты ўліковы запіс.</translation>
 <translation id="1622717322707146952">Выберыце Add to Google Calendar ("Дадаць у Google Каляндар") або Add to Apple Calendar ("Дадаць у Calendar ад Apple").</translation>
 <translation id="1629162218487290695">Пацвердзіць асобу…</translation>
 <translation id="1636234353664774105">З дапамогай функцыі навігацыі будуйце маршруты да пунктаў прызначэння з пакрокавымі інструкцыямі</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">Перазагрузіць</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
+<translation id="202070562065520783">Растлумач гэта мне</translation>
 <translation id="2021670401941426298">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя).</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="20485545164632846">новы элемент</translation>
@@ -480,6 +480,7 @@
 <translation id="2952278131021475699">Пошук з дапамогай камеры і Аб’ектыва</translation>
 <translation id="2962516096219646456">Паглядзець усе даныя аўтазапаўнення</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
+<translation id="297667759942911166">Сумесна працаваць з групамі ўкладак</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
@@ -525,6 +526,7 @@
 <translation id="3167868116600277716">Стужка рэкамендацый</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Захаваныя паролі можна выкарыстоўваць і на іншых прыладах.</translation>
+<translation id="3177338796769255211">Увайдзіце, каб атрымаць доступ да закладак і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
 <translation id="3190736958609431397">Перастаць адсочваць</translation>
 <translation id="3208260410153224535">Ваша арганізацыя адключыла магчымасць уваходу. Новыя закладкі, паролі і іншыя даныя будуць захоўвацца толькі на гэтай прыладзе.</translation>
@@ -662,6 +664,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3868495844258915202">Паказаць увесь URL-адрас</translation>
 <translation id="3875783148670536197">Паказаць</translation>
+<translation id="3878657761594430423">Захоп старонкі</translation>
 <translation id="3885587018298784481">Далучэнне да сямейнай групы</translation>
 <translation id="3888863481921783344">Гэта інфармацыя будзе выкарыстоўвацца, каб паказваць вам людзей, якіх можна запрасіць прыняць удзел у падзеі.</translation>
 <translation id="3891414008432200754">Цана</translation>
@@ -702,6 +705,7 @@
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4004204301268239848">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады.</translation>
 <translation id="4011489366247192265">З</translation>
+<translation id="4017599800655151880">Мініяцюра</translation>
 <translation id="4018440314314549819">Аўтазапаўненне захаваных пароляў</translation>
 <translation id="4021447724486050609">Абнавіце браўзер</translation>
 <translation id="4021931095789478915">Дадаць ${url} у Спіс на прагляд</translation>
@@ -740,6 +744,7 @@
 <translation id="4164514562270305824">Аўтавыдаленне спамповак</translation>
 <translation id="4168651806173792090">Апошнія лічбы нумара карткі <ph name="NETWORK_NAME" />: <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Не дазваляць</translation>
+<translation id="417138788035229076">Кіраваць групай</translation>
 <translation id="4172051516777682613">Заўсёды паказваць</translation>
 <translation id="417273154673973994">{count,plural, =1{1 група ўкладак закрыта і захавана}one{{count} група ўкладак закрыта і захавана}few{{count} групы ўкладак закрыты і захаваны}many{{count} груп укладак закрыта і захавана}other{{count} групы ўкладак закрыта і захавана}}</translation>
 <translation id="417612446554534067">Адправіць на вашы прылады</translation>
@@ -907,6 +912,7 @@
 <translation id="4860895144060829044">Выклік</translation>
 <translation id="4861953997778766866">Кожны карыстальнік можа ўносіць змяненні ў вашы абагуленыя групы ўкладак</translation>
 <translation id="4865063548323785458">Захоўвайце і аўтаматычна запаўняйце паролі, каб з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах</translation>
+<translation id="4867608294647017606">Выдаліць відарыс з пошуку</translation>
 <translation id="4869146460927742717">Размяшчэнне адраснага радка</translation>
 <translation id="4870911314065352661">Закрыць усе ўкладкі?</translation>
 <translation id="4872664437015695612">Адкрыць у спампоўках</translation>
@@ -1125,6 +1131,7 @@
 <translation id="573974402615125334">Каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі, уключыце сінхранізацыю гісторыі і ўкладак</translation>
 <translation id="5740123193752401435">Пошук укладак…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />: апавяшчэнні ўключаны</translation>
+<translation id="5745598824054949526">Тэкст не знойдзены</translation>
 <translation id="574762237186762643">Падзеі</translation>
 <translation id="5749158352074143502">Працягвайце працу з гэтай укладкай</translation>
 <translation id="5753021559215751319">Захаваць пароль</translation>
@@ -1198,6 +1205,7 @@
 <translation id="6074656473835429958">Атрымлівайце апавяшчэнні</translation>
 <translation id="607620096698446287">Не ўдалося запампаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Доступ да камеры дазволены</translation>
+<translation id="6078236141387574983">Змяніць вышыню аркуша</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
 <translation id="6089212833343035912">PIN-код Менеджара пароляў Google</translation>
 <translation id="6090760257419195752">Адхіленыя папярэджанні</translation>
@@ -1214,6 +1222,7 @@
 <translation id="6140600850356225166">Запытваць дазвол на адкрыццё спасылак з іншых праграм у рэжыме інкогніта</translation>
 <translation id="6140948187512243695">Паказаць падрабязныя звесткі</translation>
 <translation id="6144589619057374135">Адкрыць ${url} у рэжыме інкогніта</translation>
+<translation id="6145820728009071857">Паказаць рэжым чытання</translation>
 <translation id="6147279996212084542">Растлумачыць</translation>
 <translation id="6151006591088192882">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Неактыўныя</translation>
@@ -1288,6 +1297,7 @@
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
 <translation id="6416807286621280684">Абнаўленне інфармацыі пра пасылкі, якія вы адсочваеце, і дастаўку.</translation>
 <translation id="6418346271604475326">PDF рыхтуецца</translation>
+<translation id="6421038304268477484">Перакладзены тэкст</translation>
 <translation id="6429213933892582367">Адкрыйце раздзел Password Options ("Налады пароляў").</translation>
 <translation id="6434591244308415567">Адбылася памылка. Паўтарыце спробу пазней.</translation>
 <translation id="6435307030888827407">Не ўваходзіць</translation>
@@ -1310,7 +1320,6 @@
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="647867789226964031">Змяніце паролі</translation>
 <translation id="6494931198667773526">Заканчэнне</translation>
-<translation id="6495521251906266731">Выберыце, што зрабіць з захаванымі на гэтай прыладзе данымі пра работу ў браўзеры, у прыватнасці паролямі, запісамі ў гісторыі і іншымі.</translation>
 <translation id="6503077044568424649">Часцей за ўсё наведваліся</translation>
 <translation id="6503763061813913607">Апавяшчэнні праверкі бяспекі</translation>
 <translation id="6505334220040167806">Згарнуць групу ўкладак.</translation>
@@ -1593,6 +1602,7 @@
 <translation id="7669493687462784703">Спампаваць профіль канфігурацыі з вэб-сайта <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Каб праглядаць сайты ў рэжыме інкогніта, правядзіце пальцам па экране ўлева.</translation>
 <translation id="7679915578945954324">Адрасы сайтаў скапіраваны</translation>
+<translation id="7695953765525234038">Радок пошуку</translation>
 <translation id="7696316012653762532">Параметры перакладу старонкі</translation>
 <translation id="7700527812567437847">Шукаць змесціва на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -1855,6 +1865,7 @@
 <translation id="8697136149718343437">Перамясціць адрасны радок у ніжнюю частку экрана</translation>
 <translation id="8703372953981978786">Гэта спасылка не працуе</translation>
 <translation id="8706253136355675497">Тэмпература</translation>
+<translation id="8706806585855470492">Вы зможаце абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі</translation>
 <translation id="8709409604518538305">Укладкі былі закрыты</translation>
 <translation id="8712534545803964353">Пошук на старонцы…</translation>
 <translation id="8712637175834984815">Зразумела</translation>
@@ -1966,6 +1977,7 @@
 <translation id="9097506547406246598">Не ўдалося адпісацца. Нешта пайшло не так.</translation>
 <translation id="9098541895599151034">Выдаліць паролі (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Кожны раз пытацца, які ўліковы запіс выкарыстоўваць</translation>
+<translation id="9099821309562615674">Упэўніцеся, што тэкст, які вы хочаце перакласці, знаходзіцца ў кадры і добра бачны.</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="91023216973987714">Спосабы аплаты</translation>
 <translation id="9106655997975673326">З прылады "<ph name="SOURCE_DEVICE" />"</translation>

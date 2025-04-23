@@ -1653,6 +1653,10 @@ int LocalDOMWindow::screenX() const {
   if (!page)
     return 0;
 
+  if (RuntimeEnabledFeatures::ReduceScreenSizeEnabled()) {
+    return 0;
+  }
+
   ChromeClient& chrome_client = page->GetChromeClient();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
     return static_cast<int>(
@@ -1670,6 +1674,10 @@ int LocalDOMWindow::screenY() const {
   Page* page = frame->GetPage();
   if (!page)
     return 0;
+
+  if (RuntimeEnabledFeatures::ReduceScreenSizeEnabled()) {
+    return 0;
+  }
 
   ChromeClient& chrome_client = page->GetChromeClient();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {

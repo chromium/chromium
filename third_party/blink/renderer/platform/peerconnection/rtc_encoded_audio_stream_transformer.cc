@@ -24,7 +24,7 @@ namespace {
 
 // This delegate class exists to work around the fact that
 // RTCEncodedAudioStreamTransformer cannot derive from webrtc::RefCountedObject
-// and post tasks referencing itself as an rtc::scoped_refptr. Instead,
+// and post tasks referencing itself as an webrtc::scoped_refptr. Instead,
 // RTCEncodedAudioStreamTransformer creates a delegate using
 // webrtc::RefCountedObject and posts tasks referencing the delegate, which
 // invokes the RTCEncodedAudioStreamTransformer via callbacks.
@@ -48,7 +48,7 @@ class RTCEncodedAudioStreamTransformerDelegate
 
   // webrtc::FrameTransformerInterface
   void RegisterTransformedFrameCallback(
-      rtc::scoped_refptr<webrtc::TransformedFrameCallback>
+      webrtc::scoped_refptr<webrtc::TransformedFrameCallback>
           send_frame_to_sink_callback) override {
     transformer_broker_->RegisterTransformedFrameCallback(
         std::move(send_frame_to_sink_callback));
@@ -85,7 +85,7 @@ RTCEncodedAudioStreamTransformer::Broker::Broker(
     : transformer_(transformer_) {}
 
 void RTCEncodedAudioStreamTransformer::Broker::RegisterTransformedFrameCallback(
-    rtc::scoped_refptr<webrtc::TransformedFrameCallback>
+    webrtc::scoped_refptr<webrtc::TransformedFrameCallback>
         send_frame_to_sink_callback) {
   base::AutoLock locker(transformer_lock_);
   if (transformer_) {
@@ -166,7 +166,7 @@ RTCEncodedAudioStreamTransformer::~RTCEncodedAudioStreamTransformer() {
 }
 
 void RTCEncodedAudioStreamTransformer::RegisterTransformedFrameCallback(
-    rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback) {
+    webrtc::scoped_refptr<webrtc::TransformedFrameCallback> callback) {
   base::AutoLock locker(sink_lock_);
   send_frame_to_sink_cb_ = callback;
   if (short_circuit_) {
@@ -224,7 +224,7 @@ bool RTCEncodedAudioStreamTransformer::HasTransformedFrameCallback() const {
   return !!send_frame_to_sink_cb_;
 }
 
-rtc::scoped_refptr<webrtc::FrameTransformerInterface>
+webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
 RTCEncodedAudioStreamTransformer::Delegate() {
   return delegate_;
 }

@@ -95,7 +95,7 @@ class CircleBackground : public views::Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
     canvas->DrawCircle(center, radius, flags);
   }
 
@@ -230,7 +230,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
       is_cloud_(is_cloud) {
   DVLOG(1) << __func__;
   DCHECK(delegate_);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

@@ -52,6 +52,8 @@ extern const char kHistorySyncSuccessiveDeclineCount[];
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kRestrictAccountsToPatterns[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kSigninAllowedOnDevice[];
 #endif  // BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSignedInWithCredentialProvider[];

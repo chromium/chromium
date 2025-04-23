@@ -31,7 +31,9 @@ constexpr char kGroupId2[] = "group_id_2";
 media_preview_metrics::Context GetMetricsContext(
     MediaCoordinator::ViewType type) {
   return {media_preview_metrics::UiLocation::kPermissionPrompt,
-          media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(type)};
+          media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(type),
+          media_coordinator::GetPromptTypeFromMediaCoordinatorViewType(type),
+          nullptr};
 }
 
 MATCHER(VideoCaptureDeviceInfoEq, "") {
@@ -52,10 +54,11 @@ class MediaCoordinatorTest : public TestWithBrowserView {
   }
 
   void InitializeCoordinator(MediaCoordinator::ViewType view_type) {
-    coordinator_.emplace(
-        view_type, parent_view_, /*is_subsection=*/false,
-        MediaCoordinator::EligibleDevices{}, profile()->GetWeakPtr(),
-        /*allow_device_selection=*/true, GetMetricsContext(view_type));
+    coordinator_.emplace(view_type, parent_view_, /*is_subsection=*/false,
+                         MediaCoordinator::EligibleDevices{},
+                         profile()->GetWeakPtr(),
+                         /*allow_device_selection=*/true,
+                         GetMetricsContext(view_type), /*delegate=*/nullptr);
   }
 
   void TearDown() override {

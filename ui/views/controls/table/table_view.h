@@ -64,7 +64,20 @@ class TableHeader;
 class TableViewObserver;
 class TableViewTestHelper;
 
-struct TableHeaderStyle {
+struct VIEWS_EXPORT TableHeaderStyle {
+  TableHeaderStyle(int cell_vertical_padding,
+                   int cell_horizontal_padding,
+                   int resize_bar_vertical_padding,
+                   int separator_horizontal_padding,
+                   gfx::Font::Weight font_weight,
+                   ui::ColorId separator_horizontal_color_id,
+                   ui::ColorId separator_vertical_color_id,
+                   ui::ColorId background_color_id,
+                   float focus_ring_upper_corner_radius,
+                   bool header_sort_state);
+  TableHeaderStyle();
+  ~TableHeaderStyle();
+
   std::optional<int> cell_vertical_padding;
   std::optional<int> cell_horizontal_padding;
   std::optional<int> resize_bar_vertical_padding;
@@ -77,6 +90,9 @@ struct TableHeaderStyle {
   // Applied to the top left corner of the first column, and top right corner
   // of the last column. Applied to both if there is only one column.
   std::optional<float> focus_ring_upper_corner_radius;
+
+  // Add sort state to column header.
+  std::optional<bool> header_sort_state;
 };
 
 struct TableBackgroundStyle {
@@ -601,6 +617,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
+
+  // Update the accessibility name of the table header when column sorting
+  // changes.
+  void UpdateHeaderAXName();
 
   // Handles key events for keyboard navigation by cell. Returns true if the
   // event was handled.

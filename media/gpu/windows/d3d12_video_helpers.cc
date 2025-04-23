@@ -348,6 +348,12 @@ EncoderStatus CheckD3D12VideoEncoderSupport1(
       base::StrAppend(&error,
                       {"D3D12VideoEncoder does not support GOP structure. "});
     }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_SUBREGION_LAYOUT_DATA_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error,
+          {"D3D12VideoEncoder does not support the subregion layout data. "});
+    }
     return {EncoderStatus::Codes::kEncoderUnsupportedConfig, error};
   }
   return EncoderStatus::Codes::kOk;

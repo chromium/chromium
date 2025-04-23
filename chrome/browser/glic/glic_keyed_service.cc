@@ -11,8 +11,12 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -25,6 +29,8 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
+#include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,6 +47,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -48,15 +55,18 @@
 
 namespace glic {
 
-GlicKeyedService::GlicKeyedService(Profile* profile,
-                                   signin::IdentityManager* identity_manager,
-                                   ProfileManager* profile_manager,
-                                   GlicProfileManager* glic_profile_manager)
+GlicKeyedService::GlicKeyedService(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    ProfileManager* profile_manager,
+    GlicProfileManager* glic_profile_manager,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       enabling_(std::make_unique<GlicEnabling>(
           profile,
           &profile_manager->GetProfileAttributesStorage())),
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
+      host_(std::make_unique<Host>(profile)),
       window_controller_(
           std::make_unique<GlicWindowController>(profile,
                                                  identity_manager,
@@ -67,7 +77,8 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-      glic_profile_manager_(glic_profile_manager) {
+      glic_profile_manager_(glic_profile_manager),
+      contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
@@ -126,6 +137,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
+  host().Shutdown();
   SetContextAccessIndicator(false);
 }
 
@@ -133,31 +145,58 @@ void GlicKeyedService::FocusUI() {
   window_controller_->FocusIfOpen();
 }
 
+void GlicKeyedService::PrepareForOpen() {
+  window_controller_->fre_controller()->MaybePreconnect();
+
+  auto* active_web_contents = GetFocusedTabData().focus();
+  if (contextual_cueing_service_ && active_web_contents) {
+    contextual_cueing_service_
+        ->PrepareToFetchContextualGlicZeroStateSuggestions(active_web_contents);
+  }
+}
+
+void GlicKeyedService::OnZeroStateSuggestionsFetched(
+    mojom::ZeroStateSuggestionsPtr suggestions,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback,
+    std::optional<std::vector<std::string>> returned_suggestions) {
+  std::vector<mojom::SuggestionContentPtr> output_suggestions;
+  if (returned_suggestions) {
+    for (const std::string& suggestion_string : returned_suggestions.value()) {
+      output_suggestions.push_back(
+          mojom::SuggestionContent::New(suggestion_string));
+    }
+    suggestions->suggestions = std::move(output_suggestions);
+  }
+
+  std::move(callback).Run(std::move(suggestions));
+}
+
+void GlicKeyedService::FetchZeroStateSuggestions(
+    bool is_first_run,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback) {
+  auto* active_web_contents = GetFocusedTabData().focus();
+
+  if (contextual_cueing_service_ && active_web_contents) {
+    auto suggestions = mojom::ZeroStateSuggestions::New();
+    suggestions->tab_id = GetTabId(active_web_contents);
+    suggestions->tab_url = active_web_contents->GetLastCommittedURL();
+    contextual_cueing_service_->GetContextualGlicZeroStateSuggestions(
+        active_web_contents, is_first_run,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
+                           GetWeakPtr(), std::move(suggestions),
+                           std::move(callback)),
+            std::nullopt));
+
+  } else {
+    std::move(callback).Run(nullptr);
+  }
+}
+
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
-  content::WebContents* top =
-      guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
-
-  auto* glic_web_contents = window_controller().GetWebContents();
-  if (glic_web_contents) {
-    blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
-    prefs.default_font_size =
-        glic_web_contents->GetOrCreateWebPreferences().default_font_size;
-    top->SetWebPreferences(prefs);
-  }
-  auto* page_handler = GetPageHandler(top);
-  if (page_handler) {
-    auto* webview = extensions::WebViewGuest::FromWebContents(guest_contents);
-    CHECK(webview);
-    page_handler->GuestAdded(webview);
-  }
-}
-
-void GlicKeyedService::PageHandlerAdded(GlicPageHandler* page_handler) {
-  page_handlers_.insert(page_handler);
-}
-
-void GlicKeyedService::PageHandlerRemoved(GlicPageHandler* page_handler) {
-  page_handlers_.erase(page_handler);
+  host().GuestAdded(guest_contents);
 }
 
 bool GlicKeyedService::IsWindowShowing() const {
@@ -168,25 +207,28 @@ bool GlicKeyedService::IsWindowDetached() const {
   return window_controller_->IsDetached();
 }
 
-void GlicKeyedService::NotifyWindowIntentToShow() {
-  for (auto& handler : page_handlers_) {
-    handler->NotifyWindowIntentToShow();
-  }
-}
-
-GlicPageHandler* GlicKeyedService::GetPageHandler(
-    const content::WebContents* webui_contents) {
-  for (GlicPageHandler* page_handler : page_handlers_) {
-    if (page_handler->webui_contents() == webui_contents) {
-      return page_handler;
-    }
-  }
-  return nullptr;
-}
-
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
   return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabInstanceChangedCallback(
+    FocusedTabInstanceChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabInstanceChangedCallback(callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabOrCandidateInstanceChangedCallback(
+    FocusedTabOrCandidateInstanceChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabOrCandidateInstanceChangedCallback(
+      callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabDataChangedCallback(
+    FocusedTabDataChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabDataChangedCallback(callback);
 }
 
 base::CallbackListSubscription
@@ -338,35 +380,19 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
          GetFocusedTabData().focus() == contents;
 }
 
-void GlicKeyedService::WebClientCreated() {
-  web_client_created_callbacks_.Notify();
-}
-
-base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
-    base::OnceCallback<void()> callback) {
-  return web_client_created_callbacks_.Add(std::move(callback));
-}
-
 void GlicKeyedService::TryPreload() {
   CHECK(glic_profile_manager_);
 
-  Profile* profile = profile_;
-  if (!glic_profile_manager_->ShouldPreloadForProfile(profile)) {
-    return;
-  }
-
-  window_controller_->Preload();
+  glic_profile_manager_->ShouldPreloadForProfile(
+      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
 }
 
 void GlicKeyedService::TryPreloadFre() {
   CHECK(glic_profile_manager_);
 
-  Profile* profile = profile_;
-  if (!glic_profile_manager_->ShouldPreloadFreForProfile(profile)) {
-    return;
-  }
-
-  window_controller_->PreloadFre();
+  glic_profile_manager_->ShouldPreloadFreForProfile(
+      profile_,
+      base::BindOnce(&GlicKeyedService::FinishPreloadFre, GetWeakPtr()));
 }
 
 void GlicKeyedService::Reload() {
@@ -392,8 +418,44 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
   if (!contents) {
     return false;
   }
-  return contents == window_controller().GetWebContents() ||
+  return contents == host().webui_contents() ||
          contents == window_controller().GetFreWebContents();
+}
+
+void GlicKeyedService::FinishPreload(Profile* profile, bool should_preload) {
+  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
+      GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+    base::UmaHistogramBoolean("Glic.ShouldPreload", should_preload);
+  }
+
+  if (!should_preload) {
+    return;
+  }
+
+  window_controller_->Preload();
+}
+
+void GlicKeyedService::FinishPreloadFre(Profile* profile, bool should_preload) {
+  if (!should_preload) {
+    return;
+  }
+
+  window_controller_->PreloadFre();
+}
+
+bool GlicKeyedService::IsProcessHostForGlic(
+    content::RenderProcessHost* process_host) {
+  auto* fre_contents = window_controller_->GetFreWebContents();
+  if (fre_contents) {
+    if (fre_contents->GetPrimaryMainFrame()->GetProcess() == process_host) {
+      return true;
+    }
+  }
+  return host().IsGlicWebUiHost(process_host);
+}
+
+bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
+  return host().IsGlicWebUi(web_contents);
 }
 
 }  // namespace glic

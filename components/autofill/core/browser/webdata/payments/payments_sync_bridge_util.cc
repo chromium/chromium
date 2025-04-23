@@ -52,8 +52,7 @@ sync_pb::WalletMaskedCreditCard::WalletCardType WalletCardTypeFromCardNetwork(
     return sync_pb::WalletMaskedCreditCard::MASTER_CARD;
   if (network == kUnionPay)
     return sync_pb::WalletMaskedCreditCard::UNIONPAY;
-  if (network == kVerveCard &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableVerveCardSupport)) {
+  if (network == kVerveCard) {
     return sync_pb::WalletMaskedCreditCard::VERVE;
   }
   if (network == kVisaCard)
@@ -79,11 +78,7 @@ const char* CardNetworkFromWalletCardType(
     case sync_pb::WalletMaskedCreditCard::UNIONPAY:
       return kUnionPay;
     case sync_pb::WalletMaskedCreditCard::VERVE:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableVerveCardSupport)) {
-        return kVerveCard;
-      }
-      return kGenericCard;
+      return kVerveCard;
     case sync_pb::WalletMaskedCreditCard::VISA:
       return kVisaCard;
 

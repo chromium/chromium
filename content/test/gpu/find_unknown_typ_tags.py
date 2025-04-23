@@ -80,9 +80,9 @@ def _GetGeneratedTags(args):
     cmd = [
         'bq',
         'query',
-        '--max_rows=%d' % MAX_ROWS,
+        f'--max_rows={MAX_ROWS}',
         '--format=json',
-        '--project_id=%s' % args.project,
+        f'--project_id={args.project}',
         '--use_legacy_sql=false',
         query,
     ]

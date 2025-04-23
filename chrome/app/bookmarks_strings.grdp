@@ -109,6 +109,9 @@
     <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="Menu description for opening bookmark in Incognito window">
       Open in &amp;Incognito window
     </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW" desc="Menu description for opening bookmark in a split view">
+      Open in &amp;split view
+    </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="Title of the bookmark context menu item that brings up the bookmark editor">
       &amp;Edit...
     </message>
@@ -169,6 +172,9 @@
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="In Title Case: Menu description for opening bookmark in Incognito window">
       Open in &amp;Incognito Window
+    </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW" desc="In Title Case: Menu description for opening bookmark in a split view">
+      Open in &amp;Split View
     </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="In Title Case: Title of the bookmark context menu item that brings up the bookmark editor">
       &amp;Edit...

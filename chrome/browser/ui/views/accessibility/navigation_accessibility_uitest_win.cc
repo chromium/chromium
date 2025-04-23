@@ -7,6 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"

@@ -459,7 +459,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 #else
 #define MAYBE_testFocusOmniboxFromPortrait testFocusOmniboxFromPortrait
 #endif
-- (void)FLAKY_testFocusOmniboxFromPortrait {
+- (void)MAYBE_testFocusOmniboxFromPortrait {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 

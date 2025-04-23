@@ -57,6 +57,10 @@ interface AutofillAgent {
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
+  // For all elements the DOM Node ID will be exposed on the DOM
+  // as attribute "dom-node-id".This is done for data collection purposes.
+  ExposeDomNodeIDs();
+
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
 
@@ -153,17 +157,21 @@ interface PasswordAutofillAgent {
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
     AutofillSuggestionTriggerSource suggestion_source);
 
-  // Fills and submits a given change password form, specifically
-  // `password_element_id` with `old_password` and `new_password_element_id`,
-  // `confirm_password_element_id` with `new_password`. Upon completion
-  // asynchronously returns `form_data` with filled values. Submission
-  // happens by simulating Enter on the last input field.
-  SubmitChangePasswordForm(FieldRendererId password_element_id,
+  // Fills a given change password form, specifically `password_element_id` with
+  // `old_password` and `new_password_element_id`, `confirm_password_element_id`
+  // with `new_password`. Upon completion asynchronously returns `form_data`
+  // with filled values if the form was successfully filled.
+  FillChangePasswordForm(FieldRendererId password_element_id,
                          FieldRendererId new_password_element_id,
                          FieldRendererId confirm_password_element_id,
                          mojo_base.mojom.String16 old_password,
                          mojo_base.mojom.String16 new_password)
-      => (FormData form_data);
+      => (FormData? form_data);
+
+  // Submits a form based on field id if all conditions for submission with
+  // Enter are satisfied, i.e. the form exists, there is a submit element
+  // inside a form, the submit element is not disabled.
+  SubmitFormWithEnter(FieldRendererId field_id) => (bool success);
 
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.

@@ -33,8 +33,6 @@ class PrintTabHelper : public web::LazyWebStateUserData<PrintTabHelper> {
 
   raw_ptr<web::WebState> web_state_;
   __weak id<WebStatePrinter> printer_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_TAB_HELPER_H_

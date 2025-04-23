@@ -49,8 +49,8 @@ public class TopBottomLinksPageStation extends WebPageStation {
     /** Scrolls down the page using a drag gesture to dismiss browser controls. */
     private Transition.Trigger gestureScrollToBottomTrigger() {
         return () -> {
-            assertSuppliersCanBeUsed();
-            View contentView = mActivityTabSupplier.get().getView();
+            assertInPhase(Phase.ACTIVE);
+            View contentView = activityTabElement.get().getView();
             float width = contentView.getWidth();
             float height = contentView.getHeight();
             // Start the scroll with some height to avoid touching the nav bar region.
@@ -75,7 +75,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         public void declareElements(Elements.Builder elements) {
             mTopElement =
                     elements.declareElement(
-                            new HtmlElement(TOP_LINK, mHostStation.mWebContentsSupplier));
+                            new HtmlElement(TOP_LINK, mHostStation.webContentsElement));
         }
 
         /** Open context menu on the top link. */
@@ -99,9 +99,9 @@ public class TopBottomLinksPageStation extends WebPageStation {
         public void declareElements(Elements.Builder elements) {
             mBottomElement =
                     elements.declareElement(
-                            new HtmlElement(BOTTOM_LINK, mHostStation.mWebContentsSupplier));
+                            new HtmlElement(BOTTOM_LINK, mHostStation.webContentsElement));
             elements.declareEnterCondition(
-                    new ScrollToBottomCondition(mHostStation.mWebContentsSupplier));
+                    new ScrollToBottomCondition(mHostStation.webContentsElement));
         }
 
         /** Open context menu on the bottom link. */

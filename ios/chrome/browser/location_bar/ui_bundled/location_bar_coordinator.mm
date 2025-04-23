@@ -35,6 +35,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
+#import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -45,15 +47,13 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
+#import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
+#import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/chrome_omnibox_client_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_coordinator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/web_location_bar_impl.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -94,7 +94,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     LoadQueryCommands,
     LocationBarViewControllerDelegate,
     LocationBarSteadyViewConsumer,
-    OmniboxControllerDelegate,
+    WebLocationBarDelegate,
     OmniboxStateProvider,
     URLDragDataSource> {
   // API endpoint for omnibox.
@@ -167,7 +167,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       startDispatchingToTarget:self
                    forProtocol:@protocol(LoadQueryCommands)];
 
-  BOOL isIncognito = self.profile->IsOffTheRecord();
+  BOOL isIncognito = self.isOffTheRecord;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
@@ -175,10 +175,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.viewController.dispatcher = static_cast<
-      id<ActivityServiceCommands, ApplicationCommands, LoadQueryCommands,
-         LensCommands, LensOverlayCommands, OmniboxCommands>>(
-      self.browser->GetCommandDispatcher());
+  self.viewController.dispatcher =
+      static_cast<id<ActivityServiceCommands, ApplicationCommands,
+                     BrowserCoordinatorCommands, LoadQueryCommands,
+                     LensCommands, LensOverlayCommands, OmniboxCommands>>(
+          self.browser->GetCommandDispatcher());
   self.viewController.tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.voiceSearchEnabled =
@@ -407,8 +408,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
     }
     NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
-        [web_navigation_util::VariationHeadersForURL(
-            url, self.profile->IsOffTheRecord()) mutableCopy];
+        [web_navigation_util::VariationHeadersForURL(url, self.isOffTheRecord)
+            mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
     web_params.extra_headers = [combinedExtraHeaders copy];
     UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
@@ -427,8 +428,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)focusOmnibox {
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
-  if (IsVisibleURLNewTabPage([self webState]) &&
-      !self.profile->IsOffTheRecord()) {
+  if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
     id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            BrowserCoordinatorCommands);
@@ -448,7 +448,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.isCancellingOmniboxEdit = NO;
 }
 
-#pragma mark - OmniboxControllerDelegate
+#pragma mark - WebLocationBarDelegate
 
 - (web::WebState*)webState {
   return self.webStateList->GetActiveWebState();
@@ -490,7 +490,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarVisitCopyLinkTapped {
   default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
-      self.profile->IsOffTheRecord(),
+      self.isOffTheRecord,
       feature_engagement::TrackerFactory::GetForProfile(self.profile),
       self.browser->GetSceneState());
 }

@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "url/gurl.h"
 
@@ -230,7 +231,7 @@ class SigninViewController {
       signin_metrics::AccessPoint reauth_access_point,
       signin_metrics::ProfileSignout profile_signout_source,
       signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-      syncer::DataTypeSet unsynced_datatypes);
+      absl::flat_hash_map<syncer::DataType, size_t> unsynced_datatypes);
 
   void ShowChromeSigninDialogForExtensions(
       const std::u16string& extension_name_for_display,

@@ -16,6 +16,10 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
   init(rootView: Content, uiConfiguration: OverflowMenuUIConfiguration) {
     self.uiConfiguration = uiConfiguration
     super.init(rootView: rootView)
+    if #available(iOS 17, *) {
+      let sizeTraits: [UITrait] = [UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self]
+      self.registerForTraitChanges(sizeTraits, action: #selector(updateUIOnTraitChange))
+    }
   }
 
   required init(coder aDecoder: NSCoder) {
@@ -43,9 +47,14 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
       presentingViewController?.traitCollection.verticalSizeClass == .regular ? .regular : .compact
   }
 
+  @available(iOS, deprecated: 16.0)
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
+    self.updateUIOnTraitChange()
+  }
 
+  // Updates the presented view controller's horizontal and vertical layout on UITrait changes.
+  @objc func updateUIOnTraitChange() {
     // Only set the preferredContentSize in height == compact because otherwise
     // it overrides the default size of the menu on iPad.
     preferredContentSize =

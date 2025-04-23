@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -186,9 +187,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // Since there is another profile, the agent should trigger the account menu
   // instead of the add-account flow.
   OCMExpect([application_commands_mock_
-      showAccountMenuWithAnchorView:[OCMArg any]
-               skipIfUINotAvailable:YES
-                         completion:[OCMArg any]]);
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
   agent_->OnAddAccount();
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
@@ -233,9 +232,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // Since there is another profile, the agent should trigger the account menu
   // instead of the manage accounts screen.
   OCMExpect([application_commands_mock_
-      showAccountMenuWithAnchorView:[OCMArg any]
-               skipIfUINotAvailable:YES
-                         completion:[OCMArg any]]);
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
   agent_->OnManageAccounts();
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not
   // be called. This is ensured by TearDown because application_commands_mock_

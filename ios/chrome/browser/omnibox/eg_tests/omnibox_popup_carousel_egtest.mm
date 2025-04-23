@@ -6,13 +6,13 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -42,7 +42,7 @@ const NSUInteger kCarouselCapacity = 10;
 /// Returns the matcher for tile with `title`.
 id<GREYMatcher> TileWithTitle(const std::string& title) {
   return grey_allOf(
-      grey_accessibilityLabel(base::SysUTF8ToNSString(title)),
+      grey_accessibilityLabel([NSString cr_fromString:title]),
       grey_accessibilityID(kOmniboxCarouselControlLabelAccessibilityIdentifier),
       grey_interactable(), nil);
 }
@@ -84,7 +84,7 @@ id<GREYMatcher> CarouselMatcher() {
   // Block page 0 from top sites so it won't appear in most visited sites. Page
   // zero is used to navigate to the omnibox in `focusOmniboxFromWebPageZero`.
   GURL pageZeroURL = self.testServer->GetURL(PageURL(0));
-  NSString* pageZeroURLSpec = base::SysUTF8ToNSString(pageZeroURL.spec());
+  NSString* pageZeroURLSpec = [NSString cr_fromString:pageZeroURL.spec()];
   [OmniboxAppInterface blockURLFromTopSites:pageZeroURLSpec];
 }
 
@@ -194,7 +194,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self longPressMostVisitedTile:tile1];
 
   GURL page1ServerURL = self.testServer->GetURL(PageURL(page1));
-  NSString* page1URLStr = base::SysUTF8ToNSString(page1ServerURL.spec());
+  NSString* page1URLStr = [NSString cr_fromString:page1ServerURL.spec()];
   [ChromeEarlGrey verifyCopyLinkActionWithText:page1URLStr];
 }
 
@@ -208,7 +208,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self longPressMostVisitedTile:tile1];
 
   GURL page1ServerURL = self.testServer->GetURL(PageURL(page1));
-  NSString* page1Title = base::SysUTF8ToNSString(PageTitle(page1));
+  NSString* page1Title = [NSString cr_fromString:PageTitle(page1)];
   [ChromeEarlGrey verifyShareActionWithURL:page1ServerURL pageTitle:page1Title];
 }
 

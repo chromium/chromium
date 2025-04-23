@@ -669,6 +669,8 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
       });
 
   provider_->Start(input, false);
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumRequested", 1);
   EXPECT_FALSE(provider_->done());
   history::MostVisitedURLList result;
   for (const auto& test_element : DefaultTestData()) {
@@ -676,6 +678,10 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
   }
 
   std::move(callback).Run(std::move(result));
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived", 1);
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration", 1);
 
   // Shouldn't include the match from the SRP.
   EXPECT_TRUE(provider_->done());
@@ -698,6 +704,7 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
   auto history_service = std::make_unique<MockHistoryService>();
   auto& history_service_ref = *history_service;
   client_.set_history_service(std::move(history_service));
+
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
@@ -728,13 +735,23 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
   // `StartPrefetch()` shouldn't affect provider state.
   EXPECT_TRUE(provider_->done());
   provider_->StartPrefetch(input);
+  // Number of sites requested should be logged at the beginnign of the history
+  // query.
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumRequested", 1);
   EXPECT_TRUE(provider_->done());
   history::MostVisitedURLList result;
   for (const auto& test_element : DefaultTestData()) {
     result.push_back(test_element.entry);
   }
 
+  // Updates cache.
   std::move(callback).Run(std::move(result));
+  // Duration should be logged when cache is updated.
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration", 1);
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived", 1);
 
   // `StartPrefetch()` should update the list of cached sites, but not
   // update the actual provider's matches.
@@ -745,6 +762,12 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
   // include the SRP result.
   provider_->Start(input, false);
   ASSERT_EQ(4u, provider_->matches().size());
+  // Duration shouldn't be recorded again when results are returned
+  // synchronously.
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration", 1);
+  histogram_.ExpectTotalCount(
+      "Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived", 1);
 }
 
 TEST_F(MostVisitedSitesProviderTest,
@@ -785,7 +808,7 @@ TEST_F(MostVisitedSitesProviderTest,
 
   std::move(callback).Run(std::move(result));
 
-  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(provider_->done());
   // `Start()` when prefetch is enabled should update the list of cached sites,
   // but not update the actual provider's matches if the cache is empty.
   ASSERT_EQ(5u, provider_->GetCachedSitesForTesting().size());
@@ -793,6 +816,10 @@ TEST_F(MostVisitedSitesProviderTest,
 }
 
 TEST_F(MostVisitedSitesProviderTest, BlocklistedURLs) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
   history::MostVisitedURLList result;
   std::vector<TestData> test_data = {
@@ -800,7 +827,7 @@ TEST_F(MostVisitedSitesProviderTest, BlocklistedURLs) {
       {false, {GURL("http://accounts.google.com/signin"), u"Blocked"}}};
   result.push_back(test_data[0].entry);
   result.push_back(test_data[1].entry);
-  provider_->OnMostVisitedUrlsFromHistoryAvailable(input, result);
+  provider_->OnMostVisitedUrlsAvailable(input, result);
   // Shouldn't include the "accounts.google.com" URL since it is blocklisted.
   ASSERT_EQ(1u, provider_->matches().size());
   ASSERT_EQ("http://www.nonblocked.com/",
@@ -870,6 +897,74 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteWithPrefetching) {
   // 3 valid sites.
   provider_->Start(input, false);
   ASSERT_EQ(3u, provider_->matches().size());
+}
+
+TEST_F(MostVisitedSitesProviderTest, DuplicateSuggestions) {
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  history::MostVisitedURLList result;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  std::vector<TestData> test_data = {
+      {false, {GURL("http://www.mail.com"), u"Mail"}},
+      {false, {GURL("http://different.mail.com/signin"), u"Mail"}},
+      {false, {GURL("http://www.samesites.com/c/#ref"), u"Same URL"}},
+      {false,
+       {GURL("http://www.samesites.com/c/#differentref"), u"Same URL 2"}},
+      {false,
+       {GURL("http://www.samesites.com/differentpath/#ref"),
+        u"Different URL"}}};
+  for (auto& data : test_data) {
+    result.push_back(data.entry);
+  }
+  provider_->OnMostVisitedUrlsAvailable(input, result);
+  // Filter by same titles and stripped urls when deduping suggestions within
+  // the suggestion list.
+  ASSERT_EQ(3u, provider_->matches().size());
+  ASSERT_EQ("http://www.mail.com/",
+            provider_->matches().at(0).destination_url.spec());
+  ASSERT_EQ("http://www.samesites.com/c/#ref",
+            provider_->matches().at(1).destination_url.spec());
+  ASSERT_EQ("http://www.samesites.com/differentpath/#ref",
+            provider_->matches().at(2).destination_url.spec());
+}
+
+TEST_F(MostVisitedSitesProviderTest, TestProviderDoneWithEmptyCachedSites) {
+  // Set a MockHistoryService.
+  auto history_service = std::make_unique<MockHistoryService>();
+  auto& history_service_ref = *history_service;
+  client_.set_history_service(std::move(history_service));
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().prefetch_most_visited_sites = true;
+
+  history::HistoryService::QueryMostVisitedURLsCallback callback;
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
+      .WillRepeatedly(
+          [&](int result_count,
+              history::HistoryService::QueryMostVisitedURLsCallback cb,
+              base::CancelableTaskTracker* tracker,
+              std::optional<std::string> recency_factor_name,
+              std::optional<size_t> recency_window_days)
+              -> base::CancelableTaskTracker::TaskId {
+            callback = std::move(cb);
+            return {};
+          });
+
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  // Simulate a prefetch that returns no results.
+  provider_->StartPrefetch(input);
+  history::MostVisitedURLList result;
+  std::move(callback).Run(std::move(result));
+  ASSERT_EQ(0u, provider_->GetCachedSitesForTesting().size());
+
+  // Provider should still be set to done immediately after calling `Start()`
+  // even if cached sites is empty.
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

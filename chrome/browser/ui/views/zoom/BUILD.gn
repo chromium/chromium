@@ -21,5 +21,6 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support_ui",
     "//components/zoom:zoom",
     "//content/test:test_support",
+    "//ui/base:test_support",
   ]
 }

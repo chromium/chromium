@@ -44,6 +44,7 @@ class ReportScheduler {
     kTriggerUpdate = 1U << 1,      // An update was detected.
     kTriggerNewVersion = 1U << 2,  // A new version is running.
     kTriggerManual = 1U << 3,      // Trigger manually.
+    kTriggerSecurity = 1U << 4,    // Triggered by a security trigger.
   };
 
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
@@ -60,6 +61,9 @@ class ReportScheduler {
 
     virtual PrefService* GetPrefService() = 0;
 
+    // Run once after initialization of the scheduler is complete.
+    virtual void OnInitializationCompleted() = 0;
+
     // Browser version
     virtual void StartWatchingUpdatesIfNeeded(
         base::Time last_upload,
@@ -69,6 +73,12 @@ class ReportScheduler {
 
     virtual policy::DMToken GetProfileDMToken() = 0;
     virtual std::string GetProfileClientId() = 0;
+
+    // Security signals
+    virtual bool AreSecurityReportsEnabled() = 0;
+    virtual bool UseCookiesInUploads() = 0;
+    // Invoked when security signals was uploaded by a report.
+    virtual void OnSecuritySignalsUploaded() = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
@@ -174,6 +184,8 @@ class ReportScheduler {
 
   // The trigger responsible for initiating active report generation.
   ReportTrigger active_trigger_ = kTriggerNone;
+  // The configuration for  active report generation.
+  ReportGenerationConfig active_report_generation_config_;
 
   // The set of triggers that have fired while processing a report (a bitfield
   // of ReportTrigger values). They will be handled following completion of the

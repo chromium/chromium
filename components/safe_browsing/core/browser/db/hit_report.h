@@ -32,6 +32,18 @@ enum class ThreatSource {
   ANDROID_SAFEBROWSING,
 };
 
+// What subtype that expands more into details on what threat category
+// SBThreatType is targeting.
+enum class ThreatSubtype {
+  UNKNOWN,
+  // Scam experiment verdict 1
+  SCAM_EXPERIMENT_VERDICT_1,
+  // Scam experiment verdict 2
+  SCAM_EXPERIMENT_VERDICT_2,
+  // Scam experiment catch all enforcement
+  SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT,
+};
+
 // Data to report about the contents of a particular threat (malware, phishing,
 // unsafe download URL).  If post_data is non-empty, the request will be
 // sent as a POST instead of a GET.

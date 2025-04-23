@@ -79,7 +79,7 @@ please read [this article](https://www.chromium.org/developers/enterprise-change
         3.  Test the mapping by adding PolicyName.json  under
             [policy/test/data/pref_mapping](https://cs.chromium.org/chromium/src/components/policy/test/data/pref_mapping) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
         4.  iOS platform has its own
-            [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/policy/configuration_policy_handler_list_factory.mm)
+            [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.mm)
             and
             [policy/pref_mapping](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/pref_mapping)
             file.

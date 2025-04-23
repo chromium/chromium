@@ -12,12 +12,6 @@
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "content/public/browser/render_frame_host.h"
 
-namespace features {
-
-BASE_DECLARE_FEATURE(kV8PerFrameMemoryMonitoring);
-
-}  // namespace features
-
 namespace performance_manager {
 class ProcessNode;
 }

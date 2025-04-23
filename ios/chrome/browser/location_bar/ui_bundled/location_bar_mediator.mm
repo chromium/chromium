@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -191,7 +191,8 @@
 
   if (!base::FeatureList::IsEnabled(
           kLensOverlayEnableLocationBarEntrypointOnSRP) &&
-      google_util::IsGoogleSearchUrl(visibleURL)) {
+      (google_util::IsGoogleSearchUrl(visibleURL) ||
+       google_util::IsGoogleHomePageUrl(visibleURL))) {
     return NO;
   }
 

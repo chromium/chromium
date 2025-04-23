@@ -668,9 +668,11 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   int insertion_index = kInvalidIndex;
   std::unique_ptr<web::WebState> web_state_to_insert;
-  if (ShouldInsertWebState(params, group)) {
+  // Do not insert web state when shuting down the app. All tabs are closed.
+  bool is_shutting_down = params.is_closing && !params.is_user_action;
+  if (!is_shutting_down && ShouldInsertWebState(group)) {
     // In case the group is empty but should be kept, add a new tab in it
-    // instead of delete it.
+    // to prevent its deletion.
     web_state_to_insert = groups_delegate_->WebStateToAddToEmptyGroup();
     if (is_active_web_state_detached) {
       new_active_web_state = web_state_to_insert.get();
@@ -746,12 +748,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   return detached_web_state;
 }
 
-bool WebStateList::ShouldInsertWebState(DetachParams params,
-                                        const TabGroup* group) {
-  // Do not insert web state when shuting down the app. All tabs are closed.
-  if (params.is_closing && !params.is_user_action) {
-    return false;
-  }
+bool WebStateList::ShouldInsertWebState(const TabGroup* group) {
   if (!group) {
     return false;
   }
@@ -1156,6 +1153,21 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   // Return early if nothing has changed.
   if (!index_changed && !pinned_state_changed && !group_changed) {
     return;
+  }
+
+  if (ShouldInsertWebState(old_group)) {
+    // In case the group is empty but should be kept, add a new tab in it
+    // to prevent group deletion.
+    std::unique_ptr<web::WebState> web_state_to_insert =
+        groups_delegate_->WebStateToAddToEmptyGroup();
+    int insertion_index =
+        InsertWebStateImpl(std::move(web_state_to_insert),
+                           WebStateList::InsertionParams::Automatic()
+                               .InGroup(old_group)
+                               .Activate());
+    if (insertion_index < to_index) {
+      to_index++;
+    }
   }
 
   // Update the pinned tabs count.

@@ -101,6 +101,12 @@ BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
+             "PrivacySandboxAttestationsLoadFromAPKAsset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
              "PrivateAggregationDebugReportingCookieDeprecationTesting",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -135,10 +141,6 @@ BASE_FEATURE(kIpProtectionUx,
 
 BASE_FEATURE(kActUserBypassUx,
              "ActUserBypassUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionContentSettingInSettings,
-             "TrackingProtectionContentSettingInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtectionContentSettingUbControl,

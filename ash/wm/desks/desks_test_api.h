@@ -7,6 +7,7 @@
 
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "base/auto_reset.h"
 
 namespace aura {
 class Window;

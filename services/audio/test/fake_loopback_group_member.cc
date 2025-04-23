@@ -53,7 +53,7 @@ void FakeLoopbackGroupMember::RenderMoreAudio(
     for (int ch = 0; ch < params_.channels(); ++ch) {
       const double step = 2.0 * std::numbers::pi * frequency_by_channel_[ch] /
                           params_.sample_rate();
-      float* const samples = audio_bus_->channel(ch);
+      auto samples = audio_bus_->channel_span(ch);
       for (int frame = 0; frame < params_.frames_per_buffer(); ++frame) {
         samples[frame] = std::sin((at_frame_ + frame) * step);
       }

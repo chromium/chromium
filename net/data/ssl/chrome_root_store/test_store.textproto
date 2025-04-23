@@ -29,3 +29,45 @@ trust_anchors {
     permitted_dns_names: "baz.example.com"
   }
 }
+
+# CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
+# https://ssltest-a.actalis.it:8443
+trust_anchors {
+  sha256_hex: "55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066"
+  ev_policy_oids: "2.23.140.1.1"
+  eutl: true
+}
+
+# Anchors for testing combinations of |enforce_anchor_expiry| and
+# |enforce_anchor_constraints| flags.
+
+# DigiCert TLS ECC P384 Root G5
+trust_anchors {
+  sha256_hex: "d92e93252eabca950870b94331990963a2dd5db96d833c82b08e41afd1719178"
+  constraints {
+    enforce_anchor_expiry: true
+  }
+}
+
+# USERTrust RSA Certification Authority
+trust_anchors {
+  sha256_hex: "68b9c761219a5b1f0131784474665db61bbdb109e00f05ca9f74244ee5f5f52b"
+  constraints {
+    enforce_anchor_constraints: true
+  }
+}
+
+# AddTrust External CA Root
+trust_anchors {
+  sha256_hex: "687fa451382278fff0c8b11f8d43d576671c6eb2bceab413fb83d965d06d2ff2"
+  constraints {
+    enforce_anchor_expiry: true
+    enforce_anchor_constraints: true
+  }
+}
+
+# "CN=Qualified e-Szigno TLS CA 2018,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937"
+additional_certs {
+  sha256_hex: "f7c7e28fb5e79f314aaac6bbba932f15e1a72069f435d4c9e707f93ca1482ee3"
+  eutl: true
+}

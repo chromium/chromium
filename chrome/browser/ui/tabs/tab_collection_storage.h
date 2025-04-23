@@ -14,12 +14,11 @@
 
 namespace tabs {
 
-class TabModel;
 class TabInterface;
 class TabCollection;
 
-using ChildrenVector = std::vector<
-    std::variant<std::unique_ptr<TabCollection>, std::unique_ptr<TabModel>>>;
+using ChildrenVector = std::vector<std::variant<std::unique_ptr<TabCollection>,
+                                                std::unique_ptr<TabInterface>>>;
 
 // Provides reusable functionality useful to most TabCollections for storing
 // and manipulating a vector of child tabs and collections.
@@ -38,18 +37,18 @@ class TabCollectionStorage final {
 
   // Inserts a Tab into the TabCollectionStorage. The `index` represents the
   // position in the direct children vector (non-recursive).
-  TabModel* AddTab(std::unique_ptr<TabModel> tab_model, size_t index);
+  TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
 
   // Moves a tab already within this TabCollectionStorage to `dst_index`. Shifts
   // other tabs and collections in the collection as needed. Will check if index
   // is OOB.
-  void MoveTab(TabModel* tab_model, size_t dst_index);
+  void MoveTab(TabInterface* tab, size_t dst_index);
 
-  // Removes `tab_model` from storage and returns it to the caller.
-  [[nodiscard]] std::unique_ptr<TabModel> RemoveTab(TabModel* tab_model);
+  // Removes `tab` from storage and returns it to the caller.
+  [[nodiscard]] std::unique_ptr<TabInterface> RemoveTab(TabInterface* tab);
 
   // Removes a Tab in the TabCollectionStorage and frees the memory.
-  void CloseTab(TabModel* tab_model);
+  void CloseTab(TabInterface* tab);
 
   // Inserts a TabCollection into the TabCollectionStorage. The `index`
   // represents the position in the direct children vector (non-recursive).
@@ -77,13 +76,13 @@ class TabCollectionStorage final {
   // Returns true if the `tab_collection` is owned by the `children_`.
   bool ContainsCollection(TabCollection* tab_collection) const;
 
-  // Returns the index of the `tab_model` in `children_`. It returns a nullopt
-  // if the `tab_model` is not present in the `children_`.
+  // Returns the index of the `tab` in `children_`. It returns a nullopt
+  // if the `tab` is not present in the `children_`.
   std::optional<size_t> GetIndexOfTab(const TabInterface* tab) const;
 
   // Returns the tab at a direct index if the child at the direct index is a
   // tab.
-  TabModel* GetTabAtIndex(size_t index) const;
+  TabInterface* GetTabAtIndex(size_t index) const;
 
   // Returns the index of the `tab_collection` in `children_`. It returns a
   // nullopt if the `tab_collection` is not present in the `children_`.
@@ -91,7 +90,8 @@ class TabCollectionStorage final {
       TabCollection* tab_collection) const;
 
   // Returns the total number of elements stored in `children_`. This is
-  // equivalent to the sum of TabModel and TabCollection present in `children_`.
+  // equivalent to the sum of TabInterface and TabCollection present in
+  // `children_`.
   size_t GetChildrenCount() const;
 
   // Returns read only version of `children_` for clients to query
@@ -100,7 +100,8 @@ class TabCollectionStorage final {
 
  private:
   // This is where the actual storage is present. `children_` is a vector of
-  // either a `TabModel`or a `TabCollection` and has ownership of the elements.
+  // either a `TabInterface`or a `TabCollection` and has ownership of the
+  // elements.
   ChildrenVector children_;
 
   // The collection that owns this TabCollectionStorage.

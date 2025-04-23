@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] test calling function
+  WebAssembly.Function is not a constructor
+[FAIL] test constructing function
+  WebAssembly.Function is not a constructor
+Harness: the test ran to completion.
+

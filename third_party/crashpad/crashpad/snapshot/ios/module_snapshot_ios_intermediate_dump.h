@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 #include "snapshot/module_snapshot.h"
 #include "util/ios/ios_intermediate_dump_map.h"

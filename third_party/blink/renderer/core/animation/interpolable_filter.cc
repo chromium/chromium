@@ -148,7 +148,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 // static
 InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
     const CSSValue& css_value,
-    const StyleResolverState* state) {
+    const StyleResolverState& state) {
   if (css_value.IsURIValue())
     return nullptr;
 

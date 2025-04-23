@@ -165,6 +165,7 @@ class CC_EXPORT LayerImpl {
   void SetDrawsContent(bool draws_content);
   bool draws_content() const { return draws_content_; }
 
+  HitTestOpaqueness hit_test_opaqueness() const { return hit_test_opaqueness_; }
   void SetHitTestOpaqueness(HitTestOpaqueness opaqueness);
   bool HitTestable() const;
   bool OpaqueToHitTest() const;

@@ -6,8 +6,6 @@ source_set("model") {
   sources = [
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
-    "data_sharing_tab_helper.h",
-    "data_sharing_tab_helper.mm",
   ]
   public_deps = [
     "//base",
@@ -87,6 +85,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/data_sharing/public",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

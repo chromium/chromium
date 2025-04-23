@@ -35,7 +35,7 @@ struct CONTENT_EXPORT DebugReportCooldown {
   bool operator==(const DebugReportCooldown& other) const = default;
 };
 
-// Should forDebuggingOnly reports be sampled or not.
+// True if only send sampled debug reports, false if send all debug reports.
 CONTENT_EXPORT bool ShouldSampleDebugReport();
 
 // Ceil kFledgeEnableFilteringDebugReportStartingFrom to its nearest

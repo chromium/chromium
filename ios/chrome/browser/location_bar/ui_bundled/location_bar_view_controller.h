@@ -16,6 +16,7 @@
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol BadgeViewVisibilityDelegate;
+@protocol BrowserCoordinatorCommands;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
@@ -85,6 +86,7 @@ class Tracker;
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,
                               ApplicationCommands,
+                              BrowserCoordinatorCommands,
                               LoadQueryCommands,
                               LensCommands,
                               LensOverlayCommands,

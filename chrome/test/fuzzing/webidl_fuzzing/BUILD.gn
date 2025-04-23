@@ -39,7 +39,7 @@ if (!is_android && !is_msan && fuzzing_engine_supports_custom_main) {
   in_process_fuzzer("webidl_in_process_fuzzer") {
     sources = [ "webidl_in_process_fuzzer.cc" ]
 
-    centipede_options = [ "symbolizer_path=/dev/null" ]
+    centipede_options = [ "batch_size=100" ]
 
     deps = [
       ":webidl_fuzzer_grammar",

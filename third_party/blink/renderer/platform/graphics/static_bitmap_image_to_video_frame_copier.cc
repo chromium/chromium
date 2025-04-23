@@ -191,12 +191,9 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                 "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
   SkImageInfo info = SkImageInfo::MakeN32(
       image_size.width(), image_size.height(), kUnpremul_SkAlphaType);
-  GrSurfaceOrigin image_origin = image->IsOriginTopLeft()
-                                     ? kTopLeft_GrSurfaceOrigin
-                                     : kBottomLeft_GrSurfaceOrigin;
-
-  gfx::Point src_point;
   auto shared_image = image->GetSharedImage();
+  GrSurfaceOrigin image_origin = shared_image->surface_origin();
+  gfx::Point src_point;
   DCHECK(context_provider->RasterInterface());
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
       image->GetSyncToken().GetConstData());
@@ -234,7 +231,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       image->GetSyncToken().GetConstData());
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), image_size,
-      gfx::Rect(image_size), !image->IsOriginTopLeft(),
+      gfx::Rect(image_size),
+      shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
       output_frame->stride(media::VideoFrame::Plane::kY),
       output_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
       output_frame->stride(media::VideoFrame::Plane::kU),

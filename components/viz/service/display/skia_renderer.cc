@@ -758,7 +758,7 @@ struct SkiaRenderer::DrawRPDQParams {
   std::optional<MaskShader> mask_shader;
   // Backdrop border box for the render pass, to clip backdrop-filtered content
   // (but not the rest of the RPDQ itself).
-  std::optional<SkRRect> backdrop_filter_bounds;
+  std::optional<SkPath> backdrop_filter_bounds;
   // Original render pass's visible rect, which will be intersected with
   // |backdrop_filter_bounds| to determine the extent of backdrop content.
   // It is preserved here as the original DrawQuad's |visible_rect| may be
@@ -858,7 +858,7 @@ void SkiaRenderer::DrawRPDQParams::ClearOutsideBackdropBounds(
 
   if (backdrop_filter_bounds) {
     canvas->save();
-    canvas->clipRRect(*backdrop_filter_bounds, SkClipOp::kDifference, aa);
+    canvas->clipPath(*backdrop_filter_bounds, SkClipOp::kDifference, aa);
     canvas->clear(SK_ColorTRANSPARENT);
     canvas->restore();
   }
@@ -880,7 +880,7 @@ void SkiaRenderer::DrawRPDQParams::ClearOutsideBackdropBounds(
     // reflect the bounds of inner content pre-expansion by a backdrop filter.
     if (!rpdq_visible_rect.contains(filter_bounds) &&
         (!backdrop_filter_bounds ||
-         !rpdq_visible_rect.contains(backdrop_filter_bounds->rect()))) {
+         !rpdq_visible_rect.contains(backdrop_filter_bounds->getBounds()))) {
       // If the |draw_region| is defined, it's already a subset of |rect|, so
       // we don't have to clear both. Similarly, if |filter_bounds| is contained
       // within the quad, the clip set in BackdropFilterClip() discards anything
@@ -974,17 +974,6 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
       skia_output_surface_(skia_output_surface),
       lock_set_for_external_use_(resource_provider, skia_output_surface_),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
-#if BUILDFLAG(IS_WIN)
-  // |OverlayProcessorWin| can cause a render pass to reallocate during partial
-  // delegation, so we need to ensure the contents of all render passes are
-  // valid if we need to redraw one (that can potentially embed others). This
-  // behavior is not required for full delegation since |OverlayProcessorWin|
-  // does not modify non-root render pass damage in that case.
-  use_render_pass_drawn_rect_ |=
-      features::IsDelegatedCompositingEnabled() &&
-      features::kDelegatedCompositingModeParam.Get() ==
-          features::DelegatedCompositingMode::kLimitToUi;
-#endif
   DCHECK(skia_output_surface_);
 
   // There can be different synchronization types requested for different
@@ -1101,6 +1090,10 @@ void SkiaRenderer::FinishDrawingFrame() {
     surface_candidate.damage_rect =
         use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
                           : gfx::RectF(surface_plane.resource_size);
+#if BUILDFLAG(IS_WIN)
+    surface_candidate.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+#endif
 #if BUILDFLAG(IS_OZONE)
     // Ozone DRM needs the primary plane as the first overlay when overlay
     // testing.
@@ -3195,41 +3188,61 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   if (rpdq_params.backdrop_filter) {
     SkRect backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
     // Pass bounds do not match the display scale; they will be scaled and
-    // converted into an SkRRect in |backdrop_filter_bounds| if defined.
-    std::optional<gfx::RRectF> pass_bounds =
+    // converted into an SkPath in |backdrop_filter_bounds| if defined.
+    std::optional<SkPath> pass_bounds =
         BackdropFilterBoundsForPass(quad->render_pass_id);
-    std::optional<SkRRect> backdrop_filter_bounds;
+    std::optional<SkPath> backdrop_filter_bounds;
     if (pass_bounds) {
-      // Scale by the filter's scale, but don't apply filter origin
-      SkRRect result;
-      if (!SkRRect(*pass_bounds).transform(local_matrix, &result) ||
-          !backdrop_rect.intersect(result.rect())) {
-        // No visible backdrop filter
-        rpdq_params.backdrop_filter = nullptr;
-        return rpdq_params;
-      } else {
-        backdrop_filter_bounds = result;
-      }
+      SkRRect backdrop_filter_bounds_as_rrect;
+      SkRect backdrop_filter_bounds_as_rect;
+      SkRRect transformed_filter_bounds;
+      const bool is_rect = pass_bounds->isRect(&backdrop_filter_bounds_as_rect);
+      if (is_rect || pass_bounds->isRRect(&backdrop_filter_bounds_as_rrect)) {
+        if (is_rect) {
+          backdrop_filter_bounds_as_rrect =
+              SkRRect::MakeRect(backdrop_filter_bounds_as_rect);
+        }
+        // Scale by the filter's scale, but don't apply filter origin
+        SkRRect result;
+        if (!backdrop_filter_bounds_as_rrect.transform(local_matrix, &result) ||
+            !backdrop_rect.intersect(result.rect())) {
+          // No visible backdrop filter
+          rpdq_params.backdrop_filter = nullptr;
+          return rpdq_params;
+        } else {
+          transformed_filter_bounds = result;
+          backdrop_filter_bounds = SkPath::RRect(result);
+        }
 
-      if (backdrop_filter_bounds->contains(rpdq_params.filter_bounds)) {
-        // The backdrop filter bounds are a no-op since the quad rect or region
-        // fully limits the backdrop filter.
-        backdrop_filter_bounds.reset();
-      } else {
-        // The backdrop filter bounds might have an effect, but a simple case to
-        // check for is if the backdrop rounded corners are identical to the
-        // quad's rounded corner mask info. In that case, the prior contains()
-        // check would be false, but we can still discard these bounds since the
-        // final mask clip will achieve the same visual effect.
-        if (params->mask_filter_info) {
-          SkMatrix m = gfx::TransformToFlattenedSkMatrix(
-              params->content_device_transform);
-          if (backdrop_filter_bounds->transform(m, &result) &&
-              SkRRect(params->mask_filter_info->rounded_corner_bounds()) ==
-                  result) {
-            backdrop_filter_bounds.reset();
+        if (transformed_filter_bounds.contains(rpdq_params.filter_bounds)) {
+          // The backdrop filter bounds are a no-op since the quad rect or
+          // region fully limits the backdrop filter.
+          backdrop_filter_bounds.reset();
+        } else {
+          // The backdrop filter bounds might have an effect, but a simple case
+          // to check for is if the backdrop rounded corners are identical to
+          // the quad's rounded corner mask info. In that case, the prior
+          // contains() check would be false, but we can still discard these
+          // bounds since the final mask clip will achieve the same visual
+          // effect.
+          if (params->mask_filter_info) {
+            SkMatrix m = gfx::TransformToFlattenedSkMatrix(
+                params->content_device_transform);
+            if (transformed_filter_bounds.transform(m, &result) &&
+                SkRRect(params->mask_filter_info->rounded_corner_bounds()) ==
+                    result) {
+              backdrop_filter_bounds.reset();
+            }
           }
         }
+      } else {
+        SkPath transformed_path;
+        transformed_path.addPath(*pass_bounds, local_matrix);
+        if (!backdrop_rect.intersect(transformed_path.getBounds())) {
+          rpdq_params.backdrop_filter = nullptr;
+          return rpdq_params;
+        }
+        backdrop_filter_bounds = transformed_path;
       }
     }
 

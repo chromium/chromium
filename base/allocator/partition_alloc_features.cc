@@ -160,9 +160,15 @@ BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              "PartitionAllocEventuallyZeroFreedMemory",
              FEATURE_DISABLED_BY_DEFAULT);
 
+// Evaluated and positive stability and peformance-wise on Linux-based systems,
+// disabled elsewhere (for now). Does not apply to Windows.
 BASE_FEATURE(kPartitionAllocFewerMemoryRegions,
              "PartitionAllocFewerMemoryRegions",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             FEATURE_ENABLED_BY_DEFAULT);
+#else
              FEATURE_DISABLED_BY_DEFAULT);
+#endif
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
@@ -496,5 +502,11 @@ constinit const FeatureParam<ShadowMetadataEnabledProcesses>
         ShadowMetadataEnabledProcesses::kRendererOnly,
         &kShadowMetadataEnabledProcessesOptions};
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
+             "PartitionAllocUsePriorityInheritanceLocks",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
 }  // namespace base::features

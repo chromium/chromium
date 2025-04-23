@@ -117,6 +117,8 @@ void SubresourceFilterTestHarness::SetUp() {
 }
 
 void SubresourceFilterTestHarness::TearDown() {
+  // Delete `WebContents` before deleting the service.
+  DeleteContents();
   ruleset_service_.reset();
 
   content::RenderViewHostTestHarness::TearDown();
@@ -128,8 +130,9 @@ void SubresourceFilterTestHarness::TearDown() {
 // content::WebContentsObserver:
 void SubresourceFilterTestHarness::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   ContentSubresourceFilterThrottleManager::FromNavigationHandle(

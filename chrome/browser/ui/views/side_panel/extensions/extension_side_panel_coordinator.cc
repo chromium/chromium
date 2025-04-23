@@ -225,7 +225,8 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
       &ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel,
       base::Unretained(this)));
 
-  auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
+  auto extension_view =
+      std::make_unique<ExtensionViewViews>(profile_, host_.get());
   extension_view->SetVisible(true);
 
   scoped_view_observation_.Reset();

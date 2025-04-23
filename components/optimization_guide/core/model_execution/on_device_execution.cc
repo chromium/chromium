@@ -92,30 +92,6 @@ std::string GenerateExecutionId() {
 
 }  // namespace
 
-void InvokeStreamingCallbackWithRemoteResult(
-    OptimizationGuideModelExecutionResultStreamingCallback callback,
-    OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<ModelQualityLogEntry> log_entry) {
-  OptimizationGuideModelStreamingExecutionResult streaming_result;
-  if (log_entry) {
-    // TODO: crbug.com/372535824 - This function should just get execution info.
-    if (log_entry->log_ai_data_request() &&
-        log_entry->log_ai_data_request()->has_model_execution_info()) {
-      streaming_result.execution_info =
-          std::make_unique<proto::ModelExecutionInfo>(
-              log_entry->log_ai_data_request()->model_execution_info());
-    }
-    ModelQualityLogEntry::Drop(std::move(log_entry));
-  }
-  if (result.response.has_value()) {
-    streaming_result.response = base::ok(
-        StreamingResponse{.response = *result.response, .is_complete = true});
-  } else {
-    streaming_result.response = base::unexpected(result.response.error());
-  }
-  callback.Run(std::move(streaming_result));
-}
-
 OnDeviceExecution::OnDeviceExecution(
     ModelBasedCapabilityKey feature,
     OnDeviceOptions opts,

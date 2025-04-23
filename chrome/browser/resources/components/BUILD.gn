@@ -10,7 +10,7 @@ build_webui("build") {
     "components.css",
     "components.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "component.html.ts",
     "components.ts",
   ]

@@ -106,13 +106,13 @@ export class SettingsLanguagesPageElement extends
     };
   }
 
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private detailLanguage_?: LanguageState;
-  private showAddLanguagesDialog_: boolean;
-  private addLanguagesDialogLanguages_:
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private detailLanguage_?: LanguageState;
+  declare private showAddLanguagesDialog_: boolean;
+  declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
-  private showManagedLanguageDialog_: boolean;
+  declare private showManagedLanguageDialog_: boolean;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 

@@ -386,6 +386,9 @@ class HttpStreamFactory::JobController
   // It will be nulled when the |request_| is finished.
   raw_ptr<Job> bound_job_ = nullptr;
 
+  // Keeps track of the connection keepalive info.
+  std::optional<ConnectionManagementConfig> management_config_;
+
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
   // The URL from the input `http_request_info`.

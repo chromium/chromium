@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -351,6 +352,33 @@ TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithValue) {
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   ASSERT_TRUE(input);
   EXPECT_FALSE(IsShadowHost(*input));
+}
+
+// Tests that HasBeenPasswordField() remains true as the form control type
+// changes, until it changes to a non-text form control type.
+TEST_F(HTMLInputElementTest, HasBeenPasswordField) {
+  GetDocument().body()->setInnerHTML("<input>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kPassword);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kText);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kNumber);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kCheckbox);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+
+  // MaybeSetHasBeenPasswordField() only has an effect on IsTextType() elements.
+  input->setType(input_type_names::kUrl);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kRadio);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_FALSE(input->HasBeenPasswordField());
 }
 
 struct PasswordFieldResetParam {

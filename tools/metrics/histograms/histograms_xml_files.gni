@@ -218,6 +218,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/readaloud/histograms.xml",
   "//tools/metrics/histograms/metadata/regional_capabilities/enums.xml",
   "//tools/metrics/histograms/metadata/regional_capabilities/histograms.xml",
+  "//tools/metrics/histograms/metadata/renderer/enums.xml",
   "//tools/metrics/histograms/metadata/renderer/histograms.xml",
   "//tools/metrics/histograms/metadata/renderer4/histograms.xml",
   "//tools/metrics/histograms/metadata/safe_browsing/enums.xml",

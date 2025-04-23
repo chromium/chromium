@@ -26,7 +26,7 @@ struct FlexBreakTokenData final : BlockBreakTokenData {
   };
 
   FlexBreakTokenData(const BlockBreakTokenData* break_token_data,
-                     const HeapVector<FlexLine>& flex_lines,
+                     const FlexLineVector& flex_lines,
                      const Vector<EBreakBetween>& row_break_between,
                      const HeapVector<Member<LayoutBox>>& oof_children,
                      LayoutUnit intrinsic_block_size,
@@ -44,7 +44,7 @@ struct FlexBreakTokenData final : BlockBreakTokenData {
     BlockBreakTokenData::Trace(visitor);
   }
 
-  HeapVector<FlexLine> flex_lines;
+  FlexLineVector flex_lines;
   Vector<EBreakBetween> row_break_between;
   HeapVector<Member<LayoutBox>> oof_children;
   LayoutUnit intrinsic_block_size;

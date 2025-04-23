@@ -17,6 +17,7 @@
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
 #include "media/base/media_track.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/ranges.h"
 #include "media/base/renderer.h"
 #include "media/base/status.h"
@@ -171,6 +172,16 @@ struct MediaSerializer<base::Time> {
     std::stringstream formatted;
     formatted << value;
     return MediaSerializer<std::string>::Serialize(formatted.str());
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<PictureInPictureEventsInfo::AutoPipReason> {
+  static inline base::Value Serialize(
+      PictureInPictureEventsInfo::AutoPipReason value) {
+    return base::Value(
+        PictureInPictureEventsInfo::AutoPipReasonToString(value));
   }
 };
 
@@ -466,6 +477,25 @@ struct MediaSerializer<base::Location> {
     FIELD_SERIALIZE(StatusConstants::kFileKey,
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
+    return base::Value(std::move(result));
+  }
+};
+
+// Class (complex)
+template <>
+struct MediaSerializer<media::PictureInPictureEventsInfo::AutoPipInfo> {
+  static base::Value Serialize(
+      const media::PictureInPictureEventsInfo::AutoPipInfo& value) {
+    base::Value::Dict result;
+    FIELD_SERIALIZE("Reason", value.auto_pip_reason);
+    FIELD_SERIALIZE("has_audio_focus", value.has_audio_focus);
+    FIELD_SERIALIZE("is_playing", value.is_playing);
+    FIELD_SERIALIZE("was_recently_audible", value.was_recently_audible);
+    FIELD_SERIALIZE("has_safe_url", value.has_safe_url);
+    FIELD_SERIALIZE("meets_media_engagement_conditions",
+                    value.meets_media_engagement_conditions);
+    FIELD_SERIALIZE("blocked_due_to_content_setting",
+                    value.blocked_due_to_content_setting);
     return base::Value(std::move(result));
   }
 };

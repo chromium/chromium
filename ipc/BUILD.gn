@@ -311,6 +311,10 @@ if (use_blink) {
       }
     }
 
+    if (is_win) {
+      sources += [ "ipc_handle_unittest.cc" ]
+    }
+
     deps = [
       ":ipc",
       ":protobuf_support",

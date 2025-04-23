@@ -8,7 +8,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -18,6 +21,9 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -120,7 +126,7 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
   void SetupSyncBridgeModelObserver() {
     TabGroupSyncServiceImpl* service_impl =
         static_cast<TabGroupSyncServiceImpl*>(service());
-    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    SavedTabGroupModel* model = service_impl->GetModel();
     model->AddObserver(&sync_bridge_model_observer_);
   }
 
@@ -206,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
 
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
@@ -242,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
 
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
@@ -306,6 +312,270 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   tabstrip->AddToExistingGroup({1}, local_id,
                                /*add_to_end=*/true);
   VerifyWrittenToSync(/*write_events_since_last=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       UnsupportedTabFromSyncOpensToNTP) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  // Simulate a tab added event from sync.
+  const GURL url = GURL("chrome://history");
+
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  SavedTabGroupTab incoming_tab(url, u"History", saved_group->saved_guid(),
+                                std::make_optional(1));
+  model->AddTabToGroupFromSync(saved_group->saved_guid(), incoming_tab);
+  Wait();
+
+  // The incoming tab should have opened in local group.
+  ASSERT_EQ(2, tabstrip->count());
+  EXPECT_EQ(
+      2u, tabstrip->group_model()->GetTabGroup(local_id)->ListTabs().length());
+
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(1));
+
+  // There should be no write event back to sync.
+  VerifyWrittenToSync(/*write_events_since_last=*/0);
+
+  // The added tab should open the NTP instead of chrome://history.
+  EXPECT_EQ(tabstrip->GetWebContentsAt(1)->GetURL(),
+            GURL(chrome::kChromeUINewTabURL));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       UnsupportedTabNavigationFromSyncRejected) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  // Simulate a tab added event from sync.
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  base::Uuid saved_tab_id = saved_group->saved_tabs().at(0).saved_tab_guid();
+  SavedTabGroupTab navigated_tab = *saved_group->GetTab(saved_tab_id);
+  const GURL url = GURL("chrome://history");
+  navigated_tab.SetURL(url);
+  navigated_tab.SetTitle(u"History");
+
+  model->MergeRemoteTab(navigated_tab);
+  Wait();
+
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+
+  // There should be no write event back to sync.
+  VerifyWrittenToSync(/*write_events_since_last=*/0);
+
+  // The tab and saved group should not have updated.
+  EXPECT_NE(tabstrip->GetWebContentsAt(0)->GetURL(), GURL("chrome://history"));
+  EXPECT_NE(saved_group->saved_tabs().at(0).url(), url);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       UnsupportedTabNavigationLocallyAccepted) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  content::WebContents* web_contents = tabstrip->GetActiveWebContents();
+  GURL url = GURL("chrome://bookmarks");
+  web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+
+  // Simulate a tab added event from sync.
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  // There should be no write event back to sync.
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  // The tab and saved group should have updated.
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetLastCommittedURL(), url);
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), url);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       CreateTabStateOnSyncNavigations) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  const GURL url = GURL("https://www.example.com");
+  const GURL url2 = GURL("https://www.example2.com");
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+
+  // Navigate a tab locally.
+  tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Navigate a tab through sync.
+  tab->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(url2);
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Navigate a tab locally again.
+  tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       TabStateClearedOnUserInput) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  const GURL url = GURL("https://www.example.com");
+  const GURL url2 = GURL("https://www.example2.com");
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+
+  // Navigate a tab through sync.
+  tab->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(url2);
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Click the webcontents to trigger a user gesture.
+  content::SimulateMouseClick(tab->GetContents(), /*modifiers=*/0,
+                              blink::WebMouseEvent::Button::kLeft);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       TabStateNotClearedOnForwardBackwardNavigations) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  const GURL url = GURL("https://www.example.com");
+  const GURL url2 = GURL("https://www.example2.com");
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+
+  // Navigate a tab locally.
+  tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Navigate a tab through sync.
+  tab->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(url2);
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Go back to the previous page, tab state shouldn't be reset.
+  tab->GetContents()->GetController().GoBack();
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Go forward to the previous page, tab state shouldn't be reset.
+  tab->GetContents()->GetController().GoForward();
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
+                       TabStateNotClearedOnReload) {
+  SetupSyncBridgeModelObserver();
+  TabGroupSyncServiceImpl* service_impl =
+      static_cast<TabGroupSyncServiceImpl*>(service());
+  SavedTabGroupModel* model = service_impl->GetModel();
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a local tab group with one tab.
+  ASSERT_EQ(1, tabstrip->count());
+  const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
+  VerifyWrittenToSync(/*write_events_since_last=*/1);
+
+  const SavedTabGroup* saved_group = model->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  const GURL url = GURL("https://www.example.com");
+
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+  // Navigate a tab through sync.
+  tab->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(url);
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
+
+  // Reload the page.
+  tab->GetContents()->GetController().Reload(content::ReloadType::NORMAL,
+                                             /*check_for_repost=*/true);
+  content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
 }
 
 }  // namespace tab_groups

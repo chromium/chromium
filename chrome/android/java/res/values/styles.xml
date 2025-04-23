@@ -251,6 +251,18 @@ found in the LICENSE file.
         </item>
     </style>
 
+    <style name="TextAppearance.DistilledPagePrefTextSizeSmall">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.DistilledPagePrefTextSizeMedium">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="TextAppearance.DistilledPagePrefTextSizeLarge">
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <!-- Button bar styles -->
     <style name="ButtonBarTopSpacerLight">
         <item name="android:layout_width">0dp</item>
@@ -411,6 +423,19 @@ found in the LICENSE file.
     <style name="TextAppearance.IncognitoNewTabLearnMoreLinkModern">
         <item name="android:textColor">@color/default_text_color_link_light</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
+    <style name="IncognitoTextViewWithClickableSpans">
+        <item name="leading">@dimen/text_size_medium_leading</item>
+        <item name="spanBackgroundStrokeColor">@color/default_text_color_link_light</item>
+    </style>
+
+    <style name="IncognitoNewTabLearnMoreLinkModernTextView" parent="IncognitoTextViewWithClickableSpans">
+        <item name="android:textAppearance">@style/TextAppearance.IncognitoNewTabLearnMoreLinkModern</item>
+    </style>
+
+    <style name="IncognitoNewTabTextView" parent="IncognitoTextViewWithClickableSpans">
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Secondary.Baseline.Light</item>
     </style>
 
     <!-- Picker Dialog animations -->

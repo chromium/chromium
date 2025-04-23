@@ -25,7 +25,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
-#include "components/viz/service/input/fling_scheduler_android.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #endif
 
@@ -58,7 +57,6 @@ class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
-      public FlingSchedulerAndroid::Delegate,
       public AndroidStateTransferHandlerClient,
 #endif
       public RenderInputRouterSupportBase::Delegate,
@@ -82,6 +80,12 @@ class VIZ_SERVICE_EXPORT InputManager
   // FrameSinkObserver overrides.
   void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) override;
+  void OnRegisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
+  void OnUnregisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
   void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
                                            float device_scale_factor) override;
 
@@ -101,10 +105,6 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // FlingSchedulerAndroid::Delegate implementation.
-  BeginFrameSource* GetBeginFrameSourceForFrameSink(
-      const FrameSinkId& id) override;
-
   // AndroidStateTransferHandlerClient implementation.
   bool TransferInputBackToBrowser() override;
 #endif
@@ -157,6 +157,9 @@ class VIZ_SERVICE_EXPORT InputManager
 
   bool ReturnInputBackToBrowser();
 
+  void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
+                           BeginFrameSource* begin_frame_source);
+
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a
   // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
@@ -164,6 +167,9 @@ class VIZ_SERVICE_EXPORT InputManager
   // RenderInputRouterSupportAndroid as RenderInputRouterSupportChildFrame.
   void MaybeRecreateRootRenderInputRouterSupports(
       const FrameSinkId& root_frame_sink_id);
+
+  void RecreateRenderInputRouterSupport(const FrameSinkId& child_frame_sink_id,
+                                        FrameSinkMetadata& frame_sink_metadata);
 
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,

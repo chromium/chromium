@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <locale.h>
@@ -34,6 +29,7 @@
 #include <limits>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -199,9 +195,9 @@ String String::Format(const char* format, ...) {
   // the locale is compatible, and also that it is the default "C"
   // locale so that we aren't just lucky. Android's locales work
   // differently so can't check the same way there.
-  DCHECK_EQ(strcmp(localeconv()->decimal_point, "."), 0);
+  DCHECK_EQ(UNSAFE_TODO(strcmp(localeconv()->decimal_point, ".")), 0);
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, NULL), "C"), 0);
+  DCHECK_EQ(UNSAFE_TODO(strcmp(setlocale(LC_NUMERIC, NULL), "C")), 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   va_list args;
@@ -471,7 +467,7 @@ String String::FromUTF8(base::span<const uint8_t> bytes) {
   if (!length)
     return g_empty_string;
 
-  ASCIIStringAttributes attributes = CharacterAttributes(string_start, length);
+  ASCIIStringAttributes attributes = CharacterAttributes(bytes);
   if (attributes.contains_only_ascii)
     return StringImpl::Create(bytes, attributes);
 

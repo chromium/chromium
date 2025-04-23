@@ -31,6 +31,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
@@ -65,10 +67,15 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/grit/preinstalled_web_apps_resources.h"
+#endif
 
 namespace {
 
@@ -763,6 +770,15 @@ std::optional<std::string> AppListClientImpl::GetAssistantNewEntryPointName() {
   }
 
   return delegate->GetNewEntryPointName();
+}
+
+ui::ImageModel AppListClientImpl::GetGeminiIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  int resource_id = IDR_PREINSTALLED_WEB_APPS_GEMINI_ICON_192_PNG;
+#else
+  int resource_id = IDR_PRODUCT_LOGO_128;
+#endif
+  return ui::ImageModel::FromResourceId(resource_id);
 }
 
 std::unique_ptr<ash::ScopedIphSession>

@@ -1182,9 +1182,7 @@ class MockCaptureHandleProvider
 
   // Clone a |GpuMemoryBufferHandle| for IPC.
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
-    gfx::GpuMemoryBufferHandle handle;
-    handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-    handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+    gfx::GpuMemoryBufferHandle handle(gfx::DXGIHandle::CreateFakeForTest());
     return handle;
   }
 };

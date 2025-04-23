@@ -183,13 +183,6 @@ void LoginOnUff() {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
-  } else if ([self isRunningTest:@selector
-                   (testSaveCredentialWithAutofilledEmailInUFF)] ||
-             [self isRunningTest:@selector(testSaveTypedCredentialInUff)] ||
-             [self isRunningTest:@selector
-                   (DISABLED_testUpdateTypedCredentialInUff)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIosDetectUsernameInUff);
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
@@ -658,8 +651,7 @@ void LoginOnUff() {
 
 // Tests that the typed credentials are correctly updated in the sign-in UFF
 // flow when there is already a credential stored for the corresponding email.
-// TODO(crbug.com/343361399): Test is failing.
-- (void)DISABLED_testUpdateTypedCredentialInUff {
+- (void)testUpdateTypedCredentialInUff {
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
   NSString* passwordValueToBeReplaced = @"old-password";

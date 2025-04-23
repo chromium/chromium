@@ -697,21 +697,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DefaultBehavior) {
                     FaceGazeTestUtils::ToString(FaceGazeGesture::JAW_OPEN)));
 }
 
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, EnableNoDialog) {
-  auto* controller = ash::Shell::Get()->accessibility_controller();
-  auto* prefs = GetPrefs();
-
-  base::RunLoop dialog_waiter;
-  controller->AddFeatureDisableDialogCallbackForTesting(
-      base::BindLambdaForTesting([&dialog_waiter]() { dialog_waiter.Quit(); }));
-
-  // Setting sentinel value to true should enable the feature without showing
-  // the feature disable dialog.
-  prefs->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel, true);
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
-}
-
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogAccept) {
   auto* controller = ash::Shell::Get()->accessibility_controller();
   auto* prefs = GetPrefs();
@@ -723,15 +708,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogAccept) {
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
 
-  // Setting sentinel value to false should show the feature disable dialog and
-  // leave the behavior pref unchanged.
-  prefs->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel, false);
+  // Showing the feature disable dialog should leave the enabled pref unchanged.
+  controller->RequestDisableFaceGaze();
   dialog_waiter.Run();
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_NE(nullptr, controller->GetFeatureDisableDialogForTest());
 
   base::RunLoop pref_waiter;
@@ -743,40 +725,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogAccept) {
   // Accepting the dialog should turn off FaceGaze.
   controller->GetFeatureDisableDialogForTest()->Accept();
   pref_waiter.Run();
-
-  // Assert behavior and sentinel prefs are in sync.
   ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
-}
-
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogNoShow) {
-  auto* controller = ash::Shell::Get()->accessibility_controller();
-  auto* prefs = GetPrefs();
-
-  // Enabling FaceGaze should not show the feature disable dialog.
-  utils()->EnableFaceGaze(Config().Default());
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
-  ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
-
-  base::RunLoop pref_waiter;
-  PrefChangeRegistrar change_observer;
-  change_observer.Init(prefs);
-  change_observer.Add(prefs::kAccessibilityFaceGazeEnabled,
-                      pref_waiter.QuitClosure());
-
-  // Setting show dialog value to false should allow the feature to be set to
-  // false when the sentinel is set to false.
-  prefs->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog,
-                    false);
-  prefs->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel, false);
-  ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
-
-  pref_waiter.Run();
-
-  // Assert behavior and sentinel prefs are in sync.
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogCancel) {
@@ -790,12 +739,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogCancel) {
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
 
-  // Setting sentinel value to false should show the feature disable dialog and
-  // leave the behavior pref unchanged.
-  prefs->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel, false);
+  // Showing the feature disable dialog should leave the enabled pref unchanged.
+  controller->RequestDisableFaceGaze();
   dialog_waiter.Run();
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
   ASSERT_NE(nullptr, controller->GetFeatureDisableDialogForTest());
@@ -806,14 +753,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableDialogCancel) {
   change_observer.Add(prefs::kAccessibilityFaceGazeEnabledSentinel,
                       pref_waiter.QuitClosure());
 
-  // Cancelling the dialog should leave FaceGaze on and set the sentinel to
-  // true.
+  // Cancelling the dialog should leave FaceGaze on.
   controller->GetFeatureDisableDialogForTest()->Cancel();
-  pref_waiter.Run();
-
-  // Assert behavior and sentinel prefs are in sync.
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
 }
 
 // TODO(crbug.com/383757982): Add test API for .WithCursorControlEnabled() and
@@ -829,7 +771,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, EnableCursorControlNoDialog) {
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
 
   // Setting sentinel value to true should not show the feature disable dialog.
@@ -852,7 +793,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
   prefs->SetBoolean(prefs::kAccessibilityFaceGazeCursorControlEnabled, true);
   ASSERT_TRUE(prefs->GetBoolean(
@@ -898,7 +838,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
   prefs->SetBoolean(prefs::kAccessibilityFaceGazeCursorControlEnabled, true);
   ASSERT_TRUE(prefs->GetBoolean(
@@ -942,7 +881,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, EnableActionsNoDialog) {
   // Enabling FaceGaze should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
 
   // Setting sentinel value to true should not show the feature disable dialog.
@@ -962,7 +900,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableActionsDialogAccept) {
   // Setting sentinel value to true should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
   prefs->SetBoolean(prefs::kAccessibilityFaceGazeActionsEnabled, true);
   ASSERT_TRUE(
@@ -1004,7 +941,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableActionsDialogCancel) {
   // Setting sentinel value to true should not show the feature disable dialog.
   utils()->EnableFaceGaze(Config().Default());
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
   prefs->SetBoolean(prefs::kAccessibilityFaceGazeActionsEnabled, true);
   ASSERT_TRUE(
@@ -1052,7 +988,6 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CloseButton) {
 
   // Assert initial state.
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
 
   // Move mouse to close button.
@@ -1062,14 +997,22 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CloseButton) {
   ASSERT_TRUE(bubble_helper()->IsVisible());
 
   // Clicking the close button will show the dialog to turn off FaceGaze. Note
-  // that the sentinel pref gets turned to false but the FaceGaze feature stays
-  // enabled.
+  // that the feature remains on until the dialog is accepted.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_PUCKER, 95));
   dialog_waiter.Run();
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
   ASSERT_NE(nullptr, controller->GetFeatureDisableDialogForTest());
+
+  base::RunLoop pref_waiter;
+  PrefChangeRegistrar change_observer;
+  change_observer.Init(prefs);
+  change_observer.Add(prefs::kAccessibilityFaceGazeEnabled,
+                      pref_waiter.QuitClosure());
+
+  // Accepting the dialog should turn off FaceGaze.
+  controller->GetFeatureDisableDialogForTest()->Accept();
+  pref_waiter.Run();
 }
 
 }  // namespace ash

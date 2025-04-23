@@ -30,7 +30,8 @@ class BrowserViewAsh : public BrowserView {
   void Layout(PassKey) override;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override;
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override;
 
  private:
   gfx::RoundedCornersF contents_webview_radii_;

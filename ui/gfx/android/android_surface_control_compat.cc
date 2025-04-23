@@ -13,6 +13,7 @@
 #include <android/hdr_metadata.h>
 #include <dlfcn.h>
 
+#include "base/android/android_info.h"
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
 #include "base/debug/crash_logging.h"
@@ -371,19 +372,19 @@ bool SetDataSpaceStandard(const gfx::ColorSpace& color_space,
                           ADataSpace& dataspace) {
   switch (color_space.GetPrimaryID()) {
     case gfx::ColorSpace::PrimaryID::BT709:
-      dataspace |= STANDARD_BT709;
+      dataspace |= ADATASPACE_STANDARD_BT709;
       return true;
     case gfx::ColorSpace::PrimaryID::BT470BG:
-      dataspace |= STANDARD_BT601_625;
+      dataspace |= ADATASPACE_STANDARD_BT601_625;
       return true;
     case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      dataspace |= STANDARD_BT601_525;
+      dataspace |= ADATASPACE_STANDARD_BT601_525;
       return true;
     case gfx::ColorSpace::PrimaryID::BT2020:
-      dataspace |= STANDARD_BT2020;
+      dataspace |= ADATASPACE_STANDARD_BT2020;
       return true;
     case gfx::ColorSpace::PrimaryID::P3:
-      dataspace |= STANDARD_DCI_P3;
+      dataspace |= ADATASPACE_STANDARD_DCI_P3;
       return true;
     default:
       return false;
@@ -396,24 +397,24 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
   extended_range_brightness_ratio = 1.f;
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::SMPTE170M:
-      dataspace |= TRANSFER_SMPTE_170M;
+      dataspace |= ADATASPACE_TRANSFER_SMPTE_170M;
       return true;
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
-      dataspace |= TRANSFER_LINEAR;
+      dataspace |= ADATASPACE_TRANSFER_LINEAR;
       return true;
     case gfx::ColorSpace::TransferID::PQ:
-      dataspace |= TRANSFER_ST2084;
+      dataspace |= ADATASPACE_TRANSFER_ST2084;
       return true;
     case gfx::ColorSpace::TransferID::HLG:
-      dataspace |= TRANSFER_HLG;
+      dataspace |= ADATASPACE_TRANSFER_HLG;
       return true;
     case gfx::ColorSpace::TransferID::SRGB:
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     case gfx::ColorSpace::TransferID::BT709:
       // We use SRGB for BT709. See |ColorSpace::GetTransferFunction()| for
       // details.
-      dataspace |= TRANSFER_SRGB;
+      dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     default: {
       skcms_TransferFunction trfn;
@@ -421,12 +422,12 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
       if (color_space.GetTransferFunction(&trfn)) {
         if (skia::IsScaledTransferFunction(SkNamedTransferFn::kSRGB, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_SRGB;
+          dataspace |= ADATASPACE_TRANSFER_SRGB;
           return true;
         }
         if (skia::IsScaledTransferFunction(SkNamedTransferFn::kLinear, trfn,
                                            &extended_range_brightness_ratio)) {
-          dataspace |= TRANSFER_LINEAR;
+          dataspace |= ADATASPACE_TRANSFER_LINEAR;
           return true;
         }
       }
@@ -443,13 +444,13 @@ bool SetDataSpaceRange(const gfx::ColorSpace& color_space,
     case gfx::ColorSpace::RangeID::FULL:
       if (extended_range_brightness_ratio > 1.f ||
           desired_brightness_ratio > 1.f) {
-        dataspace |= RANGE_EXTENDED;
+        dataspace |= ADATASPACE_RANGE_EXTENDED;
       } else {
-        dataspace |= RANGE_FULL;
+        dataspace |= ADATASPACE_RANGE_FULL;
       }
       return true;
     case gfx::ColorSpace::RangeID::LIMITED:
-      dataspace |= RANGE_LIMITED;
+      dataspace |= ADATASPACE_RANGE_LIMITED;
       return true;
     default:
       return false;
@@ -505,8 +506,8 @@ uint64_t GetTraceIdForTransaction(int transaction_id) {
   // Xor with a mask to reduce likelihood of flow id collision with non-surface
   // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
   // interpreted as a big-endian integer. Python snippet:
-  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:8]
-  constexpr uint64_t kMask = 0x11119f59;
+  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:16]
+  constexpr uint64_t kMask = 0x11119f59bb2a2b31;
   return kMask ^ transaction_id;
 }
 
@@ -580,7 +581,8 @@ bool SurfaceControl::ColorSpaceToADataSpace(
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_S) {
     if (color_space == gfx::ColorSpace::CreateExtendedSRGB()) {
-      out_dataspace = STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED;
+      out_dataspace = ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
+                      ADATASPACE_RANGE_EXTENDED;
       return true;
     }
 
@@ -641,6 +643,12 @@ bool SurfaceControl::SupportsOnCommit() {
   return IsSupported() &&
          SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn !=
              nullptr;
+}
+
+bool SurfaceControl::SupportsFrameRateCompatAtLeast() {
+  return SupportsSetFrameRate() &&
+         base::android::android_info::sdk_int() >=
+             base::android::android_info::SDK_VERSION_BAKLAVA;
 }
 
 bool SurfaceControl::SupportsSetFrameTimeline() {
@@ -881,7 +889,8 @@ void SurfaceControl::Transaction::SetColorSpace(
   SurfaceControlMethods::Get().ASurfaceTransaction_setBufferDataSpaceFn(
       transaction_, surface.surface(), data_space);
 
-  const bool extended_range = (data_space & RANGE_MASK) == RANGE_EXTENDED;
+  const bool extended_range =
+      (data_space & ADATASPACE_RANGE_MASK) == ADATASPACE_RANGE_EXTENDED;
 
   // Set the HDR metadata for not extended SRGB case.
   if (metadata && !extended_range) {
@@ -944,6 +953,15 @@ void SurfaceControl::Transaction::SetFrameRate(
   switch (frame_rate.compatibility) {
     case gfx::SurfaceControlFrameRateCompatibility::kFixedSource:
       compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      break;
+    case gfx::SurfaceControlFrameRateCompatibility::kAtLeast:
+      if (SupportsFrameRateCompatAtLeast()) {
+        // Temporary hard code value until Android B NDK is available.
+        constexpr int8_t ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST = 2u;
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST;
+      } else {
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      }
       break;
   }
 

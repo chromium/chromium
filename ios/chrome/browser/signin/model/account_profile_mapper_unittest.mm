@@ -70,8 +70,7 @@ using testing::UnorderedElementsAre;
   NOTREACHED();
 }
 
-- (void)deleteProfile:(std::string_view)profileName
-           completion:(ProfileDeletedCallback)completion {
+- (void)deleteProfile:(std::string_view)profileName {
   _deleteProfileCalled = YES;
   _manager->MarkProfileForDeletion(profileName);
 }

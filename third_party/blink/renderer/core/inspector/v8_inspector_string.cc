@@ -17,13 +17,12 @@ namespace blink {
 v8_inspector::StringView ToV8InspectorStringView(const StringView& string) {
   if (string.IsNull())
     return v8_inspector::StringView();
-  if (string.Is8Bit())
-    return v8_inspector::StringView(
-        reinterpret_cast<const uint8_t*>(string.Characters8()),
-        string.length());
-  return v8_inspector::StringView(
-      reinterpret_cast<const uint16_t*>(string.Characters16()),
-      string.length());
+  if (string.Is8Bit()) {
+    auto span8 = string.Span8();
+    return v8_inspector::StringView(span8.data(), span8.size());
+  }
+  auto span16 = string.SpanUint16();
+  return v8_inspector::StringView(span16.data(), span16.size());
 }
 
 std::unique_ptr<v8_inspector::StringBuffer> ToV8InspectorStringBuffer(
@@ -165,18 +164,11 @@ void ProtocolTypeTraits<WTF::String>::Serialize(const String& value,
     return;
   }
   if (value.Is8Bit()) {
-    crdtp::cbor::EncodeFromLatin1(
-        crdtp::span<uint8_t>(
-            reinterpret_cast<const uint8_t*>(value.Characters8()),
-            value.length()),
-        bytes);
+    crdtp::cbor::EncodeFromLatin1(crdtp::span<uint8_t>(value.Span8()), bytes);
     return;
   }
-  crdtp::cbor::EncodeFromUTF16(
-      crdtp::span<uint16_t>(
-          reinterpret_cast<const uint16_t*>(value.Characters16()),
-          value.length()),
-      bytes);
+  crdtp::cbor::EncodeFromUTF16(crdtp::span<uint16_t>(value.SpanUint16()),
+                               bytes);
 }
 
 // static

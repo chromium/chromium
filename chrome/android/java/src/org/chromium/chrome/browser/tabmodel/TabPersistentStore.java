@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -79,6 +80,7 @@ public class TabPersistentStore {
     public static final String CLIENT_TAG_REGULAR = "Regular";
     public static final String CLIENT_TAG_CUSTOM = "Custom";
     public static final String CLIENT_TAG_ARCHIVED = "Archived";
+    public static final String CLIENT_TAG_HEADLESS = "Headless";
 
     private static final String TAG = "tabmodel";
     private static final String TAG_MIGRATION = "fb_migration";

@@ -190,6 +190,12 @@ void AIRewriter::MeasureUsage(const std::string& input,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void AIRewriter::SetPriority(on_device_model::mojom::Priority priority) {
+  if (session_) {
+    session_->SetPriority(priority);
+  }
+}
+
 void AIRewriter::DidGetExecutionInputSizeInTokensForMeasure(
     MeasureUsageCallback callback,
     std::optional<uint32_t> result) {

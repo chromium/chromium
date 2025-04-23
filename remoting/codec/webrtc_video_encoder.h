@@ -84,7 +84,7 @@ class WebrtcVideoEncoder {
     ~EncodedFrame();
 
     webrtc::DesktopSize dimensions;
-    rtc::scoped_refptr<webrtc::EncodedImageBuffer> data;
+    webrtc::scoped_refptr<webrtc::EncodedImageBuffer> data;
     bool key_frame;
     int quantizer;
     webrtc::VideoCodecType codec;

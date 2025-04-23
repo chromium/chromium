@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
@@ -143,7 +144,8 @@ class PlayerMediator implements InteractionHandler {
     private final Callback<List<PlaybackVoice>> mVoiceListObserver = this::setVoices;
     private final Callback<String> mVoiceIdObserver = this::setVoice;
 
-    private final Callback<Boolean> mPlaybackModeSelectionEnabledObserver = this::setPlaybackModeSelectionEnabled;
+    private final Callback<PlaybackModeSelectionEnablementStatus>
+            mPlaybackModeSelectionEnabledObserver = this::setPlaybackModeSelectionEnabled;
 
     private Playback mPlayback;
     @Nullable Playback mVoicePreviewPlayback;
@@ -393,8 +395,8 @@ class PlayerMediator implements InteractionHandler {
         }
     }
 
-    private void setPlaybackModeSelectionEnabled(boolean enabled) {
-        mModel.set(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED, enabled);
+    private void setPlaybackModeSelectionEnabled(PlaybackModeSelectionEnablementStatus status) {
+        mModel.set(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED, status.getValue());
     }
 
     private void setVoices(List<PlaybackVoice> voices) {

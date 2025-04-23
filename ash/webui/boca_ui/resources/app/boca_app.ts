@@ -286,7 +286,7 @@ export declare interface ClientApiDelegate {
   /**
    * Add students to the current session.
    */
-  addStudents(ids: string[]): Promise<boolean>;
+  addStudents(students: Identity[]): Promise<boolean>;
 
   /**
    * Get list of assignments in a course.

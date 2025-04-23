@@ -73,6 +73,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW,
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE,
     VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION,
+    VIEW_ID_PAGE_INFO_COOKIES_SYNC,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex

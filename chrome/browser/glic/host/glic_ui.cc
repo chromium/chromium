@@ -52,6 +52,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"signInNotice", IDS_GLIC_SIGN_IN_NOTICE},
       {"signInNoticeActionButton", IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON},
       {"signInNoticeHeader", IDS_GLIC_SIGN_IN_NOTICE_HEADER},
+      {"unresponsiveMessage", IDS_GLIC_UNRESPONSIVE_MESSAGE},
   };
 
   content::BrowserContext* browser_context =
@@ -116,15 +117,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
-
-  source->AddBoolean("enableScrollTo",
-                     base::FeatureList::IsEnabled(features::kGlicScrollTo));
-
-  source->AddBoolean("enableActInFocusedTab",
-                     base::FeatureList::IsEnabled(features::kGlicActor));
-
-  source->AddBoolean("enableDragToResizePanel",
-                     base::FeatureList::IsEnabled(features::kGlicUserResize));
 
   // Set up for periodic web client responsiveness check and its interval,
   // timeout, and max unresponsive ui time.

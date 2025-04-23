@@ -15,7 +15,7 @@ build_webui("build") {
     "images/no_downloads.svg",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "bypass_warning_confirmation_dialog.html.ts",
     "bypass_warning_confirmation_dialog.ts",

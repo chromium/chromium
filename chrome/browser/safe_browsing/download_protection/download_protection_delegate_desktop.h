@@ -17,6 +17,10 @@ namespace download {
 class DownloadItem;
 }
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace safe_browsing {
 
 class DownloadProtectionDelegateDesktop : public DownloadProtectionDelegate {
@@ -29,6 +33,8 @@ class DownloadProtectionDelegateDesktop : public DownloadProtectionDelegate {
   bool ShouldCheckClientDownload(download::DownloadItem* item) const override;
   bool IsSupportedDownload(download::DownloadItem& item,
                            const base::FilePath& target_path) const override;
+  void FinalizeResourceRequest(
+      network::ResourceRequest& resource_request) override;
   const GURL& GetDownloadRequestUrl() const override;
   net::NetworkTrafficAnnotationTag
   CompleteClientDownloadRequestTrafficAnnotation(

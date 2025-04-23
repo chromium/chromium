@@ -13,50 +13,31 @@
 <body>
 <div id="target"></div>
 <script>
-test_computed_value("column-rule-style", "none");
-test_computed_value("column-rule-style", "hidden");
-test_computed_value("column-rule-style", "dotted");
-test_computed_value("column-rule-style", "dashed");
-test_computed_value("column-rule-style", "solid");
-test_computed_value("column-rule-style", "double");
-test_computed_value("column-rule-style", "groove");
-test_computed_value("column-rule-style", "ridge");
-test_computed_value("column-rule-style", "inset");
-test_computed_value("row-rule-style", "none");
-test_computed_value("row-rule-style", "hidden");
-test_computed_value("row-rule-style", "dotted");
-test_computed_value("row-rule-style", "dashed");
-test_computed_value("row-rule-style", "solid");
-test_computed_value("row-rule-style", "double");
-test_computed_value("row-rule-style", "groove");
-test_computed_value("row-rule-style", "ridge");
-test_computed_value("row-rule-style", "inset");
+const properties = ["column-rule-style", "row-rule-style", "rule-style"];
+for (let property of properties) {
+    test_computed_value(property, "none");
+    test_computed_value(property, "hidden");
+    test_computed_value(property, "dotted");
+    test_computed_value(property, "dashed");
+    test_computed_value(property, "solid");
+    test_computed_value(property, "double");
+    test_computed_value(property, "groove");
+    test_computed_value(property, "ridge");
+    test_computed_value(property, "inset");
 
-test_computed_value("column-rule-style", "dotted dashed solid");
-test_computed_value("column-rule-style", "repeat(10, double)");
-test_computed_value("column-rule-style", "repeat(3, groove) repeat(4, ridge)");
-test_computed_value("column-rule-style", "repeat(auto, solid)");
-test_computed_value("column-rule-style", "repeat(auto, dotted solid inset)");
-test_computed_value("column-rule-style", "repeat(4, none ridge solid) repeat(auto, hidden)");
-test_computed_value("column-rule-style", "inset repeat(auto, solid ridge) repeat(4, none groove hidden)");
-test_computed_value("column-rule-style", "repeat(calc(5 + 3), ridge)", "repeat(8, ridge)");
-test_computed_value("column-rule-style", "repeat(4, dotted double dashed) repeat(auto, solid) ridge");
-test_computed_value("column-rule-style", "repeat(4, dotted double dashed) repeat(auto, solid) repeat(4, none groove hidden)");
-test_computed_value("column-rule-style", "ridge repeat(auto, solid)");
-test_computed_value("column-rule-style", "ridge repeat(auto, solid) ridge");
-test_computed_value("row-rule-style", "dotted dashed solid");
-test_computed_value("row-rule-style", "repeat(10, double)");
-test_computed_value("row-rule-style", "repeat(3, groove) repeat(4, ridge)");
-test_computed_value("row-rule-style", "repeat(auto, solid)");
-test_computed_value("row-rule-style", "repeat(auto, dotted solid inset)");
-test_computed_value("row-rule-style", "repeat(4, none ridge solid) repeat(auto, hidden)");
-test_computed_value("row-rule-style", "inset repeat(auto, solid ridge) repeat(4, none groove hidden)");
-test_computed_value("row-rule-style", "repeat(calc(5 + 3), ridge)", "repeat(8, ridge)");
-test_computed_value("row-rule-style", "repeat(4, dotted double dashed) repeat(auto, solid) ridge");
-test_computed_value("row-rule-style", "repeat(4, dotted double dashed) repeat(auto, solid) repeat(4, none groove hidden)");
-test_computed_value("row-rule-style", "ridge repeat(auto, solid)");
-test_computed_value("row-rule-style", "ridge repeat(auto, solid) ridge");
-
+    test_computed_value(property, "dotted dashed solid");
+    test_computed_value(property, "repeat(10, double)");
+    test_computed_value(property, "repeat(3, groove) repeat(4, ridge)");
+    test_computed_value(property, "repeat(auto, solid)");
+    test_computed_value(property, "repeat(auto, dotted solid inset)");
+    test_computed_value(property, "repeat(4, none ridge solid) repeat(auto, hidden)");
+    test_computed_value(property, "inset repeat(auto, solid ridge) repeat(4, none groove hidden)");
+    test_computed_value(property, "repeat(calc(5 + 3), ridge)", "repeat(8, ridge)");
+    test_computed_value(property, "repeat(4, dotted double dashed) repeat(auto, solid) ridge");
+    test_computed_value(property, "repeat(4, dotted double dashed) repeat(auto, solid) repeat(4, none groove hidden)");
+    test_computed_value(property, "ridge repeat(auto, solid)");
+    test_computed_value(property, "ridge repeat(auto, solid) ridge");
+}
 </script>
 </body>
 </html>

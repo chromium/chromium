@@ -170,19 +170,11 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewProfileForm,
+              FillOrPreviewForm,
               (autofill::mojom::ActionPersistence,
                const FormData&,
                const FieldGlobalId&,
-               const autofill::AutofillProfile&,
-               autofill::AutofillTriggerSource),
-              (override));
-  MOCK_METHOD(void,
-              FillOrPreviewCreditCardForm,
-              (autofill::mojom::ActionPersistence action_persistence,
-               const FormData&,
-               const FieldGlobalId&,
-               const autofill::CreditCard&,
+               const autofill::FillingPayload&,
                autofill::AutofillTriggerSource),
               (override));
   MOCK_METHOD(void,
@@ -793,7 +785,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   FormFieldData address_form_field_data =
       *address_form->field(kFirstNameFieldIndexInForm);
 
-  auto [autofill_profile, credit_card] = StartRunAndSelectOptions(
+  StartRunAndSelectOptions(
       {address_form_signature, credit_card_form_signature});
 
   AddFormToAutofillManagerCache(std::move(address_form));
@@ -805,12 +797,12 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
     filling_state = FastCheckoutClientImpl::FillingState::kNotFilled;
   }
 
-  EXPECT_CALL(*autofill_manager(),
-              FillOrPreviewProfileForm(
-                  autofill::mojom::ActionPersistence::kFill,
-                  FormDataEqualTo(address_form_data),
-                  address_form_field_data.global_id(), Eq(*autofill_profile),
-                  autofill::AutofillTriggerSource::kFastCheckout));
+  EXPECT_CALL(
+      *autofill_manager(),
+      FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                        FormDataEqualTo(address_form_data),
+                        address_form_field_data.global_id(), _,
+                        autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress,
                                    fast_checkout_client()->run_id_));
@@ -851,10 +843,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
 
   EXPECT_CALL(
       *autofill_manager(),
-      FillOrPreviewCreditCardForm(
-          autofill::mojom::ActionPersistence::kFill,
-          FormDataEqualTo(credit_card_form->ToFormData()), field.global_id(),
-          Eq(*credit_card), autofill::AutofillTriggerSource::kFastCheckout));
+      FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                        FormDataEqualTo(credit_card_form->ToFormData()),
+                        field.global_id(), _,
+                        autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
                                    fast_checkout_client()->run_id_));
@@ -1037,10 +1029,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
 
   EXPECT_CALL(
       *autofill_manager(),
-      FillOrPreviewCreditCardForm(
-          autofill::mojom::ActionPersistence::kFill,
-          FormDataEqualTo(credit_card_form->ToFormData()), field.global_id(),
-          Eq(*credit_card), autofill::AutofillTriggerSource::kFastCheckout));
+      FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                        FormDataEqualTo(credit_card_form->ToFormData()),
+                        field.global_id(), _,
+                        autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
                                    fast_checkout_client()->run_id_));
@@ -1114,7 +1106,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
       autofill_profile->guid());
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
-  EXPECT_CALL(*autofill_manager(), FillOrPreviewProfileForm).Times(0);
+  EXPECT_CALL(*autofill_manager(), FillOrPreviewForm).Times(0);
 
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
@@ -1137,7 +1129,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   // resolved. This assertion is a safeguard against potential future changes.
   // E.g. having the popup only for server and masked cards, like in the
   // `BrowserAutofillManager`.
-  EXPECT_CALL(*autofill_manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(*autofill_manager(), FillOrPreviewForm).Times(0);
 
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
@@ -1157,10 +1149,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
       SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, Ne(0)));
   EXPECT_CALL(
       *autofill_manager(),
-      FillOrPreviewCreditCardForm(
-          autofill::mojom::ActionPersistence::kFill,
-          FormDataEqualTo(credit_card_form->ToFormData()), field.global_id(), _,
-          autofill::AutofillTriggerSource::kFastCheckout));
+      FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                        FormDataEqualTo(credit_card_form->ToFormData()),
+                        field.global_id(), _,
+                        autofill::AutofillTriggerSource::kFastCheckout));
   StartRunAndSelectOptions({credit_card_form->form_signature()},
                            /*local_card=*/true);
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());

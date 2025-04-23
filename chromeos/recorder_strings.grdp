@@ -71,6 +71,9 @@
   <message desc="Error message for unsupported transcript language input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_LANGUAGE_UNSUPPORTED_LABEL">
     Can’t create summary for this transcript language
   </message>
+  <message desc="Error message for need-reboot error for summary. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_NEEDS_REBOOT_LABEL">
+    To create a summary, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
+  </message>
   <message desc="Error message for too-long transcript input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRANSCRIPT_TOO_LONG_LABEL">
     Can’t summarize. Try a shorter transcript.
   </message>
@@ -82,6 +85,9 @@
   </message>
   <message desc="Error message for unsupported transcript language input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_LANGUAGE_UNSUPPORTED_LABEL">
     Can't create recording titles for this transcript language
+  </message>
+  <message desc="Error message for need-reboot error for title suggestion. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_NEEDS_REBOOT_LABEL">
+    To create titles for your recording, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
   </message>
   <message desc="Error message for too-long transcript input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRANSCRIPT_TOO_LONG_LABEL">
     Can’t create titles. Try a shorter transcript.
@@ -112,6 +118,9 @@
   </message>
   <message desc="Tooltip of the link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK_TOOLTIP">
     Learn more about Generative AI
+  </message>
+  <message desc="Status message for screen reader to update that the summary and title creation model needs OS reboot. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_NEEDS_REBOOT_STATUS_MESSAGE">
+    To create summary and title, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
   </message>
   <message desc="Hint text for users to choose language from the dropdown." name="IDS_RECORDER_LANGUAGE_DROPDOWN_HINT_OPTION">
     Select language
@@ -160,6 +169,15 @@
   </message>
   <message desc="Description of language error state in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_ERROR_DESCRIPTION">
     Can’t download. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
+  </message>
+  <message desc="Accessibility label of need-reboot language row in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NEEDS_REBOOT_ARIA_LABEL">
+    To get transcript in <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph>, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
+  </message>
+  <message desc="Description of language need-reboot state in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NEEDS_REBOOT_DESCRIPTION">
+    To get transcript, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
+  </message>
+  <message desc="Status message for screen reader to announce the need-reboot state in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NEEDS_REBOOT_STATUS_MESSAGE">
+    To get transcript in <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph>, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
   </message>
   <message desc="Accessibility label of not downloaded language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NOT_DOWNLOADED_ARIA_LABEL">
     Download and select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
@@ -507,6 +525,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header when transcription is unusable in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_HEADER">
     Can't create transcript
   </message>
+  <message desc="Description when the transcription model needs reboot in the transcription view while recording. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_NEEDS_REBOOT_DESCRIPTION">
+    To create transcript, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
+  </message>
   <message desc="Description when the selected transcription language is not installed in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_NOT_INSTALLED_DESCRIPTION">
     Download transcription model in Settings
   </message>
@@ -555,6 +576,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Accessibility label of the link to more information about summary and title creation model." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_LEARN_MORE_LINK_ARIA_LABEL">
     Learn more about summary and title creation
   </message>
+  <message desc="Description of the summary and title creation setting when the summary and title creation model needs OS reboot. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_NEEDS_REBOOT_DESCRIPTION">
+    To create summary and title, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
+  </message>
   <message desc="Label of the keep screen on toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_KEEP_SCREEN_ON_LABEL">
     Keep screen on when recording
   </message>
@@ -590,6 +614,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Label of the transcription language option in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LANGUAGE_LABEL">
     Transcription language
+  </message>
+  <message desc="Description of transcription need-reboot state in settings. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_NEEDS_REBOOT_DESCRIPTION">
+    To get transcript, restart your <ph name="DEVICE_TYPE">[deviceType]</ph>
   </message>
   <message desc="Header of the general section in settings." name="IDS_RECORDER_SETTINGS_SECTION_GENERAL_HEADER">
     General

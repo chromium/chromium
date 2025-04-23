@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -88,17 +89,23 @@ public class AuxiliarySearchProvider {
 
     private final Context mContext;
     private final Profile mProfile;
-    private final AuxiliarySearchBridge mAuxiliarySearchBridge;
+    private final @AuxiliarySearchHostType int mHostType;
     private final @Nullable TabModelSelector mTabModelSelector;
+
     private Long mTabMaxAgeMillis;
+    @Nullable private AuxiliarySearchBridge mAuxiliarySearchBridge;
 
     public AuxiliarySearchProvider(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector) {
+            Context context,
+            Profile profile,
+            @Nullable TabModelSelector tabModelSelector,
+            @AuxiliarySearchHostType int hostType) {
         mContext = context;
         mProfile = profile;
-        mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);
+        mHostType = hostType;
+        if (mHostType == AuxiliarySearchHostType.CTA) {
+            mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);
+        }
         mTabModelSelector = tabModelSelector;
         mTabMaxAgeMillis = getTabsMaxAgeMs();
     }
@@ -329,5 +336,9 @@ public class AuxiliarySearchProvider {
         TaskInfo taskInfo = builder.build();
         scheduler.schedule(mContext, taskInfo);
         return taskInfo;
+    }
+
+    public boolean isAuxiliarySearchBridgeNullForTesting() {
+        return mAuxiliarySearchBridge == null;
     }
 }

@@ -25,8 +25,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -236,6 +238,52 @@ public class UndoBarControllerTest {
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertEquals("My group tab group closed and saved", getSnackbarText());
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(2, mTabModel.getCount());
+        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.setTabGroupTitle(mTabModel.getTabAt(0).getRootId(), null);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseTabGroup_EmptyTitle_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                    mTabGroupModelFilter.setTabGroupTitle(
+                            mTabModel.getTabAt(0).getRootId(), "");
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(2, mTabModel.getCount());
+        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertEquals("2 tabs tab group closed and saved", getSnackbarText());
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
         assertEquals(0, mTabModel.getCount());
 
@@ -485,6 +533,179 @@ public class UndoBarControllerTest {
         assertNull(getCurrentSnackbar());
         assertEquals(2, mTabModel.getCount());
         assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testThrottleUndo() throws Exception {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        Tab tab0 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(0));
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(3, mTabModel.getCount());
+
+        int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(TabClosureParams.closeTab(tab0).build());
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab1, tab2))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        assertNull(getCurrentSnackbar());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.stopThrottling(token));
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        clickSnackbar();
+
+        currentSnackbar = getCurrentSnackbar();
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        clickSnackbar();
+    }
+
+    @Test
+    @SmallTest
+    public void testThrottleUndo_CommitSubset() throws Exception {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        Tab tab0 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(0));
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(3, mTabModel.getCount());
+
+        int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(TabClosureParams.closeTab(tab0).build());
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab1, tab2))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        assertNull(getCurrentSnackbar());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.commitTabClosure(tab0.getId());
+                    mTabModel.commitTabClosure(tab1.getId());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.stopThrottling(token));
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        clickSnackbar();
+
+        assertNull(getCurrentSnackbar());
+    }
+
+    @Test
+    @SmallTest
+    public void testThrottleUndo_CommitAll() throws Exception {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        Tab tab0 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(0));
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(3, mTabModel.getCount());
+
+        int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(TabClosureParams.closeTab(tab0).build());
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab1, tab2))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        assertNull(getCurrentSnackbar());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.commitAllTabClosures());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.stopThrottling(token));
+
+        assertNull(getCurrentSnackbar());
+    }
+
+    @Test
+    @SmallTest
+    public void testThrottleUndo_UndoNotViaSnackbar() throws Exception {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), cta);
+        Tab tab0 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(0));
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(1));
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(3, mTabModel.getCount());
+
+        int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(TabClosureParams.closeTab(tab0).build());
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab1, tab2))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        assertNull(getCurrentSnackbar());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.cancelTabClosure(tab0.getId());
+                    mTabModel.cancelTabClosure(tab1.getId());
+                    mTabModel.cancelTabClosure(tab2.getId());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.stopThrottling(token));
+
+        assertNull(getCurrentSnackbar());
     }
 
     @Test

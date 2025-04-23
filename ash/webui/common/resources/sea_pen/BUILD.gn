@@ -56,7 +56,7 @@ build_webui("build_ts") {
     "surface_effects/sparkle_placeholder.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "constants.ts",
     "constants_generated.ts",
     "load_time_booleans.ts",
@@ -68,7 +68,6 @@ build_webui("build_ts") {
     "sea_pen_reducer.ts",
     "sea_pen_state.ts",
     "sea_pen_store.ts",
-    "sea_pen_untranslated_constants.ts",
     "sea_pen_utils.ts",
     "surface_effects/sparkle.ts",
     "surface_effects/sparkle_shader.ts",

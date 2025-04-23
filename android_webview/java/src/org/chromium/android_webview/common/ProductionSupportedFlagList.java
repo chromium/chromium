@@ -18,6 +18,7 @@ import org.chromium.components.metrics.AndroidMetricsFeatures;
 import org.chromium.components.metrics.MetricsFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
@@ -217,9 +218,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.PRELOAD_LINK_REL_DATA_URLS,
                 "Allow preloading data: URLs with link rel=preload"),
         Flag.baseFeature(
-                BlinkFeatures.BYPASS_CSP_FOR_PRELOADS,
-                "Enables bypassing CSP checks when we consume a preload"),
-        Flag.baseFeature(
                 BlinkFeatures.DOCUMENT_POLICY_EXPECT_NO_LINKED_RESOURCES,
                 "Enables the ability to use Document Policy header to control feature"
                         + " ExpectNoLinkedResources."),
@@ -275,11 +273,11 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
                 "Prevents the AutofillField's current value from being reset for import"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_LABEL_FROM_DEFAULT_SELECT_TEXT,
-                "Considers the text of a <select> element's first <option> as a potential label"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
                 "Reduces city field false positive classifications"),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DISALLOW_SLASH_DOT_LABELS,
+                "Disallows labels that only contain slashes, dots and other special characters."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
@@ -305,6 +303,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_REPLACE_CACHED_WEB_ELEMENTS_BY_RENDERER_IDS,
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_UNIFY_RATIONALIZATION_AND_SECTIONING_ORDER,
+                "When enabled, the same rationalization/sectioning order is used for heuristic and"
+                        + " server predictions."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_FR_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for France."),
@@ -735,6 +737,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND,
                 "Register, un-register Accessibility broadcast receiver on a background thread."),
         Flag.baseFeature(
+                "BatteryStatusManagerBroadcastReceiverInBackground",
+                "Register, unregister Battery Status Manager broadcast receiver on a background"
+                        + " thread."),
+        Flag.baseFeature(
                 BlinkFeatures.INCREMENT_LOCAL_SURFACE_ID_FOR_MAINFRAME_SAME_DOC_NAVIGATION,
                 "When enabled, every mainframe same-doc navigation will increment the"
                         + " `viz::LocalSurfaceId` from the impl thread."),
@@ -923,9 +929,6 @@ public final class ProductionSupportedFlagList {
                     + " is enabled, the response headers passed to the app remain unchanged. Also,"
                     + " the set-cookie header has no effect on the cookie jar."),
         Flag.baseFeature(
-                VizFeatures.RENDER_PASS_DRAWN_RECT,
-                "Enable optimization for tracking damage in a drawn rect for each render pass."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
         Flag.baseFeature("MojoUseBinder"),
@@ -1031,6 +1034,14 @@ public final class ProductionSupportedFlagList {
                 "Enable the JavaScript PaymentRequest API for launching payment apps through"
                         + " Android intents."),
         Flag.baseFeature(
+                PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP,
+                "PaymentRequest looks up the dynamic price updates service in the payment app,"
+                        + " via an intent filter."),
+        Flag.baseFeature(
+                PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS,
+                "Omit the deprecated parameters from the intents that are sent to "
+                        + "Android payment apps in the PaymentRequest API."),
+        Flag.baseFeature(
                 GpuFeatures.WEB_GPU_USE_VULKAN_MEMORY_MODEL,
                 "Use the Vulkan Memory Model from WebGPU when available"),
         Flag.baseFeature("RunBeforeUnloadClosureOnStackInvestigation"),
@@ -1079,6 +1090,15 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MULTI_BUFFER_NEVER_DEFER,
                 "Controls behavior of network deferrals during media src=file playbacks."),
+        Flag.baseFeature("PrefetchScheduler"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SEQUENCED_SHOULD_INTERCEPT_REQUEST,
+                "Enforces sequencing of calls to shouldInterceptRequest, "
+                        + "instead of invoking each call on a separate background thread."),
+        Flag.baseFeature(
+                BlinkFeatures.RENDER_BLOCKING_FULL_FRAME_RATE,
+                "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"
+                        + " loading"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

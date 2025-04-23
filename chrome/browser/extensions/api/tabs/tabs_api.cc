@@ -65,7 +65,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -89,6 +88,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1595,18 +1595,17 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   }
 
   // Extend selection for any split tabs.
-  base::flat_set<split_tabs::SplitTabId> splits_with_selections;
   for (const auto& index : selection.selected_indices()) {
-    if (tab_strip_model->IsTabSplit(index)) {
-      splits_with_selections.insert(
-          tab_strip_model->GetTabAtIndex(index)->GetSplit().value());
+    std::optional<split_tabs::SplitTabId> split_id =
+        tab_strip_model->GetSplitForTab(index);
+    if (!split_id.has_value()) {
+      continue;
     }
-  }
-  for (split_tabs::SplitTabId split_id : splits_with_selections) {
-    for (::tabs::TabInterface* split_tab :
-         tab_strip_model->GetSplitData(split_id)->ListTabs()) {
-      selection.AddIndexToSelection(tab_strip_model->GetIndexOfTab(split_tab));
-    }
+    // All the tabs in a split should be contiguous.
+    std::vector<::tabs::TabInterface*> split_tabs =
+        tab_strip_model->GetSplitData(split_id.value())->ListTabs();
+    size_t start = tab_strip_model->GetIndexOfTab(split_tabs[0]);
+    selection.AddIndexRangeToSelection(start, start + split_tabs.size() - 1);
   }
 
   selection.set_active(active_index);

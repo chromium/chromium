@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A {@link RecyclerView.ViewHolder} specifically meant to display a prefetch item that is part of a
  * group card.
  */
+@NullMarked
 public class PrefetchGroupedItemViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mTimestamp;

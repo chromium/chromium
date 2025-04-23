@@ -28,6 +28,9 @@ class MdTextButton;
 
 class DesktopMediaPickerImpl;
 
+const DesktopMediaSourceViewStyle& GetGenericScreenStyle();
+const DesktopMediaSourceViewStyle& GetSingleScreenStyle();
+
 // Dialog view used for DesktopMediaPickerImpl.
 //
 // TODO(crbug.com/40637301): Consider renaming this class.

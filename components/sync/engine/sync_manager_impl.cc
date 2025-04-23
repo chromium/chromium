@@ -48,8 +48,13 @@ sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
       return sync_pb::SyncEnums::MIGRATION;
     case CONFIGURE_REASON_NEW_CLIENT:
       return sync_pb::SyncEnums::NEW_CLIENT;
-    case CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE:
+    case CONFIGURE_REASON_EXISTING_CLIENT_RESTART:
     case CONFIGURE_REASON_CRYPTO:
+      // Mapping these cases to NEWLY_SUPPORTED_DATATYPE is rather wrong, as it
+      // includes common cases like sync being unpaused or a crypto error having
+      // been resolved, if initial sync didn't complete earlier (or data was
+      // cleared while paused). The legacy behavior is kept until a better
+      // solution is found.
       return sync_pb::SyncEnums::NEWLY_SUPPORTED_DATATYPE;
     case CONFIGURE_REASON_PROGRAMMATIC:
       return sync_pb::SyncEnums::PROGRAMMATIC;

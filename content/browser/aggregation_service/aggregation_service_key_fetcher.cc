@@ -38,8 +38,9 @@ void AggregationServiceKeyFetcher::GetPublicKey(const GURL& url,
 
   // If there is already a fetch request in progress, just enqueue the
   // callback and return.
-  if (in_progress)
+  if (in_progress) {
     return;
+  }
 
   // First we check if we already have keys stored.
   // TODO(crbug.com/40187645): Pass url by value and move after C++17.

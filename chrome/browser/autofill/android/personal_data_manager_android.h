@@ -194,10 +194,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Checks whether FIDO authentication is available.
   jboolean IsFidoAuthenticationAvailable(JNIEnv* env);
 
-  // Get Java AutofillImageFetcher.
-  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher(
-      JNIEnv* env);
-
   static base::android::ScopedJavaLocalRef<jobject> CreateJavaIbanFromNative(
       JNIEnv* env,
       const Iban& iban);

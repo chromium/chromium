@@ -366,7 +366,7 @@ TEST_F(WebViewUnitTest, CrashedOverlayView) {
   web_view->SetWebContents(web_contents.get());
 
   auto crashed_overlay_view = std::make_unique<View>();
-  crashed_overlay_view->set_owned_by_client();
+  crashed_overlay_view->set_owned_by_client(View::OwnedByClientPassKey());
   web_view->SetCrashedOverlayView(crashed_overlay_view.get());
   EXPECT_FALSE(crashed_overlay_view->IsDrawn());
 

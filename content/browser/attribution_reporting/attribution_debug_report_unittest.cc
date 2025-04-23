@@ -1272,21 +1272,20 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
       },
   };
 
-    for (const auto& test_case : kTestCases) {
-      SCOPED_TRACE(test_case.name);
-      std::optional<AttributionDebugReport> report =
-          AttributionDebugReport::Create(
-              reporting_origin,
-              RegistrationHeaderError(/*header_value=*/"!!!",
-                                      test_case.details),
-              context_origin, test_case.is_within_fenced_frame,
-              test_case.is_operation_allowed);
-      EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr);
-      if (test_case.expected_body) {
-        EXPECT_EQ(report->ReportBody(),
-                  base::test::ParseJson(test_case.expected_body));
-      }
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    std::optional<AttributionDebugReport> report =
+        AttributionDebugReport::Create(
+            reporting_origin,
+            RegistrationHeaderError(/*header_value=*/"!!!", test_case.details),
+            context_origin, test_case.is_within_fenced_frame,
+            test_case.is_operation_allowed);
+    EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr);
+    if (test_case.expected_body) {
+      EXPECT_EQ(report->ReportBody(),
+                base::test::ParseJson(test_case.expected_body));
     }
+  }
 }
 
 }  // namespace

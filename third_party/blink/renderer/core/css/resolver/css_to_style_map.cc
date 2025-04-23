@@ -825,16 +825,24 @@ std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerRangeEnd(
   return MapAnimationRange(state, value, 100);
 }
 
-std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerExitRangeStart(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTriggerExitRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
-  return MapAnimationRange(state, value, 0);
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
+      ident && ident->GetValueID() == CSSValueID::kAuto) {
+    return TimelineOffsetOrAuto();
+  }
+  return TimelineOffsetOrAuto(MapAnimationRange(state, value, 0));
 }
 
-std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerExitRangeEnd(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTriggerExitRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
-  return MapAnimationRange(state, value, 100);
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
+      ident && ident->GetValueID() == CSSValueID::kAuto) {
+    return TimelineOffsetOrAuto();
+  }
+  return TimelineOffsetOrAuto(MapAnimationRange(state, value, 100));
 }
 
 }  // namespace blink

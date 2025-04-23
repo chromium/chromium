@@ -8,7 +8,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
@@ -17,8 +20,8 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/test/mock_sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -122,4 +125,17 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
   infobar_ = nullptr;
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
+}
+
+TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
+       BannerDismissAfterTimeoutSetsInfobarTimeoutPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncTrustedVaultInfobarImprovements);
+  base::Time startTime = base::Time::Now();
+
+  [mediator_ dismissInfobarBannerForUserInteraction:false];
+  EXPECT_GT(profile_->GetPrefs()->GetTime(
+                prefs::kIosSyncInfobarErrorLastDismissedTimestamp),
+            startTime);
 }

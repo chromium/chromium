@@ -331,7 +331,7 @@ public class ExternalNavigationParams {
             return this;
         }
 
-        /** Sets the package name of the TWA or WebAPK within which the navigation is happening. **/
+        /** Sets the package name of the TWA or WebAPK within which the navigation is happening. */
         public Builder setNativeClientPackageName(String v) {
             mNativeClientPackageName = v;
             return this;

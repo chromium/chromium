@@ -21,7 +21,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.Log;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
@@ -32,13 +32,13 @@ import java.util.Set;
 /**
  * Test service worker settings APIs.
  *
- * These tests are functionally duplicates of the ones in {@link AwSettingsTest},
- * and serve to ensure that service worker settings are applied, even if no
- * {@link android.webkit.ServiceWorkerClient} is supplied.
+ * <p>These tests are functionally duplicates of the ones in {@link AwSettingsTest}, and serve to
+ * ensure that service worker settings are applied, even if no {@link
+ * android.webkit.ServiceWorkerClient} is supplied.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "https://crbug.com/409388911")
 public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     public static final String TAG = "AwSWSettingsTest";
     @Rule public AwActivityTestRule mActivityTestRule;

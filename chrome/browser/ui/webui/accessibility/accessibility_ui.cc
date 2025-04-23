@@ -100,6 +100,7 @@ static const char kWidget[] = "widget";
 static const char kBrowser[] = "browser";
 static const char kCopyTree[] = "copyTree";
 static const char kHTML[] = "html";
+static const char kIsolate[] = "isolate";
 static const char kLocked[] = "locked";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
@@ -108,11 +109,6 @@ static const char kExtendedProperties[] = "extendedProperties";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
 static const char kWeb[] = "web";
-
-// Possible global flag values
-static const char kDisabled[] = "disabled";
-static const char kOff[] = "off";
-static const char kOn[] = "on";
 
 using ui::AXPropertyFilter;
 
@@ -191,12 +187,11 @@ void HandleAccessibilityRequestCallback(
     content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(ShouldHandleAccessibilityRequestCallback(path));
 
+  auto& browser_accessibility_state =
+      *content::BrowserAccessibilityState::GetInstance();
   base::Value::Dict data;
   PrefService* pref = Profile::FromBrowserContext(current_context)->GetPrefs();
-  ui::AXMode mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  bool is_a11y_allowed = content::BrowserAccessibilityState::GetInstance()
-                             ->IsAccessibilityAllowed();
+  ui::AXMode mode = browser_accessibility_state.GetAccessibilityMode();
   bool native = mode.has_mode(ui::AXMode::kNativeAPIs);
   bool web = mode.has_mode(ui::AXMode::kWebContents);
   bool text = mode.has_mode(ui::AXMode::kInlineTextBoxes);
@@ -206,19 +201,17 @@ void HandleAccessibilityRequestCallback(
 
   // The "native" and "web" flags are disabled if
   // --disable-renderer-accessibility is set.
-  data.Set(kNative, is_a11y_allowed ? (native ? kOn : kOff) : kDisabled);
-  data.Set(kWeb, is_a11y_allowed ? (web ? kOn : kOff) : kDisabled);
+  data.Set(kNative, native);
+  data.Set(kWeb, web);
 
   // The "text", "extendedProperties" and "html" flags are only
   // meaningful if "web" is enabled.
-  bool is_web_enabled = is_a11y_allowed && web;
-  data.Set(kText, is_web_enabled ? (text ? kOn : kOff) : kDisabled);
-  data.Set(kExtendedProperties,
-           is_web_enabled ? (extendedProperties ? kOn : kOff) : kDisabled);
-  data.Set(kHTML, is_web_enabled ? (html ? kOn : kOff) : kDisabled);
+  data.Set(kText, text);
+  data.Set(kExtendedProperties, extendedProperties);
+  data.Set(kHTML, html);
 
   // The "pdfPrinting" flag is independent of the others.
-  data.Set(kPDFPrinting, pdf_printing ? kOn : kOff);
+  data.Set(kPDFPrinting, pdf_printing);
 
   std::string pref_api_type =
       pref->GetString(prefs::kShownAccessibilityApiType);
@@ -244,9 +237,10 @@ void HandleAccessibilityRequestCallback(
   }
   data.Set(kApiTypeField, pref_api_type);
 
-  bool is_mode_locked = !content::BrowserAccessibilityState::GetInstance()
-                             ->IsAXModeChangeAllowed();
-  data.Set(kLocked, is_mode_locked ? kOn : kOff);
+  data.Set(kIsolate,
+           !browser_accessibility_state.IsActivationFromPlatformEnabled());
+
+  data.Set(kLocked, !browser_accessibility_state.IsAXModeChangeAllowed());
 
   base::Value::List page_list;
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
@@ -280,9 +274,9 @@ void HandleAccessibilityRequestCallback(
     }
 
     base::Value::Dict descriptor = BuildTargetDescriptor(rvh);
-    descriptor.Set(kNative, is_a11y_allowed);
-    descriptor.Set(kExtendedProperties, is_web_enabled && extendedProperties);
-    descriptor.Set(kWeb, is_web_enabled);
+    descriptor.Set(kNative, native);
+    descriptor.Set(kExtendedProperties, extendedProperties);
+    descriptor.Set(kWeb, web);
     page_list.Append(std::move(descriptor));
   }
   data.Set(kPagesField, std::move(page_list));
@@ -310,7 +304,8 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     return "";
   }
   std::string str(2 * indent, '+');
-  std::string line = node->GetDelegate()->GetData().ToString();
+  ui::AXPlatformNodeDelegate* const node_delegate = node->GetDelegate();
+  std::string line = node_delegate->GetData().ToString();
   std::vector<std::string> attributes = base::SplitString(
       line, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (std::string attribute : attributes) {
@@ -320,8 +315,9 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     }
   }
   str += "\n";
-  for (size_t i = 0; i < node->GetDelegate()->GetChildCount(); i++) {
-    gfx::NativeViewAccessible child = node->GetDelegate()->ChildAtIndex(i);
+  for (size_t i = 0, child_count = node_delegate->GetChildCount();
+       i < child_count; i++) {
+    gfx::NativeViewAccessible child = node_delegate->ChildAtIndex(i);
     ui::AXPlatformNode* child_node =
         ui::AXPlatformNode::FromNativeViewAccessible(child);
     str += RecursiveDumpAXPlatformNodeAsString(child_node, indent + 1,
@@ -698,14 +694,19 @@ void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
 
 void AccessibilityUIMessageHandler::SetGlobalFlag(
     const base::Value::List& args) {
+  auto& browser_accessibility_state =
+      *content::BrowserAccessibilityState::GetInstance();
   const base::Value::Dict& data = args[0].GetDict();
   const std::string flag_name = CheckJSValue(data.FindString(kFlagNameField));
   bool enabled = *data.FindBool(kEnabledField);
 
   AllowJavascript();
+  if (flag_name == kIsolate) {
+    browser_accessibility_state.SetActivationFromPlatformEnabled(!enabled);
+    return;
+  }
   if (flag_name == kLocked) {
-    content::BrowserAccessibilityState::GetInstance()->SetAXModeChangeAllowed(
-        !enabled);
+    browser_accessibility_state.SetAXModeChangeAllowed(!enabled);
     return;
   }
 
@@ -748,8 +749,7 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   // accordingly. Note that this change will persist beyond the lifetime of
   // chrome://accessibility.
   if (!enabled) {
-    content::BrowserAccessibilityState::GetInstance()
-        ->RemoveAccessibilityModeFlags(new_mode);
+    browser_accessibility_state.RemoveAccessibilityModeFlags(new_mode);
   }
 }
 

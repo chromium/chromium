@@ -127,28 +127,13 @@ class WebAppDatabaseTest : public WebAppTest {
     run_loop.Run();
   }
 
-  // If `ensure_no_migration_needed` is set to true, it means that migration has
-  // already happened, and the state of the web apps in the registry need to be
-  // updated to show that.
-  Registry WriteWebApps(uint32_t num_apps, bool ensure_no_migration_needed) {
+  Registry WriteWebApps(uint32_t num_apps) {
     Registry registry;
 
     auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (uint32_t i = 0; i < num_apps; ++i) {
       std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = i});
-      if (ensure_no_migration_needed) {
-        EnsureHasUserDisplayModeForCurrentPlatform(*app);
-        if (app->GetSources().Has(WebAppManagement::kSync)) {
-          app->AddSource(WebAppManagement::kUserInstalled);
-        }
-        test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
-        proto::DatabaseMetadata metadata;
-        metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
-        write_batch->WriteData(
-            std::string(WebAppDatabase::kDatabaseMetadataKey),
-            metadata.SerializeAsString());
-      }
       std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
       const webapps::AppId app_id = app->app_id();
 
@@ -156,28 +141,13 @@ class WebAppDatabaseTest : public WebAppTest {
 
       registry.emplace(app_id, std::move(app));
     }
-
+    proto::DatabaseMetadata metadata;
+    metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
+    write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
+                           metadata.SerializeAsString());
     WriteBatch(std::move(write_batch));
 
     return registry;
-  }
-
-  void EnsureHasUserDisplayModeForCurrentPlatform(WebApp& app) {
-    // Avoid using `WebApp::user_display_mode` because it DCHECKs for a valid
-    // UDM.
-#if BUILDFLAG(IS_CHROMEOS)
-    if (app.sync_proto().has_user_display_mode_cros()) {
-      return;
-    }
-#else
-    if (app.sync_proto().has_user_display_mode_default()) {
-      return;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    app.SetUserDisplayMode(ToMojomUserDisplayMode(
-        app.sync_proto().has_user_display_mode_default()
-            ? app.sync_proto().user_display_mode_default()
-            : sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE));
   }
 
  protected:
@@ -228,7 +198,7 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
-  const uint32_t num_apps = 100;
+  const uint32_t num_apps = 1000;
 
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = 0});
   webapps::AppId app_id = app->app_id();
@@ -309,138 +279,13 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 // Read a database where all apps are already in a valid state, so there should
 // be no difference between the apps written and read.
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/true);
+  Registry registry = WriteWebApps(100);
 
   InitSyncBridge();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
   EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry));
   EXPECT_EQ(database_factory().ReadMetadata().version(),
             WebAppDatabase::GetCurrentDatabaseVersion());
-}
-
-// Read a database where some apps will be migrated at read time.
-TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
-  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
-
-  InitSyncBridge();
-
-  EXPECT_EQ(database_factory().ReadMetadata().version(),
-            WebAppDatabase::GetCurrentDatabaseVersion());
-
-  // Some apps should have been migrated from an invalid state (missing
-  // UserDisplayMode setting for the current platform) at read time.
-  EXPECT_FALSE(IsRegistryEqual(mutable_registrar().registry(), registry));
-
-  // Update the registry so apps reflect expected migrated state.
-  for (auto& [app_id, app] : registry) {
-    EnsureHasUserDisplayModeForCurrentPlatform(*app);
-    test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
-    if (app->GetSources().Has(WebAppManagement::kSync)) {
-      app->AddSource(WebAppManagement::kUserInstalled);
-    }
-  }
-
-  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
-  EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry));
-}
-
-// Read a database where some apps will be migrated from not having a
-// kUserInstalled source to having one.
-TEST_F(WebAppDatabaseTest,
-       OpenDatabaseAndReadRegistryWithSourceUpgradeMigration) {
-  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
-  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
-  proto::DatabaseMetadata metadata;
-  metadata.set_version(0);
-  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
-                         metadata.SerializeAsString());
-  WriteBatch(std::move(write_batch));
-
-  InitSyncBridge();
-
-  EXPECT_EQ(database_factory().ReadMetadata().version(),
-            WebAppDatabase::GetCurrentDatabaseVersion());
-
-  bool found_migrated_apps = false;
-  // Some apps should not have a kUserInstalled source before migration but will
-  // have one after.
-  for (auto& [app_id, app] : registry) {
-    if (app->GetSources().Has(WebAppManagement::kSync)) {
-      found_migrated_apps |=
-          !app->GetSources().Has(WebAppManagement::kUserInstalled);
-      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-          WebAppManagement::kUserInstalled));
-      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-          WebAppManagement::kSync));
-    }
-  }
-  EXPECT_TRUE(found_migrated_apps)
-      << "Generated apps did not include any that needed migrating.";
-}
-
-// Read a database where some apps will be migrated from not having a
-// kUserInstalled source to having one. Additionally with sync disabled, the
-// sync source should be removed.
-TEST_F(WebAppDatabaseTest,
-       OpenDatabaseAndReadRegistryWithSourceUpgradeMigrationNoSync) {
-  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
-  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
-  proto::DatabaseMetadata metadata;
-  metadata.set_version(0);
-  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
-                         metadata.SerializeAsString());
-  WriteBatch(std::move(write_batch));
-
-  database_factory().set_is_syncing_apps(false);
-  InitSyncBridge();
-
-  bool found_migrated_apps = false;
-  // Some apps should not have a kUserInstalled source before migration but will
-  // have one after.
-  for (auto& [app_id, app] : registry) {
-    if (app->GetSources().Has(WebAppManagement::kSync)) {
-      found_migrated_apps |=
-          !app->GetSources().Has(WebAppManagement::kUserInstalled);
-
-      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-          WebAppManagement::kUserInstalled));
-      EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
-          WebAppManagement::kSync));
-    }
-  }
-  EXPECT_TRUE(found_migrated_apps)
-      << "Generated apps did not include any that needed migrating.";
-}
-
-// Read a database where some apps will be migrated from having a kUserInstalled
-// source to not having one.
-TEST_F(WebAppDatabaseTest,
-       OpenDatabaseAndReadRegistryWithSourceDowngradeMigration) {
-  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
-  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
-  proto::DatabaseMetadata metadata;
-  metadata.set_version(1);
-  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
-                         metadata.SerializeAsString());
-  WriteBatch(std::move(write_batch));
-
-  InitSyncBridge();
-
-  EXPECT_EQ(database_factory().ReadMetadata().version(),
-            WebAppDatabase::GetCurrentDatabaseVersion());
-
-  bool found_migrated_apps = false;
-  // Some apps should have a kUserInstalled source before migration but not
-  // after.
-  for (auto& [app_id, app] : registry) {
-    if (app->GetSources().Has(WebAppManagement::kUserInstalled)) {
-      found_migrated_apps = true;
-      EXPECT_EQ(registrar().GetAppById(app_id)->GetSources(),
-                app->GetSources());
-    }
-  }
-  EXPECT_TRUE(found_migrated_apps)
-      << "Generated apps did not include any that needed migrating.";
 }
 
 TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
@@ -503,212 +348,6 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   } else {
     EXPECT_FALSE(app->chromeos_data().has_value());
   }
-}
-
-TEST_F(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
-  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
-  std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
-
-  base_proto->mutable_sync_data()->set_user_display_mode_cros(
-      sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  base_proto->mutable_sync_data()->clear_user_display_mode_default();
-
-  std::vector<std::unique_ptr<proto::WebApp>> protos;
-  protos.push_back(std::move(base_proto));
-  database_factory().WriteProtos(protos);
-
-  InitSyncBridge();
-
-  const WebApp* app = registrar().GetAppById(base_app->app_id());
-  std::unique_ptr<proto::WebApp> new_proto = WebAppToProto(*app);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On CrOS, the default field should remain absent.
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_default());
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kBrowser);
-#else
-  // On non-CrOS, both platform's fields should now be populated.
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  // Default value doesn't migrate from CrOS value so should fall back to
-  // standalone.
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kStandalone);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-TEST_F(WebAppDatabaseTest,
-       UserDisplayModeDefaultOnly_MigratesToCurrentPlatform) {
-  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
-  std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
-
-  base_proto->mutable_sync_data()->set_user_display_mode_default(
-      sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  base_proto->mutable_sync_data()->clear_user_display_mode_cros();
-
-  std::vector<std::unique_ptr<proto::WebApp>> protos;
-  protos.push_back(std::move(base_proto));
-  database_factory().WriteProtos(protos);
-
-  InitSyncBridge();
-
-  const WebApp* app = registrar().GetAppById(base_app->app_id());
-
-  // Regardless of platform, the current platform's UDM should be set: the
-  // default value should have been migrated in CrOS.
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kBrowser);
-
-  std::unique_ptr<proto::WebApp> new_proto = WebAppToProto(*app);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On CrOS, both platform's fields should now be populated.
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-#else
-  // On non-CrOS, the CrOS field should remain absent.
-  EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_cros());
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
-  InitSyncBridge();
-
-  const auto start_url = GURL("https://example.com/");
-  const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(start_url));
-  const std::string name = "Name";
-
-  auto app = std::make_unique<WebApp>(app_id);
-
-  // Required fields:
-  app->SetStartUrl(start_url);
-  app->SetManifestId(GenerateManifestIdFromStartUrlOnly(start_url));
-  app->SetName(name);
-  app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-  app->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
-  // chromeos_data should always be set on ChromeOS.
-  if (IsChromeOsDataMandatory()) {
-    app->SetWebAppChromeOsData(std::make_optional<WebAppChromeOsData>());
-  }
-
-  EXPECT_FALSE(app->HasAnySources());
-  for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
-    app->AddSource(type);
-    EXPECT_TRUE(app->HasAnySources());
-  }
-
-  // Let optional fields be empty:
-  EXPECT_EQ(app->display_mode(), DisplayMode::kUndefined);
-  EXPECT_TRUE(app->display_mode_override().empty());
-  EXPECT_TRUE(app->untranslated_description().empty());
-  EXPECT_TRUE(app->scope().is_empty());
-  EXPECT_FALSE(app->theme_color().has_value());
-  EXPECT_FALSE(app->dark_mode_theme_color().has_value());
-  EXPECT_FALSE(app->background_color().has_value());
-  EXPECT_FALSE(app->dark_mode_background_color().has_value());
-  EXPECT_TRUE(app->manifest_icons().empty());
-  EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::ANY).empty());
-  EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
-  EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
-  EXPECT_FALSE(app->is_generated_icon());
-  EXPECT_FALSE(app->is_from_sync_and_pending_installation());
-  EXPECT_FALSE(app->sync_proto().has_name());
-  EXPECT_FALSE(app->sync_proto().has_theme_color());
-  EXPECT_FALSE(app->sync_proto().has_scope());
-  EXPECT_EQ(app->sync_proto().icon_infos_size(), 0);
-  EXPECT_TRUE(app->file_handlers().empty());
-  EXPECT_FALSE(app->share_target().has_value());
-  EXPECT_TRUE(app->additional_search_terms().empty());
-  EXPECT_TRUE(app->protocol_handlers().empty());
-  EXPECT_TRUE(app->allowed_launch_protocols().empty());
-  EXPECT_TRUE(app->disallowed_launch_protocols().empty());
-  EXPECT_TRUE(app->scope_extensions().empty());
-  EXPECT_TRUE(app->validated_scope_extensions().empty());
-  EXPECT_TRUE(app->last_badging_time().is_null());
-  EXPECT_TRUE(app->last_launch_time().is_null());
-  EXPECT_TRUE(app->first_install_time().is_null());
-  EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
-  EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
-  EXPECT_TRUE(app->manifest_url().is_empty());
-  EXPECT_TRUE(app->permissions_policy().empty());
-  EXPECT_FALSE(app->isolation_data().has_value());
-  EXPECT_TRUE(app->latest_install_time().is_null());
-
-  RegisterApp(std::move(app));
-
-  Registry registry = database_factory().ReadRegistry();
-  EXPECT_EQ(1UL, registry.size());
-
-  std::unique_ptr<WebApp>& app_copy = registry.at(app_id);
-
-  // Required fields were serialized:
-  EXPECT_EQ(app_id, app_copy->app_id());
-  EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(start_url),
-            app_copy->manifest_id());
-  EXPECT_EQ(start_url, app_copy->start_url());
-  EXPECT_EQ(name, app_copy->untranslated_name());
-  EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app_copy->user_display_mode());
-  EXPECT_EQ(proto::SUGGESTED_FROM_ANOTHER_DEVICE, app_copy->install_state());
-
-  auto& chromeos_data = app_copy->chromeos_data();
-  if (IsChromeOsDataMandatory()) {
-    EXPECT_TRUE(chromeos_data->show_in_launcher);
-    EXPECT_TRUE(chromeos_data->show_in_search_and_shelf);
-    EXPECT_TRUE(chromeos_data->show_in_management);
-    EXPECT_FALSE(chromeos_data->is_disabled);
-    EXPECT_FALSE(chromeos_data->oem_installed);
-  } else {
-    EXPECT_FALSE(chromeos_data.has_value());
-  }
-
-  for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
-    EXPECT_TRUE(app_copy->HasAnySources());
-    app_copy->RemoveSource(type);
-  }
-  EXPECT_FALSE(app_copy->HasAnySources());
-
-  // No optional fields.
-  EXPECT_EQ(app_copy->display_mode(), DisplayMode::kUndefined);
-  EXPECT_TRUE(app_copy->display_mode_override().empty());
-  EXPECT_TRUE(app_copy->untranslated_description().empty());
-  EXPECT_TRUE(app_copy->scope().is_empty());
-  EXPECT_FALSE(app_copy->theme_color().has_value());
-  EXPECT_FALSE(app_copy->dark_mode_theme_color().has_value());
-  EXPECT_FALSE(app_copy->background_color().has_value());
-  EXPECT_FALSE(app_copy->dark_mode_background_color().has_value());
-  EXPECT_TRUE(app_copy->last_badging_time().is_null());
-  EXPECT_TRUE(app_copy->last_launch_time().is_null());
-  EXPECT_TRUE(app_copy->first_install_time().is_null());
-  EXPECT_TRUE(app_copy->manifest_icons().empty());
-  EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::ANY).empty());
-  EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
-  EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
-  EXPECT_FALSE(app_copy->is_generated_icon());
-  EXPECT_FALSE(app_copy->is_from_sync_and_pending_installation());
-  EXPECT_FALSE(app_copy->sync_proto().has_name());
-  EXPECT_FALSE(app_copy->sync_proto().has_theme_color());
-  EXPECT_FALSE(app_copy->sync_proto().has_scope());
-  EXPECT_EQ(app_copy->sync_proto().icon_infos_size(), 0);
-  EXPECT_TRUE(app_copy->file_handlers().empty());
-  EXPECT_FALSE(app_copy->share_target().has_value());
-  EXPECT_TRUE(app_copy->additional_search_terms().empty());
-  EXPECT_TRUE(app_copy->allowed_launch_protocols().empty());
-  EXPECT_TRUE(app_copy->disallowed_launch_protocols().empty());
-  EXPECT_TRUE(app_copy->scope_extensions().empty());
-  EXPECT_TRUE(app_copy->validated_scope_extensions().empty());
-  EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
-  EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
-  EXPECT_TRUE(app_copy->manifest_url().is_empty());
-  EXPECT_TRUE(app_copy->permissions_policy().empty());
-  EXPECT_FALSE(app_copy->tab_strip());
-  EXPECT_TRUE(app_copy->latest_install_time().is_null());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {

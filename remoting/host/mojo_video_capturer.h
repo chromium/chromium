@@ -44,8 +44,8 @@ class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback,
 
   // mojom::VideoCapturer implementation.
   void CaptureFrame() override;
+  void SetComposeEnabled(bool enabled) override;
 
-  void SetComposeEnabled(bool enabled);
   void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
   void SetMouseCursorPosition(const webrtc::DesktopVector& position);
 

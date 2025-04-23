@@ -8,7 +8,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 // E2E tests for PrimaryTts.
 
 /** Test fixture. */
-ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BackgroundTtsTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -26,7 +26,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Preprocess', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'Preprocess', function() {
   const preprocess = tts.preprocess.bind(tts);
 
   // Punctuation.
@@ -86,7 +86,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Preprocess', function() {
   assertEquals('space', preprocess('\u00a0'));
 });
 
-TEST_F('ChromeVoxBackgroundTtsTest', 'UpdateVoice', function() {
+TEST_F('ChromeVoxMV2BackgroundTtsTest', 'UpdateVoice', function() {
   const voices = [
     {lang: 'zh-CN', voiceName: 'Chinese'},
     {lang: 'zh-TW', voiceName: 'Chinese (Taiwan)'},
@@ -146,7 +146,7 @@ TEST_F('ChromeVoxBackgroundTtsTest', 'UpdateVoice', function() {
 
 // This test only works if Google tts is installed. Run it locally.
 TEST_F(
-    'ChromeVoxBackgroundTtsTest', 'DISABLED_EmptyStringCallsCallbacks',
+    'ChromeVoxMV2BackgroundTtsTest', 'DISABLED_EmptyStringCallsCallbacks',
     function() {
       let startCalls = 0;
       let endCalls = 0;
@@ -169,7 +169,7 @@ TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBackgroundTtsTest', 'CapitalizeSingleLettersAfterNumbers',
+    'ChromeVoxMV2BackgroundTtsTest', 'CapitalizeSingleLettersAfterNumbers',
     function() {
       const preprocess = tts.preprocess.bind(tts);
 
@@ -186,24 +186,25 @@ AX_TEST_F(
           preprocess('Please do the shopping at 3 a thing came up at work'));
     });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'AnnounceCapitalLetters', function() {
-  const preprocess = tts.preprocess.bind(tts);
+AX_TEST_F(
+    'ChromeVoxMV2BackgroundTtsTest', 'AnnounceCapitalLetters', function() {
+      const preprocess = tts.preprocess.bind(tts);
 
-  assertEquals('A', preprocess('A'));
+      assertEquals('A', preprocess('A'));
 
-  // Only announce capital for solo capital letters.
-  SettingsManager.set('capitalStrategy', 'announceCapitals');
-  assertEquals('Cap A', preprocess('A'));
-  assertEquals('Cap Z', preprocess('Z'));
-  assertEquals('Cap Ａ', preprocess('Ａ'));
-  assertEquals('Cap Б', preprocess('Б'));
+      // Only announce capital for solo capital letters.
+      SettingsManager.set('capitalStrategy', 'announceCapitals');
+      assertEquals('Cap A', preprocess('A'));
+      assertEquals('Cap Z', preprocess('Z'));
+      assertEquals('Cap Ａ', preprocess('Ａ'));
+      assertEquals('Cap Б', preprocess('Б'));
 
-  // Do not announce capital for the following inputs.
-  assertEquals('BB', preprocess('BB'));
-  assertEquals('A.', preprocess('A.'));
-});
+      // Do not announce capital for the following inputs.
+      assertEquals('BB', preprocess('BB'));
+      assertEquals('A.', preprocess('A.'));
+    });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'PunctuationMode', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PunctuationMode', function() {
   const PUNCTUATION_ECHO_NONE = '0';
   const PUNCTUATION_ECHO_SOME = '1';
   const PUNCTUATION_ECHO_ALL = '2';
@@ -253,7 +254,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'PunctuationMode', function() {
       lastSpokenTextString);
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'NumberReadingStyle', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'NumberReadingStyle', function() {
   let lastSpokenTextString = '';
   tts.speakUsingQueue_ = function(utterance, _) {
     lastSpokenTextString = utterance.textString;
@@ -292,7 +293,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'NumberReadingStyle', function() {
       'An unanswered call lasts for ３ ０ seconds.', lastSpokenTextString);
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'SplitLongText', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'SplitLongText', function() {
   const spokenTextStrings = [];
   tts.speakUsingQueue_ = function(utterance, _) {
     spokenTextStrings.push(utterance.textString);
@@ -307,7 +308,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'SplitLongText', function() {
   assertEquals(2, spokenTextStrings.length);
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'SplitUntilSmall', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'SplitUntilSmall', function() {
   const split = PrimaryTts.splitUntilSmall;
 
   // A single delimiter.
@@ -348,7 +349,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'SplitUntilSmall', function() {
   assertEqualsJSON(['a'], split('a', 'b'));
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Phonetics', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'Phonetics', function() {
   let spokenStrings = [];
   tts.speakUsingQueue_ = (utterance, ...rest) => {
     spokenStrings.push(utterance.textString);
@@ -417,7 +418,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Phonetics', function() {
   assertEquals(1, spokenStrings.length);
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'PitchChanges', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PitchChanges', function() {
   const preprocess = tts.preprocess.bind(tts);
   const props = {relativePitch: -0.3};
   SettingsManager.set('usePitchChanges', true);
@@ -428,7 +429,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'PitchChanges', function() {
   assertFalse(props.hasOwnProperty('relativePitch'));
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'InterjectUtterances', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'InterjectUtterances', function() {
   // Fake out setTimeout for our purposes.
   let lastSetTimeoutCallback;
   setTimeout = (callback, delay) => {
@@ -526,7 +527,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'InterjectUtterances', function() {
   ]);
 });
 
-AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Mute', function() {
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'Mute', function() {
   // Fake out setTimeout for our purposes.
   let lastSetTimeoutCallback;
   setTimeout = (callback, delay) => {
@@ -556,18 +557,20 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Mute', function() {
   this.expectUtteranceQueueIsLike([]);
 });
 
-TEST_F('ChromeVoxBackgroundTtsTest', 'ResetTtsSettingsClearsVoice', function() {
-  this.newCallback(async () => {
-    ChromeVox.tts.ttsEngines_[0].currentVoice = '';
-    CommandHandlerInterface.instance.onCommand('resetTextToSpeechSettings');
-    await new Promise(r => {
-      ChromeVox.tts.speak = textString => {
-        if (textString === 'Reset text to speech settings to default values') {
-          r();
-        }
-      };
+TEST_F(
+    'ChromeVoxMV2BackgroundTtsTest', 'ResetTtsSettingsClearsVoice', function() {
+      this.newCallback(async () => {
+        ChromeVox.tts.ttsEngines_[0].currentVoice = '';
+        CommandHandlerInterface.instance.onCommand('resetTextToSpeechSettings');
+        await new Promise(r => {
+          ChromeVox.tts.speak = textString => {
+            if (textString ===
+                'Reset text to speech settings to default values') {
+              r();
+            }
+          };
+        });
+        assertEquals(
+            constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
+      })();
     });
-    assertEquals(
-        constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
-  })();
-});

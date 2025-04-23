@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Els llocs web poden demanar-te la ubicació</translation>
 <translation id="3658847490588580244">Full inferior del navegador predeterminat</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> lloc web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}other{<ph name="RWS_MEMBERS_COUNT" /> llocs web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}}</translation>
+<translation id="3670480940339182416">Els llocs web poden utilitzar l'optimitzador de V8</translation>
 <translation id="3676777756440746804">Els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3697164069658504920">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius USB. Quan aquesta opció està desactivada, els llocs web no poden fer servir dispositius USB.</translation>
+<translation id="3703430731944883733">Gestiona el teu feed</translation>
 <translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3708684582558000260">No permetis que els llocs web tancats acabin d'enviar o de rebre dades</translation>
 <translation id="3709818294139939629">Accés del lloc web suprimit</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Pregunta abans de permetre que els llocs web vegin i canviïn la informació que hi ha als dispositius amb NFC (opció recomanada)</translation>
 <translation id="4200726100658658164">Obre la configuració d'ubicació</translation>
 <translation id="421742575134139848">És possible que els llocs web reprodueixin so per proporcionar àudio per a música, vídeos i altres continguts multimèdia</translation>
+<translation id="4217710972110098902">Connectat a un port en sèrie</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Quan surts d'un lloc web, el lloc pot continuar amb la sincronització per finalitzar les taques que estava fent, com ara penjar fotos o enviar un missatge de xat</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
+<translation id="4578289292431526768">Som-hi</translation>
 <translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="461356340001513807">Et permet iniciar la sessió en llocs web amb un servei d'identitat utilitzant el compte que ja tens</translation>
 <translation id="4635969503923889910">No permetis que els llocs web utilitzin dispositius amb NFC</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat</translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
+<translation id="5743425052258407233">Obtén l'historial en tots els teus dispositius perquè puguis continuar fàcilment des d'on ho vas deixar</translation>
 <translation id="5750869797196646528">Seguiment de mans</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5877248419911025165">Replega totes les sol·licituds</translation>
+<translation id="5878945009165002849">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat</translation>
 <translation id="5884085660368669834">Preferència de lloc web</translation>
 <translation id="5887687176710214216">Darrera visita: ahir</translation>
 <translation id="5908617755156109052">No permetis que els llocs web creïn un mapa 3D del teu entorn ni que facin un seguiment de la posició de la càmera</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6320088164292336938">Vibració</translation>
-<translation id="6344622098450209924">Protecció antiseguiment</translation>
 <translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="640163077447496506">Caduca avui</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Revoca el permís d'accés al dispositiu</translation>
 <translation id="8471525937465764768">Els llocs web solen connectar-se a dispositius USB per a funcions com ara desar dades en un dispositiu d'emmagatzematge o imprimir un document</translation>
 <translation id="8473055640493819707">L'aplicació <ph name="APP_NAME" /> no està actualitzada. Torna a instal·lar-la.</translation>
+<translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="848952951823693243">Sol·licita sempre el lloc web per a mòbils</translation>
 <translation id="8492822722330266509">Els llocs web poden enviar finestres emergents i utilitzar redireccions</translation>

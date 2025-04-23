@@ -270,5 +270,3 @@ PrefService* LensOverlayTabHelper::GetProfilePrefs() {
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   return profile->GetPrefs();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LensOverlayTabHelper)

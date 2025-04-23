@@ -53,8 +53,6 @@ struct CreateRandomWebAppParams {
 };
 std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params);
 
-void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app);
-
 void TestAcceptDialogCallback(
     base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,

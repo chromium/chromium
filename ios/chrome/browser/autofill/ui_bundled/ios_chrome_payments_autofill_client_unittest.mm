@@ -215,7 +215,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillSaveCardBottomSheet);
 
-  payments_client()->ConfirmSaveCreditCardToCloud(
+  payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_num_strikes(0)
@@ -226,7 +226,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        DoNotShowSaveCardBottomSheet_FlagDisabled) {
-  payments_client()->ConfirmSaveCreditCardToCloud(
+  payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_num_strikes(0)
@@ -240,7 +240,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillSaveCardBottomSheet);
 
-  payments_client()->ConfirmSaveCreditCardToCloud(
+  payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_num_strikes(1)
@@ -254,7 +254,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillSaveCardBottomSheet);
 
-  payments_client()->ConfirmSaveCreditCardToCloud(
+  payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_name_from_user(true)
@@ -269,7 +269,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillSaveCardBottomSheet);
 
-  payments_client()->ConfirmSaveCreditCardToCloud(
+  payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_expiration_date_from_user(true)

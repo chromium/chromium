@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
-#include "ash/boca/on_task/on_task_pod_controller.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
@@ -15,6 +15,8 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -25,7 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -116,14 +118,15 @@ SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
 
   // TODO (b/354007279): Filter out SWA window instances that are not managed by
   // OnTask (for instance, those manually spawned by consumers).
-  Browser* const browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
+  BrowserDelegate* const browser =
+      BrowserController::GetInstance()->GetDelegate(
+          FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA));
   // Verify that there is no browser instance and that there is no scheduled
   // task to delete the browser instance following window close.
-  if (!browser || browser->IsBrowserClosing()) {
+  if (!browser || browser->IsClosing()) {
     return SessionID::InvalidValue();
   }
-  return browser->session_id();
+  return browser->GetSessionID();
 }
 
 void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
@@ -152,6 +155,11 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
     // Nothing to do.
     return;
   }
+
+  // Move the browser window to the top of the layer tree before pinning or
+  // unpinning it. This fixes a bug on tablets that results in no content being
+  // rendered on pinning.
+  browser->window()->Show();
   aura::Window* const native_window = browser->window()->GetNativeWindow();
   if (pinned) {
     PinWindow(native_window, /*trusted=*/true);
@@ -191,33 +199,50 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
     return;
   }
 
-  auto* const immersive_mode_controller =
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->immersive_mode_controller();
-  bool avoid_using_immersive_mode =
-      platform_util::IsBrowserLockedFullscreen(browser) && paused;
-  if (avoid_using_immersive_mode) {
-    // Hide tab strip in pause mode.
-    immersive_mode_controller->SetEnabled(false);
-  } else if (platform_util::IsBrowserLockedFullscreen(browser)) {
-    immersive_mode_controller->SetEnabled(true);
-  }
-
   if (paused) {
     // Focus on the boca homepage in pause mode.
     browser->tab_strip_model()->ActivateTabAt(0);
-  }
 
+    // Cache current camera and microphone states before pausing, only if not
+    // already cached.
+    if (!was_camera_disabled_.has_value()) {
+      auto* const camera_controller = ash::CameraPrivacySwitchController::Get();
+      if (camera_controller) {
+        was_camera_disabled_ = camera_controller->IsCameraAccessForceDisabled();
+      }
+    }
+    if (!was_microphone_disabled_.has_value()) {
+      auto* const audio_handler = ash::CrasAudioHandler::Get();
+      if (audio_handler) {
+        was_microphone_disabled_ = audio_handler->IsInputMuted();
+      }
+    }
+
+    // Force pause camera and microphone inputs.
+    PauseCameraInput(true);
+    PauseMicrophoneInput(true);
+  } else {
+    // Restore inputs to their cached states only if previous states were
+    // cached.
+    if (was_camera_disabled_.has_value()) {
+      PauseCameraInput(was_camera_disabled_.value());
+    }
+    if (was_microphone_disabled_.has_value()) {
+      PauseMicrophoneInput(was_microphone_disabled_.value());
+    }
+
+    // Clear the cached states.
+    was_camera_disabled_ = std::nullopt;
+    was_microphone_disabled_ = std::nullopt;
+  }
   EnableOrDisableCommandsForTabSwitch(window_id, !paused);
 
-  // Update Ontask pod to enable or disable toggle tab strip visibility.
+  // Configure SWA window and the OnTask pod for paused mode. This needs to be
+  // done after switching tabs to ensure the pod is not visible when in paused
+  // mode.
   LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
-  if (!window_tracker) {
-    return;
-  }
-  auto* const pod_controller = window_tracker->on_task_pod_controller();
-  if (pod_controller) {
-    pod_controller->OnPauseModeChanged(paused);
+  if (window_tracker) {
+    window_tracker->OnPauseModeChanged(paused);
   }
 }
 
@@ -242,6 +267,21 @@ void OnTaskSystemWebAppManagerImpl::EnableOrDisableCommandsForTabSwitch(
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_5, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_6, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_7, enabled);
+}
+
+void OnTaskSystemWebAppManagerImpl::PauseCameraInput(bool paused) {
+  auto* const camera_controller = ash::CameraPrivacySwitchController::Get();
+  if (camera_controller) {
+    camera_controller->SetForceDisableCameraAccess(paused);
+  }
+}
+
+void OnTaskSystemWebAppManagerImpl::PauseMicrophoneInput(bool paused) {
+  auto* const audio_handler = ash::CrasAudioHandler::Get();
+  if (audio_handler) {
+    audio_handler->SetInputMute(
+        paused, ash::CrasAudioHandler::InputMuteChangeMethod::kOther);
+  }
 }
 
 // TODO(b/367417612): Add unit test for this function.

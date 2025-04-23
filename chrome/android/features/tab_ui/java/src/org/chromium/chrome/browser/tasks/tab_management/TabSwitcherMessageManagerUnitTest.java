@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManage
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -92,6 +94,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -112,6 +115,7 @@ public class TabSwitcherMessageManagerUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         TrackerFactory.setTrackerForTests(mTracker);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         mTab1 = MockTab.createAndInitialize(TAB1_ID, mProfile);
         mTab2 = MockTab.createAndInitialize(TAB2_ID, mProfile);

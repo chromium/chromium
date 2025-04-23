@@ -224,7 +224,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     return WriteFileSystemHandle(kFileSystemDirectoryHandleTag, dir_handle);
   }
   if (auto* certificate = dispatcher.ToMostDerived<RTCCertificate>()) {
-    rtc::RTCCertificatePEM pem = certificate->Certificate()->ToPEM();
+    webrtc::RTCCertificatePEM pem = certificate->Certificate()->ToPEM();
     WriteAndRequireInterfaceTag(kRTCCertificateTag);
     WriteUTF8String(pem.private_key().c_str());
     WriteUTF8String(pem.certificate().c_str());
@@ -723,7 +723,7 @@ bool V8ScriptValueSerializerForModules::WriteRTCDataChannel(
   auto* attachment = GetSerializedScriptValue()
                          ->GetOrCreateAttachment<RTCDataChannelAttachment>();
   using NativeDataChannelVector =
-      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+      Vector<webrtc::scoped_refptr<webrtc::DataChannelInterface>>;
   NativeDataChannelVector& channels = attachment->DataChannels();
   channels.push_back(channel->TransferUnderlyingChannel());
   const uint32_t index = static_cast<uint32_t>(channels.size() - 1);

@@ -40,7 +40,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
     int relevance;
     size_t strong_word_matches;
     size_t weak_word_matches;
-    std::string rule;
+    std::string source;
   };
 
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
@@ -117,7 +117,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // Helper method to get `destination_url` based on `suggestion_type` for
   // `CreateMatch()`.
   std::string GetMatchDestinationUrl(const base::Value::Dict& result,
-                                     const TemplateURLRef& url_ref,
                                      SuggestionType suggestion_type) const;
 
   // Helper method to get `description` based on `suggestion_type` for

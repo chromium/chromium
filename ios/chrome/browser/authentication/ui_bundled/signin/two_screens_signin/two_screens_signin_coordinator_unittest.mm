@@ -11,9 +11,10 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -71,9 +72,11 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     coordinator_ = [[TwoScreensSigninCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()
+                      contextStyle:SigninContextStyle::kDefault
                        accessPoint:signin_metrics::AccessPoint::kSettings
                        promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NO_SIGNIN_PROMO];
+                                       PROMO_ACTION_NO_SIGNIN_PROMO
+              continuationProvider:NotReachedContinuationProvider()];
     coordinator_.signinCompletion = ^(
         SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
@@ -151,8 +154,8 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
   // Expect the signin screen to be presented.
   EXPECT_NE(PresentedViewController(), nil);
-  EXPECT_TRUE(
-      [TopViewController() isKindOfClass:[SigninScreenViewController class]]);
+  EXPECT_TRUE([TopViewController()
+      isKindOfClass:[FullscreenSigninScreenViewController class]]);
   SigninFakeIdentity();
 
   NextScreen();

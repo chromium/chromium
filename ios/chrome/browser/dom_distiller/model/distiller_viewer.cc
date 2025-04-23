@@ -33,7 +33,7 @@ DistillerViewer::DistillerViewer(
       callback_(std::move(callback)) {
   DCHECK(url.is_valid());
   SendCommonJavaScript();
-  distiller_ = distiller_factory->CreateDistillerForUrl(url);
+  distiller_ = distiller_factory->CreateDistiller();
   distiller_->DistillPage(
       url, std::move(page),
       base::BindOnce(&DistillerViewer::OnDistillerFinished,

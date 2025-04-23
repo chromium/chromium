@@ -280,28 +280,6 @@
         hidden="[[!is3pcdRedesignEnabled_]]"
         icon="settings:visibility-off">
     </settings-toggle-button>
-    <template is="dom-if" if="[[isIpProtectionAvailable_]]">
-      <settings-toggle-button
-          id="ipProtectionToggle"
-          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
-          label="$i18n{trackingProtectionIpProtectionToggleLabel}"
-          sub-label-with-link="
-            $i18n{trackingProtectionIpProtectionToggleSubLabel}"
-          on-settings-boolean-control-change="onIpProtectionChanged_"
-          icon="settings:location-disabled">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
-      <settings-toggle-button
-          id="fingerprintingProtectionToggle"
-          pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
-          label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
-          sub-label="
-            $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
-          on-settings-boolean-control-change="onFpProtectionChanged_"
-          icon="settings:fingerprint-off">
-      </settings-toggle-button>
-    </template>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="site-data-trigger" class="hr"

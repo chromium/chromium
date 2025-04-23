@@ -56,6 +56,7 @@
   _viewController.mutator = nil;
   _mediator.consumer = nil;
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
 }
 

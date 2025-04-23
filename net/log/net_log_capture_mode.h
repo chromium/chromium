@@ -22,13 +22,28 @@ namespace net {
 // Note the numeric values are used in a bitfield (NetLogCaptureModeSet) so must
 // be sequential starting from 0, and not exceed 31.
 enum class NetLogCaptureMode : uint32_t {
+  // Logging level that only allows fields that are known to be safe from a
+  // privacy perspective.
+  //
+  // Logs recorded at this level are generally safe to share with untrusted
+  // parties. They will not contain any information about IP addresses, host
+  // names, URLs, headers, etc. They will still contain information about
+  // timing, counts, and modes of operation (e.g. which version of HTTP is
+  // used).
+  //
+  // Note this is implemented using a centrally managed allowlist of param keys;
+  // see net_log_heavily_redacted_allowlist.h. Individual netlog entry producer
+  // callsites do not have any say in this. This is by design to make it harder
+  // for a given producer to accidentally log sensitive data.
+  kHeavilyRedacted = 0,
+
   // Default logging level, which is expected to be light-weight and
   // does best-effort stripping of privacy/security sensitive data.
   //
   //  * Includes most HTTP request/response headers, but strips cookies and
   //    auth.
   //  * Does not include the full bytes read/written to sockets.
-  kDefault = 0,
+  kDefault,
 
   // Logging level that includes everything from kDefault, plus sensitive data
   // that it may have strippped.

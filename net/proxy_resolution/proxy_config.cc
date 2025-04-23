@@ -33,12 +33,12 @@ void AddProxyListToValue(const char* name,
 }
 
 // Split the |uri_list| on commas and add each entry to |proxy_list| in turn.
-void AddProxyURIListToProxyList(std::string uri_list,
+void AddProxyURIListToProxyList(std::string_view uri_list,
                                 ProxyList* proxy_list,
                                 ProxyServer::Scheme default_scheme,
                                 bool allow_bracketed_proxy_chains,
                                 bool is_quic_allowed) {
-  base::StringTokenizer proxy_uri_list(uri_list, ",");
+  base::StringViewTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyChain(
         allow_bracketed_proxy_chains
@@ -90,7 +90,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
   }
 }
 
-void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
+void ProxyConfig::ProxyRules::ParseFromString(std::string_view proxy_rules,
                                               bool allow_bracketed_proxy_chains,
                                               bool is_quic_allowed) {
   // Reset.
@@ -110,13 +110,17 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
   CHECK(!is_quic_allowed);
 #endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
-  base::StringTokenizer proxy_server_list(proxy_rules, ";");
+  base::StringViewTokenizer proxy_server_list(proxy_rules, ";");
   while (proxy_server_list.GetNext()) {
-    base::StringTokenizer proxy_server_for_scheme(
+    // Have to use the constructor that takes iterators here (or copy the
+    // current token() on the stack), since StringViewTokenizer's constructor
+    // that takes a string_view doesn't make its own copy of the string_view,
+    // but instead holds onto iterators to it.
+    base::StringViewTokenizer proxy_server_for_scheme(
         proxy_server_list.token_begin(), proxy_server_list.token_end(), "=");
 
     while (proxy_server_for_scheme.GetNext()) {
-      std::string url_scheme = proxy_server_for_scheme.token();
+      std::string_view url_scheme = proxy_server_for_scheme.token();
 
       // If we fail to get the proxy server here, it means that
       // this is a regular proxy server configuration, i.e. proxies
@@ -126,14 +130,14 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
           continue;  // Unexpected.
         }
         AddProxyURIListToProxyList(
-            std::move(url_scheme), &single_proxies, ProxyServer::SCHEME_HTTP,
+            url_scheme, &single_proxies, ProxyServer::SCHEME_HTTP,
             allow_bracketed_proxy_chains, is_quic_allowed);
         type = Type::PROXY_LIST;
         return;
       }
 
       // Trim whitespace off the url scheme.
-      base::TrimWhitespaceASCII(url_scheme, base::TRIM_ALL, &url_scheme);
+      url_scheme = base::TrimWhitespaceASCII(url_scheme, base::TRIM_ALL);
 
       // Add it to the per-scheme mappings (if supported scheme).
       type = Type::PROXY_LIST_PER_SCHEME;
@@ -188,7 +192,7 @@ bool ProxyConfig::ProxyRules::Equals(const ProxyRules& other) const {
 }
 
 ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyListNoFallback(
-    const std::string& scheme) {
+    std::string_view scheme) {
   DCHECK_EQ(Type::PROXY_LIST_PER_SCHEME, type);
   if (scheme == "http") {
     return &proxies_for_http;

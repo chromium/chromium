@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -40,6 +41,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/data_sharing/public/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -65,6 +67,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -146,8 +149,17 @@ class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
   MultiStep ShowBookmarksBar() {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
-        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+            SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
         // On Mac the menu might still be animating closed, so wait for that.
         WaitForHide(AppMenuModel::kBookmarksMenuItem),
         WaitForShow(kBookmarkBarElementId));
@@ -198,10 +210,14 @@ class SavedTabGroupInteractiveTest
   void SetUp() override {
     if (IsMigrationEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingJoinOnly});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
+               data_sharing::features::kDataSharingFeature,
+               data_sharing::features::kDataSharingJoinOnly});
     }
 
     SavedTabGroupInteractiveTestBase::SetUp();
@@ -334,11 +350,11 @@ class SavedTabGroupInteractiveTest
       if (IsMigrationEnabled()) {
         TabGroupSyncServiceImpl* service_impl =
             static_cast<TabGroupSyncServiceImpl*>(service);
-        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
+        service_impl->GetModel()->AddedFromSync(std::move(group));
       } else {
-        TabGroupSyncServiceProxy* service_impl =
+        TabGroupSyncServiceProxy* service_proxy =
             static_cast<TabGroupSyncServiceProxy*>(service);
-        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
+        service_proxy->GetModel()->AddedFromSync(std::move(group));
       }
     });
   }
@@ -1085,6 +1101,163 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       // Validate if the menu item view loaded a favicon from the database
       WaitForShow(STGTabsMenuModel::kTab), WaitForTabMenuItemToLoadFavicon());
+}
+
+class TabGroupShortcutsInteractiveTest
+    : public SavedTabGroupInteractiveTestBase {
+ public:
+  TabGroupShortcutsInteractiveTest() = default;
+  ~TabGroupShortcutsInteractiveTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({tabs::kTabGroupShortcuts}, {});
+    SavedTabGroupInteractiveTestBase::SetUp();
+  }
+
+  StepBuilder WaitForIndexToBecomeActiveTab(int index) {
+    return Do([=, this]() {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return browser()->tab_strip_model()->active_index() == index;
+      }));
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       NewTabAddedToEndOfActiveTabsGroupWithKeyboardShortcut) {
+  ui::Accelerator create_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_CREATE_NEW_TAB_GROUP, &create_accelerator));
+
+  ui::Accelerator add_new_tab_to_group_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_ADD_NEW_TAB_TO_GROUP, &add_new_tab_to_group_accelerator));
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Use the keyboard shortcut command to create a new tab group.
+      SendAccelerator(kBrowserViewElementId, create_accelerator),
+      EnsurePresent(kTabGroupHeaderElementId),
+      // Refocus the first tab in order to close the tab group editor bubble.
+      PressButton(kSavedTabGroupButtonElementId),
+      // Use the keyboard shortcut command to add a new tab at the end of the
+      // group.
+      SendAccelerator(kBrowserViewElementId, add_new_tab_to_group_accelerator),
+
+      // Verify the tab was added to the group.
+      CheckResult(
+          [&]() {
+            int active_index = browser()->tab_strip_model()->active_index();
+            std::optional<TabGroupId> group_id =
+                browser()->tab_strip_model()->GetTabGroupForTab(active_index);
+            EXPECT_TRUE(group_id);
+
+            return browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group_id.value())
+                ->ListTabs()
+                .length();
+          },
+          2));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       CreateNewGroupAndCloseItWithKeyboardShortcuts) {
+  ui::Accelerator create_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_CREATE_NEW_TAB_GROUP, &create_accelerator));
+
+  ui::Accelerator close_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_CLOSE_TAB_GROUP, &close_accelerator));
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Use the keyboard shortcut command to create a new tab group.
+      SendAccelerator(kBrowserViewElementId, create_accelerator),
+      EnsurePresent(kTabGroupHeaderElementId),
+      // Refocus the first tab in order to close the tab group editor bubble.
+      PressButton(kSavedTabGroupButtonElementId),
+      // Use the keyboard shortcut command to close the tab group.
+      SendAccelerator(kBrowserViewElementId, close_accelerator),
+      WaitForHide(kTabGroupHeaderElementId),
+      // Verify the group is still saved.
+      EnsurePresent(kSavedTabGroupButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       FocusNextAndPrevTabGroupWithKeyboardShortcuts) {
+  ui::Accelerator create_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_CREATE_NEW_TAB_GROUP, &create_accelerator));
+
+  ui::Accelerator focus_next_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_TAB_GROUP, &focus_next_accelerator));
+
+  ui::Accelerator focus_prev_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_PREV_TAB_GROUP, &focus_prev_accelerator));
+
+  RunTestSequence(
+      FinishTabstripAnimations(),
+      // Use the keyboard shortcut command to create 3 new tab groups.
+      //
+      // NOTE: Ensure the tab group editor bubble that is opened when creating a
+      // new group is closed before running subsequent SendAccelerator calls.
+      // Otherwise the commands will get eaten by that view and the tests will
+      // fail.
+      SendAccelerator(kBrowserViewElementId, create_accelerator),
+      FinishTabstripAnimations(), WaitForIndexToBecomeActiveTab(1),
+      SendAccelerator(kTabGroupEditorBubbleId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kTabGroupEditorBubbleId), FinishTabstripAnimations(),
+
+      SendAccelerator(kBrowserViewElementId, create_accelerator),
+      FinishTabstripAnimations(), WaitForIndexToBecomeActiveTab(2),
+      SendAccelerator(kTabGroupEditorBubbleId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kTabGroupEditorBubbleId), FinishTabstripAnimations(),
+
+      SendAccelerator(kBrowserViewElementId, create_accelerator),
+      FinishTabstripAnimations(), WaitForIndexToBecomeActiveTab(3),
+      SendAccelerator(kTabGroupEditorBubbleId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kTabGroupEditorBubbleId), FinishTabstripAnimations(),
+
+      CheckResult(
+          [&]() {
+            return browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->ListTabGroups()
+                .size();
+          },
+          3u),
+
+      // Cycle through the first tabs of the next tab groups until we land on
+      // the third group again using the next keyboard shortcut.
+      SendAccelerator(kBrowserViewElementId, focus_next_accelerator),
+      WaitForIndexToBecomeActiveTab(1),
+      SendAccelerator(kBrowserViewElementId, focus_next_accelerator),
+      WaitForIndexToBecomeActiveTab(2),
+      SendAccelerator(kBrowserViewElementId, focus_next_accelerator),
+      WaitForIndexToBecomeActiveTab(3),
+
+      // Cycle through the first tabs of the previous tab groups until we land
+      // on the third group again using the prev keyboard shortcut.
+      SendAccelerator(kBrowserViewElementId, focus_prev_accelerator),
+      WaitForIndexToBecomeActiveTab(2),
+      SendAccelerator(kBrowserViewElementId, focus_prev_accelerator),
+      WaitForIndexToBecomeActiveTab(1),
+      SendAccelerator(kBrowserViewElementId, focus_prev_accelerator),
+      WaitForIndexToBecomeActiveTab(3));
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,

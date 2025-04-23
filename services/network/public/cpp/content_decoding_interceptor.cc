@@ -4,9 +4,12 @@
 
 #include "services/network/public/cpp/content_decoding_interceptor.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/current_process.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -25,6 +28,29 @@
 namespace network {
 
 namespace {
+
+// Defines suffixes for UMA histogram names based on the client type that
+// initiated the content decoding interception requiring a data pipe.
+constexpr auto kClientTypeToMetricsSuffix =
+    base::MakeFixedFlatMap<ContentDecodingInterceptor::ClientType,
+                           std::string_view>({
+        {ContentDecodingInterceptor::ClientType::kTest, "Test"},
+        {ContentDecodingInterceptor::ClientType::kURLLoaderThrottle,
+         "URLLoaderThrottle"},
+        {ContentDecodingInterceptor::ClientType::kCommitNavigation,
+         "CommitNavigation"},
+        {ContentDecodingInterceptor::ClientType::kDownload, "Download"},
+        {ContentDecodingInterceptor::ClientType::kNavigationPreload,
+         "NavigationPreload"},
+        {ContentDecodingInterceptor::ClientType::kSignedExchange,
+         "SignedExchange"},
+    });
+
+static_assert(
+    kClientTypeToMetricsSuffix.size() ==
+        static_cast<size_t>(ContentDecodingInterceptor::ClientType::kMaxValue) +
+            1,
+    "ClientType entry missing from kClientTypeToMetricsSuffix map.");
 
 uint32_t GetRendererSideContentDecodingPipeSize() {
   const int feature_param_value =
@@ -229,23 +255,54 @@ class Interceptor : public network::mojom::URLLoaderClient,
   // Stores the completion status received from the original URLLoaderClient.
   std::optional<network::URLLoaderCompletionStatus> completion_status_;
 };
-}  // namespace
 
-// static
-bool ContentDecodingInterceptor::
-    force_mojo_create_data_pipe_failure_for_testing_ = false;
+}  // namespace
 
 // static
 bool ContentDecodingInterceptor::
     is_network_serice_runnning_in_the_current_process_ = false;
 
+// static
+std::optional<ContentDecodingInterceptor::DataPipePair>
+ContentDecodingInterceptor::CreateDataPipePair(ClientType client_type) {
+  if (features::kRendererSideContentDecodingForceMojoFailureForTesting.Get()) {
+    LOG(ERROR) << "Simulating Mojo data pipe creation failure.";
+    return std::nullopt;
+  }
+  const MojoCreateDataPipeOptions options{
+      .struct_size = sizeof(MojoCreateDataPipeOptions),
+      .flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE,
+      .element_num_bytes = 1,
+      .capacity_num_bytes = GetRendererSideContentDecodingPipeSize()};
+  mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
+  const auto mojo_result = mojo::CreateDataPipe(&options, pipe_producer_handle,
+                                                pipe_consumer_handle);
+  const bool success = mojo_result == MOJO_RESULT_OK;
+  // Record success/failure UMA, suffixing the histogram name with the client
+  // type that requested the pipe.
+  base::UmaHistogramBoolean(
+      base::StrCat({"Network.ContentDecodingInterceptor.CreateDataPipeSuccess.",
+                    kClientTypeToMetricsSuffix.at(client_type)}),
+      success);
+  if (success) {
+    return std::make_pair(std::move(pipe_producer_handle),
+                          std::move(pipe_consumer_handle));
+  }
+  LOG(ERROR) << "Failed to create a Mojo data pipe.";
+  // The only expected failure reason in practice is resource exhaustion.
+  CHECK_EQ(mojo_result, MOJO_RESULT_RESOURCE_EXHAUSTED);
+  return std::nullopt;
+}
+
 void ContentDecodingInterceptor::Intercept(
     const std::vector<net::SourceStreamType>& types,
     network::mojom::URLLoaderClientEndpointsPtr& endpoints,
     mojo::ScopedDataPipeConsumerHandle& body,
+    DataPipePair data_pipe_pair,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner) {
   Intercept(
-      types,
+      types, std::move(data_pipe_pair),
       base::BindOnce(
           [](network::mojom::URLLoaderClientEndpointsPtr* original_endpoints,
              mojo::ScopedDataPipeConsumerHandle* original_body,
@@ -260,25 +317,16 @@ void ContentDecodingInterceptor::Intercept(
 
 void ContentDecodingInterceptor::Intercept(
     const std::vector<net::SourceStreamType>& types,
+    DataPipePair data_pipe_pair,
     base::OnceCallback<
         void(network::mojom::URLLoaderClientEndpointsPtr& endpoints,
              mojo::ScopedDataPipeConsumerHandle& body)> swap_callback,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner) {
   CHECK(!types.empty());
-  mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
-  mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
-  // Creates a data pipe for communication between Interceptor and
-  // URLLoaderClient in the caller side.
-  const MojoCreateDataPipeOptions options{
-      .struct_size = sizeof(MojoCreateDataPipeOptions),
-      .flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE,
-      .element_num_bytes = 1,
-      .capacity_num_bytes = GetRendererSideContentDecodingPipeSize()};
-  const auto mojo_result = mojo::CreateDataPipe(&options, pipe_producer_handle,
-                                                pipe_consumer_handle);
-  base::UmaHistogramExactLinear(
-      "Network.RendererSideContentDecoding.CreateDataPipe", mojo_result,
-      MOJO_RESULT_SHOULD_WAIT + 1);
+  CHECK(data_pipe_pair.first->is_valid());
+  CHECK(data_pipe_pair.second->is_valid());
+  mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle =
+      std::move(data_pipe_pair.second);
 
   // Create new endpoints for the intercepted URLLoader and URLLoaderClient.
   mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver;
@@ -290,16 +338,8 @@ void ContentDecodingInterceptor::Intercept(
   // side.
   std::move(swap_callback).Run(endpoints, pipe_consumer_handle);
 
-  if (mojo_result != MOJO_RESULT_OK ||
-      force_mojo_create_data_pipe_failure_for_testing_) {
-    mojo::Remote<network::mojom::URLLoaderClient> client(
-        std::move(url_loader_client));
-    client->OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
-    return;
-  }
   Intercept(types, std::move(pipe_consumer_handle),
-            std::move(pipe_producer_handle), std::move(endpoints->url_loader),
+            std::move(data_pipe_pair.first), std::move(endpoints->url_loader),
             std::move(endpoints->url_loader_client),
             std::move(url_loader_receiver), std::move(url_loader_client),
             worker_task_runner);
@@ -333,40 +373,16 @@ void ContentDecodingInterceptor::InterceptOnNetworkService(
     mojom::NetworkService& network_service,
     const std::vector<net::SourceStreamType>& types,
     network::mojom::URLLoaderClientEndpointsPtr& endpoints,
-    mojo::ScopedDataPipeConsumerHandle& body) {
-  mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
-  mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
-  const MojoCreateDataPipeOptions options{
-      .struct_size = sizeof(MojoCreateDataPipeOptions),
-      .flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE,
-      .element_num_bytes = 1,
-      .capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
-          network::DataPipeAllocationSize::kLargerSizeIfPossible)};
-  const auto mojo_result = mojo::CreateDataPipe(&options, pipe_producer_handle,
-                                                pipe_consumer_handle);
-  base::UmaHistogramExactLinear(
-      "Network.ContentDecodingInterceptor.CreateDataPipe", mojo_result,
-      MOJO_RESULT_SHOULD_WAIT + 1);
-  if (mojo_result != MOJO_RESULT_OK ||
-      force_mojo_create_data_pipe_failure_for_testing_) {
-    mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver;
-    mojo::Remote<network::mojom::URLLoaderClient> client_remote(
-        client_receiver.InitWithNewPipeAndPassRemote());
-    client_remote->OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
-    endpoints = network::mojom::URLLoaderClientEndpoints::New(
-        std::move(endpoints->url_loader), std::move(client_receiver));
-    return;
-  }
-
+    mojo::ScopedDataPipeConsumerHandle& body,
+    DataPipePair data_pipe_pair) {
   mojo::PendingRemote<network::mojom::URLLoader> new_url_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> new_url_loader_client;
   network_service.InterceptUrlLoaderForBodyDecoding(
-      types, std::move(body), std::move(pipe_producer_handle),
+      types, std::move(body), std::move(data_pipe_pair.first),
       std::move(endpoints->url_loader), std::move(endpoints->url_loader_client),
       new_url_loader.InitWithNewPipeAndPassReceiver(),
       new_url_loader_client.InitWithNewPipeAndPassRemote());
-  body = std::move(pipe_consumer_handle);
+  body = std::move(data_pipe_pair.second);
   endpoints = network::mojom::URLLoaderClientEndpoints::New(
       std::move(new_url_loader), std::move(new_url_loader_client));
 }
@@ -376,12 +392,6 @@ void ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
     bool value,
     SetIsNetworkServiceRunningInTheCurrentProcessKey) {
   is_network_serice_runnning_in_the_current_process_ = value;
-}
-
-// static
-void ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
-    bool value) {
-  force_mojo_create_data_pipe_failure_for_testing_ = value;
 }
 
 // static

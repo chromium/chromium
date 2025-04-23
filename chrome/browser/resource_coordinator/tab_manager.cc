@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 
 #include <stddef.h>
@@ -168,12 +163,11 @@ bool TabManager::IsInternalPage(const GURL& url) {
       chrome::kChromeUINewTabURL,
       chrome::kChromeUISettingsURL,
   });
-  // Prefix-match against the table above. Use strncmp to avoid allocating
-  // memory to convert the URL prefix constants into std::strings.
-  for (size_t i = 0; i < std::size(kInternalPagePrefixes); ++i) {
-    if (!strncmp(url.spec().c_str(), kInternalPagePrefixes[i],
-                 strlen(kInternalPagePrefixes[i])))
+  // Prefix-match against the table above.
+  for (const char* prefix : kInternalPagePrefixes) {
+    if (base::StartsWith(url.spec(), prefix)) {
       return true;
+    }
   }
   return false;
 }

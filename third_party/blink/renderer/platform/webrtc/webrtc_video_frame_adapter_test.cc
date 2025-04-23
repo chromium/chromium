@@ -169,9 +169,9 @@ TEST_F(WebRtcVideoFrameAdapterTest, MapFullFrameIsZeroCopy) {
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                                     base::TimeDelta(), test_sii_.get());
 
-  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                         resources));
+  webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                            resources));
 
   // Mapping produces a frame of the correct size.
   auto mapped_frame = multi_buffer->GetMappedFrameBuffer(kNv12);
@@ -210,9 +210,9 @@ TEST_F(WebRtcVideoFrameAdapterTest, MapScaledFrameCreatesNewFrame) {
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                                     base::TimeDelta(), test_sii_.get());
 
-  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                         resources));
+  webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                            resources));
 
   auto scaled_frame =
       multi_buffer->Scale(kSize360p.width(), kSize360p.height());
@@ -259,9 +259,9 @@ TEST_F(WebRtcVideoFrameAdapterTest,
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                                     base::TimeDelta(), test_sii_.get());
 
-  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                         resources));
+  webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                            resources));
 
   // Hard-apply scaling to 480p. Because a pre-scaled 480p is not available, we
   // scale from 720p.
@@ -314,9 +314,9 @@ TEST_F(WebRtcVideoFrameAdapterTest,
                       media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                       base::TimeDelta(), test_sii_.get());
 
-  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(full_frame,
-                                                         resources));
+  webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(full_frame,
+                                                            resources));
 
   // Crop and scale some more and then map it.
   // Apply a 10 pixel border and downscale by a factor of 2 again.
@@ -377,9 +377,9 @@ TEST_F(WebRtcVideoFrameAdapterTest,
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                                     base::TimeDelta(), test_sii_.get());
 
-  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                         resources));
+  webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                            resources));
 
   // Hard-apply scaling to 480p WITH cropping.
   resources->ExpectConvertAndScaleWithRealImplementation();
@@ -424,17 +424,17 @@ TEST_F(WebRtcVideoFrameAdapterTest, FrameFeedbackSetsRequireMappedFrame) {
   EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
   {
     // Do some scaling, but don't map it.
-    rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-        new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                           resources));
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
     multi_buffer->Scale(kSize360p.width(), kSize360p.height());
   }
   EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
   {
     // Do map the buffer.
-    rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
-        new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
-                                                           resources));
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
     multi_buffer->Scale(kSize360p.width(), kSize360p.height())
         ->GetMappedFrameBuffer(kNv12);
   }

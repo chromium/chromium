@@ -104,13 +104,13 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     };
   }
 
-  private readOnlyList: boolean;
-  model: SiteException;
-  private chooserType: ChooserType;
-  private chooserObject: object;
-  private showPolicyPrefIndicator_: boolean;
-  private allowNavigateToSiteDetail_: boolean;
-  cookiesExceptionType: CookiesExceptionType;
+  declare private readOnlyList: boolean;
+  declare model: SiteException;
+  declare private chooserType: ChooserType;
+  declare private chooserObject: object;
+  declare private showPolicyPrefIndicator_: boolean;
+  declare private allowNavigateToSiteDetail_: boolean;
+  declare cookiesExceptionType: CookiesExceptionType;
 
   private onShowTooltip_() {
     const indicator =

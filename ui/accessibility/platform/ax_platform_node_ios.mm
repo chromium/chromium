@@ -11,7 +11,7 @@ namespace ui {
 
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNode* node = new AXPlatformNodeIOS();
   node->Init(delegate);
   return Pointer(node);
@@ -45,7 +45,7 @@ AXPlatformNodeIOSDelegate* AXPlatformNodeIOS::GetIOSDelegate() const {
   return ios_delegate_.get();
 }
 
-void AXPlatformNodeIOS::Init(AXPlatformNodeDelegate* delegate) {
+void AXPlatformNodeIOS::Init(AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeBase::Init(delegate);
   CreateNativeWrapper();
 }

@@ -14,6 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace network {
 class SharedURLLoaderFactory;

@@ -114,9 +114,6 @@ class PageInfoUI {
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;
 
-    // List of ACT features.
-    std::vector<content_settings::TrackingProtectionFeature> features;
-
     std::optional<CookiesRwsInfo> rws_info;
 
     // The expiration of the active third-party cookie exception.

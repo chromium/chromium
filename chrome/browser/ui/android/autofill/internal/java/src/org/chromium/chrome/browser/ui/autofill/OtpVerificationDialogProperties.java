@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.Optional;
 
+@NullMarked
 class OtpVerificationDialogProperties {
     /** Interface for the mediator to be notified of view actions. */
     interface ViewDelegate {

@@ -150,7 +150,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
-  void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void PopulateLoadTimingInternalInfo(
       LoadTimingInternalInfo* load_timing_internal_info) const override;
@@ -159,8 +158,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void SetPriority(RequestPriority priority) override;
   void SetWebSocketHandshakeStreamCreateHelper(
       WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
-  void SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback callback) override;
   void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
@@ -170,7 +167,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
-  int ResumeNetworkStart() override;
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   bool IsMdlMatchForMetrics() const override;
@@ -329,7 +325,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     kCouldntConditionalize = 8,    // Couldn't send conditional request.
     kValidated = 9,                // Original URL response was revalidated.
     kUpdated = 10,                 // Original URL response was updated.
-    kMaxValue = kUpdated,
+    kCacheLockTimeout = 11,        // Failed to get cache lock; cache not used.
+    kMaxValue = kCacheLockTimeout,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchUseResult)
 
@@ -800,7 +797,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
       websocket_handshake_stream_base_create_helper_ = nullptr;
 
-  BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;

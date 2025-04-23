@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -25,11 +24,12 @@ import java.util.LinkedList;
  * of the stack) {@link Pane} is focused, but the previous {@link Pane} is not re-added to the stack
  * to prevent an infinite loop.
  */
+@NullMarked
 public class PaneBackStackHandler implements BackPressHandler {
-    private final @NonNull PaneManager mPaneManager;
-    private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
-    private final @NonNull LinkedList<Pane> mBackStack;
-    private final @NonNull Callback<Pane> mOnPaneFocusedCallback;
+    private final PaneManager mPaneManager;
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
+    private final LinkedList<Pane> mBackStack;
+    private final Callback<Pane> mOnPaneFocusedCallback;
     private @Nullable Pane mCurrentPane;
 
     /**
@@ -37,7 +37,7 @@ public class PaneBackStackHandler implements BackPressHandler {
      *
      * @param paneManager The {@link PaneManager} of the Hub.
      */
-    public PaneBackStackHandler(@NonNull PaneManager paneManager) {
+    public PaneBackStackHandler(PaneManager paneManager) {
         mPaneManager = paneManager;
         mHandleBackPressSupplier = new ObservableSupplierImpl<>();
         mHandleBackPressSupplier.set(false);

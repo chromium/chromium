@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_service.h"
 
 namespace {
 
@@ -274,6 +275,9 @@ ShortcutsBackend::ShortcutsBackend(
     db_ = new ShortcutsDatabase(database_path);
   if (history_service)
     history_service_observation_.Observe(history_service);
+  if (template_url_service_) {
+    template_url_service_observation_.Observe(template_url_service_);
+  }
 }
 
 bool ShortcutsBackend::Init() {
@@ -461,6 +465,18 @@ void ShortcutsBackend::OnHistoryDeletions(
   DeleteShortcutsWithIDs(shortcut_ids);
 }
 
+void ShortcutsBackend::OnTemplateURLServiceChanged() {
+  if (!initialized()) {
+    return;
+  }
+  DeleteShortcutsWithDeletedOrInactiveKeywords();
+  return;
+}
+
+void ShortcutsBackend::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
+}
+
 void ShortcutsBackend::InitInternal() {
   DCHECK(current_state_ == INITIALIZING);
   db_->Init();
@@ -610,6 +626,39 @@ bool ShortcutsBackend::DeleteShortcutsWithURL(const GURL& url,
                  db_.get(), url_spec));
 }
 
+void ShortcutsBackend::DeleteShortcutsWithDeletedOrInactiveKeywords() {
+  ShortcutsDatabase::ShortcutIDs shortcut_ids =
+      GetShortcutsWithDeletedOrInactiveKeywords();
+  UMA_HISTOGRAM_COUNTS_10000(
+      "ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions."
+      "OnKeywordChange",
+      shortcut_ids.size());
+  DeleteShortcutsWithIDs(shortcut_ids);
+}
+
+ShortcutsDatabase::ShortcutIDs
+ShortcutsBackend::GetShortcutsWithDeletedOrInactiveKeywords() const {
+  ShortcutsDatabase::ShortcutIDs shortcut_ids;
+  for (const auto& pair : guid_map_) {
+    // Check if the keyword is invalid: not present in the `TemplateURLService`
+    // or inactive. Prepopulated engines have an active status of
+    // `ActiveStatus::kUnspecified` by default and should be considered active
+    // at all times because they cannot be deactivated by the user.
+    if (pair.second->second.match_core.keyword.empty()) {
+      continue;
+    }
+    const TemplateURL* template_url =
+        template_url_service_->GetTemplateURLForKeyword(
+            pair.second->second.match_core.keyword);
+    if (!template_url ||
+        (template_url->prepopulate_id() == 0 &&
+         template_url->is_active() != TemplateURLData::ActiveStatus::kTrue)) {
+      shortcut_ids.push_back(pair.first);
+    }
+  }
+  return shortcut_ids;
+}
+
 bool ShortcutsBackend::DeleteAllShortcuts() {
   if (!initialized())
     return false;
@@ -626,6 +675,21 @@ bool ShortcutsBackend::DeleteAllShortcuts() {
 }
 
 bool ShortcutsBackend::DeleteOldShortcuts() {
+  ShortcutsDatabase::ShortcutIDs shortcut_ids = GetShortcutsWithExpiredTime();
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions.OnInit",
+                             shortcut_ids.size());
+  ShortcutsDatabase::ShortcutIDs shortcut_ids_invalid_keywords =
+      GetShortcutsWithDeletedOrInactiveKeywords();
+  UMA_HISTOGRAM_COUNTS_10000(
+      "ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnInit",
+      shortcut_ids_invalid_keywords.size());
+  shortcut_ids.insert(shortcut_ids.end(), shortcut_ids_invalid_keywords.begin(),
+                      shortcut_ids_invalid_keywords.end());
+  return DeleteShortcutsWithIDs(shortcut_ids);
+}
+
+ShortcutsDatabase::ShortcutIDs ShortcutsBackend::GetShortcutsWithExpiredTime()
+    const {
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
   const base::Time now(base::Time::Now());
   for (const auto& guid_pair : guid_map_) {
@@ -634,7 +698,5 @@ bool ShortcutsBackend::DeleteOldShortcuts() {
       shortcut_ids.push_back(guid_pair.first);
     }
   }
-  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions.OnInit",
-                             shortcut_ids.size());
-  return DeleteShortcutsWithIDs(shortcut_ids);
+  return shortcut_ids;
 }

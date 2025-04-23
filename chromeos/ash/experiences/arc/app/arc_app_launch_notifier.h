@@ -12,6 +12,11 @@
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 namespace content {
 class BrowserContext;
 }  // namespace content

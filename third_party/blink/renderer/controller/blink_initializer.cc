@@ -238,7 +238,6 @@ void SetCorsExemptHeaderList(
 }
 
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
-  ModulesInitializer::RegisterInterfaces(binders);
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
   CHECK(main_thread_task_runner);

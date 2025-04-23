@@ -263,7 +263,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     response_.restricted_prefetch = true;
   }
 
-  next_state_ = STATE_NOTIFY_BEFORE_CREATE_STREAM;
+  next_state_ = STATE_CREATE_STREAM;
   int rv = DoLoop(OK);
   if (rv == ERR_IO_PENDING)
     callback_ = std::move(callback);
@@ -545,9 +545,6 @@ LoadState HttpNetworkTransaction::GetLoadState() const {
   }
 }
 
-void HttpNetworkTransaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {}
-
 bool HttpNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   if (!stream_ || !stream_->GetLoadTimingInfo(load_timing_info))
@@ -578,6 +575,18 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
 
 void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (!create_stream_start_time_.is_null() &&
+      !create_stream_end_time_.is_null()) {
+    CHECK_LE(create_stream_start_time_, create_stream_end_time_);
+    load_timing_internal_info->create_stream_delay =
+        create_stream_end_time_ - create_stream_start_time_;
+  }
+  if (!connected_callback_start_time_.is_null() &&
+      !connected_callback_end_time_.is_null()) {
+    CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+    load_timing_internal_info->connected_callback_delay =
+        connected_callback_end_time_ - connected_callback_start_time_;
+  }
   if (!initialize_stream_start_time_.is_null() &&
       !initialize_stream_end_time_.is_null()) {
     CHECK_LE(initialize_stream_start_time_, initialize_stream_end_time_);
@@ -617,11 +626,6 @@ void HttpNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
   websocket_handshake_stream_base_create_helper_ = create_helper;
 }
 
-void HttpNetworkTransaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  before_network_start_callback_ = std::move(callback);
-}
-
 void HttpNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   connected_callback_ = callback;
@@ -656,15 +660,16 @@ void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
   NOTREACHED();
 }
 
-int HttpNetworkTransaction::ResumeNetworkStart() {
-  TRACE_EVENT("net", "HttpNetworkTransaction::ResumeNetworkStart",
-              NetLogWithSourceToFlow(net_log_));
-  DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
-  return DoLoop(OK);
-}
-
 void HttpNetworkTransaction::ResumeAfterConnected(int result) {
   DCHECK_EQ(next_state_, STATE_CONNECTED_CALLBACK_COMPLETE);
+
+  connected_callback_end_time_ = base::TimeTicks::Now();
+  CHECK(!connected_callback_start_time_.is_null());
+  CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+  base::UmaHistogramTimes(
+      "Net.NetworkTransaction.ConnectedCallbackDelay",
+      connected_callback_end_time_ - connected_callback_start_time_);
+
   OnIOComplete(result);
 }
 
@@ -854,10 +859,6 @@ int HttpNetworkTransaction::DoLoop(int result) {
     State state = next_state_;
     next_state_ = STATE_NONE;
     switch (state) {
-      case STATE_NOTIFY_BEFORE_CREATE_STREAM:
-        DCHECK_EQ(OK, rv);
-        rv = DoNotifyBeforeCreateStream();
-        break;
       case STATE_CREATE_STREAM:
         DCHECK_EQ(OK, rv);
         rv = DoCreateStream();
@@ -955,18 +956,6 @@ int HttpNetworkTransaction::DoLoop(int result) {
   return rv;
 }
 
-int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
-  TRACE_EVENT("net", "HttpNetworkTransaction::NotifyBeforeCreateStream",
-              NetLogWithSourceToFlow(net_log_));
-  next_state_ = STATE_CREATE_STREAM;
-  bool defer = false;
-  if (!before_network_start_callback_.is_null())
-    std::move(before_network_start_callback_).Run(&defer);
-  if (!defer)
-    return OK;
-  return ERR_IO_PENDING;
-}
-
 int HttpNetworkTransaction::DoCreateStream() {
   TRACE_EVENT("net", "HttpNetworkTransaction::CreateStream",
               NetLogWithSourceToFlow(net_log_), "retry_attempts",
@@ -982,6 +971,10 @@ int HttpNetworkTransaction::DoCreateStream() {
   }
 
   create_stream_start_time_ = base::TimeTicks::Now();
+  // Reset `create_stream_end_time__` to prevent an inconsistent state in
+  // case that `DoCreateStream` is called multiple times.
+  create_stream_end_time_ = base::TimeTicks();
+
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
@@ -1003,9 +996,11 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
+    create_stream_end_time_ = base::TimeTicks::Now();
     next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
     CHECK(!create_stream_start_time_.is_null());
+    CHECK_LE(create_stream_start_time_, create_stream_end_time_);
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.NetworkTransaction.Create",
@@ -1013,7 +1008,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
                                       : "HttpStreamTime."),
              (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
-        base::TimeTicks::Now() - create_stream_start_time_);
+        create_stream_end_time_ - create_stream_start_time_);
     if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
       base::UmaHistogramTimes(
           "Net.NetworkTransaction.ResetConnectionAndResendRequestTime",
@@ -1129,6 +1124,11 @@ int HttpNetworkTransaction::DoConnectedCallback() {
     stream_->GetSSLInfo(&ssl_info);
     is_issued_by_known_root = ssl_info.is_issued_by_known_root;
   }
+
+  connected_callback_start_time_ = base::TimeTicks::Now();
+  // Reset `connected_callback_end_time_` to prevent an inconsistent state in
+  // case that `DoConnectedCallback` is called multiple times.
+  connected_callback_end_time_ = base::TimeTicks();
 
   return connected_callback_.Run(
       TransportInfo(type, remote_endpoint_,
@@ -1295,7 +1295,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 
   if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
       proxy_info_.is_for_ip_protection()) {
-    CHECK(!proxy_info_.is_direct() || features::kIpPrivacyDirectOnly.Get());
     if (!proxy_info_.is_direct()) {
       request_headers_.SetHeader("IP-Protection", "1");
     }
@@ -2305,7 +2304,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
     int get_endpoint_result = stream_->GetRemoteEndpoint(&endpoint);
     if (get_endpoint_result == OK) {
       base::UmaHistogramEnumeration(
-          "NetNetworkTransaction.StreamAddressFamily", endpoint.GetFamily(),
+          "Net.NetworkTransaction.StreamAddressFamily", endpoint.GetFamily(),
           static_cast<AddressFamily>(ADDRESS_FAMILY_LAST + 1));
     }
   } else {

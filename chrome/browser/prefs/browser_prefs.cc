@@ -27,7 +27,6 @@
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
@@ -59,6 +58,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -66,6 +66,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
@@ -127,6 +128,7 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/ntp_tiles/custom_links_manager_impl.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -151,10 +153,10 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
@@ -187,6 +189,7 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/service/variations_service.h"
+#include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/render_process_host.h"
@@ -203,6 +206,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui_prefs.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
@@ -311,7 +315,6 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
-#include "components/ntp_tiles/custom_links_manager_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -1089,6 +1092,14 @@ inline constexpr char kRecurrentSSLInterstitial[] =
 // Deprecated 04/2025.
 inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
     "default_search_provider.choice_screen_shuffle_milestone";
+#if !BUILDFLAG(IS_ANDROID)
+inline char kPerformanceInterventionNotificationAcceptHistoryDeprecated[] =
+    "performance_tuning.intervention_notification.accept_history";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Deprecated 04/2025.
+inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
+    "bookmarks.added_since_power_bookmarks_launch";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1193,6 +1204,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 03/2025.
   registry->RegisterTimePref(kDeviceRestrictionScheduleHighestSeenTime,
                              base::Time());
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 04/2025.
+  registry->RegisterListPref(
+      kPerformanceInterventionNotificationAcceptHistoryDeprecated);
 #endif
 }
 
@@ -1526,6 +1543,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 04/2025.
   registry->RegisterIntegerPref(
       kDefaultSearchProviderChoiceScreenShuffleMilestone, 0);
+
+  // Deprecated 04/2025.
+  registry->RegisterBooleanPref(kAddedBookmarkSincePowerBookmarksLaunch, false);
 }
 
 }  // namespace
@@ -1891,6 +1911,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);
+  ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
@@ -1910,12 +1931,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PrefetchOriginDecider::RegisterPrefs(registry);
   PrefsTabHelper::RegisterProfilePrefs(registry, locale);
   privacy_sandbox::RegisterProfilePrefs(registry);
+  privacy_sandbox::PrivacySandboxNoticeStorage::RegisterProfilePrefs(registry);
   Profile::RegisterProfilePrefs(registry);
   ProfileImpl::RegisterProfilePrefs(registry);
   ProfileNetworkContextService::RegisterProfilePrefs(registry);
   custom_handlers::ProtocolHandlerRegistry::RegisterProfilePrefs(registry);
   PushMessagingAppIdentifier::RegisterProfilePrefs(registry);
+  PushMessagingUnsubscribedEntry::RegisterProfilePrefs(registry);
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
+  regional_capabilities::prefs::RegisterProfilePrefs(registry);
   RegisterBrowserUserPrefs(registry);
   RegisterGeminiSettingsPrefs(registry);
   RegisterPrefersDefaultScrollbarStylesPrefs(registry);
@@ -1949,6 +1973,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   tab_groups::prefs::RegisterProfilePrefs(registry);
   tpcd::experiment::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
+  visited_url_ranking::GroupSuggestionsServiceImpl::RegisterProfilePrefs(
+      registry);
   omnibox::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
 
@@ -2034,7 +2060,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
   ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
-  ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   OutlookCalendarPageHandler::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   promos_utils::RegisterProfilePrefs(registry);
@@ -2428,6 +2453,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kDeviceRestrictionScheduleHighestSeenTime);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(
+      kPerformanceInterventionNotificationAcceptHistoryDeprecated);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2802,6 +2832,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025.
   profile_prefs->ClearPref(kDefaultSearchProviderChoiceScreenShuffleMilestone);
+
+  // Added 04/2025.
+  profile_prefs->ClearPref(kAddedBookmarkSincePowerBookmarksLaunch);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

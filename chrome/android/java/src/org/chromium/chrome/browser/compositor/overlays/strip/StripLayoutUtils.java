@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.content.Context;
+import android.text.TextUtils;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
@@ -15,6 +17,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -34,7 +37,7 @@ public class StripLayoutUtils {
     //         - overlap(28-16) =
     public static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
     static final float MIN_TAB_WIDTH_DP = 108.f;
-    static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+    public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
     // Animation Constants.
@@ -91,6 +94,23 @@ public class StripLayoutUtils {
     }
 
     /**
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
+     * @param tabModel The {@link TabModel} that holds the give tab.
+     * @param stripTab The {@link StripLayoutTab}
+     * @return Whether the given tab is at a non-last position in any group.
+     */
+    public static boolean isNonTrailingTabInGroup(
+            TabGroupModelFilter modelFilter, TabModel tabModel, StripLayoutTab stripTab) {
+        Tab tab = tabModel.getTabById(stripTab.getTabId());
+        if (modelFilter.isTabInTabGroup(tab)) {
+            List<Tab> relatedTabs = modelFilter.getRelatedTabList(tab.getId());
+            Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
+            return tab.getId() != lastTab.getId();
+        }
+        return false;
+    }
+
+    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
@@ -139,6 +159,44 @@ public class StripLayoutUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the group title text for the given {@link Tab}'s group. Falls back to the default
+     * title if needed.
+     *
+     * @param context The Android {@link Context}.
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given tab.
+     * @param tab A grouped tab.
+     */
+    public static String getGroupTitleText(
+            Context context, TabGroupModelFilter modelFilter, Tab tab) {
+        assert tab != null && tab.getTabGroupId() != null;
+        return getDefaultGroupTitleTextIfEmpty(
+                context,
+                modelFilter,
+                tab.getTabGroupId(),
+                modelFilter.getTabGroupTitle(tab.getRootId()));
+    }
+
+    /**
+     * Returns the provided title text if it isn't empty. Otherwise, returns the default title.
+     *
+     * @param context The Android {@link Context}.
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
+     * @param tabGroupId The tab group ID of the relevant tab group.
+     * @param titleText The tab group's title text, if any. {@code null} otherwise.
+     */
+    public static String getDefaultGroupTitleTextIfEmpty(
+            Context context,
+            TabGroupModelFilter modelFilter,
+            Token tabGroupId,
+            @Nullable String titleText) {
+        // TODO(crbug.com/407545128): Unify with similar checks elsewhere.
+        if (!TextUtils.isEmpty(titleText)) return titleText;
+
+        int numTabs = modelFilter.getTabCountForGroup(tabGroupId);
+        return TabGroupTitleUtils.getDefaultTitle(context, numTabs);
     }
 
     /**
@@ -213,7 +271,7 @@ public class StripLayoutUtils {
      * @param id The ID of the {@link StripLayoutTab} we're searching for.
      * @return The {@link StripLayoutTab}. {@code null} if not found.
      */
-    static @Nullable StripLayoutTab findTabById(StripLayoutTab[] stripTabs, int id) {
+    public static @Nullable StripLayoutTab findTabById(StripLayoutTab[] stripTabs, int id) {
         if (stripTabs == null) return null;
         for (int i = 0; i < stripTabs.length; i++) {
             if (stripTabs[i].getTabId() == id) return stripTabs[i];
@@ -235,15 +293,15 @@ public class StripLayoutUtils {
             if (view instanceof StripLayoutTab tab) {
                 leftEdge = tab.getTouchTargetLeft();
                 rightEdge = tab.getTouchTargetRight();
-                if (LocalizationUtils.isLayoutRtl()) {
-                    leftEdge -= tab.getTrailingMargin();
-                } else {
-                    rightEdge += tab.getTrailingMargin();
-                }
             } else {
                 if (!includeGroupTitles) continue;
                 leftEdge = view.getDrawX();
                 rightEdge = leftEdge + view.getWidth();
+            }
+            if (LocalizationUtils.isLayoutRtl()) {
+                leftEdge -= view.getTrailingMargin();
+            } else {
+                rightEdge += view.getTrailingMargin();
             }
 
             if (view.isVisible() && leftEdge <= x && x <= rightEdge) {

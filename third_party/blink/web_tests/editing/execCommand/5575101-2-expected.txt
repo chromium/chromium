@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] Outdent nested item two
-  resources/testharness.js:2638:25)\n	 expected <div contenteditable="true"><ol><li>one</li><li id="outdent">|two<ol><li>three</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li><li id="insert"><li>|two</li><ol><li>three</li></ol></li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li><li id="
+  resources/testharness.js:2642:25)\n	 expected <div contenteditable="true"><ol><li>one</li><li id="outdent">|two<ol><li>three</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li><li id="insert"><li>|two</li><ol><li>three</li></ol></li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li><li id="
 [FAIL] Outdent unnested item two
-  resources/testharness.js:2638:25)\n	 expected <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li><ol><li>three</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li>three</li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li>
+  resources/testharness.js:2642:25)\n	 expected <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li><ol><li>three</li></ol></li></ol></div>,\n	 but got  <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li>three</li></ol></div>,\n	 sameupto <div contenteditable="true"><ol><li>one</li></ol>|two<ol><li>
 Harness: the test ran to completion.
 

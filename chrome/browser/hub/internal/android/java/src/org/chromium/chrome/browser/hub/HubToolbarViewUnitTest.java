@@ -44,6 +44,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.tabs.TabLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,10 +54,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -65,19 +69,34 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /** Unit tests for {@link HubPaneHostView}. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class HubToolbarViewUnitTest {
+    // All the tests in this file will run twice, once for isXrDevice=true and once for
+    // isXrDevice=false. Expect all the tests with the same results on XR devices too.
+    // The setup ensures the correct environment is configured for each run.
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
+
+    @Parameter(0)
+    public boolean mIsXrDevice;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock Runnable mOnButton;
     @Mock Callback<PaneButtonLookup> mPaneButtonLookupCallback;
@@ -99,7 +118,14 @@ public class HubToolbarViewUnitTest {
 
     @Before
     public void setUp() throws Exception {
+        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    @After
+    public void tearDown() {
+        XrUtils.resetXrDeviceForTesting();
     }
 
     private void onActivity(TestActivity activity) {
@@ -107,8 +133,8 @@ public class HubToolbarViewUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mToolbarContainer =
-                (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
+        int layoutId = mIsXrDevice ? R.layout.hub_xr_toolbar_layout : R.layout.hub_toolbar_layout;
+        mToolbarContainer = (FrameLayout) inflater.inflate(layoutId, null, false);
         mActionButton = mToolbarContainer.findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = mToolbarContainer.findViewById(R.id.pane_switcher);
         mMenuButtonContainer = mToolbarContainer.findViewById(R.id.menu_button_container);

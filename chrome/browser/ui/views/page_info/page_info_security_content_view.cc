@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"

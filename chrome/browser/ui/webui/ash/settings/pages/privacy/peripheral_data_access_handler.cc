@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -61,7 +62,8 @@ PeripheralDataAccessHandler::PeripheralDataAccessHandler(Profile* profile) {
   DCHECK(pref);
   // If the user has a managed policy or is a guest profile, prevent user
   // configuration of the setting.
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   is_user_configurable_ = !pref->IsManaged() && !IsGuestModeActive(user);
 
   peripheral_data_access_subscription_ =

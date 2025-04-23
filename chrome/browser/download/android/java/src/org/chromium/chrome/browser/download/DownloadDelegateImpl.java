@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.download;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.download.DownloadDelegate;
 
 /** Utility class that implements DownloadDelegate. */
+@NullMarked
 public class DownloadDelegateImpl extends DownloadDelegate {
     public DownloadDelegateImpl() {}
 
@@ -19,7 +22,7 @@ public class DownloadDelegateImpl extends DownloadDelegate {
     }
 
     @Override
-    public Uri parseOriginalUrl(String originalUrl) {
+    public @Nullable Uri parseOriginalUrl(String originalUrl) {
         return DownloadUtils.parseOriginalUrl(originalUrl);
     }
 

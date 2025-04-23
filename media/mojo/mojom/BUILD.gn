@@ -165,6 +165,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.AutoPipInfo"
+          cpp = "::media::PictureInPictureEventsInfo::AutoPipInfo"
+        },
+      ]
+      traits_headers = [ "picture_in_picture_events_info_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.FullscreenVideoStatus"
           cpp = "::blink::WebFullscreenVideoStatus"
         },
@@ -921,6 +931,8 @@ source_set("shared_mojom_traits") {
   sources = [
     "audio_processing_mojom_traits.cc",
     "audio_processing_mojom_traits.h",
+    "picture_in_picture_events_info_mojom_traits.cc",
+    "picture_in_picture_events_info_mojom_traits.h",
     "video_frame_metadata_mojom_traits.cc",
     "video_frame_metadata_mojom_traits.h",
   ]
@@ -975,6 +987,7 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "picture_in_picture_events_info_mojom_traits_unittest.cc",
     "speech_recognition_recognition_context_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",

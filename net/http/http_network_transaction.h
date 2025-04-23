@@ -83,7 +83,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
-  void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void PopulateLoadTimingInternalInfo(
       LoadTimingInternalInfo* load_timing_internal_info) const override;
@@ -92,8 +91,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetPriority(RequestPriority priority) override;
   void SetWebSocketHandshakeStreamCreateHelper(
       WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
-  void SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback callback) override;
   void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
@@ -103,7 +100,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
-  int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
   bool IsMdlMatchForMetrics() const override;
 
@@ -157,7 +153,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                            FlowControlNegativeSendWindowSize);
 
   enum State {
-    STATE_NOTIFY_BEFORE_CREATE_STREAM,
     STATE_CREATE_STREAM,
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
@@ -199,7 +194,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // argument receive the result from the previous state.  If a method returns
   // ERR_IO_PENDING, then the result from OnIOComplete will be passed to the
   // next state method as the result arg.
-  int DoNotifyBeforeCreateStream();
   int DoCreateStream();
   int DoCreateStreamComplete(int result);
   int DoInitStream();
@@ -451,8 +445,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // transaction.
   int64_t total_sent_bytes_ = 0;
 
-  // When the transaction started creating a stream.
+  // When the transaction started / finished creating a stream.
   base::TimeTicks create_stream_start_time_;
+  base::TimeTicks create_stream_end_time_;
 
   // When the transaction started / finished sending the request, including
   // the body, if present. |send_start_time_| is set to |base::TimeTicks()|
@@ -487,7 +482,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
       websocket_handshake_stream_base_create_helper_ = nullptr;
 
-  BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
@@ -532,6 +526,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   base::TimeTicks blocked_initialize_stream_start_time_;
   base::TimeTicks blocked_generate_proxy_auth_token_start_time_;
   base::TimeTicks blocked_generate_server_auth_token_start_time_;
+
+  // Timing information for the connected callback.
+  base::TimeTicks connected_callback_start_time_;
+  base::TimeTicks connected_callback_end_time_;
 
   // The number of bytes of the body received from network.
   int64_t received_body_bytes_ = 0;

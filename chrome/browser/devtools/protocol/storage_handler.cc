@@ -28,20 +28,20 @@ StorageHandler::StorageHandler(content::WebContents* web_contents,
 
 StorageHandler::~StorageHandler() = default;
 
-// TODO: crbug.com/380896828 - move CDP support for DIPS to //content.
+// TODO: crbug.com/380896828 - move CDP support for BTM to //content.
 void StorageHandler::RunBounceTrackingMitigations(
     std::unique_ptr<RunBounceTrackingMitigationsCallback> callback) {
-  content::BtmService* dips_service =
+  content::BtmService* btm_service =
       web_contents_
           ? content::BtmService::Get(web_contents_->GetBrowserContext())
           : nullptr;
 
-  if (!dips_service) {
+  if (!btm_service) {
     callback->sendFailure(protocol::Response::ServerError("No BtmService"));
     return;
   }
 
-  dips_service->DeleteEligibleSitesImmediately(
+  btm_service->DeleteEligibleSitesImmediately(
       base::BindOnce(&StorageHandler::GotDeletedSites, std::move(callback)));
 }
 

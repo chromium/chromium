@@ -27,17 +27,6 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #endif
 
-namespace {
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-constexpr std::string_view kTokenBindingAssertionSentinel =
-    "DBSC_CHALLENGE_IF_REQUIRED";
-constexpr std::string_view kTokenBindingAssertionFailedPlaceholder =
-    "SIGNATURE_FAILED";
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
-}  // namespace
-
 ProfileOAuth2TokenService::ProfileOAuth2TokenService(
     PrefService* user_prefs,
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate)
@@ -189,7 +178,7 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
             // because the server doesn't verify assertions during dark launch.
             // TODO(crbug.com/377942773): fail here immediately after the
             // feature is fully launched.
-            assertion = kTokenBindingAssertionFailedPlaceholder;
+            assertion = GaiaConstants::kTokenBindingAssertionFailedPlaceholder;
           }
           return signin::OAuthMultiloginTokenResponse(std::move(token),
                                                       std::move(assertion));
@@ -208,7 +197,8 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
 
   signin::OAuthMultiloginTokenResponse response(
       std::move(refresh_token),
-      is_bound ? std::string(kTokenBindingAssertionSentinel) : std::string());
+      is_bound ? std::string(GaiaConstants::kTokenBindingAssertionSentinel)
+               : std::string());
 #else
   signin::OAuthMultiloginTokenResponse response(std::move(refresh_token));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

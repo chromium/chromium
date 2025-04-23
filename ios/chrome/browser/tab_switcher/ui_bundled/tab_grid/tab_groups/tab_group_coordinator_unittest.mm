@@ -10,6 +10,7 @@
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
@@ -60,9 +61,11 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(
   ProfileIOS* profile = static_cast<ProfileIOS*>(context);
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  TabGroupService* tab_group_service =
+      TabGroupServiceFactory::GetForProfile(profile);
 
   return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
-                                               nullptr);
+                                               nullptr, tab_group_service);
 }
 
 class TabGroupCoordinatorTest : public PlatformTest {

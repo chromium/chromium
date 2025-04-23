@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
@@ -865,6 +866,12 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
+  // Show the caption buttons if the app happens to be locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser_view()->browser()->IsLockedForOnTask()) {
+    return true;
+  }
+
   if (GetHideCaptionButtonsForFullscreen()) {
     return false;
   }
@@ -1028,11 +1035,12 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
 
   aura::Window* window = GetWidget()->GetNativeWindow();
 
-  const int corner_radius = chromeos::GetWindowCornerRadius(window);
-  window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
+  const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                      window_radii.upper_left());
 
   if (frame_header_) {
-    frame_header_->SetHeaderCornerRadius(corner_radius);
+    frame_header_->SetHeaderCornerRadius(window_radii.upper_left());
   }
 
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
@@ -1040,13 +1048,16 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
     // drawn above the client view. The container has a background that extends
     // over the curvature of the top-right corner, requiring its rounding.
     caption_button_container_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(0, corner_radius, 0, 0));
+        gfx::RoundedCornersF(0, window_radii.upper_right(), 0, 0));
     caption_button_container_->layer()->SetIsFastRoundedCorner(/*enable=*/true);
   }
 
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
-  }
+  // Ensure that browser scrims match window rounding.
+  browser_view()->window_scrim_view()->SetRoundedCorners(window_radii);
+  browser_view()->contents_scrim_view()->SetRoundedCorners(gfx::RoundedCornersF(
+      0, 0, window_radii.lower_right(), window_radii.lower_left()));
+
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
 void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {

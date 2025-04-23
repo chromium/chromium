@@ -24,6 +24,7 @@ include_rules = [
   "+ios/chrome/browser/discover_feed/model/feed_constants.h",
   "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
   "+ios/chrome/browser/download/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/download/ui",
   "+ios/chrome/browser/download/coordinator",
   "+ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h",
@@ -38,6 +39,8 @@ include_rules = [
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h",
+  "+ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h",
+  "+ios/chrome/browser/intelligence/glic/model",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h",
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",
@@ -55,6 +58,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/omnibox/model/omnibox_position",
   "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/overlays/model/public/overlay_presenter.h",
   "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
@@ -117,12 +121,3 @@ include_rules = [
   "+ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h",
 ]
-
-specific_include_rules = {
-  "browser_view_controller_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  "key_commands_provider_unittest\.mm": [
-    "+ios/web/find_in_page/java_script_find_in_page_manager_impl.h",
-  ],
-}

@@ -1299,7 +1299,9 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/result ==
+                AuctionV8Helper::Result::kFailure),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
         /*scoring_latency=*/elapsed,
@@ -1368,7 +1370,8 @@ void SellerWorklet::V8State::ScoreAd(
           /*script_timed_out=*/convert_score_ad.FailureIsTimeout(),
           std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
+              ->TakePrivateAggregationRequests(
+                  /*did_uncaught_error_occur=*/true),
           FilterRealtimeContributions(std::move(real_time_contributions),
                                       elapsed));
       return;
@@ -1411,7 +1414,8 @@ void SellerWorklet::V8State::ScoreAd(
             /*scoring_latency=*/elapsed,
             /*script_timed_out=*/false, std::move(errors_out),
             context_recycler->private_aggregation_bindings()
-                ->TakePrivateAggregationRequests(),
+                ->TakePrivateAggregationRequests(
+                    /*did_uncaught_error_occur=*/true),
             FilterRealtimeContributions(std::move(real_time_contributions),
                                         elapsed));
         return;
@@ -1466,7 +1470,8 @@ void SellerWorklet::V8State::ScoreAd(
                   ->TakeLossReportUrl(),
               /*debug_win_report_url=*/std::nullopt,
               context_recycler->private_aggregation_bindings()
-                  ->TakePrivateAggregationRequests(),
+                  ->TakePrivateAggregationRequests(
+                      /*did_uncaught_error_occur=*/false),
               FilterRealtimeContributions(std::move(real_time_contributions),
                                           elapsed),
               /*scoring_latency=*/elapsed, /*script_timed_out=*/true,
@@ -1523,7 +1528,8 @@ void SellerWorklet::V8State::ScoreAd(
         /*scoring_latency=*/elapsed,
         /*script_timed_out=*/false, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/true),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed));
     return;
@@ -1540,7 +1546,8 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed),
         /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
@@ -1564,7 +1571,8 @@ void SellerWorklet::V8State::ScoreAd(
         /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
         std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/true),
         FilterRealtimeContributions(std::move(real_time_contributions),
                                     elapsed));
     return;
@@ -1589,7 +1597,8 @@ void SellerWorklet::V8State::ScoreAd(
           /*scoring_latency=*/elapsed,
           /*script_timed_out=*/false, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
+              ->TakePrivateAggregationRequests(
+                  /*did_uncaught_error_occur=*/true),
           FilterRealtimeContributions(std::move(real_time_contributions),
                                       elapsed));
       return;
@@ -1618,7 +1627,8 @@ void SellerWorklet::V8State::ScoreAd(
       context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
       context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
       context_recycler->private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/false),
       FilterRealtimeContributions(std::move(real_time_contributions), elapsed),
       /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
       std::move(errors_out));
@@ -1883,7 +1893,9 @@ void SellerWorklet::V8State::ReportResult(
         std::move(callback), /*signals_for_winner=*/std::nullopt,
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/result ==
+                AuctionV8Helper::Result::kFailure),
         elapsed,
         /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
         std::move(errors_out));
@@ -1895,7 +1907,8 @@ void SellerWorklet::V8State::ReportResult(
       context_recycler.report_bindings()->report_url(),
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/false),
       elapsed, /*script_timed_out=*/false, std::move(errors_out));
 }
 

@@ -11,7 +11,10 @@
 
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/stack_frame.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class RenderFrameHost;

@@ -19,10 +19,6 @@ found in the LICENSE file.
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
 
-    <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
-    <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
-
     <!-- Account Signin Colors -->
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
     <macro name="signin_head_background">@macro/default_bg_color</macro>
@@ -65,10 +61,16 @@ found in the LICENSE file.
     <!-- Tab strip button hover background color -->
     <color name="tab_strip_button_hover_bg_color">@color/baseline_neutral_90</color>
 
+    <!-- Tab strip incognito background tints -->
+    <color name="tab_strip_bg_incognito_default_tint">@color/gm3_baseline_surface_container_dark</color>
+    <color name="tab_strip_bg_incognito_pressed_tint">@color/gm3_baseline_surface_container_highest_dark</color>
+
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>
     <color name="image_viewer_bg">#0E0E0E</color>
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
     <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
 
+    <!-- Swipe Refresh Handler -->
+    <color name="incognito_swipe_refresh_layout_bg">@color/gm3_baseline_surface_container_dark</color>
 </resources>

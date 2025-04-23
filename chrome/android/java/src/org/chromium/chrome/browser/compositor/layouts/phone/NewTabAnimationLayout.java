@@ -31,6 +31,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimator;
 import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
@@ -98,6 +100,7 @@ public class NewTabAnimationLayout extends Layout {
     private static final long FOREGROUND_ANIMATION_DURATION_MS = 300L;
     private static final long FOREGROUND_FADE_DURATION_MS = 150L;
     private static final long ANIMATION_TIMEOUT_MS = 800L;
+    private final LayoutStateProvider mLayoutStateProvider;
     private final ViewGroup mContentContainer;
     private final ViewGroup mAnimationHostView;
     private final CompositorViewHolder mCompositorViewHolder;
@@ -117,6 +120,7 @@ public class NewTabAnimationLayout extends Layout {
     private Runnable mTimeoutRunnable;
     private Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
+    private boolean mSkipForceAnimationToFinish;
 
     /**
      * Creates an instance of the {@link NewTabAnimationLayout}.
@@ -124,6 +128,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param context The current Android's context.
      * @param updateHost The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost The {@link LayoutRenderHost} view for this layout.
+     * @param layoutStateProvider Provider for layout state updates.
      * @param contentContainer The container for content sensitivity.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
      * @param animationHostView The host view for animations.
@@ -134,6 +139,7 @@ public class NewTabAnimationLayout extends Layout {
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
+            LayoutStateProvider layoutStateProvider,
             ViewGroup contentContainer,
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup animationHostView,
@@ -141,6 +147,7 @@ public class NewTabAnimationLayout extends Layout {
             BrowserControlsManager browserControlsManager,
             ObservableSupplier<Boolean> scrimVisibilitySupplier) {
         super(context, updateHost, renderHost);
+        mLayoutStateProvider = layoutStateProvider;
         mContentContainer = contentContainer;
         mCompositorViewHolder = compositorViewHolderSupplier.get();
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
@@ -226,9 +233,13 @@ public class NewTabAnimationLayout extends Layout {
 
     @Override
     protected void forceAnimationToFinish() {
-        runQueuedRunnableIfExists();
-        if (mTabCreatedForegroundAnimation != null) mTabCreatedForegroundAnimation.end();
-        if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
+        if (mSkipForceAnimationToFinish) {
+            mSkipForceAnimationToFinish = false;
+        } else {
+            runQueuedRunnableIfExists();
+            if (mTabCreatedForegroundAnimation != null) mTabCreatedForegroundAnimation.end();
+            if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
+        }
     }
 
     @Override
@@ -286,8 +297,7 @@ public class NewTabAnimationLayout extends Layout {
                     data != null && !isRegularNtp
                             ? data.getTabContextMenuVisibilitySupplier()
                             : mScrimVisibilitySupplier;
-            tabCreatedInBackground(
-                    isRegularNtp, oldTab.isIncognitoBranded(), x, y, visibilitySupplier);
+            tabCreatedInBackground(oldTab, isRegularNtp, x, y, visibilitySupplier);
         } else {
             tabCreatedInForeground(
                     id, sourceId, newIsIncognito, getForegroundRectStart(oldTab, newTab));
@@ -316,11 +326,6 @@ public class NewTabAnimationLayout extends Layout {
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive);
         layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset());
         mSceneLayer.update(layoutTab);
-    }
-
-    @Override
-    public boolean forceShowBrowserControlsAndroidView() {
-        return true;
     }
 
     /**
@@ -475,6 +480,7 @@ public class NewTabAnimationLayout extends Layout {
             mFadeAnimator.end();
         }
         if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
+        mSkipForceAnimationToFinish = false;
     }
 
     /**
@@ -611,23 +617,34 @@ public class NewTabAnimationLayout extends Layout {
     /**
      * Animates opening a tab in the background.
      *
+     * @param animationTab The tab being animated over.
      * @param isRegularNtp True if the old tab is regular NTP.
-     * @param isIncognito True if the old tab is an incognito tab.
      * @param x The x coordinate of the originating touch input in px.
      * @param y The y coordinate of the originating touch input in px.
      * @param visibilitySupplier The visibility supplier for either the context menu or the NTP
      *     bottom sheet's scrim.
      */
     private void tabCreatedInBackground(
+            Tab animationTab,
             boolean isRegularNtp,
-            boolean isIncognito,
             @Px int x,
             @Px int y,
             ObservableSupplier<Boolean> visibilitySupplier) {
+        boolean isIncognito = animationTab.isIncognitoBranded();
+
         // TODO(crbug.com/40282469): Investigate why NTP presents lower quality during the
         // animation and how to stop forcing browser controls in the NTP.
         assert mLayoutTabs.length == 1;
         forceNewTabAnimationToFinish();
+
+        // TODO(crbug.com/40282469): Fix bug where the animation has a weird state and does not call
+        // startHiding when opening multiple tabs from NTP MVT context menu.
+        mSkipForceAnimationToFinish = true;
+        startHiding();
+
+        BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate =
+                mBrowserControlsManager.getBrowserVisibilityDelegate();
+        int token = browserControlsVisibilityDelegate.showControlsPersistent();
 
         ToggleTabStackButton tabSwitcherButton =
                 mAnimationHostView.findViewById(R.id.tab_switcher_button);
@@ -653,8 +670,10 @@ public class NewTabAnimationLayout extends Layout {
                 tabSwitcherButton,
                 prevTabCount,
                 toolbarColor,
+                isRegularNtp,
                 isIncognito,
-                mBrowserControlsManager.getTopControlsMinHeight());
+                mBrowserControlsManager.getTopControlsMinHeight(),
+                mToolbarManager.getNtpTransitionPercentage());
 
         // TODO(crbug.com/40282469): Get correct x and y for the NTP.
         final int originX;
@@ -666,6 +685,9 @@ public class NewTabAnimationLayout extends Layout {
             originX = x;
             originY = y;
         }
+
+        // {@link View#INVISIBLE} is needed to generate the geometry information.
+        mBackgroundHostView.setVisibility(View.INVISIBLE);
         mAnimationHostView.addView(mBackgroundHostView);
 
         // This ensures the view to be properly laid out in order to do calculations within the
@@ -674,6 +696,13 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;
+                    AnimationInterruptor interruptor =
+                            new AnimationInterruptor(
+                                    mLayoutStateProvider,
+                                    mTabModelSelector.getCurrentTabSupplier(),
+                                    animationTab,
+                                    mScrimVisibilitySupplier,
+                                    this::forceNewTabAnimationToFinish);
                     mTabCreatedBackgroundAnimation =
                             mBackgroundHostView.getAnimatorSet(
                                     originX, originY, getStatusBarHeightIfNeeded());
@@ -681,21 +710,26 @@ public class NewTabAnimationLayout extends Layout {
                             new AnimatorListenerAdapter() {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
+                                    interruptor.destroy();
                                     mTabCreatedBackgroundAnimation = null;
-                                    startHiding();
+                                    mTimeoutRunnable = null;
                                     mAnimationHostView.removeView(mBackgroundHostView);
+                                    browserControlsVisibilityDelegate.releasePersistentShowingToken(
+                                            token);
                                 }
                             });
+                    mBackgroundHostView.setVisibility(View.VISIBLE);
                     mTabCreatedBackgroundAnimation.start();
                 };
 
         mTimeoutRunnable =
                 () -> {
-                    mHandler.removeCallbacks(mAnimationRunnable);
+                    if (mTimeoutRunnable == null) return;
                     mTimeoutRunnable = null;
-                    mTabCreatedBackgroundAnimation = null;
+                    mHandler.removeCallbacks(mAnimationRunnable);
                     mAnimationRunnable = null;
-                    startHiding();
+                    mTabCreatedBackgroundAnimation = null;
+                    browserControlsVisibilityDelegate.releasePersistentShowingToken(token);
                     mAnimationHostView.removeView(mBackgroundHostView);
                     if (mVisibilityObserver != null) {
                         visibilitySupplier.removeObserver(mVisibilityObserver);

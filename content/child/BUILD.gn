@@ -77,7 +77,7 @@ target(link_target_type, "child") {
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/scenario_api",
     "//components/permissions:permissions_common",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/variations",
     "//components/webcrypto",
     "//content/common",

@@ -170,9 +170,6 @@ bool RunDecodeXz(base::File in_file, base::File out_file) {
     if (!size_read.has_value()) {
       return false;  // Read error.
     }
-    if (*size_read == 0) {
-      break;  // EOF.
-    }
 
     src_fill += *size_read;
     SizeT src_len = src_fill;
@@ -187,6 +184,11 @@ bool RunDecodeXz(base::File in_file, base::File out_file) {
         src_fill < src_buff.size(), CODER_FINISH_ANY, &status);
     if (code_result != SZ_OK) {
       return false;  // XZ coder error.
+    }
+    if (src_len == 0 && dest_pos == 0) {
+      // No progress; either the decoder is stuck or we've reached the end of
+      // the input and have no more output to emit.
+      break;
     }
 
     // Write dst_buff[0 .. dest_pos) to out_file.

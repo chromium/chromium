@@ -49,7 +49,7 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
   }
 
   std::string id = base::NumberToString(
-      display::win::ScreenWin::DisplayIdFromMonitorInfo(monitor_info));
+      display::win::GetScreenWin()->DisplayIdFromMonitorInfo(monitor_info));
   (*device_id_to_name)[id] = base::WideToUTF8(device.DeviceString);
   return TRUE;
 }

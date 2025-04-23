@@ -79,6 +79,10 @@ class FileTypePolicies {
   // SBClientDownloadExtensions UMA histogram bucket for this file's type.
   int64_t UmaValueForFile(const base::FilePath& file) const;
 
+  // Returns the SBClientDownloadExtensions UMA histogram bucket for a filename.
+  // See base::FilePath::AsUTF8Unsafe() comment for why this is unsafe.
+  int64_t UmaValueForUTF16FilenameUnsafe(const std::u16string& filename) const;
+
   // True if download protection should send a ping to check
   // this type of file.
   bool IsCheckedBinaryFile(const base::FilePath& file) const;

@@ -175,7 +175,7 @@ class MockWebMediaPlayerClient : public MediaPlayerClient {
   MOCK_METHOD0(GetSelectedVideoTrackId, WebMediaPlayer::TrackId());
   MOCK_METHOD0(HasNativeControls, bool());
   MOCK_METHOD0(IsAudioElement, bool());
-  MOCK_CONST_METHOD0(GetDisplayType, DisplayType());
+  MOCK_CONST_METHOD0(GetDisplayType, WebMediaPlayer::DisplayType());
   MOCK_CONST_METHOD0(IsInAutoPIP, bool());
   MOCK_METHOD1(MediaRemotingStarted, void(const WebString&));
   MOCK_METHOD1(MediaRemotingStopped, void(int));
@@ -869,6 +869,22 @@ class WebMediaPlayerImplTest
                              WebMediaPlayer::kReadyStateHaveCurrentData);
   }
 
+  void WaitForReadyStateHaveCurrentData() {
+    // This runs until we reach the have current data state. Attempting to wait
+    // for states < kReadyStateHaveCurrentData is unreliable due to asynchronous
+    // execution of tasks on the base::test:TaskEnvironment.
+    while (wmpi_->GetReadyState() <
+           WebMediaPlayer::kReadyStateHaveCurrentData) {
+      base::RunLoop loop;
+      EXPECT_CALL(client_, ReadyStateChanged())
+          .WillRepeatedly(RunClosure(loop.QuitClosure()));
+      loop.Run();
+
+      // Clear the mock so it doesn't have a stale QuitClosure.
+      testing::Mock::VerifyAndClearExpectations(&client_);
+    }
+  }
+
   void CycleThreads() {
     // Ensure any tasks waiting to be posted to the media thread are posted.
     base::RunLoop().RunUntilIdle();
@@ -1083,18 +1099,8 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
 
   base::RunLoop().RunUntilIdle();
 
-  // This runs until we reach the have current data state. Attempting to wait
-  // for states < kReadyStateHaveCurrentData is unreliable due to asynchronous
-  // execution of tasks on the base::test:TaskEnvironment.
-  while (wmpi_->GetReadyState() < WebMediaPlayer::kReadyStateHaveCurrentData) {
-    base::RunLoop loop;
-    EXPECT_CALL(client_, ReadyStateChanged())
-        .WillRepeatedly(RunClosure(loop.QuitClosure()));
-    loop.Run();
-
-    // Clear the mock so it doesn't have a stale QuitClosure.
-    testing::Mock::VerifyAndClearExpectations(&client_);
-  }
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
 
   EXPECT_FALSE(IsSuspended());
   CycleThreads();
@@ -1112,6 +1118,9 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
   CycleThreads();
   EXPECT_TRUE(IsSuspended());
   EXPECT_TRUE(ShouldCancelUponDefer());
+
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
@@ -1192,6 +1201,9 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   EXPECT_TRUE(IsSuspended());
   EXPECT_TRUE(wmpi_->DidLazyLoad());
   EXPECT_FALSE(ShouldCancelUponDefer());
+
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
@@ -1999,9 +2011,12 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   base::RunLoop run_loop;
   // MediaFoundationRenderer doesn't use AudioService.
   EXPECT_CALL(client_, DidUseAudioServiceChange(/*uses_audio_service=*/false))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
+      .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
   Load(kEncryptedVideoOnlyTestFile);
   run_loop.Run();
+
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
 }
 
 // Tests that when PIPELINE_ERROR_HARDWARE_CONTEXT_RESET happens, the pipeline
@@ -2435,6 +2450,8 @@ TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
 }
 
 TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kPauseBackgroundTimer);
   InitializeWebMediaPlayerImpl();
   SetSuspendState(true);
   SetPaused(false);
@@ -2550,7 +2567,8 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   OnMetadata(metadata);
 
   EXPECT_CALL(client_, GetDisplayType())
-      .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+      .WillRepeatedly(
+          Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(1);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2577,7 +2595,8 @@ TEST_F(WebMediaPlayerImplTest, OnPictureInPictureStateChangeNotCalled) {
 
   EXPECT_CALL(client_, IsAudioElement()).WillOnce(Return(true));
   EXPECT_CALL(client_, GetDisplayType())
-      .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+      .WillRepeatedly(
+          Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(0);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2606,23 +2625,25 @@ TEST_F(WebMediaPlayerImplTest, DisplayTypeChange) {
   // compositing the video in the original window.
   EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(false));
   EXPECT_CALL(client_, SetCcLayer(nullptr));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  wmpi_->OnDisplayTypeChanged(
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 
   // When switching back to the inline mode the CC layer is set back to the
   // bridge CC layer.
   EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kInline);
+  wmpi_->OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline);
 
   // When in persistent state (e.g. auto-pip), video is not playing in the
   // regular Picture-in-Picture mode. Don't set the CC layer to null.
   EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(true));
   EXPECT_CALL(client_, SetCcLayer(_)).Times(0);
-  wmpi_->OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  wmpi_->OnDisplayTypeChanged(
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 
   // When switching back to fullscreen mode the CC layer is set back to the
   // bridge CC layer.
   EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kFullscreen);
+  wmpi_->OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
@@ -2849,7 +2870,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     if (!IsPictureInPictureOn())
       return;
     EXPECT_CALL(client_, GetDisplayType())
-        .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+        .WillRepeatedly(
+            Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   }
 
   bool IsMediaSuspendOn() {

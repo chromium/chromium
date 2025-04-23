@@ -6,6 +6,7 @@
     "dcheck_always_on": false,
     "debuggable_apks": false,
     "enable_cast_receiver": true,
+    "enable_jni_multiplexing": false,
     "ffmpeg_branding": "Chrome",
     "is_clang": true,
     "is_component_build": false,

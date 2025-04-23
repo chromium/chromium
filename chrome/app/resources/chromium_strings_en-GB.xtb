@@ -79,6 +79,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2018879682492276940">Installation failed. Please try again.</translation>
 <translation id="2020032459870799438">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Choose whether to include Chromium history for more personalised experiences in Google services</translation>
+<translation id="2054039611381840095">To get future Chromium updates, you'll need macOS 12 or later. This computer is using macOS 11.</translation>
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="2088953378266246249">Information about how Chromium manages its root certificates</translation>
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
@@ -288,7 +289,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4888717733111232871">Inbound rule for Chromium to allow mDNS traffic.</translation>
 <translation id="4893347770495441059">Relaunch to Update &amp;Chromium</translation>
 <translation id="4918844574251943176">Image copied</translation>
-<translation id="4942295735032723435">To get future Chromium updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in background mode.</translation>
 <translation id="494490797786467921">Click to close the Chromium sign-in dialogue</translation>
 <translation id="4950660488495335294">With Chromium profiles, you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.</translation>

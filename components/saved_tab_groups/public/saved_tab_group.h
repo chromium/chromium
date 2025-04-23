@@ -28,6 +28,10 @@ namespace tab_groups {
 // may change if the tab groups name, color, or urls are changed from the
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
+  // This tells if the shared group is enabled or not. This field is read from
+  // group data and is to inform observers/UI about the shared group status.
+  enum class SharedGroupStatus { kEnabled, kDisabledChromeNeedsUpdate };
+
  public:
   SavedTabGroup(
       const std::u16string& title,
@@ -163,6 +167,7 @@ class SavedTabGroup {
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
       std::optional<CollaborationId> collaboration_id);
+  SavedTabGroup& SetSharedGroupStatus(SharedGroupStatus shared_group_status);
   SavedTabGroup& SetOriginatingTabGroupGuid(
       std::optional<base::Uuid> originating_tab_group_guid,
       bool use_originating_tab_group_guid);
@@ -361,6 +366,9 @@ class SavedTabGroup {
   // The last removed tabs which were removed from this group. Used for shared
   // tab groups only.
   std::map<base::Uuid, RemovedTabMetadata> last_removed_tabs_metadata_;
+
+  // Whether to show/disable a shared tab group is known from this status.
+  SharedGroupStatus shared_group_status_ = SharedGroupStatus::kEnabled;
 };
 
 }  // namespace tab_groups

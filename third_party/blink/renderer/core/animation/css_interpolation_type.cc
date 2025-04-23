@@ -301,7 +301,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
     return MaybeConvertInherit(state, conversion_checkers);
   }
 
-  return MaybeConvertValue(*value, &state, conversion_checkers);
+  return MaybeConvertValue(*value, state, conversion_checkers);
 }
 
 InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
@@ -375,7 +375,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   }
 
   DCHECK(value);
-  return MaybeConvertValue(*value, &state, conversion_checkers);
+  return MaybeConvertValue(*value, state, conversion_checkers);
 }
 
 InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
@@ -391,10 +391,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
       style.GetVariableValue(name, Registration().Inherits());
   if (!underlying_value)
     return nullptr;
-  // TODO(alancutter): Remove the need for passing in conversion checkers.
-  ConversionCheckers dummy_conversion_checkers;
-  return MaybeConvertValue(*underlying_value,
-                           /*state=*/nullptr, dummy_conversion_checkers);
+  return MaybeConvertCustomPropertyUnderlyingValue(*underlying_value);
 }
 
 void CSSInterpolationType::Apply(

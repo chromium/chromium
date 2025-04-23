@@ -269,8 +269,6 @@ class FileSystemChromeAppTest : public extensions::PlatformAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/276433834): Implement an end-to-end test for getDirectoryPicker in
-// Chrome apps.
 IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
                        FileSystemAccessPermissionRequestManagerExists) {
   ASSERT_TRUE(embedded_test_server()->Start());

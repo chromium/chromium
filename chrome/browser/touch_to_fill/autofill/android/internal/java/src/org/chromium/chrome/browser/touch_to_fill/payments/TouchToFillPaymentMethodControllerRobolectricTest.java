@@ -70,8 +70,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -258,7 +258,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TouchToFillPaymentMethodComponent.Delegate mDelegateMock;
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
-    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private AutofillImageFetcher mImageFetcher;
 
     public TouchToFillPaymentMethodControllerRobolectricTest() {
         mCoordinator = new TouchToFillPaymentMethodCoordinator();
@@ -273,7 +273,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .thenReturn(true);
         mCoordinator.initialize(
                 mContext,
-                mPersonalDataManager,
+                mImageFetcher,
                 mBottomSheetController,
                 mDelegateMock,
                 mBottomSheetFocusHelper);

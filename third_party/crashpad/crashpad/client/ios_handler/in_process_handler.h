@@ -33,6 +33,7 @@
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
+#include "util/mach/mach_extensions.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -194,10 +195,11 @@ class InProcessHandler {
   void StartProcessingPendingReports(
       UploadBehavior upload_behavior = UploadBehavior::kUploadWhenAppIsActive);
 
-  //! \brief Inject a callback into Mach handling. Intended to be used by
-  //!     tests to trigger a reentrant exception.
-  void SetMachExceptionCallbackForTesting(void (*callback)()) {
-    mach_exception_callback_for_testing_ = callback;
+  //! \brief Inject a callback into the Mach exception and signal handling
+  //!     mechanisms. Intended to be used by tests to trigger a reentrant
+  //      exception.
+  void SetExceptionCallbackForTesting(void (*callback)()) {
+    exception_callback_for_testing_ = callback;
   }
 
  private:
@@ -281,8 +283,9 @@ class InProcessHandler {
   const base::FilePath NewLockedFilePath();
 
   // Intended to be used by tests triggering a reentrant exception. Called
-  // in DumpExceptionFromMachException after aquiring the cached_writer_.
-  void (*mach_exception_callback_for_testing_)() = nullptr;
+  // in DumpExceptionFromMachException and DumpExceptionFromSignal after
+  // acquiring the cached_writer_.
+  void (*exception_callback_for_testing_)() = nullptr;
 
   // Used to synchronize access to UpdatePruneAndUploadThreads().
   base::Lock prune_and_upload_lock_;

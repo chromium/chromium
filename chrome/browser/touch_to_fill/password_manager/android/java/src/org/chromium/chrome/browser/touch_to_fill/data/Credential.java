@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.touch_to_fill.data;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.url.GURL;
 
 /**
  * This class holds the data used to represent a selectable credential in the Touch To Fill sheet.
  */
+@NullMarked
 public class Credential {
     private final String mUsername;
     private final String mPassword;

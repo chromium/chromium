@@ -140,7 +140,7 @@ MmappedBuffer::MmappedBuffer(const base::PlatformFile ioctl_fd,
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
-        mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
+        mmap(nullptr, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
              MAP_SHARED, ioctl_fd, v4l2_buffer.m.planes[i].m.mem_offset);
 
     LOG_IF(FATAL, start_addr == MAP_FAILED)

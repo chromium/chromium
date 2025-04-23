@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -14,6 +15,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import java.util.List;
 
 /** Controller for accessing helper functions for the singleton factory instance. */
+@NullMarked
 public class RestoreTabsControllerImpl implements RestoreTabsController {
     private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
@@ -28,6 +30,7 @@ public class RestoreTabsControllerImpl implements RestoreTabsController {
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mRestoreTabsCoordinator.destroy();
         mRestoreTabsCoordinator = null;

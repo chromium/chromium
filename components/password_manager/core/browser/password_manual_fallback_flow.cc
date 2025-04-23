@@ -92,7 +92,9 @@ PasswordManualFallbackFlow::PasswordManualFallbackFlow(
     PasswordManualFallbackMetricsRecorder* manual_fallback_metrics_recorder,
     const PasswordFormCache* password_form_cache,
     std::unique_ptr<SavedPasswordsPresenter> passwords_presenter)
-    : suggestion_generator_(password_manager_driver, password_client),
+    : suggestion_generator_(password_manager_driver,
+                            password_client,
+                            autofill_client),
       password_manager_driver_(password_manager_driver),
       autofill_client_(autofill_client),
       password_client_(password_client),

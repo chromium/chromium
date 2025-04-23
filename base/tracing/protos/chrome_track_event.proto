@@ -323,6 +323,7 @@ message ChildProcessLauncherPriority {
     IMPORTANCE_NORMAL = 1;
     IMPORTANCE_MODERATE = 2;
     IMPORTANCE_IMPORTANT = 3;
+    IMPORTANCE_PERCEPTIBLE = 4;
   }
   optional Importance importance = 3;
 }
@@ -701,7 +702,8 @@ message BackForwardCacheCanStoreDocumentResult {
     WEBVIEW_SAFE_BROWSING_ALLOWLIST_CHANGED = 63;
     WEBVIEW_DOCUMENT_START_JAVASCRIPT_CHANGED = 64;
     CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED = 65;
-    CACHE_LIMIT_PRUNED = 66;
+    CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE = 66;
+    CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE = 67;
   }
 
   optional BackForwardCacheNotRestoredReason
@@ -2380,9 +2382,147 @@ message AndroidChoreographerFrameCallbackData {
   optional int64 preferred_frame_timeline_index = 3;
 }
 
+message ChromeFrameReporter2 {
+  enum State {
+    // The frame did not have any updates to present.
+    STATE_NO_UPDATE_DESIRED = 0;
+
+    // The frame presented all the desired updates (i.e. any updates requested
+    // from both the compositor thread and main-threads were handled).
+    STATE_PRESENTED_ALL = 1;
+
+    // The frame was presented with some updates, but also missed some updates
+    // (e.g. missed updates from the main-thread, but included updates from the
+    // compositor thread).
+    STATE_PRESENTED_PARTIAL = 2;
+
+    // The frame was dropped, i.e. some updates were desired for the frame, but
+    // was not presented.
+    STATE_DROPPED = 3;
+  };
+
+  optional State state = 1;
+
+  enum FrameDropReason {
+    REASON_UNSPECIFIED = 0;
+
+    // Frame was dropped by the display-compositor.
+    // The display-compositor may drop a frame some times (e.g. the frame missed
+    // the deadline, or was blocked on surface-sync, etc.)
+    REASON_DISPLAY_COMPOSITOR = 1;
+
+    // Frame was dropped because of the main-thread.
+    // The main-thread may cause a frame to be dropped, e.g. if the main-thread
+    // is running expensive javascript, or doing a lot of layout updates, etc.
+    REASON_MAIN_THREAD = 2;
+
+    // Frame was dropped by the client compositor.
+    // The client compositor can drop some frames too (e.g. attempting to
+    // recover latency, missing the deadline, etc.).
+    REASON_CLIENT_COMPOSITOR = 3;
+  };
+
+  // The reason is set only if |state| is not |STATE_UPDATED_ALL|.
+  optional FrameDropReason reason = 2;
+
+  optional uint64 frame_source = 3;
+  optional uint64 frame_sequence = 4;
+
+  // If this is a dropped frame (i.e. if |state| is set to |STATE_DROPPED| or
+  // |STATE_PRESENTED_PARTIAL|), then indicates whether this frame impacts
+  // smoothness.
+  optional bool affects_smoothness = 5;
+
+  enum ScrollState {
+    SCROLL_NONE = 0;
+    SCROLL_MAIN_THREAD = 1;
+    SCROLL_COMPOSITOR_THREAD = 2;
+    SCROLL_RASTER = 3;
+
+    // Used when it can't be determined whether a scroll is in progress or not.
+    SCROLL_UNKNOWN = 4;
+  }
+
+  // The type of active scroll.
+  optional ScrollState scroll_state = 6;
+
+  // If any main thread animation is active during this frame.
+  optional bool has_main_animation = 7;
+  // If any compositor thread animation is active during this frame.
+  optional bool has_compositor_animation = 8;
+  // If any touch-driven UX (not scroll) is active during this frame.
+  optional bool has_smooth_input_main = 9;
+
+  // Whether the frame contained any missing content (i.e. whether there was
+  // checkerboarding in the frame).  If has_missing_content,
+  // checkerboarded_needs_raster and checkerboarded_needs_record all have
+  // values, has_missing_content should equal checkerboarded_needs_raster ||
+  // checkerboarded_needs_record.
+  optional bool has_missing_content = 10;
+
+  // The id of layer_tree_host that the frame has been produced for.
+  optional uint64 layer_tree_host_id = 11;
+
+  // If total latency of PipelineReporter exceeds a certain limit.
+  optional bool has_high_latency = 12;
+
+  enum FrameType {
+    FORKED = 0;
+    BACKFILL = 1;
+  }
+
+  // Indicate if the frame is "FORKED" (i.e. a PipelineReporter event starts at
+  // the same frame sequence as another PipelineReporter) or "BACKFILL"
+  // (i.e. dropped frames when there are no partial compositor updates).
+  optional FrameType frame_type = 13;
+
+  // The breakdown stage of PipelineReporter that is most likely accountable for
+  // high latency.
+  repeated string high_latency_contribution_stage = 14;
+
+  // Whether the frame contained any content that is not fully rastered.
+  optional bool checkerboarded_needs_raster = 15;
+
+  // Whether the frame contained any content that is not fully recorded.
+  optional bool checkerboarded_needs_record = 16;
+
+  // viz::BeginFrameArgs.trace_id of the frame (before surface aggregation). See
+  // also ChromeTrackEvent.EventLatency.surface_frame_trace_id.
+  optional int64 surface_frame_trace_id = 17;
+
+  // gfx::PresentationFeedback.display_trace_id of the frame (after surface
+  // aggregation). See also ChromeTrackEvent.EventLatency.display_trace_id.
+  optional int64 display_trace_id = 18;
+}
+
+message InputTransferHandler {
+  // The values in this enum are incremented by one compared to histograms enum
+  // to follow proto guidelines to leave 0 for unknown or unset values.
+  // LINT.IfChange(TransferInputToVizResult)
+  enum TransferInputToVizResult {
+    // We don't expect this to be present in traces.
+    UNKNOWN = 0;
+    SUCCESSFULLY_TRANSFERRED = 1;
+    INPUT_TRANSFER_HANDLER_NOT_FOUND_IN_MAP = 2;
+    NON_FINGER_TOOL_TYPE = 3;
+    VIZ_INITIALIZATION_NOT_COMPLETE = 4;
+    SELECTION_HANDLES_ACTIVE = 5;
+    CAN_TRIGGER_BACK_GESTURE = 6;
+    IME_IS_ACTIVE = 7;
+    REQUESTED_BY_EMBEDDER = 8;
+    SYSTEM_SERVER_DID_NOT_TRANSFER = 9;
+    BROWSER_TOKEN_CHANGED = 10;
+    MULTIPLE_BROWSER_WINDOWS_OPEN = 11;
+    DOWN_TIME_AFTER_EVENT_TIME = 12;
+    SEQUENCE_TRANSFERRED_BACK_FROM_VIZ = 13;
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
+  optional TransferInputToVizResult transfer_result = 1;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1075
+  // Next ID: 1077
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2541,5 +2681,11 @@ message ChromeTrackEvent {
     optional UrlInfo url_info = 1073;
 
     optional BeginFrameId begin_frame_id = 1074;
+
+    // Older versions of Chrome set TrackEvent.chrome_frame_reporter, which is
+    // now deprecated, instead.
+    optional ChromeFrameReporter2 frame_reporter = 1075;
+
+    optional InputTransferHandler input_transfer_handler = 1076;
   }
 }

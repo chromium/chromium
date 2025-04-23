@@ -50,7 +50,7 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         @ModuleType int mModuleType;
 
         @Override
-        public void stateChanged(@ModuleType int moduleType) {
+        public void localPasswordsStateChanged(@ModuleType int moduleType) {
             mModuleType = moduleType;
         }
 
@@ -90,7 +90,7 @@ public class SafetyHubLocalPasswordsDataSourceTest {
                         mPrefServiceMock,
                         mSafetyHubFetchServiceMock,
                         mPasswordStoreBridge);
-        mDataSource.setObserver(mObserver);
+        mDataSource.addObserver(mObserver);
         mDataSource.setUp();
     }
 

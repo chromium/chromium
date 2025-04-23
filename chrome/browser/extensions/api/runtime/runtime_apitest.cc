@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   EXPECT_EQ(extension_page_url.spec(), GetActiveUrl(browser()));
 
   // Uninstall the extension and expect its uninstall url to open in a new tab.
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_USER_INITIATED, nullptr);
   content::WaitForLoadStop(tabs->GetActiveWebContents());
   EXPECT_EQ(2, tabs->count());
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   // Uninstall the extension and expect its uninstall url to open.
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_USER_INITIATED, nullptr);
   TabStripModel* tabs = browser()->tab_strip_model();
 
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   // Uninstalling a blocklisted extension should not open its uninstall url.
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()),
                                          extension->id());
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_USER_INITIATED, nullptr);
   observer.WaitForExtensionUninstalled();
 

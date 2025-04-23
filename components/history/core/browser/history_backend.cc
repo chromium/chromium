@@ -1025,8 +1025,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     top_level_url = request.top_level_url;
   }
   std::optional<GURL> frame_url = std::nullopt;
-  if (request.referrer.is_valid()) {
-    frame_url = request.referrer;
+  if (request.frame_url.has_value() && request.frame_url->is_valid()) {
+    frame_url = request.frame_url;
   }
 
   if (!has_redirects) {

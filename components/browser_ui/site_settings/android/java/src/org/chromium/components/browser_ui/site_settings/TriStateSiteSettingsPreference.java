@@ -21,7 +21,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 @NullMarked
 public class TriStateSiteSettingsPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
-    private static final int ICON_MARGIN_END_DP = 8;
     private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
     private int @Nullable [] mDescriptionIds;
     private int @Nullable [] mIconIds;
@@ -30,6 +29,7 @@ public class TriStateSiteSettingsPreference extends Preference
     private RadioButtonWithDescription mBlocked;
     private RadioGroup mRadioGroup;
     private boolean mIsPermissionSiteSettingsRadioButtonFeatureEnabled;
+    private int mIconMarginEnd;
 
     public TriStateSiteSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,12 +53,14 @@ public class TriStateSiteSettingsPreference extends Preference
             @ContentSettingValues int setting,
             int @Nullable [] descriptionIds,
             int @Nullable [] iconIds,
-            boolean isPermissionSiteSettingsRadioButtonFeatureEnabled) {
+            boolean isPermissionSiteSettingsRadioButtonFeatureEnabled,
+            int iconMarginEnd) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
         mIconIds = iconIds;
         mIsPermissionSiteSettingsRadioButtonFeatureEnabled =
                 isPermissionSiteSettingsRadioButtonFeatureEnabled;
+        mIconMarginEnd = iconMarginEnd;
     }
 
     /** @return The current checked setting. */
@@ -102,19 +104,18 @@ public class TriStateSiteSettingsPreference extends Preference
             }
         }
 
-        final float scale = getContext().getResources().getDisplayMetrics().density;
         if (mIconIds != null) {
             if (mIconIds[0] != 0) {
                 mAllowed.setIcon(mIconIds[0]);
-                mAllowed.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+                mAllowed.setIconMarginEnd(mIconMarginEnd);
             }
             if (mIconIds[1] != 0) {
                 mAsk.setIcon(mIconIds[1]);
-                mAsk.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+                mAsk.setIconMarginEnd(mIconMarginEnd);
             }
             if (mIconIds[2] != 0) {
                 mBlocked.setIcon(mIconIds[2]);
-                mBlocked.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+                mBlocked.setIconMarginEnd(mIconMarginEnd);
             }
         }
 

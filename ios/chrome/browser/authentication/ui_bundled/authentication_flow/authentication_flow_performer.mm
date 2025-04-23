@@ -32,6 +32,7 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -51,6 +53,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -77,14 +80,16 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 NSString* const kAuthenticationSnackbarCategory =
     @"AuthenticationSnackbarCategory";
 
-void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
-                                    SceneState* scene_state,
-                                    base::OnceClosure closure) {
-  Browser* new_browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
-
-  std::move(completion).Run(/*success=*/true, new_browser);
-  std::move(closure).Run();
+// The change profile continuation for the authentication flow.
+void AuthenticationFlowContinuationImpl(
+    id<AuthenticationFlowPerformerDelegate> delegate,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
+  CHECK(delegate);
+  [delegate
+      didSwitchToProfileWithNewProfileBrowser:
+          scene_state.browserProviderInterface.currentBrowserProvider.browser
+                                   completion:std::move(closure)];
 }
 
 // Handler for the signout action from a snackbar. Will `clear_selected_type`
@@ -113,10 +118,9 @@ void HandleSignoutForSnackbar(
         ->SetSelectedType(clear_selected_type.value(), false);
   }
 
-  signin::MultiProfileSignOut(
-      browser, signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
-      /*force_snackbar_over_toolbar=*/false,
-      /*snackbar_message=*/nil, /*signout_completion=*/nil);
+  signin::ProfileSignoutRequest(
+      signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
+      .Run(browser);
 }
 
 }  // namespace
@@ -255,8 +259,13 @@ void HandleSignoutForSnackbar(
 }
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                         sceneState:(SceneState*)sceneState {
+                         sceneState:(SceneState*)sceneState
+                      requestHelper:
+                          (id<AuthenticationFlowRequestHelper>)requestHelper {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK(requestHelper);
+  ChangeProfileContinuation continuation =
+      [requestHelper authenticationFlowWillChangeProfile];
 
   std::optional<std::string> profileName =
       GetApplicationContext()
@@ -273,26 +282,23 @@ void HandleSignoutForSnackbar(
     return;
   }
 
-  [self switchToProfileWithName:*profileName sceneState:sceneState];
+  [self switchToProfileWithName:*profileName
+                     sceneState:sceneState
+      changeProfileContinuation:std::move(continuation)];
 }
 
 - (void)switchToProfileWithName:(const std::string&)profileName
-                     sceneState:(SceneState*)sceneState {
+                     sceneState:(SceneState*)sceneState
+      changeProfileContinuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
-  __weak __typeof(_delegate) weakDelegate = _delegate;
-  OnProfileSwitchCompletion completion = base::BindOnce(
-      [](__typeof(_delegate) delegate, bool success,
-         Browser* new_profile_browser) {
-        [delegate didSwitchToProfileWithNewProfileBrowser:new_profile_browser];
-      },
-      weakDelegate);
-
-  [_changeProfileHandler
-      changeProfile:profileName
-           forScene:sceneState
-       continuation:base::BindOnce(&AuthenticationFlowContinuation,
-                                   std::move(completion))];
+  ChangeProfileContinuation authenticationFlowContinuation =
+      [self authenticationFlowContinuation];
+  ChangeProfileContinuation fullContinuation = ChainChangeProfileContinuations(
+      std::move(authenticationFlowContinuation), std::move(continuation));
+  [_changeProfileHandler changeProfile:profileName
+                              forScene:sceneState
+                          continuation:std::move(fullContinuation)];
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
@@ -360,7 +366,8 @@ void HandleSignoutForSnackbar(
 
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
                      withIdentity:(id<SystemIdentity>)identity
-                          browser:(Browser*)browser {
+                          browser:(Browser*)browser
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
   DCHECK(browser);
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
@@ -382,6 +389,12 @@ void HandleSignoutForSnackbar(
     syncService->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kReadingList, true);
     clearSelectableType = syncer::UserSelectableType::kReadingList;
+  }
+
+  if (postSignInActions.Has(
+          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
+    [self showHistorySyncScreenAfterProfileSwitch:browser
+                                      accessPoint:accessPoint];
   }
 
   if (postSignInActions.Has(
@@ -538,6 +551,11 @@ void HandleSignoutForSnackbar(
 }
 
 #pragma mark - Private
+
+// The change profile continuation for the authentication flow.
+- (ChangeProfileContinuation)authenticationFlowContinuation {
+  return base::BindOnce(&AuthenticationFlowContinuationImpl, _delegate);
+}
 
 // Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.
 - (void)leavingPrimaryAccountConfirmationDone:(BOOL)continueFlow {
@@ -751,6 +769,28 @@ void HandleSignoutForSnackbar(
   [self managedConfirmationDidAccept:accepted
                              browser:browser
             keepBrowsingDataSeparate:keepBrowsingDataSeparate];
+}
+
+- (void)showHistorySyncScreenAfterProfileSwitch:(Browser*)browser
+                                    accessPoint:(signin_metrics::AccessPoint)
+                                                    accessPoint {
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kHistorySync
+               identity:nil
+            accessPoint:accessPoint
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:nil];
+  command.optionalHistorySync = YES;
+
+  UIViewController* viewController =
+      browser->GetSceneState().rootViewController;
+  while (viewController.presentedViewController) {
+    viewController = viewController.presentedViewController;
+  }
+
+  [browser->GetSceneState().controller showSignin:command
+                               baseViewController:viewController];
 }
 
 @end

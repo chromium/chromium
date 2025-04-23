@@ -658,10 +658,6 @@ void OverviewWindowDragController::ContinueNormalDrag(
   // If virtual desks is enabled, we want to gradually shrink the dragged item
   // as it gets closer to get dropped into a desk mini view.
   if (virtual_desks_bar_enabled_) {
-    // TODO(sammiequon): There is a slight jump especially if we drag from the
-    // corner of a larger overview item, but this is necessary for the time
-    // being to prevent jumps from happening while shrinking. Investigate if we
-    // can satisfy all cases.
     centerpoint = location_in_screen;
 
     const auto iter = per_grid_desks_bar_data_.find(overview_grid);

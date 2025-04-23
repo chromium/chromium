@@ -319,7 +319,10 @@ class HostResolverServiceEndpointRequestTest
       ResolveHostParameters parameters = ResolveHostParameters()) {
     return resolver_->CreateServiceEndpointRequest(
         url::SchemeHostPort(GURL(host)), NetworkAnonymizationKey(),
-        NetLogWithSource(), std::move(parameters), resolve_context_.get());
+        // Use an actual NetLogWithSource instance so that we can see NetLog
+        // events when `--log-net-log` is specified.
+        NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE),
+        std::move(parameters), resolve_context_.get());
   }
 
   Requester CreateRequester(
@@ -404,12 +407,69 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
   requester.WaitForOnUpdated();
 
   // Simulate the case when the preference or policy has disabled the insecure
-  // DNS client causing AbortInsecureDnsTasks.
+  // DNS client causing AbortInsecureDnsTasks. The request falls back to
+  // SystemTask, which doesn't resolve the destination.
   resolver_->SetInsecureDnsClientEnabled(
       /*enabled=*/false, /*additional_dns_types_enabled=*/false);
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
-  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
+
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
+  ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
+}
+
+// Test that When an HostResolverManager::Job associated with a request kills
+// an insecure DnsTask and falls back to a secure DnsTask, the request
+// maintains intermediate endpoint results from the secure DnsTask.
+TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTaskFallbackSecure) {
+  // Set to kAutomatic to attempt an insecure DnsTask first then falls back to
+  // a secure DnsTask.
+  set_secure_dns_mode(SecureDnsMode::kAutomatic);
+
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, "host", dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, "host", dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  SetDnsRules(std::move(rules));
+
+  proc_->SignalMultiple(1u);
+
+  ResolveHostParameters parameters;
+  // Set HostResolverSource to DNS to disable SystemTask.
+  parameters.source = HostResolverSource::DNS;
+  Requester requester = CreateRequester("https://host", std::move(parameters));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForOnUpdated();
+
+  // Simulate the case when the preference or policy has disabled the insecure
+  // DNS client causing AbortInsecureDnsTasks, triggering secure DNS task as
+  // fallback.
+  resolver_->SetInsecureDnsClientEnabled(
+      /*enabled=*/false, /*additional_dns_types_enabled=*/false);
+
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  /*ipv6_endpoints_matcher=*/IsEmpty())));
+
+  mock_dns_client_->CompleteDelayedTransactions();
+
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {

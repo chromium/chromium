@@ -8,10 +8,9 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** The {@link ModuleProviderBuilder} to build the single tab module on the magic stack. */
+@NullMarked
 public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Activity mActivity;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -39,9 +40,9 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
      * @param tabContentManagerSupplier The supplier of the {@link TabContentManager}.
      */
     public SingleTabModuleBuilder(
-            @NonNull Activity activity,
-            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            Activity activity,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -64,14 +65,12 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                     moduleDelegate.onUrlClicked(
                             new GURL(UrlConstants.RECENT_TABS_URL), ModuleType.SINGLE_TAB);
                 };
-        Runnable snapshotParentViewRunnable =
-                () -> {
-                    moduleDelegateHost.onCaptureThumbnailStatusChanged();
-                };
+        Runnable snapshotParentViewRunnable = moduleDelegateHost::onCaptureThumbnailStatusChanged;
 
         // If the host surface is NTP and there isn't a last visited Tab to track, don't create the
         // single Tab module.
-        if (moduleDelegate.getTrackingTab() == null) {
+        Tab trackingTab = moduleDelegate.getTrackingTab();
+        if (trackingTab == null) {
             return false;
         }
         SingleTabSwitcherCoordinator singleTabSwitcherCoordinator =
@@ -80,7 +79,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                         /* container= */ null,
                         mTabModelSelectorSupplier.get(),
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                        moduleDelegate.getTrackingTab(),
+                        trackingTab,
                         singleTabCardClickedCallback,
                         seeMoreLinkClickedCallback,
                         snapshotParentViewRunnable,

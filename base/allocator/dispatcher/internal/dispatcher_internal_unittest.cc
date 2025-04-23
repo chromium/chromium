@@ -146,12 +146,14 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
                                            &realloc_function,
                                            &realloc_unchecked_function,
                                            [](void*, void*) {},
+                                           [](void*, size_t, void*) {},
+                                           [](void*, size_t, void*) {},
+                                           [](void*, size_t, size_t, void*) {},
                                            &get_size_estimate_function,
                                            &good_size_function,
                                            &claimed_address_function,
                                            &batch_malloc_function,
                                            [](void**, unsigned, void*) {},
-                                           [](void*, size_t, void*) {},
                                            [](void*, void*) {},
                                            &aligned_malloc_function,
                                            &aligned_malloc_unchecked_function,
@@ -259,7 +261,7 @@ TEST_F(AllocationEventDispatcherInternalTest, VerifyAllocatorShimDataIsSet) {
   EXPECT_NE(nullptr, allocator_dispatch->free_function);
   EXPECT_NE(nullptr, allocator_dispatch->batch_malloc_function);
   EXPECT_NE(nullptr, allocator_dispatch->batch_free_function);
-  EXPECT_NE(nullptr, allocator_dispatch->free_definite_size_function);
+  EXPECT_NE(nullptr, allocator_dispatch->free_with_size_function);
   EXPECT_NE(nullptr, allocator_dispatch->try_free_default_function);
   EXPECT_NE(nullptr, allocator_dispatch->aligned_malloc_function);
   EXPECT_NE(nullptr, allocator_dispatch->aligned_malloc_unchecked_function);
@@ -515,7 +517,7 @@ TEST_F(AllocationEventDispatcherInternalTest,
 }
 
 TEST_F(AllocationEventDispatcherInternalTest,
-       VerifyAllocatorShimHooksTriggerCorrectly_free_definite_size_function) {
+       VerifyAllocatorShimHooksTriggerCorrectly_free_with_size_function) {
   std::array<ObserverMock, kMaximumNumberOfObservers> observers;
 
   for (auto& mock : observers) {
@@ -530,12 +532,12 @@ TEST_F(AllocationEventDispatcherInternalTest,
       GetNotificationHooks(CreateTupleOfPointers(observers));
 
   auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch();
-  EXPECT_NE(allocator_dispatch->free_definite_size_function, nullptr);
+  EXPECT_NE(allocator_dispatch->free_with_size_function, nullptr);
 
   allocator_dispatch->next = GetNextAllocatorDispatch();
 
-  allocator_dispatch->free_definite_size_function(GetAllocatedAddress(),
-                                                  GetAllocatedSize(), nullptr);
+  allocator_dispatch->free_with_size_function(GetAllocatedAddress(),
+                                              GetAllocatedSize(), nullptr);
 }
 
 TEST_F(AllocationEventDispatcherInternalTest,

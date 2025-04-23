@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,6 +23,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+BASE_FEATURE(kDelayStopForMediaElementSourceNode,
+             "DelayStopForMediaElementSourceNode",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TeeFilter is a RenderCallback implementation that allows for a client to get
 // a copy of the data being rendered by the |renderer_| on Render(). This class
@@ -137,13 +142,15 @@ void WebAudioSourceProviderImpl::SetClient(
 
   base::AutoLock auto_lock(sink_lock_);
   if (client) {
-    // Detach the audio renderer from normal playback.
-    if (sink_) {
-      sink_->Stop();
+    if (!base::FeatureList::IsEnabled(kDelayStopForMediaElementSourceNode)) {
+      // Detach the audio renderer from normal playback.
+      if (sink_) {
+        sink_->Stop();
 
-      // It's not possible to resume an element after disconnection, so just
-      // drop the sink entirely for now.
-      sink_ = nullptr;
+        // It's not possible to resume an element after disconnection, so just
+        // drop the sink entirely for now.
+        sink_ = nullptr;
+      }
     }
 
     // The client will now take control by calling provideInput() periodically.
@@ -227,6 +234,30 @@ void WebAudioSourceProviderImpl::ProvideInput(
     bus_wrapper_->ZeroFramesPartial(frames, number_of_frames - frames);
 
   bus_wrapper_->Scale(volume_);
+}
+
+void WebAudioSourceProviderImpl::ConnectToDestinationReady() {
+  if (!base::FeatureList::IsEnabled(kDelayStopForMediaElementSourceNode)) {
+    return;
+  }
+
+  if (!client_) {
+    return;
+  }
+
+  base::AutoLock auto_lock(sink_lock_);
+  if (!sink_) {
+    return;
+  }
+
+  // If client is set and sink is playing, then we finally stop the sink at this
+  // time. It is expected that the newly connected node, which is calling this
+  // method, will start the audio output.
+  sink_->Stop();
+
+  // It's not possible to resume an element after disconnection, so just
+  // drop the sink entirely for now.
+  sink_ = nullptr;
 }
 
 void WebAudioSourceProviderImpl::Initialize(

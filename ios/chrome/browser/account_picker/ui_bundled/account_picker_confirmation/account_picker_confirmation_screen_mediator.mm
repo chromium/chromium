@@ -124,10 +124,6 @@
                                                       selectedIdentity]];
 }
 
-- (void)handleIdentityListChanged {
-  [self selectSelectedIdentity];
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([_selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
@@ -158,7 +154,7 @@
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self selectSelectedIdentity];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

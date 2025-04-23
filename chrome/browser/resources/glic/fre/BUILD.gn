@@ -10,11 +10,11 @@ build_webui("build") {
   grd_prefix = "glic_fre"
 
   static_files = [
-    "fre.html",
     "fre.css",
+    "fre.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "fre_app_controller.ts",
     "icons.html.ts",
     "main.ts",

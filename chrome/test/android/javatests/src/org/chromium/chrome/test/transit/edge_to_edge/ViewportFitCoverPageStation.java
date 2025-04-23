@@ -58,19 +58,19 @@ public class ViewportFitCoverPageStation extends WebPageStation {
 
         // Ensure the web page elements are drawn and visible.
         mAvoidBottomElement =
-                elements.declareElement(new HtmlElement(AVOID_BOTTOM_DIV, mWebContentsSupplier));
+                elements.declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
         mFullScreenButtonElement =
                 elements.declareElement(
-                        new HtmlElement(FULLSCREEN_MAIN_BUTTON, mWebContentsSupplier));
+                        new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
 
         // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
         elements.declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
 
         // Ensure the bottom chin is on display.
         Supplier<BottomControlsStacker> bottomControlsStacker =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mActivityElement));
-        elements.declareLogicalElement(
+        elements.declareElement(
                 LogicalElement.uiThreadLogicalElement(
                         "Bottom chin is not on display",
                         this::isBottomChinShowing,

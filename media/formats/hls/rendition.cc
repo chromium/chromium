@@ -14,6 +14,9 @@
 namespace media::hls {
 
 Rendition::Rendition(base::PassKey<RenditionGroup>, CtorArgs args)
+    : Rendition(std::move(args)) {}
+
+Rendition::Rendition(CtorArgs args)
     : uri_(std::move(args.uri)),
       name_(std::move(args.name)),
       language_(std::move(args.language)),
@@ -24,5 +27,10 @@ Rendition::Rendition(base::PassKey<RenditionGroup>, CtorArgs args)
 Rendition::Rendition(Rendition&&) = default;
 
 Rendition::~Rendition() = default;
+
+// static
+Rendition Rendition::CreateRenditionForTesting(CtorArgs args) {
+  return Rendition{std::move(args)};
+}
 
 }  // namespace media::hls

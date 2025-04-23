@@ -13,13 +13,14 @@ source_set("row") {
     "omnibox_popup_row_util.mm",
   ]
   deps = [
+    ":icon_retriever",
     "//base",
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_icon",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/resources",
@@ -32,5 +33,12 @@ source_set("row") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
+  ]
+}
+
+source_set("icon_retriever") {
+  sources = [
+    "favicon_retriever.h",
+    "image_retriever.h",
   ]
 }

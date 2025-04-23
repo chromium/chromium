@@ -49,7 +49,7 @@ import {FileType, ScanJobObserverReceiver, ScanResult, SourceType} from './scann
 import {getTemplate} from './scanning_app.html.js';
 import type {ScanJobSettingsForMetrics, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse, SuccessResponse} from './scanning_app_types.js';
 import {AppState, MAX_NUM_SAVED_SCANNERS} from './scanning_app_types.js';
-import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
+import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString} from './scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
@@ -596,7 +596,7 @@ export class ScanningAppElement extends ScanningAppElementBase implements
     for (const scanner of response.scanners) {
       this.setScannerInfo(scanner);
       if (this.isLastUsedScanner(scanner)) {
-        this.lastUsedScannerId = tokenToString(scanner.id);
+        this.lastUsedScannerId = scanner.id;
       }
     }
 
@@ -1036,8 +1036,7 @@ export class ScanningAppElement extends ScanningAppElementBase implements
   }
 
   private setScannerInfo(scanner: Scanner): void {
-    this.scannerInfoMap.set(
-        tokenToString(scanner.id), this.createScannerInfo(scanner));
+    this.scannerInfoMap.set(scanner.id, this.createScannerInfo(scanner));
   }
 
   private isLastUsedScanner(scanner: Scanner): boolean {

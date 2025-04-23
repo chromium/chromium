@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Create a CustomElementRegistry not identically equal to window.customElements
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Defining an element in the global registry does not add a definition to a scoped CustomElementRegistry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Defining an element in a scoped global registry does not add a definition to the global registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

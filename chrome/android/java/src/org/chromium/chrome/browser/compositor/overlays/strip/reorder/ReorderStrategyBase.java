@@ -13,7 +13,6 @@ import android.animation.AnimatorSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
@@ -58,6 +58,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     protected final View mContainerView;
     protected final ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     protected final Supplier<Float> mTabWidthSupplier;
+    private final Supplier<Long> mLastReorderScrollTimeSupplier;
 
     ReorderStrategyBase(
             ReorderDelegate reorderDelegate,
@@ -68,7 +69,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
-            Supplier<Float> tabWidthSupplier) {
+            Supplier<Float> tabWidthSupplier,
+            Supplier<Long> lastReorderScrollTimeSupplier) {
+        // TODO(crbug.com/409392603): Investigate splitting this class even further.
         mModel = model;
         mTabGroupModelFilter = tabGroupModelFilter;
         mContainerView = containerView;
@@ -78,14 +81,19 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         mReorderDelegate = reorderDelegate;
         mGroupIdToHideSupplier = groupIdToHideSupplier;
         mTabWidthSupplier = tabWidthSupplier;
+        mLastReorderScrollTimeSupplier = lastReorderScrollTimeSupplier;
     }
+
+    // ============================================================================================
+    // Group helpers
+    // ============================================================================================
 
     /**
      * Attempts to move the interacting tab out of its group. May prompt the user with a
      * confirmation dialog if the tab removal will result in a group deletion. Animates accordingly.
      *
+     * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
-     * @param stripTabs The list of {@link StripLayoutTab}.
      * @param interactingTab The tab to move out of group.
      * @param groupTitleToAnimate The title of the group the interacting tab is attempting to move
      *     out of.Used for animation. Null if animation is not needed.
@@ -93,8 +101,8 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
      * @param actionType The action type {@link ActionType} to determine which user prompt to show.
      */
     protected void moveInteractingTabOutOfGroup(
+            StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
             StripLayoutTab interactingTab,
             StripLayoutGroupTitle groupTitleToAnimate,
             boolean towardEnd,
@@ -102,7 +110,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         final int tabId = interactingTab.getTabId();
         // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
         Runnable beforeSyncDialogRunnable =
-                () -> mReorderDelegate.stopReorderMode(groupTitles, stripTabs);
+                () -> mReorderDelegate.stopReorderMode(stripViews, groupTitles);
         Runnable onSuccess =
                 () -> RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
 
@@ -173,42 +181,70 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                         throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
     }
 
-    protected void setTrailingMarginForTab(
-            StripLayoutTab stripTab,
-            StripLayoutGroupTitle[] groupTitles,
-            boolean shouldHaveTrailingMargin,
-            @NonNull List<Animator> animationList) {
-        final Tab tab = mModel.getTabById(stripTab.getTabId());
-        if (tab == null) return;
-        final StripLayoutGroupTitle groupTitle =
-                StripLayoutUtils.findGroupTitle(groupTitles, tab.getTabGroupId());
+    // ============================================================================================
+    // Margin helpers
+    // ============================================================================================
 
-        setTrailingMarginForTab(stripTab, groupTitle, shouldHaveTrailingMargin, animationList);
+    protected void setTrailingMarginForView(
+            StripLayoutView stripView,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isInteracting,
+            @NonNull List<Animator> animationList) {
+        final StripLayoutGroupTitle groupTitle;
+        if (stripView instanceof StripLayoutTab stripTab) {
+            final Tab tab = mModel.getTabById(stripTab.getTabId());
+            if (tab == null) return;
+            groupTitle = StripLayoutUtils.findGroupTitle(groupTitles, tab.getTabGroupId());
+        } else {
+            groupTitle = (StripLayoutGroupTitle) stripView;
+        }
+
+        setTrailingMarginForView(
+                stripView,
+                groupTitle,
+                shouldHaveTrailingMargin(stripView, isInteracting),
+                animationList);
+    }
+
+    private boolean shouldHaveTrailingMargin(
+            StripLayoutView interactingView, boolean isInteracting) {
+        // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
+        // merging on drop is not allowed.
+        if (!TabDragSource.canMergeIntoGroupOnDrop() && isInteracting) {
+            if (interactingView instanceof StripLayoutGroupTitle groupTitle) {
+                return groupTitle.isCollapsed();
+            } else if (interactingView instanceof StripLayoutTab stripTab) {
+                return !StripLayoutUtils.isNonTrailingTabInGroup(
+                        mTabGroupModelFilter, mModel, stripTab);
+            }
+        }
+        return isInteracting;
     }
 
     /**
-     * Sets the trailing margin for the current tab. Update bottom indicator width for Tab Group
-     * Indicators and animates if necessary.
+     * Sets the trailing margin for the current stripView. Update bottom indicator width for Tab
+     * Group Indicators and animates if necessary.
      *
-     * @param tab The tab to update.
-     * @param groupTitle The group title associated with the tab. Null if tab is not grouped.
-     * @param shouldHaveTrailingMargin Whether the tab should have a trailing margin or not.
-     * @param animationList The list to add the animation to, or {@code null} if not animating.
+     * @param stripView The stripView to update.
+     * @param groupTitle The group title associated with the stripView. Null if stripView is not
+     *     grouped.
+     * @param shouldHaveTrailingMargin Whether the stripView should have a trailing margin or not.
+     * @param animationList The list to add the animation to.
      */
-    private void setTrailingMarginForTab(
-            StripLayoutTab tab,
+    private void setTrailingMarginForView(
+            StripLayoutView stripView,
             StripLayoutGroupTitle groupTitle,
             boolean shouldHaveTrailingMargin,
             @NonNull List<Animator> animationList) {
         // Avoid triggering updates if trailing margin isn't actually changing.
-        float trailingMargin =
-                shouldHaveTrailingMargin
-                        ? StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                        : 0.f;
-        if (tab.getTrailingMargin() == trailingMargin) return;
+        float halfTabWidth = StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier);
+        float trailingMargin = shouldHaveTrailingMargin ? halfTabWidth : 0f;
+        if (stripView.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
-        if (groupTitle != null && !groupTitle.isCollapsed()) {
+        if (groupTitle != null
+                && !groupTitle.isCollapsed()
+                && TabDragSource.canMergeIntoGroupOnDrop()) {
             float startWidth = groupTitle.getBottomIndicatorWidth();
             float endWidth =
                     StripLayoutUtils.calculateBottomIndicatorWidth(
@@ -232,20 +268,63 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         animationList.add(
                 CompositorAnimator.ofFloatProperty(
                         mAnimationHost.getAnimationHandler(),
-                        tab,
-                        StripLayoutTab.TRAILING_MARGIN,
-                        tab.getTrailingMargin(),
+                        stripView,
+                        StripLayoutView.TRAILING_MARGIN,
+                        stripView.getTrailingMargin(),
                         trailingMargin,
                         ANIM_TAB_SLIDE_OUT_MS));
     }
 
-    protected void handleStopReorderMode(
+    private void resetTabGroupMargins(
             StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
+            StripLayoutView[] stripViews,
+            @NonNull List<Animator> animationList) {
+        // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
+        //  don't use trailing margins to demarcate tab group bounds.
+        for (int i = 0; i < stripViews.length; i++) {
+            setTrailingMarginForView(
+                    stripViews[i], groupTitles, /* isInteracting= */ false, animationList);
+        }
+        mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
+    }
+
+    /**
+     * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
+     * near the edge of the tab strip. 0 if the first/last tabs aren't grouped, respectively.
+     *
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     */
+    protected void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
+        float marginWidth =
+                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
+                        * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+
+        // 1. Set the start margin. Update the scroll offset to prevent any apparent movement.
+        StripLayoutTab firstTab = stripTabs[0];
+        boolean firstTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
+        if (firstTabIsInGroup) mScrollDelegate.setReorderStartMargin(marginWidth);
+
+        // 2. Set the trailing margin.
+        StripLayoutTab lastTab = stripTabs[stripTabs.length - 1];
+        boolean lastTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(lastTab.getTabId()));
+        lastTab.setTrailingMargin((lastTabIsInGroup && !lastTab.isCollapsed()) ? marginWidth : 0.f);
+
+        // 3. Ensure the second-to-last tab doesn't have a trailing margin after reorder.
+        if (stripTabs.length > 1) stripTabs[stripTabs.length - 2].setTrailingMargin(0f);
+    }
+
+    // ============================================================================================
+    // Stop reorder helpers
+    // ============================================================================================
+
+    protected void handleStopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
             StripLayoutView interactingView,
             List<Animator> animationList) {
-
-        // 2. Animate offsets back to 0, reattach the container, and clear the margins.
+        // Animate offsets back to 0, reattach the container, and clear the margins.
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         // interactingView may be null if reordering for external view drag drop.
         if (interactingView != null) {
@@ -262,11 +341,10 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 updateTabAttachState(tab, /* attached= */ true, animationList);
             }
         }
-        resetTabGroupMargins(groupTitles, stripTabs, animationList);
+        resetTabGroupMargins(groupTitles, stripViews, animationList);
     }
 
-    @VisibleForTesting
-    void updateTabAttachState(
+    protected void updateTabAttachState(
             StripLayoutTab tab, boolean attached, @NonNull List<Animator> animationList) {
         float startValue =
                 attached
@@ -312,45 +390,58 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         animationList.add(set);
     }
 
-    private void resetTabGroupMargins(
-            StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
-            @NonNull List<Animator> animationList) {
-        // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
-        //  don't use trailing margins to demarcate tab group bounds.
-        for (int i = 0; i < stripTabs.length; i++) {
-            final StripLayoutTab stripTab = stripTabs[i];
-            setTrailingMarginForTab(
-                    stripTab, groupTitles, /* shouldHaveTrailingMargin= */ false, animationList);
-        }
-        mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
+    // ============================================================================================
+    // Threshold helpers
+    // ============================================================================================
+
+    /** Returns the threshold to swap the interacting views with an adjacent tab. */
+    protected float getTabSwapThreshold() {
+        return StripLayoutUtils.getEffectiveTabWidth(mTabWidthSupplier)
+                * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+    }
+
+    // ============================================================================================
+    // Offset helpers
+    // ============================================================================================
+
+    /**
+     * Adjusts the drag offset such that no apparent movement occurs for the view after a reorder is
+     * processed. e.g. account for new idealX, scroll offset clamping, etc.
+     *
+     * @param interactingView The view that is being dragged for reorder.
+     * @param offset The previous drag offset.
+     * @param deltaX The change in drag offset since it was last processed.
+     * @param oldIdealX The interacting view's {@code idealX} prior to the reorder.
+     * @param oldScrollOffset The scroll offset prior to the reorder.
+     * @param oldStartMargin The start margin prior to the reorder.
+     * @return The new drag offset to prevent any apparent movement.
+     */
+    protected float adjustOffsetAfterReorder(
+            StripLayoutView interactingView,
+            float offset,
+            float deltaX,
+            float oldIdealX,
+            float oldScrollOffset,
+            float oldStartMargin) {
+        // Account for the new idealX after reorder.
+        offset += oldIdealX - interactingView.getIdealX();
+        // When the strip is scrolling, deltaX is already accounted for by idealX. This is because
+        // it uses the scroll offset which has already been adjusted by deltaX.
+        if (mLastReorderScrollTimeSupplier.get() != 0) offset -= deltaX;
+        // When scrolled near the end of the strip, the scrollOffset being clamped can affect the
+        // apparent position.
+        oldScrollOffset += oldStartMargin - mScrollDelegate.getReorderStartMargin();
+        float scrollOffsetDelta = mScrollDelegate.getScrollOffset() - oldScrollOffset;
+        offset -= MathUtils.flipSignIf(scrollOffsetDelta, LocalizationUtils.isLayoutRtl());
+        return offset;
     }
 
     /**
-     * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
-     * near the edge of the tab strip. 0 if the first/last tabs aren't grouped, respectively.
-     *
-     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param offset The offset of the current drag.
+     * @return {@code true} if we're dragging towards the end of the strip. {@code false} otherwise.
      */
-    void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
-        float marginWidth =
-                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                        * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
-
-        // 1. Set the start margin. Update the scroll offset to prevent any apparent movement.
-        StripLayoutTab firstTab = stripTabs[0];
-        boolean firstTabIsInGroup =
-                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
-        if (firstTabIsInGroup) mScrollDelegate.setReorderStartMargin(marginWidth);
-
-        // 2. Set the trailing margin.
-        StripLayoutTab lastTab = stripTabs[stripTabs.length - 1];
-        boolean lastTabIsInGroup =
-                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(lastTab.getTabId()));
-        lastTab.setTrailingMargin((lastTabIsInGroup && !lastTab.isCollapsed()) ? marginWidth : 0.f);
-
-        // 3. Ensure the second-to-last tab doesn't have a trailing margin after reorder.
-        if (stripTabs.length > 1) stripTabs[stripTabs.length - 2].setTrailingMargin(0f);
+    protected boolean isOffsetTowardEnd(float offset) {
+        return (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
     }
 
     // ============================================================================================

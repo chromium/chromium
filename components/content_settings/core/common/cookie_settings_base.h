@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -264,13 +265,27 @@ class CookieSettingsBase {
       net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
-  // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.
-  // `site_for_cookies` is used to determine third-party-ness of `url`.
-  // `top_frame_origin` is used to check if there are any content_settings
-  // exceptions. `top_frame_origin` should at least be specified when
-  // `site_for_cookies` is non-empty.
+  // `top_frame_origin`, `cookie_partition_key`) is allowed to access (i.e.,
+  // read or write) cookies. `site_for_cookies` is used to determine
+  // third-party-ness of `url`. `top_frame_origin` is used to check if there are
+  // any content_settings exceptions. `top_frame_origin` should at least be
+  // specified when `site_for_cookies` is non-empty. `cookie_partition_key` is
+  // used to determine if unpartitioned cookie access should be blocked based on
+  // the this particular CookiePartitionKey (e.g. Fenced Frame and
+  // Credentialless iframes have nonce partition keys and their access should be
+  // blocked).
   //
   // This may be called on any thread.
+  bool IsFullCookieAccessAllowed(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
+      CookieSettingWithMetadata* cookie_settings = nullptr) const;
+
+  // TODO(https://crbug.com/399826579): Remove this overload and migrate all
+  // callsites to signature above
   bool IsFullCookieAccessAllowed(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
@@ -394,7 +409,9 @@ class CookieSettingsBase {
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
       base::optional_ref<const network::PermissionsPolicy> permissions_policy)
+
       const;
 
  protected:
@@ -422,10 +439,36 @@ class CookieSettingsBase {
   // `first_party_url`.
   bool IsBlockedByTopLevel3pcdOriginTrial(const GURL& first_party_url) const;
 
-  // Proxies of the restricted cookie manager can override if third party
-  // cookies should be allowed.
-  // Used by WebView.
-  bool Are3pcsForceDisabledByOverride(
+  // The cookie behavior that may result from a cookie settings modifier
+  // (`CookieSettingOverrides` or origin trial).
+  enum class ModifierMode {
+    // Indicates that the modifiers are not enough to determine the resulting
+    // cookie behavior.
+    kUndefined = 0,
+    // Indicates that third-party cookies are allowed due to the modifiers.
+    kAllow = 1,
+    // Indicates that third-party cookies are blocked but may also be unblocked
+    // due to third-party cookie phaseout related mitigations (grace period,
+    // heuristics, etc.)
+    kPhaseout = 2,
+    // Indicates that third-party cookies are blocked and cannot be unblocked
+    // due to third-party cookie phaseout related mitigations (grace period,
+    // heuristics, etc.)
+    kBlock = 3,
+  };
+
+  // Will return the `ModifierMode` based on the `CookieSettingOverrides` and
+  // top-level 3pcd origin trial status.
+  ModifierMode GetModifierMode(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const;
+
+  // Returns whether third-party cookies should be blocked solely due to
+  // third-party-cookie "modifiers" (`CookieSettingOverrides` or origin trial).
+  // If the modifiers are not enough to determine a decision, `std::nullopt`
+  // will be returned.
+  std::optional<bool> MaybeBlockThirdPartyCookiesPerModifiers(
+      base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
  private:

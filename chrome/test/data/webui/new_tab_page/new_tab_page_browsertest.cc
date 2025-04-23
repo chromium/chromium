@@ -91,10 +91,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleRegistry) {
   RunTest("new_tab_page/modules/module_registry_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeader) {
-  RunTest("new_tab_page/modules/module_header_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
   RunTest("new_tab_page/modules/info_dialog_test.js", "mocha.run()");
 }

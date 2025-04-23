@@ -50,6 +50,12 @@
             "type": "string",
             "minLength": 1,
             "description": "The action button hover tooltip text."
+          },
+          "icon": {
+            "optional": true,
+            "type": "object",
+            "additionalProperties": { "type": "any" },
+            "description": "The icon shown in the action button on the leading side of the  action label. The icon must be specified as an imageData object. The size should not be more than 160 px wide and tall."
           }
         }
       },

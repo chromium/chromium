@@ -63,6 +63,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/sync/base/time.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -123,8 +124,6 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::PRELOADED_DEFAULT:
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
-    case InstallSource::COUNT:
-      NOTREACHED();
   }
 }
 
@@ -321,7 +320,11 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
-  const base::Time now_time = base::Time::Now();
+  // When testing, the database state is compared with the in-memory registry,
+  // and because proto time has less granularity, this comparison fails unless
+  // we pre-downgrade to proto time and back before saving in our database.
+  const base::Time now_time =
+      syncer::ProtoTimeToTime(syncer::TimeToProtoTime(base::Time::Now()));
 
   // The UI may initiate a full install to overwrite the existing
   // non-locally-installed app. Therefore, `install_state` can be
@@ -359,6 +362,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyUserDisplayModeSyncMitigations(options, *web_app);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  CHECK(HasCurrentPlatformUserDisplayMode(web_app->sync_proto()));
 
 #if BUILDFLAG(IS_MAC)
   // Only set this flag for newly installed DIY apps on Mac

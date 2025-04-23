@@ -23,10 +23,9 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
-ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
-    : views::WebView(host->GetBrowser() ? host->GetBrowser()->profile()
-                                        : nullptr),
-      host_(host) {
+ExtensionViewViews::ExtensionViewViews(Profile* profile,
+                                       extensions::ExtensionViewHost* host)
+    : views::WebView(profile), host_(host) {
   web_contents_attached_subscription_ =
       AddWebContentsAttachedCallback(base::BindRepeating(
           &ExtensionViewViews::OnWebContentsAttached, base::Unretained(this)));

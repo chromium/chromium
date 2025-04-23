@@ -249,13 +249,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    // See crbug.com(407035093).
-    GTEST_SKIP() << "Test broken on automotive builders.";
-  }
-#endif
-
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   PopulateRequiredTimingFields(&timing);
@@ -264,12 +257,12 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
   metadata.behavior_flags |=
       blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
 
+  // Background the tab, then foreground it (see below).
+  web_contents()->WasHidden();
   NavigateAndCommit(GURL(kDefaultTestUrl));
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
 
-  // Background the tab, then foreground it.
-  web_contents()->WasHidden();
-  web_contents()->WasShown();
+  web_contents()->WasShown();  // Foreground the tab.
 
   InitializeTestPageLoadTiming(&timing);
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);

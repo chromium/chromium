@@ -13,7 +13,6 @@
 
 namespace autofill {
 class FormStructure;
-class AttributeType;
 class EntityInstance;
 }  // namespace autofill
 
@@ -22,6 +21,11 @@ namespace autofill_ai {
 // Separator to use between a certain entity label attributes, for example:
 // "Passport · Jon Doe · Germany".
 inline constexpr char16_t kLabelSeparator[] = u" · ";
+
+// The maximum number of entity values/labels that can be used when
+// disambiguating suggestions/entities. Used by suggestion generation and the
+// settings page.
+inline constexpr size_t kMaxNumberOfLabels = 2;
 
 // Alias defining a list of labels available for each AutofillAi entity.
 using EntitiesLabels =
@@ -35,12 +39,16 @@ bool IsFormEligibleForFilling(const autofill::FormStructure& form);
 // list of labels that can be used by an UI surface to display entities
 // information. This is for example used by filling suggestions and the settings
 // page.
-// `attribute_types_to_exclude` is used to exclude specific attribute types from
-// the list of available labels.
+// If `allow_only_disambiguating_types` is true, it will for example in the
+// passport case return only values for name and country attributes, as they are
+// part of the disambiguating attributes from the passport entity. If
+// `return_at_least_one_label` is true, it makes sure that for each
+// `entity_instances`, at least one label is present, even if it repeats across
+// all other entities.
 EntitiesLabels GetLabelsForEntities(
     base::span<const autofill::EntityInstance*> entity_instances,
-    const autofill::DenseSet<autofill::AttributeType>&
-        attribute_types_to_exclude,
+    bool allow_only_disambiguating_types,
+    bool return_at_least_one_label,
     const std::string& app_locale);
 
 }  // namespace autofill_ai

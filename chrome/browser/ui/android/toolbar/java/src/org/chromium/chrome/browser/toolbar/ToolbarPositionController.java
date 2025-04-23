@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -221,6 +222,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context, boolean isCustomTab) {
         return !isCustomTab
                 && ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                && !DeviceInfo.isAutomotive()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
@@ -379,12 +381,13 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean isFormFieldFocusedWithKeyboardVisible,
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
+        boolean miniOriginBarEnabled = ChromeFeatureList.sMiniOriginBar.isEnabled();
         @ControlsPosition int newControlsPosition;
         if (ntpShowing
                 || tabSwitcherShowing
                 || isOmniboxFocused
                 || isFindInPageShowing
-                || isFormFieldFocusedWithKeyboardVisible
+                || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
                 || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {

@@ -35,6 +35,9 @@ class ContextualSearchSelectRegionAction : public OmniboxAction {
   // OmniboxAction:
   OmniboxActionId ActionId() const override;
   void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
 
  protected:
   ~ContextualSearchSelectRegionAction() override;
@@ -47,6 +50,9 @@ class ContextualSearchAskAboutPageAction : public OmniboxAction {
   // OmniboxAction:
   OmniboxActionId ActionId() const override;
   void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
 
  protected:
   ~ContextualSearchAskAboutPageAction() override;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -2469,7 +2471,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   int num_begin_main_frames_main_thread_;
   gfx::Vector2dF current_elastic_overscroll_;
 
-  const gfx::Vector2dF elastic_overscroll_test_cases_[5] = {
+  const std::array<gfx::Vector2dF, 5> elastic_overscroll_test_cases_ = {
       gfx::Vector2dF(0, 0), gfx::Vector2dF(5, 10), gfx::Vector2dF(5, 5),
       gfx::Vector2dF(-4, -5), gfx::Vector2dF(0, 0)};
 };

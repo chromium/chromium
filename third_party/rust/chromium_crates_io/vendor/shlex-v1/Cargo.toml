@@ -12,6 +12,9 @@
 name = "shlex"
 version = "1.3.0"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "default" = []
 "std" = []

@@ -4,5 +4,8 @@
 
 package org.chromium.chrome.browser.partnerbookmarks;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** For now a placeholder. */
+@NullMarked
 public interface Placeholder {}

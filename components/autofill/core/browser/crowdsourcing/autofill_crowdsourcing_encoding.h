@@ -56,6 +56,13 @@ struct EncodeUploadRequestOptions {
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate =
             IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
+
+    // The type of password generation event, if it happened.
+    AutofillUploadContents::Field::PasswordGenerationType generation_type =
+        AutofillUploadContents::Field::NO_GENERATION;
+
+    // Whether the generated password was changed by user.
+    bool generated_password_changed = false;
   };
 
   EncodeUploadRequestOptions();
@@ -131,7 +138,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
 // `ProcessServerPredictionsQueryResponse`.

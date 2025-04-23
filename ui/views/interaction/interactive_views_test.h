@@ -411,6 +411,24 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       ThenBlock then_steps,
       ElseBlock else_steps = Else());
 
+  // On some platforms, context menu operations run in an OS message pump that
+  // ignores non-input events, so async Kombucha does not work, as the posted
+  // tasks won't be run.
+  //
+  // Wrap any context menu operation (including the triggering event, if it is a
+  // `ClickMouse(ui_controls::RIGHT)`) up to and including the step that closes
+  // the context menu in this modifier. If your test fails to close the context
+  // menu, it may hang, as there is no single automated way to clean up context
+  // menus in Views.
+  template <typename... Args>
+  [[nodiscard]] static MultiStep MayInvolveNativeContextMenu(Args&&... args) {
+#if BUILDFLAG(IS_MAC)
+    return WithoutDelay(std::forward<Args>(args)...);
+#else
+    return Steps(std::forward<Args>(args)...);
+#endif
+  }
+
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);

@@ -155,9 +155,14 @@ class BrowsingDataRemover {
   // (https://github.com/WICG/dbsc/blob/main/README.md)
   static constexpr DataType DATA_TYPE_DEVICE_BOUND_SESSIONS = 1 << 25;
 
+  // Interest group data that should be cleared in response to user action,
+  // but not Clear-Site-Site data.
+  // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md)
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_USER_CLEAR = 1 << 26;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_DEVICE_BOUND_SESSIONS;
+      DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -169,7 +174,7 @@ class BrowsingDataRemover {
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
       DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
       DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.

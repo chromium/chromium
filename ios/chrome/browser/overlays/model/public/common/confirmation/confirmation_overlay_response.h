@@ -18,7 +18,7 @@ class ConfirmationOverlayResponse
   bool confirmed() const { return confirmed_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(ConfirmationOverlayResponse);
+  friend class OverlayUserData<ConfirmationOverlayResponse>;
   explicit ConfirmationOverlayResponse(bool confirmed);
 
   bool confirmed_ = false;

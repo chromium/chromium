@@ -40,24 +40,29 @@ public class Profile {
     @NonNull private final ServiceWorkerController mServiceWorkerController;
 
     public Profile(@NonNull final AwBrowserContext browserContext) {
-        assert ThreadUtils.runningOnUiThread();
-        WebViewChromiumFactoryProvider factory = WebViewChromiumFactoryProvider.getSingleton();
-        mBrowserContext = browserContext;
-        mName = browserContext.getName();
+        String traceArgs = String.format("{name: \"%s\"}", browserContext.getName());
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.constructor", traceArgs)) {
+            ThreadUtils.checkUiThread();
+            mBrowserContext = browserContext;
+            mName = browserContext.getName();
 
-        if (browserContext.isDefaultAwBrowserContext()) {
-            mCookieManager = factory.getCookieManager();
-            mWebStorage = factory.getWebStorage();
-            mGeolocationPermissions = factory.getGeolocationPermissions();
-            mServiceWorkerController = factory.getServiceWorkerController();
-        } else {
-            mCookieManager = new CookieManagerAdapter(browserContext.getCookieManager());
-            mWebStorage = new WebStorageAdapter(factory, browserContext.getQuotaManagerBridge());
-            mGeolocationPermissions =
-                    new GeolocationPermissionsAdapter(
-                            factory, browserContext.getGeolocationPermissions());
-            mServiceWorkerController =
-                    new ServiceWorkerControllerAdapter(browserContext.getServiceWorkerController());
+            WebViewChromiumFactoryProvider factory = WebViewChromiumFactoryProvider.getSingleton();
+            if (browserContext.isDefaultAwBrowserContext()) {
+                mCookieManager = factory.getCookieManager();
+                mWebStorage = factory.getWebStorage();
+                mGeolocationPermissions = factory.getGeolocationPermissions();
+                mServiceWorkerController = factory.getServiceWorkerController();
+            } else {
+                mCookieManager = new CookieManagerAdapter(browserContext.getCookieManager());
+                mWebStorage =
+                        new WebStorageAdapter(factory, browserContext.getQuotaManagerBridge());
+                mGeolocationPermissions =
+                        new GeolocationPermissionsAdapter(
+                                factory, browserContext.getGeolocationPermissions());
+                mServiceWorkerController =
+                        new ServiceWorkerControllerAdapter(
+                                browserContext.getServiceWorkerController());
+            }
         }
     }
 
@@ -68,7 +73,11 @@ public class Profile {
 
     @NonNull
     public CookieManager getCookieManager() {
-        return mCookieManager;
+        String traceArgs = String.format("{name: \"%s\"}", mName);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.GET_COOKIE_MANAGER", traceArgs)) {
+            return mCookieManager;
+        }
     }
 
     @NonNull

@@ -136,7 +136,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
     if (features::IsTabSearchMoving()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
-          tab_strip_->controller(), this,
+          tab_strip_->controller(),
           browser->GetFeatures().tab_declutter_controller(),
           browser->GetFeatures().glic_nudge_controller());
 
@@ -558,10 +558,10 @@ void TabStripRegionView::UpdateButtonBorders() {
   // should be improved, likely by taking the scroll state of the tabstrip into
   // account.
   const auto border_insets = gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0);
+  if (tab_strip_action_container_) {
+    tab_strip_action_container_->UpdateButtonBorders(border_insets);
+  }
   if (tab_strip_combo_button_) {
-    if (tab_strip_action_container_) {
-      tab_strip_action_container_->UpdateButtonBorders(border_insets);
-    }
     tab_strip_combo_button_->new_tab_button()->SetBorder(
         views::CreateEmptyBorder(border_insets));
     tab_strip_combo_button_->tab_search_button()->SetBorder(

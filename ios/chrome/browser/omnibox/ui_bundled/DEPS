@@ -21,9 +21,3 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/url_loading/model",
 ]
-
-specific_include_rules = {
-  "^omnibox_coordinator.mm": [
-    "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
-  ],
-}

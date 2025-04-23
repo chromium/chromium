@@ -483,7 +483,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // open chrome://safe-browsing tabs. Returns a token that can be used in
   // |AddToPGResponses| to correlate a ping and response.
   int AddToPGPings(const LoginReputationClientRequest& request,
-                   const std::string oauth_token);
+                   const std::string& oauth_token);
 
   // Add the new response to |pg_responses_| and send it to all the open
   // chrome://safe-browsing tabs.
@@ -494,10 +494,10 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void ClearPGPings();
 
   // UrlRealTimeMechanism::WebUIDelegate:
-  int AddToURTLookupPings(const RTLookupRequest request,
-                          const std::string oauth_token) override;
+  int AddToURTLookupPings(const RTLookupRequest& request,
+                          const std::string& oauth_token) override;
   void AddToURTLookupResponses(int token,
-                               const RTLookupResponse response) override;
+                               const RTLookupResponse& response) override;
 
   // Clear the list of sent URT lookup pings and responses.
   void ClearURTLookupPings();

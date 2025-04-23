@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -72,7 +75,8 @@ class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
     // Enable Boca and consumer experience for testing purposes. This is used
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBoca, features::kBocaConsumer},
+        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
+                              features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 
@@ -155,6 +159,29 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(boca_app_browser->window()->IsVisible());
+  EXPECT_TRUE(boca_app_browser->window()->IsToolbarVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PinSystemWebAppWindowOnTablets) {
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Pin the Boca app and verify result.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->session_id());
+  EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(boca_app_browser->window()->IsVisible());
   EXPECT_TRUE(boca_app_browser->window()->IsToolbarVisible());
 }
 
@@ -171,6 +198,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
       /*pinned=*/true, boca_app_browser->session_id());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  ASSERT_TRUE(boca_app_browser->window()->IsVisible());
 
   // Unpin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
@@ -228,6 +256,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.SetPauseStateForSystemWebAppWindow(
       /*paused=*/true, boca_app_browser->session_id());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_TRUE(boca_app_browser->window()->IsVisible());
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
   auto* const browser_view =
@@ -248,10 +277,20 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_5));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_6));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_7));
+
+  // Verify that camera and microphone access are disabled.
+  EXPECT_TRUE(
+      ash::CameraPrivacySwitchController::Get()->IsCameraAccessForceDisabled());
+  EXPECT_TRUE(ash::CrasAudioHandler::Get()->IsInputMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
                        UnpauseSystemWebAppWindow) {
+  // Enable camera and disable microphone.
+  ash::CameraPrivacySwitchController::Get()->SetForceDisableCameraAccess(false);
+  ash::CrasAudioHandler::Get()->SetInputMute(
+      true, ash::CrasAudioHandler::InputMuteChangeMethod::kOther);
+
   // Launch Boca app for testing purposes.
   OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
   base::test::TestFuture<bool> launch_future;
@@ -259,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_TRUE(launch_future.Get());
   Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Disable camera and enable microphone.
+  ash::CameraPrivacySwitchController::Get()->SetForceDisableCameraAccess(true);
+  ash::CrasAudioHandler::Get()->SetInputMute(
+      false, ash::CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   // Pin and pause the Boca app.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
@@ -271,6 +315,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   auto* const browser_view =
       BrowserView::GetBrowserViewForBrowser(boca_app_browser);
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+
+  // Verify that camera and microphone access are disabled.
+  ASSERT_TRUE(
+      ash::CameraPrivacySwitchController::Get()->IsCameraAccessForceDisabled());
+  ASSERT_TRUE(ash::CrasAudioHandler::Get()->IsInputMuted());
 
   // Unpause the Boca app and verify result.
   system_web_app_manager.SetPauseStateForSystemWebAppWindow(
@@ -293,6 +342,12 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_5));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_6));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_7));
+
+  // Verify that camera and microphone access are restored to the latest state
+  // before pause mode.
+  EXPECT_TRUE(
+      ash::CameraPrivacySwitchController::Get()->IsCameraAccessForceDisabled());
+  EXPECT_FALSE(ash::CrasAudioHandler::Get()->IsInputMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,

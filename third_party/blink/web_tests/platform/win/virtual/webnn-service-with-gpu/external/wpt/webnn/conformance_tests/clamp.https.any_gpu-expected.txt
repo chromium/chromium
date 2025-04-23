@@ -6,6 +6,6 @@ This is a testharness.js-based test.
 [FAIL] clamp int64 1D tensor
   assert_true: assert_array_approx_equals_ulp: test clamp int64 actual -4147483648 should be close enough to expected -2 by the acceptable 0 ULP distance, but they have 4147483646 ULP distance expected true got false
 [FAIL] clamp uint64 1D tensor
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 5294967295 to a BigInt"
+  assert_true: assert_array_approx_equals_ulp: test clamp uint64 actual 5294967295 should be close enough to expected 5294967290 by the acceptable 0 ULP distance, but they have 5 ULP distance expected true got false
 Harness: the test ran to completion.
 

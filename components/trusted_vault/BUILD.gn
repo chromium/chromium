@@ -31,6 +31,8 @@ static_library("trusted_vault") {
       "proto_string_bytes_conversion.h",
       "proto_time_conversion.cc",
       "proto_time_conversion.h",
+      "recovery_key_store_certificate.cc",
+      "recovery_key_store_certificate.h",
       "recovery_key_store_connection.h",
       "recovery_key_store_connection_impl.cc",
       "recovery_key_store_connection_impl.h",
@@ -61,6 +63,9 @@ static_library("trusted_vault") {
       "trusted_vault_request.h",
       "trusted_vault_server_constants.cc",
       "trusted_vault_server_constants.h",
+      "trusted_vault_throttling_connection.h",
+      "trusted_vault_throttling_connection_impl.cc",
+      "trusted_vault_throttling_connection_impl.h",
     ]
 
     deps = [
@@ -73,6 +78,7 @@ static_library("trusted_vault") {
       "//net",
       "//services/network/public/cpp:cpp",
       "//third_party/boringssl",
+      "//third_party/libxml:xml_reader",
     ]
   }
 }
@@ -82,8 +88,10 @@ if (!is_android) {
     testonly = true
     sources = [
       "download_keys_response_handler_unittest.cc",
+      "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
+      "recovery_key_store_certificate_unittest.cc",
       "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
@@ -94,6 +102,7 @@ if (!is_android) {
       "trusted_vault_degraded_recoverability_handler_unittest.cc",
       "trusted_vault_request_unittest.cc",
       "trusted_vault_server_constants_unittest.cc",
+      "trusted_vault_throttling_connection_impl_unittest.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -138,10 +147,12 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "test/fake_file_access.cc",
+      "test/fake_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
-      "test/mock_trusted_vault_connection.cc",
-      "test/mock_trusted_vault_connection.h",
+      "test/mock_trusted_vault_throttling_connection.cc",
+      "test/mock_trusted_vault_throttling_connection.h",
     ]
 
     public_deps += [

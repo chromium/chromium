@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
     kWebAppProviderNotReadyToRead,
     kNewEntryPointNotEnabled,
     kNewEntryPointNotFound,
+    kNonGoogleChromeBuild,
   };
 
   AssistantBrowserDelegate();

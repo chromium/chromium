@@ -100,6 +100,10 @@ HTMLMediaElement* MediaElementAudioSourceNode::mediaElement() const {
   return media_element_.Get();
 }
 
+void MediaElementAudioSourceNode::ConnectToDestinationReady() {
+  media_element_->ConnectToDestinationReady();
+}
+
 void MediaElementAudioSourceNode::SetFormat(uint32_t number_of_channels,
                                             float sample_rate) {
   GetMediaElementAudioSourceHandler().SetFormat(number_of_channels,

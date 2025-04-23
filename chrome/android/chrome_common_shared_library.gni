@@ -95,9 +95,6 @@ template("chrome_common_shared_library") {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
-    # Warn if linking code which could implicitly disable BTI on Arm systems
-    configs += [ "//build/config/android:lld_branch_target_hardening" ]
-
     if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]

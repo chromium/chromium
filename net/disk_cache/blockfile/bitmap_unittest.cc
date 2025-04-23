@@ -8,6 +8,9 @@
 #endif
 
 #include "net/disk_cache/blockfile/bitmap.h"
+
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(BitmapTest, OverAllocate) {
@@ -94,12 +97,12 @@ TEST(BitmapTest, Resize) {
 TEST(BitmapTest, Map) {
   // Tests Set/GetMap and the constructor that takes an array.
   const int kMapSize = 80;
-  char local_map[kMapSize];
+  std::array<char, kMapSize> local_map;
   for (int i = 0; i < kMapSize; i++)
     local_map[i] = static_cast<char>(i);
 
   disk_cache::Bitmap bitmap(kMapSize * 8, false);
-  bitmap.SetMap(reinterpret_cast<uint32_t*>(local_map), kMapSize / 4);
+  bitmap.SetMap(reinterpret_cast<uint32_t*>(local_map.data()), kMapSize / 4);
   for (int i = 0; i < kMapSize; i++) {
     if (i % 2)
       EXPECT_TRUE(bitmap.Get(i * 8));
@@ -107,16 +110,16 @@ TEST(BitmapTest, Map) {
       EXPECT_FALSE(bitmap.Get(i * 8));
   }
 
-  EXPECT_EQ(0, memcmp(local_map, bitmap.GetMapForTesting(), kMapSize));
+  EXPECT_EQ(0, memcmp(local_map.data(), bitmap.GetMapForTesting(), kMapSize));
 
   // Now let's create a bitmap that shares local_map as storage.
-  disk_cache::Bitmap bitmap2(reinterpret_cast<uint32_t*>(local_map),
+  disk_cache::Bitmap bitmap2(reinterpret_cast<uint32_t*>(local_map.data()),
                              kMapSize * 8, kMapSize / 4);
-  EXPECT_EQ(0, memcmp(local_map, bitmap2.GetMapForTesting(), kMapSize));
+  EXPECT_EQ(0, memcmp(local_map.data(), bitmap2.GetMapForTesting(), kMapSize));
 
   local_map[kMapSize / 2] = 'a';
-  EXPECT_EQ(0, memcmp(local_map, bitmap2.GetMapForTesting(), kMapSize));
-  EXPECT_NE(0, memcmp(local_map, bitmap.GetMapForTesting(), kMapSize));
+  EXPECT_EQ(0, memcmp(local_map.data(), bitmap2.GetMapForTesting(), kMapSize));
+  EXPECT_NE(0, memcmp(local_map.data(), bitmap.GetMapForTesting(), kMapSize));
 }
 
 TEST(BitmapTest, SetAll) {

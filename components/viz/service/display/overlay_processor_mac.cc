@@ -34,14 +34,6 @@ bool OverlayProcessorMac::IsOverlaySupported() const {
   return true;
 }
 
-gfx::Rect OverlayProcessorMac::GetPreviousFrameOverlaysBoundingRect() const {
-  // This function's return value is used to determine the range of quads
-  // produced by surface aggregation. We use the quads to generate our CALayer
-  // tree every frame, and we use the quads that didn't change. For that
-  // reason, always return the full frame.
-  return previous_frame_full_bounding_rect_;
-}
-
 gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   gfx::Rect result = ca_overlay_damage_rect_;
   ca_overlay_damage_rect_ = gfx::Rect();
@@ -65,7 +57,6 @@ void OverlayProcessorMac::ProcessForOverlays(
 
   // Clear to get ready to handle output surface as overlay.
   output_surface_already_handled_ = false;
-  previous_frame_full_bounding_rect_ = render_pass->output_rect;
 
   // We could have surfaceless overlay but not ca overlay system on. In this
   // case we would still have the OutputSurfaceOverlayPlane.

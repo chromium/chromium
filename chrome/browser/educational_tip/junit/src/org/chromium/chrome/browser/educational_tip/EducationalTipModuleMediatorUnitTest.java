@@ -113,6 +113,13 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_quick_delete_title,
                 R.string.educational_tip_quick_delete_description,
                 R.drawable.quick_delete_promo_logo);
+
+        // Test showing history sync promo card.
+        testShowModuleImpl(
+                ModuleType.HISTORY_SYNC_PROMO,
+                R.string.educational_tip_history_sync_title,
+                R.string.educational_tip_history_sync_description,
+                R.drawable.history_sync_promo_logo);
     }
 
     @Test

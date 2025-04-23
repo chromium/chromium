@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 
 /** Records UMA stats for the actions that the user takes on the feed in the NTP. */
 public class FeedUma {
@@ -21,6 +22,9 @@ public class FeedUma {
         "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
         "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.OffsetFromEndOfStream",
     };
+
+    private static final String HISTOGRAM_ARTICLES_LIST_VISIBLE =
+            "NewTabPage.ContentSuggestions.ArticlesListVisible";
 
     /**
      * Records the number of remaining cards (for the user to scroll through) at which the feed is
@@ -43,5 +47,28 @@ public class FeedUma {
                 TOTAL_CARDS_HISTOGRAM_NAMES[sectionType], totalCards);
         RecordHistogram.recordCount100Histogram(
                 OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[sectionType], numCardsRemaining);
+    }
+
+    /**
+     * Records distinct metrics for each click on the section or button of the feed settings bottom
+     * sheet in the NTP customization.
+     *
+     * @param feedUserActionType The section or button got clicked in the Feed bottom sheet.
+     */
+    public static void recordFeedBottomSheetItemsClicked(
+            @FeedUserActionType int feedUserActionType) {
+        FeedServiceBridge.reportOtherUserAction(feedUserActionType);
+
+        if (feedUserActionType == FeedUserActionType.TAPPED_TURN_ON) {
+            recordArticlesListVisible(/* isArticlesListVisible= */ true);
+        } else if (feedUserActionType == FeedUserActionType.TAPPED_TURN_OFF) {
+            recordArticlesListVisible(/* isArticlesListVisible= */ false);
+        }
+    }
+
+    /** Records whether article suggestions are set visible by user. */
+    public static void recordArticlesListVisible(boolean isArticlesListVisible) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_ARTICLES_LIST_VISIBLE, isArticlesListVisible);
     }
 }

@@ -8,7 +8,6 @@ import android.content.res.ColorStateList;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;

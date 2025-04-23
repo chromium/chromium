@@ -100,7 +100,7 @@ void StatusIconButtonLinux::OnSetDelegate() {
   }
 
   widget_->SetContentsView(this);
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetBorder(nullptr);
   SetImage(delegate_->GetImage());

@@ -17,6 +17,8 @@ syntax = "proto2";
 
 package tflite.task.processor;
 
+
+
 // Defines a dense feature vector. Only one of the two fields is ever present.
 // Feature vectors are assumed to be one-dimensional and L2-normalized.
 message FeatureVector {

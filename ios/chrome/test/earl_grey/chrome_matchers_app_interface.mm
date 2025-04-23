@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/buttons_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -97,7 +98,7 @@ NSString* IdentifierForStripCellAtIndex(unsigned int index) {
 NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u",
                                     TabStripCollectionViewConstants
-                                        .tabStripTabCellPrefixIdentifier,
+                                        .tabStripGroupCellPrefixIdentifier,
                                     index];
 }
 
@@ -106,6 +107,13 @@ NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
 NSString* IdentifierForTabGroupsPanelCellAtIndex(unsigned int index) {
   return [NSString
       stringWithFormat:@"%@%u", kTabGroupsPanelCellIdentifierPrefix, index];
+}
+
+// Identifier for theRecentActivityLogCell at the given index in the recent
+// activity.
+NSString* IdentifierForRecentActivityLogCellAtIndex(unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kRecentActivityLogCellIdentifierPrefix, index];
 }
 
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
@@ -581,6 +589,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)showTabsButton {
   return grey_allOf(grey_accessibilityID(kToolbarStackButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)blueDotOnShowTabsButton {
+  return grey_allOf(grey_accessibilityID(kToolbarButtonBlueDotViewID),
                     grey_sufficientlyVisible(), nil);
 }
 
@@ -1163,6 +1176,24 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)blueDotOnTabStripCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.blueDotAccessibilityIdentifier),
+      grey_ancestor(grey_accessibilityID(IdentifierForStripCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)notificationDotOnTabStripGroupCellAtIndex:
+    (unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          TabStripGroupItemConstants.notificationDotAccessibilityIdentifier),
+      grey_ancestor(
+          grey_accessibilityID(IdentifierForStripGroupCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_accessibilityID(IdentifierForTabGroupsPanelCellAtIndex(index)),
@@ -1181,6 +1212,26 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
           base::SysNSStringToUTF16(@"Created just now"))),
       grey_kindOfClassName(@"TabGroupsPanelCell"), grey_sufficientlyVisible(),
       nil);
+}
+
++ (id<GREYMatcher>)tabGroupRecentActivityCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(IdentifierForRecentActivityLogCellAtIndex(index)),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupActivityLabelOnGroupCellAtIndex:(unsigned int)index {
+  return grey_allOf(grey_accessibilityID(kTabCellActivityLabelIdentifier),
+                    grey_ancestor(grey_accessibilityID(
+                        IdentifierForGridGroupCellAtIndex(index))),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupActivityLabelOnGridCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(kTabCellActivityLabelIdentifier),
+      grey_ancestor(grey_accessibilityID(IdentifierForGridCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGridDoneButton {
@@ -1678,6 +1729,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
 }
 
++ (id<GREYMatcher>)tabGroupActivitySummaryCell {
+  return grey_allOf(grey_accessibilityID(kActivitySummaryGridCellIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupActivitySummaryCellCloseButton {
+  return grey_allOf(
+      grey_accessibilityID(kActivitySummaryGridCellCloseButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 #pragma mark - Tab Groups Context Menus
 
 + (id<GREYMatcher>)addTabToNewGroupButton {
@@ -1739,6 +1801,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return [ChromeMatchersAppInterface
       contextMenuItemWithAccessibilityLabelID:
           IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP];
+}
+
++ (id<GREYMatcher>)recentActivityButton {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY];
 }
 
 + (id<GREYMatcher>)leaveSharedGroupButton {

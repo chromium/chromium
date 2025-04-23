@@ -63,6 +63,8 @@ int GetMagnifierHeight(int display_height) {
          DockedMagnifierController::kSeparatorHeight;
 }
 
+}  // namespace
+
 class DockedMagnifierTest : public NoSessionAshTestBase {
  public:
   DockedMagnifierTest() = default;
@@ -154,7 +156,8 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
 
   std::unique_ptr<views::Widget> CreateLockSystemModalWindow(
       const gfx::Rect& bounds) {
-    auto* widget_delegate_view = new views::WidgetDelegateView();
+    auto* widget_delegate_view = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
     widget_delegate_view->SetModalType(ui::mojom::ModalType::kSystem);
     return CreateTestWidget(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -985,7 +988,5 @@ TEST_F(DockedMagnifierTest, CaptureMode) {
 // - Test magnifier viewport's layer transforms with screen rotation,
 //   multi display, and unified mode.
 // - Test adjust scale using scroll events.
-
-}  // namespace
 
 }  // namespace ash

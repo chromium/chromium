@@ -7,6 +7,7 @@
 
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace password_manager {
 class PasswordFormManager;
@@ -17,12 +18,14 @@ class WebContents;
 
 // Helper object which waits for change password parsing, invokes callback on
 // completion. If form isn't found withing
-// `kChangePasswordFormWaitingTimeout` callback is invoked with nullptr.
+// `kChangePasswordFormWaitingTimeout` after WebContents finished loading
+// callback is invoked with nullptr.
 class ChangePasswordFormWaiter
-    : public password_manager::PasswordFormManagerObserver {
+    : public password_manager::PasswordFormManagerObserver,
+      public content::WebContentsObserver {
  public:
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
-      base::Seconds(10);
+      base::Seconds(2);
   using PasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
@@ -31,10 +34,19 @@ class ChangePasswordFormWaiter
 
   ~ChangePasswordFormWaiter() override;
 
+#if defined(UNIT_TEST)
+  void MarkPageFinishedLoading() {
+    DocumentOnLoadCompletedInPrimaryMainFrame();
+  }
+#endif
+
  private:
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
       password_manager::PasswordFormManager* form_manager) override;
+
+  //  content::WebContentsObserver
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void OnTimeout();
 

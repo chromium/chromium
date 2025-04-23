@@ -46,7 +46,10 @@ cargo_crate("lib") {
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/utf8_iter/v1:lib",
   ]
-  features = [ "duration" ]
+  features = [
+    "default",
+    "duration",
+  ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

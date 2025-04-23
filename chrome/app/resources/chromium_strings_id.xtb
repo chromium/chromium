@@ -77,6 +77,7 @@
 <translation id="2018879682492276940">Gagal menginstal. Coba lagi.</translation>
 <translation id="2020032459870799438">Untuk memeriksa apakah sandi Anda yang lain aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
+<translation id="2054039611381840095">Untuk mendapatkan update Chromium berikutnya, Anda memerlukan macOS 12 atau yang lebih baru. Komputer ini menggunakan macOS 11.</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut menipu dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="2088953378266246249">Informasi tentang cara Chromium mengelola root certificate-nya</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
@@ -286,7 +287,6 @@
 <translation id="4888717733111232871">Inbound rule untuk Chromium guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="4893347770495441059">Luncurkan kembali untuk Mengupdate &amp;Chromium</translation>
 <translation id="4918844574251943176">Gambar disalin</translation>
-<translation id="4942295735032723435">Untuk mendapatkan update Chromium berikutnya, Anda perlu macOS 11 atau yang lebih baru. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium berjalan di mode latar belakang.</translation>
 <translation id="494490797786467921">Klik untuk menutup dialog login Chromium</translation>
 <translation id="4950660488495335294">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>

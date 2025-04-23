@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -49,6 +50,11 @@ bool CanAccessMantaFeaturesWithoutMinorRestrictions(Profile* profile) {
           manta::FeatureSupportStatus::kSupported;
   return canAccessMantaFeaturesWithoutMinorRestrictions;
 }
+
+constexpr auto kSeaPenTextInputSupportedLanguages =
+    base::MakeFixedFlatSet<std::string_view>({"en", "fr", "de", "ja", "es",
+                                              "nl", "it", "sv", "nb", "da",
+                                              "fi", "pt"});
 }  // namespace
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
@@ -114,10 +120,17 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   }
 }
 
-bool IsSystemInEnglishLanguage() {
-  return g_browser_process != nullptr &&
-         language::ExtractBaseLanguage(
-             g_browser_process->GetApplicationLocale()) == "en";
+bool IsSystemInSupportedLanguage() {
+  if (!g_browser_process) {
+    LOG(WARNING) << __func__ << " no browser process";
+    return false;
+  }
+  const std::string_view language =
+      language::ExtractBaseLanguage(g_browser_process->GetApplicationLocale());
+  if (ash::features::IsSeaPenTextInputTranslationEnabled()) {
+    return kSeaPenTextInputSupportedLanguages.contains(language);
+  }
+  return language == "en";
 }
 
 bool IsEligibleForSeaPen(Profile* profile) {
@@ -217,9 +230,9 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
     DVLOG(1) << __func__ << " SeaPenTextInput disabled";
     return false;
   }
-  if (!IsSystemInEnglishLanguage()) {
-    // The feature only supports English users.
-    DVLOG(1) << __func__ << " system not in English language";
+  if (!IsSystemInSupportedLanguage()) {
+    // The feature only supports a limited number of languages.
+    DVLOG(1) << __func__ << " system not in supported language";
     return false;
   }
   return IsEligibleForSeaPen(profile) &&

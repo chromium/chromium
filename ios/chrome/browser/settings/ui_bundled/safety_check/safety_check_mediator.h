@@ -77,6 +77,9 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Must be called before -dealloc.
+- (void)disconnect;
+
 // Starts a safety check if one is not currently running.
 - (void)startCheckIfNotRunning;
 

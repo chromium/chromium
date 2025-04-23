@@ -68,12 +68,10 @@ void AccessTokenFetcherAdaptor::HandleTokenRequestCompletion(
 ProfileIdentityProvider::ProfileIdentityProvider(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
-ProfileIdentityProvider::~ProfileIdentityProvider() {
-  identity_manager_->RemoveObserver(this);
-}
+ProfileIdentityProvider::~ProfileIdentityProvider() = default;
 
 CoreAccountId ProfileIdentityProvider::GetActiveAccountId() {
   return identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -129,6 +127,12 @@ void ProfileIdentityProvider::OnPrimaryAccountChanged(
 void ProfileIdentityProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   ProcessRefreshTokenUpdateForAccount(account_info.account_id);
+}
+
+void ProfileIdentityProvider::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_);
+  identity_manager_observation_.Reset();
 }
 
 }  // namespace invalidation

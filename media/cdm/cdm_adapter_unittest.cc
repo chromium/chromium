@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/check.h"
@@ -86,15 +87,29 @@ namespace {
 const uint64_t kExpectedLicenseSdkVersion = 12345;
 
 // Random key ID used to create a session.
-const uint8_t kKeyId[] = {
+const auto kKeyId = std::to_array<uint8_t>({
     // base64 equivalent is AQIDBAUGBwgJCgsMDQ4PEA
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
-};
+    0x01,
+    0x02,
+    0x03,
+    0x04,
+    0x05,
+    0x06,
+    0x07,
+    0x08,
+    0x09,
+    0x0a,
+    0x0b,
+    0x0c,
+    0x0d,
+    0x0e,
+    0x0f,
+    0x10,
+});
 
 const char kKeyIdAsJWK[] = "{\"kids\": [\"AQIDBAUGBwgJCgsMDQ4PEA\"]}";
 
-const uint8_t kKeyIdAsPssh[] = {
+const auto kKeyIdAsPssh = std::to_array<uint8_t>({
     0x00, 0x00, 0x00, 0x34,                          // size = 52
     'p',  's',  's',  'h',                           // 'pssh'
     0x01,                                            // version = 1
@@ -105,7 +120,7 @@ const uint8_t kKeyIdAsPssh[] = {
     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // key
     0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
     0x00, 0x00, 0x00, 0x00,  // datasize
-};
+});
 
 // Key is 0x0405060708090a0b0c0d0e0f10111213,
 // base64 equivalent is BAUGBwgJCgsMDQ4PEBESEw.
@@ -430,7 +445,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, BadLibraryPath) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateWebmSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 }
 
@@ -446,8 +463,10 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateKeyIdsSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateCencSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyIdAsPssh,
-                              kKeyIdAsPssh + std::size(kKeyIdAsPssh));
+  std::vector<uint8_t> key_id(kKeyIdAsPssh.data(),
+                              base::span<const uint8_t>(kKeyIdAsPssh)
+                                  .subspan(std::size(kKeyIdAsPssh))
+                                  .data());
   CreateSessionAndExpect(EmeInitDataType::CENC, key_id, SUCCESS);
 }
 
@@ -455,7 +474,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
   // Use |kKeyId| but specify KEYIDS format.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
@@ -463,14 +484,18 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, LoadSession) {
   InitializeAndExpect(SUCCESS);
 
   // LoadSession() is not supported by AesDecryptor.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), kKeyAsJWK, SUCCESS, true);
@@ -479,7 +504,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), "random data", FAILURE, true);

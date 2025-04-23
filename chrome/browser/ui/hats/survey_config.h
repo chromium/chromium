@@ -103,6 +103,15 @@ class Profile;
 
 namespace hats {
 struct SurveyConfig {
+  // LINT.IfChange(RequestedBrowserType)
+  enum RequestedBrowserType {
+    // A standard survey, shown only in regular mode.
+    kRegular = 0,
+    // An Incognito survey, shown only in incognito.
+    kIncognito = 1,
+  };
+  // LINT.ThenChange(//chrome/browser/ui/android/hats/java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java:RequestedBrowserType)
+
   // Constructs a SurveyConfig by inspecting |feature|. This includes checking
   // if the feature is enabled, as well as inspecting the feature parameters
   // for the survey probability, and if |presupplied_trigger_id| is not
@@ -119,7 +128,9 @@ struct SurveyConfig {
       const std::vector<std::string>& product_specific_bits_data_fields = {},
       const std::vector<std::string>& product_specific_string_data_fields = {},
       bool log_responses_to_uma = false,
-      bool log_responses_to_ukm = false);
+      bool log_responses_to_ukm = false,
+      RequestedBrowserType requested_browser_type =
+          RequestedBrowserType::kRegular);
 
   SurveyConfig();
   SurveyConfig(const SurveyConfig&);
@@ -156,6 +167,9 @@ struct SurveyConfig {
   // Product Specific String Data fields which are sent with the survey
   // response.
   std::vector<std::string> product_specific_string_data_fields;
+
+  // Requested browser type decides where the survey can be shown.
+  RequestedBrowserType requested_browser_type = RequestedBrowserType::kRegular;
 
   // The feature associated with the HaTS survey. It is used to check if the
   // survey is in the dogfood stage, meaning that it's launched only for a

@@ -8,17 +8,30 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
+import android.net.Uri;
+
 import androidx.browser.trusted.LaunchHandlerClientMode.ClientMode;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.content_public.browser.WebContents;
+
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
- * client mode and generate launch parameters.
+ * client mode and work with launch queue.
  */
+@JNINamespace("webapps")
 public class WebAppLaunchHandler {
 
     public static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
+
+    /** The LaunchParams value to be sent to a web app launch queue on app launch. */
+    private final WebAppLaunchParams mLaunchParams;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -35,6 +48,31 @@ public class WebAppLaunchHandler {
         }
     }
 
+    public WebAppLaunchHandler(
+            @ClientMode int clientMode, String targetUrl, String packageName, List<Uri> fileUris) {
+        mLaunchParams = getLaunchParams(clientMode, targetUrl, packageName, fileUris);
+    }
+
+    /** Returns whether this launch triggers a navigation */
+    public boolean getStartNewNavigation() {
+        return mLaunchParams.startNewNavigation;
+    }
+
+    /**
+     * Initiates the launch process for a web application tab notifying a launch queue.
+     *
+     * @param webContents Web contents object of the tab is being launched.
+     */
+    public void notifyLaunchQueue(WebContents webContents) {
+        WebAppLaunchHandlerJni.get()
+                .notifyLaunchQueue(
+                        webContents,
+                        mLaunchParams.startNewNavigation,
+                        mLaunchParams.targetUrl,
+                        mLaunchParams.packageName,
+                        mLaunchParams.fileUris);
+    }
+
     /**
      * Generates WebAppLaunchParams based on the AndroidX representation of the client mode.
      *
@@ -43,13 +81,28 @@ public class WebAppLaunchHandler {
      * @param packageName Android package name of the web app is being launched.
      * @return The generated WebAppLaunchParams object.
      */
-    public static WebAppLaunchParams getLaunchParams(
-            @ClientMode int clientModeParam, String targetUrl, String packageName) {
+    private static WebAppLaunchParams getLaunchParams(
+            @ClientMode int clientModeParam,
+            String targetUrl,
+            String packageName,
+            List<Uri> fileUris) {
         @ClientMode int clientMode = getClientMode(clientModeParam);
 
         boolean startedNewNavigation = clientMode != FOCUS_EXISTING;
-        return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName);
+        return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName, fileUris);
     }
 
-    private WebAppLaunchHandler() {}
+    /**
+     * Takes the WebContents object of the tab that is being launched and notifies the launch queue
+     * with this object and associated launch parameters.
+     */
+    @NativeMethods
+    public interface Natives {
+        void notifyLaunchQueue(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("bool") boolean startNewNavigation,
+                @JniType("std::string") String startUrl,
+                @JniType("std::string") String packageName,
+                @JniType("std::vector<std::string>") String[] fileUris);
+    }
 }

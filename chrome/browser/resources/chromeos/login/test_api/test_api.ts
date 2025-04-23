@@ -1431,13 +1431,35 @@ class PersonalizedRecommendAppsScreenTester extends ScreenElementApi {
 }
 
 class SplitModifierKeyboardInfoScreenTester extends ScreenElementApi {
+  private shouldSkipReceived: boolean;
+  private shouldBeSkipped: boolean;
+
   constructor() {
     super('split-modifier-keyboard-info');
+    this.shouldSkipReceived = false;
+    this.shouldBeSkipped = false;
+  }
+
+  requestShouldSkip(): void {
+    sendWithPromise('OobeTestApi.getShouldSkipSplitModifierScreen')
+        .then(shouldBeSkipped => this.setShouldBeSkipped(shouldBeSkipped));
+  }
+
+  setShouldBeSkipped(shouldBeSkipped: boolean): void {
+    this.shouldSkipReceived = true;
+    this.shouldBeSkipped = shouldBeSkipped;
+  }
+
+  isShouldSkipReceived(): boolean {
+    return this.shouldSkipReceived;
   }
 
   override shouldSkip(): boolean {
+    // TODO(bohdanty): Add assert check in a follow-up CL to prevent CQ from
+    // breaking.
     return loadTimeData.getBoolean(
-        'testapi_shouldSkipSplitModifierKeyboardInfo');
+               'testapi_shouldSkipSplitModifierKeyboardInfo') ||
+        this.shouldBeSkipped;
   }
 
   isReadyForTesting(): boolean {

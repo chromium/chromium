@@ -12,7 +12,7 @@ build_webui("build") {
   grd_prefix = "ash_personalization_app"
 
   # When adding a new file to personalization app, add it to one of the lists
-  # below. `non_web_component_files` are plain ts files, `web_component_files` are
+  # below. `ts_files` are plain ts files, `web_component_files` are
   # polymer based ts files, `css_files` are Polymer css files,
   # `static_files` are non-js files, e.g. image, html, plain css.
 
@@ -86,7 +86,7 @@ build_webui("build") {
     "js/wallpaper/wallpaper_subpage_element.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "js/ambient/ambient_actions.ts",
     "js/ambient/ambient_controller.ts",
     "js/ambient/ambient_interface_provider.ts",
@@ -177,8 +177,8 @@ build_webui("build") {
   if (is_chrome_branded && overlay_include_cbx) {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
-      "time_of_day/thumbnails/new_mexico.jpg",
       "time_of_day/thumbnails/jupiter.jpg",
+      "time_of_day/thumbnails/new_mexico.jpg",
     ]
   }
 

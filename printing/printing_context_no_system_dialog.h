@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextNoSystemDialog
     : public PrintingContext {
  public:
   PrintingContextNoSystemDialog(Delegate* delegate,
-                                ProcessBehavior process_behavior);
+                                OutOfProcessBehavior out_of_process_behavior);
   PrintingContextNoSystemDialog(const PrintingContextNoSystemDialog&) = delete;
   PrintingContextNoSystemDialog& operator=(
       const PrintingContextNoSystemDialog&) = delete;

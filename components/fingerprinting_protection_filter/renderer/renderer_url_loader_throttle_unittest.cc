@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,6 +17,7 @@
 #include "components/fingerprinting_protection_filter/renderer/mock_renderer_agent.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/variations/variations_switches.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -270,6 +272,24 @@ TEST_F(RendererURLLoaderThrottleTest,
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+}
+
+// There should be no activation on localhosts, except for when
+// --enable-benchmarking switch is active.
+TEST_F(RendererURLLoaderThrottleTest,
+       Localhost_HttpsScriptUrl_DefersOnlyWhenBenchmarking) {
+  GURL url("https://localhost:1010.example.com/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
+  throttle_->WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      variations::switches::kEnableBenchmarking);
+  defer = true;
+  throttle_->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
 }
 
 }  // namespace fingerprinting_protection_filter

@@ -5,15 +5,33 @@
 package org.chromium.components.embedder_support.util;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Used by components/embedder_support/android/util/input_stream_unittest.cc
+ *
+ * @noinspection unused
+ */
 @SuppressWarnings("InputStreamSlowMultibyteRead")
+@NullMarked
 class InputStreamUnittest {
     private InputStreamUnittest() {}
 
     @CalledByNative
+    @Nullable
+    @JniType("std::unique_ptr<embedder_support::InputStream>")
+    static InputStream getNullStream() {
+        return null;
+    }
+
+    @CalledByNative
+    @JniType("std::unique_ptr<embedder_support::InputStream>")
     static InputStream getEmptyStream() {
         return new InputStream() {
             @Override
@@ -24,6 +42,7 @@ class InputStreamUnittest {
     }
 
     @CalledByNative
+    @JniType("std::unique_ptr<embedder_support::InputStream>")
     static InputStream getThrowingStream() {
         return new InputStream() {
             @Override
@@ -49,6 +68,7 @@ class InputStreamUnittest {
     }
 
     @CalledByNative
+    @JniType("std::unique_ptr<embedder_support::InputStream>")
     static InputStream getCountingStream(final int size) {
         return new InputStream() {
             private int mCount;

@@ -18,8 +18,11 @@ namespace commerce {
 class ShoppingService;
 }
 
+@class ContentSuggestionsMetricsRecorder;
+class ImpressionLimitService;
 class PrefService;
 class FaviconLoader;
+@protocol NewTabPageActionsDelegate;
 @protocol ShopCardActionDelegate;
 @class ShopCardItem;
 @class ShopCardData;
@@ -45,6 +48,7 @@ class FaviconLoader;
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
               faviconLoader:(FaviconLoader*)faviconLoader
+     impressionLimitService:(ImpressionLimitService*)impressionLimitService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -62,6 +66,13 @@ class FaviconLoader;
 
 // Delegate to communicate events back to the ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<ShopCardActionDelegate> shopCardActionDelegate;
+
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, weak)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 @end
 

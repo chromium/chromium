@@ -216,21 +216,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* FirstChildBox() const;
   LayoutBox* LastChildBox() const;
 
-  LayoutUnit LogicalLeft() const;
-  LayoutUnit LogicalRight() const {
-    NOT_DESTROYED();
-    return LogicalLeft() + LogicalWidth();
-  }
-  LayoutUnit LogicalTop() const;
-  LayoutUnit LogicalBottom() const {
-    NOT_DESTROYED();
-    return LogicalTop() + LogicalHeight();
-  }
+  // Returns the LogicalRect of this box for LocationContainer()'s writing-mode.
+  // The coordinate origin is the border corner of the LocationContainer().
+  // This function doesn't take into account of TextDirection.
+  LogicalRect LogicalRectInContainer() const;
+
+  // Returns the inline-size for this box's writing-mode.  It might be
+  // different from container's writing-mode.
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
     PhysicalSize size = Size();
     return StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
   }
+  // Returns the block-size for this box's writing-mode.  It might be
+  // different from container's writing-mode.
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
     PhysicalSize size = Size();
@@ -662,6 +661,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     wtf_size_t IndexOf(const PhysicalBoxFragment& fragment) const;
     bool Contains(const PhysicalBoxFragment& fragment) const;
 
+    // Note: We can't use std::views.  It's banned in Chromium.
     class CORE_EXPORT Iterator {
      public:
       using iterator_category = std::forward_iterator_tag;
@@ -676,14 +676,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
       const PhysicalBoxFragment& operator*() const;
 
-      Iterator& operator++() {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++iterator_);
+      UNSAFE_BUFFER_USAGE Iterator& operator++() {
+        // SAFETY: This is not safe. We should not use this operator directly.
+        UNSAFE_BUFFERS(++iterator_);
         return *this;
       }
-      Iterator operator++(int) {
+      UNSAFE_BUFFER_USAGE Iterator operator++(int) {
         Iterator copy = *this;
-        ++*this;
+        // SAFETY: This is not safe. We should not use this operator directly.
+        UNSAFE_BUFFERS(++*this);
         return copy;
       }
 

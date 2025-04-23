@@ -325,7 +325,6 @@ std::map<FormSignature, FormPredictions> CreatePredictions(
         CalculateFieldSignatureForField(form.fields()[index_prediction.first]);
     FieldType server_type = index_prediction.second;
     predictions.fields.emplace_back(renderer_id, field_signature, server_type,
-                                    /*may_use_prefilled_placeholder=*/false,
                                     is_override);
   }
   FormSignature form_signature = CalculateFormSignature(form);
@@ -345,7 +344,6 @@ FormPredictions MakeSingleUsernamePredictions(
                                  ? autofill::SINGLE_USERNAME
                                  : autofill::NO_SERVER_DATA;
   predictions.fields.emplace_back(renderer_id, field_signature, type,
-                                  /*may_use_prefilled_placeholder=*/false,
                                   /*is_override=*/false);
 
   return predictions;
@@ -591,7 +589,6 @@ class PasswordFormManagerTest : public testing::Test,
     FormPredictions predictions;
     predictions.form_signature = form_signature;
     predictions.fields.emplace_back(field_id, field_signature, predicted_type,
-                                    /*may_use_prefilled_placeholder=*/false,
                                     /*is_override=*/false);
     field_info_manager_->AddFieldInfo(info, predictions);
   }
@@ -3151,7 +3148,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
       kUsernameFieldRendererId,
       CalculateFieldSignatureForField(observed_form_.fields()[1]),
       FieldType::UNKNOWN_TYPE,
-      /*may_use_prefilled_placeholder=*/false,
       /*is_override=*/false);
 
   possible_username_data.form_predictions = predictions;
@@ -3652,7 +3648,6 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   predictions.form_signature = kUsernameFormSignature;
   predictions.fields.emplace_back(kUsernameFieldRendererId,
                                   kUsernameFieldSignature, SINGLE_USERNAME,
-                                  /*may_use_prefilled_placeholder=*/false,
                                   /*is_override=*/false);
   possible_username_data.form_predictions = std::move(predictions);
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
@@ -3839,11 +3834,9 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
     SCOPED_TRACE(testing::Message("prediction=") << prediction);
 
     FormPredictions form_predictions;
-    form_predictions.fields.emplace_back(
-        possible_username_data.renderer_id, autofill::FieldSignature(123),
-        prediction,
-        /*may_use_prefilled_placeholder=*/false,
-        /*is_override=*/false);
+    form_predictions.fields.emplace_back(possible_username_data.renderer_id,
+                                         autofill::FieldSignature(123),
+                                         prediction, /*is_override=*/false);
 
     possible_username_data.form_predictions = form_predictions;
     base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>

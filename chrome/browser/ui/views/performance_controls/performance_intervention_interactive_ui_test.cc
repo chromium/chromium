@@ -727,6 +727,17 @@ class PerformanceInterventionNotificationImprovementTest
     PerformanceInterventionInteractiveTest::SetUp();
   }
 
+  auto CheckAcceptHistorySize(size_t expected_size) {
+    return CheckResult(
+        [=]() {
+          return g_browser_process->local_state()
+              ->GetList(performance_manager::user_tuning::prefs::
+                            kPerformanceInterventionNotificationAcceptHistory)
+              .size();
+        },
+        expected_size);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -805,4 +816,21 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
                       kPerformanceInterventionDialogDeactivateButton),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId),
       CheckResult([=] { return controller->GetAcceptancePercentage(); }, 20));
+}
+
+// Regression test for crbug.com/411210860.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
+                       UpdateAcceptHistory) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      TriggerOnActionableTabListChange({1}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      CheckAcceptHistorySize(0),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId),
+      CheckAcceptHistorySize(1));
 }

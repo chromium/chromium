@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación</translation>
 <translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio en el grupo de sitios de <ph name="RWS_OWNER" /> puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios en el grupo de sitios de <ph name="RWS_OWNER" /> pueden ver tu actividad en el grupo}}</translation>
+<translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3676777756440746804">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Cuando está desactivada, los sitios no pueden usar dispositivos USB.</translation>
+<translation id="3703430731944883733">Administra tu feed</translation>
 <translation id="3707034683772193706">Un sitio que visitas puede guardar una pequeña cantidad de información con Chrome, principalmente para validar que no eres un bot.</translation>
 <translation id="3708684582558000260">No permitir que los sitios cerrados terminen de enviar o recibir datos</translation>
 <translation id="3709818294139939629">Sitio sin acceso al archivo</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Preguntar antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir la configuración de la ubicación</translation>
 <translation id="421742575134139848">Es posible que los sitios reproduzcan sonido para que la música, los videos y demás contenido multimedia tengan audio</translation>
+<translation id="4217710972110098902">Conectado a un puerto en serie</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan vibrar el dispositivo</translation>
 <translation id="4259722352634471385">Navegación bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Después de que sales de los sitios, por lo general se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
+<translation id="4578289292431526768">Continuar</translation>
 <translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="461356340001513807">Te permite acceder a sitios web a través de una cuenta con un servicio de identidad</translation>
 <translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
 <translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5706552988683188916">Esta acción borra las cookies y otros datos de sitios para <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad</translation>
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
+<translation id="5743425052258407233">Obtén tu historial en todos los dispositivos para que puedas retomar fácilmente la navegación</translation>
 <translation id="5750869797196646528">Seguimiento de manos</translation>
 <translation id="5771720122942595109">Bloqueado: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876056640971328065">Pausar video</translation>
 <translation id="5877248419911025165">Contraer todas las solicitudes</translation>
+<translation id="5878945009165002849">Bloquear los mensajes de acceso de servicios de identidad</translation>
 <translation id="5884085660368669834">Preferencia de sitio</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5908617755156109052">No permitir que los sitios creen un mapa 3D de tu entorno ni hagan un seguimiento de la posición de la cámara</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres recibir notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
-<translation id="6344622098450209924">Protección contra seguimiento</translation>
 <translation id="6367753977865761591">Bloquea el acceso de terceros a un sitio específico.</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="640163077447496506">Vence hoy</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Revocar permiso para el dispositivo</translation>
 <translation id="8471525937465764768">Por lo general los sitios se conectan a dispositivos USB para habilitar funciones, como imprimir un documento o guardar datos en un dispositivo de almacenamiento.</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" está desactualizada. Vuelve a instalar la app.</translation>
+<translation id="847433688444405067">Navega en distintos dispositivos</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="848952951823693243">Solicitar siempre el sitio móvil</translation>
 <translation id="8492822722330266509">Permitir que los sitios abran ventanas emergentes y usen redireccionamientos</translation>

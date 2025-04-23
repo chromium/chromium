@@ -761,8 +761,9 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         dawn_d3d11_device = dawn::native::d3d11::GetD3D11Device(device.Get());
       }
       if (dawn_d3d11_device == texture_d3d11_device_) {
-        shared_texture_memory =
-            CreateDawnSharedTextureMemory(device, d3d11_texture_);
+        shared_texture_memory = CreateDawnSharedTextureMemory(
+            device, d3d11_texture_, /*requires_dawn_signal_fence=*/
+            use_cross_device_fence_synchronization());
       } else {
         CHECK(dxgi_shared_handle_state_);
         const HANDLE shared_handle =

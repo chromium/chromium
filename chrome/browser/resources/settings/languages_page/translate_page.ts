@@ -64,11 +64,11 @@ export class SettingsTranslatePageElement extends
     };
   }
 
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private showAddAlwaysTranslateDialog_: boolean;
-  private showAddNeverTranslateDialog_: boolean;
-  private addLanguagesDialogLanguages_:
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private showAddAlwaysTranslateDialog_: boolean;
+  declare private showAddNeverTranslateDialog_: boolean;
+  declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();

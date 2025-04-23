@@ -89,7 +89,7 @@ bool ProcessSharingInfobarDelegate::Accept() {
                        static_cast<int>(ui::mojom::DialogButton::kCancel));
   delegate->SetContentsView(MakeRestartView());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetShowCloseButton(false);
   delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

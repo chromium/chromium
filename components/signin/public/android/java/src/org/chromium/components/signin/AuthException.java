@@ -5,55 +5,62 @@
 package org.chromium.components.signin;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 /**
- * AuthException abstracts away authenticator specific exceptions behind a single interface.
- * It is used for passing information that is useful for better handling of errors.
+ * AuthException abstracts away authenticator specific exceptions behind a single interface. It is
+ * used for passing information that is useful for better handling of errors.
  */
 @NullMarked
 public class AuthException extends Exception {
+    // TODO(crbug.com/404745044): Remove these fields.
     public static final boolean TRANSIENT = true;
     public static final boolean NONTRANSIENT = false;
 
-    private final boolean mIsTransientError;
+    private final GoogleServiceAuthError mAuthError;
 
     /**
      * Wraps exception that caused auth failure along with transience flag.
-     * @param isTransientError Whether the error is transient and we can retry.
-     *         Use {@link #TRANSIENT} and {@link #NONTRANSIENT} for readability.
+     *
      * @param cause Exception that caused auth failure.
      */
-    public AuthException(boolean isTransientError, Exception cause) {
-        super(cause);
-        mIsTransientError = isTransientError;
+    // TODO(crbug.com/404745044): Remove this method.
+    public AuthException(boolean isTransient, Exception cause) {
+        this(isTransient, "", cause);
     }
 
     /**
      * Wraps exception that caused auth failure along with transience flag and message.
-     * @param isTransientError Whether the error is transient and we can retry.
-     *         Use {@link #TRANSIENT} and {@link #NONTRANSIENT} for readability.
+     *
      * @param message Message describing context in which auth failure happened.
-     * @param cause Exception that caused auth failure.
+     * @param ex Exception that caused auth failure.
      */
-    public AuthException(boolean isTransientError, String message, Exception cause) {
-        super(message, cause);
-        mIsTransientError = isTransientError;
+    // TODO(crbug.com/404745044): Remove this method.
+    public AuthException(boolean isTransient, String message, Exception ex) {
+        super(message, ex);
+        mAuthError =
+                new GoogleServiceAuthError(
+                        isTransient
+                                ? GoogleServiceAuthErrorState.CONNECTION_FAILED
+                                : GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS);
     }
 
     /**
-     * Constructs an instance without a wrapped exception, based on transience flag and message.
-     * @param isTransientError Whether the error is transient and we can retry.
-     *         Use {@link #TRANSIENT} and {@link #NONTRANSIENT} for readability.
+     * Wraps exception that caused auth failure and stores the {@link GoogleServiceAuthError}.
+     *
      * @param message Message describing context in which auth failure happened.
+     * @param ex Exception that caused auth failure.
+     * @param error {@link GoogleServiceAuthError} encountered during authentication.
      */
-    public AuthException(boolean isTransientError, String message) {
-        super(message);
-        mIsTransientError = isTransientError;
+    public AuthException(String message, Exception ex, GoogleServiceAuthError error) {
+        super(message, ex);
+        mAuthError = error;
     }
 
-    /** @return Whether the error is transient and we can retry. */
-    public boolean isTransientError() {
-        return mIsTransientError;
+    /** Returns the {@link GoogleServiceAuthError} encountered during token fetch. */
+    public GoogleServiceAuthError getAuthError() {
+        return mAuthError;
     }
 
     /** Joins messages from all exceptions in the causal chain into a single string. */

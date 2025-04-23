@@ -31,11 +31,9 @@
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
-#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -43,7 +41,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,11 +55,9 @@
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function_constants.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
@@ -73,6 +68,13 @@
 #include "net/base/load_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "extensions/browser/api/management/management_api.h"
+#endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -518,6 +520,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
         !supervised_user::
             IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
@@ -531,6 +534,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
         RequestExtensionApproval(web_contents);
         return;
       }
+#else
+      // TODO(crbug.com/410616937): Support supervised user install controls on
+      // desktop Android.
+      NOTIMPLEMENTED() << "Supervised user checks not yet supported.";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     }
   }
 
@@ -589,6 +597,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
 
 void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
     content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
       ManagementAPI::GetFactoryInstance()
           ->Get(profile_)
@@ -603,6 +612,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
       gfx::ImageSkia::CreateFrom1xBitmap(icon_),
       SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
       std::move(extension_approval_callback));
+#else
+  // TODO(crbug.com/410616937): Support supervised user install controls on
+  // desktop Android.
+  NOTIMPLEMENTED() << "Supervised user checks not yet supported on Android.";
+  OnExtensionApprovalDone(
+      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+#endif
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
@@ -626,12 +642,18 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnExtensionApprovalApproved() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
       ManagementAPI::GetFactoryInstance()
           ->Get(profile_)
           ->GetSupervisedUserExtensionsDelegate();
   CHECK(supervised_user_extensions_delegate);
   supervised_user_extensions_delegate->AddExtensionApproval(*dummy_extension_);
+#else
+  // TODO(crbug.com/410616937): Support supervised user install controls on
+  // desktop Android.
+  NOTIMPLEMENTED() << "Supervised user checks not yet supported on Android.";
+#endif
 
   HandleInstallProceed();
 }
@@ -849,7 +871,7 @@ WebstorePrivateBeginInstallWithManifest3Function::BuildResponse(
     // In the cases where they do not correspond we should add a new enum value.
     // We will need to ensure that the Webstore is entirely basing its logic on
     // the result alone before removing the error.
-    return ErrorWithArguments(
+    return ErrorWithArgumentsDoNotUse(
         BeginInstallWithManifest3::Results::Create(result), error);
   }
 
@@ -875,18 +897,22 @@ bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
   }
 
   // Only show friction if the allowlist warnings are enabled for the profile.
-  auto* extension_system = ExtensionSystem::Get(profile);
-  return extension_system->extension_service()->allowlist()->warnings_enabled();
+  return ExtensionAllowlist::Get(profile)->warnings_enabled();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     ShowInstallFrictionDialog(content::WebContents* contents) {
   friction_dialog_shown_ = true;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ShowExtensionInstallFrictionDialog(
       contents,
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
                          OnFrictionPromptDone,
                      this));
+#else
+  NOTIMPLEMENTED() << "ShowInstallFrictionDialog not supported on Android";
+  OnFrictionPromptDone(true);
+#endif
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
@@ -964,9 +990,15 @@ void WebstorePrivateBeginInstallWithManifest3Function::
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ShowExtensionInstallBlockedDialog(extension->id(), extension->name(),
                                     blocked_by_policy_error_message_, image,
                                     contents, std::move(done_callback));
+#else
+  LOG(ERROR) << "Install blocked. Dialog not supported on Android. Extension: "
+             << extension->name()
+             << ", message: " << blocked_by_policy_error_message_;
+#endif
 }
 
 WebstorePrivateCompleteInstallFunction::
@@ -1220,7 +1252,7 @@ WebstorePrivateGetReferrerChainFunction::Run() {
                           : nullptr;
 
   if (!outermost_render_frame_host) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::webstore_private::GetReferrerChain::Results::Create(""),
         kWebstoreUserCancelledError));
   }
@@ -1355,6 +1387,7 @@ WebstorePrivateGetMV2DeprecationStatusFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
   MV2ExperimentStage current_stage =
@@ -1379,6 +1412,12 @@ WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
   return RespondNow(ArgumentList(
       api::webstore_private::GetMV2DeprecationStatus::Results::Create(
           api_status)));
+#else
+  // Android does not support Manifest V2 experiments.
+  return RespondNow(ArgumentList(
+      api::webstore_private::GetMV2DeprecationStatus::Results::Create(
+          api::webstore_private::MV2DeprecationStatus::kInactive)));
+#endif
 }
 
 }  // namespace extensions

@@ -37,6 +37,7 @@
 
 class HostContentSettingsMap;
 class OneTimePermissionsTracker;
+class FileSystemAccessPageActionController;
 enum ContentSetting;
 
 namespace content {
@@ -123,6 +124,36 @@ class ChromeFileSystemAccessPermissionContext
     kRejected = 3,
     kDismissed = 4,
     kMaxValue = kDismissed
+  };
+
+  // Represents the blocking behavior for the certain `BlockPathRule`.
+  enum class BlockType {
+    // All children of the given path are blocked as well.
+    kBlockAllChildren,
+    // Access is allowed to individual files in the directory, but nested
+    // directories are still blocked.
+    kBlockNestedDirectories,
+    // Only the given path and its parents are blocked.
+    kDontBlockChildren
+  };
+
+  // Describes a rule for blocking a directory, which can be constructed
+  // dynamically (based on state) or statically (from `kBlockedPaths`).
+  struct BlockPathRule {
+    base::FilePath path;
+    BlockType type;
+  };
+
+  struct BlockedPath {
+    // base::BasePathKey value (or one of the platform specific extensions to
+    // it) for a path that should be blocked. Specify kNoBasePathKey if |path|
+    // should be used instead.
+    int base_path_key;
+    // Explicit path to block instead of using |base_path_key|. Set to nullptr
+    // to use |base_path_key| on its own. If both |base_path_key| and |path| are
+    // set, |path| is treated relative to the path |base_path_key| resolves to.
+    const base::FilePath::CharType* path;
+    BlockType type;
   };
 
   explicit ChromeFileSystemAccessPermissionContext(
@@ -379,6 +410,7 @@ class ChromeFileSystemAccessPermissionContext
       HandleType handle_type,
       UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,
+      const base::TimeTicks start_time,
       base::OnceCallback<void(SensitiveEntryResult)> callback,
       bool should_block);
 
@@ -532,6 +564,9 @@ class ChromeFileSystemAccessPermissionContext
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  // Updates the File System Access page action icon for the given tab.
+  void UpdatePageAction(FileSystemAccessPageActionController* controller);
 #endif
 
   // Number of custom IDs an origin can specify.
@@ -545,6 +580,8 @@ class ChromeFileSystemAccessPermissionContext
       file_created_from_show_save_file_picker_callback_list_;
 
   std::optional<base::FilePath> profile_path_override_;
+
+  std::vector<BlockedPath> blocked_paths_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};

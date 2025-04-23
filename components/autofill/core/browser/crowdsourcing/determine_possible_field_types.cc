@@ -19,11 +19,11 @@
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -140,11 +140,13 @@ void FindAndSetPossibleFieldTypesForField(
     AutofillField& field,
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
+    const std::set<FieldGlobalId> fields_that_match_state,
     const std::string& app_locale) {
-  std::u16string value = field.value_for_import();
-  base::TrimWhitespace(value, base::TRIM_ALL, &value);
+  std::u16string value_u16 = field.value_for_import();
+  base::TrimWhitespace(value_u16, base::TRIM_ALL, &value_u16);
 
-  if (!field.possible_types().empty() && value.empty()) {
+  if (!field.possible_types().empty() && value_u16.empty()) {
     // This is a password field in a sign-in form. Skip checking its type
     // since |field->value| is not set.
     DCHECK_EQ(1u, field.possible_types().size());
@@ -154,13 +156,22 @@ void FindAndSetPossibleFieldTypesForField(
   FieldTypeSet matching_types;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value, app_locale, &matching_types);
+    profile.GetMatchingTypes(value_u16, app_locale, &matching_types);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value, app_locale, &matching_types);
+    card.GetMatchingTypes(value_u16, app_locale, &matching_types);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    const std::string value_u8 = base::UTF16ToUTF8(value_u16);
+    for (const LoyaltyCard& card : loyalty_cards) {
+      if (value_u8 == card.loyalty_card_number()) {
+        matching_types.insert(LOYALTY_MEMBERSHIP_ID);
+      }
+    }
   }
 
-  if (field.state_is_a_matching_type()) {
+  if (fields_that_match_state.contains(field.global_id())) {
     matching_types.insert(ADDRESS_HOME_STATE);
   }
   if (matching_types.empty()) {
@@ -175,11 +186,14 @@ void FindAndSetPossibleFieldTypesForField(
 void FindAndSetPossibleFieldTypes(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
+    const std::set<FieldGlobalId> fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
   for (size_t i = 0; i < form.field_count(); ++i) {
     FindAndSetPossibleFieldTypesForField(*form.field(i), profiles, credit_cards,
+                                         loyalty_cards, fields_that_match_state,
                                          app_locale);
   }
 
@@ -221,9 +235,11 @@ std::vector<std::u16string> GetMatchingCompleteDateFormats(
 
 }  // namespace
 
-void PreProcessStateMatchingTypes(const AutofillClient& client,
-                                  const std::vector<AutofillProfile>& profiles,
-                                  FormStructure& form_structure) {
+std::set<FieldGlobalId> PreProcessStateMatchingTypes(
+    const std::vector<AutofillProfile>& profiles,
+    const FormStructure& form_structure,
+    const std::string& app_locale) {
+  std::set<FieldGlobalId> fields_that_match_state;
   for (const auto& profile : profiles) {
     std::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =
@@ -233,11 +249,11 @@ void PreProcessStateMatchingTypes(const AutofillClient& client,
       continue;
     }
 
-    const std::u16string& country_code = profile.GetInfo(
-        AutofillType(HtmlFieldType::kCountryCode), client.GetAppLocale());
+    const std::u16string& country_code =
+        profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
 
     for (auto& field : form_structure) {
-      if (field->state_is_a_matching_type()) {
+      if (fields_that_match_state.contains(field->global_id())) {
         continue;
       }
 
@@ -249,15 +265,18 @@ void PreProcessStateMatchingTypes(const AutofillClient& client,
       if (canonical_state_name_from_text &&
           canonical_state_name_from_text.value() ==
               canonical_state_name_from_profile.value()) {
-        field->set_state_is_a_matching_type();
+        fields_that_match_state.insert(field->global_id());
       }
     }
   }
+  return fields_that_match_state;
 }
 
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
+    const std::set<FieldGlobalId>& fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
@@ -266,7 +285,8 @@ void DeterminePossibleFieldTypesForUpload(
     // the values so that the first call does not affect later calls.
     field->set_possible_types({});
   }
-  FindAndSetPossibleFieldTypes(profiles, credit_cards,
+  FindAndSetPossibleFieldTypes(profiles, credit_cards, loyalty_cards,
+                               fields_that_match_state,
                                last_unlocked_credit_card_cvc, app_locale, form);
   DisambiguatePossibleFieldTypes(form);
 }
@@ -304,8 +324,8 @@ DeterminePossibleFormatStringsForUpload(
 
   // Cheap check if the three fields' values might together contain a year,
   // month and day.
-  // TODO(crbug.com/396325496): Remove the label / separator comparisons if
-  // crrev.com/c/6360977 has landed.
+  // TODO(crbug.com/396325496): Remove the label / separator comparisons when
+  // AutofillDisallowSlashDotLabels is cleaned up.
   auto may_be_split_date =
       [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
         return std::ranges::all_of(group, may_be_part_of_date) &&
@@ -340,9 +360,7 @@ DeterminePossibleFormatStringsForUpload(
       const base::span<const std::unique_ptr<AutofillField>, 3> group =
           fields.subspan(i).first<3>();
       if (!std::ranges::all_of(group, may_be_interesting) ||
-          !may_be_split_date(group) ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+          !may_be_split_date(group)) {
         continue;
       }
       static constexpr std::u16string_view kSeparator = u"-";

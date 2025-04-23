@@ -21,7 +21,7 @@ class BrowserProcessTask : public Task {
 
   // task_manager::Task:
   bool IsKillable() override;
-  void Kill() override;
+  bool Kill() override;
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;

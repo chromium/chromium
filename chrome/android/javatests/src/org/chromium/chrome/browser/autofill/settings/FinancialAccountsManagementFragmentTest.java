@@ -42,6 +42,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -125,15 +126,17 @@ public class FinancialAccountsManagementFragmentTest {
                 () -> {
                     AutofillImageFetcher imageFetcher =
                             AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile();
-                    // Cache the test image in AutofillImageFetcher. Only cached images are returned
-                    // immediately by the AutofillImageFetcher. If the image is not cached, it'll
-                    // trigger an async fetch from the above TestImageFetcher and cache it for the
-                    // next time.
-                    imageFetcher.addImageToCacheForTesting(
-                            FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
-                            FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
+                    CardIconSpecs specs =
                             CardIconSpecs.create(
-                                    ContextUtils.getApplicationContext(), ImageSize.LARGE));
+                                    ContextUtils.getApplicationContext(), ImageSize.LARGE);
+                    // Cache the test image in AutofillImageFetcher. Only cached images are returned
+                    // immediately by the AutofillImageFetcher.
+                    imageFetcher.addImageToCacheForTesting(
+                            AutofillUiUtils.getFifeIconUrlWithParams(
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                                    specs.getWidth(),
+                                    specs.getHeight()),
+                            FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
                     imageFetcher.addImageToCacheForTesting(
                             AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(
                                     FINANCIAL_ACCOUNT_DISPLAY_ICON_URL),

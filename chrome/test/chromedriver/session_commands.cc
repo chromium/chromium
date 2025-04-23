@@ -307,15 +307,11 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
   if (session->web_socket_url) {
     // Suffixes used with the client channels.
-    std::string client_suffixes[] = {Session::kChannelSuffix,
-                                     Session::kNoChannelSuffix};
-    for (std::string suffix : client_suffixes) {
-      BidiTracker* bidi_tracker = new BidiTracker();
-      bidi_tracker->SetChannelSuffix(std::move(suffix));
-      bidi_tracker->SetBidiCallback(base::BindRepeating(
-          &Session::OnBidiResponse, base::Unretained(session)));
-      devtools_event_listeners.emplace_back(bidi_tracker);
-    }
+    BidiTracker* bidi_tracker = new BidiTracker();
+    bidi_tracker->SetChannelSuffix(std::move(Session::kChannelSuffix));
+    bidi_tracker->SetBidiCallback(base::BindRepeating(
+        &Session::OnBidiResponse, base::Unretained(session)));
+    devtools_event_listeners.emplace_back(bidi_tracker);
   }
 
   status = LaunchChrome(
@@ -356,37 +352,59 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   }
 
   if (session->web_socket_url) {
-    WebView* web_view = nullptr;
-    status = session->GetTargetWindow(&web_view);
-    if (status.IsError())
-      return status;
-    session->bidi_mapper_web_view_id = web_view->GetId();
+    // The webview that will be visible to the user as the initial one.
+    WebView* initial_web_view = nullptr;
+    // The webview that will be used for running BiDi mapper. Can be either
+    // a hidden target or a visible tab.
+    WebView* bidi_mapper_web_view = nullptr;
 
-    // Create a new tab because the default one will be occupied by the
-    // mapper. The new tab is activated and focused.
-    std::string web_view_id;
-    status =
-        session->chrome->NewWindow(session->window, Chrome::WindowType::kTab,
-                                   false, session->w3c_compliant, &web_view_id);
-
+    // Get the currently open web view.
+    status = session->GetTargetWindow(&initial_web_view);
     if (status.IsError()) {
       return status;
     }
 
-    std::unique_ptr<base::Value> result;
-    base::Value::Dict body;
-    body.Set("handle", web_view_id);
-
-    // Even though the new tab is already activated the explicit switch to the
-    // new tab is needed to update the internal state of ChromeDriver properly.
-    status = ExecuteSwitchToWindow(session, body, &result);
+    // Navigate the initial page to `about:blank` to align with the html spec:
+    // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-a-new-browsing-context
+    Timeout timeout(session->page_load_timeout);
+    status = initial_web_view->Load("about:blank", &timeout);
+    if (status.IsError()) {
+      return status;
+    }
+    // Wait until the currently open web view's navigation is over.
+    status = initial_web_view->WaitForPendingNavigations(
+        session->GetCurrentFrameId(), Timeout(session->page_load_timeout),
+        true);
     if (status.IsError()) {
       return status;
     }
 
-    // Wait until the default page navigation is over to prevent the mapper
-    // from being evicted by the navigation.
-    status = web_view->WaitForPendingNavigations(
+    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+    // Create a target fot BiDi-CDP mapper. It should be either a visible tab
+    // or a hidden target based on the `--debug-bidi-mapper` switch.
+    if (cmd_line->HasSwitch("debug-bidi-mapper")) {
+      // Create a visible tab.
+      status = session->chrome->NewWindow(session->window,
+        Chrome::WindowType::kTab, true,
+        session->w3c_compliant, &session->bidi_mapper_web_view_id);
+
+    } else {
+      // Create a hidden target.
+      status = session->chrome->NewHiddenTarget(
+          session->window, session->w3c_compliant,
+          &session->bidi_mapper_web_view_id);
+    }
+    if (status.IsError()) {
+      return status;
+    }
+
+    // Set the BiDi mapper web view to the new target.
+    session->chrome->GetWebViewById(session->bidi_mapper_web_view_id,
+                                    &bidi_mapper_web_view);
+
+    // Wait until the initial navigation is over to prevent the mapper from
+    // being evicted by the navigation.
+    status = bidi_mapper_web_view->WaitForPendingNavigations(
         session->GetCurrentFrameId(), Timeout(session->page_load_timeout),
         true);
     if (status.IsError()) {
@@ -394,7 +412,6 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     }
 
     // Start the mapper.
-    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
     base::FilePath bidi_mapper_path =
         cmd_line->GetSwitchValuePath("bidi-mapper-path");
 
@@ -412,8 +429,8 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
     bool enable_unsafe_extension_debugging =
         capabilities.switches.HasSwitch("enable-unsafe-extension-debugging");
-    status = web_view->StartBidiServer(mapper_script,
-                                       enable_unsafe_extension_debugging);
+    status = bidi_mapper_web_view->StartBidiServer(
+        mapper_script, enable_unsafe_extension_debugging);
     if (status.IsError()) {
       return status;
     }
@@ -425,7 +442,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     bidi_cmd.Set("params", params.Clone());
     bidi_cmd.Set("method", "session.new");
     base::Value::Dict bidi_response;
-    status = web_view->SendBidiCommand(
+    status = bidi_mapper_web_view->SendBidiCommand(
         std::move(bidi_cmd), Timeout(base::Seconds(20)), bidi_response);
     if (status.IsError()) {
       return status;
@@ -1772,6 +1789,42 @@ Status ExecuteRemoveVirtualPressureSource(Session* session,
                                body);
 }
 
+Status ExecuteSetProtectedAudienceKAnonymity(
+    Session* session,
+    const base::Value::Dict& params,
+    std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* owner = params.FindString("owner");
+  if (!owner) {
+    return Status(kInvalidArgument, "missing parameter 'owner'");
+  }
+  const std::string* name = params.FindString("name");
+  if (!name) {
+    return Status(kInvalidArgument, "missing parameter 'name'");
+  }
+  const base::Value::List* hashes = params.FindList("hashes");
+  if (!hashes) {
+    return Status(kInvalidArgument, "missing parameter 'hashes'");
+  }
+  for (const auto& hash : *hashes) {
+    if (!hash.is_string()) {
+      return Status(kInvalidArgument, "hashes should be base64 strings");
+    }
+  }
+
+  base::Value::Dict body;
+  body.Set("owner", *owner);
+  body.Set("name", *name);
+  body.Set("hashes", base::Value(hashes->Clone()));
+
+  return web_view->SendCommand("Storage.setProtectedAudienceKAnonymity", body);
+}
+
 // Run a BiDi command
 Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,
@@ -1803,21 +1856,10 @@ Status ForwardBidiCommand(Session* session,
 
   base::Value::Dict bidi_cmd = data->Clone();
 
-  if (bidi_cmd.FindString("channel") != nullptr) {
-    return Status{kInvalidArgument,
-                  "Legacy `channel` parameter is deprecated and not supported. "
-                  "Use `goog:channel` instead."};
-  }
-
   std::string* user_channel = bidi_cmd.FindString("goog:channel");
-  std::string channel;
-  if (user_channel) {
-    channel = *user_channel + "/" + base::NumberToString(*connection_id) +
-              Session::kChannelSuffix;
-  } else {
-    channel =
-        "/" + base::NumberToString(*connection_id) + Session::kNoChannelSuffix;
-  }
+  std::string channel = (user_channel ? *user_channel : "") + "/" +
+                        base::NumberToString(*connection_id) +
+                        Session::kChannelSuffix;
 
   bidi_cmd.Set("goog:channel", std::move(channel));
   status = web_view->PostBidiCommand(std::move(bidi_cmd));

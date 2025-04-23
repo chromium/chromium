@@ -18,7 +18,7 @@ build_webui("build") {
     "nearby_discovery_page.ts",
   ]
 
-  non_web_component_files = [ "discovery_manager.ts" ]
+  ts_files = [ "discovery_manager.ts" ]
 
   ts_deps = [
     "./shared:build_ts",

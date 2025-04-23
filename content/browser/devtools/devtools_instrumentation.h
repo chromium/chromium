@@ -346,10 +346,9 @@ void ThrottleServiceWorkerMainScriptFetch(
     const GlobalRenderFrameHostId& requesting_frame_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 
-// For PlzDedicatedWorker. When creating a new DedicatedWorker with
-// PlzDedicatedWorker, the worker script fetch happens before starting the
-// worker. This function is called when DedicatedWorkerHost, which is the
-// representation of a worker in the browser process, is created.
+// When creating a new DedicatedWorker, the worker script fetch happens before
+// starting the worker. This function is called when DedicatedWorkerHost, which
+// is the representation of a worker in the browser process, is created.
 // `throttle_handle` controls when the script fetch resumes.
 void ThrottleWorkerMainScriptFetch(
     const base::UnguessableToken& devtools_worker_token,
@@ -426,14 +425,13 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
     network::ResourceRequest& request);
 
 // Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
-// worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
+// worker main script. Used for DedicatedWorker and SharedWorker.
 void OnWorkerMainScriptRequestWillBeSent(
     RenderFrameHostImpl& ancestor_frame_host,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request);
 
-// Fires `Network.onLoadingFailed` event for a dedicated worker main script.
-// Used for PlzDedicatedWorker.
+// Fires `Network.onLoadingFailed` event for a DedicatedWorker main script.
 void OnWorkerMainScriptLoadingFailed(
     const GURL& url,
     const base::UnguessableToken& worker_token,

@@ -101,6 +101,10 @@ ServiceWorkerProviderContext::TakeController() {
   return std::move(controller_);
 }
 
+bool ServiceWorkerProviderContext::container_is_blob_url_shared_worker() const {
+  return container_is_blob_url_shared_worker_;
+}
+
 int64_t ServiceWorkerProviderContext::GetControllerVersionId() const {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   return controller_version_id_;

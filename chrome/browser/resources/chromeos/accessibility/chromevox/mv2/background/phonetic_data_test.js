@@ -7,7 +7,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for PhoneticData.
  */
-ChromeVoxPhoneticDataTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2PhoneticDataTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -49,7 +49,7 @@ JA_TEST_MAP = new Map([
 
 // TODO(crbug.com/40758998): Polish phonetic readings so that users can disambiguate
 // more precisely.
-AX_TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
+AX_TEST_F('ChromeVoxMV2PhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('ヒラガナ アサヒ ノ ア', PhoneticData.forCharacter('あ', 'ja'));
   assertEquals('カタカナ アサヒ ノ ア', PhoneticData.forCharacter('ア', 'ja'));
   assertEquals(
@@ -76,28 +76,30 @@ AX_TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('アジア ノ ア', PhoneticData.forCharacter('亜', 'ja'));
 });
 
-AX_TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaSingleCharacter', function() {
-  assertEquals('あ', PhoneticData.forText('あ', 'ja'));
-  assertEquals('カタカナ ア', PhoneticData.forText('ア', 'ja'));
-  assertEquals('あ', PhoneticData.forText('ぁ', 'ja'));
-  assertEquals('カタカナ チイサイ ア', PhoneticData.forText('ァ', 'ja'));
-  assertEquals('ハンカク ｱ', PhoneticData.forText('ｱ', 'ja'));
-  assertEquals('ハンカク チイサイ ｱ', PhoneticData.forText('ｧ', 'ja'));
-  assertEquals('オオモジ A', PhoneticData.forText('A', 'ja'));
-  assertEquals('a', PhoneticData.forText('a', 'ja'));
-  assertEquals('1', PhoneticData.forText('1', 'ja'));
-  assertEquals('アットマーク', PhoneticData.forText('@', 'ja'));
-  assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forText('Ａ', 'ja'));
-  assertEquals('ゼンカク ａ', PhoneticData.forText('ａ', 'ja'));
-  assertEquals('ゼンカク １', PhoneticData.forText('１', 'ja'));
-  assertEquals('ゼンカク アットマーク', PhoneticData.forText('＠', 'ja'));
-  assertEquals('オオモジ ギリシャ アルファ', PhoneticData.forText('Α', 'ja'));
-  assertEquals('ギリシャ アルファ', PhoneticData.forText('α', 'ja'));
-  assertEquals('アジア ノ ア', PhoneticData.forText('亜', 'ja'));
-});
+AX_TEST_F(
+    'ChromeVoxMV2PhoneticDataTest', 'forTextJaSingleCharacter', function() {
+      assertEquals('あ', PhoneticData.forText('あ', 'ja'));
+      assertEquals('カタカナ ア', PhoneticData.forText('ア', 'ja'));
+      assertEquals('あ', PhoneticData.forText('ぁ', 'ja'));
+      assertEquals('カタカナ チイサイ ア', PhoneticData.forText('ァ', 'ja'));
+      assertEquals('ハンカク ｱ', PhoneticData.forText('ｱ', 'ja'));
+      assertEquals('ハンカク チイサイ ｱ', PhoneticData.forText('ｧ', 'ja'));
+      assertEquals('オオモジ A', PhoneticData.forText('A', 'ja'));
+      assertEquals('a', PhoneticData.forText('a', 'ja'));
+      assertEquals('1', PhoneticData.forText('1', 'ja'));
+      assertEquals('アットマーク', PhoneticData.forText('@', 'ja'));
+      assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forText('Ａ', 'ja'));
+      assertEquals('ゼンカク ａ', PhoneticData.forText('ａ', 'ja'));
+      assertEquals('ゼンカク １', PhoneticData.forText('１', 'ja'));
+      assertEquals('ゼンカク アットマーク', PhoneticData.forText('＠', 'ja'));
+      assertEquals(
+          'オオモジ ギリシャ アルファ', PhoneticData.forText('Α', 'ja'));
+      assertEquals('ギリシャ アルファ', PhoneticData.forText('α', 'ja'));
+      assertEquals('アジア ノ ア', PhoneticData.forText('亜', 'ja'));
+    });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest', 'forTextJaPairCharacters_EndWithHiragana',
+    'ChromeVoxMV2PhoneticDataTest', 'forTextJaPairCharacters_EndWithHiragana',
     function() {
       assertEquals('ああ', PhoneticData.forText('ああ', 'ja'));
       assertEquals('ああ', PhoneticData.forText('ぁあ', 'ja'));
@@ -105,7 +107,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest', 'forTextJaPairCharacters_EndWithKatakana',
+    'ChromeVoxMV2PhoneticDataTest', 'forTextJaPairCharacters_EndWithKatakana',
     function() {
       assertEquals('カタカナ アア', PhoneticData.forText('アア', 'ja'));
       assertEquals(
@@ -114,7 +116,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHiraganaSmallLetter', function() {
       assertEquals('あぁ', PhoneticData.forText('ぁぁ', 'ja'));
       assertEquals('あぁ', PhoneticData.forText('あぁ', 'ja'));
@@ -122,7 +124,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithKatakanaSmallLetter', function() {
       assertEquals(
           'カタカナ チイサイ アァ', PhoneticData.forText('ァァ', 'ja'));
@@ -132,7 +134,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthKatakana', function() {
       assertEquals('ハンカク ｱｱ', PhoneticData.forText('ｱｱ', 'ja'));
       assertEquals('ハンカク チイサイ ｱｱ', PhoneticData.forText('ｧｱ', 'ja'));
@@ -140,7 +142,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthKatakanaSmallLetter', function() {
       assertEquals('ハンカク チイサイ ｱｧ', PhoneticData.forText('ｧｧ', 'ja'));
       assertEquals('ハンカク ｱｧ', PhoneticData.forText('ｱｧ', 'ja'));
@@ -148,7 +150,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthAlphabetUpper', function() {
       assertEquals('オオモジ AA', PhoneticData.forText('AA', 'ja'));
       assertEquals(
@@ -160,7 +162,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthAlphabetLower', function() {
       assertEquals('aa', PhoneticData.forText('aa', 'ja'));
       assertEquals('あ a', PhoneticData.forText('あa', 'ja'));
@@ -169,7 +171,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthNumeric', function() {
       assertEquals('11', PhoneticData.forText('11', 'ja'));
       assertEquals('あ 1', PhoneticData.forText('あ1', 'ja'));
@@ -178,7 +180,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithHalfWidthSymbol', function() {
       assertEquals(
           'アットマーク アットマーク', PhoneticData.forText('@@', 'ja'));
@@ -189,7 +191,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthAlphabetUpper', function() {
       assertEquals('ゼンカクオオモジ ＡＡ', PhoneticData.forText('ＡＡ', 'ja'));
       assertEquals(
@@ -199,7 +201,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthAlphabetLower', function() {
       assertEquals('ゼンカク ａａ', PhoneticData.forText('ａａ', 'ja'));
       assertEquals(
@@ -208,7 +210,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthNumeric', function() {
       assertEquals('ゼンカク １１', PhoneticData.forText('１１', 'ja'));
       assertEquals(
@@ -217,7 +219,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthSymbol', function() {
       assertEquals(
           'ゼンカク アットマーク アットマーク',
@@ -230,7 +232,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthGreekUpper', function() {
       assertEquals(
           'オオモジ ギリシャ アルファ ギリシャ アルファ',
@@ -240,7 +242,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest',
+    'ChromeVoxMV2PhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthGreekLower', function() {
       assertEquals(
           'ギリシャ アルファ ギリシャ アルファ',
@@ -252,13 +254,13 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxPhoneticDataTest', 'forTextJaPairCharacters_EndWithOther',
+    'ChromeVoxMV2PhoneticDataTest', 'forTextJaPairCharacters_EndWithOther',
     function() {
       assertEquals(
           'アジア ノ ア アジア ノ ア', PhoneticData.forText('亜亜', 'ja'));
     });
 
-AX_TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaLongSound', function() {
+AX_TEST_F('ChromeVoxMV2PhoneticDataTest', 'forTextJaLongSound', function() {
   assertEquals('あー', PhoneticData.forText('あー', 'ja'));
   assertEquals('カタカナ アー', PhoneticData.forText('アー', 'ja'));
   assertEquals('あー', PhoneticData.forText('ぁー', 'ja'));
@@ -269,7 +271,7 @@ AX_TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaLongSound', function() {
   assertEquals('アジア ノ ア チョウオン', PhoneticData.forText('亜ー', 'ja'));
 });
 
-AX_TEST_F('ChromeVoxPhoneticDataTest', 'forTextSampleSentences', function() {
+AX_TEST_F('ChromeVoxMV2PhoneticDataTest', 'forTextSampleSentences', function() {
   assertEquals(
       'コンゲツノコン ニチヨウビノニチ は テンキヨホウノテン クウキノキ です マル',
       PhoneticData.forText('今日は天気です。', 'ja'));

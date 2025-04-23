@@ -368,7 +368,7 @@ class DeepScanningRequestTest : public testing::Test {
         write_item->full_path = download_path_;
         write_item->frame_url = download_url_;
         write_item->browser_context = profile_;
-        write_item->web_contents = web_contents_.get();
+        write_item->web_contents = web_contents_->GetWeakPtr();
         write_item->size = item_.GetTotalBytes();
         write_item->sha256_hash = download_hash_;
         write_item->has_user_gesture = false;

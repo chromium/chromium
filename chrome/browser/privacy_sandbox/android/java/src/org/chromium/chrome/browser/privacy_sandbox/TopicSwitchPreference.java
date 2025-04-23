@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 
+@NullMarked
 public class TopicSwitchPreference extends ChromeSwitchPreference {
-    private final @NonNull Topic mTopic;
+    private final Topic mTopic;
 
-    public TopicSwitchPreference(Context context, @NonNull Topic topic) {
+    public TopicSwitchPreference(Context context, Topic topic) {
         super(context);
         mTopic = topic;
         setTitle(topic.getName());

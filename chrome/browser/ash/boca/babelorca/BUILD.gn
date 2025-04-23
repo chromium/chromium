@@ -20,6 +20,7 @@ static_library("babelorca") {
     "//ash",
     "//chrome/browser/ash/accessibility/live_caption",
     "//chromeos/ash/components/boca/babelorca",
+    "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/live_caption:live_translate",

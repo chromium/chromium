@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">ምስሉን ገልብጥ</translation>
 <translation id="1612754831519568745">የእርስዎ ደህንነቱ የተጠበቀ አሰሳ አሁኑ ጠፍቷል። ከአደገኛ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያግኙ።</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
-<translation id="1622195983844804153">ነባር የአሰሳ ውሂብ ወደ የሥራ መለያዎ አይንቀሳቀስም። ዝግተው በመውጣት ወይም የግላዊ መለያ በማከል አሁንም ሊደርሱት ይችላሉ።</translation>
 <translation id="1622717322707146952">«ወደ Google ቀን መቁጠሪያ አክል» የሚለውን ወይም «ወደ Apple ቀን መቁጠሪያ አክል» የሚለውን ይምረጡ።</translation>
 <translation id="1629162218487290695">እርስዎ መሆንዎን ያረጋግጡ…</translation>
 <translation id="1636234353664774105">የአሰሳ ባህሪውን በመጠቀም ተራ በተራ በሆነ መመሪያ ወደ መድረሻዎ አቅጣጫዎችን ያግኙ</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">እንደገና ጫን</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="201759455285471444">የትር ቡድኑን ዘርጋ</translation>
+<translation id="202070562065520783">ይህን አብራራልኝ</translation>
 <translation id="2021670401941426298">መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ።</translation>
 <translation id="2044394949148788042">የትር ፍርግርግን ይክፈቱ</translation>
 <translation id="20485545164632846">አዲስ ንጥል</translation>
@@ -480,6 +480,7 @@
 <translation id="2952278131021475699">የሌንስ ካሜራ ፍለጋ</translation>
 <translation id="2962516096219646456">ሁሉንም ራስ-ሙላ ውሂብ ይመልከቱ</translation>
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="297667759942911166">የትር ቡድኖች ውስጥ ይተባበሩ</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
 <translation id="2989805286512600854">በአዲስ ትር ክፈት</translation>
 <translation id="2996291259634659425">የይለፍ ሐረግ ይፍጠሩ</translation>
@@ -525,6 +526,7 @@
 <translation id="3167868116600277716">ምግብ ያግኙ</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">እንዲሁም በሌሎች መሳሪያዎችዎ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ።</translation>
+<translation id="3177338796769255211">የእርስዎን እልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ</translation>
 <translation id="3181954750937456830">ደኅንነቱ የተጠበቀ አሰሳ (እርስዎን እና የእርስዎን መሣሪያ ከአደገኛ ጣቢያዎች ጥበቃ ያደርግላችኋል)</translation>
 <translation id="3190736958609431397">ክትትል ማድረግ አቁም</translation>
 <translation id="3208260410153224535">ድርጅትዎ በመለያ መግባትን አጥፍቷል። አዳዲስ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
@@ -1125,6 +1127,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="573974402615125334">የትር ቡድኖች ውስጥ ለማጋራት፣ ለመቀላቀል እና ለመተባበር ታሪክዎን እና ትሮችዎን ያሥምሩ</translation>
 <translation id="5740123193752401435">ትሮችን ይፈልጉ…</translation>
 <translation id="5744274077973758795">የ<ph name="FEATURE_NAME" /> ማሳወቂያዎች በርተዋል</translation>
+<translation id="5745598824054949526">ምንም ጽሑፍ አልተገኘም</translation>
 <translation id="574762237186762643">ክስተቶች</translation>
 <translation id="5749158352074143502">በዚህ ትር ላይ ይቀጥሉ</translation>
 <translation id="5753021559215751319">የይለፍ ቃሉን አስቀምጥ</translation>
@@ -1288,6 +1291,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6410883413783534063">በተመሳሳይ ጊዜ የተለያዩ ገጾችን ለመጎብኘት ትሮችን ይክፈቱ</translation>
 <translation id="6416807286621280684">የእርስዎ ክትትል የተደረገባቸው ጥቅሎች እና የማድረስ ዝማኔዎች።</translation>
 <translation id="6418346271604475326">ፒዲኤፍ በመዘጋጀት ላይ</translation>
+<translation id="6421038304268477484">የተተረጎመ ጽሑፍ</translation>
 <translation id="6429213933892582367">የይለፍ ቃል አማራጮችን ይክፈቱ</translation>
 <translation id="6434591244308415567">አንድ ስህተት አጋጥሟል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6435307030888827407">ዘግተው እንደወጡ ይቆዩ</translation>
@@ -1310,7 +1314,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6476800141292307438">ገጹን ወደ <ph name="LANGUAGE" /> በመተርጎም ላይ። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="647867789226964031">የይለፍ ቃላትዎን ይለውጡ</translation>
 <translation id="6494931198667773526">ያበቃል</translation>
-<translation id="6495521251906266731">በዚህ መሣሪያ ላይ እንደ የይለፍ ቃላት፣ ታሪክ እና ሌሎች ባሉ በነባር የአሰሳ ውሂብ ምን እንደሚደረግ ይምረጡ።</translation>
 <translation id="6503077044568424649">በይበልጥ የተጎበኙ</translation>
 <translation id="6503763061813913607">የደህንነት ፍተሻ ማሳወቂያዎች</translation>
 <translation id="6505334220040167806">የትር ቡድኑን ሰብስብ።</translation>
@@ -1855,6 +1858,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8697136149718343437">የአድራሻ አሞሌን ወደታች ይውሰዱ</translation>
 <translation id="8703372953981978786">ይህ አገናኝ አይሠራም</translation>
 <translation id="8706253136355675497">የሙቀት መጠን</translation>
+<translation id="8706806585855470492">የትር ቡድኖች ውስጥ ማጋራት፣ መቀላቀል እና መተባበር ይችላሉ</translation>
 <translation id="8709409604518538305">ትሮች ተዘግተዋል</translation>
 <translation id="8712534545803964353">በገፅ ውስጥ አግኝ…</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
@@ -1966,6 +1970,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9097506547406246598">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> የይለፍ ቃላት ይሰረዙ?</translation>
 <translation id="9099233023029360602">በእያንዳንዱ ጊዜ የትኛውን መለያ ጥቅም ላይ እንደሚውል ጠይቅ</translation>
+<translation id="9099821309562615674">እየተረጎሙት ያለው ጽሑፍ ግልጽ እና በክፈፍ ውስጥ እንደሆነ ያረጋግጡ።</translation>
 <translation id="9100610230175265781">የይለፍ ሐረግ ያስፈልጋል</translation>
 <translation id="91023216973987714">የመክፈያ ዘዴዎች</translation>
 <translation id="9106655997975673326">ከ«<ph name="SOURCE_DEVICE" />»</translation>

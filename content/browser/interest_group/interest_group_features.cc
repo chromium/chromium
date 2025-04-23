@@ -11,11 +11,21 @@ namespace features {
 
 // Please keep features in alphabetical order.
 
+// Always check for k-anonymity updates whenever we do interest group updates.
+BASE_FEATURE(kAlwaysUpdateKAnon,
+             "AlwaysUpdateKAnon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
 // the auction when detected.
 BASE_FEATURE(kDetectInconsistentPageImpl,
              "DetectInconsistentPageImpl",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable sending clickiness data in B&A requests.
+BASE_FEATURE(kEnableBandAClickiness,
+             "EnabledBandAClickiness",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable parsing and using K-Anonymity features for B&A.
 BASE_FEATURE(kEnableBandAKAnonEnforcement,

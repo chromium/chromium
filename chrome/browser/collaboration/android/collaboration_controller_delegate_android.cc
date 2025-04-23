@@ -205,6 +205,46 @@ void CollaborationControllerDelegateAndroid::ShowManageDialog(
       conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
+void CollaborationControllerDelegateAndroid::ShowLeaveDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  if (std::holds_alternative<base::Uuid>(either_id)) {
+    Java_CollaborationControllerDelegateImpl_showLeaveDialog(
+        env, java_obj_,
+        tab_groups::UuidToJavaString(env, std::get<base::Uuid>(either_id)),
+        /*localId=*/nullptr,
+        conversion::GetJavaResultCallbackPtr(std::move(result)));
+    return;
+  }
+  Java_CollaborationControllerDelegateImpl_showLeaveDialog(
+      env, java_obj_, /*syncId=*/nullptr,
+      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+          env, std::get<tab_groups::LocalTabGroupID>(either_id)),
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
+}
+
+void CollaborationControllerDelegateAndroid::ShowDeleteDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  if (std::holds_alternative<base::Uuid>(either_id)) {
+    Java_CollaborationControllerDelegateImpl_showDeleteDialog(
+        env, java_obj_,
+        tab_groups::UuidToJavaString(env, std::get<base::Uuid>(either_id)),
+        /*localId=*/nullptr,
+        conversion::GetJavaResultCallbackPtr(std::move(result)));
+    return;
+  }
+  Java_CollaborationControllerDelegateImpl_showDeleteDialog(
+      env, java_obj_, /*syncId=*/nullptr,
+      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+          env, std::get<tab_groups::LocalTabGroupID>(either_id)),
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
+}
+
 void CollaborationControllerDelegateAndroid::PromoteTabGroup(
     const data_sharing::GroupId& group_id,
     ResultCallback result) {

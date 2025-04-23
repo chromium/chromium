@@ -11,17 +11,25 @@ import("//ios/build/chrome_build.gni")
 import("//ios/chrome/features.gni")
 import("//ios/features.gni")
 
+declare_args() {
+  # When true, modifies the chrome_app template to additionally build
+  # a framework with a single ChromeMain() entry point. This framework
+  # is not used or linked against, but can be uploaded as a build
+  # artifact.
+  ios_force_build_chrome_framework = false
+}
+
 # Template used to create a Chrome-like app bundle that depends on
 # EarlyMallocZoneRegistration.
 #
 template("chrome_app") {
   _target_name = target_name
 
-  if (use_blink) {
-    assert(ios_partition_alloc_enabled)
+  if (ios_force_build_chrome_framework || use_blink) {
     ios_framework_bundle("${_target_name}_framework") {
       forward_variables_from(invoker,
                              [
+                               "bundle_deps",
                                "deps",
                                "framework_dirs",
                                "frameworks",
@@ -40,13 +48,16 @@ template("chrome_app") {
       }
 
       output_name = "${_target_name}_framework"
-      transparent = true
+      transparent = use_blink
 
       info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
       extra_substitutions =
           [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
     }
+  }
 
+  if (use_blink) {
+    assert(ios_partition_alloc_enabled)
     template("browserkit_extension") {
       _process_target = target_name
       _outer_target = _target_name

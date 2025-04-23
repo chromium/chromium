@@ -169,6 +169,9 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegrationModule);
 extern const base::FeatureParam<bool> kMaxAuxiliarySearchForceShow;
 extern const base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions;
 
+// The maximum number of times the history sync promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxHistorySyncCardImpressions;
 // Feature flag for enabling FedCM user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 

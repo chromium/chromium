@@ -54,8 +54,8 @@ export class SettingsStartupUrlEntryElement extends
     };
   }
 
-  editable: boolean;
-  model: StartupPageInfo;
+  declare editable: boolean;
+  declare model: StartupPageInfo;
 
   private onRemoveClick_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();

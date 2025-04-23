@@ -135,6 +135,12 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void ReDisplayNotifications(
       std::vector<GURL> origins,
       ReDisplayNotificationsResultCallback callback) override;
+  void WriteNotificationMetadata(
+      const std::string& notification_id,
+      const GURL& origin,
+      const std::string& metadata_key,
+      const std::string& metadata_value,
+      WriteResourcesResultCallback callback) override;
 
   // ServiceWorkerContextCoreObserver implementation.
   void OnRegistrationDeleted(int64_t registration_id,
@@ -314,6 +320,13 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void DoReDisplayNotifications(std::vector<GURL> origins,
                                 ReDisplayNotificationsResultCallback callback,
                                 bool initialized);
+
+  void DoWriteNotificationMetadata(const std::string& notification_id,
+                                   const GURL& origin,
+                                   const std::string& metadata_key,
+                                   const std::string& metadata_value,
+                                   WriteResourcesResultCallback callback,
+                                   bool initialized);
 
   void OnStorageWipedInitialized(bool initialized);
 

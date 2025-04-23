@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/btm_redirect_info.h"
-#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -144,18 +143,6 @@ struct PopupWithTime {
   base::Time last_popup_time;
 };
 
-// These values are emitted in metrics and should not be renumbered. This one
-// type is used for both of the IsAdTagged and HasSameSiteIframe UKM enums.
-enum class OptionalBool {
-  kUnknown = 0,
-  kFalse = 1,
-  kTrue = 2,
-};
-
-inline OptionalBool ToOptionalBool(bool b) {
-  return b ? OptionalBool::kTrue : OptionalBool::kFalse;
-}
-
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_activation_times,
                   lhs.stateful_bounce_times, lhs.bounce_times,
@@ -178,12 +165,6 @@ CONTENT_EXPORT std::string GetSiteForBtm(const url::Origin& origin);
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.
 bool HasSameSiteIframe(WebContents* web_contents, const GURL& url);
-
-// Returns whether the provided cookie access was ad-tagged, based on the cookie
-// settings overrides. Returns Unknown if kSkipTpcdMitigationsForAdsHeuristics
-// is false and the override is not set regardless.
-CONTENT_EXPORT OptionalBool
-IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details);
 
 CONTENT_EXPORT bool HasCHIPS(
     const net::CookieAccessResultList& cookie_access_result_list);

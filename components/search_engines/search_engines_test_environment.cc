@@ -12,6 +12,7 @@
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
@@ -31,10 +32,10 @@ SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
   default_factories.search_engine_choice_service_factory =
       base::BindRepeating([](SearchEnginesTestEnvironment& environment) {
         return std::make_unique<SearchEngineChoiceService>(
+            std::make_unique<FakeSearchEngineChoiceServiceClient>(),
             environment.pref_service(), &environment.local_state(),
             environment.regional_capabilities_service(),
-            environment.prepopulate_data_resolver(),
-            /*is_profile_eligible_for_dse_guest_propagation=*/false);
+            environment.prepopulate_data_resolver());
       });
 
   default_factories.template_url_service_factory = base::BindLambdaForTesting(

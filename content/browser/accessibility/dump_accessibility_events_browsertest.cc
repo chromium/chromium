@@ -101,7 +101,7 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
     return property_filters;
   }
 
-  std::vector<std::string> Dump(ui::AXMode mode) override;
+  std::vector<std::string> Dump() override;
 
   void OnDiffFailed() override;
   void RunEventTest(const base::FilePath::CharType* file_path);
@@ -111,7 +111,7 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   std::string final_tree_;
 };
 
-std::vector<std::string> DumpAccessibilityEventsTest::Dump(ui::AXMode mode) {
+std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
   WebContentsImpl* web_contents = GetWebContents();
 
   // Save a copy of the accessibility tree (as a text dump); we'll
@@ -127,8 +127,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(ui::AXMode mode) {
     auto [go_results, event_logs] = CaptureEvents(
         base::BindOnce([](RenderFrameHostImpl* frame,
                           std::string script) { return EvalJs(frame, script); },
-                       web_contents->GetPrimaryMainFrame(), "go()"),
-        ui::kAXModeComplete);
+                       web_contents->GetPrimaryMainFrame(), "go()"));
     run_go_again = go_results == true;
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.
@@ -408,8 +407,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-delay-show-list.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaComboBoxNext) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-next.html"));
 }
@@ -519,16 +517,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("checked-mixed-changed.html"));
 }
 
-// Flaky on Windows, disabled on Linux: https://crbug.com/1186887
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
-  DISABLED_AccessibilityEventsCaretMoveHiddenInput
-#else
-#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
-  AccessibilityEventsCaretMoveHiddenInput
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsCaretMoveHiddenInput) {
+                       AccessibilityEventsCaretMoveHiddenInput) {
   RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
 }
 

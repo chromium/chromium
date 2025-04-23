@@ -18,6 +18,7 @@ ci/android-13-x64-fyi-rel
 ci/android-13-x64-rel
 ci/android-14-arm64-fyi-rel
 ci/android-14-arm64-rel
+ci/android-14-automotive-landscape-x64-rel
 ci/android-14-tablet-landscape-arm64-rel
 ci/android-14-x64-fyi-rel
 ci/android-14-x64-rel
@@ -55,6 +56,7 @@ try/android-13-x64-fyi-rel
 try/android-13-x64-rel
 try/android-14-arm64-fyi-rel
 try/android-14-arm64-rel
+try/android-14-automotive-landscape-x64-rel
 try/android-14-tablet-landscape-arm64-rel
 try/android-14-x64-fyi-rel
 try/android-14-x64-rel

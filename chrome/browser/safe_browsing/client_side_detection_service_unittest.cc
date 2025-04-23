@@ -936,11 +936,6 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationFailure) {
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
-  // The on device model is "available" but the session creation will fail,
-  // hence the true value for the histogram
-  // SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime.
-  histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", false, 1);
   histogram_tester.ExpectTotalCount(
@@ -1020,11 +1015,113 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationSuccess) {
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       TestSessionCreationSuccessWithAPreviousAliveSession) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
+
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+
+  // We will expect a second time, but since the InquireOnDeviceModel function
+  // wasn't finished and the future callback wasn't completed, we will remove
+  // the "old" session and recreate a new one.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future2;
+  csd_service_->InquireOnDeviceModel("", future2.GetCallback());
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 2);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 2);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 1);
 }
 
 TEST_P(ClientSideDetectionServiceTest, TestSessionExecutionFailure) {
@@ -1113,8 +1210,6 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionExecutionFailure) {
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
-  histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -1209,8 +1304,6 @@ TEST_P(ClientSideDetectionServiceTest,
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
-  histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -1316,8 +1409,6 @@ TEST_P(ClientSideDetectionServiceTest,
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
-  histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
@@ -1415,8 +1506,6 @@ TEST_P(ClientSideDetectionServiceTest,
   csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
-  histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
@@ -1489,19 +1578,13 @@ TEST_P(ClientSideDetectionServiceTest,
   // service class.
   csd_service_->SetOnDeviceAvailabilityForTesting(false);
 
-  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel("", future.GetCallback());
+  csd_service_->LogOnDeviceModelEligibilityReason();
 
-  // The on device model is not available as set with the
-  // SetOnDeviceAvailabilityForTesting, hence the false value for the histogram
-  // SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime. We expect the
-  // histogram value for
+  // We expect the histogram value for
   // SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure to be
   // kModelTobeInstalled as we set the EXPECT_CALL above when calling for
   // function GetOnDeviceModelEligibility within the optimization guide service,
   // which is called in the service delegate.
-  histogram_tester.ExpectUniqueSample(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", false, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
       optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,

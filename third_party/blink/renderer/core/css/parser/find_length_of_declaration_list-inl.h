@@ -71,8 +71,10 @@ static inline __m128i LoadAndCollapseHighBytes(const LChar* ptr) {
 }
 
 template <class CharType>
-ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
-                                                        const CharType* end) {
+ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
+    const base::span<CharType> chars) {
+  const CharType* begin = chars.data();
+  const CharType* end = base::to_address(chars.end());
   // If the previous block ended with quote status (see below),
   // the lowest byte of this will be all-ones.
   __m128i prev_quoted = _mm_setzero_si128();
@@ -351,7 +353,9 @@ __attribute__((target("avx2"))) ALWAYS_INLINE static __m256i MaskToAVX2(
 
 template <class CharType>
 __attribute__((target("avx2,pclmul"))) ALWAYS_INLINE static size_t
-FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
+FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
+  const CharType* begin = chars.data();
+  const CharType* end = base::to_address(chars.end());
   uint64_t prev_single_quote = 0;
   uint64_t prev_double_quote = 0;
   __m256i prev_parens = _mm256_setzero_si256();
@@ -445,11 +449,9 @@ FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
 __attribute__((target("avx2,pclmul"))) inline size_t
 FindLengthOfDeclarationListAVX2(StringView str) {
   if (str.Is8Bit()) {
-    return FindLengthOfDeclarationListAVX2(
-        str.Characters8(), UNSAFE_TODO(str.Characters8() + str.length()));
+    return FindLengthOfDeclarationListAVX2(str.Span8());
   } else {
-    return FindLengthOfDeclarationListAVX2(
-        str.Characters16(), UNSAFE_TODO(str.Characters16() + str.length()));
+    return FindLengthOfDeclarationListAVX2(str.Span16());
   }
 }
 
@@ -480,8 +482,10 @@ static inline uint8x16_t LoadAndCollapseHighBytes(const LChar* ptr) {
 // equivalent of PCLMULQDQ), but it's supposedly slow, so we use
 // the same XOR-shift cascade.
 template <class CharType>
-ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
-                                                        const CharType* end) {
+ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
+    base::span<const CharType> chars) {
+  const CharType* begin = chars.data();
+  const CharType* end = base::to_address(chars.end());
   // Since NEON doesn't have a natural way of moving the last element
   // to the first slot (shift right by 15 _bytes_), but _does_ have
   // fairly cheap broadcasting (unlike SSE2 without SSSE3), we use
@@ -597,8 +601,8 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 // If we have neither SSE2 nor NEON, we simply return 0 immediately.
 // We will then never use lazy parsing.
 template <class CharType>
-ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
-                                                        const CharType* end) {
+ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
+    base::span<const CharType> chars) {
   return 0;
 }
 
@@ -606,11 +610,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 
 ALWAYS_INLINE static size_t FindLengthOfDeclarationList(StringView str) {
   if (str.Is8Bit()) {
-    return FindLengthOfDeclarationList(
-        str.Characters8(), UNSAFE_TODO(str.Characters8() + str.length()));
+    return FindLengthOfDeclarationList(str.Span8());
   } else {
-    return FindLengthOfDeclarationList(
-        str.Characters16(), UNSAFE_TODO(str.Characters16() + str.length()));
+    return FindLengthOfDeclarationList(str.Span16());
   }
 }
 

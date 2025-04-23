@@ -4,8 +4,11 @@
 
 package org.chromium.base.version_info;
 
+import org.chromium.build.annotations.NullMarked;
+
 // Constants shared by Android Chrome and WebView. Chrome specific constants are
 // in ChromeVersionConstants.
+@NullMarked
 public class VersionConstants {
     public static final String PRODUCT_VERSION = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
     @SuppressWarnings({"ComplexBooleanConstant", "IdentityBinaryExpression"})

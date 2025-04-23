@@ -78,6 +78,8 @@ class TestFocusRules : public wm::BaseFocusRules {
   bool can_activate_ = true;
 };
 
+}  // namespace
+
 class NativeWidgetAuraTest : public ViewsTestBase {
  public:
   NativeWidgetAuraTest() = default;
@@ -863,7 +865,6 @@ TEST_F(NativeWidgetAuraTest, VisibilityOfChildBubbleWindow) {
 TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   // Create the delegate first so it's destroyed last.
   auto delegate_owned = std::make_unique<WidgetDelegate>();
-  delegate_owned->SetOwnedByWidget(false);
   // Create a parent window.
   auto parent = std::make_unique<Widget>();
   Widget::InitParams parent_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -1126,5 +1127,4 @@ TEST_F(NativeWidgetAuraWithNoDelegateTest, UpdateVisualStateTest) {
   native_widget_->UpdateVisualState();
 }
 
-}  // namespace
 }  // namespace views

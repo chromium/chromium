@@ -90,6 +90,7 @@
 #include "ash/focus/ash_focus_manager_factory.h"
 #include "ash/focus/ash_focus_rules.h"
 #include "ash/focus/focus_cycler.h"
+#include "ash/focus/shutdown_focus_rules.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
@@ -686,10 +687,6 @@ void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
       handler);
 }
 
-DeskProfilesDelegate* Shell::GetDeskProfilesDelegate() {
-  return shell_delegate_->GetDeskProfilesDelegate();
-}
-
 WebAuthNDialogController* Shell::webauthn_dialog_controller() {
   return webauthn_dialog_controller_.get();
 }
@@ -776,10 +773,14 @@ Shell::~Shell() {
   display_prefs_.reset();
   display_alignment_controller_.reset();
 
-  // Remove the focus from any window. This will prevent overhead and side
-  // effects (e.g. crashes) from changing focus during shutdown.
-  // See bug crbug.com/134502.
-  aura::client::GetFocusClient(GetPrimaryRootWindow())->FocusWindow(nullptr);
+  // Remove the focus from any window and set ShutdowFocusRules. This will
+  // prevent overhead and side effects (e.g. crashes) from changing focus
+  // during shutdown.
+  // See crbug.com/134502, crbug.com/369135212
+  focus_controller_->FocusWindow(nullptr);
+  auto shutdown_focus_rules = std::make_unique<ShutdownFocusRules>();
+  focus_rules_ = shutdown_focus_rules.get();
+  focus_controller_->SetFocusRules(std::move(shutdown_focus_rules));
 
   // Please keep in reverse order as in Init() because it's easy to miss one.
   if (window_modality_controller_) {
@@ -1345,7 +1346,7 @@ void Shell::Init(
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
-      shell_delegate_->CreateCaptureModeDelegate());
+      shell_delegate_->CreateCaptureModeDelegate(local_state));
 
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();

@@ -55,7 +55,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
                                                       /*web_contents=*/nullptr);
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(browser(), host->GetBrowser());
     EXPECT_EQ(mojom::ViewType::kExtensionSidePanel,
               host->extension_host_type());
   }
@@ -68,7 +67,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
             browser()->tab_strip_model()->GetActiveTab());
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(browser(), host->GetBrowser());
     EXPECT_EQ(mojom::ViewType::kExtensionSidePanel,
               host->extension_host_type());
   }

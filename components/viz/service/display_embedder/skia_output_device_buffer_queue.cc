@@ -145,7 +145,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
     const ReleaseOverlaysCallback& release_overlays_callback)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
-                       deps->GetSharedContextState()->graphite_context(),
+                       deps->GetSharedContextState()->graphite_shared_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback,
                        release_overlays_callback),

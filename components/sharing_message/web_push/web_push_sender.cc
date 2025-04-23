@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -188,7 +190,7 @@ void WebPushSender::SendMessage(const std::string& fcm_token,
 void WebPushSender::OnMessageSent(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     WebPushCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int net_error = url_loader->NetError();
   if (net_error != net::OK) {
     if (net_error == net::ERR_INSUFFICIENT_RESOURCES) {

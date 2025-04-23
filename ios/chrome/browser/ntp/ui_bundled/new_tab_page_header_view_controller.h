@@ -15,6 +15,7 @@
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol FakeboxFocuser;
+@protocol HelpCommands;
 @protocol HomeCustomizationDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;
@@ -47,6 +48,7 @@
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 @property(nonatomic, weak) id<NewTabPageHeaderViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<NewTabPageHeaderCommands> commandHandler;
@@ -132,9 +134,6 @@
 
 // Sets the tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
-
-// Sets the user signed-in status
-- (void)setUserSignedIn:(BOOL)signedIn;
 
 @end
 

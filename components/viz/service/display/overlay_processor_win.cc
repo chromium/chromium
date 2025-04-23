@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -26,6 +27,7 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/overlay_processor_delegated_support.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
@@ -146,16 +148,6 @@ OverlayProcessorWin::~OverlayProcessorWin() = default;
 
 bool OverlayProcessorWin::IsOverlaySupported() const {
   return true;
-}
-
-gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
-  if (features::IsDelegatedCompositingEnabled()) {
-    return previous_frame_overlay_rect_;
-  }
-
-  // TODO(dcastagna): Implement me.
-  NOTIMPLEMENTED();
-  return gfx::Rect();
 }
 
 gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
@@ -523,6 +515,9 @@ OverlayProcessorWin::TryDelegatedCompositing(
   DelegatedCompositingResult result;
   result.candidates.reserve(root_render_pass->quad_list.size());
 
+  const bool allow_promotion_hinting =
+      media::SupportMediaFoundationClearPlayback();
+
   int draw_quad_rounded_corner_count = 0;
 
   // The quad that renders underneath the current quad in the following loop.
@@ -531,29 +526,34 @@ OverlayProcessorWin::TryDelegatedCompositing(
   // Try to promote all the quads in the root pass to overlay.
   for (const auto* quad : root_render_pass->quad_list.BackToFront()) {
     std::optional<OverlayCandidate> dc_layer;
-    if (is_full_delegated_compositing) {
-      // Try to promote videos like DCLayerOverlay does first, then fall back to
-      // OverlayCandidateFactory. This is because Windows has some specific
-      // details on how it promotes e.g. protected videos that we want to
-      // preserve.
-      const bool is_possible_full_screen_letterboxing =
-          is_page_fullscreen_mode_ &&
-          DCLayerOverlayProcessor::IsPossibleFullScreenLetterboxing(
-              quad_below, root_render_pass->output_rect);
-      dc_layer = dc_layer_overlay_processor_->FromTextureOrYuvQuad(
-          resource_provider, root_render_pass, *quad,
-          is_possible_full_screen_letterboxing);
-    } else {
-      // In the partial delegated compositing case, we don't expect
-      // video/canvas/etc content in the UI.
-    }
+    {
+      auto candidate_result = TryPromoteDrawQuadForDelegation(factory, quad);
 
-    if (!dc_layer.has_value()) {
-      if (auto candidate_result =
-              TryPromoteDrawQuadForDelegation(factory, quad);
-          candidate_result.has_value()) {
+      if (allow_promotion_hinting && !quad->resource_id.is_null() &&
+          resource_provider->DoesResourceWantPromotionHint(quad->resource_id)) {
+        // The OverlayStateService should always be initialized by
+        // GpuServiceImpl at creation - CHECK here just to assert there aren't
+        // any corner cases where this isn't true.
+        auto* overlay_state_service = OverlayStateService::GetInstance();
+        CHECK(overlay_state_service->IsInitialized());
+        overlay_state_service->SetPromotionHint(
+            resource_provider->GetMailbox(quad->resource_id),
+            /*promoted=*/candidate_result.has_value());
+      }
+
+      if (candidate_result.has_value()) {
         if (auto& candidate = candidate_result.value()) {
           dc_layer = std::move(candidate);
+
+          if (is_page_fullscreen_mode_ &&
+              quad->material == DrawQuad::Material::kTextureContent) {
+            // Note we're using the root render pass output rect in full screen
+            // mode as an approximation of the monitor size.
+            const gfx::Rect display_rect = root_render_pass->output_rect;
+            dc_layer->possible_video_fullscreen_letterboxing =
+                DCLayerOverlayProcessor::IsPossibleFullScreenLetterboxing(
+                    quad_below, display_rect);
+          }
         } else {
           // This quad can be intentionally skipped.
           continue;

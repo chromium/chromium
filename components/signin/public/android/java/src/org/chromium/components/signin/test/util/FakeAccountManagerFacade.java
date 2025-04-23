@@ -30,6 +30,8 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -168,7 +170,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         if (accountHolder == null) {
             Log.w(TAG, "Cannot find account:" + coreAccountInfo.toString());
             ThreadUtils.runOnUiThread(
-                    () -> callback.onGetTokenFailure(/* isTransientError= */ false));
+                    () ->
+                            callback.onGetTokenFailure(
+                                    new GoogleServiceAuthError(
+                                            GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
             return;
         }
         ThreadUtils.runOnUiThread(

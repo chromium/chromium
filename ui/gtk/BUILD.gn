@@ -124,6 +124,7 @@ component("gtk") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:ozone_buildflags",
+    "//ui/base/glib",
     "//ui/base/ime",
     "//ui/base/ime/linux",
     "//ui/color",
@@ -153,8 +154,6 @@ component("gtk") {
 
   if (ozone_platform_x11) {
     sources += [
-      "x/gtk_event_loop_x11.cc",
-      "x/gtk_event_loop_x11.h",
       "x/gtk_ui_platform_x11.cc",
       "x/gtk_ui_platform_x11.h",
     ]

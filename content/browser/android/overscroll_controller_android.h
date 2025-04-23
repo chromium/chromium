@@ -123,6 +123,11 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   bool enabled_;
 
+  // True if the OverscrollController has claimed the current input sequence. It
+  // will continue handling all events in this sequence until a terminating
+  // action (ACTION_UP/ACTION_CANCEL) occurs.
+  bool is_handling_sequence_ = false;
+
   // Stores the last seen position of a touch input event (in pix) to correctly
   // calculate scroll deltas for `refresh_effect_`.
   gfx::Vector2dF last_pos_;

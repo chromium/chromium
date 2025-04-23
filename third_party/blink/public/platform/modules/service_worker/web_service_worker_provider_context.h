@@ -44,6 +44,9 @@ class WebServiceWorkerProviderContext {
 
   // The Client#id value of this context.
   virtual const WebString client_id() const = 0;
+
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  virtual bool container_is_blob_url_shared_worker() const = 0;
 };
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/test/base/testing_profile.h"

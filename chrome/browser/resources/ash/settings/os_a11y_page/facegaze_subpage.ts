@@ -16,17 +16,22 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './facegaze_subpage.html.js';
+import type {FaceGazeSubpageBrowserProxy} from './facegaze_subpage_browser_proxy.js';
+import {FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
+
 
 const SettingsFaceGazeSubpageElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
 export interface SettingsFaceGazeSubpageElement {
   $: {
+    faceGazeToggle: SettingsToggleButtonElement,
     recognitionConfidenceRepeat: DomRepeat,
   };
 }
@@ -46,12 +51,28 @@ export class SettingsFaceGazeSubpageElement extends
       toggleLabel_: {
         type: String,
         computed:
-            'getToggleLabel_(prefs.settings.a11y.face_gaze.enabled_sentinel.value)',
+            'getToggleLabel_(prefs.settings.a11y.face_gaze.enabled.value)',
       },
     };
   }
 
   private toggleLabel_: string;
+  private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
+
+  constructor() {
+    super();
+    this.faceGazeSubpageBrowserProxy_ =
+        FaceGazeSubpageBrowserProxyImpl.getInstance();
+    this.addWebUiListener(
+        'settings.handleDisableDialogResult',
+        (accepted: boolean) => this.onDisableDialogResult_(accepted));
+  }
+
+  override ready(): void {
+    super.ready();
+    this.$.faceGazeToggle.checked =
+        this.prefs.settings.a11y.face_gaze.enabled.value;
+  }
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -59,9 +80,24 @@ export class SettingsFaceGazeSubpageElement extends
   ]);
 
   private getToggleLabel_(): string {
-    return this.getPref('settings.a11y.face_gaze.enabled_sentinel').value ?
+    return this.getPref('settings.a11y.face_gaze.enabled').value ?
         this.i18n('deviceOn') :
         this.i18n('deviceOff');
+  }
+
+  private onFaceGazeToggleClicked_(): void {
+    this.faceGazeSubpageBrowserProxy_.requestEnableFaceGaze(
+        this.$.faceGazeToggle.checked);
+  }
+
+  private onDisableDialogResult_(accepted: boolean): void {
+    this.$.faceGazeToggle.checked = !accepted;
+  }
+
+  static get observers() {
+    return [
+      'onFaceGazeEnabledChanged_(prefs.settings.a11y.face_gaze.enabled.value)',
+    ];
   }
 
   override currentRouteChanged(route: Route): void {
@@ -71,6 +107,11 @@ export class SettingsFaceGazeSubpageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  private onFaceGazeEnabledChanged_() {
+    this.$.faceGazeToggle.checked =
+        this.getPref('settings.a11y.face_gaze.enabled').value;
   }
 }
 

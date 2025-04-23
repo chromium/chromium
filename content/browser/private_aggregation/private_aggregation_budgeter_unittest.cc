@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <optional>
 #include <set>
@@ -775,9 +776,14 @@ TEST_P(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
     int64_t timestamp;
   };
 
+  enum FatalErrorExpectation { kExpectFatalError, kDontExpectFatalError };
+
   const struct {
     BudgetEntryValidityStatus expected_status;
     std::vector<BudgetEntries> budgets;
+
+    // If there is a fatal error, only the first budgeting call will occur.
+    FatalErrorExpectation fatal_error_expectation = kDontExpectFatalError;
   } kTestCases[] = {
       {BudgetEntryValidityStatus::kValid,
        {
@@ -800,7 +806,8 @@ TEST_P(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
        {
            {1, oldest_window_start},
            {kMaxSmallerScopeBudget + 1, latest_window_start},
-       }},
+       },
+       kExpectFatalError},
       {BudgetEntryValidityStatus::kContainsTimestampNotRoundedToMinute,
        {
            {1, oldest_window_start},
@@ -811,7 +818,8 @@ TEST_P(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
            {-1, after_latest_window_start},
            {3, oldest_window_start + 1},
            {kMaxSmallerScopeBudget + 1, latest_window_start},
-       }},
+       },
+       kExpectFatalError},
       {BudgetEntryValidityStatus::kSpansMoreThanADay,
        {
            {5, before_oldest_window_start},
@@ -833,7 +841,11 @@ TEST_P(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
         }));
     histograms.ExpectUniqueSample(
         "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
-        test_case.expected_status, GetErrorReportingEnabledParam() ? 2 : 1);
+        test_case.expected_status,
+        GetErrorReportingEnabledParam() &&
+                test_case.fatal_error_expectation == kDontExpectFatalError
+            ? 2
+            : 1);
     run_loop.Run();
   }
 }
@@ -2473,6 +2485,100 @@ TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
         EXPECT_EQ(result.overall_result, RequestResult::kApproved);
         EXPECT_THAT(result.result_for_each_contribution, testing::IsEmpty());
       }));
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       MultipleContributionsWithSumExceeding32Bits) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  // Value sums to value 1 if 32-bit overflow is allowed.
+  using Contribution = blink::mojom::AggregatableReportHistogramContribution;
+  std::vector<Contribution> example_contribution_vector = {
+      Contribution(/*bucket=*/12, /*value=*/3, /*filtering_id=*/std::nullopt),
+      Contribution(/*bucket=*/12, /*value=*/std::numeric_limits<int32_t>::max(),
+                   /*filtering_id=*/std::nullopt),
+      Contribution(/*bucket=*/12, /*value=*/std::numeric_limits<int32_t>::max(),
+                   /*filtering_id=*/std::nullopt)};
+
+  base::RunLoop run_loop;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        EXPECT_EQ(result.query_result.overall_result,
+                  RequestResult::kRequestedMoreThanTotalBudget);
+        EXPECT_EQ(result.query_result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      {ResultForContribution::kApproved,
+                       ResultForContribution::kDenied,
+                       ResultForContribution::kDenied}));
+
+        extracted_lock = std::move(result.lock);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_lock).value(),
+      {Contribution(/*bucket=*/12, /*value=*/3, /*filtering_id=*/std::nullopt)},
+      example_key, base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        EXPECT_EQ(result.overall_result, RequestResult::kApproved);
+        EXPECT_EQ(result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      {ResultForContribution::kApproved}));
+      }));
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       DiskUsageAlreadyExceedsBudget_BadValuesOnDisk) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  int64_t latest_window_start = example_key.time_window()
+                                    .start_time()
+                                    .ToDeltaSinceWindowsEpoch()
+                                    .InMicroseconds();
+  int64_t previous_window_start =
+      (example_key.time_window().start_time() -
+       PrivateAggregationBudgetKey::TimeWindow::kDuration)
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds();
+
+  AddBudgetValueAtTimestamp(
+      example_key,
+      PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
+      latest_window_start);
+  AddBudgetValueAtTimestamp(example_key, 1, previous_window_start);
+
+  using Contribution = blink::mojom::AggregatableReportHistogramContribution;
+  std::vector<Contribution> example_contribution_vector = {
+      Contribution(/*bucket=*/12, /*value=*/1, /*filtering_id=*/std::nullopt)};
+
+  base::RunLoop run_loop;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        EXPECT_EQ(result.query_result.overall_result,
+                  RequestResult::kBadValuesOnDisk);
+        EXPECT_TRUE(result.query_result.result_for_each_contribution.empty());
+
+        EXPECT_FALSE(result.lock.has_value());
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
 }
 
 }  // namespace

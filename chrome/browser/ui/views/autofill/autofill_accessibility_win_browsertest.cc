@@ -126,7 +126,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
                        MAYBE_AutofillPopupControllerFor) {
   content::AccessibilityNotificationWaiter waiter(
-      GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+      GetWebContents(), ax::mojom::Event::kLoadComplete);
   NavigateToAndWaitForForm(
       embedded_test_server()->GetURL("/accessibility/input_datalist.html"));
   ASSERT_TRUE(waiter.WaitForNotification());

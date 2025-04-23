@@ -112,6 +112,7 @@ public class CustomTabTaskDescriptionHelperTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest(message = "crbug.com/409695389")
     public void testPageNorLaunchIntentProvidesThemeColor() throws Exception {
         final String pageWithoutThemeColorUrl =
                 mTestServer.getURL("/chrome/test/data/android/simple.html");

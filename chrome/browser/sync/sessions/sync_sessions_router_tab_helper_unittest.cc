@@ -67,6 +67,7 @@ class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     sync_sessions_router_.reset();
+    router_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -77,7 +78,7 @@ class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<SyncSessionsWebContentsRouter, DanglingUntriaged> router_ = nullptr;
+  raw_ptr<SyncSessionsWebContentsRouter> router_ = nullptr;
   FakeLocalSessionEventHandler handler_;
   std::unique_ptr<SyncSessionsRouterTabHelper> sync_sessions_router_;
 };

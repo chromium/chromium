@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/window_properties.h"
@@ -93,14 +94,17 @@ gfx::Rect GetWorkAreaBoundsInScreen(aura::Window* window) {
 }
 
 // Returns the widget init params needed to create the widget.
-views::Widget::InitParams CreateWidgetInitParams(aura::Window* parent_window,
-                                                 const gfx::Rect& bounds) {
+views::Widget::InitParams CreateWidgetInitParams(
+    aura::Window* parent_window,
+    const gfx::Rect& bounds,
+    views::WidgetDelegate* delegate) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = parent_window;
+  params.delegate = delegate;
   params.bounds = bounds;
   params.init_properties_container.SetProperty(kExcludeInMruKey, true);
   params.init_properties_container.SetProperty(kIgnoreWindowActivationKey,
@@ -631,7 +635,9 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   DCHECK(!divider_widget_);
   CHECK_GE(observed_windows_.size(), 1u);
   // Native widget owns this widget.
-  divider_widget_ = new SplitViewDividerWidget;
+  widget_delegate_ = std::make_unique<AccessibilityFocusableWidgetDelegate>(
+      /*register=*/true);
+  divider_widget_ = std::make_unique<SplitViewDividerWidget>();
   divider_widget_->set_focus_on_creation(false);
   aura::Window* parent_container = nullptr;
   aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
@@ -643,8 +649,10 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
       GetWorkAreaBoundsInScreen(observed_windows_[0].get()),
       IsLayoutHorizontal(observed_windows_[0].get()), divider_position,
       /*is_dragging=*/false);
-  divider_widget_->Init(
-      CreateWidgetInitParams(parent_container, initial_divider_bounds));
+
+  divider_widget_->Init(CreateWidgetInitParams(
+      parent_container, initial_divider_bounds, widget_delegate_.get()));
+
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
   divider_view_ = divider_widget_->SetContentsView(
@@ -665,8 +673,6 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   // destroying.
   wm::TransientWindowManager::GetOrCreate(divider_widget_native_window)
       ->set_parent_controls_lifetime(false);
-
-  Shell::Get()->focus_cycler()->AddWidget(divider_widget_);
 }
 
 void SplitViewDivider::CloseDividerWidget() {
@@ -681,7 +687,6 @@ void SplitViewDivider::CloseDividerWidget() {
   dragged_window_ = nullptr;
 
   if (divider_widget_) {
-    Shell::Get()->focus_cycler()->RemoveWidget(divider_widget_);
     auto* divider_window = divider_widget_->GetNativeWindow();
     if (auto* transient_parent = wm::GetTransientParent(divider_window)) {
       wm::RemoveTransientChild(transient_parent, divider_window);
@@ -696,9 +701,9 @@ void SplitViewDivider::CloseDividerWidget() {
     // widget.
     divider_view_->SetCanProcessEventsWithinSubtree(false);
     divider_window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
-    divider_widget_->Close();
     divider_view_ = nullptr;
-    divider_widget_ = nullptr;
+    divider_widget_.reset();
+    widget_delegate_.reset();
   }
 }
 

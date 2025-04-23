@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -33,6 +34,7 @@ function computeHueGradient(): string {
 
 export interface ThemeHueSliderDialogElement {
   $: {
+    contentsWrapper: HTMLElement,
     dialog: HTMLDialogElement,
     slider: CrSliderElement,
   };
@@ -75,13 +77,7 @@ export class ThemeHueSliderDialogElement extends
   protected accessor minHue_: number = minHue;
   accessor selectedHue: number = minHue;
   protected accessor knobHue_: number = minHue;
-  private boundPointerdown_: (e: PointerEvent) => void;
-
-  constructor() {
-    super();
-
-    this.boundPointerdown_ = this.onDocumentPointerdown_.bind(this);
-  }
+  private eventTracker_: EventTracker = new EventTracker();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -96,31 +92,33 @@ export class ThemeHueSliderDialogElement extends
   }
 
   showAt(anchor: HTMLElement) {
-    this.$.dialog.show();
+    this.$.dialog.showModal();
 
-    this.$.dialog.style.left = `${
-        anchor.offsetLeft + anchor.offsetWidth - this.$.dialog.offsetWidth}px`;
+    const anchorBoundingClientRect = anchor.getBoundingClientRect();
+    this.$.dialog.style.left =
+        `${anchorBoundingClientRect.right - this.$.dialog.offsetWidth}px`;
 
     // By default, align the dialog below the anchor. If the window is too
     // small, show it above the anchor.
-    if (anchor.getBoundingClientRect().bottom + this.$.dialog.offsetHeight >=
+    if (anchorBoundingClientRect.bottom + this.$.dialog.offsetHeight >=
         window.innerHeight) {
       this.$.dialog.style.top =
-          `${anchor.offsetTop - this.$.dialog.offsetHeight}px`;
+          `${anchorBoundingClientRect.top - this.$.dialog.offsetHeight}px`;
     } else {
-      this.$.dialog.style.top = `${anchor.offsetTop + anchor.offsetHeight}px`;
+      this.$.dialog.style.top = `${anchorBoundingClientRect.bottom}px`;
     }
 
-    document.addEventListener('pointerdown', this.boundPointerdown_);
+    this.eventTracker_.add(
+        this.$.dialog, 'pointerdown', this.onPointerdown_.bind(this));
   }
 
   hide() {
     this.$.dialog.close();
-    document.removeEventListener('pointerdown', this.boundPointerdown_);
+    this.eventTracker_.removeAll();
   }
 
-  private onDocumentPointerdown_(e: PointerEvent) {
-    if (e.composedPath().includes(this.$.dialog)) {
+  private onPointerdown_(e: PointerEvent) {
+    if (e.button !== 0 || e.composedPath()[0]! !== this.$.dialog) {
       return;
     }
 

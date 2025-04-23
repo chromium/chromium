@@ -5,13 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_H_
 
+#import <map>
+
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_groups_delegate.h"
 
 class ProfileIOS;
 class ShareKitService;
 class TabGroup;
+
+namespace collaboration {
+class IOSCollaborationControllerDelegate;
+}
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -21,7 +29,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Service that manages models required to support
+// Service that manages all tab group-related functions.
 class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
  public:
   explicit TabGroupService(
@@ -36,6 +44,23 @@ class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
   bool ShouldDeleteGroup(const TabGroup* group) override;
   std::unique_ptr<web::WebState> WebStateToAddToEmptyGroup() override;
 
+  // Registers a collaboration controller delegate for future access. Not all
+  // delegates will be registered. It is an error to register two delegate for
+  // the same group.
+  void RegisterCollaborationControllerDelegate(
+      tab_groups::LocalTabGroupID tab_group_id,
+      base::WeakPtr<collaboration::IOSCollaborationControllerDelegate>
+          controller_delegate);
+
+  // Unregisters a collaboration controller delegate. Registered delegate should
+  // call this at the end of their flow.
+  void UnregisterCollaborationControllerDelegate(
+      tab_groups::LocalTabGroupID tab_group_id);
+
+  // Returns the registered collaboration controller delegate, if any.
+  collaboration::IOSCollaborationControllerDelegate* GetDelegateForGroup(
+      tab_groups::LocalTabGroupID tab_group_id);
+
  private:
   // true if the group is shared.
   bool IsSharedGroup(const TabGroup* group);
@@ -48,6 +73,12 @@ class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
 
   // The share kit service.
   raw_ptr<ShareKitService> share_kit_service_;
+
+  // The map holding the collaboration controller delegate with their associated
+  // tab group id.
+  std::map<tab_groups::LocalTabGroupID,
+           base::WeakPtr<collaboration::IOSCollaborationControllerDelegate>>
+      group_to_controller_delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_H_

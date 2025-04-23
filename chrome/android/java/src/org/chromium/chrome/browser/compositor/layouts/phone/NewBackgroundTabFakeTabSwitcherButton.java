@@ -203,7 +203,10 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
 
         mHasOutstandingAnimator = true;
         setBackgroundVisibility(true);
-        mBackgroundView.setAlpha(0f);
+        mBackgroundView.setAlpha(1f);
+        if (incrementCount) {
+            incrementTabCount();
+        }
         float size = getContext().getResources().getDimension(R.dimen.toolbar_height_no_shadow);
         float distance = size * (direction == TranslateDirection.UP ? -1f : 1f);
         ObjectAnimator translateAnimator =
@@ -216,16 +219,6 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
                 Interpolators.NEW_BACKGROUND_TAB_ANIMATION_TRANSLATE_INTERPOLATOR);
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        mBackgroundView.setAlpha(1f);
-                        // TODO(crbug.com/40282469): This might need to be posted so a visible
-                        // update occurs.
-                        if (incrementCount) {
-                            incrementTabCount();
-                        }
-                    }
-
                     @Override
                     public void onAnimationCancel(Animator animator) {
                         resetState();

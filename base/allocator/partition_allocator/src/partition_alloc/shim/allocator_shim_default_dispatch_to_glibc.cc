@@ -88,6 +88,21 @@ void GlibcFree(void* address, void* context) {
   __libc_free(address);
 }
 
+void GlibcFreeWithSize(void* address, size_t, void* context) {
+  __libc_free(address);
+}
+
+void GlibcFreeWithAlignment(void* address, size_t, void* context) {
+  __libc_free(address);
+}
+
+void GlibcFreeWithSizeAndAlignment(void* address,
+                                   size_t,
+                                   size_t,
+                                   void* context) {
+  __libc_free(address);
+}
+
 PA_NO_SANITIZE("cfi-icall")
 size_t GlibcGetSizeEstimate(void* address, void* context) {
   // glibc does not expose an alias to resolve malloc_usable_size. Dynamically
@@ -112,17 +127,21 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &GlibcRealloc,          /* realloc_function */
     &GlibcUncheckedRealloc, /* realloc_unchecked_function */
     &GlibcFree,             /* free_function */
-    &GlibcGetSizeEstimate,  /* get_size_estimate_function */
-    nullptr,                /* good_size_function */
-    nullptr,                /* claimed_address */
-    nullptr,                /* batch_malloc_function */
-    nullptr,                /* batch_free_function */
-    nullptr,                /* free_definite_size_function */
-    nullptr,                /* try_free_default_function */
-    nullptr,                /* aligned_malloc_function */
-    nullptr,                /* aligned_malloc_unchecked_function */
-    nullptr,                /* aligned_realloc_function */
-    nullptr,                /* aligned_realloc_unchecked_function */
-    nullptr,                /* aligned_free_function */
-    nullptr,                /* next */
+    GlibcFreeWithSize,      /* free_with_size_function */
+    GlibcFreeWithAlignment,
+    /* free_with_alignment_function */
+    GlibcFreeWithSizeAndAlignment,
+    /* free_with_size_and_alignment_function */
+    &GlibcGetSizeEstimate, /* get_size_estimate_function */
+    nullptr,               /* good_size_function */
+    nullptr,               /* claimed_address */
+    nullptr,               /* batch_malloc_function */
+    nullptr,               /* batch_free_function */
+    nullptr,               /* try_free_default_function */
+    nullptr,               /* aligned_malloc_function */
+    nullptr,               /* aligned_malloc_unchecked_function */
+    nullptr,               /* aligned_realloc_function */
+    nullptr,               /* aligned_realloc_unchecked_function */
+    nullptr,               /* aligned_free_function */
+    nullptr,               /* next */
 };

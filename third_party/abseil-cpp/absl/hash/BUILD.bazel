@@ -86,6 +86,7 @@ cc_test(
         ":hash_testing",
         ":spy_hash_state",
         "//absl/base:config",
+        "//absl/container:flat_hash_map",
         "//absl/container:flat_hash_set",
         "//absl/memory",
         "//absl/meta:type_traits",

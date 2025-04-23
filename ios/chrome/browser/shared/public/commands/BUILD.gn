@@ -58,6 +58,7 @@ source_set("commands") {
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
     "quick_delete_commands.h",
+    "reader_mode_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
     "recent_activity_commands.h",
@@ -95,8 +96,8 @@ source_set("commands") {
   deps = [
     "//components/lens",
     "//components/tab_groups",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
     "//ios/chrome/browser/browsing_data/model:util",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/shared/ui/util:url_with_title",

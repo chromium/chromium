@@ -6,6 +6,8 @@
 #include <queue>
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -390,6 +392,16 @@ class EmbeddedPermissionPromptInteractiveTest
             type, 0));
   }
 
+  auto ShowTabModalUI() {
+    return Do([this]() {
+      scoped_tab_modal_ui_ = browser()->GetActiveTabInterface()->ShowModalUI();
+    });
+  }
+
+  auto HideTabModalUI() {
+    return Do([this]() { scoped_tab_modal_ui_.reset(); });
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -399,6 +411,7 @@ class EmbeddedPermissionPromptInteractiveTest
   // |ukm_recorder_| needs to be reset after every check so that further check
   // functions will only check the new data.
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 };
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
@@ -890,6 +903,98 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       // Now that both system permissions changed to allowed, clicking the "open
       // settings" button means the prompt progresses to the next screen.
       InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       CrossOriginZoomAffectsValidation) {
+  StateChange done_visible;
+  done_visible.where = DeepQuery{"#done"};
+  done_visible.type = StateChange::Type::kExists;
+  done_visible.event = kDoneVisibleEvent;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(
+          kWebContentsElementId,
+          https_server()->GetURL(
+              "b.test", "/permissions/permission_element_embedder.html")));
+  content::WebContentsConsoleObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  RunTestSequence(
+      ExecuteJs(kWebContentsElementId,
+                content::JsReplace("() => { insertIframe($1, $2); }", GetURL(),
+                                   "zoom5")));
+  // Wait until getting the message that the permission element's font is
+  // too large.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& message : observer.messages()) {
+      if (message.message ==
+          u"Font size of the permission element 'camera' is too large") {
+        return true;
+      }
+    }
+
+    return false;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BrowserZoomDoesNotAffectValidation) {
+  zoom::ZoomController* zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  zoom_controller->SetZoomLevel(10);
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)));
+}
+
+// Checks that the prompt is not shown if the tab is displaying another modal
+// UI and that it is shown when the other modal UI is closed.
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestSamePromptInteractionsWithModalUILock) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()), ShowTabModalUI(),
+      ClickOnPEPCElement("camera"), HideTabModalUI(),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(
+          CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                            &views::Label::GetText, u"Use your cameras")),
+      Do([&]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_FALSE(manager->has_pending_requests());
+
+        // Need to close the permission prompt before the test shuts down.
+        manager->Dismiss();
+        manager->FinalizeCurrentRequests();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestDifferentPromptInteractionsWithModalUILock) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()), ShowTabModalUI(),
+      ClickOnPEPCElement("camera"), HideTabModalUI(),
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(
+          CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                            &views::Label::GetText, u"Know your location")),
+      Do([&]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_FALSE(manager->has_pending_requests());
+
+        // Need to close the permission prompt before the test shuts down.
+        manager->Dismiss();
+        manager->FinalizeCurrentRequests();
+      }));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest

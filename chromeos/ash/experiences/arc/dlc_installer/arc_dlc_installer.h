@@ -90,7 +90,14 @@ class ArcDlcInstaller {
   void OnDlcInstalled(
       base::OnceCallback<void(bool)> callback,
       base::TimeTicks start_installation_time,
+      std::unique_ptr<bool> installation_triggered,
       const ash::DlcserviceClient::InstallResult& install_result);
+
+  // The progress_callback function in DlcserviceClient's Install() is triggered
+  // only while the DLC is installing. Once the DLC image is installed, this
+  // callback will no longer be triggered. The service uses this mechanism to
+  // determine whether the DLC image was installed.
+  void OnDlcProgress(bool* installation_triggered, double progress);
 
   std::unique_ptr<ArcDlcNotificationManagerFactory>
       notification_manager_factory_;

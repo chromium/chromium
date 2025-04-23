@@ -94,6 +94,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
       const std::optional<std::string>& cache_guid) const override;
   bool WasTabGroupClosedLocally(const base::Uuid& sync_id) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
+  void UpdateArchivalStatus(const base::Uuid& sync_id,
+                            bool archival_status) override;
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
@@ -121,6 +123,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void NotifyObserversOfTabGroupUpdated(SavedTabGroup& group);
   // Notifies observers when `group` is shared.
   void NotifyObserversOfTabGroupShared(SavedTabGroup& group);
+
+  std::unique_ptr<TabGroupSyncDelegate> delegate_;
 
   base::ObserverList<TabGroupSyncService::Observer> observers_;
   std::vector<SavedTabGroup> groups_;

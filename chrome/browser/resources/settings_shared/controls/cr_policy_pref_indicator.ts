@@ -72,13 +72,13 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
     };
   }
 
-  iconAriaLabel: string;
-  indicatorIcon: string;
-  indicatorType: CrPolicyIndicatorType;
-  indicatorTooltip: string;
-  indicatorVisible: boolean;
-  pref?: chrome.settingsPrivate.PrefObject;
-  associatedValue?: any;
+  declare iconAriaLabel: string;
+  declare indicatorIcon: string;
+  declare indicatorType: CrPolicyIndicatorType;
+  declare indicatorTooltip: string;
+  declare indicatorVisible: boolean;
+  declare pref?: chrome.settingsPrivate.PrefObject;
+  declare associatedValue?: any;
 
   /**
    * @return True if the indicator should be shown.

@@ -128,8 +128,8 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
   audio_processing->DetachAecDump();
 }
 
-rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
-    const AudioProcessingSettings& settings) {
+webrtc::scoped_refptr<webrtc::AudioProcessing>
+CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
   if (!settings.NeedWebrtcAudioProcessing())
     return nullptr;
 

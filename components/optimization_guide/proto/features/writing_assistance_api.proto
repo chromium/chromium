@@ -35,6 +35,8 @@ message WritingAssistanceApiRequest {
   string rewrite_text = 3;
 
   string shared_context = 4;
+
+  string instructions = 5;
 }
 
 message WritingAssistanceApiOptions {

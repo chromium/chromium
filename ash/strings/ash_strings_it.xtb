@@ -1873,7 +1873,7 @@ Nuova installazione</translation>
 <translation id="7068360136237591149">Apri file</translation>
 <translation id="7076293881109082629">Accesso</translation>
 <translation id="7076878155205969899">Disattiva audio</translation>
-<translation id="7083848064787091821">Modalità Niente distrazioni</translation>
+<translation id="7083848064787091821">Niente distrazioni</translation>
 <translation id="7084678090004350185">Attiva/disattiva l'hotspot. Hotspot attivo, <ph name="DEVICECOUNT" /> dispositivi connessi.</translation>
 <translation id="7086931198345821656">Questo aggiornamento richiede il Powerwash di <ph name="DEVICE_TYPE" />. Tutti i dati verranno eliminati. Scopri di più sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
@@ -2013,7 +2013,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7569886975397378678">Chiudi la configurazione della visualizzazione di app e notifiche dello smartphone</translation>
 <translation id="7571361473021531288">Batteria: <ph name="BATTERY_PERCENTAGE" />% | Tempo rimanente: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Finestra attiva agganciata a destra.</translation>
-<translation id="7579778809502851308">Acquisizione schermo</translation>
+<translation id="7579778809502851308">Cattura schermo</translation>
 <translation id="7588317312481506627">Copiata negli appunti.</translation>
 <translation id="7593891976182323525">Tasto per la ricerca o Maiusc</translation>
 <translation id="7598054670902114203">Istantanea dell'utilizzo della CPU, <ph name="CPU_USEAGE" />%. Temperatura: <ph name="TEMPERATURE" /> gradi centigradi, velocità attuale: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>

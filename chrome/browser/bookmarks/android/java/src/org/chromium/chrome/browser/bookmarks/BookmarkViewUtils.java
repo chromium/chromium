@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.UiUtils;
@@ -143,7 +142,7 @@ public class BookmarkViewUtils {
         if (bookmarkModel.isSpecialFolder(item)) {
             return SemanticColorUtils.getColorPrimaryContainer(context);
         } else {
-            return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+            return SemanticColorUtils.getColorSurfaceContainerLow(context);
         }
     }
 

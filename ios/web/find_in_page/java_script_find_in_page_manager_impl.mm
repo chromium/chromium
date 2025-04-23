@@ -312,6 +312,4 @@ void JavaScriptFindInPageManagerImpl::SelectCurrentMatch() {
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(JavaScriptFindInPageManager)
-
 }  // namespace web

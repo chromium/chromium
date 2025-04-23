@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.HardwareRenderer;
@@ -25,10 +27,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.CaptureObserver;
 import org.chromium.ui.resources.dynamics.CaptureUtils;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Uses a {@link RenderNode} to perform bitmap capture of a java View. This walks the View hierarchy
@@ -36,6 +42,7 @@ import java.nio.ByteBuffer;
  * executed to paint colors onto a {@link Bitmap}. Uses functionality that requires Android Q+.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public class HardwareDraw {
 
     /**
@@ -55,25 +62,40 @@ public class HardwareDraw {
         // An ImageReader requires a listener to run in a separate thread.
         // Ideally, we would just post to the thread pool, but it doesn't implement a Handler like
         // the ImageReader requires.
-        private static Handler sHardwareThreadHandler;
+        private static @Nullable Handler sHardwareCallbackThreadHandler;
+
+        // A dedicated thread to issue HardwareRenderer requests from.
+        //
+        // If task issuing the hardware rendering request is posted to the global thread pool, it
+        // results in the worker thread running the task getting added to the ADPF session and since
+        // Android assumes that these requests originate from the UI thread. Android might then
+        // prioritize the worker thread as though it were the UI thread, which is undesirable for
+        // performance. Having a dedicated thread to issue HardwareRenderer requests from mitigates
+        // this problem by preventing contamination of the global thread pool.
+        private static @Nullable Executor sHardwareRequestThreadExecutor;
 
         // Only ever recreated in the UI thread.
         private ImageReader mImageReader;
 
         // Set in the UI thread before enqueuing a request.
         // Cleared in the hardware thread after posting the task back to the UI thread.
-        private Callback<Bitmap> mOnBitmapCapture;
+        private @Nullable Callback<@Nullable Bitmap> mOnBitmapCapture;
 
         /**
          * Each instance should be called by external clients only on the thread it is created. The
-         * first instance created will also create a thread to acquire rendered images.
+         * first instance created will also create a thread to acquire rendered images and a thread
+         * to issue hardware accelerated render requests to the OS.
          */
         private Renderer(ThreadUtils.ThreadChecker uiThreadChecker, int width, int height) {
             mUiThreadChecker = uiThreadChecker;
-            if (sHardwareThreadHandler == null) {
-                HandlerThread thread = new HandlerThread("HardwareDrawThread");
+            if (sHardwareCallbackThreadHandler == null) {
+                HandlerThread thread = new HandlerThread("HardwareDrawCallbackThread");
                 thread.start();
-                sHardwareThreadHandler = new Handler(thread.getLooper());
+                sHardwareCallbackThreadHandler = new Handler(thread.getLooper());
+            }
+
+            if (sHardwareRequestThreadExecutor == null) {
+                sHardwareRequestThreadExecutor = Executors.newSingleThreadExecutor();
             }
 
             try (TraceEvent e = TraceEvent.scoped("Renderer::initImageReader")) {
@@ -93,39 +115,41 @@ public class HardwareDraw {
                 mImageReader =
                         ImageReader.newInstance(
                                 width, height, PixelFormat.RGBA_8888, maxAcquiredImages);
-                mImageReader.setOnImageAvailableListener(this, sHardwareThreadHandler);
+                mImageReader.setOnImageAvailableListener(this, sHardwareCallbackThreadHandler);
             }
         }
 
         // Posts a single draw request to the thread pool. It should only be called once.
-        private void requestDraw(RenderNode renderNode, Callback<Bitmap> onBitmapCapture) {
+        private void requestDraw(
+                RenderNode renderNode, Callback<@Nullable Bitmap> onBitmapCapture) {
             mUiThreadChecker.assertOnValidThread();
             assert mOnBitmapCapture == null;
             mOnBitmapCapture = onBitmapCapture;
-            PostTask.postTask(
-                    TaskTraits.USER_VISIBLE_MAY_BLOCK,
-                    () -> {
-                        try (TraceEvent e = TraceEvent.scoped("Renderer::requestDraw::task")) {
-                            HardwareRenderer renderer = new HardwareRenderer();
-                            Surface s = mImageReader.getSurface();
-                            renderer.setContentRoot(renderNode);
-                            renderer.setSurface(s);
-                            HardwareRenderer.FrameRenderRequest request =
-                                    renderer.createRenderRequest();
-                            // Block until the frame is submitted to the surface, so that it is safe
-                            // to discard all resources afterwards.
-                            request.setWaitForPresent(true);
-                            request.syncAndDraw();
-                            renderer.stop();
-                            renderer.destroy();
-                            renderNode.discardDisplayList();
-                        }
-                    });
+            assumeNonNull(sHardwareRequestThreadExecutor)
+                    .execute(
+                            () -> {
+                                try (TraceEvent e =
+                                        TraceEvent.scoped("Renderer::requestDraw::task")) {
+                                    HardwareRenderer renderer = new HardwareRenderer();
+                                    Surface s = mImageReader.getSurface();
+                                    renderer.setContentRoot(renderNode);
+                                    renderer.setSurface(s);
+                                    HardwareRenderer.FrameRenderRequest request =
+                                            renderer.createRenderRequest();
+                                    // Block until the frame is submitted to the surface, so that it
+                                    // is safe to discard all resources afterwards.
+                                    request.setWaitForPresent(true);
+                                    request.syncAndDraw();
+                                    renderer.stop();
+                                    renderer.destroy();
+                                    renderNode.discardDisplayList();
+                                }
+                            });
         }
 
         /**
-         * This method runs on the sHardwareThreadHandler. It acquires an image and releases it
-         * after copying it to a bitmap. Then posts the callback to the UI thread. Ignores any
+         * This method runs on the sHardwareCallbackThreadHandler. It acquires an image and releases
+         * it after copying it to a bitmap. Then posts the callback to the UI thread. Ignores any
          * subsequent calls.
          */
         @Override
@@ -175,7 +199,7 @@ public class HardwareDraw {
 
     private final ThreadUtils.ThreadChecker mUiThreadChecker = new ThreadUtils.ThreadChecker();
 
-    private Renderer mRenderer;
+    private @Nullable Renderer mRenderer;
 
     private boolean mPendingDraw;
 
@@ -197,7 +221,7 @@ public class HardwareDraw {
             int height,
             float scale,
             CaptureObserver observer,
-            Callback<Bitmap> onBitmapCapture) {
+            Callback<@Nullable Bitmap> onBitmapCapture) {
         try (TraceEvent e = TraceEvent.scoped("HardwareDraw::startBitmapCapture")) {
             mUiThreadChecker.assertOnValidThread();
             if (view.getWidth() == 0 || view.getHeight() == 0) {
@@ -229,7 +253,7 @@ public class HardwareDraw {
                 mPendingDraw = true;
                 mRenderer.requestDraw(
                         renderNode,
-                        (Bitmap bitmap) -> {
+                        (@Nullable Bitmap bitmap) -> {
                             mUiThreadChecker.assertOnValidThread();
                             onBitmapCapture.onResult(bitmap);
                             mPendingDraw = false;

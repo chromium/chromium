@@ -5,6 +5,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -20,7 +22,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -31,10 +32,10 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/auto_reset.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -209,8 +210,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // scrolls, they get scrolled underneath the split view window. The window
   // will be returned to its proper z-order on exiting overview if it is
   // activated.
-  // TODO(sammiequon): This does not handle the case if either the snapped
-  // window or this window is an always on top window.
+  // TODO: This does not handle the case if either the snapped window or this
+  // window is an always on top window.
   if (auto* split_view_controller =
           SplitViewController::Get(Shell::GetPrimaryRootWindow());
       ShouldUseTabletModeGridLayout() &&
@@ -237,7 +238,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // Note: windows in the overview belong to different containers. For instance,
   // normal windows belong to a desk container, floated windows to a float
   // container, and always-on-top windows to their respective container.
-  window_tree_synchronizer_ = std::make_unique<ScopedWindowTreeSynchronizer>(
+  window_tree_synchronizer_ = std::make_unique<WindowTreeSynchronizer>(
       window_->GetRootWindow(), /*restore_tree=*/true);
 }
 
@@ -407,8 +408,7 @@ void ScopedOverviewTransformWindow::SetClipping(const gfx::Rect& clip_rect) {
   }
 
   ui::Layer* layer = window_->layer();
-  // TODO(sammiequon): Investigate why we cannot use
-  // `ui::Layer::GetTargetClipRect()` here.
+  // TODO: Investigate why we cannot use `ui::Layer::GetTargetClipRect()` here.
   if (layer->GetAnimator()->GetTargetClipRect() == clip_rect) {
     return;
   }
@@ -568,10 +568,6 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
                          window(), /*include_header_rounding=*/false, scale)
                    : gfx::RoundedCornersF(0));
 
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
   gfx::RectF contents_bounds_in_root(contents_bounds_in_screen);
   wm::TranslateRectFromScreen(window_->GetRootWindow(),
                               &contents_bounds_in_root);
@@ -581,6 +577,12 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
       window_util::GetMiniWindowRoundedCorners(
           window(), /*include_header_rounding=*/false));
 
+  auto window_tree_synchronizer([&]() {
+    return window_tree_synchronizer_during_drag_
+               ? window_tree_synchronizer_during_drag_.get()
+               : window_tree_synchronizer_.get();
+  });
+
   // Synchronizing the rounded corners of a window and its transient hierarchy
   // against `rounded_contents_bounds` yields two outcomes:
   // * We can apply the specified rounding without the need for a render
@@ -588,8 +590,8 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   // * It ensures that the transient windows' corners are correctly rounded,
   //   ensuring that all four corners of the WindowMiniView appear rounded.
   //   See b/325635179.
-  window_tree_synchronizer_->SynchronizeRoundedCorners(
-      window(), /*consider_curvature=*/false, rounded_contents_bounds,
+  window_tree_synchronizer()->SynchronizeRoundedCorners(
+      window(), rounded_contents_bounds,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);
@@ -692,6 +694,21 @@ void ScopedOverviewTransformWindow::OnWindowBoundsChanged(
 void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
   DCHECK(window_observations_.IsObservingSource(window));
   window_observations_.RemoveObservation(window);
+}
+
+void ScopedOverviewTransformWindow::OnDragStarted() {
+  window_tree_synchronizer_during_drag_ =
+      std::make_unique<WindowTreeSynchronizer>(window_->GetRootWindow(),
+                                               /*restore_tree=*/true);
+}
+
+void ScopedOverviewTransformWindow::OnDragEnded() {
+  if (!window_tree_synchronizer_during_drag_) {
+    return;
+  }
+
+  window_tree_synchronizer_during_drag_->Restore();
+  window_tree_synchronizer_during_drag_.reset();
 }
 
 // static

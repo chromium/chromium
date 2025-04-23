@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.language.settings;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.R;
@@ -16,6 +18,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 /** Simple object representing the language item. */
+@NullMarked
 public class LanguageItem {
     /** Comparator for sorting LanguageItems alphabetically by display name. */
     public static final Comparator<LanguageItem> COMPARE_BY_DISPLAY_NAME =
@@ -41,8 +44,12 @@ public class LanguageItem {
      * @param nativeDisplayName The display name of the language in the language's locale.
      * @param supportTranslate Whether Chrome supports translate for this language.
      */
+    @SuppressWarnings("NullAway") // Many call sites assume mCode is not null.
     public LanguageItem(
-            String code, String displayName, String nativeDisplayName, boolean supportTranslate) {
+            @Nullable String code,
+            String displayName,
+            String nativeDisplayName,
+            boolean supportTranslate) {
         mCode = code;
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;

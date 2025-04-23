@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -19,6 +18,10 @@ namespace views {
 class BoxLayoutView;
 class Label;
 }  // namespace views
+
+#if BUILDFLAG(IS_CHROMEOS)
+class NonAccessibleImageView;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
@@ -36,6 +39,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
+
+  void SyncSettingsLinkClicked(const ui::Event& event);
 
   void RwsSettingsButtonClicked(const ui::Event& event);
 
@@ -65,16 +70,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetThirdPartyCookiesTitleAndDescription(
       bool protections_on,
       CookieControlsEnforcement enforcement,
-      content_settings::TrackingProtectionBlockingStatus status,
       CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
 
   // Sets properties for `third_party_cookies_toggle_` using:
   // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
   // `status: current 3PC blocking status
-  void SetThirdPartyCookiesToggle(
-      bool protections_on,
-      content_settings::TrackingProtectionBlockingStatus status);
+  void SetThirdPartyCookiesToggle(bool protections_on,
+                                  CookieBlocking3pcdStatus blocking_status);
 
   // Sets `cookie_description_label_` text and style using:
   // `blocking_status`: label for the status of the protection (e.g. allowed,
@@ -93,12 +96,11 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // limited, blocked)
   // `expiration`: duration of site exception
   // `feature: list of tracking protection features
-  void SetThirdPartyCookiesInfo(
-      bool protections_on,
-      bool controls_visible,
-      CookieBlocking3pcdStatus blocking_status,
-      base::Time expiration,
-      content_settings::TrackingProtectionFeature feature);
+  void SetThirdPartyCookiesInfo(bool protections_on,
+                                bool controls_visible,
+                                CookieControlsEnforcement enforcement,
+                                CookieBlocking3pcdStatus blocking_status,
+                                base::Time expiration);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
@@ -116,8 +118,12 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // an active exception.
   void AddThirdPartyCookiesContainer();
 
-  std::u16string GetStatusLabel(
-      content_settings::TrackingProtectionBlockingStatus blocking_status);
+#if BUILDFLAG(IS_CHROMEOS)
+  // There is a ChromeOS enterprise policy which allows moving user's cookies
+  // across devices. In that case, we add a section which mentions it in Cookies
+  // subpage in page info.
+  void MaybeAddSyncDisclaimer();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
@@ -131,6 +137,15 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // The StyledLabel that appears above |third_party_cookies_container|.
   raw_ptr<views::StyledLabel> cookies_description_label_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Cookie sync disclaimer which consists of an enterprise icon and a
+  // description. It should be displayed for ChromeOS enterprise users when
+  // their admin has configured cookie sync.
+  raw_ptr<views::BoxLayoutView> cookies_sync_container_ = nullptr;
+  raw_ptr<NonAccessibleImageView> cookies_sync_icon_ = nullptr;
+  raw_ptr<views::StyledLabel> cookies_sync_description_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The toggle on |blocking_third_party_cookies_row| when state is managed by
   // the user.

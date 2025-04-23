@@ -62,9 +62,14 @@ class PartitionAllocFunctionsInternal {
 
   static void Free(void* object, void* context);
 
-#if PA_BUILDFLAG(IS_APPLE)
-  static void FreeDefiniteSize(void* address, size_t size, void* context);
-#endif  // PA_BUILDFLAG(IS_APPLE)
+  static void FreeWithSize(void* object, size_t size, void* context);
+
+  static void FreeWithAlignment(void* object, size_t alignment, void* context);
+
+  static void FreeWithSizeAndAlignment(void* object,
+                                       size_t size,
+                                       size_t alignment,
+                                       void* context);
 
   static size_t GetSizeEstimate(void* address, void* context);
 
@@ -89,14 +94,17 @@ class PartitionAllocFunctionsInternal {
 
   static constexpr AllocatorDispatch MakeDispatch() {
     return {
-        &Malloc,            // alloc_function
-        &MallocUnchecked,   // alloc_unchecked_function
-        &Calloc,            // alloc_zero_initialized_function
-        &Memalign,          // alloc_aligned_function
-        &Realloc,           // realloc_function
-        &ReallocUnchecked,  // realloc_unchecked_function
-        &Free,              // free_function
-        &GetSizeEstimate,   // get_size_estimate_function
+        &Malloc,                    // alloc_function
+        &MallocUnchecked,           // alloc_unchecked_function
+        &Calloc,                    // alloc_zero_initialized_function
+        &Memalign,                  // alloc_aligned_function
+        &Realloc,                   // realloc_function
+        &ReallocUnchecked,          // realloc_unchecked_function
+        &Free,                      // free_function
+        &FreeWithSize,              // free_with_size_function
+        &FreeWithAlignment,         // free_with_alignment_function
+        &FreeWithSizeAndAlignment,  // free_with_size_and_alignment_function
+        &GetSizeEstimate,           // get_size_estimate_function
 #if PA_BUILDFLAG(IS_APPLE)
         &GoodSize,        // good_size
         &ClaimedAddress,  // claimed_address
@@ -107,15 +115,10 @@ class PartitionAllocFunctionsInternal {
         &BatchMalloc,  // batch_malloc_function
         &BatchFree,    // batch_free_function
 #if PA_BUILDFLAG(IS_APPLE)
-        // On Apple OSes, free_definite_size() is always called from free(),
-        // since get_size_estimate() is used to determine whether an allocation
-        // belongs to the current zone. It makes sense to optimize for it.
-        &FreeDefiniteSize,
         // On Apple OSes, try_free_default() is sometimes called as an
         // optimization of free().
         &TryFreeDefault,
 #else
-        nullptr,  // free_definite_size_function
         nullptr,  // try_free_default_function
 #endif
         &AlignedAlloc,             // aligned_malloc_function
@@ -138,11 +141,13 @@ using PartitionAllocWithAdvancedChecksFunctions =
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // `PartitionAllocFunctions` in instantiated in cc file.
-extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<partition_alloc::AllocFlags::kNoHooks,
                                     partition_alloc::FreeFlags::kNoHooks>;
 // `PartitionAllocWithAdvancedChecksFunctions` in instantiated in cc file.
-extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |
@@ -176,19 +181,22 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
           ? partition_alloc::TagViolationReportingMode::kSynchronous
           : partition_alloc::TagViolationReportingMode::kDisabled;
   auto distribution = BucketDistribution::kNeutral;
-  auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
-  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
-  auto zapping_by_free_flags = ZappingByFreeFlags(false);
+
+  auto scheduler_loop_quarantine_global_config =
+      partition_alloc::internal::SchedulerLoopQuarantineConfig();
+  auto scheduler_loop_quarantine_thread_local_config =
+      partition_alloc::internal::SchedulerLoopQuarantineConfig();
+
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
   auto fewer_memory_regions = FewerMemoryRegions(false);
   auto use_small_single_slot_spans = UseSmallSingleSlotSpans(true);
 
   ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
                       memory_tagging_reporting_mode, distribution,
-                      scheduler_loop_quarantine,
-                      scheduler_loop_quarantine_capacity_in_bytes,
-                      zapping_by_free_flags, eventually_zero_freed_memory,
-                      fewer_memory_regions, use_small_single_slot_spans);
+                      scheduler_loop_quarantine_global_config,
+                      scheduler_loop_quarantine_thread_local_config,
+                      eventually_zero_freed_memory, fewer_memory_regions,
+                      use_small_single_slot_spans);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

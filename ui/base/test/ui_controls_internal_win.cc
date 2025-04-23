@@ -527,7 +527,7 @@ bool SendKeyPressReleaseImpl(HWND window,
 
 bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   gfx::Point screen_point =
-      display::win::ScreenWin::DIPToScreenPoint({screen_x, screen_y});
+      display::win::GetScreenWin()->DIPToScreenPoint({screen_x, screen_y});
 
   // Check if the mouse is already there.
   POINT current_pos;

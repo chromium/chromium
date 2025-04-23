@@ -58,12 +58,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
   virtual void PageVisibilityChanged() {}
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
-      RasterModeHint hint) = 0;
-  CanvasResourceProvider*
-  GetOrCreateResourceProviderWithCurrentRasterModeHint() {
-    return GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode());
-  }
+  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
@@ -100,10 +95,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual bool PrintedInCurrentTask() const = 0;
   virtual bool IsHibernating() const { return false; }
 
-  RasterModeHint preferred_2d_raster_mode() const {
-    return preferred_2d_raster_mode_;
-  }
-
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
@@ -131,8 +122,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) = 0;
+  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
  private:
   bool is_displayed_ = false;

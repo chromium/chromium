@@ -26,7 +26,7 @@ namespace device {
 
 struct TestData {
   // Data copies larger than a cache line.
-  uint32_t buffer[32];
+  std::array<uint32_t, 32> buffer;
 };
 
 class BasicSeqLockTestThread : public base::PlatformThread::Delegate {

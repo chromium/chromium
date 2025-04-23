@@ -198,12 +198,6 @@ const char kDisableDefaultApps[] = "disable-default-apps";
 // Disables Domain Reliability Monitoring.
 const char kDisableDomainReliability[] = "disable-domain-reliability";
 
-// Disable extensions.
-const char kDisableExtensions[] = "disable-extensions";
-
-// Disable extensions except those specified in a comma-separated list.
-const char kDisableExtensionsExcept[] = "disable-extensions-except";
-
 // Disables lazy loading of images and frames.
 const char kDisableLazyLoading[] = "disable-lazy-loading";
 
@@ -300,6 +294,9 @@ const char kExtensionContentVerification[] = "extension-content-verification";
 const char kExtensionContentVerificationBootstrap[] = "bootstrap";
 const char kExtensionContentVerificationEnforce[] = "enforce";
 const char kExtensionContentVerificationEnforceStrict[] = "enforce_strict";
+
+// Name of the command line flag to allow the experimental actor API.
+const char kExtensionExperimentalActor[] = "enable-extension-actor-api";
 
 // Turns on extension install verification if it would not otherwise have been
 // turned on.

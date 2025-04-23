@@ -40,6 +40,7 @@ MIXIN_GROUPS = {
         'mac_arm64_apple_m1_gpu_stable',
         'mac_arm64_apple_m2_retina_gpu_experimental',
         'mac_arm64_apple_m2_retina_gpu_stable',
+        'mac_arm64_apple_m3_retina_gpu_stable',
         'mac_mini_intel_gpu_experimental',
         'mac_mini_intel_gpu_stable',
         'mac_pro_amd_gpu',

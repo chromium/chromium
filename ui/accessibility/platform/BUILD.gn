@@ -350,6 +350,7 @@ component("platform") {
 
       if (use_glib) {
         configs += [ "//build/config/linux:glib" ]
+        deps += [ "//ui/base/glib" ]
       }
       if (use_gio) {
         configs += [ "//build/linux:gio_config" ]

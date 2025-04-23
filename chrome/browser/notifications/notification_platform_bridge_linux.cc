@@ -159,7 +159,7 @@ void EscapeUnsafeCharacters(std::string* message) {
   base::ReplaceChars(*message, ">", "&gt;", message);
 }
 
-int NotificationPriorityToFdoUrgency(int priority) {
+uint8_t NotificationPriorityToFdoUrgency(int priority) {
   switch (priority) {
     case message_center::MIN_PRIORITY:
     case message_center::LOW_PRIORITY:
@@ -802,12 +802,12 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     DbusDictionary hints;
 
-    uint32_t urgency =
+    uint8_t urgency =
         notification->never_timeout() &&
                 ShouldMarkPersistentNotificationsAsCritical(server_name_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
-    hints.PutAs("urgency", DbusUint32(urgency));
+    hints.PutAs("urgency", DbusByte(urgency));
 
     if (notification->silent()) {
       hints.PutAs("suppress-sound", DbusBoolean(true));

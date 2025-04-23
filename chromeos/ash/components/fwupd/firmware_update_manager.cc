@@ -21,7 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -322,19 +322,19 @@ std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
     return "";
   }
 
-  std::string error;
-  JSONStringValueDeserializer messages_deserializer(json_content);
-  std::unique_ptr<base::Value> value =
-      messages_deserializer.Deserialize(/*error_code=*/nullptr, &error);
-  if (error != "") {
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(json_content);
+  if (!value.has_value()) {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json string with error: "
-                        << error;
+                        << value.error().ToString();
     return "";
   }
-  DCHECK(value);
-  auto dictionary =
-      std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
-  base::Value::List* items = dictionary->FindList("Items");
+  base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
+    FIRMWARE_LOG(ERROR) << "Parsed JSON is not a dictionary";
+    return "";
+  }
+  base::Value::List* items = dict->FindList("Items");
   if (items == nullptr || items->empty()) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Items' key in checksum json file";
     return "";
@@ -344,7 +344,7 @@ std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Id' key in checksum json file";
     return "";
   }
-  return *filename;
+  return std::move(*filename);
 }
 
 bool CreateAndClearFile(const base::FilePath& filepath) {

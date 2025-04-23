@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_NATIVE_SCHEME;
+import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_SCHEME;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -33,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
@@ -252,6 +256,18 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         DomDistillerTabUtils.setInterceptNavigationDelegate(
                 mCustomTabNavigationDelegate, webContents);
+    }
+
+    @Override
+    public void onPageLoadFinished(Tab tab, GURL url) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_AUTO_DISTILL)
+                || url.getScheme().equals(DOM_DISTILLER_SCHEME)
+                || url.getScheme().equals(CHROME_SCHEME)
+                || url.getScheme().equals(CHROME_NATIVE_SCHEME)) {
+            return;
+        }
+
+        distillInCustomTab();
     }
 
     @Override

@@ -380,13 +380,19 @@ suite('cr-input', function() {
 
       static get properties() {
         return {
-          parentValue: String,
-          parentInvalid: Boolean,
+          parentValue: {
+            type: String,
+            value: 'hello',
+          },
+          parentInvalid: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      parentValue: string = 'hello';
-      parentInvalid: boolean = false;
+      declare parentValue: string;
+      declare parentInvalid: boolean;
       private events_: string[] = [];
       private expectedValue_: string = 'hello';
 

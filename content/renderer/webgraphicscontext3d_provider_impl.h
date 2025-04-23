@@ -60,9 +60,6 @@ class WebGraphicsContext3DProviderImpl
       base::RepeatingCallback<void(const char*, int32_t)>) override;
   cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override;
   gpu::SharedImageInterface* SharedImageInterface() override;
-  void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
-                      media::VideoFrame* video_frame,
-                      cc::PaintCanvas* canvas) override;
   viz::RasterContextProvider* RasterContextProvider() const override;
   unsigned int GetGrGLTextureFormat(
       viz::SharedImageFormat format) const override;

@@ -232,9 +232,11 @@ void DataSharingServiceHooks(
 std::unique_ptr<ShareKitService> CreateShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
     collaboration::CollaborationService* collaboration_service,
-    tab_groups::TabGroupSyncService* sync_service) {
-  return std::make_unique<TestShareKitService>(
-      data_sharing_service, collaboration_service, sync_service);
+    tab_groups::TabGroupSyncService* sync_service,
+    TabGroupService* tab_group_service) {
+  return std::make_unique<TestShareKitService>(data_sharing_service,
+                                               collaboration_service,
+                                               sync_service, tab_group_service);
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

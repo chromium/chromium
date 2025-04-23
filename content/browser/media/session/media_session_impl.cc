@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -1295,8 +1296,12 @@ void MediaSessionImpl::EnterPictureInPicture() {
     return;
   }
 
-  // There should be one and only one player when we enter picture-in-picture.
   DCHECK_EQ(normal_players_.size(), 1u);
+  if (normal_players_.size() != 1u) {
+    // There should be one and only one player when we enter picture-in-picture.
+    return;
+  }
+
   normal_players_.begin()->first.observer->OnEnterPictureInPicture(
       normal_players_.begin()->first.player_id);
   uma_helper_.RecordEnterPictureInPicture(
@@ -1314,6 +1319,7 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
   }
   if (!ShouldRouteAction(
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
+    MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
     return;
   }
 
@@ -1321,7 +1327,7 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
       media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
   uma_helper_.RecordEnterPictureInPicture(
       MediaSessionUmaHelper::EnterPictureInPictureType::kRegisteredAutomatic);
-  OnAutoPictureInPictureInfoChanged();
+  ReportAutoPictureInPictureInfoChanged();
 }
 
 void MediaSessionImpl::SetAudioSinkId(const std::optional<std::string>& id) {
@@ -1429,6 +1435,21 @@ void MediaSessionImpl::GetMediaImageBitmap(
                      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                          std::move(callback), SkBitmap()),
                      minimum_size_px, desired_size_px, source_icon));
+}
+
+void MediaSessionImpl::ReportAutoPictureInPictureInfoChanged() {
+  ContentClient* content_client = GetContentClient();
+  const auto auto_picture_in_picture_info =
+      media::PictureInPictureEventsInfo::AutoPipInfoToString(
+          content_client->browser()->GetAutoPipInfo(*web_contents()));
+
+  ForAllPlayers(base::BindRepeating(
+      [](std::string_view auto_picture_in_picture_info,
+         const PlayerIdentifier& player) {
+        player.observer->OnAutoPictureInPictureInfoChanged(
+            player.player_id, auto_picture_in_picture_info);
+      },
+      auto_picture_in_picture_info));
 }
 
 void MediaSessionImpl::AbandonSystemAudioFocusIfNeeded() {
@@ -1870,6 +1891,15 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     }
   }
 
+  // If the website could enter browser initiated automatic picture in picture,
+  // then we should expose EnterAutoPictureInPicture as an available action.
+  if (CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+  }
+
   if (base::FeatureList::IsEnabled(
           media::kGlobalMediaControlsSeamlessTransfer) &&
       IsAudioOutputDeviceSwitchingSupported()) {
@@ -2162,24 +2192,46 @@ void MediaSessionImpl::ResetDurationUpdateGuard() {
   guarding_player_id_.reset();
 }
 
-void MediaSessionImpl::OnAutoPictureInPictureInfoChanged() {
-  ContentClient* content_client = GetContentClient();
-  const auto auto_picture_in_picture_reason =
-      media::PictureInPictureEventsInfo::AutoPipReasonToString(
-          content_client->browser()->GetAutoPipReason(*web_contents()));
-
-  ForAllPlayers(base::BindRepeating(
-      [](std::string_view auto_picture_in_picture_reason,
-         const PlayerIdentifier& player) {
-        player.observer->OnAutoPictureInPictureInfoChanged(
-            player.player_id, auto_picture_in_picture_reason);
-      },
-      auto_picture_in_picture_reason));
-}
-
 void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(
     bool should_throttle) {
   should_throttle_duration_update_ = should_throttle;
+}
+
+bool MediaSessionImpl::CouldEnterBrowserInitiatedAutomaticPictureInPicture()
+    const {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
+    return false;
+  }
+
+  if (!IsPictureInPictureAvailable()) {
+    return false;
+  }
+
+  // There should be one and only one player when we could enter browser
+  // initiated automatic picture-in-picture.
+  CHECK_EQ(normal_players_.size(), 1u);
+
+  auto& first = normal_players_.begin()->first;
+  if (first.observer->IsPaused(first.player_id)) {
+    return false;
+  }
+
+  return true;
+}
+
+void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture()
+    const {
+  if (!CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
+    return;
+  }
+
+  // There should be one and only one player when we could enter browser
+  // initiated automatic picture-in-picture.
+  CHECK_EQ(normal_players_.size(), 1u);
+
+  auto& first = normal_players_.begin()->first;
+  first.observer->OnEnterPictureInPicture(first.player_id);
 }
 
 bool MediaSessionImpl::HasImageCacheForTest(const GURL& image_url) const {

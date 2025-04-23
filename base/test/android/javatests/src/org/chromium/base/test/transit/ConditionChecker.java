@@ -6,18 +6,21 @@ package org.chromium.base.test.transit;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Spot checks multiple {@link Condition}s to assert preconditions are still valid. */
+@NullMarked
 public class ConditionChecker {
 
     /** The process of checking a {@link Condition} only once. */
     private static class ConditionCheck {
 
         private final Condition mCondition;
-        private ConditionStatus mStatus;
+        private @Nullable ConditionStatus mStatus;
 
         private ConditionCheck(Condition condition) {
             mCondition = condition;
@@ -41,6 +44,7 @@ public class ConditionChecker {
         }
 
         private ConditionStatus getConditionStatus() {
+            assert mStatus != null : "update() not called";
             return mStatus;
         }
     }

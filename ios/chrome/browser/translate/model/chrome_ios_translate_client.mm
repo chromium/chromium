@@ -204,5 +204,3 @@ void ChromeIOSTranslateClient::DidPageLoadComplete() {
     translate_metrics_logger_.reset();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ChromeIOSTranslateClient)

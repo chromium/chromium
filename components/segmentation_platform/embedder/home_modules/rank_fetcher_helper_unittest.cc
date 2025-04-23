@@ -140,7 +140,7 @@ TEST_F(RankFetcherHelperTest, GetHomeModulesRankDisabled) {
   ClassificationResult result = FetchRank(rank_fetcher_helper);
 
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_THAT(result.ordered_labels, SizeIs(5));  // Fixed modules size.
+  EXPECT_THAT(result.ordered_labels, SizeIs(4));  // Fixed modules size.
 #endif
 }
 

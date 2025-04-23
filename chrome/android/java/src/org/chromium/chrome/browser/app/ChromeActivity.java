@@ -75,7 +75,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.CloseListenerManager;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
@@ -596,6 +596,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 getLaunchCauseMetrics().onReceivedIntent();
             }
 
+            long intentTimestamp = BrowserIntentUtils.getStartupRealtimeMillis(getIntent());
+            if (intentTimestamp != -1) {
+                recordIntentToCreationTime(getOnCreateTimestampMs() - intentTimestamp);
+            }
+
             mBottomContainer = findViewById(R.id.bottom_container);
 
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
@@ -641,6 +646,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             ShareDelegate shareDelegate =
                     new ShareDelegateImpl(
+                            this,
                             mRootUiCoordinator.getBottomSheetController(),
                             getLifecycleDispatcher(),
                             getActivityTabProvider(),
@@ -909,19 +915,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
-        return new AppMenuPropertiesDelegateImpl(
-                this,
-                getActivityTabProvider(),
-                getMultiWindowModeStateDispatcher(),
-                getTabModelSelector(),
-                getToolbarManager(),
-                getWindow().getDecorView(),
-                null,
-                mBookmarkModelSupplier,
-                /* incognitoReauthControllerOneshotSupplier= */ null,
-                mRootUiCoordinator.getReadAloudControllerSupplier());
-    }
+    public abstract AppMenuPropertiesDelegate createAppMenuPropertiesDelegate();
 
     /**
      * @return The resource id for the layout to use for {@link ControlContainer}. 0 by default.
@@ -1346,13 +1340,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             if (MultiWindowUtils.getInstance()
                                     .isInMultiWindowMode(ChromeActivity.this)) {
                                 onDeferredStartupForMultiWindowMode();
-                            }
-
-                            long intentTimestamp =
-                                    BrowserIntentUtils.getStartupRealtimeMillis(getIntent());
-                            if (intentTimestamp != -1) {
-                                recordIntentToCreationTime(
-                                        getOnCreateTimestampMs() - intentTimestamp);
                             }
 
                             recordDisplayDimensions();
@@ -1815,6 +1802,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         PowerMonitor.create();
 
         super.finishNativeInitialization();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
+            ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
+        }
 
         getProfileProviderSupplier().runSyncOrOnAvailable(this::initializeManualFillingComponent);
 

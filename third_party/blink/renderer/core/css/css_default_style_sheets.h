@@ -124,6 +124,12 @@ class CSSDefaultStyleSheets final
 
   void CollectFeaturesTo(const Document&, RuleFeatureSet&);
 
+  void ForEachRuleFeatureSet(
+      const Document& document,
+      bool call_for_each_stylesheet,
+      base::RepeatingCallback<void(const RuleFeatureSet&, StyleSheetContents*)>
+          func);
+
   HeapVector<std::pair<unsigned, RuleSetGroup>>& RuleSetGroupCache() {
     return rule_set_group_cache_;
   }
@@ -184,6 +190,8 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> scroll_button_style_sheet_;
   Member<StyleSheetContents> scroll_marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
+  Member<StyleSheetContents> view_source_style_sheet_;
+  Member<StyleSheetContents> json_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
 

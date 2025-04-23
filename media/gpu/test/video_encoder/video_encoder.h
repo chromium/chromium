@@ -6,6 +6,8 @@
 #define MEDIA_GPU_TEST_VIDEO_ENCODER_VIDEO_ENCODER_H_
 
 #include <limits.h>
+
+#include <array>
 #include <atomic>
 #include <memory>
 #include <utility>
@@ -144,8 +146,8 @@ class VideoEncoder {
   // The list of events thrown by the video encoder client.
   std::vector<EncoderEvent> video_encoder_events_ GUARDED_BY(event_lock_);
   // The number of times each event has occurred.
-  size_t video_encoder_event_counts_[EncoderEvent::kNumEvents] GUARDED_BY(
-      event_lock_);
+  std::array<size_t, EncoderEvent::kNumEvents> video_encoder_event_counts_
+      GUARDED_BY(event_lock_);
   // The index of the next event to start at, when waiting for events.
   size_t next_unprocessed_event_ GUARDED_BY(event_lock_);
 

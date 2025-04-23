@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
 /** Resolves the tab switcher drawable's button data. */
+@NullMarked
 public class TabSwitcherDrawableButtonData extends DrawableButtonData {
     private final int mTabCount;
 

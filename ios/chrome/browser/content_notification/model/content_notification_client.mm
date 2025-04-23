@@ -10,28 +10,37 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 ContentNotificationClient::ContentNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kContent) {}
+    : PushNotificationClient(PushNotificationClientId::kContent,
+                             PushNotificationClientScope::kPerProfile) {}
 
 ContentNotificationClient::~ContentNotificationClient() = default;
+
+bool ContentNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return [notification.request.content.categoryIdentifier
+      isEqualToString:kContentNotificationFeedbackCategoryIdentifier];
+}
 
 bool ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   // Need to check if it is a content notification first to avoid conflicts with
   // other clients.
-  if (![response.notification.request.content.categoryIdentifier
-          isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
+  if (!CanHandleNotification(response.notification)) {
     return false;
   }
 
   // If the app is not foreground active, store this interaction and process it
-  // later.
-  if (GetSceneLevelForegroundActiveBrowser() == nullptr) {
+  // later. This uses an arbitrary Browser and thus is unsafe in multi-profile.
+  // TODO(crbug.com/41497027): This API should be redesigned.
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
     stored_interaction_ = response;
     return true;
   }
@@ -50,7 +59,7 @@ bool ContentNotificationClient::HandleNotificationInteraction(
   // Regenerate the regular payload as NSDictionary after removing the extra
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
-  ProfileIOS* profile = GetAnyProfile();
+  ProfileIOS* profile = browser->GetProfile();
   CHECK(profile);
   ContentNotificationService* contentNotificationService =
       ContentNotificationServiceFactory::GetForProfile(profile);

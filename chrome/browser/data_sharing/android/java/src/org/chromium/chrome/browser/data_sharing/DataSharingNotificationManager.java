@@ -13,6 +13,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -29,6 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Sends notification for information update of Data Sharing service to user. */
+@NullMarked
 public class DataSharingNotificationManager {
     private final Context mContext;
     private final BaseNotificationManagerProxy mNotificationManagerProxy;
@@ -84,7 +87,7 @@ public class DataSharingNotificationManager {
         return launchIntent;
     }
 
-    private static Intent createManageIntent(Context context, String syncId) {
+    private static Intent createManageIntent(Context context, @Nullable String syncId) {
         Intent launchIntent = createdIntentShared(context, Action.MANAGE_TAB_GROUP);
         launchIntent.putExtra(TAB_GROUP_SYNC_ID_EXTRA, syncId);
         return launchIntent;
@@ -135,7 +138,7 @@ public class DataSharingNotificationManager {
      * @param syncId The sync id of the tab group that should be opened upon action interaction.
      */
     public void showOtherJoinedNotification(
-            String contentTitle, String syncId, int notificationId) {
+            String contentTitle, @Nullable String syncId, int notificationId) {
         Intent pendingIntent = createPendingIntent(Action.MANAGE_TAB_GROUP);
         pendingIntent.putExtra(TAB_GROUP_SYNC_ID_EXTRA, syncId);
         buildAndNotify(contentTitle, /* showWhen= */ true, notificationId, pendingIntent);

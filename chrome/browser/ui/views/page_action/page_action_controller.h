@@ -9,11 +9,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 
@@ -34,12 +36,24 @@ namespace page_actions {
 class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
+class PageActionMetricsRecorderFactory;
+class PageActionMetricsRecorderInterface;
 
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.
   bool should_animate = true;
+
+  // Whether the chip should be announced by a screen reader.
+  // TODO(crbug.com/410844651): Consider making this standard behaviour for all
+  // page actions.
+  bool should_announce_chip = false;
+
+  // Used in tests.
+  auto operator<=>(const SuggestionChipConfig& other) const = default;
 };
+
+std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config);
 
 // `PageActionController` controls the state of all page actions, scoped to a
 // single tab. Each page action has a corresponding `PageActionModel` that will
@@ -47,15 +61,17 @@ struct SuggestionChipConfig {
 class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
-      const PageActionControllerPropertiesMap& controller_properties,
       PinnedToolbarActionsModel* pinned_actions_model,
-      PageActionModelFactory* page_action_model_factory = nullptr);
+      PageActionModelFactory* page_action_model_factory = nullptr,
+      PageActionMetricsRecorderFactory* page_action_metrics_factory = nullptr);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController() override;
 
-  void Initialize(tabs::TabInterface& tab_interface,
-                  const std::vector<actions::ActionId>& action_ids);
+  void Initialize(
+      tabs::TabInterface& tab_interface,
+      const std::vector<actions::ActionId>& action_ids,
+      const PageActionPropertiesProviderInterface& properties_provider);
 
   // Request that the page action be shown or hidden.
   void Show(actions::ActionId action_id);
@@ -76,6 +92,12 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text);
   void ClearOverrideText(actions::ActionId action_id);
+
+  // By default, the text is used as the accessible name. However, features may
+  // need a different text.
+  void OverrideAccessibleName(actions::ActionId action_id,
+                              const std::u16string& override_accessible_name);
+  void ClearOverrideAccessibleName(actions::ActionId action_id);
 
   // By default, the page action will have an image which can be shared in the
   // other places that rely on the same action item. However, features can
@@ -136,12 +158,21 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   std::unique_ptr<PageActionModelInterface> CreateModel(
       actions::ActionId action_id);
-
-  const raw_ref<const PageActionControllerPropertiesMap> controller_properties_;
+  std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
+      tabs::TabInterface& tab_interface,
+      const PageActionProperties& properties,
+      PageActionModelInterface& model);
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
+  const raw_ptr<PageActionMetricsRecorderFactory>
+      page_action_metrics_recorder_factory_ = nullptr;
 
   PageActionModelsMap page_actions_;
+
+  // Metrics recorders associated with ephemeral page actions.
+  // Each recorder handles logging UMA metrics for one specific action id.
+  std::vector<std::unique_ptr<PageActionMetricsRecorderInterface>>
+      metrics_recorders_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

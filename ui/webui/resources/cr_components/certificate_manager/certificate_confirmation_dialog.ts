@@ -45,8 +45,8 @@ export class CertificateConfirmationDialogElement extends
     };
   }
 
-  dialogTitle: string;
-  dialogMessage: string;
+  accessor dialogTitle: string;
+  accessor dialogMessage: string;
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';

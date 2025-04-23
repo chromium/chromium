@@ -55,6 +55,7 @@ class MockMediaSession : public MediaSession {
                int desired_size_px,
                GetMediaImageBitmapCallback callback),
               (override));
+  MOCK_METHOD(void, ReportAutoPictureInPictureInfoChanged, (), (override));
   MOCK_METHOD(void, SeekTo, (base::TimeDelta seek_time), (override));
   MOCK_METHOD(void, ScrubTo, (base::TimeDelta seek_time), (override));
   MOCK_METHOD(void, EnterPictureInPicture, (), (override));

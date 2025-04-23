@@ -49,10 +49,17 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
     /**
      * Helper function to build a ListItem of a divider.
      *
+     * @param isIncognito Whether we're creating an incognito-themed menu.
      * @return ListItem Representing a divider.
      */
-    public static ListItem buildMenuDivider() {
-        return new ListItem(ListMenuItemType.DIVIDER, new PropertyModel());
+    public static ListItem buildMenuDivider(boolean isIncognito) {
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS);
+        if (isIncognito) {
+            builder.with(
+                    ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
+        }
+        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 
     /**

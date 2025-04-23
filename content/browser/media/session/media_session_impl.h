@@ -319,6 +319,10 @@ class MediaSessionImpl : public MediaSession,
       int desired_size_px,
       GetMediaImageBitmapCallback callback) override;
 
+  // Called to report to all players that the auto picture in picture
+  // information changed.
+  void ReportAutoPictureInPictureInfoChanged() override;
+
   const base::UnguessableToken& audio_focus_group_id() const {
     return audio_focus_group_id_;
   }
@@ -343,7 +347,8 @@ class MediaSessionImpl : public MediaSession,
       media_session::mojom::RemotePlaybackMetadataPtr metadata);
 
   // Returns whether the action should be routed to |routed_service_|.
-  bool ShouldRouteAction(media_session::mojom::MediaSessionAction action) const;
+  CONTENT_EXPORT bool ShouldRouteAction(
+      media_session::mojom::MediaSessionAction action) const;
 
   // Returns the source ID which links media sessions on the same browser
   // context together.
@@ -530,12 +535,18 @@ class MediaSessionImpl : public MediaSession,
 
   void ResetDurationUpdateGuard();
 
-  // Called when any of the normal players auto picture in picture information
-  // changes.
-  void OnAutoPictureInPictureInfoChanged();
-
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);
+
+  // Returns true if there exists a single normal "playing" player with picture
+  // in picture available, false otherwise.
+  bool CouldEnterBrowserInitiatedAutomaticPictureInPicture() const;
+
+  // Automatically enter picture-in-picture from a non-user source (e.g. in
+  // reaction to content being hidden), if the EnterAutoPictureInPicture action
+  // is registered by the browser (the user did not provide an
+  // `enterpictureinpicture` action handler).
+  void MaybeEnterBrowserInitiatedAutomaticPictureInPicture() const;
 
   // Duration update allowance is inscreasing by 1 every 20 seconds, and
   // capped at 3. Every duration updates will consume 1 allowance, and

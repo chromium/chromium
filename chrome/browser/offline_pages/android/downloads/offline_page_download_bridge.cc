@@ -315,6 +315,12 @@ void OnOfflinePageAcquireFileAccessPermissionDone(
     return;
   }
 
+  // Off the record save page are handled separately.
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    web_contents->OnSavePage();
+    return;
+  }
+
   // Otherwise, save the HTML page as archive.
   GURL original_url =
       offline_pages::OfflinePageUtils::GetOriginalURLFromWebContents(

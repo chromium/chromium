@@ -86,12 +86,14 @@ class ExpectationHandler::ResponseBuilder {
   // parameter specifies the MIME type (like "text/html") and content contains
   // the response body. Returns a reference to this ResponseBuilder to allow
   // method chaining.
-  ResponseBuilder& RespondWith(std::string_view content_type,
-                               std::string_view content);
+  ResponseBuilder& RespondWith(
+      std::string_view content_type = std::string_view("text/html"),
+      std::string_view content = "");
 
-  ResponseBuilder& RespondWith(const HttpStatusCode status_code,
-                               std::string_view content_type,
-                               std::string_view content);
+  ResponseBuilder& RespondWith(
+      const HttpStatusCode status_code,
+      std::string_view content_type = std::string_view("text/html"),
+      std::string_view content = "");
 
   // Associates a TestFuture with this response.
   // When a request for this URL is received, the TestFuture will be

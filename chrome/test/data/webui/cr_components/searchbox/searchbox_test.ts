@@ -2449,6 +2449,63 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   //============================================================================
+  // Test custom action icons
+  //============================================================================
+
+  test('Test action with custom icon', async () => {
+    realbox.$.input.value = 'Open extension email';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    const matches = [
+      createSearchMatch({
+        actions: [{
+          a11yLabel: stringToMojoString16(''),
+          hint: stringToMojoString16('Open Email'),
+          suggestionContents: stringToMojoString16(''),
+          iconUrl: 'data:image/random',
+        }],
+      }),
+      createSearchMatch({
+        actions: [{
+          a11yLabel: stringToMojoString16(''),
+          hint: stringToMojoString16('Open Email'),
+          suggestionContents: stringToMojoString16(''),
+          iconUrl: 'icon.png',
+        }],
+      }),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    verifyMatch(matches[0]!, matchEls[0]!);
+    verifyMatch(matches[1]!, matchEls[1]!);
+
+    // Match action that has a custom icon associated with it.
+    const actionElCustomIcon =
+        $$($$(matchEls[0]!, 'cr-searchbox-action')!, '.contents')!;
+    const actionIconCustom =
+        actionElCustomIcon.querySelector<HTMLElement>('#action-icon')!;
+    // Match action that has a standard vector icon associated with it.
+    const actionElStandardIcon =
+        $$($$(matchEls[1]!, 'cr-searchbox-action')!, '.contents')!;
+    const actionIconStandard =
+        actionElStandardIcon.querySelector<HTMLElement>('#action-icon')!;
+
+    // Custom icons should use `background-image` while standard vector icons
+    // should use `-webkit-mask-image`.
+    assertStyle(
+        actionIconCustom, 'background-image', 'url("data:image/random")');
+    assertStyle(
+        actionIconStandard, '-webkit-mask-image',
+        'url("chrome://new-tab-page/icon.png")');
+  });
+
+  //============================================================================
   // Test pedals
   //============================================================================
 

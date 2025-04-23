@@ -16,9 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
-#include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
-#include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
@@ -112,10 +109,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
-      chrome_app_kiosk_service_ash_(
-          std::make_unique<ChromeAppKioskServiceAsh>()),
-      clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
-      desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
@@ -202,24 +195,9 @@ void CrosapiAsh::BindChapsService(
   chaps_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindChromeAppKioskService(
-    mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
-  chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindClipboardHistory(
-    mojo::PendingReceiver<mojom::ClipboardHistory> receiver) {
-  clipboard_history_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindCrosDisplayConfigController(
     mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
   ash::BindCrosDisplayConfigController(std::move(receiver));
-}
-
-void CrosapiAsh::BindDeskProfileObserver(
-    mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) {
-  desk_profiles_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeviceAttributes(

@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -350,14 +351,13 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
     mojom::blink::RequestContextType request_context,
     bool allowed,
     std::unique_ptr<SourceLocation> source_location) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
-      "insecure %s '%s'. %s",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      RequestContextName(request_context), url.ElidedString().Utf8().c_str(),
-      allowed ? "This content should also be served over HTTPS."
-              : "This request has been blocked; the content must be served "
-                "over HTTPS.");
+  String message = WTF::StrCat(
+      {"Mixed Content: The page at '", main_resource_url.ElidedString(),
+       "' was loaded over HTTPS, but requested an insecure ",
+       RequestContextName(request_context), " '", url.ElidedString(), "'. ",
+       allowed ? "This content should also be served over HTTPS."
+               : "This request has been blocked; the content must be served "
+                 "over HTTPS."});
   mojom::ConsoleMessageLevel message_level =
       allowed ? mojom::ConsoleMessageLevel::kWarning
               : mojom::ConsoleMessageLevel::kError;
@@ -714,15 +714,16 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutWebSocket(
     const KURL& main_resource_url,
     const KURL& url,
     bool allowed) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but attempted to "
-      "connect to the insecure WebSocket endpoint '%s'. %s",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      url.ElidedString().Utf8().c_str(),
-      allowed ? "This endpoint should be available via WSS. Insecure access is "
-                "deprecated."
-              : "This request has been blocked; this endpoint must be "
-                "available over WSS.");
+  String message = WTF::StrCat(
+      {"Mixed Content: The page at '", main_resource_url.ElidedString(),
+       "' was loaded over HTTPS, but attempted to connect to the insecure "
+       "WebSocket endpoint '",
+       url.ElidedString(), "'. ",
+       allowed
+           ? "This endpoint should be available via WSS. Insecure access is "
+             "deprecated."
+           : "This request has been blocked; this endpoint must be "
+             "available over WSS."});
   mojom::ConsoleMessageLevel message_level =
       allowed ? mojom::ConsoleMessageLevel::kWarning
               : mojom::ConsoleMessageLevel::kError;

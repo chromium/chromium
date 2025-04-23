@@ -48,7 +48,8 @@ void ThrottleDecider::ProcessRenderPass(
           render_pass_quad->resource_id == viz::kInvalidResourceId) {
         gfx::RectF blur_bounds(child_rp.output_rect);
         if (child_rp.backdrop_filter_bounds)
-          blur_bounds.Intersect(child_rp.backdrop_filter_bounds->rect());
+          blur_bounds.Intersect(
+              gfx::SkRectToRectF(child_rp.backdrop_filter_bounds->getBounds()));
         blur_bounds = quad->shared_quad_state->quad_to_target_transform.MapRect(
             blur_bounds);
         if (quad->shared_quad_state->clip_rect) {

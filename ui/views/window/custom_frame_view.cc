@@ -295,7 +295,7 @@ int CustomFrameView::IconSize() const {
 #if BUILDFLAG(IS_WIN)
   // This metric scales up if either the titlebar height or the titlebar font
   // size are increased.
-  return display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON);
+  return display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYSMICON);
 #else
   // The icon never shrinks below 16 px on a side.
   constexpr int kIconMinimumSize = 16;

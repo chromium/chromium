@@ -52,7 +52,6 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace skgpu::graphite {
-class Context;
 class Recorder;
 struct InsertRecordingInfo;
 }  // namespace skgpu::graphite
@@ -68,6 +67,7 @@ class FeatureInfo;
 }  // namespace gles2
 
 class SharedContextState;
+class GraphiteSharedContext;
 
 // Returns default GrContextOptions.
 GPU_GLES2_EXPORT GrContextOptions GetDefaultGrContextOptions();
@@ -82,7 +82,7 @@ GetDefaultGraphiteContextOptions(const GpuDriverBugWorkarounds& workarounds);
 // "skia/gpu_resources/gpu_main_graphite_image_provider{&recorder-clientImageProvider()}".
 // Designed for background dumps.
 void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
+    const gpu::GraphiteSharedContext* context,
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd);
 

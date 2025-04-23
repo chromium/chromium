@@ -4,7 +4,7 @@
 
 // <if expr="enable_pdf_ink2 or enable_ink">
 export enum AnnotationMode {
-  NONE = 'none',
+  OFF = 'off',
   DRAW = 'draw',
   // <if expr="enable_pdf_ink2">
   TEXT = 'text',
@@ -35,10 +35,10 @@ export interface AnnotationBrush {
 }
 
 export enum TextAlignment {
-  LEFT = 'LEFT',
-  CENTER = 'CENTER',
-  RIGHT = 'RIGHT',
-  JUSTIFY = 'JUSTIFY',
+  LEFT = 'left',
+  CENTER = 'center',
+  RIGHT = 'right',
+  JUSTIFY = 'justify',
 }
 
 export enum TextStyle {
@@ -58,6 +58,13 @@ export interface AnnotationText {
   color: Color;
   alignment: TextAlignment;
   styles: TextStyles;
+}
+
+export interface TextBoxRect {
+  height: number;
+  locationX: number;
+  locationY: number;
+  width: number;
 }
 // </if>
 

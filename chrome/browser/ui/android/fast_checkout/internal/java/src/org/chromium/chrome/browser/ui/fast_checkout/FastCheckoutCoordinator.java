@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
@@ -20,12 +22,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
+@NullMarked
 class FastCheckoutCoordinator implements FastCheckoutComponent {
     private FastCheckoutMediator mMediator = new FastCheckoutMediator();
     private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
     private FastCheckoutSheetContent mContent;
     private BottomSheetController mBottomSheetController;
 
+    @Initializer
     @Override
     public void initialize(
             Context context,

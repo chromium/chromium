@@ -5,8 +5,11 @@
 #include "components/sync/base/data_type_histogram.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/sync/base/data_type.h"
 
 namespace syncer {
@@ -16,8 +19,15 @@ namespace {
 const char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
 const char kDataTypeCountHistogramPrefix[] = "Sync.DataTypeCount.";
 const char kDataTypeUpdateDropHistogramPrefix[] = "Sync.DataTypeUpdateDrop.";
-const char kDataTypeNumUnsyncedEntitiesOnModelReady[] =
-    "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.";
+const char kDataTypeNumUnsyncedEntities[] = "Sync.DataTypeNumUnsyncedEntities";
+
+// Suffixes for `kDataTypeNumUnsyncedEntities`:
+constexpr char kDataTypeNumUnsyncedEntitiesOnModelReady[] = "OnModelReady";
+constexpr char
+    kDataTypeNumUnsyncedEntitiesOnSignoutConfirmationFromPendingState[] =
+        "OnSignoutConfirmationFromPendingState";
+constexpr char kDataTypeNumUnsyncedEntitiesOnSignoutConfirmation[] =
+    "OnSignoutConfirmation";
 
 const char kEntitySizeWithMetadataHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
@@ -44,6 +54,20 @@ std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
       return "FailedToDecrypt";
     case UpdateDropReason::kDroppedByBridge:
       return "DroppedByBridge";
+  }
+}
+
+// Returns the suffix  for the histograms recording the number of unsynced
+// entities.
+const char* SyncGetNumUnsyncedEntitiesHistogramSuffix(
+    UnsyncedDataRecordingEvent event) {
+  switch (event) {
+    case UnsyncedDataRecordingEvent::kOnModelReady:
+      return kDataTypeNumUnsyncedEntitiesOnModelReady;
+    case UnsyncedDataRecordingEvent::kOnSignoutConfirmationFromPendingState:
+      return kDataTypeNumUnsyncedEntitiesOnSignoutConfirmationFromPendingState;
+    case UnsyncedDataRecordingEvent::kOnSignoutConfirmation:
+      return kDataTypeNumUnsyncedEntitiesOnSignoutConfirmation;
   }
 }
 
@@ -89,13 +113,16 @@ void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
   }
 }
 
-void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-    DataType data_type,
-    size_t num_unsynced_entities) {
-  const std::string full_histogram_name =
-      std::string(kDataTypeNumUnsyncedEntitiesOnModelReady) +
-      DataTypeToHistogramSuffix(data_type);
-  base::UmaHistogramCounts1000(full_histogram_name, num_unsynced_entities);
+void SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+    UnsyncedDataRecordingEvent event,
+    absl::flat_hash_map<DataType, size_t> unsynced_data) {
+  for (const auto& [type, count] : unsynced_data) {
+    base::UmaHistogramCounts1000(
+        base::StrCat({kDataTypeNumUnsyncedEntities,
+                      SyncGetNumUnsyncedEntitiesHistogramSuffix(event), ".",
+                      DataTypeToHistogramSuffix(type)}),
+        count);
+  }
 }
 
 void RecordSyncToSigninMigrationReadingListStep(ReadingListMigrationStep step) {

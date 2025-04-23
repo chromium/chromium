@@ -668,6 +668,10 @@ class CORE_EXPORT InlineCursor {
   void DecrementFragmentIndex();
   void IncrementFragmentIndex();
 
+  wtf_size_t ToSpanIndex(const ItemsSpan::iterator& iter) const {
+    return base::checked_cast<wtf_size_t>(std::distance(items_.begin(), iter));
+  }
+
   InlineCursorPosition current_;
 
   ItemsSpan items_;

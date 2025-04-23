@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -69,13 +70,17 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
       ReadUnsanitizedCustomFormatCallback callback) override;
   void WriteUnsanitizedCustomFormat(const std::u16string& format,
                                     mojo_base::BigBuffer data) override;
+  void RegisterClipboardListener(
+      mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
  private:
   std::vector<std::u16string> ReadStandardFormatNames();
+  void OnClipboardDataChanged();
 
   mojo::ReceiverSet<blink::mojom::ClipboardHost> receivers_;
+  mojo::Remote<blink::mojom::ClipboardListener> clipboard_listener_;
   ui::ClipboardSequenceNumberToken sequence_number_;
   std::u16string plain_text_;
   std::u16string html_text_;

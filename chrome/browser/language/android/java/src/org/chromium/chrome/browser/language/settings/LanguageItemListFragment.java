@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.app.Activity;
@@ -24,6 +25,9 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -44,6 +48,7 @@ import java.util.Collection;
  * menu and added with the `Add Language` button. Subclasses will override makeFragmentListDelegate
  * to populate the LanguageItem list and provide callbacks for adding and removing items.
  */
+@NullMarked
 public abstract class LanguageItemListFragment extends Fragment
         implements EmbeddableSettingsPage, ProfileDependentSetting {
     // Request code for returning from Select Language Fragment
@@ -97,13 +102,13 @@ public abstract class LanguageItemListFragment extends Fragment
         }
     }
 
-    private Profile mProfile;
+    private @MonotonicNonNull Profile mProfile;
     private ListAdapter mAdapter;
     private ListDelegate mListDelegate;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListDelegate = makeFragmentListDelegate();
         mPageTitle.set(getLanguageListTitle(getContext()));
@@ -117,7 +122,9 @@ public abstract class LanguageItemListFragment extends Fragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
         View inflatedView =
                 inflater.inflate(R.layout.language_list_with_add_button, container, false);
@@ -129,7 +136,7 @@ public abstract class LanguageItemListFragment extends Fragment
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        mAdapter = new ListAdapter(activity, mProfile);
+        mAdapter = new ListAdapter(activity, assumeNonNull(mProfile));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.onDataUpdated();
         ScrollView scrollView = inflatedView.findViewById(R.id.scroll_view);
@@ -163,9 +170,10 @@ public abstract class LanguageItemListFragment extends Fragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
+            assumeNonNull(data);
             String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
             onLanguageAdded(code);
             mAdapter.onDataUpdated();
@@ -180,6 +188,7 @@ public abstract class LanguageItemListFragment extends Fragment
 
     /** Return the {@link Profile} associated with this language item. */
     public Profile getProfile() {
+        assert mProfile != null : "Attempting to use the profile before initialization.";
         return mProfile;
     }
 
@@ -219,7 +228,7 @@ public abstract class LanguageItemListFragment extends Fragment
     protected abstract void recordRemoveAction();
 
     /** Callback for when a language is added to the LanguageItemList. */
-    protected abstract void onLanguageAdded(String code);
+    protected abstract void onLanguageAdded(@Nullable String code);
 
     /** Callback for when a language is removed to the LanguageItemList. */
     protected abstract void onLanguageRemoved(String code);

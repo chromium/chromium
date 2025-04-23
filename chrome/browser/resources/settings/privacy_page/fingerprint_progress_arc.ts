@@ -155,10 +155,10 @@ export class FingerprintProgressArcElement extends PolymerElement {
     };
   }
 
-  circleRadius: number;
-  autoplay: boolean;
-  private scale_: number;
-  private isComplete_: boolean;
+  declare circleRadius: number;
+  declare autoplay: boolean;
+  declare private scale_: number;
+  declare private isComplete_: boolean;
   private isDarkModeActive_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 

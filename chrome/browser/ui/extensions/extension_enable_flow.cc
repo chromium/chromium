@@ -53,8 +53,6 @@ void ExtensionEnableFlow::Start() {
 }
 
 void ExtensionEnableFlow::Run() {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
   const Extension* extension =
@@ -67,7 +65,8 @@ void ExtensionEnableFlow::Run() {
       return;
     }
     // If the app was terminated, reload it first.
-    service->ReloadExtension(extension_id_);
+    extensions::ExtensionRegistrar::Get(profile_)->ReloadExtension(
+        extension_id_);
 
     // ReloadExtension reallocates the Extension object.
     extension = registry->disabled_extensions().GetByID(extension_id_);

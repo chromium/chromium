@@ -10,9 +10,11 @@ import android.view.View;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -49,6 +51,12 @@ public class ListSectionDividerViewBinder {
                         rightPaddingPx,
                         view.getPaddingBottom());
             }
+        } else if (propertyKey == ListSectionDividerProperties.COLOR_ID) {
+            view.findViewById(R.id.divider_view)
+                    .setBackgroundColor(
+                            ContextCompat.getColor(
+                                    view.getContext(),
+                                    model.get(ListSectionDividerProperties.COLOR_ID)));
         }
     }
 }

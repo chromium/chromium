@@ -419,6 +419,12 @@ public class ContentView extends FrameLayout
     }
 
     @Override
+    public boolean onCapturedPointerEvent(MotionEvent event) {
+        EventForwarder forwarder = getEventForwarder();
+        return forwarder != null ? forwarder.onCapturedPointerEvent(event) : false;
+    }
+
+    @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         PointerIcon icon = null;
         if (mStylusWritingIconSupplier != null) {

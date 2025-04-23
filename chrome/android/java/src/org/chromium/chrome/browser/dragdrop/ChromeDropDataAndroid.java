@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.content.Context;
+
 import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /** Chrome-specific drop data. */
@@ -22,7 +24,7 @@ public abstract class ChromeDropDataAndroid extends DropDataAndroid {
     public abstract boolean isIncognito();
 
     /** Build clip data text with tab info. */
-    public abstract String buildTabClipDataText();
+    public abstract String buildTabClipDataText(Context context);
 
     /** Get supported MimeTypes for the associated browser content. */
     public abstract String[] getSupportedMimeTypes();

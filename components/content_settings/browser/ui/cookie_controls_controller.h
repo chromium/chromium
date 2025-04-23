@@ -17,7 +17,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/ip_protection/common/ip_protection_status.h"
@@ -94,15 +93,13 @@ class CookieControlsController final
            bool protections_on,
            CookieControlsEnforcement enforcement,
            CookieBlocking3pcdStatus blocking_status,
-           base::Time expiration,
-           std::vector<TrackingProtectionFeature> features);
+           base::Time expiration);
     ~Status();
     bool controls_visible;
     bool protections_on;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
-    std::vector<TrackingProtectionFeature> features;
   };
 
   // The observed WebContents changes during the lifetime of the
@@ -177,11 +174,6 @@ class CookieControlsController final
 
   Status GetStatus(content::WebContents* web_contents);
 
-  std::vector<TrackingProtectionFeature> CreateTrackingProtectionFeatureList(
-      CookieControlsEnforcement enforcement,
-      bool cookies_allowed,
-      bool act_exception);
-
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,
       const GURL url,
@@ -227,9 +219,9 @@ class CookieControlsController final
 
   bool ShouldHighlightUserBypass(bool protections_on);
   bool ShouldUserBypassIconBeVisible(
-      std::vector<TrackingProtectionFeature> features,
       bool protections_on,
       bool controls_visible);
+  bool SiteDataAccessAttempted();
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;

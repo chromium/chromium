@@ -48,13 +48,13 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     const std::optional<GURL>& manifest_id,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
-                    const GURL&,
+                    const webapps::AppId&,
                     webapps::InstallResultCode>(
           "WebInstallFromUrlCommand",
           SharedWebContentsLockDescription(),
           std::move(installed_callback),
           /*args_for_shutdown=*/
-          std::make_tuple(GURL(),
+          std::make_tuple(webapps::AppId(),
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(profile),
@@ -105,7 +105,7 @@ void WebInstallFromUrlCommand::Abort(webapps::InstallResultCode code) {
   MeasureUserInstalledAppHistogram(code);
   RecordInstallMetrics(InstallCommand::kWebAppInstallFromUrl,
                        WebAppType::kCraftedApp, code, kInstallSource);
-  CompleteAndSelfDestruct(CommandResult::kFailure, GURL(), code);
+  CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code);
 }
 
 void WebInstallFromUrlCommand::OnUrlLoadedFetchManifest(
@@ -167,13 +167,19 @@ void WebInstallFromUrlCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("start_url", web_app_info_->start_url().spec());
   GetMutableDebugValue().Set("name", web_app_info_->title);
 
-  // If the manifest_id parameter was provided, ensure it matches the resolved
-  // id of the manifest we just fetched.
+  // If navigator.install was invoked with only an `install_url` (1 parameter
+  // version), the manifest must have a developer-specified, or "custom", id.
+  if (!manifest_id_.has_value() && !opt_manifest->has_custom_id) {
+    Abort(webapps::InstallResultCode::kNoCustomManifestId);
+    return;
+  }
+
+  // If navigator.install was invoked with both `install_url` and `manifest_id`
+  // (2 param version), the given `manifest_id` must match the computed id of
+  // the manifest we just fetched.
   if (manifest_id_.has_value() &&
-      web_app_info_->manifest_id() != manifest_id_.value()) {
-    // TODO(crbug.com/333795265): Add custom WebInstallFromUrlCommand error
-    // types for additional granularity.
-    Abort(webapps::InstallResultCode::kNotInstallable);
+      manifest_id_ != web_app_info_->manifest_id()) {
+    Abort(webapps::InstallResultCode::kManifestIdMismatch);
     return;
   }
 
@@ -298,7 +304,7 @@ void WebInstallFromUrlCommand::OnAppLaunched(base::Value launch_debug_value) {
       shared_web_contents_with_app_lock_->registrar().GetComputedManifestId(
           app_id_);
   CHECK(opt_manifest_->id == manifest_id);
-  CompleteAndSelfDestruct(CommandResult::kSuccess, manifest_id,
+  CompleteAndSelfDestruct(CommandResult::kSuccess, app_id_,
                           install_result_code_);
 }
 

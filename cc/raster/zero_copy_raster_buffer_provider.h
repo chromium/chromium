@@ -67,7 +67,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
       const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-      const viz::SharedImageFormat& format,
       bool is_software);
 
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
@@ -84,8 +83,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override;
-  viz::SharedImageFormat GetFormat() const override;
-  bool IsResourcePremultiplied() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;
@@ -104,8 +101,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
 
   bool is_software_ = false;
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
-
-  const viz::SharedImageFormat tile_format_;
 };
 
 }  // namespace cc

@@ -1953,7 +1953,7 @@ INSTANTIATE_TEST_SUITE_P(
     VBRSeeks_HasTOC,
     Mp3FastSeekIntegrationTest,
     ::testing::Values(Mp3FastSeekParams("bear-audio-10s-VBR-has-TOC.mp3",
-                                        "-0.08,-0.53,0.75,0.89,2.44,0.73,")));
+                                        "0.65,0.22,1.01,0.57,0.84,0.83,")));
 
 INSTANTIATE_TEST_SUITE_P(
     VBRSeeks_NoTOC,

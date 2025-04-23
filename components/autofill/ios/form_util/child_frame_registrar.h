@@ -93,7 +93,6 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar>,
  private:
   explicit ChildFrameRegistrar(web::WebState* web_state);
   friend class web::WebStateUserData<ChildFrameRegistrar>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Deletes all entries in `lookup_map_` that contain `frame_id` as local frame
   // token.

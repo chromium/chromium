@@ -5,11 +5,11 @@
 GEN_INCLUDE(['../dictation_test_base.js']);
 
 /** Dictation tests for speech parsing. */
-DictationParseTest = class extends DictationE2ETestBase {};
+DictationMV2ParseTest = class extends DictationE2ETestBase {};
 
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
-AX_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
+AX_TEST_F('DictationMV2ParseTest', 'InputTextStrategy', async function() {
   /** @type {!Array<!ParseTestCase>} */
   const testCases = [
     new ParseTestCase('Hello world', {name: 'INPUT_TEXT_VIEW'}),
@@ -24,7 +24,7 @@ AX_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
 
 // Tests that the SimpleParseStrategy returns the correct type of Macro given
 // speech input.
-AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
+AX_TEST_F('DictationMV2ParseTest', 'SimpleParseStrategy', async function() {
   /** @type {!Array<!ParseTestCase>} */
   const testCases = [
     new ParseTestCase('Hello world', {name: 'INPUT_TEXT_VIEW'}),
@@ -75,22 +75,23 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   }
 });
 
-AX_TEST_F('DictationParseTest', 'NoSmartMacrosForRTLLocales', async function() {
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-  await this.getPref(Dictation.DICTATION_LOCALE_PREF);
+AX_TEST_F(
+    'DictationMV2ParseTest', 'NoSmartMacrosForRTLLocales', async function() {
+      await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+      await this.getPref(Dictation.DICTATION_LOCALE_PREF);
 
-  // Add is smart here and below.
-  await this.runSimpleParseTestCase(new ParseTestCase(
-      'insert hello world before goodnight world',
-      {name: 'SMART_INSERT_BEFORE', smart: true}));
+      // Add is smart here and below.
+      await this.runSimpleParseTestCase(new ParseTestCase(
+          'insert hello world before goodnight world',
+          {name: 'SMART_INSERT_BEFORE', smart: true}));
 
-  // Change Dictation locale to a right-to-left locale.
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ar-LB');
-  await this.getPref(Dictation.DICTATION_LOCALE_PREF);
+      // Change Dictation locale to a right-to-left locale.
+      await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ar-LB');
+      await this.getPref(Dictation.DICTATION_LOCALE_PREF);
 
-  // Smart macros are not supported in right-to-left locales. In these cases,
-  // we fall back to INPUT_TEXT_VIEW macros.
-  await this.runSimpleParseTestCase(new ParseTestCase(
-      'insert hello world before goodnight world',
-      {name: 'INPUT_TEXT_VIEW', smart: false}));
-});
+      // Smart macros are not supported in right-to-left locales. In these
+      // cases, we fall back to INPUT_TEXT_VIEW macros.
+      await this.runSimpleParseTestCase(new ParseTestCase(
+          'insert hello world before goodnight world',
+          {name: 'INPUT_TEXT_VIEW', smart: false}));
+    });

@@ -117,7 +117,6 @@ public class FirstRunFlowSequencerTest {
         when(IdentityServicesProvider.get().getIdentityManager(profile))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
 
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);

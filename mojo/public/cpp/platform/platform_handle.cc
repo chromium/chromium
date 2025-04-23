@@ -42,26 +42,24 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 base::win::ScopedHandle CloneHandle(const base::win::ScopedHandle& handle) {
-  DCHECK(handle.IsValid());
+  DCHECK(handle.is_valid());
 
-  HANDLE dupe;
-  BOOL result = FALSE;
-
-  // INVALID_HANDLE_VALUE and the process pseudo-handle are both represented as
-  // the value -1. This means that if a caller does not correctly check the
-  // handle returned by file and pipe creation APIs, then it would pass an
-  // INVALID_HANDLE_VALUE to the code below, which would result in the
-  // destination process getting full control over the calling process (see
-  // http://crbug.com/243339 for an example of this vulnerability). So, we just
-  // explicitly check for INVALID_HANDLE_VALUE, since there's no valid scenario
-  // in which it would be passed as the source handle here.
-  if (handle.Get() != INVALID_HANDLE_VALUE) {
-    result = ::DuplicateHandle(::GetCurrentProcess(), handle.Get(),
-                               ::GetCurrentProcess(), &dupe, 0, FALSE,
-                               DUPLICATE_SAME_ACCESS);
-  }
-  if (!result)
+  // If a caller does not correctly check the handle returned by file and pipe
+  // creation APIs, or directly provides a pseudo handle value like
+  // ::GetCurrentThread(), then it would result in the destination process
+  // getting full control over the calling process (see http://crbug.com/243339
+  // for an example of this vulnerability). HandleTraits for Windows rejects
+  // pseudo handle values, but check again here for defense-in-depth.
+  if (!handle.is_valid()) {
     return base::win::ScopedHandle();
+  }
+
+  HANDLE dupe = nullptr;
+  if (!::DuplicateHandle(::GetCurrentProcess(), handle.Get(),
+                         ::GetCurrentProcess(), &dupe, 0, FALSE,
+                         DUPLICATE_SAME_ACCESS)) {
+    return base::win::ScopedHandle();
+  }
   DCHECK_NE(dupe, INVALID_HANDLE_VALUE);
   return base::win::ScopedHandle(dupe);
 }

@@ -129,7 +129,7 @@ BASE_FEATURE(kWaylandPerSurfaceScale,
 // Controls whether Wayland text-input-v3 protocol support is enabled.
 BASE_FEATURE(kWaylandTextInputV3,
              "WaylandTextInputV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether support for "Large Text" accessibility setting via UI
 // scaling is enabled.

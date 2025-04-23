@@ -40,7 +40,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_result.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -189,12 +189,13 @@ content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     const url::Origin& origin,
     const std::optional<url::Origin>& requesting_origin) {
   auto* controller = GetProfile()->GetPermissionController();
-
+  auto descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(permission);
   if (requesting_origin.has_value()) {
     return controller->GetPermissionResultForOriginWithoutContext(
-        permission, *requesting_origin, origin);
+        descriptor, *requesting_origin, origin);
   } else {
-    return controller->GetPermissionResultForOriginWithoutContext(permission,
+    return controller->GetPermissionResultForOriginWithoutContext(descriptor,
                                                                   origin);
   }
 }
@@ -271,6 +272,11 @@ void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
                                                  base::UTF16ToUTF8(rws_owner));
+}
+
+void ChromePageInfoDelegate::ShowSyncSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {

@@ -72,8 +72,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
 
   bool initialized_ = false;
 
-  raw_ptr<dbus::ExportedObject, AcrossTasksDanglingUntriaged> exported_object_ =
-      nullptr;
+  raw_ptr<dbus::ExportedObject> exported_object_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

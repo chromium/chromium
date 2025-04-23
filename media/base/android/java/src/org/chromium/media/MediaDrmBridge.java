@@ -743,12 +743,6 @@ public class MediaDrmBridge {
         // Close all open sessions.
         for (SessionId sessionId : mSessionManager.getAllSessionIds()) {
             Log.i(TAG, "Force closing session %s", sessionId);
-            try {
-                // Some implementations don't have removeKeys, crbug/475632
-                mMediaDrm.removeKeys(assumeNonNull(sessionId.drmId()));
-            } catch (Exception e) {
-                Log.e(TAG, "removeKeys failed: ", e);
-            }
 
             closeSessionNoException(sessionId);
             onSessionClosed(sessionId);
@@ -987,12 +981,6 @@ public class MediaDrmBridge {
         }
 
         Log.i(TAG, "closeSession(%s)", sessionId);
-        try {
-            // Some implementations don't have removeKeys, crbug/475632
-            mMediaDrm.removeKeys(assumeNonNull(sessionId.drmId()));
-        } catch (Exception e) {
-            Log.e(TAG, "removeKeys failed: ", e);
-        }
 
         closeSessionNoException(sessionId);
         mSessionManager.remove(sessionId);

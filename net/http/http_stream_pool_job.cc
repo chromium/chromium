@@ -23,9 +23,11 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/spdy/spdy_http_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -176,6 +178,48 @@ void HttpStreamPool::Job::Resume() {
         return dict;
       });
 
+  // There might be existing QUIC/SPDY sessions after resuming `this`.
+
+  QuicChromiumClientSession* quic_session =
+      group_->pool()
+          ->http_network_session()
+          ->quic_session_pool()
+          ->FindExistingSession(group_->quic_session_alias_key().session_key(),
+                                group_->quic_session_alias_key().destination());
+  if (quic_session) {
+    if (IsPreconnect()) {
+      CallOnPreconnectCompleteLater(OK);
+    } else {
+      auto http_stream = std::make_unique<QuicHttpStream>(
+          quic_session->CreateHandle(
+              group_->quic_session_alias_key().destination()),
+          quic_session->GetDnsAliasesForSessionKey(
+              group_->quic_session_alias_key().session_key()));
+      delegate_->OnStreamReady(this, std::move(http_stream),
+                               NextProto::kProtoQUIC);
+    }
+    return;
+  }
+
+  base::WeakPtr spdy_session = group_->pool()->FindAvailableSpdySession(
+      group_->stream_key(), group_->spdy_session_key(),
+      delegate_->enable_ip_based_pooling(), request_net_log_);
+  if (spdy_session) {
+    if (IsPreconnect()) {
+      CallOnPreconnectCompleteLater(OK);
+    } else {
+      auto http_stream = std::make_unique<SpdyHttpStream>(
+          spdy_session, request_net_log_.source(),
+          group_->http_network_session()
+              ->spdy_session_pool()
+              ->GetDnsAliasesForSessionKey(group_->spdy_session_key()));
+      delegate_->OnStreamReady(this, std::move(http_stream),
+                               NextProto::kProtoHTTP2);
+    }
+    return;
+  }
+
+  group_->EnsureAttemptManager();
   StartInternal();
 }
 
@@ -262,6 +306,12 @@ void HttpStreamPool::Job::OnPreconnectComplete(int status) {
   delegate_->OnPreconnectComplete(this, status);
 }
 
+void HttpStreamPool::Job::CallOnPreconnectCompleteLater(int status) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
+                                weak_ptr_factory_.GetWeakPtr(), status));
+}
+
 base::TimeDelta HttpStreamPool::Job::CreateToResumeTime() const {
   if (resume_time_.is_null()) {
     return base::TimeDelta();
@@ -281,7 +331,7 @@ void HttpStreamPool::Job::StartInternal() {
   if (IsPreconnect()) {
     attempt_manager()->Preconnect(this);
   } else {
-    attempt_manager()->StartJob(this, request_net_log_);
+    attempt_manager()->StartJob(this);
   }
 }
 

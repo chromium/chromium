@@ -34,6 +34,7 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/service_proxy.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
@@ -634,14 +635,10 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
       segmentation_platform::kPriceChangeFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1));
   input_context->metadata_args.emplace(
-      segmentation_platform::kTabResumptionForAndroidHomeFreshness,
-      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
-  input_context->metadata_args.emplace(
       segmentation_platform::kSafetyHubFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1));
 
-  std::vector<std::string> result = {kPriceChange, kSingleTab,
-                                     kTabResumptionForAndroidHome, kSafetyHub};
+  std::vector<std::string> result = {kPriceChange, kSingleTab, kSafetyHub};
   ExpectGetClassificationResult(
       segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
       input_context,
@@ -661,12 +658,20 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   // Update this test when adding new cards with inputs.
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_EQ(1u, registry->get_all_cards_by_priority().size());
+#else
   EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
 
   auto input_context = base::MakeRefCounted<InputContext>();
+#if BUILDFLAG(IS_ANDROID)
+  input_context->metadata_args.emplace(
+      "auxiliary_search_available", processing::ProcessedValue::FromFloat(0));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // No cards are added, the model fetches no results and fails.
   ExpectGetAnnotatedNumericResult(

@@ -72,8 +72,9 @@ CanvasRenderingContextHost::CreateTransparentImage(
   if (!IsValidImageSize(size))
     return nullptr;
   SkImageInfo info = SkImageInfo::Make(
-      gfx::SizeToSkISize(size), GetRenderingContextSkColorType(),
-      kPremul_SkAlphaType, GetRenderingContextSkColorSpace());
+      gfx::SizeToSkISize(size),
+      viz::ToClosestSkColorType(GetRenderingContextFormat()),
+      kPremul_SkAlphaType, GetRenderingContextColorSpace().ToSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
   if (!surface)
@@ -119,14 +120,12 @@ bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
 }
 
 CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(
-    RasterModeHint hint) {
-  return GetOrCreateCanvasResourceProviderImpl(hint);
+CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
+  return GetOrCreateCanvasResourceProviderImpl();
 }
 
 CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
-    RasterModeHint hint) {
+CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl() {
   if (!ResourceProvider() && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize(Size())) {
       if (IsWebGPU()) {
@@ -134,7 +133,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
       } else if (IsWebGL()) {
         CreateCanvasResourceProviderWebGL();
       } else {
-        CreateCanvasResourceProvider2D(hint);
+        CreateCanvasResourceProvider2D();
       }
     }
     if (!ResourceProvider())
@@ -249,8 +248,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   }
 }
 
-void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
-    RasterModeHint hint) {
+void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()
@@ -261,8 +259,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const viz::SharedImageFormat format = GetRenderingContextFormat();
   const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
-  const bool use_gpu =
-      hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
+  const bool use_gpu = ShouldTryToUseGpuRaster() && ShouldAccelerate2dContext();
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kCallClear;
   if (use_gpu && LowLatencyEnabled()) {
@@ -364,19 +361,10 @@ SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
                             : kPremul_SkAlphaType;
 }
 
-SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
-  return viz::ToClosestSkColorType(GetRenderingContextFormat());
-}
-
 viz::SharedImageFormat CanvasRenderingContextHost::GetRenderingContextFormat()
     const {
   return RenderingContext() ? RenderingContext()->GetSharedImageFormat()
                             : GetN32FormatForCanvas();
-}
-
-sk_sp<SkColorSpace>
-CanvasRenderingContextHost::GetRenderingContextSkColorSpace() const {
-  return GetRenderingContextColorSpace().ToSkColorSpace();
 }
 
 gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()

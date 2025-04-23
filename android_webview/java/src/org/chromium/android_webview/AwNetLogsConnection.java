@@ -23,9 +23,11 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 // Connects to AwNetLogService service.
 @JNINamespace("android_webview")
+@NullMarked
 public class AwNetLogsConnection {
     private static final String TAG = "AwNetLogsConnection";
 

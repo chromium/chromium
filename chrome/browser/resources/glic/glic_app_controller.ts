@@ -11,7 +11,7 @@ import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {PageType, WebviewDelegate} from './webview.js';
-import {WebviewController} from './webview.js';
+import {WebviewController, WebviewPersistentState} from './webview.js';
 
 const transitionDuration = {
   microseconds: BigInt(100000),
@@ -41,6 +41,7 @@ interface PageElementTypes {
   webviewHeader: HTMLDivElement;
   webviewContainer: HTMLDivElement;
   signInButton: HTMLButtonElement;
+  unresponsiveOverlay: HTMLElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -55,6 +56,8 @@ type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
 interface StateDescriptor {
   onEnter?: () => void;
   onExit?: () => void;
+  // Whether to try to reload the webview on open while in this state.
+  reloadOnOpen?: boolean;
 }
 
 export class GlicAppController implements PageInterface, WebviewDelegate,
@@ -71,6 +74,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
 
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
+  private webviewPersistentState = new WebviewPersistentState();
 
   private profileReadyState: ProfileReadyState|undefined = undefined;
   private profileReadyInitialState = Promise.withResolvers<void>();
@@ -140,9 +144,13 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         $.guestPanel.classList.toggle('show-header', true);
         this.showPanel('guestPanel');
         break;
+      case 'guestError':
+        this.setState(WebUiState.kGuestError);
+        break;
       case 'regular':
         $.guestPanel.classList.toggle('show-header', false);
-        if (this.state === WebUiState.kReady) {
+        if (this.state === WebUiState.kReady ||
+            this.state === WebUiState.kGuestError) {
           this.setState(WebUiState.kBeginLoad);
         }
         break;
@@ -159,6 +167,10 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
     this.browserProxy.handler.webUiStateChanged(this.state);
+  }
+
+  private stateDescriptor(): StateDescriptor|undefined {
+    return this.state !== undefined ? this.states.get(this.state) : undefined;
   }
 
   readonly states: Map<WebUiState, StateDescriptor> = new Map([
@@ -181,10 +193,12 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     [
       WebUiState.kError,
       {
-        onEnter: () => {
-          this.destroyWebview();
-          this.showPanel('errorPanel');
-        },
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showPanel('errorPanel');
+            },
       },
     ],
     [
@@ -199,10 +213,12 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     [
       WebUiState.kUnavailable,
       {
-        onEnter: () => {
-          this.destroyWebview();
-          this.showPanel('unavailablePanel');
-        },
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showPanel('unavailablePanel');
+            },
       },
     ],
     [
@@ -217,39 +233,42 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     [
       WebUiState.kUnresponsive,
       {
-        onEnter: () => {
-          // TODO(crbug.com/394162784): Create an unresponsive UI according to
-          // the design spec and remove the placeholder.
-          this.enterUnresponsiveUiPlaceholder();
-        },
-        onExit: this.exitUnresponsiveUiPlaceholder,
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              $.unresponsiveOverlay.classList.toggle('hidden', false);
+            },
+        onExit:
+            () => {
+              $.unresponsiveOverlay.classList.toggle('hidden', true);
+            },
       },
     ],
     [
       WebUiState.kSignIn,
       {
-        onEnter: () => {
-          this.destroyWebview();
-          this.showPanel('signInPanel');
-        },
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showPanel('signInPanel');
+            },
+      },
+    ],
+    [
+      WebUiState.kGuestError,
+      {
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.lastWidth = 400;
+              this.lastHeight = 800;
+              $.guestPanel.classList.toggle('show-header', true);
+              this.showPanel('guestPanel');
+            },
       },
     ],
   ]);
-
-  private enterUnresponsiveUiPlaceholder(): void {
-    if (!this.webview) {
-      return;
-    }
-    this.webview.webview.style.webkitTransition = 'opacity 250ms';
-    this.webview.webview.style.opacity = '0.5';
-  }
-
-  private exitUnresponsiveUiPlaceholder(): void {
-    if (!this.webview) {
-      return;
-    }
-    this.webview.webview.style.opacity = '1';
-  }
 
   private cancelTimeout(): void {
     if (this.loadingTimer) {
@@ -295,7 +314,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     // Load the web client only after cookie sync is complete.
     this.destroyWebview();
     this.webview = new WebviewController(
-        $.webviewContainer, this.browserProxy, this, this);
+        $.webviewContainer, this.browserProxy, this, this,
+        this.webviewPersistentState);
     this.webview.getWebClientState().subscribe(
         this.webClientStateChanged.bind(this));
 
@@ -484,7 +504,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   // Called before the WebUI is shown. If we're in an error state, automatically
   // try to reload.
   intentToShow() {
-    if (this.state === WebUiState.kError) {
+    if (this.stateDescriptor()?.reloadOnOpen) {
       this.reload();
     }
   }
@@ -508,8 +528,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
           this.setState(WebUiState.kSignIn);
           break;
         case ProfileReadyState.kReady:
-          if (this.state === WebUiState.kUnavailable ||
-              this.state === WebUiState.kSignIn) {
+          if (this.stateDescriptor()?.reloadOnOpen) {
             this.setState(WebUiState.kBeginLoad);
           }
           break;

@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -23,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Orchestrates the displaying of a list of cross device tabs and related promos. */
+@NullMarked
 public class CrossDeviceListCoordinator {
     private final CrossDevicePaneView mView;
     private final CrossDeviceListMediator mCrossDeviceListMediator;

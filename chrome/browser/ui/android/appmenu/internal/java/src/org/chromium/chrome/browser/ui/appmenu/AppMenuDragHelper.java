@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.TimeAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,10 +20,11 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 
 import java.lang.annotation.Retention;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
  * hidden in API 16.
  */
 @SuppressLint("NewApi")
+@NullMarked
 class AppMenuDragHelper {
     private final Context mContext;
     private final AppMenu mAppMenu;
@@ -210,6 +214,7 @@ class AppMenuDragHelper {
             mAppMenu.dismiss();
         } else if (eventActionMasked == MotionEvent.ACTION_MOVE) {
             // Auto scrolling on the top or the bottom of the listView.
+            assumeNonNull(listView);
             if (listView.getHeight() > 0) {
                 float autoScrollAreaRatio =
                         Math.min(
@@ -254,6 +259,7 @@ class AppMenuDragHelper {
         if (!isReadyForMenuItemAction()) return false;
 
         ListView listView = mAppMenu.getListView();
+        assumeNonNull(listView);
 
         ArrayList<View> itemViews = new ArrayList<View>();
         for (int i = 0; i < listView.getChildCount(); ++i) {
@@ -313,6 +319,7 @@ class AppMenuDragHelper {
     @VisibleForTesting
     boolean isReadyForMenuItemAction() {
         ListView listView = mAppMenu.getListView();
+        assumeNonNull(listView);
 
         // Starting M, we have a popup menu animation that slides down. If we process dragging
         // events while it's sliding, it will touch many views that are passing by user's finger,

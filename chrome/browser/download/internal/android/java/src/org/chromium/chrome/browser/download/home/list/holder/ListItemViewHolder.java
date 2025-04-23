@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A {@link ViewHolder} responsible for building and setting properties on the underlying Android
  * {@link View}s for the Download Manager list.
  */
+@NullMarked
 public abstract class ListItemViewHolder extends ViewHolder {
     /** Creates an instance of a {@link ListItemViewHolder}. */
     protected ListItemViewHolder(View itemView) {
@@ -67,8 +71,8 @@ public abstract class ListItemViewHolder extends ViewHolder {
                 return CardDividerBottomViewHolder.create(parent);
         }
 
-        assert false;
-        return null;
+        assert false : "View type not supported.";
+        return assumeNonNull(null);
     }
 
     /**

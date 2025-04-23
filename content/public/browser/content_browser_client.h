@@ -558,6 +558,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const url::Origin& origin,
       bool is_for_isolated_world,
+      bool is_for_service_worker,
       network::mojom::URLLoaderFactoryParams* factory_params);
 
   // Returns a list of additional WebUI schemes, if any.  These additional
@@ -1866,19 +1867,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // browser-side throttles for keepalive requests:
   // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#heading=h.eu8mlvut479
   //
-  // |wc_getter| returns the WebContents of the context of the |request| when
-  // available. It can return nullptr for requests for which it there are no
-  // WebContents (e.g., requests for web workers).
-  //
   // |frame_tree_node_id| is also invalid in some cases
   // (e.g., requests for web workers).
   //
   // This is called on the UI thread.
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottlesForKeepAlive(
-      const network::ResourceRequest& request,
       BrowserContext* browser_context,
-      const base::RepeatingCallback<WebContents*()>& wc_getter,
       FrameTreeNodeId frame_tree_node_id);
 
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
@@ -2483,9 +2478,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller);
 
-  // Returns the reason for entering picture in picture automatically. This is
-  // recorded in metrics.
-  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
+  // Returns information related to auto picture in picture. The auto picture in
+  // picture reason is recorded in metrics.
+  virtual media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo(
       const WebContents& web_contents) const;
 
   // Registers the watcher to observe updates in RendererPreferences.
@@ -3154,9 +3149,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // today to suppress the event when the user navigates to the new tab page.
   virtual bool ShouldSuppressAXLoadComplete(RenderFrameHost* rfh);
 
+  // Binds the AIManager for a given `browser_context` to `receiver`. The
+  // created AIManager will be owned by the `context_user_data`. The
+  // RenderFrameHost may be null if this is called for a service worker or
+  // shared worker. If present, `rfh` will be used to listen for page visibility
+  // changes, and that will be used to adjust priority of requests.
   virtual void BindAIManager(
       BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
+      RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
   // Binds the TranslationManager for the given `browser_context`,

@@ -29,7 +29,7 @@ namespace component_updater {
 
 class ComponentUpdateService;
 
-constexpr char kExperimentalVersionAttributeName[] =
+inline constexpr char kExperimentalVersionAttributeName[] =
     "_experimental_list_version";
 
 // These values are persisted to logs. Entries should not be renumbered and

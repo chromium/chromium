@@ -94,6 +94,7 @@ class AuxiliarySearchProvider : public KeyedService,
       std::vector<raw_ptr<TabAndroid, VectorExperimental>> all_tabs,
       NonSensitiveTabsCallback callback) const;
 
+  bool is_observing_ = false;
   base::android::ScopedJavaGlobalRef<jobject> j_ref_;
 
   const raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;

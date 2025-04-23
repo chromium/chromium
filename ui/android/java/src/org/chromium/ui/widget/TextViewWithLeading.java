@@ -27,20 +27,20 @@ import org.chromium.ui.base.UiAndroidFeatureList;
 @NullMarked
 public class TextViewWithLeading extends AppCompatTextView {
     /**
-     * Constructing TextViewWithLeading programmatically without an {@link AttributeSet} will render
-     * it functionally equivalent to a TextView - that is no leading will be applied. This method is
-     * provided for use from subclasses.
+     * If the {@link AttributeSet} is not provided, this will be functionally equivalent to a
+     * TextView - that is no leading will be applied. This method is also available for use from
+     * subclasses besides inflation from XML.
      */
-    protected TextViewWithLeading(Context context) {
-        super(context);
+    public TextViewWithLeading(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        applySpacingAttributes(attrs);
     }
 
-    /** Constructor for use from XML with checkForLineSpacingAttributes assertion. */
-    public TextViewWithLeading(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    private void applySpacingAttributes(@Nullable AttributeSet attrs) {
+        if (attrs == null) return;
         checkForLineSpacingAttributes(attrs);
         Float nullableLeading = getLeadingDimen(attrs);
-        // TODO(https://crbug.com:1499069): Remove feature/kill switch once certain this is safe.
+        // TODO(crbug.com/40287683): Remove feature/kill switch once certain this is safe.
         if (UiAndroidFeatureList.sRequireLeadingInTextViewWithLeading.isEnabled()) {
             assert nullableLeading != null : "Couldn't find leading for TextViewWithLeading";
             applyLeading(nullableLeading);

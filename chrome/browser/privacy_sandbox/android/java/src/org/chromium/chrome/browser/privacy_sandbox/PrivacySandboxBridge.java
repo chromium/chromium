@@ -9,6 +9,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
+@NullMarked
 public class PrivacySandboxBridge {
 
     private final Profile mProfile;

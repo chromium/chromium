@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 namespace {
@@ -42,6 +43,10 @@ bool IsUserPolicyNotificationNeeded(
   if (prefService->GetBoolean(
           policy::policy_prefs::kUserPolicyNotificationWasShown)) {
     // Return false the notification was already shown in the past.
+    return false;
+  }
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     return false;
   }
 

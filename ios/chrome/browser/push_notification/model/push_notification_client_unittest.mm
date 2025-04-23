@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -74,8 +75,10 @@ TEST_F(PushNotificationClientTest, VerifyDelayNotification) {
   feature_list.InitAndEnableFeature(kNotificationCollisionManagement);
   push_notification_prefs::RegisterLocalStatePrefs(local_state_->registry());
 
-  UNNotificationRequest* safety_check_notification =
-      UpdateChromeNotificationRequest(UpdateChromeSafetyCheckState::kOutOfDate);
+  id safety_check_notification = OCMClassMock([UNNotificationRequest class]);
+  OCMStub([safety_check_notification identifier])
+      .andReturn(kSafetyCheckUpdateChromeNotificationID);
+
   StubGetPendingRequests(@[ safety_check_notification ]);
 
   ScheduledNotificationRequest tip_request = {

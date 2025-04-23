@@ -152,15 +152,6 @@ public class AccessibilityNodeInfoBuilder {
     private static final List<String> sRequestImageData =
             Collections.singletonList(EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY);
 
-    // Throttle time for content invalid utterances. Content invalid will only be announced at most
-    // once per this time interval in milliseconds for a given focused node.
-    private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
-
-    // These track the last focused content invalid view id and the last time we reported content
-    // invalid for that node. Used to ensure we report content invalid on a node once per interval.
-    private int mLastContentInvalidViewId;
-    private long mLastContentInvalidUtteranceTime;
-
     /** Delegate interface for any client that wants to use the node builder. */
     interface BuilderDelegate {
         // The view that contains the content this builder is used for.
@@ -206,7 +197,6 @@ public class AccessibilityNodeInfoBuilder {
             AccessibilityNodeInfoCompat node,
             int virtualViewId,
             boolean checkable,
-            boolean checked,
             boolean clickable,
             boolean contentInvalid,
             boolean enabled,
@@ -220,7 +210,6 @@ public class AccessibilityNodeInfoBuilder {
             boolean hasCharacterLocations,
             boolean isRequired) {
         node.setCheckable(checkable);
-        node.setChecked(checked);
         node.setClickable(clickable);
         node.setEnabled(enabled);
         node.setFocusable(focusable);
@@ -230,30 +219,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setSelected(selected);
         node.setVisibleToUser(visibleToUser);
         node.setFieldRequired(isRequired);
-
-        // In the special case that we have invalid content on a focused field, we only want to
-        // report that to the user at most once per {@link CONTENT_INVALID_THROTTLE_DELAY} time
-        // interval, to be less jarring to the user.
-        if (contentInvalid && focused) {
-            if (virtualViewId == mLastContentInvalidViewId) {
-                // If we are focused on the same node as before, check if it has been longer than
-                // our delay since our last utterance, and if so, report invalid content and update
-                // our last reported time, otherwise suppress reporting content invalid.
-                if (SystemClock.elapsedRealtime() - mLastContentInvalidUtteranceTime
-                        >= CONTENT_INVALID_THROTTLE_DELAY) {
-                    mLastContentInvalidUtteranceTime = SystemClock.elapsedRealtime();
-                    node.setContentInvalid(true);
-                }
-            } else {
-                // When we are focused on a new node, report as normal and track new time.
-                mLastContentInvalidViewId = virtualViewId;
-                mLastContentInvalidUtteranceTime = SystemClock.elapsedRealtime();
-                node.setContentInvalid(true);
-            }
-        } else {
-            // For non-focused fields we want to set contentInvalid as normal.
-            node.setContentInvalid(contentInvalid);
-        }
+        node.setContentInvalid(contentInvalid);
 
         if (hasImage) {
             Bundle bundle = node.getExtras();
@@ -396,6 +362,7 @@ public class AccessibilityNodeInfoBuilder {
             String role,
             String roleDescription,
             String hint,
+            String tooltipText,
             String targetUrl,
             boolean canOpenPopup,
             boolean multiLine,
@@ -406,7 +373,8 @@ public class AccessibilityNodeInfoBuilder {
             String display,
             String brailleLabel,
             String brailleRoleDescription,
-            int expandedState) {
+            int expandedState,
+            int checked) {
         node.setUniqueId(String.valueOf(virtualViewId));
         node.setClassName(className);
 
@@ -440,6 +408,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setMultiLine(multiLine);
         node.setInputType(inputType);
         node.setHintText(hint);
+        node.setTooltipText(tooltipText);
         node.setExpandedState(expandedState);
 
         // Deliberately don't call setLiveRegion because TalkBack speaks the entire region anytime
@@ -451,7 +420,7 @@ public class AccessibilityNodeInfoBuilder {
         }
 
         // We only apply the |errorMessage| if {@link setAccessibilityNodeInfoBooleanAttributes}
-        // set |contentInvalid| to true based on throttle delay.
+        // set |contentInvalid| to true.
         if (node.isContentInvalid()) {
             node.setError(errorMessage);
         }
@@ -460,6 +429,8 @@ public class AccessibilityNodeInfoBuilder {
         if (clickableScore > 0) {
             bundle.putInt(EXTRAS_KEY_CLICKABLE_SCORE, clickableScore);
         }
+
+        node.setChecked(checked);
     }
 
     @SuppressLint("NewApi")

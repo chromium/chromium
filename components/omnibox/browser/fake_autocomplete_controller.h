@@ -97,6 +97,7 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::OldResult;
 
   // AutocompleteController (methods):
+  using AutocompleteController::CheckWhetherDefaultMatchChanged;
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
   using AutocompleteController::ShouldRunProvider;
   using AutocompleteController::UpdateAssociatedKeywords;
@@ -108,6 +109,7 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::input_;
   using AutocompleteController::internal_result_;
   using AutocompleteController::keyword_provider_;
+  using AutocompleteController::last_time_default_match_changed_;
   using AutocompleteController::last_update_type_;
   using AutocompleteController::metrics_;
   using AutocompleteController::providers_;

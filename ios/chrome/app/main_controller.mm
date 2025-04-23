@@ -23,6 +23,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/timer/timer.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
@@ -129,6 +130,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/ui_bundled/chrome_web_ui_ios_controller_factory.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -163,13 +165,6 @@
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 #import "ios/chrome/browser/default_browser/model/default_status/default_status_helper.h"
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
-
-@interface MainController (ForUnloadProfileMarkedForDeletion)
-
-- (void)unloadProfileMarkedForDeletion:(std::string_view)profileName
-                            completion:(ProfileDeletedCallback)completion;
-
-@end
 
 namespace {
 
@@ -329,21 +324,62 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
       count_discarded_scene_still_connected, 100);
 }
 
-// Helper used to call -unloadProfileMarkedForDeletion:completion: from
-// a callback.
-void UnloadProfileMarkedForDeletion(MainController* controller,
-                                    const std::string& profile_name,
-                                    ProfileDeletedCallback completion) {
-  [controller unloadProfileMarkedForDeletion:profile_name
-                                  completion:std::move(completion)];
+// Possible choices for which profile to use for a scene.
+enum class ProfileChoice {
+  kProfileForScene,
+  kProfileFromActivity,
+  kLastUsedProfile,
+  kPersonalProfile,
+  kNewProfile,
+};
+
+// Returns the available ProfileChoices depending on the enabled features.
+base::span<const ProfileChoice> GetProfileChoices() {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    static constexpr ProfileChoice kProfileChoicesWithSeparateAccounts[] = {
+        ProfileChoice::kProfileForScene, ProfileChoice::kProfileFromActivity,
+        ProfileChoice::kLastUsedProfile, ProfileChoice::kPersonalProfile,
+        ProfileChoice::kNewProfile,
+    };
+    return kProfileChoicesWithSeparateAccounts;
+  }
+
+  static constexpr ProfileChoice kProfileChoices[] = {
+      ProfileChoice::kProfileFromActivity,
+      ProfileChoice::kPersonalProfile,
+      ProfileChoice::kNewProfile,
+  };
+  return kProfileChoices;
 }
 
-// Helper used to implement a continuation that invoke `done_closure`.
-void DeleteProfileContinuation(base::OnceClosure done_closure,
-                               SceneState* scene_state,
-                               base::OnceClosure next_closure) {
-  std::move(done_closure).Run();
-  std::move(next_closure).Run();
+// Returns the name of the profile for `choice`. May be empty in some cases,
+// e.g. when a corresponding pref isn't set yet.
+std::string GetProfileNameForChoice(ProfileChoice choice,
+                                    SceneState* scene_state,
+                                    ProfileManagerIOS* manager,
+                                    ProfileAttributesStorageIOS* storage,
+                                    PrefService* local_state) {
+  switch (choice) {
+    case ProfileChoice::kProfileFromActivity: {
+      for (NSUserActivity* activity in scene_state.connectionOptions
+               .userActivities) {
+        std::string profile_name = GetProfileNameFromActivity(activity);
+        if (!profile_name.empty()) {
+          return profile_name;
+        }
+      }
+      return std::string();
+    }
+    case ProfileChoice::kProfileForScene:
+      return storage->GetProfileNameForSceneID(scene_state.sceneSessionID);
+    case ProfileChoice::kLastUsedProfile:
+      return local_state->GetString(prefs::kLastUsedProfile);
+    case ProfileChoice::kPersonalProfile:
+      return storage->GetPersonalProfileName();
+    case ProfileChoice::kNewProfile:
+      return manager->ReserveNewProfileName();
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -465,6 +501,11 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   // reached a significant stage (e.g. loaded the session and allowed the
   // user to interact with the application, ...).
   ProfileInitStage _highestProfileInitStageReached;
+
+  // Timer used to schedule the unload of unused profiles during the next
+  // run loop (to avoid unloading a profile and destroying all objects in
+  // an observer method as this can be dangerous if it destroy the sender).
+  base::OneShotTimer _timer;
 }
 
 // Defined by public protocols.
@@ -949,6 +990,13 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
+    sceneDisconnected:(SceneState*)sceneState {
+  if (profileState.connectedScenes.count == 0) {
+    [self scheduleUnloadUnusedProfiles];
+  }
+}
+
+- (void)profileState:(ProfileState*)profileState
     willTransitionToInitStage:(ProfileInitStage)nextInitStage
                 fromInitStage:(ProfileInitStage)fromInitStage {
   if (nextInitStage > _highestProfileInitStageReached) {
@@ -1032,10 +1080,9 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   }
 
   // This should happen for all ProfileStage as it is responsible for
-  // removing self from the observers and for recording the lauch metrics
-  // which should wait until all SceneStates have been mapped to Profiles.
+  // recording the lauch metrics which should wait until all SceneStates
+  // have been mapped to Profiles.
   if (nextInitStage == ProfileInitStage::kFinal) {
-    [profileState removeObserver:self];
     [MetricsMediator logProfileLoadMetrics:profileState.profile];
     [self recordLaunchMetrics];
   }
@@ -1659,15 +1706,16 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
     // Pretend the scene has been disconnected, then reconnect it.
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
-    const WindowActivityOrigin savedOrigin = sceneState.currentOrigin;
-    UISceneConnectionOptions* savedConnectionOptions =
-        sceneState.connectionOptions;
+    UISceneConnectionOptions* savedOptions = sceneState.connectionOptions;
 
-    [sceneDelegate sceneDidDisconnect:scene];  // destroy the old SceneState
-    sceneState = sceneDelegate.sceneState;     // recreate a new SceneState
-    sceneState.currentOrigin = savedOrigin;
-    sceneState.connectionOptions = savedConnectionOptions;
-    sceneState.scene = scene;
+    // Destroy the old SceneState and recreate it.
+    [sceneDelegate sceneDidDisconnect:scene];
+    [sceneDelegate scene:scene
+        willConnectToSession:scene.session
+                     options:savedOptions];
+
+    sceneState = sceneDelegate.sceneState;
+    DCHECK(sceneState);
 
     // Reconnect the scene. This will attach a profile automatically based
     // on the information stored in the ProfileAttributesStorageIOS.
@@ -1688,8 +1736,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
                  continuation:std::move(continuation)];
 }
 
-- (void)deleteProfile:(std::string_view)profileName
-           completion:(ProfileDeletedCallback)completion {
+- (void)deleteProfile:(std::string_view)profileName {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
@@ -1698,60 +1745,43 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
       manager->GetProfileAttributesStorage()->GetPersonalProfileName();
   DCHECK_GT(personalProfile.size(), 0u);
 
+  // Mark the profile for deletion, and then if there is no UI elements
+  // attached, immediately request it to be unloaded.
   manager->MarkProfileForDeletion(profileName);
   auto iter = _profileControllers.find(profileName);
-
-  NSArray<SceneState*>* scenes = nil;
-  if (iter != _profileControllers.end()) {
-    ProfileController* controller = iter->second;
-    scenes = controller.state.connectedScenes;
-  }
-
-  if (scenes.count == 0) {
-    // Either the Profile is not loaded or there is no scene connected, so
-    // there is no need to switch any scene to another Profile. Invoke the
-    // next step directly without waiting.
-    [self unloadProfileMarkedForDeletion:profileName
-                              completion:std::move(completion)];
+  if (iter == _profileControllers.end()) {
+    manager->UnloadProfile(profileName);
     return;
   }
 
-  __weak MainController* weakSelf = self;
-  base::RepeatingClosure closure = BarrierClosure(
-      scenes.count,
-      base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf,
-                     std::string(profileName), std::move(completion)));
+  ProfileController* controller = iter->second;
+  NSArray<SceneState*>* scenes = controller.state.connectedScenes;
+
+  // If there are no connected scenes, then there is no need to change
+  // the profile for the scene. Do not immediately unload the profile,
+  // as there may still be objects that are shutting down. Schedule a
+  // call to -unloadUnusedProfiles to unload it at the next run loop.
+  if (scenes.count == 0) {
+    [self scheduleUnloadUnusedProfiles];
+    return;
+  }
+
+  // Otherwise, change the profile for all connected scenes. This will
+  // result in a call to -profileState:sceneDisconnected: for each one
+  // and eventually a call to -scheduleUnloadUnusedProfiles.
+  auto continuation = base::BindRepeating(
+      [](SceneState* scene_state, base::OnceClosure closure) {
+        std::move(closure).Run();
+      });
 
   for (SceneState* scene in scenes) {
     [self changeProfile:personalProfile
                forScene:scene
-           continuation:base::BindOnce(&DeleteProfileContinuation, closure)];
+           continuation:continuation];
   }
 }
 
 #pragma mark - Private
-
-// Removes `profileName` in profile controller if needed and unload
-// `profileName` which should have been marked for deletion.
-- (void)unloadProfileMarkedForDeletion:(std::string_view)profileName
-                            completion:(ProfileDeletedCallback)completion {
-  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-  CHECK(manager->IsProfileMarkedForDeletion(profileName));
-  if (auto iter = _profileControllers.find(profileName);
-      iter != _profileControllers.end()) {
-    ProfileController* controller = iter->second;
-    NSArray<SceneState*>* scenes = controller.state.connectedScenes;
-    DCHECK_EQ(scenes.count, 0u);
-
-    // Call -shutdown before deleting the object.
-    [controller shutdown];
-    _profileControllers.erase(iter);
-  }
-
-  manager->UnloadProfile(profileName);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(completion), true));
-}
 
 // Attach a Profile to all connected scenes.
 - (void)attachProfilesToAllConnectedScenes {
@@ -1779,44 +1809,10 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   // profile (i.e. the value is set and the profile is known) amongst the
   // following value: the profile configured for the scene, the last used
   // profile, the personal profile, or as a last resort a new profile.
-  enum class ProfileChoice {
-    kProfileForScene,
-    kLastUsedProfile,
-    kPersonalProfile,
-    kNewProfile,
-  };
-
-  static constexpr ProfileChoice kProfileChoices[] = {
-      ProfileChoice::kProfileForScene,
-      ProfileChoice::kLastUsedProfile,
-      ProfileChoice::kPersonalProfile,
-      ProfileChoice::kNewProfile,
-  };
-
   std::string profileName;
-  bool changedProfileNameForScene = false;
-  for (ProfileChoice choice : kProfileChoices) {
-    switch (choice) {
-      case ProfileChoice::kProfileForScene:
-        profileName = storage->GetProfileNameForSceneID(sceneID);
-        changedProfileNameForScene = false;
-        break;
-
-      case ProfileChoice::kLastUsedProfile:
-        profileName = localState->GetString(prefs::kLastUsedProfile);
-        changedProfileNameForScene = true;
-        break;
-
-      case ProfileChoice::kPersonalProfile:
-        profileName = storage->GetPersonalProfileName();
-        changedProfileNameForScene = true;
-        break;
-
-      case ProfileChoice::kNewProfile:
-        profileName = manager->ReserveNewProfileName();
-        changedProfileNameForScene = true;
-        break;
-    }
+  for (ProfileChoice choice : GetProfileChoices()) {
+    profileName = GetProfileNameForChoice(choice, sceneState, manager, storage,
+                                          localState);
 
     // Pick the first valid profile name found.
     if (storage->HasProfileWithName(profileName)) {
@@ -1831,7 +1827,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   // If the mapping has changed, store the mapping between the SceneID
   // and the profile in the ProfileAttributesStorageIOS so that it is
   // accessible the next time the window is open.
-  if (changedProfileNameForScene) {
+  if (profileName != storage->GetProfileNameForSceneID(sceneID)) {
     storage->SetProfileNameForSceneID(sceneID, profileName);
   }
 
@@ -1863,6 +1859,76 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
   // Attach the SceneState to the ProfileState.
   [sceneState.controller setProfileState:state];
+}
+
+// Unload all unused profiles.
+- (void)unloadUnusedProfiles {
+  std::vector<std::string> profilesToUnload;
+  for (const auto& [name, controller] : _profileControllers) {
+    if (controller.state.connectedScenes.count == 0) {
+      profilesToUnload.push_back(name);
+    }
+  }
+
+  if (profilesToUnload.empty()) {
+    return;
+  }
+
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+
+  for (const auto& name : profilesToUnload) {
+    auto iter = _profileControllers.find(name);
+    CHECK(iter != _profileControllers.end());
+
+    ProfileController* controller = iter->second;
+    CHECK_EQ(controller.state.connectedScenes.count, 0u);
+    [controller.state removeObserver:self];
+
+    // Call -shutdown before deleting the object.
+    [controller shutdown];
+    _profileControllers.erase(iter);
+    manager->UnloadProfile(name);
+  }
+
+  [self updateLastUsedProfilePref];
+}
+
+// Update the kLastUsedProfile preference if needed.
+- (void)updateLastUsedProfilePref {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (base::Contains(_profileControllers,
+                     localState->GetString(prefs::kLastUsedProfile))) {
+    // The last used profile is still loaded, no need to update the pref.
+    return;
+  }
+
+  // Find the name of the profile which most recently had a scene connected.
+  std::string mostRecentlyUsedProfile;
+  base::TimeTicks lastSceneConnection = base::TimeTicks::Min();
+  for (const auto& [name, controller] : _profileControllers) {
+    const base::TimeTicks timestamp = controller.state.lastSceneConnection;
+    if (timestamp > lastSceneConnection) {
+      lastSceneConnection = timestamp;
+      mostRecentlyUsedProfile = name;
+    }
+  }
+
+  // If mostRecentlyUsedProfile is empty, then there is no profile connected,
+  // which usually mean that app will shutdown. In that case, do not update
+  // the preference.
+  if (!mostRecentlyUsedProfile.empty()) {
+    localState->SetString(prefs::kLastUsedProfile, mostRecentlyUsedProfile);
+  }
+}
+
+// Schedule a call to -unloadUnusedProfiles at the next run loop iteration.
+- (void)scheduleUnloadUnusedProfiles {
+  if (!_timer.IsRunning()) {
+    __weak __typeof(self) weakSelf = self;
+    _timer.Start(FROM_HERE, base::Seconds(0), base::BindOnce(^{
+                   [weakSelf unloadUnusedProfiles];
+                 }));
+  }
 }
 
 @end

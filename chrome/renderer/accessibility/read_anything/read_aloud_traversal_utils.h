@@ -110,7 +110,7 @@ struct ReadAloudCurrentGranularity {
 
 // Returns the index of the next sentence of the given text, such that the
 // next sentence is equivalent to text.substr(0, <returned_index>).
-int GetNextSentence(const std::u16string& text, bool is_pdf);
+int GetNextSentence(const std::u16string& text);
 
 // Returns the index of the next word of the given text, such that the
 // next word is equivalent to text.substr(0, <returned_index>).
@@ -126,11 +126,6 @@ bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
 // to get a parent node from the AXPosition's returned anchor.
 ui::AXNode* GetAnchorNode(
     const ui::AXNodePosition::AXPositionInstance& position);
-
-// Uses the given AXNodePosition to return the next node that should be spoken
-// by Read Aloud.
-ui::AXNode* GetNextNodeFromPosition(
-    const ui::AXNodePosition::AXPositionInstance& ax_position);
 
 // Returns if the given character can be considered opening puncutation.
 // This is used to ensure we're not reading out opening punctuation

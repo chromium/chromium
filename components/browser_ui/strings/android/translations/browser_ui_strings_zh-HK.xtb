@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">網站可要求取得您的位置</translation>
 <translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}other{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}}</translation>
+<translation id="3670480940339182416">網站可使用 V8 優化工具</translation>
 <translation id="3676777756440746804">已禁止網站使用與你相關的既有資料</translation>
 <translation id="3697164069658504920">開咗之後，網站可以要求使用 USB 裝置。閂咗之後，網站唔可以使用 USB 裝置。</translation>
+<translation id="3703430731944883733">管理資訊提供</translation>
 <translation id="3707034683772193706">您瀏覽的網站可將少量資料儲存至 Chrome，主要用來證明您不是機器人</translation>
 <translation id="3708684582558000260">不允許已關閉的網站完成資料收發</translation>
 <translation id="3709818294139939629">已移除網站對檔案的存取權</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">在允許網站查看和變更 NFC 裝置上的資料前先詢問您 (建議)</translation>
 <translation id="4200726100658658164">開啟位置設定</translation>
 <translation id="421742575134139848">網站可能會需要音效權限，才能播放音樂、影片和其他媒體的音效</translation>
+<translation id="4217710972110098902">已連線至序列連接埠</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
+<translation id="4578289292431526768">開始設定</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="461356340001513807">讓你使用具有身分識別服務的帳戶來登入網站</translation>
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
+<translation id="571222594670061844">網站可顯示來自身分服務的登入提示</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
+<translation id="5743425052258407233">讓記錄同步到你的所有裝置，方便你繼續執行先前的工作</translation>
 <translation id="5750869797196646528">手部追蹤</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5876056640971328065">暫停影片</translation>
 <translation id="5877248419911025165">收合所有要求</translation>
+<translation id="5878945009165002849">封鎖來自身分服務的登入提示</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
 <translation id="5908617755156109052">不允許網站建立你周遭環境的 3D 地圖或追蹤攝錄機位置</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6320088164292336938">震動</translation>
-<translation id="6344622098450209924">追蹤保護功能</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="640163077447496506">今天到期</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">撤消裝置權限</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」版本已過期。請重新安裝應用程式。</translation>
+<translation id="847433688444405067">在不同裝置上瀏覽</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求流動網站</translation>
 <translation id="8492822722330266509">網頁可傳送彈出式視窗和使用重新導向</translation>

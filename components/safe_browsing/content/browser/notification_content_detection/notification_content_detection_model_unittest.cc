@@ -160,7 +160,12 @@ TEST_F(NotificationContentDetectionModelTest, LogNotificationSuspiciousScore) {
       action->title = action_title;
       notification_data.actions.push_back(std::move(action));
     }
-    EXPECT_CALL(model_verdict_callback_, Run(_)).Times(1);
+    EXPECT_CALL(
+        model_verdict_callback_,
+        Run(_, testing::Eq(
+                   "{\"is-origin-allowlisted-by-user\":false,\"is-origin-on-"
+                   "global-cache-list\":false,\"suspicious-score\":59.0}")))
+        .Times(1);
     notification_content_detection_model()->Execute(
         notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
         /*did_match_allowlist=*/false, model_verdict_callback_.Get());
@@ -177,7 +182,12 @@ TEST_F(NotificationContentDetectionModelTest,
   SendModelToNotificationContentDetectionModel();
 
   blink::PlatformNotificationData notification_data;
-  EXPECT_CALL(model_verdict_callback_, Run(_)).Times(1);
+  EXPECT_CALL(
+      model_verdict_callback_,
+      Run(_,
+          testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-origin-on-"
+                      "global-cache-list\":false,\"suspicious-score\":59.0}")))
+      .Times(1);
   notification_content_detection_model()->Execute(
       notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
       /*did_match_allowlist=*/false, model_verdict_callback_.Get());
@@ -209,7 +219,11 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   SetUpFeatureWithSuspiciousThresholdValue("100");
 
   blink::PlatformNotificationData notification_data;
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  EXPECT_CALL(model_verdict_callback_,
+              Run(/*is_suspicious=*/false,
+                  testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-"
+                              "origin-on-global-cache-list\":false}")))
+      .Times(1);
   notification_content_detection_model()->Execute(
       notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
       /*did_match_allowlist=*/false, model_verdict_callback_.Get());
@@ -223,7 +237,12 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   SendModelToNotificationContentDetectionModel();
 
   blink::PlatformNotificationData notification_data;
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  EXPECT_CALL(
+      model_verdict_callback_,
+      Run(/*is_suspicious=*/false,
+          testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-origin-on-"
+                      "global-cache-list\":false,\"suspicious-score\":59.0}")))
+      .Times(1);
   notification_content_detection_model()->Execute(
       notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
       /*did_match_allowlist=*/false, model_verdict_callback_.Get());
@@ -237,7 +256,12 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   SendModelToNotificationContentDetectionModel();
 
   blink::PlatformNotificationData notification_data;
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/true)).Times(1);
+  EXPECT_CALL(
+      model_verdict_callback_,
+      Run(/*is_suspicious=*/true,
+          testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-origin-on-"
+                      "global-cache-list\":false,\"suspicious-score\":59.0}")))
+      .Times(1);
   notification_content_detection_model()->Execute(
       notification_data, GURL("url"), /*is_allowlisted_by_user=*/false,
       /*did_match_allowlist=*/false, model_verdict_callback_.Get());
@@ -251,7 +275,12 @@ TEST_F(NotificationContentDetectionModelWithShownWarningsTest,
   SendModelToNotificationContentDetectionModel();
 
   blink::PlatformNotificationData notification_data;
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  EXPECT_CALL(
+      model_verdict_callback_,
+      Run(/*is_suspicious=*/false,
+          testing::Eq("{\"is-origin-allowlisted-by-user\":true,\"is-origin-on-"
+                      "global-cache-list\":false,\"suspicious-score\":59.0}")))
+      .Times(1);
   notification_content_detection_model()->Execute(
       notification_data, GURL("url"), /*is_allowlisted_by_user=*/true,
       /*did_match_allowlist=*/false, model_verdict_callback_.Get());

@@ -74,7 +74,6 @@ class LiveTabContextBrowserAgent
 
  private:
   friend class BrowserUserData<LiveTabContextBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 

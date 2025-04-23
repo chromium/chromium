@@ -152,6 +152,10 @@ class UrlBarProperties {
     /** Specifies the color for url bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
 
+    /** Whether the url bar should use a small text size. */
+    public static final WritableBooleanPropertyKey USE_SMALL_TEXT =
+            new WritableBooleanPropertyKey();
+
     /** Specifies the color for url bar hint text. */
     public static final WritableIntPropertyKey HINT_TEXT_COLOR = new WritableIntPropertyKey();
 
@@ -195,6 +199,7 @@ class UrlBarProperties {
                 INCOGNITO_COLORS_ENABLED,
                 HAS_URL_SUGGESTIONS,
                 TEXT_COLOR,
+                USE_SMALL_TEXT,
                 HINT_TEXT_COLOR,
                 SELECT_ALL_ON_FOCUS,
                 LONG_CLICK_LISTENER,

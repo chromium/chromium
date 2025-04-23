@@ -459,9 +459,8 @@ void ThemeService::RemoveUnusedThemes() {
     return;
   }
 
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
+  if (!extension_registrar) {
     return;
   }
 
@@ -488,8 +487,8 @@ void ThemeService::RemoveUnusedThemes() {
   // policy provider.
 
   for (const auto& i : remove_list) {
-    service->UninstallExtension(i, extensions::UNINSTALL_REASON_ORPHANED_THEME,
-                                nullptr);
+    extension_registrar->UninstallExtension(
+        i, extensions::UNINSTALL_REASON_ORPHANED_THEME, nullptr);
   }
 }
 

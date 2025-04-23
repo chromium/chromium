@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -46,8 +48,24 @@ bool IsValidRange(const RangeInFlatTree* range) {
   // An attached range may have !IsCollapsed but converting to EphemeralRange
   // results in IsCollapsed. For an example, see
   // AnnotationAgentImplTest.ScrollIntoViewCollapsedRange.
-  return range && range->IsConnected() && !range->IsCollapsed() &&
-         !range->ToEphemeralRange().IsCollapsed();
+  bool is_valid = range && range->IsConnected() && !range->IsCollapsed() &&
+                  !range->ToEphemeralRange().IsCollapsed();
+
+  if (is_valid) {
+    // TODO(crbug.com/410033683): Temporary to work around a crash.
+    // DocumentMarkers work on EphemeralRange (i.e. not FlatTree) so when we try
+    // to add a marker in ProcessAttachmentFinished, a well-ordered range in a
+    // flat tree may become invalid due to slotted elements. DocumentMarkers
+    // should maybe work on FlatTree types but for now just invalidate this
+    // case.
+    Position start = ToPositionInDOMTree(range->StartPosition());
+    Position end = ToPositionInDOMTree(range->EndPosition());
+    if (start > end) {
+      return false;
+    }
+  }
+
+  return is_valid;
 }
 
 // There are several cases where text isn't visible/presented to the user but
@@ -137,6 +155,24 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
     case mojom::blink::AnnotationType::kSharedHighlight:
     case mojom::blink::AnnotationType::kUserNote:
       return false;
+  }
+}
+
+// The maximum scroll distance for which an AnnotationAgent of type kGlic should
+// use a smooth (animated) scroll. For longer distances, the scroll will be
+// instant.
+int kGlicSmoothScrollThreshold = 7000;
+
+std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
+    mojom::blink::AnnotationType annotation_type) {
+  switch (annotation_type) {
+    case mojom::blink::AnnotationType::kSharedHighlight:
+    case mojom::blink::AnnotationType::kUserNote:
+      return DocumentMarker::MarkerTypes::TextFragment();
+    case mojom::blink::AnnotationType::kGlic:
+      return DocumentMarker::MarkerTypes::Glic();
+    case mojom::blink::AnnotationType::kTextFinder:
+      return std::nullopt;
   }
 }
 
@@ -256,8 +292,11 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      document->Markers().RemoveMarkersInRange(
-          dom_range, DocumentMarker::MarkerTypes::TextFragment());
+      std::optional<DocumentMarker::MarkerTypes> marker_types =
+          GetMarkerTypesForAnnotationType(type_);
+      if (marker_types.has_value()) {
+        document->Markers().RemoveMarkersInRange(dom_range, *marker_types);
+      }
     }
   }
 
@@ -306,9 +345,7 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
           ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
           mojom::blink::ScrollType::kProgrammatic);
   params->cross_origin_boundaries = false;
-  if (type_ == mojom::blink::AnnotationType::kGlic) {
-    params->behavior = mojom::blink::ScrollBehavior::kSmooth;
-  }
+  params->behavior = ComputeScrollIntoViewBehavior(bounding_box, *params);
 
   if (applies_focus) {
     // If the first node accepts keyboard focus, move focus there to aid users
@@ -435,12 +472,26 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
-    // TextFinder type is used only to determine whether a given text can be
-    // found in the page, it should have no side-effects.
-    if (type_ != mojom::blink::AnnotationType::kTextFinder) {
-      document->Markers().AddTextFragmentMarker(dom_range);
-      document->Markers().MergeOverlappingMarkers(
-          DocumentMarker::kTextFragment);
+    switch (type_) {
+      case mojom::blink::AnnotationType::kUserNote:
+      case mojom::blink::AnnotationType::kSharedHighlight: {
+        document->Markers().AddTextFragmentMarker(dom_range);
+        document->Markers().MergeOverlappingMarkers(
+            DocumentMarker::kTextFragment);
+        break;
+      }
+      case mojom::blink::AnnotationType::kGlic: {
+        document->Markers().AddGlicMarker(dom_range);
+        // TODO(crbug.com/407967372): Should only start the animation after the
+        // annotated target is scrolled into the viewport.
+        document->Markers().StartGlicMarkerAnimation();
+        break;
+      }
+      case mojom::blink::AnnotationType::kTextFinder: {
+        // TextFinder type is used only to determine whether a given text can be
+        // found in the page, it should have no side-effects.
+        break;
+      }
     }
 
     if (type_ != mojom::blink::AnnotationType::kUserNote) {
@@ -492,6 +543,36 @@ bool AnnotationAgentImpl::IsRemoved() const {
   DCHECK(owning_container_ || !agent_host_.is_bound());
   DCHECK(owning_container_ || !receiver_.is_bound());
   return !owning_container_;
+}
+
+mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
+    const PhysicalRect& bounding_box,
+    const mojom::blink::ScrollIntoViewParams& params) const {
+  using mojom::blink::AnnotationType;
+  using mojom::blink::ScrollBehavior;
+  switch (type_) {
+    case AnnotationType::kSharedHighlight:
+    case AnnotationType::kTextFinder:
+    case AnnotationType::kUserNote:
+      return ScrollBehavior::kAuto;
+    case AnnotationType::kGlic:
+      // Use kInstant for long scroll distances, kSmooth otherwise.
+      if (LocalFrameView* view =
+              owning_container_->GetSupplementable()->GetFrame()->View()) {
+        ScrollOffset scroll_offset =
+            scroll_into_view_util::GetScrollOffsetToExpose(
+                *view->GetScrollableArea(), bounding_box, PhysicalBoxStrut(),
+                *params.align_x, *params.align_y);
+        gfx::Vector2dF scroll_distance =
+            scroll_offset - view->GetScrollableArea()->GetScrollOffset();
+        float max_distance = std::max(std::abs(scroll_distance.x()),
+                                      std::abs(scroll_distance.y()));
+        if (max_distance < kGlicSmoothScrollThreshold) {
+          return ScrollBehavior::kSmooth;
+        }
+      }
+      return ScrollBehavior::kInstant;
+  }
 }
 
 }  // namespace blink

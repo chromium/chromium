@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -858,9 +859,9 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
       start_node.getNodeType() == Node::kCommentNode) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
-        "Nodes of type '" + new_node->nodeName() +
-            "' may not be inserted inside nodes of type '" +
-            start_node.nodeName() + "'.");
+        WTF::StrCat({"Nodes of type '", new_node->nodeName(),
+                     "' may not be inserted inside nodes of type '",
+                     start_node.nodeName(), "'."}));
     return;
   }
   const bool start_is_text = start_node.IsTextNode();
@@ -884,8 +885,8 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
   if (start_node.IsAttributeNode()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
-        "Nodes of type '" + new_node->nodeName() +
-            "' may not be inserted inside nodes of type 'Attr'.");
+        WTF::StrCat({"Nodes of type '", new_node->nodeName(),
+                     "' may not be inserted inside nodes of type 'Attr'."}));
     return;
   }
 
@@ -1039,7 +1040,7 @@ Node* Range::CheckNodeWOffset(Node* n,
     case Node::kDocumentTypeNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          "The node provided is of type '" + n->nodeName() + "'.");
+          WTF::StrCat({"The node provided is of type '", n->nodeName(), "'."}));
       return nullptr;
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
@@ -1047,29 +1048,33 @@ Node* Range::CheckNodeWOffset(Node* n,
       if (offset > To<CharacterData>(n)->length()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "The offset " + String::Number(offset) +
-                " is larger than the node's length (" +
-                String::Number(To<CharacterData>(n)->length()) + ").");
+            WTF::StrCat({"The offset ", String::Number(offset),
+                         " is larger than the node's length (",
+                         String::Number(To<CharacterData>(n)->length()),
+                         ")."}));
       } else if (offset >
                  static_cast<unsigned>(std::numeric_limits<int>::max())) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "The offset " + String::Number(offset) + " is invalid.");
+            WTF::StrCat(
+                {"The offset ", String::Number(offset), " is invalid."}));
       }
       return nullptr;
     case Node::kProcessingInstructionNode:
       if (offset > To<ProcessingInstruction>(n)->data().length()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "The offset " + String::Number(offset) +
-                " is larger than the node's length (" +
-                String::Number(To<ProcessingInstruction>(n)->data().length()) +
-                ").");
+            WTF::StrCat(
+                {"The offset ", String::Number(offset),
+                 " is larger than the node's length (",
+                 String::Number(To<ProcessingInstruction>(n)->data().length()),
+                 ")."}));
       } else if (offset >
                  static_cast<unsigned>(std::numeric_limits<int>::max())) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "The offset " + String::Number(offset) + " is invalid.");
+            WTF::StrCat(
+                {"The offset ", String::Number(offset), " is invalid."}));
       }
       return nullptr;
     case Node::kAttributeNode:
@@ -1081,14 +1086,16 @@ Node* Range::CheckNodeWOffset(Node* n,
       if (offset > static_cast<unsigned>(std::numeric_limits<int>::max())) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "The offset " + String::Number(offset) + " is invalid.");
+            WTF::StrCat(
+                {"The offset ", String::Number(offset), " is invalid."}));
         return nullptr;
       }
       Node* child_before = NodeTraversal::ChildAt(*n, offset - 1);
       if (!child_before) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
-            "There is no child at offset " + String::Number(offset) + ".");
+            WTF::StrCat(
+                {"There is no child at offset ", String::Number(offset), "."}));
       }
       return child_before;
     }

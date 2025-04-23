@@ -128,15 +128,6 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, DetachAndReInsertGroup) {
 
   tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
 
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
-
-  // TODO(392952244): Remove this after migrating callers to using new APIs.
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
-      observation_pauser_ =
-          tab_group_service->CreateScopedLocalObserverPauser();
-
   std::unique_ptr<DetachedTabGroup> detached_group =
       tab_strip_model()->DetachTabGroupForInsertion(group);
 

@@ -117,8 +117,9 @@ class CONTENT_EXPORT BackForwardCache {
     kWebViewSafeBrowsingAllowlistChanged = 67,
     kWebViewDocumentStartJavascriptChanged = 68,
     kCacheControlNoStoreDeviceBoundSessionTerminated = 69,
-    kCacheLimitPruned = 70,
-    kMaxValue = kCacheLimitPruned,
+    kCacheLimitPrunedOnModerateMemoryPressure = 70,
+    kCacheLimitPrunedOnCriticalMemoryPressure = 71,
+    kMaxValue = kCacheLimitPrunedOnCriticalMemoryPressure,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheNotRestoredReason)
 
@@ -269,7 +270,7 @@ class CONTENT_EXPORT BackForwardCache {
 
   // Evict back/forward cache entries from the least recently used ones until
   // the cache is within the given size limit.
-  virtual void Prune(size_t limit) = 0;
+  virtual void Prune(size_t limit, NotRestoredReason reason) = 0;
 
   // Disables the BackForwardCache so that no documents will be stored/served.
   // This allows tests to "force" not using the BackForwardCache, this can be

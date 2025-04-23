@@ -230,12 +230,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/policy_handlers.h"
+#include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/messaging/native_messaging_policy_handler.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
-#include "extensions/browser/pref_names.h"
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -565,9 +565,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultFileSystemWriteGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
     base::Value::Type::INTEGER },
+#endif // !BUILDFLAG(IS_ANDROID)
   { key::kDefaultImagesSetting,
     prefs::kManagedDefaultImagesSetting,
     base::Value::Type::INTEGER },
+#if !BUILDFLAG(IS_ANDROID)
   { key::kDefaultInsecureContentSetting,
     prefs::kManagedDefaultInsecureContentSetting,
     base::Value::Type::INTEGER },
@@ -592,6 +594,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultDirectSocketsSetting,
     prefs::kManagedDefaultDirectSocketsSetting,
     base::Value::Type::INTEGER },
+#if BUILDFLAG(IS_CHROMEOS)
+  {  key::kDefaultSmartCardConnectSetting,
+    prefs::kManagedDefaultSmartCardConnectSetting,
+    base::Value::Type::INTEGER },
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   { key::kDeletingUndecryptablePasswordsEnabled,
     password_manager::prefs::kDeletingUndecryptablePasswordsEnabled,
@@ -657,12 +664,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHomepageIsNewTabPage,
     prefs::kHomePageIsNewTabPage,
     base::Value::Type::BOOLEAN },
+#endif // !BUILDFLAG(IS_ANDROID)
   { key::kImagesAllowedForUrls,
     prefs::kManagedImagesAllowedForUrls,
     base::Value::Type::LIST },
   { key::kImagesBlockedForUrls,
     prefs::kManagedImagesBlockedForUrls,
     base::Value::Type::LIST },
+#if !BUILDFLAG(IS_ANDROID)
   { key::kInsecureContentAllowedForUrls,
     prefs::kManagedInsecureContentAllowedForUrls,
     base::Value::Type::LIST },
@@ -769,8 +778,8 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRelaunchNotificationPeriod,
     prefs::kRelaunchNotificationPeriod,
     base::Value::Type::INTEGER },
-  { key::kRelaunchSupersededReleaseAge,
-    prefs::kRelaunchSupersededReleaseAge,
+  { key::kRelaunchFastIfOutdated,
+    prefs::kRelaunchFastIfOutdated,
     base::Value::Type::INTEGER },
   { key::kRemoteDebuggingAllowed,
     prefs::kDevToolsRemoteDebuggingAllowed,
@@ -1318,6 +1327,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     nullptr,
     base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenSpokenFeedbackEnabled,
+    nullptr,
+    base::Value::Type::BOOLEAN },
+  { key::kDeviceLoginScreenFaceGazeEnabled,
     nullptr,
     base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenDefaultHighContrastEnabled,
@@ -2305,9 +2317,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID)
-  { key::kTabOrganizerSettings,
-    optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed,
-    base::Value::Type::INTEGER},
   { key::kAutofillPredictionSettings,
     optimization_guide::prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
@@ -2826,15 +2835,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       false));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabelForBrowser,
-      base::Value::Type::STRING));
+      key::kEnterpriseCustomLabelForBrowser,
+      prefs::kEnterpriseCustomLabelForBrowser, base::Value::Type::STRING));
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
           key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabelForProfile,
           base::Value::Type::STRING)));
 
   handlers->AddHandler(std::make_unique<URLPolicyHandler>(
-      key::kEnterpriseLogoUrl, prefs::kEnterpriseLogoUrlForBrowser));
+      key::kEnterpriseLogoUrlForBrowser, prefs::kEnterpriseLogoUrlForBrowser));
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
       std::make_unique<URLPolicyHandler>(key::kEnterpriseLogoUrl,
                                          prefs::kEnterpriseLogoUrlForProfile)));
@@ -3230,8 +3239,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionSettingsPolicyHandler>(
           chrome_schema));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kExtensionInstallAllowlist,
       extensions::pref_names::kInstallAllowList, false));
@@ -3239,6 +3246,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<extensions::ExtensionInstallBlockListPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionInstallForceListPolicyHandler>());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionURLPatternListPolicyHandler>(
           key::kExtensionInstallSources,
@@ -3338,9 +3347,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kHelpMeWriteSettings,
       optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
-      key::kTabOrganizerSettings,
-      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(
       key::kCreateThemesSettings,
       optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);

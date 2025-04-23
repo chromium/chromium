@@ -5,10 +5,7 @@
 //! Utilities to process `cargo metadata` dependency graph.
 
 use crate::{
-    config::BuildConfig,
-    crates,
-    gn::{target_spec_to_condition, Condition},
-    group::Group,
+    condition::Condition, config::BuildConfig, crates, group::Group,
     inherit::find_inherited_privilege_group,
 };
 
@@ -405,15 +402,7 @@ fn get_reverse_dependency_kinds(
         feature_set
             .features_for(package.id())
             .unwrap()
-            .map(|feature_list| {
-                feature_list
-                    .named_features()
-                    // TODO(lukasza): Stop filtering out the "default" feature.
-                    // (The current behavior doesn't match `cargo`.)
-                    .filter(|&f| f != "default")
-                    .map(|s| s.to_string())
-                    .collect_vec()
-            })
+            .map(|feature_list| feature_list.named_features().map(|s| s.to_string()).collect_vec())
             .unwrap_or_default()
     };
     let mut result = HashMap::new();
@@ -457,7 +446,7 @@ fn get_condition(platform_status: PlatformStatus) -> Condition {
         PlatformDependent { eval } => eval
             .target_specs()
             .iter()
-            .map(target_spec_to_condition)
+            .map(Condition::from_target_spec)
             .fold(Condition::AlwaysFalse, Condition::or),
     }
 }
@@ -659,7 +648,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(0, 2, 133));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["std"],
+            &["default", "std"],
         );
 
         i += 1;
@@ -670,7 +659,7 @@ mod tests {
         assert_eq!(dependencies[i].group, Group::Safe);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["std"]
+            &["default", "std"]
         );
         assert_eq!(dependencies[i].build_dependencies.len(), 1);
         assert_eq!(
@@ -703,7 +692,7 @@ mod tests {
         assert!(dependencies[i].is_toplevel_dep);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["alloc", "race", "std"]
+            &["alloc", "default", "race", "std"]
         );
 
         i += 1;
@@ -712,7 +701,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(1, 0, 40));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["proc-macro"]
+            &["default", "proc-macro"]
         );
         assert!(dependencies[i].build_script.as_ref().is_some_and(|path| {
             assert!(path.ends_with("proc-macro2-1.0.40/build.rs"));
@@ -725,7 +714,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(1, 0, 20));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["proc-macro"]
+            &["default", "proc-macro"]
         );
 
         i += 1;
@@ -736,7 +725,7 @@ mod tests {
         assert_eq!(dependencies[i].group, Group::Safe);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["derive", "serde_derive", "std"]
+            &["default", "derive", "serde_derive", "std"]
         );
         assert_eq!(dependencies[i].dependencies.len(), 1);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
@@ -756,7 +745,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(1, 0, 139));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            empty_str_slice
+            &["default"],
         );
         assert!(!dependencies[i].is_toplevel_dep);
         assert_eq!(dependencies[i].group, Group::Safe);
@@ -797,7 +786,7 @@ mod tests {
         assert!(!dependencies[i].is_toplevel_dep);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["clone-impls", "derive", "parsing", "printing", "proc-macro", "quote"]
+            &["clone-impls", "default", "derive", "parsing", "printing", "proc-macro", "quote"]
         );
         assert_eq!(dependencies[i].dependencies.len(), 3);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
@@ -858,7 +847,7 @@ mod tests {
         assert_eq!(dependencies[i].group, Group::Test);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["alloc", "std"]
+            &["alloc", "default", "std"]
         );
         assert_eq!(dependencies[i].dependencies.len(), 2);
         assert_eq!(
@@ -955,7 +944,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(0, 2, 133));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["std"]
+            &["default", "std"]
         );
 
         i += 1;
@@ -969,7 +958,7 @@ mod tests {
         assert_eq!(dependencies[i].version, Version::new(0, 3, 14));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            &["alloc", "std"]
+            &["alloc", "default", "std"]
         );
 
         i += 1;

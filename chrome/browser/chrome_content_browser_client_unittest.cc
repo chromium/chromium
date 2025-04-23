@@ -359,7 +359,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
       url::Origin::Create(GURL("c.test"))));
 }
 
-TEST_F(ChromeContentBrowserClientWindowTest, GetAutoPipReason) {
+TEST_F(ChromeContentBrowserClientWindowTest, GetAutoPipInfo_AutoPipReason) {
   ChromeContentBrowserClient client;
 
   const GURL url("https://www.google.com");
@@ -378,18 +378,18 @@ TEST_F(ChromeContentBrowserClientWindowTest, GetAutoPipReason) {
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   ASSERT_NE(nullptr, tab_helper);
   EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
-            client.GetAutoPipReason(*web_contents));
+            client.GetAutoPipInfo(*web_contents).auto_pip_reason);
 
   tab_helper->set_auto_pip_trigger_reason_for_testing(
       media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing);
   EXPECT_EQ(
       media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
-      client.GetAutoPipReason(*web_contents));
+      client.GetAutoPipInfo(*web_contents).auto_pip_reason);
 
   tab_helper->set_auto_pip_trigger_reason_for_testing(
       media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback);
   EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback,
-            client.GetAutoPipReason(*web_contents));
+            client.GetAutoPipInfo(*web_contents).auto_pip_reason);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1632,7 +1632,7 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
                 &profile_, GURL("chrome-search://test")));
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extension URL
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
             browser_client.ShouldUseSpareRenderProcessHost(

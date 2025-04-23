@@ -28,6 +28,7 @@ class IOSEnterpriseInterstitial
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
       base::Value::Dict& load_time_data) const override;
+  void WasDismissed() override;
 
   // EnterpriseInterstitialBase:
   const std::vector<security_interstitials::UnsafeResource>& unsafe_resources()
@@ -42,11 +43,24 @@ class IOSEnterpriseInterstitial
         const security_interstitials::UnsafeResource& resource);
     ~EnterprisePageControllerClient() override;
 
-   private:
+    // Handles commands forwarded from the IOSEnterpriseInterstitial.
+    void HandleCommand(
+        security_interstitials::SecurityInterstitialCommand command);
+
     // security_interstitials::ControllerClient:
     void Proceed() override;
     void GoBack() override;
     void GoBackAfterNavigationCommitted() override;
+
+   private:
+    // Removes pending navigation decisions from the allow list. Call this if
+    // the user goes back or closes the interstitial.
+    void RemovePendingUnsafeNavigationDecisionsFromAllowList();
+
+    // Stored details from the UnsafeResource needed for command handling.
+    GURL request_url_;
+    safe_browsing::SBThreatType threat_type_;
+    safe_browsing::ThreatSource threat_source_;
   };
 
   IOSEnterpriseInterstitial(
@@ -56,7 +70,8 @@ class IOSEnterpriseInterstitial
  private:
   // The unsafe resource(s) triggering the enterprise blocking/warning page.
   std::vector<security_interstitials::UnsafeResource> unsafe_resources_;
-
+  // The controller client responsible for handling user interactions and
+  // navigation logic.
   std::unique_ptr<EnterprisePageControllerClient> client_;
 };
 

@@ -58,7 +58,8 @@ class TestPermissionManager : public MockPermissionManager {
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override {
     ASSERT_EQ(request_description.permissions.size(), 1u);
-    EXPECT_EQ(request_description.permissions[0],
+    EXPECT_EQ(blink::PermissionDescriptorToPermissionType(
+                  request_description.permissions[0]),
               blink::PermissionType::GEOLOCATION);
     EXPECT_TRUE(request_description.user_gesture);
     request_callback_.Run(std::move(callback));

@@ -104,8 +104,7 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
 
   // Note: The PDF plugin doesn't set the `X-Requested-With` header.
   if (!request.headers.empty()) {
-    net::HttpUtil::HeadersIterator it(request.headers.begin(),
-                                      request.headers.end(), "\n\r");
+    net::HttpUtil::HeadersIterator it(request.headers, "\n\r");
     while (it.GetNext()) {
       blink_request.AddHttpHeaderField(blink::WebString::FromUTF8(it.name()),
                                        blink::WebString::FromUTF8(it.values()));

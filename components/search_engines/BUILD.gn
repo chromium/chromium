@@ -29,7 +29,6 @@ static_library("search_engines") {
     "search_engine_choice/search_engine_choice_service.h",
     "search_engine_choice/search_engine_choice_utils.cc",
     "search_engine_choice/search_engine_choice_utils.h",
-    "search_engines_pref_names.h",
     "search_host_to_urls_map.cc",
     "search_host_to_urls_map.h",
     "search_terms_data.cc",
@@ -60,6 +59,7 @@ static_library("search_engines") {
   ]
 
   public_deps = [
+    ":search_engine_pref_names",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -72,7 +72,6 @@ static_library("search_engines") {
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
     "//third_party/search_engines_data:prepopulated_engines",
-    "//third_party/search_engines_data:regional_settings",
   ]
 
   deps = [
@@ -168,6 +167,10 @@ source_set("search_engine_type") {
   sources = [ "search_engine_type.h" ]
 }
 
+source_set("search_engine_pref_names") {
+  sources = [ "search_engines_pref_names.h" ]
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -193,6 +196,7 @@ static_library("test_support") {
     "//components/regional_capabilities:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
+    "//third_party/search_engines_data:regional_settings",
   ]
 }
 

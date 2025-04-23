@@ -96,15 +96,15 @@ export class SettingsToggleButtonElement extends
     ];
   }
 
-  override ariaLabel: string;
-  ariaShowLabel: boolean;
-  ariaShowSublabel: boolean;
-  elideLabel: boolean;
-  icon: string;
-  learnMoreAriaLabel: string;
-  learnMoreUrl: string;
-  subLabelWithLink: string;
-  subLabelIcon: string;
+  declare ariaLabel: string;
+  declare ariaShowLabel: boolean;
+  declare ariaShowSublabel: boolean;
+  declare elideLabel: boolean;
+  declare icon: string;
+  declare learnMoreAriaLabel: string;
+  declare learnMoreUrl: string;
+  declare subLabelWithLink: string;
+  declare subLabelIcon: string;
 
   override ready() {
     super.ready();

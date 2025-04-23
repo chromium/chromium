@@ -46,7 +46,6 @@ cc_library(
     ],
     deps = [
         ":tokenizer",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/utils:common_utils",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_googlesource_code_re2//:re2",

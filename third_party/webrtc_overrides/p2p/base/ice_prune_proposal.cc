@@ -11,10 +11,10 @@
 namespace blink {
 
 IcePruneProposal::IcePruneProposal(
-    const rtc::ArrayView<const cricket::Connection*> connections_to_prune,
+    const webrtc::ArrayView<const webrtc::Connection*> connections_to_prune,
     bool reply_expected)
     : IceProposal(reply_expected) {
-  for (const cricket::Connection* conn : connections_to_prune) {
+  for (const webrtc::Connection* conn : connections_to_prune) {
     if (conn) {
       connections_to_prune_.emplace_back(conn);
     }
@@ -22,7 +22,7 @@ IcePruneProposal::IcePruneProposal(
 }
 
 std::string IcePruneProposal::ToString() const {
-  rtc::StringBuilder ss;
+  webrtc::StringBuilder ss;
   ss << "PruneProposal[";
   int ctr = 1;
   for (auto conn : connections_to_prune_) {

@@ -68,6 +68,12 @@ class PrerenderNewTabHandle {
     return attributes_.GetEagerness();
   }
 
+  // Returns std::nullopt iff prerendering is initiated by the browser (not by
+  // a renderer using Speculation Rules API).
+  std::optional<url::Origin> initiator_origin() const {
+    return attributes_.initiator_origin;
+  }
+
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 
  private:

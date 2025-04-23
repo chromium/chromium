@@ -11,12 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A simple binder class for footer items. */
+@NullMarked
 class FooterItemViewBinder {
     /** Creates a view for footer items on the detail sheet. */
     static View create(ViewGroup parent) {

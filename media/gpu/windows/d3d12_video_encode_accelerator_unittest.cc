@@ -143,9 +143,8 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestVideoFrame() {
-    gfx::GpuMemoryBufferHandle fake_handle;
-    fake_handle.type = gfx::DXGI_SHARED_HANDLE;
-    fake_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+    gfx::GpuMemoryBufferHandle fake_handle(
+        gfx::DXGIHandle::CreateFakeForTest());
 
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -237,11 +236,14 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, RejectsUnsupportedConfig) {
     auto bad_config = supported_config;
     bad_config.output_profile = video_codec_profile;
     bad_config.input_visible_size = size;
-    EXPECT_TRUE(d3d12_video_encode_accelerator
-                    ->Initialize(bad_config, client_.get(), media_log_->Clone())
-                    .is_ok());
+    EXPECT_FALSE(
+        d3d12_video_encode_accelerator
+            ->Initialize(bad_config, client_.get(), media_log_->Clone())
+            .is_ok());
+    // Errors should be returned early and InitializeTask() should not be
+    // called.
     EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(0);
-    EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(1);
+    EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
     WaitForEncoderTasksToComplete();
     Mock::VerifyAndClearExpectations(&client_);
   }

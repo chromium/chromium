@@ -117,6 +117,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
       const std::optional<std::string>& cache_guid) const override;
   bool WasTabGroupClosedLocally(const base::Uuid& sync_id) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
+  void UpdateArchivalStatus(const base::Uuid& sync_id,
+                            bool archival_status) override;
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
@@ -139,7 +141,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void SetIsInitializedForTesting(bool initialized) override;
   std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
 
-  SavedTabGroupModel* GetModelForTesting();
+  SavedTabGroupModel* GetModel();
 
  private:
   // SavedTabGroupModelObserver:

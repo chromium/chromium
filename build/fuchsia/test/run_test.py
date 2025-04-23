@@ -23,7 +23,8 @@ from ffx_integration import ScopedFfxConfig
 from flash_device import register_update_args, update
 from isolate_daemon import IsolateDaemon
 from log_manager import LogManager, start_system_log
-from publish_package import publish_packages, register_package_args
+from publish_package import ensure_repository, publish_packages, \
+                            register_package_args
 from run_blink_test import BlinkTestRunner
 from run_executable_test import create_executable_test_runner, \
                                 register_executable_test_args
@@ -78,7 +79,7 @@ def main():
     register_executable_test_args(parser)
     register_update_args(parser, default_os_check='ignore')
     register_log_args(parser)
-    register_package_args(parser, allow_temp_repo=True)
+    register_package_args(parser)
     register_serve_args(parser)
 
     # Treat unrecognized arguments as test specific arguments.
@@ -147,10 +148,16 @@ def main():
                 # Create a directory that serves as a temporary repository.
                 runner_args.repo = stack.enter_context(
                     tempfile.TemporaryDirectory())
-            publish_packages(package_deps.values(), runner_args.repo,
-                             not runner_args.no_repo_init)
-            stack.enter_context(serve_repository(runner_args))
+                assert ensure_repository(runner_args), \
+                    'Must initialize a repository with a temporary folder.'
+                stack.enter_context(serve_repository(runner_args))
+            publish_packages(package_deps.values(), runner_args)
             resolve_packages(package_deps.keys(), runner_args.target_id)
+        elif runner_args.repo:
+            # If there is a repo defined without packages, start the repo, so
+            # that the following runs can use it.
+            if ensure_repository(runner_args):
+                stack.enter_context(serve_repository(runner_args))
 
         return test_runner.run_test().returncode
 

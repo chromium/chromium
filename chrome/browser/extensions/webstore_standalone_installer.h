@@ -23,7 +23,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/webstore_install_result.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class Extension;

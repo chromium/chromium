@@ -12,6 +12,7 @@ source_set("authentication_flow") {
   deps = [
     ":authentication_flow_in_profile",
     ":authentication_flow_performer",
+    ":request_helper",
     "//base",
     "//components/bookmarks/common",
     "//components/reading_list/features:flags",
@@ -67,6 +68,7 @@ source_set("authentication_flow_in_profile") {
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:capabilities_fetcher",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -90,6 +92,7 @@ source_set("authentication_flow_performer") {
     "authentication_flow_performer_delegate.h",
   ]
   deps = [
+    ":request_helper",
     "//base",
     "//components/prefs",
     "//components/signin/public/base",
@@ -129,6 +132,15 @@ source_set("authentication_flow_performer") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("request_helper") {
+  sources = [ "authentication_flow_request_helper.h" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/signin/model:constants",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -140,6 +152,8 @@ source_set("unit_tests") {
     ":authentication_flow",
     ":authentication_flow_in_profile",
     ":authentication_flow_performer",
+    ":request_helper",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",
@@ -148,7 +162,9 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:test_support",
@@ -170,5 +186,24 @@ source_set("unit_tests") {
     "//ios/testing:protocol_fake",
     "//ios/web/public/test",
     "//third_party/ocmock",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_authentication_flow_request_helper.h",
+    "test_authentication_flow_request_helper.mm",
+  ]
+  deps = [
+    ":authentication_flow",
+    ":request_helper",
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/signin/model:constants",
   ]
 }

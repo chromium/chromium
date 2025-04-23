@@ -79,12 +79,12 @@ export class SecurityKeysSubpageElement extends PolymerElement {
     };
   }
 
-  private enableBioEnrollment_: boolean;
-  private enableManagePhones_: boolean;
-  private showSetPINDialog_: boolean;
-  private showCredentialManagementDialog_: boolean;
-  private showResetDialog_: boolean;
-  private showBioEnrollDialog_: boolean;
+  declare private enableBioEnrollment_: boolean;
+  declare private enableManagePhones_: boolean;
+  declare private showSetPINDialog_: boolean;
+  declare private showCredentialManagementDialog_: boolean;
+  declare private showResetDialog_: boolean;
+  declare private showBioEnrollDialog_: boolean;
 
   private onManagePhonesClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);

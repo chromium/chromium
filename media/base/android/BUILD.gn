@@ -50,16 +50,8 @@ if (is_android) {
       "media_drm_bridge_factory.h",
       "media_drm_storage_bridge.cc",
       "media_drm_storage_bridge.h",
-      "media_player_bridge.cc",
-      "media_player_bridge.h",
-      "media_player_listener.cc",
-      "media_player_listener.h",
-      "media_resource_getter.cc",
-      "media_resource_getter.h",
       "media_server_crash_listener.cc",
       "media_server_crash_listener.h",
-      "media_service_throttler.cc",
-      "media_service_throttler.h",
       "stream_texture_wrapper.h",
     ]
     configs += [ "//media:subcomponent_config" ]
@@ -90,8 +82,6 @@ if (is_android) {
       "media_codec_loop_unittest.cc",
       "media_codec_util_unittest.cc",
       "media_drm_bridge_unittest.cc",
-      "media_player_bridge_unittest.cc",
-      "media_service_throttler_unittest.cc",
     ]
 
     deps = [
@@ -138,8 +128,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
-      "java/src/org/chromium/media/MediaPlayerBridge.java",
-      "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
@@ -205,8 +193,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaDrmSessionManager.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
       "java/src/org/chromium/media/MediaFormatBuilder.java",
-      "java/src/org/chromium/media/MediaPlayerBridge.java",
-      "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/ScreenResolutionUtil.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",

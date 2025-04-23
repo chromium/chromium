@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
@@ -69,6 +70,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -557,8 +559,6 @@ void TabDragControllerTest::SetUp() {
 
 namespace {
 
-enum InputSource { INPUT_SOURCE_MOUSE = 0, INPUT_SOURCE_TOUCH = 1 };
-
 int GetDetachY(TabStrip* tab_strip) {
   return std::max(TabDragController::kTouchVerticalDetachMagnetism,
                   TabDragController::kVerticalDetachMagnetism) +
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
 }
 
 class DetachToBrowserTabDragControllerTest
-    : public TabDragControllerTest,
+    : public TabDragControllerInteractiveTestMixin<TabDragControllerTest>,
       public ::testing::WithParamInterface<
           testing::tuple<bool, bool, const char*>> {
  public:
@@ -725,75 +725,15 @@ class DetachToBrowserTabDragControllerTest
 #endif  // BUILDFLAG(IS_MAC)
   }
 
-  InputSource input_source() const {
-    return strstr(std::get<2>(GetParam()), "mouse") ? INPUT_SOURCE_MOUSE
-                                                    : INPUT_SOURCE_TOUCH;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool SendTouchEventsSync(int action, int id, const gfx::Point& location) {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    if (!ui_controls::SendTouchEventsNotifyWhenDone(
-            action, id, location.x(), location.y(), run_loop.QuitClosure())) {
-      return false;
-    }
-    run_loop.Run();
-    return true;
-  }
-#endif
-
-  gfx::NativeWindow GetWindowHint(const views::View* view) {
-    return view->GetWidget() ? view->GetWidget()->GetNativeWindow()
-                             : gfx::NativeWindow();
-  }
-
-  // The following methods update one of the mouse or touch input depending upon
-  // the InputSource.
-  bool PressInput(const gfx::Point& location,
-                  const gfx::NativeWindow window_hint,
-                  int id = 0) {
-    if (input_source() == INPUT_SOURCE_MOUSE) {
-      return ui_test_utils::SendMouseMoveSync(location, window_hint) &&
-             ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
-                                                ui_controls::DOWN, window_hint);
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    return SendTouchEventsSync(ui_controls::kTouchPress, id, location);
-#else
-    NOTREACHED();
-#endif
-  }
-
-  // Like PressInput() used together with GetCenterInScreenCoordinates(), but
-  // also automatically passes a window hint to the ui_test_utils functions
-  // used. This is sometimes needed on Wayland to ensure the mouse events are
-  // sent to the correct location.
-  bool PressInputAtCenter(const views::View* view, int id = 0) {
-    return PressInput(GetCenterInScreenCoordinates(view), GetWindowHint(view),
-                      id);
-  }
-
-  bool DragInputTo(const gfx::Point& location, gfx::NativeWindow window_hint) {
-    if (input_source() == INPUT_SOURCE_MOUSE) {
-      return ui_test_utils::SendMouseMoveSync(location, window_hint);
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    return SendTouchEventsSync(ui_controls::kTouchMove, 0, location);
-#else
-    NOTREACHED();
-#endif
-  }
-
-  // Like PressInputAtCenter(), but for DragInputTo() instead of PressInput()
-  // and with an offset applied to the view's center.
-  bool DragInputToCenter(const views::View* view, gfx::Vector2d offset = {}) {
-    return DragInputTo(GetCenterInScreenCoordinates(view) + offset,
-                       GetWindowHint(view));
+  InputSource input_source() override {
+    return strstr(std::get<2>(GetParam()), "mouse")
+               ? InputSource::INPUT_SOURCE_MOUSE
+               : InputSource::INPUT_SOURCE_TOUCH;
   }
 
   bool DragInputToAsync(const gfx::Point& location,
                         const gfx::NativeWindow window_hint) {
-    if (input_source() == INPUT_SOURCE_MOUSE) {
+    if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
       return ui_controls::SendMouseMove(location.x(), location.y(),
                                         window_hint);
     }
@@ -816,7 +756,7 @@ class DetachToBrowserTabDragControllerTest
   bool DragInputToNotifyWhenDone(const gfx::Point& location,
                                  base::OnceClosure task,
                                  const gfx::NativeWindow window_hint) {
-    if (input_source() == INPUT_SOURCE_MOUSE) {
+    if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
       return ui_controls::SendMouseMoveNotifyWhenDone(
           location.x(), location.y(), std::move(task), window_hint);
     }
@@ -838,23 +778,6 @@ class DetachToBrowserTabDragControllerTest
     gfx::Point location = GetCenterInScreenCoordinates(view) + offset;
     return DragInputToNotifyWhenDone(location, std::move(task),
                                      GetWindowHint(view));
-  }
-
-  bool ReleaseInput(int id = 0, bool async = false) {
-    if (input_source() == INPUT_SOURCE_MOUSE) {
-      return async ? ui_controls::SendMouseEvents(ui_controls::LEFT,
-                                                  ui_controls::UP)
-                   : ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
-                                                        ui_controls::UP);
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    return async ? ui_controls::SendTouchEvents(ui_controls::kTouchRelease, id,
-                                                0, 0)
-                 : SendTouchEventsSync(ui_controls::kTouchRelease, id,
-                                       gfx::Point());
-#else
-    NOTREACHED();
-#endif
   }
 
   void ReleaseInputAfterWindowDetached(int first_dragged_tab_width) {
@@ -885,7 +808,7 @@ class DetachToBrowserTabDragControllerTest
 
   bool MoveInputTo(const gfx::Point& location) {
     aura::Env::GetInstance()->SetLastMouseLocation(location);
-    if (input_source() == INPUT_SOURCE_MOUSE) {
+    if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
       return ui_test_utils::SendMouseMoveSync(location);
     }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3792,7 +3715,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DISABLED_DragDirectlyToSecondWindow) {
   // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/918733
-  if (input_source() == INPUT_SOURCE_TOUCH) {
+  if (input_source() == InputSource::INPUT_SOURCE_TOUCH) {
     VLOG(1) << "Test is DISABLED for touch input.";
     return;
   }
@@ -4528,7 +4451,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   // This other browser should be on the second screen (with mouse drag)
   // With the touch input the browser cannot be dragged from one screen
   // to another and the window stays on the first screen.
-  if (input_source() == INPUT_SOURCE_MOUSE) {
+  if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
     EXPECT_EQ(
         ui_test_utils::GetSecondaryDisplay(screen).id(),
         screen
@@ -5543,3 +5466,101 @@ INSTANTIATE_TEST_SUITE_P(
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse")));
 #endif
+
+// TODO(crbug.com/409577362) : Fix test flakiness
+#if !BUILDFLAG(IS_CHROMEOS)
+class SideBySideTabDragControllerTest
+    : public TabDragControllerInteractiveTestMixin<TabDragControllerTest> {
+ public:
+  bool IsTabInSplit(int index) {
+    return GetTabStripForBrowser(browser())->tab_at(index)->split().has_value();
+  }
+
+  void AddTabs(Browser* browser, int additional_tabs) {
+    for (int i = 0; i < additional_tabs; i++) {
+      chrome::AddSelectedTabWithURL(browser, GURL(url::kAboutBlankURL),
+                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSideBySide};
+};
+
+// Flaky. https://crbug.com/40748225
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DragBetweenSplitTab DISABLED_DragBetweenSplitTab
+#else
+#define MAYBE_DragBetweenSplitTab DragBetweenSplitTab
+#endif
+IN_PROC_BROWSER_TEST_F(SideBySideTabDragControllerTest,
+                       MAYBE_DragBetweenSplitTab) {
+  TabStrip* const tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabs(browser(), 2);
+
+  split_tabs::SplitTabId id = split_tabs::SplitTabId::GenerateNew();
+  tab_strip->SetSplit({0, 1}, id);
+  StopAnimating(tab_strip);
+
+  Tab* const last_split_tab = tab_strip->tab_at(1);
+
+  EXPECT_TRUE(IsTabInSplit(0));
+  EXPECT_TRUE(IsTabInSplit(1));
+  EXPECT_FALSE(IsTabInSplit(2));
+
+  // Drag the last tab to the middle of the split tab.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(2)));
+  ASSERT_TRUE(DragInputToCenter(last_split_tab));
+  ASSERT_TRUE(ReleaseInput());
+  StopAnimating(tab_strip);
+
+  // The last tab should return to where it was since we can't drag a tab in
+  // between a split.
+  EXPECT_FALSE(IsTabInSplit(0));
+  EXPECT_TRUE(IsTabInSplit(1));
+  EXPECT_TRUE(IsTabInSplit(2));
+}
+
+// Flaky. https://crbug.com/40748225
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DragBetweenMultipleSplitTabs DISABLED_DragBetweenMultipleSplitTabs
+#else
+#define MAYBE_DragBetweenMultipleSplitTabs DragBetweenMultipleSplitTabs
+#endif
+IN_PROC_BROWSER_TEST_F(SideBySideTabDragControllerTest,
+                       MAYBE_DragBetweenMultipleSplitTabs) {
+  TabStrip* const tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabs(browser(), 4);
+
+  split_tabs::SplitTabId first_id = split_tabs::SplitTabId::GenerateNew();
+  tab_strip->SetSplit({0, 1}, first_id);
+
+  split_tabs::SplitTabId second_id = split_tabs::SplitTabId::GenerateNew();
+  tab_strip->SetSplit({2, 3}, second_id);
+
+  StopAnimating(tab_strip);
+
+  EXPECT_TRUE(IsTabInSplit(0));
+  EXPECT_TRUE(IsTabInSplit(1));
+  EXPECT_TRUE(IsTabInSplit(2));
+  EXPECT_TRUE(IsTabInSplit(3));
+  EXPECT_FALSE(IsTabInSplit(4));
+
+  // Drag the last tab in between the two sets of split tabs.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(4)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(2)));
+  ASSERT_TRUE(ReleaseInput());
+
+  StopAnimating(tab_strip);
+
+  // The single tab should be able to go in between the two sets of split tabs
+  // since they belong to different splits.
+  EXPECT_TRUE(IsTabInSplit(0));
+  EXPECT_TRUE(IsTabInSplit(1));
+  EXPECT_FALSE(IsTabInSplit(2));
+  EXPECT_TRUE(IsTabInSplit(3));
+  EXPECT_TRUE(IsTabInSplit(4));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

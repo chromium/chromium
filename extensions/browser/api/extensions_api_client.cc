@@ -64,11 +64,12 @@ void ExtensionsAPIClient::OpenFileUrl(
     content::BrowserContext* browser_context) {}
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
+std::unique_ptr<AppViewGuestDelegate>
+ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return nullptr;
 }
 
-ExtensionOptionsGuestDelegate*
+std::unique_ptr<ExtensionOptionsGuestDelegate>
 ExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
     ExtensionOptionsGuest* guest) const {
   return nullptr;
@@ -85,14 +86,15 @@ ExtensionsAPIClient::CreateMimeHandlerViewGuestDelegate(
   return nullptr;
 }
 
-WebViewGuestDelegate* ExtensionsAPIClient::CreateWebViewGuestDelegate(
+std::unique_ptr<WebViewGuestDelegate>
+ExtensionsAPIClient::CreateWebViewGuestDelegate(
     WebViewGuest* web_view_guest) const {
   return nullptr;
 }
 
-WebViewPermissionHelperDelegate* ExtensionsAPIClient::
-    CreateWebViewPermissionHelperDelegate(
-        WebViewPermissionHelper* web_view_permission_helper) const {
+std::unique_ptr<WebViewPermissionHelperDelegate>
+ExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
+    WebViewPermissionHelper* web_view_permission_helper) const {
   return nullptr;
 }
 #endif

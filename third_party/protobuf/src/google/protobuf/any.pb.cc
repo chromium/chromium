@@ -233,7 +233,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Any_class_data_ =
             Any::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Any::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Any::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Any_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Any_class_data_.tc_table);
   return Any_class_data_.base();

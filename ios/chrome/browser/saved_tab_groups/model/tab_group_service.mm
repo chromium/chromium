@@ -50,6 +50,25 @@ std::unique_ptr<web::WebState> TabGroupService::WebStateToAddToEmptyGroup() {
   return web_state;
 }
 
+void TabGroupService::RegisterCollaborationControllerDelegate(
+    tab_groups::LocalTabGroupID tab_group_id,
+    base::WeakPtr<collaboration::IOSCollaborationControllerDelegate>
+        controller_delegate) {
+  CHECK(!group_to_controller_delegate_.contains(tab_group_id),
+        base::NotFatalUntil::M142);
+  group_to_controller_delegate_[tab_group_id] = controller_delegate;
+}
+
+void TabGroupService::UnregisterCollaborationControllerDelegate(
+    tab_groups::LocalTabGroupID tab_group_id) {
+  group_to_controller_delegate_.erase(tab_group_id);
+}
+
+collaboration::IOSCollaborationControllerDelegate*
+TabGroupService::GetDelegateForGroup(tab_groups::LocalTabGroupID tab_group_id) {
+  return group_to_controller_delegate_[tab_group_id].get();
+}
+
 bool TabGroupService::IsSharedGroup(const TabGroup* group) {
   CHECK(group);
   return tab_groups::utils::IsTabGroupShared(group, tab_group_sync_service_);

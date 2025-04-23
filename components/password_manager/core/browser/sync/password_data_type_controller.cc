@@ -104,4 +104,9 @@ void PasswordDataTypeController::OnPrimaryAccountChanged(
 #endif
 }
 
+void PasswordDataTypeController::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+}
+
 }  // namespace password_manager

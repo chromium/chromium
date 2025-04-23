@@ -152,25 +152,6 @@ VpnServiceForExtension::VpnServiceForExtension(
 
 VpnServiceForExtension::~VpnServiceForExtension() = default;
 
-void VpnServiceForExtension::OnAddDialog() {
-  DispatchEvent(std::make_unique<extensions::Event>(
-      extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
-      api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowAddDialog,
-                                 std::string()),
-      browser_context_));
-}
-
-void VpnServiceForExtension::OnConfigureDialog(
-    const std::string& configuration_name) {
-  DispatchEvent(std::make_unique<extensions::Event>(
-      extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
-      api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowConfigureDialog,
-                                 configuration_name),
-      browser_context_));
-}
-
 void VpnServiceForExtension::OnConfigRemoved(
     const std::string& configuration_name) {
   DispatchEvent(std::make_unique<extensions::Event>(
@@ -181,15 +162,14 @@ void VpnServiceForExtension::OnConfigRemoved(
 
 void VpnServiceForExtension::OnPlatformMessage(
     const std::string& configuration_name,
-    int32_t platform_message,
-    const std::optional<std::string>& error) {
+    int32_t platform_message) {
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
       api_vpn::OnPlatformMessage::kEventName,
       api_vpn::OnPlatformMessage::Create(
           configuration_name,
           static_cast<api_vpn::PlatformMessage>(platform_message),
-          error.value_or(std::string{})),
+          /*error=*/std::string{}),
       browser_context_));
 }
 
@@ -203,6 +183,7 @@ void VpnServiceForExtension::OnPacketReceived(
       browser_context_));
 }
 
+// TODO(neis): Remove this in favor of VpnService::SendToExtension.
 void VpnServiceForExtension::DispatchEvent(
     std::unique_ptr<extensions::Event> event) const {
   extensions::EventRouter::Get(browser_context_)
@@ -223,14 +204,43 @@ VpnService::VpnService(content::BrowserContext* browser_context)
 VpnService::~VpnService() = default;
 
 void VpnService::SendShowAddDialogToExtension(const std::string& extension_id) {
-  GetVpnServiceForExtension(extension_id)->DispatchAddDialogEvent();
+  SendToExtension(
+      extension_id,
+      std::make_unique<extensions::Event>(
+          extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
+          api_vpn::OnUIEvent::kEventName,
+          api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowAddDialog,
+                                     std::string()),
+          browser_context_));
 }
 
 void VpnService::SendShowConfigureDialogToExtension(
     const std::string& extension_id,
     const std::string& configuration_name) {
-  GetVpnServiceForExtension(extension_id)
-      ->DispatchConfigureDialogEvent(configuration_name);
+  SendToExtension(
+      extension_id,
+      std::make_unique<extensions::Event>(
+          extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
+          api_vpn::OnUIEvent::kEventName,
+          api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowConfigureDialog,
+                                     configuration_name),
+          browser_context_));
+}
+
+void VpnService::SendToExtension(const std::string& extension_id,
+                                 std::unique_ptr<extensions::Event> event) {
+  extensions::EventRouter::Get(browser_context_)
+      ->DispatchEventToExtension(extension_id, std::move(event));
+}
+
+void VpnService::SendOnPlatformMessageToExtension(
+    const std::string& extension_id,
+    const std::string& configuration_name,
+    uint32_t platform_message) {
+  auto it = extension_id_to_service_.find(extension_id);
+  CHECK(it != extension_id_to_service_.end());
+  CHECK(it->second);
+  it->second->OnPlatformMessage(configuration_name, platform_message);
 }
 
 void VpnService::CreateConfiguration(const std::string& extension_id,

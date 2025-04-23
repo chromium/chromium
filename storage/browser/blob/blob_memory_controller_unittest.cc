@@ -9,6 +9,7 @@
 
 #include "storage/browser/blob/blob_memory_controller.h"
 
+#include <array>
 #include <optional>
 
 #include "base/files/file_util.h"
@@ -679,7 +680,7 @@ TEST_F(BlobMemoryControllerTest, PagingStopsWhenFull) {
   // Create all of our blobs.
   std::vector<scoped_refptr<ShareableBlobDataItem>> all_items;
   std::vector<base::WeakPtr<QuotaAllocationTask>> memory_tasks;
-  bool memory_requested[kBlobsThatCanFit] = {};
+  std::array<bool, kBlobsThatCanFit> memory_requested = {};
   for (size_t i = 0; i < kBlobsThatCanFit; i++) {
     BlobDataBuilder builder("fake");
     builder.AppendData(std::string(kData, kDataSize));

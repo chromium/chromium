@@ -20,42 +20,42 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
  public:
   // Create an IceTransportAdapter for an existing |ice_transport_channel|
   // object.
-  IceTransportAdapterImpl(
-      Delegate* delegate,
-      rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel);
+  IceTransportAdapterImpl(Delegate* delegate,
+                          webrtc::scoped_refptr<webrtc::IceTransportInterface>
+                              ice_transport_channel);
 
   ~IceTransportAdapterImpl() override;
 
   // IceTransportAdapter overrides.
   void StartGathering(
-      const cricket::IceParameters& local_parameters,
-      const cricket::ServerAddresses& stun_servers,
-      const std::vector<cricket::RelayServerConfig>& turn_servers,
+      const webrtc::IceParameters& local_parameters,
+      const webrtc::ServerAddresses& stun_servers,
+      const std::vector<webrtc::RelayServerConfig>& turn_servers,
       IceTransportPolicy policy) override;
   void Start(
-      const cricket::IceParameters& remote_parameters,
-      cricket::IceRole role,
-      const Vector<cricket::Candidate>& initial_remote_candidates) override;
+      const webrtc::IceParameters& remote_parameters,
+      webrtc::IceRole role,
+      const Vector<webrtc::Candidate>& initial_remote_candidates) override;
   void HandleRemoteRestart(
-      const cricket::IceParameters& new_remote_parameters) override;
-  void AddRemoteCandidate(const cricket::Candidate& candidate) override;
+      const webrtc::IceParameters& new_remote_parameters) override;
+  void AddRemoteCandidate(const webrtc::Candidate& candidate) override;
 
  private:
-  cricket::IceTransportInternal* ice_transport_channel() {
+  webrtc::IceTransportInternal* ice_transport_channel() {
     return ice_transport_channel_->internal();
   }
   void SetupIceTransportChannel();
   // Callbacks from P2PTransportChannel.
-  void OnGatheringStateChanged(cricket::IceTransportInternal* transport);
-  void OnCandidateGathered(cricket::IceTransportInternal* transport,
-                           const cricket::Candidate& candidate);
-  void OnStateChanged(cricket::IceTransportInternal* transport);
+  void OnGatheringStateChanged(webrtc::IceTransportInternal* transport);
+  void OnCandidateGathered(webrtc::IceTransportInternal* transport,
+                           const webrtc::Candidate& candidate);
+  void OnStateChanged(webrtc::IceTransportInternal* transport);
   void OnNetworkRouteChanged(
-      std::optional<rtc::NetworkRoute> new_network_route);
-  void OnRoleConflict(cricket::IceTransportInternal* transport);
+      std::optional<webrtc::NetworkRoute> new_network_route);
+  void OnRoleConflict(webrtc::IceTransportInternal* transport);
 
   const raw_ptr<Delegate> delegate_;
-  rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;
+  webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;
 };
 
 }  // namespace blink

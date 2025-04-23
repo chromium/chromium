@@ -26,9 +26,6 @@
 // Delegate that handles tab group indicator view updates.
 @property(nonatomic, weak) id<TabGroupIndicatorViewDelegate> delegate;
 
-// The view controller on which the face pile is presented.
-@property(nonatomic, weak) UIViewController* facePileParentViewController;
-
 // Mutator for actions happening in the view.
 @property(nonatomic, weak) id<TabGroupIndicatorMutator> mutator;
 

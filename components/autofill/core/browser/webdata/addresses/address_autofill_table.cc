@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -566,7 +567,7 @@ AddressAutofillTable::~AddressAutofillTable() = default;
 
 // static
 AddressAutofillTable* AddressAutofillTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<AddressAutofillTable*>(db->GetTable(GetKey()));
+  return static_cast<AddressAutofillTable*>(CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey AddressAutofillTable::GetTypeKey() const {

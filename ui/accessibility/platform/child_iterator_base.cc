@@ -65,7 +65,7 @@ AXPlatformNodeDelegate* ChildIteratorBase::get() const {
 AXPlatformNodeDelegate& ChildIteratorBase::operator*() const {
   AXPlatformNode* platform_node =
       AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
-  DCHECK(platform_node && platform_node->GetDelegate());
+  DCHECK(platform_node);
   return *(platform_node->GetDelegate());
 }
 

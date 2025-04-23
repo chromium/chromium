@@ -44,6 +44,7 @@
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -57,6 +58,8 @@
 #include "url/origin.h"
 
 namespace content {
+
+class BrowserContext;
 
 namespace {
 // The maximum number of active report requests at a time.
@@ -268,6 +271,22 @@ void RecordNumberOfSelectableBuyerAndSellerReportingIds(
   }
 }
 
+// Returns true if `origin` is allowed to use interest group operation
+// `operation`, and false otherwise.
+bool IsInterestGroupAPIAllowed(
+    BrowserContext& browser_context,
+    const NavigationOrDocumentHandle* navigation_or_document_handle,
+    ContentBrowserClient::InterestGroupApiOperation operation,
+    const url::Origin& origin,
+    const url::Origin& top_frame_origin) {
+  auto* rfh = navigation_or_document_handle
+                  ? navigation_or_document_handle->GetDocument()
+                  : nullptr;
+
+  return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+      &browser_context, rfh, operation, top_frame_origin, origin);
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
@@ -460,16 +479,6 @@ void InterestGroupManagerImpl::OnClearOriginJoinedInterestGroupsComplete(
   }
 }
 
-void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
-    const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state,
-    std::optional<std::string> user_agent_override,
-    AreReportingOriginsAttestedCallback callback) {
-  update_manager_.UpdateInterestGroupsOfOwner(
-      owner, std::move(client_security_state), std::move(user_agent_override),
-      std::move(callback));
-}
-
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
     std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -478,6 +487,10 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
   update_manager_.UpdateInterestGroupsOfOwners(
       owners, std::move(client_security_state), std::move(user_agent_override),
       std::move(callback));
+  if (k_anonymity_manager_ &&
+      base::FeatureList::IsEnabled(features::kAlwaysUpdateKAnon)) {
+    k_anonymity_manager_->QueryKAnonymityOfOwners(owners);
+  }
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
@@ -537,16 +550,52 @@ void InterestGroupManagerImpl::RecordDebugReportCooldown(
 }
 
 void InterestGroupManagerImpl::RecordViewClick(
+    BrowserContext& browser_context,
+    const NavigationOrDocumentHandle* navigation_or_document_handle,
+    const std::optional<url::Origin>& maybe_top_frame_origin,
     network::AdAuctionEventRecord event_record) {
-  // TODO(crbug.com/394108643): Check against
-  // ContentBrowserClient::IsInterestGroupAPIAllowed(). This will require
-  // getting an RFH; we could use something like
-  // url_loader_network_observers_.current_context().navigation_or_document()
-  // in the StoragePartitionImpl, but the issue is that for clicks, we'll
-  // probably get a navigation handle instead of an RFH? Perhaps we can
-  // override WebContentsObserver::DidFinishNavigation() to wait until the new
-  // RFH is ready?
+  bool had_top_frame_origin = maybe_top_frame_origin.has_value();
+  url::Origin top_frame_origin =
+      maybe_top_frame_origin ? *maybe_top_frame_origin : url::Origin();
+  base::UmaHistogramBoolean(
+      "Storage.InterestGroup.HeaderObserver.CreatedOpaqueOriginForPrefsCheck",
+      !had_top_frame_origin);
+
+  if (!IsInterestGroupAPIAllowed(browser_context, navigation_or_document_handle,
+                                 InterestGroupApiOperation::kJoin,
+                                 event_record.providing_origin,
+                                 top_frame_origin)) {
+    return;
+  }
+
+  std::vector<url::Origin> allowed_eligible_origins;
+  for (url::Origin& eligible_origin : event_record.eligible_origins) {
+    if (IsInterestGroupAPIAllowed(browser_context,
+                                  navigation_or_document_handle,
+                                  InterestGroupApiOperation::kJoin,
+                                  eligible_origin, top_frame_origin)) {
+      allowed_eligible_origins.push_back(std::move(eligible_origin));
+    }
+  }
+  if (allowed_eligible_origins.empty()) {
+    return;
+  }
+  event_record.eligible_origins = std::move(allowed_eligible_origins);
   caching_storage_.RecordViewClick(std::move(event_record));
+}
+
+void InterestGroupManagerImpl::RecordViewClickForTesting(
+    network::AdAuctionEventRecord event_record) {
+  caching_storage_.RecordViewClick(std::move(event_record));
+}
+
+void InterestGroupManagerImpl::CheckViewClickInfoInDbForTesting(
+    url::Origin provider_origin,
+    url::Origin eligible_origin,
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  caching_storage_.CheckViewClickInfoInDbForTesting(std::move(provider_origin),
+                                                    std::move(eligible_origin),
+                                                    std::move(callback));
 }
 
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
@@ -598,8 +647,10 @@ void InterestGroupManagerImpl::UpdateCachedOriginsIfEnabled(
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion,
     base::OnceClosure completion_callback) {
-  caching_storage_.DeleteInterestGroupData(storage_key_matcher,
+  caching_storage_.DeleteInterestGroupData(std::move(storage_key_matcher),
+                                           user_initiated_deletion,
                                            std::move(completion_callback));
 }
 

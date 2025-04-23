@@ -12,7 +12,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
     .size="${this.listItemSize}"
-    .url="${this.bookmark.url}"
+    .url="${this.getUrl_()}"
     .imageUrls="${this.getBookmarkImageUrls_()}"
     .count="${this.bookmark.children?.length}"
     .title="${this.bookmark.title}"
@@ -72,7 +72,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
 </cr-url-list-item>`;
 
   if (this.shouldExpand_()) {
-    return html`
+    return html`<!--_html_template_start_-->
 <cr-expand-button no-hover id="expandButton"
     collapse-icon="cr:expand-more"
     expand-icon="cr:chevron-right"
@@ -86,20 +86,18 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .bookmark="${item}"
           ?compact="${this.compact}"
           .depth="${this.depth + 1}"
-          trailingIconTooltip="$i18n{tooltipMore}"
+          trailing-icon-tooltip="$i18n{tooltipMore}"
           ?has-checkbox="${this.hasCheckbox}"
           .selectedBookmarks="${this.selectedBookmarks}"
           .renamingId="${this.renamingId}"
           .imageUrls="${this.imageUrls}"
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
-          .bookmarksService="${this.bookmarksService}"
           .draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
-          .keyArrowNavigationService="${this.keyArrowNavigationService}"
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''
-  }`;
+  }<!--_html_template_end_-->`;
   }
 
   return html`

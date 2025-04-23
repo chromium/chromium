@@ -29,8 +29,6 @@ ContextualPanelTabHelper::~ContextualPanelTabHelper() {
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(ContextualPanelTabHelper)
-
 void ContextualPanelTabHelper::AddObserver(
     ContextualPanelTabHelperObserver* observer) {
   observers_.AddObserver(observer);

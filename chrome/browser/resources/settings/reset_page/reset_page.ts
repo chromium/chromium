@@ -63,7 +63,7 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
     };
   }
 
-  private showIncompatibleApplications_: boolean;
+  declare private showIncompatibleApplications_: boolean;
   // </if>
 
   /**

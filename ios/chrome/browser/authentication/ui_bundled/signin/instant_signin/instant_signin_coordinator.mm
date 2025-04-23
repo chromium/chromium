@@ -13,10 +13,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -40,13 +40,15 @@
   // Coordinator for the user to select an account.
   IdentityChooserCoordinator* _identityChooserCoordinator;
   // Coordinator to add an account.
-  SigninCoordinator* _addAccountSigninCoordinator;
+  SigninCoordinator<StopAnimatedChromeCoordinator>*
+      _addAccountSigninCoordinator;
   // Overlay to block the current window while the sign-in is in progress.
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
   // Action recorded if sign-in succeeded.
   signin_metrics::AccountConsistencyPromoAction _actionToRecordOnSuccess;
   // The signin logger.
   UserSigninLogger* _signinLogger;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 #pragma mark - Public
@@ -55,14 +57,20 @@
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                       identity:(id<SystemIdentity>)identity
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                   promoAction:(signin_metrics::PromoAction)promoAction {
+                   promoAction:(signin_metrics::PromoAction)promoAction
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(continuationProvider);
     _identity = identity;
     _promoAction = promoAction;
+    _continuationProvider = continuationProvider;
   }
   return self;
 }
@@ -71,6 +79,8 @@
   // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
+  DUMP_WILL_BE_CHECK(!_signinLogger)
+      << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - ChromeCoordinator
@@ -81,7 +91,8 @@
                                                     promoAction:_promoAction];
   [_signinLogger logSigninStarted];
   _mediator =
-      [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint];
+      [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint
+                                    continuationProvider:_continuationProvider];
   _mediator.delegate = self;
 
   if (_identity) {
@@ -126,34 +137,26 @@
   [_identityChooserCoordinator start];
 }
 
-- (void)stop {
-  CHECK(!_addAccountSigninCoordinator);
-  CHECK(!_activityOverlayCoordinator);
-  CHECK(!_identityChooserCoordinator);
-  _signinLogger = nil;
-  [_mediator disconnect];
-  _mediator.delegate = nil;
-  _mediator = nil;
-  [super stop];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
+- (void)stopAnimated:(BOOL)animated {
   if (_addAccountSigninCoordinator) {
     CHECK(!_identityChooserCoordinator);
     CHECK(!_activityOverlayCoordinator);
-    [_addAccountSigninCoordinator interruptAnimated:animated];
+    [_addAccountSigninCoordinator stopAnimated:animated];
+    _addAccountSigninCoordinator = nil;
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
     [self stopIdentityChooserCoordinator];
   } else {
     [self stopActivityOverlay];
   }
+  CHECK(!_addAccountSigninCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_activityOverlayCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_identityChooserCoordinator, base::NotFatalUntil::M145);
+  _signinLogger = nil;
+  [_mediator disconnect];
   _mediator.delegate = nil;
-  [_mediator interrupt];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
+  _mediator = nil;
+  [super stopAnimated:animated];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
@@ -263,7 +266,9 @@
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.baseViewController
                                           browser:self.browser
-                                      accessPoint:self.accessPoint];
+                                     contextStyle:self.contextStyle
+                                      accessPoint:self.accessPoint
+                             continuationProvider:_continuationProvider];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion = ^(
       SigninCoordinatorResult result, id<SystemIdentity> resultIdentity) {

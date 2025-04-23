@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Disabled because otherwise it is incorrectly also applied to Lit properties,
+// since Lit and Polymer coexist in this file.
+/* eslint-disable @webui-eslint/polymer-property-class-member */
+
+// Disabled because otherwise it is incorrectly also applied to Polymer
+// properties, since Lit and Polymer coexist in this file.
+/* eslint-disable @webui-eslint/lit-property-accessor */
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -97,11 +105,11 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
     };
   }
 
-  prop1: boolean = false;
-  prop2: boolean = false;
-  prop3: boolean = false;
-  propFour: boolean = false;
-  prop5: boolean|undefined = false;
+  accessor prop1: boolean = false;
+  accessor prop2: boolean = false;
+  accessor prop3: boolean = false;
+  accessor propFour: boolean = false;
+  accessor prop5: boolean|undefined = false;
 }
 
 customElements.define(
@@ -133,10 +141,10 @@ class CrDummyPropertiesWithReflectElement extends CrLitElement {
     };
   }
 
-  prop1: boolean = false;
-  prop2WithSuffix: boolean = false;
-  prop3: boolean = false;
-  propFour: boolean = false;
+  accessor prop1: boolean = false;
+  accessor prop2WithSuffix: boolean = false;
+  accessor prop3: boolean = false;
+  accessor propFour: boolean = false;
 }
 
 customElements.define(
@@ -244,11 +252,14 @@ suite('CrLitElement', function() {
 
       static get properties() {
         return {
-          show: Boolean,
+          show: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      show: boolean = false;
+      declare show: boolean;
 
       override connectedCallback() {
         super.connectedCallback();
@@ -376,9 +387,9 @@ suite('CrLitElement', function() {
         };
       }
 
-      fooBarBoolean: boolean = false;
-      fooBarString: string = 'hello';
-      fooBarStringCustom: string = 'hola';
+      accessor fooBarBoolean: boolean = false;
+      accessor fooBarString: string = 'hello';
+      accessor fooBarStringCustom: string = 'hola';
     }
 
     customElements.define(
@@ -467,11 +478,14 @@ suite('CrLitElement', function() {
 
       static get properties() {
         return {
-          myProp: Boolean,
+          myProp: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      myProp: boolean = false;
+      declare myProp: boolean;
     }
 
     customElements.define(CrPolymerWrapperElement.is, CrPolymerWrapperElement);
@@ -568,41 +582,17 @@ suite('CrLitElement accessor', function() {
         // below simulates TypeScript's JS output when class properties are
         // replaced with getter/setter pairs.
 
-        /* eslint-disable-next-line @webui-eslint/polymer-property-class-member
-         */
         propReflected: {
           type: String,
           reflect: true,
         },
 
-        /* eslint-disable-next-line @webui-eslint/polymer-property-class-member
-         */
         propNonReflected: {type: String},
       };
     }
 
-    // Simulate the code emitted by TS when 'accessor' is used as follows:
-    // accessor propReflected: boolean = true;
-    // accessor propNonReflected: boolean = true;
-    // along with the config at
-    // tools/typescript/tsconfig_base_lit_389737066.json. To ensure that such
-    // properties are initialized as expected.
-
-    #propReflected_accessor_storge: string = 'initial';
-    get propReflected() {
-      return this.#propReflected_accessor_storge;
-    }
-    set propReflected(value: string) {
-      this.#propReflected_accessor_storge = value;
-    }
-
-    #propNonReflected_accessor_storge: string = 'initial';
-    get propNonReflected() {
-      return this.#propNonReflected_accessor_storge;
-    }
-    set propNonReflected(value: string) {
-      this.#propNonReflected_accessor_storge = value;
-    }
+    accessor propReflected: string = 'initial';
+    accessor propNonReflected: string = 'initial';
 
     override willUpdate(changedProperties: PropertyValues<this>) {
       super.willUpdate(changedProperties);

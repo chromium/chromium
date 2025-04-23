@@ -175,6 +175,8 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   const_iterator cend() const { return end(); }
 
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
  private:
   friend class BigBufferView;
 

@@ -70,32 +70,6 @@ std::string GetUserSalt(const AccountId& account_id) {
   return {};
 }
 
-std::unique_ptr<views::Widget> CreateAuthDialogWidget(
-    std::unique_ptr<views::View> contents_view) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::mojom::WindowShowState::kNormal;
-  CHECK_EQ(Shell::Get()->session_controller()->GetSessionState(),
-           session_manager::SessionState::ACTIVE);
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
-      kShellWindowId_SystemModalContainer);
-  params.autosize = true;
-  params.name = "AuthDialogWidget";
-
-  params.delegate->SetInitiallyFocusedView(contents_view.get());
-  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  params.delegate->SetOwnedByWidget(true);
-
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(params));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  widget->SetContentsView(std::move(contents_view));
-  return widget;
-}
-
 const char* ReasonToString(AuthRequest::Reason reason) {
   switch (reason) {
     case AuthRequest::Reason::kPasswordManager:
@@ -448,7 +422,29 @@ void ActiveSessionAuthControllerImpl::InitUi() {
       account_id_, title_, description_, available_factors_);
   contents_view_ = contents_view.get();
 
-  widget_ = CreateAuthDialogWidget(std::move(contents_view));
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.delegate = new views::WidgetDelegate();
+  params.show_state = ui::mojom::WindowShowState::kNormal;
+  CHECK_EQ(Shell::Get()->session_controller()->GetSessionState(),
+           session_manager::SessionState::ACTIVE);
+  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_SystemModalContainer);
+  params.autosize = true;
+  params.name = "AuthDialogWidget";
+
+  params.delegate->SetInitiallyFocusedView(contents_view.get());
+  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
+
+  widget_ = std::make_unique<views::Widget>();
+  widget_->Init(std::move(params));
+  widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  widget_->SetContentsView(std::move(contents_view));
+
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
   SetState(ActiveSessionAuthState::kInitialized);

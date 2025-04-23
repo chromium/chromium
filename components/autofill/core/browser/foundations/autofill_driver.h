@@ -284,11 +284,10 @@ class AutofillDriver {
                                 const FieldGlobalId& field_id,
                                 const std::u16string& value) = 0;
 
-  // Sends the field type predictions specified in |forms| to the renderer. This
-  // method is a no-op if the renderer is not available or the appropriate
-  // command-line flag is not set.
-  virtual void SendTypePredictionsToRenderer(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) = 0;
+  // Sends the field type predictions of `form` to the renderer.
+  virtual void SendTypePredictionsToRenderer(const FormStructure& forms) = 0;
+  // Calls the agent and exposes DOM Node IDS as part of devtools protocol.
+  virtual void ExposeDomNodeIDs() = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(

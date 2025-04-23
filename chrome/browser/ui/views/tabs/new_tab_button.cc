@@ -178,7 +178,7 @@ void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   // this event was not handled, it seems like things would Just Work.
   gfx::Point point = event.location();
   views::View::ConvertPointToScreen(this, &point);
-  point = display::win::ScreenWin::DIPToScreenPoint(point);
+  point = display::win::GetScreenWin()->DIPToScreenPoint(point);
   auto weak_this = weak_factory_.GetWeakPtr();
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this), point);
   if (!weak_this) {

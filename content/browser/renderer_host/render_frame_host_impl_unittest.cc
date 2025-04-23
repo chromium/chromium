@@ -1410,6 +1410,175 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+class AvoidUnnecessaryBeforeUnloadCheckSyncTest
+    : public RenderFrameHostImplTest {
+ public:
+  class ForcePostTaskContentBrowserClient : public ContentBrowserClient {
+    bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override {
+      return false;
+    }
+  };
+
+  // In this function, the following code path will be executed on navigation.
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync disabled]
+  // - Start a browser initiated navigation.
+  // - Run TestRenderFrameHost::SendBeforeUnload()
+  // - Run on_sendbeforeunload_begin_ closure
+  // - Run RenderFrameHostImpl::SendBeforeUnload() => Post a task
+  // - Run on_sendbeforeunload_end_ closure
+  //
+  // (In the posted task)
+  // - Run RenderFrameHostImpl::ProcessBeforeUnloadCompleted()
+  // - Run on_process_before_unload_completed_for_testing_ closure
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync + `kWithSendBeforeUnload`]
+  // - Start a browser initiated navigation.
+  // - Run TestRenderFrameHost::SendBeforeUnload()
+  // - Run on_sendbeforeunload_begin_ closure
+  // - Run RenderFrameHostImpl::SendBeforeUnload()
+  // - Run RenderFrameHostImpl::ProcessBeforeUnloadCompleted()
+  // - Run on_process_before_unload_completed_for_testing_ closure
+  // - Run on_sendbeforeunload_end_ closure
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync + `kWithoutSendBeforeUnload`]
+  // - Start a browser initiated navigation.
+  // - (the rest will be skipped)
+  //
+  // - expect_beforeunload_processed_on_sendbeforeunload_stack argument checks
+  //   if ProcessBeforeUnloadCompleted() is called without posting a task by
+  //   checking it in on_sendbeforeunload_end_ closure. This argument is
+  //   optional because this argument doesn't make sense when SendBeforeUnload()
+  //   and ProcessBeforeUnloadCompleted are not called at all.
+  //
+  // - expect_to_run_sendbeforeunload argument checks if both
+  //   SendBeforeUnload() and ProcessBeforeUnloadCompleted() are called or not.
+  void TestBeforeUnloadBehaviorOnNavigation(
+      std::optional<bool>
+          expect_beforeunload_processed_on_sendbeforeunload_stack,
+      bool expect_to_run_sendbeforeunload,
+      const base::Location& location = FROM_HERE) {
+    TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+    bool beforeunload_processed = false;
+    bool run_sendbeforeunload = false;
+    // The following callback is called when processing beforeunload is
+    // completed.
+    rfh->set_on_process_before_unload_completed_for_testing(
+        base::BindLambdaForTesting([&]() { beforeunload_processed = true; }));
+    // The following callback is called when SendBeforeUnload() is about to
+    // start.
+    rfh->set_on_sendbeforeunload_begin(base::BindLambdaForTesting([&]() {
+      EXPECT_FALSE(beforeunload_processed) << location.ToString();
+    }));
+    // The following callback is called when SendBeforeUnload() is about to end.
+    rfh->set_on_sendbeforeunload_end(base::BindLambdaForTesting([&]() {
+      EXPECT_EQ(beforeunload_processed,
+                *expect_beforeunload_processed_on_sendbeforeunload_stack)
+          << location.ToString();
+      run_sendbeforeunload = true;
+    }));
+
+    auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
+        GURL("https://example.com/navigation.html"), contents());
+    simulator->Start();
+    simulator->Wait();
+
+    EXPECT_EQ(beforeunload_processed, expect_to_run_sendbeforeunload)
+        << location.ToString();
+    EXPECT_EQ(run_sendbeforeunload, expect_to_run_sendbeforeunload)
+        << location.ToString();
+  }
+};
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest, EnabledWithSendBeforeUnload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/true,
+      /*expect_to_run_sendbeforeunload=*/true);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest, Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/false,
+      /*expect_to_run_sendbeforeunload=*/true);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithSendBeforeUnloadButBrowserClientProhibits) {
+  ForcePostTaskContentBrowserClient force_post_task_content_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&force_post_task_content_browser_client);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes precedence over
+  // enabling the kAvoidUnnecessaryBeforeUnloadCheckSync feature.
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/false,
+      /*expect_to_run_sendbeforeunload=*/true);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/std::nullopt,
+      /*expect_to_run_send_beforeunload=*/false);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnloadButBrowserClientProhibits) {
+  ForcePostTaskContentBrowserClient force_post_task_content_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&force_post_task_content_browser_client);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes precedence over
+  // enabling the kAvoidUnnecessaryBeforeUnloadCheckSync feature.
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/false,
+      /*expect_to_run_send_beforeunload=*/true);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {

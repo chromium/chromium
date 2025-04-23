@@ -1,0 +1,516 @@
+{
+ "grammar": {
+  "grammars": [
+   {
+    "greedy_lexer": false,
+    "nodes": [
+     {
+      "Join": {
+       "sequence": [
+        1,
+        2
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        3,
+        4
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\"]\n}"
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        8,
+        9
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        5
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        6
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        7
+       ],
+       "capture_name": "__LIST_APPEND:item"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        10,
+        11
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\", \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        15,
+        16
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        12
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        13
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        14
+       ],
+       "capture_name": "__LIST_APPEND:item"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        17,
+        18
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\", \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        22,
+        23
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        19
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        20
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        21
+       ],
+       "capture_name": "__LIST_APPEND:item"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        24,
+        25
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": ",\n    \"items\": [\""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        29,
+        30
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        26
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        27
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        28
+       ],
+       "capture_name": "strength"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "[0-9]+",
+       "stop_rx": ",",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        31,
+        32
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\",\n    \"strength\": "
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        36,
+        37
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        33
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        34
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        35
+       ],
+       "capture_name": "mantra"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        38,
+        39
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\",\n    \"mantra\": \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        43,
+        44
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        40
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        41
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        42
+       ],
+       "capture_name": "class"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        45,
+        46
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\",\n    \"class\": \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        50,
+        51
+       ]
+      }
+     },
+     {
+      "Select": {
+       "among": [
+        47,
+        48,
+        49
+       ],
+       "capture_name": "weapon"
+      }
+     },
+     {
+      "String": {
+       "literal": "axe"
+      }
+     },
+     {
+      "String": {
+       "literal": "sword"
+      }
+     },
+     {
+      "String": {
+       "literal": "bow"
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        52,
+        53
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\",\n    \"weapon\": \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        57,
+        58
+       ]
+      }
+     },
+     {
+      "Select": {
+       "among": [
+        54,
+        55,
+        56
+       ],
+       "capture_name": "armor"
+      }
+     },
+     {
+      "String": {
+       "literal": "leather"
+      }
+     },
+     {
+      "String": {
+       "literal": "chainmail"
+      }
+     },
+     {
+      "String": {
+       "literal": "plate"
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        59,
+        60
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": ",\n    \"armor\": \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        64,
+        65
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        61
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        62
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        63
+       ],
+       "capture_name": "age"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "[0-9]+",
+       "stop_rx": ",",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        66,
+        67
+       ]
+      }
+     },
+     {
+      "String": {
+       "literal": "\",\n    \"age\": "
+      }
+     },
+     {
+      "String": {
+       "literal": "{\n    \"name\": \""
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        68
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        69
+       ]
+      }
+     },
+     {
+      "Join": {
+       "sequence": [
+        70
+       ],
+       "capture_name": "name"
+      }
+     },
+     {
+      "Gen": {
+       "body_rx": "",
+       "stop_rx": "\"",
+       "temperature": 0.0,
+       "max_tokens": 1000
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

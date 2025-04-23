@@ -13,7 +13,7 @@ class ChromeAccountManagerService;
 @class FaviconAttributesProvider;
 
 // These functions are used to save the content suggestions tiles (favicon and
-// name) offline for the use of the content widget. The most visited info and
+// name) offline for the use of the shortcuts widget. The most visited info and
 // icon fallback data are saved to userdefaults. The favicons are saved to a
 // shared directory.
 namespace content_suggestions_tile_saver {

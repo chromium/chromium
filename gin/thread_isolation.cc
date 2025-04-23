@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gin/thread_isolation.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -40,7 +35,9 @@ bool KernelHasPkruFix() {
   CHECK_EQ(0, uname(&uname_buffer));
   int kernel, major, minor;
   // Conservatively return if the release does not match the format we expect.
-  if (sscanf(uname_buffer.release, "%d.%d.%d", &kernel, &major, &minor) != 3) {
+  // SAFETY: required from system when uname() returns successfully.
+  if (UNSAFE_BUFFERS(sscanf(uname_buffer.release, "%d.%d.%d", &kernel, &major,
+                            &minor)) != 3) {
     return -1;
   }
   return kernel > 5 || (kernel == 5 && major >= 13) ||   // anything >= 5.13

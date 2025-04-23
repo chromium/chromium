@@ -35,7 +35,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"

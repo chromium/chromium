@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -26,14 +27,16 @@
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/integrators/valuables/mock_valuable_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -51,6 +54,8 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -141,6 +146,13 @@ class TestAutofillClientTemplate : public T {
     return *test_personal_data_manager_.get();
   }
 
+  ValuablesDataManager* GetValuablesDataManager() override {
+    if (!valuables_data_manager_) {
+      valuables_data_manager_ = std::make_unique<TestValuablesDataManager>();
+    }
+    return valuables_data_manager_.get();
+  }
+
   EntityDataManager* GetEntityDataManager() override {
     return entity_data_manager_non_owning_
                ? entity_data_manager_non_owning_.get()
@@ -175,6 +187,10 @@ class TestAutofillClientTemplate : public T {
 
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override {
     return plus_address_delegate_.get();
+  }
+
+  IdentityCredentialDelegate* GetIdentityCredentialDelegate() override {
+    return identity_credential_delegate_.get();
   }
 
   test::AutofillTestingPrefService* GetPrefs() override {
@@ -214,13 +230,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<payments::TestPaymentsAutofillClient>(this);
     }
     return payments_autofill_client_.get();
-  }
-
-  MockValuableManager* GetValuableManager() override {
-    if (!valuable_manager_) {
-      valuable_manager_ = std::make_unique<MockValuableManager>();
-    }
-    return valuable_manager_.get();
   }
 
   TestStrikeDatabase* GetStrikeDatabase() override {
@@ -506,6 +515,11 @@ class TestAutofillClientTemplate : public T {
     payments_autofill_client_ = std::move(payments_client);
   }
 
+  void set_valuables_data_manager(
+      std::unique_ptr<ValuablesDataManager> valuables_data_manager) {
+    valuables_data_manager_ = std::move(valuables_data_manager);
+  }
+
   void set_single_field_fill_router(
       std::unique_ptr<SingleFieldFillRouter> router) {
     single_field_fill_router_ = std::move(router);
@@ -572,6 +586,12 @@ class TestAutofillClientTemplate : public T {
     plus_address_delegate_ = std::move(plus_address_delegate);
   }
 
+  void set_identity_credential_delegate(
+      std::unique_ptr<IdentityCredentialDelegate>
+          identity_credential_delegate) {
+    identity_credential_delegate_ = std::move(identity_credential_delegate);
+  }
+
   void set_suggestion_ui_session_id(
       std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
     suggestion_ui_session_id_ = session_id;
@@ -591,6 +611,7 @@ class TestAutofillClientTemplate : public T {
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
+  std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =
@@ -619,6 +640,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
+  std::unique_ptr<ValuablesDataManager> valuables_data_manager_;
   std::unique_ptr<EntityDataManager> entity_data_manager_;
   raw_ptr<EntityDataManager> entity_data_manager_non_owning_ = nullptr;
   // The below objects must be destroyed before `TestPersonalDataManager`
@@ -627,7 +649,6 @@ class TestAutofillClientTemplate : public T {
       payments_autofill_client_;
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  std::unique_ptr<MockValuableManager> valuable_manager_;
 
   GeoIpCountryCode variation_config_country_code_;
 

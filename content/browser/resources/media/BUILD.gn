@@ -12,7 +12,7 @@ build_webui("build") {
     "media_internals.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "client_renderer.js",
     "main.js",
     "manager.js",

@@ -20,10 +20,6 @@
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 
-namespace net {
-class StringIOBuffer;
-}  // namespace net
-
 namespace network {
 
 class SharedDictionaryDiskCache;
@@ -52,7 +48,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
   void Initialize();
 
   // SharedDictionaryWriter
-  void Append(const char* buf, int num_bytes) override;
+  void Append(base::span<const uint8_t> data) override;
   void Finish() override;
 
  private:
@@ -61,7 +57,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
   ~SharedDictionaryWriterOnDisk() override;
 
   void OnEntry(disk_cache::EntryResult result);
-  void WriteData(scoped_refptr<net::StringIOBuffer> buffer);
+  void WriteData(scoped_refptr<net::IOBuffer> buffer);
   void OnWrittenData(int expected_result, int result);
 
   void OnFailed(Result result);
@@ -78,7 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
 
   State state_ = State::kBeforeInitialize;
   disk_cache::ScopedEntryPtr entry_;
-  std::deque<scoped_refptr<net::StringIOBuffer>> pending_write_buffers_;
+  std::deque<scoped_refptr<net::IOBuffer>> pending_write_buffers_;
 
   int offset_ = 0;
   bool finish_called_ = false;

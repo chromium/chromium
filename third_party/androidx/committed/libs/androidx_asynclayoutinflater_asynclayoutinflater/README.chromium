@@ -1,7 +1,7 @@
 Name: AsyncLayoutInflater
 Short Name: asynclayoutinflater
-URL: https://developer.android.com/jetpack/androidx/releases/asynclayoutinflater#1.1.0-SNAPSHOT
-Version: 1.1.0-SNAPSHOT
+URL: https://developer.android.com/jetpack/androidx/releases/asynclayoutinflater#1.1.0
+Version: 1.1.0
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

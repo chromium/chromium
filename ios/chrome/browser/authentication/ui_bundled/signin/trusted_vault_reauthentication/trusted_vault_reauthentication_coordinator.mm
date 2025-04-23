@@ -8,8 +8,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -49,6 +49,7 @@ using l10n_util::GetNSStringF;
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:SigninContextStyle::kDefault
                                accessPoint:accessPoint];
   if (self) {
     _intent = intent;
@@ -65,28 +66,16 @@ using l10n_util::GetNSStringF;
   return self;
 }
 
-#pragma mark - InterruptibleChromeCoordinator
+#pragma mark - StopAnimatedChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated {
-  __weak __typeof(self) weakSelf = self;
-  void (^cancelCompletion)(void) = ^() {
-    // The reauthentication callback is dropped when the dialog is canceled.
-    // The completion block has to be called explicitly.
-    [weakSelf runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                         completionIdentity:nil];
-  };
+- (void)stopAnimated:(BOOL)animated {
   // This coordinator should be either showing an error dialog or the trusted
   // vault dialog.
-  if (self.errorAlertCoordinator) {
-    CHECK(!self.errorAlertCoordinator.noInteractionAction);
-    self.errorAlertCoordinator.noInteractionAction = cancelCompletion;
-    [self stopErrorAlertCoordinator];
-    // Checks that `cancelCompletion` is executed synchronously.
-    CHECK(!self.signinCompletion, base::NotFatalUntil::M126);
-  } else {
+  [self stopErrorAlertCoordinator];
+  if (_dialogCancelCallback) {
     std::move(_dialogCancelCallback).Run(animated, nil);
-    cancelCompletion();
   }
+  [super stopAnimated:animated];
 }
 
 #pragma mark - ChromeCoordinator

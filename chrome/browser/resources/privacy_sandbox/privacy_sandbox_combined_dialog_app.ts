@@ -56,7 +56,7 @@ export class PrivacySandboxCombinedDialogAppElement extends
     };
   }
 
-  private step_: PrivacySandboxCombinedDialogStep;
+  declare private step_: PrivacySandboxCombinedDialogStep;
   private animationsEnabled_: boolean = true;
 
   override ready() {

@@ -156,8 +156,6 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Whether a reload navigation has just been triggered.
   bool reloading_from_offline_ = false;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to OfflinePageTabHelper are invalidated before its
   // members variable's destructors are executed, rendering them invalid.

@@ -7,7 +7,6 @@
  */
 
 import {nearbyShareMojom} from 'chrome://os-settings/os_settings.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type ReceiveObserverInterface = nearbyShareMojom.ReceiveObserverInterface;
@@ -53,10 +52,9 @@ export class FakeReceiveManager extends TestBrowserProxy implements
       name: string, connectionToken: string, _payloadDescription = '',
       _payloadType = 0): ShareTarget {
     const target: ShareTarget = {
-      id: {
-        low: BigInt(1),
-        high: BigInt(2),
-      },
+      id: (1n.toString(16).padStart(16, '0') +
+           2n.toString(16).padStart(16, '0'))
+              .toUpperCase(),
       name,
       type: 1,
       payloadPreview: {
@@ -109,12 +107,12 @@ export class FakeReceiveManager extends TestBrowserProxy implements
     return Promise.resolve({success: this.nextResult_});
   }
 
-  accept(shareTargetId: UnguessableToken): Promise<{success: boolean}> {
+  accept(shareTargetId: string): Promise<{success: boolean}> {
     this.methodCalled('accept', shareTargetId);
     return Promise.resolve({success: this.nextResult_});
   }
 
-  reject(shareTargetId: UnguessableToken): Promise<{success: boolean}> {
+  reject(shareTargetId: string): Promise<{success: boolean}> {
     this.methodCalled('reject', shareTargetId);
     return Promise.resolve({success: this.nextResult_});
   }

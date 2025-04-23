@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -243,6 +244,9 @@ public interface Tab extends TabLifecycle {
     /** Returns whether the tab is detached for reparenting. */
     boolean isDetached();
 
+    /** Returns whether this is the activated tab; AKA selected tab, or current tab. */
+    boolean isActivated();
+
     /** Sets Parent for the current Tab and other tab related parent properties. */
     void reparentTab(Tab parent);
 
@@ -446,4 +450,10 @@ public interface Tab extends TabLifecycle {
 
     /** Called when the tab is restored from the archived tab model. */
     void onTabRestoredFromArchivedTabModel();
+
+    /** Called when the tab is added to a tab model. */
+    void onAddedToTabModel(ObservableSupplier<@Nullable Tab> currentTabSupplier);
+
+    /** Called when the tab is removed from a tab model. */
+    void onRemovedFromTabModel(ObservableSupplier<@Nullable Tab> currentTabSupplier);
 }

@@ -45,7 +45,8 @@ import java.util.List;
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
         implements SafetyHubModuleMediatorDelegate {
-    private static final String PREF_PASSWORDS = "passwords_account";
+    private static final String PREF_UNIFIED_PASSWORDS = "passwords_unified";
+    private static final String PREF_ACCOUNT_PASSWORDS = "passwords_account";
     private static final String PREF_LOCAL_PASSWORDS = "passwords_local";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
@@ -126,6 +127,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         this,
                         NotificationPermissionReviewBridge.getForProfile(getProfile()));
 
+        mModuleMediators =
+                new ArrayList<SafetyHubModuleMediator>(
+                        Arrays.asList(
+                                updateCheckModuleMediator,
+                                permissionsRevocationModuleMediator,
+                                safeBrowsingModuleMediator,
+                                notificationsModuleMediator));
+
         SafetyHubAccountPasswordsDataSource accountPasswordsDataSource =
                 new SafetyHubAccountPasswordsDataSource(
                         mDelegate,
@@ -133,36 +142,42 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         safetyHubFetchService,
                         IdentityServicesProvider.get().getSigninManager(getProfile()),
                         getProfile());
-        SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =
-                new SafetyHubAccountPasswordsModuleMediator(
-                        findPreference(PREF_PASSWORDS),
-                        accountPasswordsDataSource,
-                        /* mediatorDelegate= */ this,
-                        mDelegate);
+        SafetyHubLocalPasswordsDataSource localPasswordsDataSource =
+                new SafetyHubLocalPasswordsDataSource(
+                        mDelegate,
+                        UserPrefs.get(getProfile()),
+                        safetyHubFetchService,
+                        new PasswordStoreBridge(getProfile()));
 
-        mModuleMediators =
-                new ArrayList<SafetyHubModuleMediator>(
-                        Arrays.asList(
-                                updateCheckModuleMediator,
-                                permissionsRevocationModuleMediator,
-                                safeBrowsingModuleMediator,
-                                notificationsModuleMediator,
-                                accountPasswordsModuleMediator));
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
-            SafetyHubLocalPasswordsDataSource localPasswordsDataSource =
-                    new SafetyHubLocalPasswordsDataSource(
-                            mDelegate,
-                            UserPrefs.get(getProfile()),
-                            safetyHubFetchService,
-                            new PasswordStoreBridge(getProfile()));
-            SafetyHubLocalPasswordsModuleMediator localPasswordsModuleMediator =
-                    new SafetyHubLocalPasswordsModuleMediator(
-                            findPreference(PREF_LOCAL_PASSWORDS),
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
+            SafetyHubPasswordsModuleMediator passwordsModuleMediator =
+                    new SafetyHubPasswordsModuleMediator(
+                            findPreference(PREF_UNIFIED_PASSWORDS),
+                            accountPasswordsDataSource,
                             localPasswordsDataSource,
                             /* mediatorDelegate= */ this,
                             mDelegate);
-            mModuleMediators.add(localPasswordsModuleMediator);
+            mModuleMediators.add(passwordsModuleMediator);
+        } else {
+            SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =
+                    new SafetyHubAccountPasswordsModuleMediator(
+                            findPreference(PREF_ACCOUNT_PASSWORDS),
+                            accountPasswordsDataSource,
+                            /* mediatorDelegate= */ this,
+                            mDelegate);
+            mModuleMediators.add(accountPasswordsModuleMediator);
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
+                SafetyHubLocalPasswordsModuleMediator localPasswordsModuleMediator =
+                        new SafetyHubLocalPasswordsModuleMediator(
+                                findPreference(PREF_LOCAL_PASSWORDS),
+                                localPasswordsDataSource,
+                                /* mediatorDelegate= */ this,
+                                mDelegate);
+                mModuleMediators.add(localPasswordsModuleMediator);
+            }
         }
 
         mBrowserStateModuleMediator =

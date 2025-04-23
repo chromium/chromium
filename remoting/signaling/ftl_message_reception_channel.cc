@@ -96,7 +96,8 @@ void FtlMessageReceptionChannel::OnReceiveMessagesStreamClosed(
 
   reconnect_retry_backoff_.InformOfRequest(false);
   if (status.error_code() == HttpStatus::Code::ABORTED ||
-      status.error_code() == HttpStatus::Code::UNAVAILABLE) {
+      status.error_code() == HttpStatus::Code::UNAVAILABLE ||
+      status.error_code() == HttpStatus::Code::NETWORK_ERROR) {
     // These are 'soft' connection errors that should be retried.
     // Other errors should be ignored.
     RetryStartReceivingMessagesWithBackoff();

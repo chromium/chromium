@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -28,10 +29,13 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
   // Shows the CookieControlsBubbleView. If the bubble is currently shown it
   // simply returns.
   virtual void ShowBubble(
+      ToolbarButtonProvider* toolbar_button_provider,
       content::WebContents* web_contents,
       content_settings::CookieControlsController* controller);
 
   virtual CookieControlsBubbleViewImpl* GetBubble() const;
+
+  bool IsReloadingState() const;
 
   CookieControlsBubbleViewController* GetViewControllerForTesting();
   void SetDisplayNameForTesting(const std::u16string& name);

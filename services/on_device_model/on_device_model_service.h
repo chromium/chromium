@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
 
   size_t NumModelsForTesting() const { return models_.size(); }
 
+  void SetForceQueueingForTesting(bool force_queueing);
+
  private:
   on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClassImpl();
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);

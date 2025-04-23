@@ -188,10 +188,8 @@ public class BinderCallsListener {
                             mInvocationHandler);
             mImplementation = implementation;
         } catch (Exception e) {
-            // Undocumented API, do not fail if it changes. Pretend that it has been installed
-            // to not attempt it later.
+            // Undocumented API, do not fail if it changes.
             Log.w(TAG, "Failed to create the listener proxy. Has the framework changed?");
-            mInstalled = true;
         }
     }
 
@@ -210,6 +208,21 @@ public class BinderCallsListener {
     @UiThread
     public boolean installListener() {
         return installListener(mImplementation);
+    }
+
+    /**
+     * Get the total time spent in Binder calls since the listener was installed, if it was
+     * installed.
+     *
+     * <p>NOTE: The current implementation of BinderCallsListener is *very* exhaustive. This method
+     * will include time spent in Binder calls that originated from outside of Chrome too.
+     *
+     * @return time spent in Binder calls in milliseconds since the listener was installed or null.
+     */
+    @Nullable
+    public Long getTimeSpentInBinderCalls() {
+        if (!mInstalled || mInvocationHandler == null) return null;
+        return mInvocationHandler.getTimeSpentInBinderCalls();
     }
 
     private boolean installListener(@Nullable Object listener) {
@@ -255,7 +268,12 @@ public class BinderCallsListener {
         private @Nullable BiConsumer<String, String> mObserver;
         private int mCurrentTransactionId;
         private int mNumUploads;
+        private long mTotalTimeSpentInBinderCallsMillis;
         private long mCurrentTransactionStartTimeMillis;
+
+        public long getTimeSpentInBinderCalls() {
+            return mTotalTimeSpentInBinderCallsMillis;
+        }
 
         @Override
         public @Nullable Object invoke(Object proxy, Method method, Object[] args) {
@@ -282,6 +300,10 @@ public class BinderCallsListener {
                     return null;
                 case "onTransactEnded":
                     TraceEvent.end("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
+
+                    long transactionDurationMillis =
+                            SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
+                    mTotalTimeSpentInBinderCallsMillis += transactionDurationMillis;
                     if (mObserver != null) {
                         mObserver.accept("onTransactEnded", mCurrentInterfaceDescriptor);
                     }
@@ -290,9 +312,6 @@ public class BinderCallsListener {
                     if (session == null || session != mCurrentTransactionId) {
                         return null;
                     }
-
-                    long transactionDurationMillis =
-                            SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
 
                     // Only report a subset of slow calls for non-local builds.
                     boolean shouldReportSlowCall =
@@ -303,7 +322,8 @@ public class BinderCallsListener {
                         // If there was a new Binder call introduced, consider moving it to a
                         // background thread if possible. If not, add it to the allow list.
                         String message =
-                                "BinderCallsListener detected a slow call on the UI thread by: "
+                                "This is not a crash. BinderCallsListener detected a slow call on"
+                                        + " the UI thread by: "
                                         + mCurrentInterfaceDescriptor
                                         + " with duration="
                                         + transactionDurationMillis

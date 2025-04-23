@@ -41,7 +41,7 @@ interface Writer {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIAvailability> availability(
+  static Promise<Availability> availability(
     optional WriterCreateCoreOptions options = {}
   );
 

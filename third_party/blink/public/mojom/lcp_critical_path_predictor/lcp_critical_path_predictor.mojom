@@ -9,16 +9,30 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "url/mojom/url.mojom";
 
+struct LcpElement {
+  // LCP ElementLocator information serialized in proto3 binary format.
+  mojo_base.mojom.ByteString? locator;
+  // Indicates if the element is an image element.
+  bool is_image;
+  // Predicted index of `locator` in
+  // LCPCriticalPathPredictorNavigationTimeHint.
+  uint32? predicted_index;
+};
+
 // Interface for LCP Critical Path Predictor from the renderer process.
+// Design doc(Google internal)
+// https://docs.google.com/document/d/1V5PFwVTDonJ1RE52ZI5WGRihn07atHLApnIWsZ3fgfM/
 interface LCPCriticalPathPredictorHost {
-  // `lcp_element_locator` is a LCP ElementLocator information
-  // serialized in proto3 binary format.
-  // `is_image_element` indicates if the element is an image element.
-  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
-  //  LCPCriticalPathPredictorNavigationTimeHint.
-  OnLcpUpdated(mojo_base.mojom.ByteString? lcp_element_locator,
-    bool is_image_element,
-    uint32? predicted_lcp_index);
+  // Called when an LCP-element candidate is updated. (For each page load,
+  // there can be multiple LCP-element candidates, and the LCP element will be
+  // determined after the page load finishes.
+  OnLcpUpdated(LcpElement lcp_element);
+
+  // Only for testing. Called when LCP timing is predicted or fallbacked when
+  // prediction is failed.
+  // `element_locator` is the LCP element's locator or null when this is
+  // fallbacked.
+  OnLcpTimingPredictedForTesting(mojo_base.mojom.ByteString? element_locator);
 
   // `lcp_influencer_scripts` contain the list of script URLs that affected
   // the LCP element.
@@ -68,4 +82,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
 
   // Unused preloaded URLs in the past loads.
   array<url.mojom.Url> unused_preloads;
+
+  // True to enable some debugging operations.
+  bool for_testing;
 };

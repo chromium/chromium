@@ -6,6 +6,7 @@
 
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/api/web_request/web_request_event_router_factory.h"
+#include "extensions/browser/delayed_install_manager_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -15,6 +16,7 @@
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/message_tracker.h"
+#include "extensions/browser/pending_extension_manager_factory.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -44,6 +46,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   AppWindowGeometryCache::Factory::GetInstance();
   AppWindowRegistry::Factory::GetInstance();
 #endif
+  DelayedInstallManagerFactory::GetInstance();
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
   ExtensionActionManager::GetFactory();
@@ -56,6 +59,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
+  PendingExtensionManagerFactory::GetInstance();
   PermissionsManager::GetFactory();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();

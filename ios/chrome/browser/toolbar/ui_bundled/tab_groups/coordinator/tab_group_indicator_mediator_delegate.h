@@ -11,6 +11,9 @@
 
 class TabGroup;
 enum class TabGroupActionType;
+namespace collaboration {
+enum class CollaborationServiceShareOrManageEntryPoint;
+}  // namespace collaboration
 
 // Delegate for actions happening in the TabGroupIndicatorMediator.
 @protocol TabGroupIndicatorMediatorDelegate
@@ -29,6 +32,10 @@ enum class TabGroupActionType;
                                          group:(base::WeakPtr<const TabGroup>)
                                                    tabGroup;
 
+// Starts the leave or delete shared group flow.
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)tabGroup
+                            forAction:(TabGroupActionType)actionType;
+
 // Displays a snackbar after closing a tab group locally.
 - (void)showTabGroupIndicatorSnackbarAfterClosingGroup;
 
@@ -38,7 +45,11 @@ enum class TabGroupActionType;
 
 // Shows the "share" or "manage" screen for the `tabGroup`. The choice is
 // automatically made based on whether the group is already shared or not.
-- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup;
+- (void)
+    shareOrManageTabGroup:(const TabGroup*)tabGroup
+               entryPoint:
+                   (collaboration::CollaborationServiceShareOrManageEntryPoint)
+                       entryPoint;
 
 @end
 

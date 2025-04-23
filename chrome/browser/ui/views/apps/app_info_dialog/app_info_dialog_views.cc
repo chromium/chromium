@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_dialog_container.h"
@@ -26,7 +25,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/app_constants/constants.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -48,68 +46,9 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/arc_app_info_links_panel.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #endif
-
-namespace {
-
-constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
-
-}  // namespace
-
-bool CanPlatformShowAppInfoDialog() {
-#if BUILDFLAG(IS_MAC)
-  return false;
-#else
-  return true;
-#endif
-}
-
-bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto* system_web_app_manager = ash::SystemWebAppManager::Get(profile);
-  if (system_web_app_manager &&
-      system_web_app_manager->IsSystemWebApp(extension_id)) {
-    return false;
-  }
-
-  const extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::Extension* extension =
-      registry->GetInstalledExtension(extension_id);
-
-  if (!extension) {
-    return false;
-  }
-
-  // App Management only displays apps that are displayed in the launcher.
-  if (!extensions::AppDisplayInfo::ShouldDisplayInAppLauncher(*extension)) {
-    return false;
-  }
-#endif
-  return CanPlatformShowAppInfoDialog();
-}
-
-void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
-                               Profile* profile,
-                               const extensions::Extension* app,
-                               base::OnceClosure close_callback) {
-  views::DialogDelegate* dialog = CreateDialogContainerForView(
-      std::make_unique<AppInfoDialog>(profile, app), kDialogSize,
-      std::move(close_callback));
-  views::Widget* dialog_widget;
-  if (dialog->GetModalType() == ui::mojom::ModalType::kChild) {
-    dialog_widget =
-        constrained_window::ShowWebModalDialogViews(dialog, web_contents);
-  } else {
-    gfx::NativeWindow window = web_contents->GetTopLevelNativeWindow();
-    dialog_widget =
-        constrained_window::CreateBrowserModalDialogViews(dialog, window);
-    dialog_widget->Show();
-  }
-}
 
 base::WeakPtr<AppInfoDialog>& AppInfoDialog::GetLastDialogForTesting() {
   static base::NoDestructor<base::WeakPtr<AppInfoDialog>> last_dialog;

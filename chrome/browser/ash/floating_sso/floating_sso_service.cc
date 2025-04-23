@@ -29,15 +29,11 @@ namespace ash::floating_sso {
 
 namespace {
 
-bool IsGoogleCookie(const net::CanonicalCookie& cookie) {
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie.Domain(), cookie.SecureAttribute());
-
+bool IsGoogleUrl(const GURL& url) {
   return google_util::IsGoogleDomainUrl(
-             cookie_domain_url, google_util::ALLOW_SUBDOMAIN,
+             url, google_util::ALLOW_SUBDOMAIN,
              google_util::ALLOW_NON_STANDARD_PORTS) ||
-         google_util::IsYoutubeDomainUrl(cookie_domain_url,
-                                         google_util::ALLOW_SUBDOMAIN,
+         google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
                                          google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
@@ -215,27 +211,11 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
   if (!ShouldSyncCookie(cookie)) {
     return;
   }
-  std::optional<sync_pb::CookieSpecifics> sync_specifics = ToSyncProto(cookie);
-  if (!sync_specifics.has_value()) {
-    return;
-  }
 
-  const auto& in_store_specifics = bridge_->CookieSpecificsInStore();
   switch (change.cause) {
-    case net::CookieChangeCause::INSERTED: {
-      // Check if an identical cookie already exists in the bridge's store,
-      // to avoid sending no-op changes to sync.
-      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
-          it != in_store_specifics.end()) {
-        const sync_pb::CookieSpecifics& local_specifics = it->second;
-        std::unique_ptr<net::CanonicalCookie> in_store_cookie =
-            FromSyncProto(local_specifics);
-        if (in_store_cookie &&
-            in_store_cookie->HasEquivalentDataMembers(cookie)) {
-          break;
-        }
-      }
-      bridge_->AddOrUpdateCookie(sync_specifics.value());
+    case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE: {
+      bridge_->AddOrUpdateCookie(cookie);
       break;
     }
     // All cases below correspond to deletion of a cookie. When intention is to
@@ -248,12 +228,7 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
-      // Check if the key is present in the bridge's store, to avoid sending
-      // no-op changes to sync.
-      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
-          it != in_store_specifics.end()) {
-        bridge_->DeleteCookie(sync_specifics.value().unique_key());
-      }
+      bridge_->DeleteCookie(cookie);
       break;
   }
 }
@@ -309,12 +284,7 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
     if (!ShouldSyncCookie(cookie)) {
       continue;
     }
-    std::optional<sync_pb::CookieSpecifics> sync_specifics =
-        ToSyncProto(cookie);
-    if (!sync_specifics.has_value()) {
-      continue;
-    }
-    bridge_->AddOrUpdateCookie(sync_specifics.value());
+    bridge_->AddOrUpdateCookie(cookie);
   }
 }
 
@@ -333,24 +303,25 @@ bool FloatingSsoService::ShouldSyncCookie(
     return false;
   }
 
+  const GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie.Domain(), cookie.SecureAttribute());
+  return ShouldSyncCookiesForUrl(cookie_domain_url);
+}
+
+bool FloatingSsoService::ShouldSyncCookiesForUrl(const GURL& url) const {
   // Filter out Google cookies.
-  if (IsGoogleCookie(cookie)) {
+  if (IsGoogleUrl(url)) {
     return false;
   }
-
   // Filter out policy-blocked URLs.
-  if (!IsDomainAllowed(cookie)) {
+  if (!IsDomainAllowed(url)) {
     return false;
   }
-
   return true;
 }
 
-bool FloatingSsoService::IsDomainAllowed(
-    const net::CanonicalCookie& cookie) const {
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie.Domain(), cookie.SecureAttribute());
-  bool is_excepted = !except_url_matcher_->MatchURL(cookie_domain_url).empty();
+bool FloatingSsoService::IsDomainAllowed(const GURL& url) const {
+  bool is_excepted = !except_url_matcher_->MatchURL(url).empty();
 
   // Exception list takes precedence.
   if (is_excepted) {
@@ -358,7 +329,7 @@ bool FloatingSsoService::IsDomainAllowed(
   }
 
   // The domain is not blocked if it doesn't have matches in the blocklist.
-  return block_url_matcher_->MatchURL(cookie_domain_url).empty();
+  return block_url_matcher_->MatchURL(url).empty();
 }
 
 void FloatingSsoService::OnCookieSet(net::CookieAccessResult result) {

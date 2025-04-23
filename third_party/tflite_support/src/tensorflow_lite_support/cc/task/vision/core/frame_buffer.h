@@ -16,6 +16,7 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_CORE_FRAME_BUFFER_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_CORE_FRAME_BUFFER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -28,7 +29,6 @@ limitations under the License.
 #include "absl/time/clock.h"  // from @com_google_absl
 #include "absl/time/time.h"  // from @com_google_absl
 #include "absl/types/optional.h"  // from @com_google_absl
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 
 namespace tflite {
@@ -105,9 +105,9 @@ class FrameBuffer {
 
   // YUV data structure.
   struct YuvData {
-    const uint8* y_buffer;
-    const uint8* u_buffer;
-    const uint8* v_buffer;
+    const uint8_t* y_buffer;
+    const uint8_t* u_buffer;
+    const uint8_t* v_buffer;
     // Y buffer row stride in bytes.
     int y_row_stride;
     // U/V buffer row stride in bytes.
@@ -134,7 +134,7 @@ class FrameBuffer {
 
   // Plane encapsulates buffer and stride information.
   struct Plane {
-    const uint8* buffer;
+    const uint8_t* buffer;
     Stride stride;
   };
 

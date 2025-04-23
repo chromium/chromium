@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
@@ -50,6 +51,7 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldReturnAccessCode) {
   TestFuture<const std::string&> access_code_future;
   TestFuture<ExtendedStartCrdSessionResultCode, const std::string&>
       error_callback_future;
+  TestFuture<void> session_finished_future;
   SharedCrdSession::SessionParameters input_parameters;
   input_parameters.viewer_email = "admin@email.com";
   input_parameters.allow_file_transfer = false;
@@ -61,7 +63,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldReturnAccessCode) {
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
                                     access_code_future.GetCallback(),
-                                    error_callback_future.GetCallback());
+                                    error_callback_future.GetCallback(),
+                                    session_finished_future.GetCallback());
   ASSERT_TRUE(access_code_future.Wait());
 
   auto result = access_code_future.Get();
@@ -72,6 +75,7 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   TestFuture<const std::string&> access_code_future;
   TestFuture<ExtendedStartCrdSessionResultCode, const std::string&>
       error_callback_future;
+  TestFuture<void> session_finished_future;
   SharedCrdSession::SessionParameters input_parameters;
   input_parameters.viewer_email = "admin@email.com";
   input_parameters.allow_file_transfer = false;
@@ -85,7 +89,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
                                     access_code_future.GetCallback(),
-                                    error_callback_future.GetCallback());
+                                    error_callback_future.GetCallback(),
+                                    session_finished_future.GetCallback());
   ASSERT_TRUE(access_code_future.Wait());
 
   StartCrdSessionJobDelegate::SessionParameters output_parameters =
@@ -111,6 +116,7 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostFailureShouldHaveErrorCode) {
   TestFuture<const std::string&> access_code_future;
   TestFuture<ExtendedStartCrdSessionResultCode, const std::string&>
       error_callback_future;
+  TestFuture<void> session_finished_future;
   SharedCrdSession::SessionParameters input_parameters;
   input_parameters.request_origin =
       SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
@@ -119,11 +125,29 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostFailureShouldHaveErrorCode) {
       ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
   shared_crd_session_->StartCrdHost(input_parameters,
                                     access_code_future.GetCallback(),
-                                    error_callback_future.GetCallback());
+                                    error_callback_future.GetCallback(),
+                                    session_finished_future.GetCallback());
   ASSERT_TRUE(error_callback_future.Wait());
 
   EXPECT_EQ(error_callback_future.Get<ExtendedStartCrdSessionResultCode>(),
             ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
+}
+
+TEST_F(SharedCrdSessionImplTest, RunsConsumerCallbackOnCrdSessionEnd) {
+  TestFuture<const std::string&> access_code_future;
+  TestFuture<ExtendedStartCrdSessionResultCode, const std::string&>
+      error_callback_future;
+  TestFuture<void> session_finished_future;
+  SharedCrdSession::SessionParameters input_parameters;
+  input_parameters.request_origin =
+      SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
+  shared_crd_session_->StartCrdHost(input_parameters,
+                                    access_code_future.GetCallback(),
+                                    error_callback_future.GetCallback(),
+                                    session_finished_future.GetCallback());
+
+  delegate().TerminateCrdSession(base::Seconds(0));
+  EXPECT_TRUE(session_finished_future.Wait());
 }
 
 }  // namespace

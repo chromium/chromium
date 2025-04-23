@@ -43,6 +43,9 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
+// Used to enable the refreshed fallback flow for Secure Payment Confirmation.
+BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
+
 }  // namespace features
 }  // namespace payments
 

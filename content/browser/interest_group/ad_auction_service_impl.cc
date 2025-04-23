@@ -68,6 +68,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -394,8 +395,8 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
 
   // `base::Unretained` is safe here since the `BrowserContext` owns the
   // `StoragePartition` that owns the interest group manager.
-  GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetClientSecurityState(), user_agent_override,
+  GetInterestGroupManager().UpdateInterestGroupsOfOwners(
+      {origin()}, GetClientSecurityState(), user_agent_override,
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())));
@@ -727,7 +728,8 @@ void AdAuctionServiceImpl::PreconnectSocket(
       ->GetNetworkContext()
       ->PreconnectSockets(
           /*num_streams=*/1, url, network::mojom::CredentialsMode::kOmit,
-          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag());
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1103,6 +1105,24 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
         blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds);
   }
 
+  if (!has_logged_private_aggregation_error_reporting_web_feature_ &&
+      std::ranges::any_of(
+          private_aggregation_requests, [](const auto& request) {
+            auction_worklet::mojom::AggregatableReportContributionPtr&
+                contribution = request->contribution;
+            if (contribution->is_histogram_contribution()) {
+              return false;
+            }
+            CHECK(contribution->is_for_event_contribution());
+            return contribution->get_for_event_contribution()
+                ->event_type->is_reserved_error();
+          })) {
+    has_logged_private_aggregation_error_reporting_web_feature_ = true;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting);
+  }
+
   if (!has_logged_private_aggregation_enable_debug_mode_web_feature_ &&
       std::ranges::any_of(private_aggregation_requests,
                           [](const auto& request) {
@@ -1306,7 +1326,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
           render_frame_host()
               .GetIsolationInfoForSubresources()
               .network_anonymization_key(),
-          net::MutableNetworkTrafficAnnotationTag());
+          net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 
   AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
   if (!ad_auction_page_data) {

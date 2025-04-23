@@ -55,23 +55,6 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
   int max_bytes_per_copy_operation = 1024 * 1024;
   int max_staging_buffer_usage_in_bytes = 32 * 1024 * 1024;
 
-  RasterCapabilities raster_caps;
-  if (compositor_context_provider) {
-    if (host_impl->settings().use_rgba_4444) {
-      raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_4444;
-    } else {
-      if (raster_type() == TestRasterType::kGpu) {
-        raster_caps.tile_format =
-            viz::PlatformColor::BestSupportedRenderBufferFormat(
-                compositor_context_provider->ContextCapabilities());
-      } else {
-        raster_caps.tile_format =
-            viz::PlatformColor::BestSupportedTextureFormat(
-                compositor_context_provider->ContextCapabilities());
-      }
-    }
-  }
-
   switch (raster_type()) {
     case TestRasterType::kBitmap:
       EXPECT_FALSE(compositor_context_provider);
@@ -79,23 +62,22 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
           host_impl->layer_tree_frame_sink()->shared_image_interface(),
-          raster_caps.tile_format, /*is_software=*/true);
+          /*is_software=*/true);
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
-      raster_caps.use_gpu_rasterization = true;
       return std::make_unique<GpuRasterBufferProvider>(
-          compositor_context_provider, worker_context_provider, raster_caps,
-          gfx::Size(), true, host_impl->GetRasterQueryQueueForTesting());
+          compositor_context_provider, worker_context_provider,
+          /*is_overlay_candidate=*/false, gfx::Size(),
+          host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
           compositor_context_provider->SharedImageInterface(),
-          raster_caps.tile_format,
           /*is_software=*/false);
     case TestRasterType::kOneCopy:
       EXPECT_TRUE(compositor_context_provider);
@@ -105,8 +87,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       return std::make_unique<OneCopyRasterBufferProvider>(
           task_runner, compositor_context_provider, worker_context_provider,
           max_bytes_per_copy_operation, false,
-          max_staging_buffer_usage_in_bytes, raster_caps.tile_format,
-          raster_caps.tile_overlay_candidate);
+          max_staging_buffer_usage_in_bytes,
+          /*is_overlay_candidate=*/false);
   }
 }
 

@@ -20,7 +20,19 @@ class PerfettoTaskRunner;
 
 class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
  public:
-  explicit PerfettoPlatform(scoped_refptr<base::SequencedTaskRunner>);
+  struct Options final {
+    // The prefix to return in GetCurrentProcessName(). This makes it possible
+    // to customize the Perfetto "producer name", which can then be used as
+    // a filter in the Perfetto trace config (see
+    // TraceConfig.DataSource.producer_name_filter).
+    std::string process_name_prefix = "org.chromium-";
+
+    // Work around https://bugs.llvm.org/show_bug.cgi?id=36684
+    static Options Default() { return {}; }
+  };
+
+  explicit PerfettoPlatform(scoped_refptr<base::SequencedTaskRunner>,
+                            Options options = Options::Default());
   ~PerfettoPlatform() override;
 
   // perfetto::Platform implementation:
@@ -37,6 +49,7 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   void ResetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
+  const std::string process_name_prefix_;
   WeakPtr<PerfettoTaskRunner> perfetto_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ThreadLocalStorage::Slot thread_local_object_;

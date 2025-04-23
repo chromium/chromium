@@ -11,14 +11,14 @@ namespace gpu {
 
 // static
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
-    gl::GLDisplay* display,
+    scoped_refptr<SharedContextState> context_state,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
 #if BUILDFLAG(IS_OZONE)
-  return gl::init::CreateSurfacelessViewGLSurface(display, surface_handle);
+  return gl::init::CreateSurfacelessViewGLSurface(context_state->display(),
+                                                  surface_handle);
 #else
   return nullptr;
 #endif

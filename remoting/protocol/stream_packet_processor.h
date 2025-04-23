@@ -39,7 +39,7 @@ class StreamPacketProcessor {
   virtual void ApplyPacketOptions(
       uint8_t* data,
       size_t data_size,
-      const rtc::PacketTimeUpdateParams& packet_time_params) const = 0;
+      const webrtc::PacketTimeUpdateParams& packet_time_params) const = 0;
 };
 
 }  // namespace remoting::protocol

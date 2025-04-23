@@ -23,21 +23,33 @@ _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
-AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false', 'use_allocator_shim=false')
+AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false',
+                   'use_allocator_shim=false')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
 def run(command, **kwargs):
-  """See the official documentation for subprocess.call.
+  """See the official documentation for subprocess.check_call.
+
+  Args:
+    command (list[str]): command to be executed
+  """
+  print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
+  subprocess.check_call(command, **kwargs)
+
+
+def run_and_get_stdout(command, **kwargs):
+  """See the official documentation for subprocess.run.
 
   Args:
     command (list[str]): command to be executed
 
   Returns:
-    int: the return value of subprocess.call
+    str: stdout for the executed command
   """
   print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
-  return subprocess.call(command, **kwargs)
+  return subprocess.run(command, capture_output=True,
+                        check=True, **kwargs).stdout.decode('utf-8').strip()
 
 
 def gn(out_dir, gn_args, gn_extra=None, **kwargs):
@@ -51,14 +63,11 @@ def gn(out_dir, gn_args, gn_extra=None, **kwargs):
     out_dir (str): Path to delegate to `gn gen`.
     gn_args (str): Args as a string delimited by space.
     gn_extra (str): extra args as a string delimited by space.
-
-  Returns:
-    Exit code of running `gn gen` command with argument provided.
   """
   cmd = [GN_PATH, 'gen', out_dir, '--args=%s' % gn_args]
   if gn_extra:
     cmd += gn_extra
-  return run(cmd, **kwargs)
+  run(cmd, **kwargs)
 
 
 def compare_text_and_generate_diff(generated_text, golden_text,
@@ -103,14 +112,11 @@ def build(out_dir, build_target, extra_options=None):
   Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
   the target |build_target| for the GN configuration living under |out_dir|.
   This is done locally on the same chromium checkout.
-
-  Returns:
-    Exit code of running `ninja ..` command with the argument provided.
   """
   cmd = [NINJA_PATH, '-C', out_dir, build_target]
   if extra_options:
     cmd += extra_options
-  return run(cmd)
+  run(cmd)
 
 
 def build_all(out_dir, build_targets, extra_options=None):
@@ -119,15 +125,12 @@ def build_all(out_dir, build_targets, extra_options=None):
   Runs `ninja -C |out_dir| |build_targets| |extra_options|` which will build
   the targets |build_targets| for the GN configuration living under |out_dir|.
   This is done locally on the same chromium checkout.
-
-  Returns:
-    Exit code of running `ninja ..` command with the argument provided.
   """
   cmd = [NINJA_PATH, '-C', out_dir]
   cmd.extend(build_targets)
   if extra_options:
     cmd += extra_options
-  return run(cmd)
+  run(cmd)
 
 
 def get_transitive_deps_build_files(repo_path: str, out_dir: str,

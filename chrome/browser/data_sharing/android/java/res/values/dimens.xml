@@ -17,7 +17,6 @@ found in the LICENSE file.
     <dimen name="shared_image_tiles_overlap_margin">8dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin_negative">-6dp</dimen>
     <dimen name="shared_image_tiles_text_padding">6dp</dimen>
-    <dimen name="default_bg_elevation">@dimen/default_elevation_5</dimen>
 
     <!-- Dimens for recent activity screen -->
     <dimen name="recent_activity_avatar_container_size">40dp</dimen>

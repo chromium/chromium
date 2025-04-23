@@ -44,8 +44,8 @@ void Done(base::OnceCallback<
               return out_file;
             }
             return base::unexpected<CategorizedError>(
-                {.category_ = ErrorCategory::kUnpack,
-                 .code_ = static_cast<int>(UnpackerError::kXzFailed)});
+                {.category = ErrorCategory::kUnpack,
+                 .code = static_cast<int>(UnpackerError::kXzFailed)});
           }()));
 }
 

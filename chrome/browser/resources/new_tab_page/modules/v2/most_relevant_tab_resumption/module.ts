@@ -72,20 +72,18 @@ export class ModuleElement extends I18nMixinLit
 
       showInfoDialog_: {type: Boolean},
 
-      useIsKnownToSync_: {type: Boolean},
+      allowFaviconServerFallback_: {type: Boolean},
     };
   }
 
-  format: string = 'wide';
-  urlVisits: URLVisit[] = [];
-  protected fallbackToHost_: boolean =
+  accessor format: string = 'wide';
+  accessor urlVisits: URLVisit[] = [];
+  protected accessor fallbackToHost_: boolean =
       loadTimeData.getBoolean('mostRelevantTabResumptionModuleFallbackToHost');
-  protected shouldShowDeviceIcon_: boolean =
-    loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
-  protected showInfoDialog_: boolean = false;
-  protected useIsKnownToSync_:
-    boolean =
-        loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
+  protected accessor showInfoDialog_: boolean = false;
+  protected accessor allowFaviconServerFallback_: boolean =
+      loadTimeData.getBoolean(
+          'mostRelevantTabResumptionAllowFaviconServerFallback');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -245,7 +243,7 @@ export class ModuleElement extends I18nMixinLit
   }
 
   protected computeShouldShowDeviceName_(urlVisit: URLVisit): boolean {
-    return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(urlVisit);
+    return !!this.computeDeviceName_(urlVisit);
   }
 
   protected getVisibleUrlVisits_(): URLVisit[] {

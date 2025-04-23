@@ -16,6 +16,8 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -29,6 +31,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
@@ -37,7 +40,6 @@
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
@@ -56,6 +58,13 @@ using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::metrics_util::PasswordType;
+
+namespace {
+
+// The check was triggered by the user entering a password on a webpage.
+inline constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
+
+}  // namespace
 
 IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     id<IOSChromePasswordManagerClientBridge> bridge)
@@ -220,6 +229,49 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
 
 bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
   return false;
+}
+
+// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
+void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
+    const GURL& url,
+    bool is_federated,
+    const url::SchemeHostPort& federated_origin,
+    const std::u16string& login_user_name) const {
+  // Guard the password login reporting event on iOS behind the feature flag.
+  if (!bridge_.profile ||
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+    return;
+  }
+
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          bridge_.profile);
+  CHECK(router);
+
+  // The router is responsible for checking if the reporting of this event type
+  // is enabled by the admin.
+  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
+}
+
+// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
+void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
+    const std::vector<std::pair<GURL, std::u16string>>& identities) const {
+  // Guard the realtime event reporting feature on iOS behind the feature flag.
+  if (!bridge_.profile ||
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+    return;
+  }
+
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          bridge_.profile);
+  CHECK(router);
+
+  // The router is responsible for checking if the reporting of this event type
+  // is enabled by the admin.
+  router->OnPasswordBreach(kPasswordBreachEntryTrigger, identities);
 }
 
 void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {

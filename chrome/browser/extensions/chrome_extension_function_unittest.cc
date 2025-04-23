@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +88,7 @@ TEST_F(ChromeExtensionFunctionUnitTest, BrowserShutdownValidationFunctionTest) {
 TEST_F(ChromeExtensionFunctionUnitTest, DestructionWithoutResponseOnUnload) {
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   auto function = base::MakeRefCounted<ValidationFunction>(false);
@@ -119,7 +120,7 @@ TEST_F(ChromeExtensionFunctionDeathTest, MAYBE_DestructionWithoutResponse) {
         InitializeEmptyExtensionService();
         scoped_refptr<const Extension> extension =
             ExtensionBuilder("foo").Build();
-        service()->AddExtension(extension.get());
+        registrar()->AddExtension(extension.get());
 
         ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 

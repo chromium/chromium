@@ -1,12 +1,7 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <cstring>
 #include <limits>
 #include <memory>
@@ -77,7 +72,7 @@ struct TestAudioParams {
   const int sample_rate;
 };
 
-constexpr TestAudioParams kTestAudioParamsOpus[] = {
+constexpr auto kTestAudioParamsOpus = std::to_array<TestAudioParams>({
     {AudioCodec::kOpus, 2, 48000},
     // Change to mono:
     {AudioCodec::kOpus, 1, 48000},
@@ -89,14 +84,17 @@ constexpr TestAudioParams kTestAudioParamsOpus[] = {
     {AudioCodec::kOpus, 2, 44100},
     {AudioCodec::kOpus, 2, 96000},
     {AudioCodec::kOpus, 2, kAudioSampleRateWithDelay},
-};
+});
 
 #if HAS_AAC_ENCODER
-constexpr TestAudioParams kTestAudioParamsAAC[] = {
-    {AudioCodec::kAAC, 2, 48000}, {AudioCodec::kAAC, 6, 48000},
-    {AudioCodec::kAAC, 1, 48000}, {AudioCodec::kAAC, 2, 44100},
-    {AudioCodec::kAAC, 6, 44100}, {AudioCodec::kAAC, 1, 44100},
-};
+constexpr auto kTestAudioParamsAAC = std::to_array<TestAudioParams>({
+    {AudioCodec::kAAC, 2, 48000},
+    {AudioCodec::kAAC, 6, 48000},
+    {AudioCodec::kAAC, 1, 48000},
+    {AudioCodec::kAAC, 2, 44100},
+    {AudioCodec::kAAC, 6, 44100},
+    {AudioCodec::kAAC, 1, 44100},
+});
 #endif  // HAS_AAC_ENCODER
 
 std::string EncoderStatusCodeToString(EncoderStatus::Codes code) {
@@ -713,17 +711,17 @@ TEST_P(AudioOpusEncoderTest, ExtraData) {
   EXPECT_EQ(extra[2], 'u');
   EXPECT_EQ(extra[3], 's');
 
-  uint16_t* sample_rate_ptr = reinterpret_cast<uint16_t*>(extra.data() + 12);
+  uint16_t sample_rate = (static_cast<uint16_t>(extra[13]) << 8) + extra[12];
   if (options_.sample_rate < std::numeric_limits<uint16_t>::max())
-    EXPECT_EQ(*sample_rate_ptr, options_.sample_rate);
+    EXPECT_EQ(sample_rate, options_.sample_rate);
   else
-    EXPECT_EQ(*sample_rate_ptr, 48000);
+    EXPECT_EQ(sample_rate, 48000);
 
-  uint8_t* channels_ptr = reinterpret_cast<uint8_t*>(extra.data() + 9);
-  EXPECT_EQ(*channels_ptr, options_.channels);
+  uint8_t channels = extra[9];
+  EXPECT_EQ(channels, options_.channels);
 
-  uint16_t* skip_ptr = reinterpret_cast<uint16_t*>(extra.data() + 10);
-  EXPECT_GT(*skip_ptr, 0);
+  uint16_t skip = extra[10];
+  EXPECT_GT(skip, 0);
 }
 
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
@@ -908,7 +906,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
 
 TEST_P(AudioOpusEncoderTest, VariableChannelCounts) {
   constexpr int kTestToneFrequency = 440;
-  SineWaveAudioSource sources[] = {
+  std::array<SineWaveAudioSource, 3> sources = {
       SineWaveAudioSource(1, kTestToneFrequency, options_.sample_rate),
       SineWaveAudioSource(2, kTestToneFrequency, options_.sample_rate),
       SineWaveAudioSource(3, kTestToneFrequency, options_.sample_rate)};

@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "components/os_crypt/sync/os_crypt.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -222,28 +221,24 @@ void HashPasswordManager::ClearAllNonGmailPasswordHash() {
 std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   CHECK(prefs_);
   std::vector<PasswordHashData> result;
-  if (base::FeatureList::IsEnabled(
-          features::kLocalStateEnterprisePasswordHashes)) {
-    // TODO(b/325053878): Replace w/ CHECK once safe.
-    if (!local_prefs_) {
-      return result;
-    }
+  // TODO(crbug.com/325053878): Replace w/ CHECK once safe.
+  if (!local_prefs_) {
+    return result;
   }
+
   // Required check to avoid returning an empty pref value.
   if (prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
     result = RetrieveAllPasswordHashesInternal(
         prefs_->GetList(prefs::kPasswordHashDataList));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kLocalStateEnterprisePasswordHashes)) {
-    // Required check to avoid returning an empty pref value.
-    if (local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
-      std::vector<PasswordHashData> enterprise_result =
-          RetrieveAllPasswordHashesInternal(
-              local_prefs_->GetList(prefs::kLocalPasswordHashDataList));
-      result.insert(result.end(), enterprise_result.begin(),
-                    enterprise_result.end());
-    }
+
+  // Required check to avoid returning an empty pref value.
+  if (local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
+    std::vector<PasswordHashData> enterprise_result =
+        RetrieveAllPasswordHashesInternal(
+            local_prefs_->GetList(prefs::kLocalPasswordHashDataList));
+    result.insert(result.end(), enterprise_result.begin(),
+                  enterprise_result.end());
   }
 
   return result;
@@ -376,14 +371,11 @@ bool HashPasswordManager::EncryptAndSave(
 const base::Value::List* HashPasswordManager::GetPrefList(
     bool is_gaia_password) const {
   if (!is_gaia_password) {
-    if (base::FeatureList::IsEnabled(
-            features::kLocalStateEnterprisePasswordHashes)) {
-      // Required check to avoid returning an empty pref value.
-      if (!local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
-        return nullptr;
-      }
-      return &local_prefs_->GetList(prefs::kLocalPasswordHashDataList);
+    // Required check to avoid returning an empty pref value.
+    if (!local_prefs_->HasPrefPath(prefs::kLocalPasswordHashDataList)) {
+      return nullptr;
     }
+    return &local_prefs_->GetList(prefs::kLocalPasswordHashDataList);
   }
   // Required check to avoid returning an empty pref value.
   if (!prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
@@ -395,11 +387,8 @@ const base::Value::List* HashPasswordManager::GetPrefList(
 std::unique_ptr<ScopedListPrefUpdate>
 HashPasswordManager::GetScopedListPrefUpdate(bool is_gaia_password) const {
   if (!is_gaia_password) {
-    if (base::FeatureList::IsEnabled(
-            features::kLocalStateEnterprisePasswordHashes)) {
-      return std::make_unique<ScopedListPrefUpdate>(
-          local_prefs_, prefs::kLocalPasswordHashDataList);
-    }
+    return std::make_unique<ScopedListPrefUpdate>(
+        local_prefs_, prefs::kLocalPasswordHashDataList);
   }
   return std::make_unique<ScopedListPrefUpdate>(prefs_,
                                                 prefs::kPasswordHashDataList);
@@ -408,10 +397,7 @@ HashPasswordManager::GetScopedListPrefUpdate(bool is_gaia_password) const {
 void HashPasswordManager::CheckPrefs(bool is_gaia_password) const {
   CHECK(prefs_);
   if (!is_gaia_password) {
-    if (base::FeatureList::IsEnabled(
-            features::kLocalStateEnterprisePasswordHashes)) {
-      CHECK(local_prefs_);
-    }
+    CHECK(local_prefs_);
   }
 }
 
@@ -429,9 +415,7 @@ void HashPasswordManager::MigrateEnterprisePasswordHashes() {
   base::Value::List& update_list = update.Get();
   base::Value::List& enterprise_update_list = enterprise_update.Get();
   for (auto it = update_list.begin(); it != update_list.end();) {
-    if (!IsGaiaPassword(*it) &&
-        base::FeatureList::IsEnabled(
-            features::kLocalStateEnterprisePasswordHashes)) {
+    if (!IsGaiaPassword(*it)) {
       enterprise_update_list.Append(std::move(it->GetDict()));
       it = update_list.erase(it);
       continue;

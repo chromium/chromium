@@ -91,7 +91,7 @@ bool QuicClientMessageLooplNetworkHelper::CreateUDPSocketAndBind(
       std::move(socket_), clock_, this, kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      /*report_ecn=*/true, NetLogWithSource());
+      NetLogWithSource());
 
   if (socket != nullptr) {
     socket->Close();

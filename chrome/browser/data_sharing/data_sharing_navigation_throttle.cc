@@ -4,10 +4,9 @@
 
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_utils.h"
-#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/collaboration/internal/metrics.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -77,7 +76,7 @@ const char* DataSharingNavigationThrottle::GetNameForLogging() {
 }
 
 void DataSharingNavigationThrottle::SetServiceForTesting(
-    DataSharingService* test_service) {
+    collaboration::CollaborationService* test_service) {
   test_service_ = test_service;
 }
 
@@ -88,25 +87,29 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
     return PROCEED;
   }
 
-  DataSharingService* data_sharing_service =
-      DataSharingServiceFactory::GetForProfile(Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext()));
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              navigation_handle()->GetWebContents()->GetBrowserContext()));
 
   if (test_service_) {
-    data_sharing_service = test_service_;
+    collaboration_service = test_service_;
   }
 
   const GURL& url = navigation_handle()->GetURL();
-  if (data_sharing_service &&
-      data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
-    collaboration::metrics::RecordJoinPageTransitionType(
-        data_sharing_service->GetLogger(),
-        navigation_handle()->GetPageTransition());
+  if (collaboration_service &&
+      collaboration_service->ShouldInterceptNavigationForShareURL(url)) {
     if (ShouldHandleShareURLNavigation(navigation_handle())) {
-      data_sharing_service->HandleShareURLNavigationIntercepted(
-          url, /* context = */ nullptr);
+      collaboration_service->HandleShareURLNavigationIntercepted(
+          url, /* context = */ nullptr,
+          collaboration::GetEntryPointFromPageTransition(
+              navigation_handle()->GetPageTransition()));
     }
 
+    // crbug.com/411646000: Only enable this for Android because on Desktop if
+    // user clicks an invite link to launch the browser, the browser will quit
+    // when the current tab is closed due to no tab remains.
+#if BUILDFLAG(IS_ANDROID)
     // Close the tab if the url interception ends with an empty page.
     const GURL& last_committed_url =
         navigation_handle()->GetWebContents()->GetLastCommittedURL();
@@ -114,6 +117,8 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
         last_committed_url.is_empty()) {
       navigation_handle()->GetWebContents()->ClosePage();
     }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     return CANCEL;
   }
 

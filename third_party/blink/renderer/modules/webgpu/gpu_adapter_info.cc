@@ -19,7 +19,8 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const String& backend,
                                const String& type,
                                const std::optional<uint32_t> d3d_shader_model,
-                               const std::optional<uint32_t> vk_driver_version)
+                               const std::optional<uint32_t> vk_driver_version,
+                               const String& power_preference)
     : vendor_(vendor),
       architecture_(architecture),
       subgroup_min_size_(subgroup_min_size),
@@ -31,7 +32,8 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
       backend_(backend),
       type_(type),
       d3d_shader_model_(d3d_shader_model),
-      vk_driver_version_(vk_driver_version) {}
+      vk_driver_version_(vk_driver_version),
+      power_preference_(power_preference) {}
 
 void GPUAdapterInfo::AppendMemoryHeapInfo(GPUMemoryHeapInfo* info) {
   memory_heaps_.push_back(info);
@@ -88,6 +90,10 @@ const std::optional<uint32_t>& GPUAdapterInfo::d3dShaderModel() const {
 
 const std::optional<uint32_t>& GPUAdapterInfo::vkDriverVersion() const {
   return vk_driver_version_;
+}
+
+const String& GPUAdapterInfo::powerPreference() const {
+  return power_preference_;
 }
 
 void GPUAdapterInfo::Trace(Visitor* visitor) const {

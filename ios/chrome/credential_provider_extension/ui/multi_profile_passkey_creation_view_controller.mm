@@ -221,8 +221,6 @@ NSAttributedString* AsAttributedString(NSString* text,
 - (UIView*)iconView {
   FaviconContainerView* faviconContainerView =
       [[FaviconContainerView alloc] init];
-  [faviconContainerView setFaviconBackgroundColor:GetBackgroundColor()];
-  [faviconContainerView setFaviconBorderColor:[UIColor clearColor]];
   _faviconView = faviconContainerView.faviconView;
   return faviconContainerView;
 }

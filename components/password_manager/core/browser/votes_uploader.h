@@ -290,7 +290,8 @@ class VotesUploader {
   };
 
   // Adds a vote on password generation usage to |form_structure|.
-  void AddGeneratedVote(autofill::FormStructure* form_structure);
+  void AddGeneratedVote(autofill::FormStructure& form_structure,
+                        autofill::EncodeUploadRequestOptions& options);
 
   // Sets the known-value flag for each field, indicating that the field
   // contained a previously stored credential on submission.

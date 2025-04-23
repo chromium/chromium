@@ -12,6 +12,7 @@ build_webui_tests("build") {
     "custom_element_test.ts",
     "icon_test.ts",
     "load_time_data_test.ts",
+    "long_test_name_test_suite_self_test.ts",
     "metrics_reporter/metrics_reporter_test.ts",
     "mojo_type_util_test.ts",
     "parse_html_subset_test.ts",

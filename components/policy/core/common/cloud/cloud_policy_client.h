@@ -426,9 +426,12 @@ class POLICY_EXPORT CloudPolicyClient {
       ResultCallback callback);
 
   // Uploads Chrome profile report to the server. The user's DM token must be
-  // set. |chrome_profile_report| will be included in the upload request. The
-  // |callback| will be called when the operation completes.
+  // set. If |use_cookies| is true, the applicable user's cookies will be
+  // forwarded along with the request. |chrome_profile_report| will be included
+  // in the upload request. The |callback| will be called when the operation
+  // completes.
   virtual void UploadChromeProfileReport(
+      bool use_cookies,
       std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
           chrome_profile_report,
       ResultCallback callback);

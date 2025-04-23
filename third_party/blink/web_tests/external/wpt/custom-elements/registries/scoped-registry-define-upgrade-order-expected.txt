@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Upgrade in tree order in the same tree scope
+  assert_array_equals: lengths differ, expected array ["a", "b", "c"] length 3, got [] length 0
+[FAIL] Upgrade in shadow-including tree order across tree scopes
+  assert_array_equals: lengths differ, expected array ["a", "b", "c"] length 3, got [] length 0
+[FAIL] Upgrade order does not depend on shadow root attach order
+  assert_array_equals: lengths differ, expected array ["a", "c", "b"] length 3, got [] length 0
+[FAIL] Upgrade in association order across documents, then tree order in each document
+  assert_array_equals: lengths differ, expected array ["a", "b", "c"] length 3, got [] length 0
+[FAIL] Upgrade order is not affected by DOM order between child frames
+  assert_array_equals: lengths differ, expected array ["a", "b"] length 2, got [] length 0
+[FAIL] Upgrade order is affected by shadow tree adoption across documents
+  assert_array_equals: lengths differ, expected array ["b", "a"] length 2, got [] length 0
+[FAIL] Elements in the "owner" window of a scoped registry are not always upgraded first
+  assert_array_equals: lengths differ, expected array ["a", "b"] length 2, got [] length 0
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] generateKeyFrame works with simulcast rids
+  assert_equals: expected "success" but got "failure"
+[FAIL] generateKeyFrame for rid that was negotiated away fails
+  assert_equals: expected "success" but got "failure"
+[FAIL] generateKeyFrame with rid after simulcast->unicast negotiation fails
+  assert_equals: expected "success" but got "failure"
+Harness: the test ran to completion.
+

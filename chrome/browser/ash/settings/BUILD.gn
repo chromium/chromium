@@ -34,8 +34,6 @@ static_library("settings") {
     "stub_cros_settings_provider.h",
     "supervised_user_cros_settings_provider.cc",
     "supervised_user_cros_settings_provider.h",
-    "token_encryptor.cc",
-    "token_encryptor.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -127,7 +125,6 @@ source_set("unit_tests") {
     "shutdown_policy_handler_unittest.cc",
     "stats_reporting_controller_unittest.cc",
     "stub_cros_settings_provider_unittest.cc",
-    "token_encryptor_unittest.cc",
   ]
 
   deps = [

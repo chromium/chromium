@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IdRes;
@@ -46,6 +47,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     private Runnable mNavigateBackRunnable;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
+    private View mNextFocusableView;
 
     public BookmarkToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -173,6 +175,10 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         onSelectionStateChange(new ArrayList<>(mSelectionDelegate.getSelectedItems()));
     }
 
+    void setNextFocusableView(View view) {
+        mNextFocusableView = view;
+    }
+
     // OnMenuItemClickListener implementation.
 
     @Override
@@ -182,6 +188,11 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     // SelectableListToolbar implementation.
+
+    @Override
+    protected View getNextFocusForward() {
+        return mNextFocusableView;
+    }
 
     @Override
     public void onNavigationBack() {

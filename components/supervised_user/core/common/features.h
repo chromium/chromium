@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -24,6 +25,11 @@ extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Whether we show an error screen in case of failure of a local web approval.
+BASE_DECLARE_FEATURE(kEnableLocalWebApprovalErrorDialog);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
 // Whether the Pacp widget can process a url payload as part of the local
 // approval request.
 BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
@@ -39,11 +45,12 @@ BASE_DECLARE_FEATURE(
 // Applies new informative strings during the parental extension approval flow.
 BASE_DECLARE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_DESKTOP_ANDROID)
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Returns whether a new installation state for supervised users
 // on new extension installations is offered to the Webstore.
 BASE_DECLARE_FEATURE(kExposedParentalControlNeededForExtensionInstallation);
@@ -55,7 +62,7 @@ BASE_DECLARE_FEATURE(kExposedParentalControlNeededForExtensionInstallation);
 // On Win/Linux/Mac enabling the new mode requires that the feature
 // `kEnableExtensionsPermissionsForSupervisedUsersOnDesktop` is also enabled.
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Enable different web sign in interception behaviour for supervised users:

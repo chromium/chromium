@@ -90,8 +90,6 @@ class ReadingListWebStateObserver
   web::PageLoadCompletionStatus last_load_result_;
 
   base::WeakPtrFactory<ReadingListWebStateObserver> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_WEB_STATE_OBSERVER_H_

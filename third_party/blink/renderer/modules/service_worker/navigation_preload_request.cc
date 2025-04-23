@@ -55,8 +55,22 @@ void NavigationPreloadRequest::OnReceiveResponse(
   if (!response_head->client_side_content_decoding_types.empty()) {
     auto endpoints = network::mojom::URLLoaderClientEndpoints::New(
         mojo::PendingRemote<network::mojom::URLLoader>(), receiver_.Unbind());
+    // Attempt to create the data pipe needed for content decoding.
+    auto data_pipe_pair =
+        network::ContentDecodingInterceptor::CreateDataPipePair(
+            network::ContentDecodingInterceptor::ClientType::
+                kNavigationPreload);
+    if (!data_pipe_pair) {
+      // If pipe creation fails, report an error and stop processing.
+      // This will cause the navigation preload fetch to fail.
+      OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      return;
+    }
+    // If pipe creation succeeds, intercept the response to set up decoding.
     network::ContentDecodingInterceptor::Intercept(
         response_head->client_side_content_decoding_types, endpoints, body,
+        std::move(*data_pipe_pair),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_BLOCKING}));
     decoder_loader_ = std::move(endpoints->url_loader);

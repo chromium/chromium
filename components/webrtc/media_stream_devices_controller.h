@@ -16,6 +16,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
@@ -90,10 +91,10 @@ class MediaStreamDevicesController {
 
   // Returns true if clicking allow on the dialog should give access to the
   // requested devices.
-  bool IsUserAcceptAllowed(blink::PermissionType permission) const;
+  bool IsUserAcceptAllowed(blink::PermissionType permission_descriptor) const;
 
   bool PermissionIsBlockedForReason(
-      blink::PermissionType permission,
+      blink::PermissionType permission_descriptor,
       content::PermissionStatusSource reason) const;
 
   // Called when a permission prompt is answered through the PermissionManager.

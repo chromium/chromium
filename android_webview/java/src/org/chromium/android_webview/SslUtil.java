@@ -8,6 +8,8 @@ import android.net.http.SslCertificate;
 import android.net.http.SslError;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetError;
 import org.chromium.net.X509Util;
 
@@ -16,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+@NullMarked
 class SslUtil {
     private static final String TAG = "SslUtil";
 
@@ -38,7 +41,7 @@ class SslUtil {
         return new SslError(SslError.SSL_INVALID, cert, url);
     }
 
-    public static SslCertificate getCertificateFromDerBytes(byte[] derBytes) {
+    public static @Nullable SslCertificate getCertificateFromDerBytes(byte @Nullable [] derBytes) {
         if (derBytes == null) {
             return null;
         }

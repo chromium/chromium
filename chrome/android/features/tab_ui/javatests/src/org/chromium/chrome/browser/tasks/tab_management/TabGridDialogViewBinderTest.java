@@ -48,7 +48,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -80,6 +79,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -106,7 +106,7 @@ public class TabGridDialogViewBinderTest {
 
     private PropertyModel mModel;
     private TabGridDialogToolbarView mToolbarView;
-    private RecyclerView mContentView;
+    private TabListRecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
     private ChromeImageView mNewTabButton;
     private ChromeImageView mBackButton;
@@ -694,7 +694,8 @@ public class TabGridDialogViewBinderTest {
         GradientDrawable drawable = (GradientDrawable) mColorIcon.getBackground();
         assertEquals(
                 ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(sActivity, color, false)),
+                        TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                                sActivity, color, false)),
                 drawable.getColor());
     }
 

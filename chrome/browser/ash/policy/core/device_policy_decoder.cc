@@ -1363,6 +1363,18 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
     }
 
+    if (container.has_login_screen_face_gaze_enabled()) {
+      auto policy_level =
+          GetPolicyLevel(container.has_login_screen_face_gaze_enabled_options(),
+                         container.login_screen_face_gaze_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenFaceGazeEnabled, policy_level.value(),
+            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_face_gaze_enabled()), nullptr);
+      }
+    }
+
     if (container.has_login_screen_shortcuts_enabled()) {
       auto policy_level =
           GetPolicyLevel(container.has_login_screen_shortcuts_enabled_options(),

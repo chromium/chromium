@@ -32,7 +32,7 @@ class TestStoreClient extends TestStoreClientBase {
     };
   }
 
-  items: NodeMap = {};
+  accessor items: NodeMap = {};
   hasChanged: boolean = false;
 
   toArray(items: NodeMap) {

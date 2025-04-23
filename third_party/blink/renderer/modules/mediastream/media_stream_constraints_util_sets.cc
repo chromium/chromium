@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 
 #include <cmath>
@@ -533,7 +528,7 @@ void ResolutionSet::TryAddVertex(Vector<Point>* vertices,
   // This is to prevent duplicates in case an aspect ratio intersects a width
   // or height right on a vertex.
   if (vertices->empty() ||
-      (*(vertices->end() - 1) != point && *vertices->begin() != point)) {
+      (vertices->back() != point && vertices->front() != point)) {
     vertices->push_back(point);
   }
 }

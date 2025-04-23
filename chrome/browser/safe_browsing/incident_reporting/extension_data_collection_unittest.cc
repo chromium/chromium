@@ -27,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -100,8 +101,8 @@ void ExtensionTestingProfile::AddExtension(
                            .Set("update_url", update_url))
           .Build();
 
-  // Install the extension on the faked extension service.
-  extension_service_->AddExtension(extension.get());
+  // Install the extension.
+  extensions::ExtensionRegistrar::Get(profile_)->AddExtension(extension.get());
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",

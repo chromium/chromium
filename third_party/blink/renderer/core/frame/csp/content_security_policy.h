@@ -264,15 +264,6 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   // TODO(crbug.com/889751): Remove "mojom::blink::RequestContextType" once
   // all the code migrates.
-  bool AllowRequestWithoutIntegrity(
-      mojom::blink::RequestContextType context,
-      network::mojom::RequestDestination request_destination,
-      const KURL& url,
-      ReportingDisposition reporting_disposition,
-      CheckHeaderType check_header_type);
-
-  // TODO(crbug.com/889751): Remove "mojom::blink::RequestContextType" once
-  // all the code migrates.
   bool AllowRequest(mojom::blink::RequestContextType,
                     network::mojom::RequestDestination,
                     network::mojom::RequestMode,
@@ -434,10 +425,6 @@ class CORE_EXPORT ContentSecurityPolicy final
                            AllowResponseChecksReportedAndEnforcedCSP);
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextTest,
                            PopulateResourceRequestChecksReportOnlyCSP);
-  FRIEND_TEST_ALL_PREFIXES(RequireSRIForContentSecurityPolicyTest,
-                           RequireSRIFor);
-  FRIEND_TEST_ALL_PREFIXES(RequireSRIForContentSecurityPolicyTest,
-                           RequireSRIForNoReport);
 
   void ApplyPolicySideEffectsToDelegate();
   void ReportUseCounters(

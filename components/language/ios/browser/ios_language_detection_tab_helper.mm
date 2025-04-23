@@ -282,6 +282,4 @@ void IOSLanguageDetectionTabHelper::ExtractContentLanguageHeader(
     content_language_header_.resize(comma_index);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(IOSLanguageDetectionTabHelper)
-
 }  // namespace language

@@ -1,0 +1,59 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxSelect collapsed value='Option1'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='Option1' selected=true
+++++++++++menuListOption invisible name='Option2' selected=false
+++++++++++menuListOption invisible name='Option3' selected=false
+++++++listBox multiselectable activedescendantId=listBoxOption
+++++++++genericContainer ignored
+++++++++++listBoxOption name='Option1' selected=true
+++++++++++listBoxOption name='Option2' selected=true
+++++++++++listBoxOption name='Option3' selected=false
+++++++listBox multiselectable activedescendantId=listBoxOption
+++++++++genericContainer ignored
+++++++++++listBoxOption name='Option1' selected=true
+++++++++++listBoxOption name='Option2' selected=true
+++++++++++listBoxOption name='Option3' selected=false
+++++++listBox multiselectable
+++++++++listBoxOption name='Red' selected=true
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Red'
+++++++++++++inlineTextBox name='Red'
+++++++++listBoxOption name='Orange' selected=true
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Orange'
+++++++++++++inlineTextBox name='Orange'
+++++++++listBoxOption name='Yellow' selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Yellow'
+++++++++++++inlineTextBox name='Yellow'
+++++++genericContainer
+++++++++staticText name='Available upgrades:'
+++++++++++inlineTextBox name='Available upgrades:'
+++++++listBox multiselectable name='Available upgrades:'
+++++++++listBoxOption name='" Leather seats "' selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='" Leather seats "'
+++++++++++++inlineTextBox name='" Leather seats "'
+++++++++listBoxOption name='" Front seat warmers "' selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='" Front seat warmers "'
+++++++++++++inlineTextBox name='" Front seat warmers "'
+++++++++listBoxOption name=' " Rear bucket seats "' selected=true
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name=' " Rear bucket seats "'
+++++++++++++inlineTextBox name=' " Rear bucket seats "'

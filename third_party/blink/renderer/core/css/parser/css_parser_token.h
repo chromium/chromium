@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -221,7 +217,8 @@ class CORE_EXPORT CSSParserToken {
     value_length_ = string.length();
     value_is_8bit_ = string.Is8Bit();
     if (value_is_8bit_ && value_length_ <= sizeof(value_data_char_inline_)) {
-      memcpy(value_data_char_inline_, string.Bytes(), value_length_);
+      UNSAFE_TODO(
+          memcpy(value_data_char_inline_, string.Bytes(), value_length_));
       value_is_inline_ = true;
     } else {
       value_data_char_raw_ = string.Bytes();

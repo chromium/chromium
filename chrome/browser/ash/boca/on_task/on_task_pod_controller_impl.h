@@ -36,7 +36,7 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   void MaybeNavigateToPreviousPage() override;
   void MaybeNavigateToNextPage() override;
   void ReloadCurrentPage() override;
-  void ToggleTabStripVisibility(bool show) override;
+  void ToggleTabStripVisibility(bool show, bool user_action) override;
   void SetSnapLocation(OnTaskPodSnapLocation snap_location) override;
   void OnPauseModeChanged(bool paused) override;
   void OnPageNavigationContextChanged() override;

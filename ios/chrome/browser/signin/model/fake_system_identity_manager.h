@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
@@ -121,7 +122,12 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       PresentDialogConfiguration configuration) final;
   DismissViewCallback PresentLinkedServicesSettingsDetailsController(
       PresentDialogConfiguration configuration) final;
+
+  // Sets the factory for creating SystemIdentityInteractionManager instances.
+  void SetInteractionManagerFactory(
+      base::RepeatingCallback<id<SystemIdentityInteractionManager>()> factory);
   id<SystemIdentityInteractionManager> CreateInteractionManager() final;
+
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
@@ -200,6 +206,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // List of gaia ids for identities that has been removed by calling
   // `ForgetIdentity()` (instead of `ForgetIdentityFromOtherApplication()`).
   __strong NSMutableSet<NSString*>* gaia_ids_removed_by_user_ = nil;
+
+  base::RepeatingCallback<id<SystemIdentityInteractionManager>()>
+      interaction_manager_factory_;
 
   base::WeakPtrFactory<FakeSystemIdentityManager> weak_ptr_factory_{this};
 };

@@ -67,14 +67,12 @@ InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   // TODO(40946458): Don't resolve anything here, rewrite to
   // interpolate unresolved palettes.
   return ConvertFontPalette(StyleBuilderConverterBase::ConvertFontPalette(
-      state ? state->CssToLengthConversionData()
-            : CSSToLengthConversionData(/*element=*/nullptr),
-      value));
+      state.CssToLengthConversionData(), value));
 }
 
 InterpolationValue

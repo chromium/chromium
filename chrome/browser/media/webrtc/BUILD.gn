@@ -6,6 +6,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//chrome/common/features.gni")
 import("//content/public/common/features.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -210,6 +211,9 @@ source_set("webrtc") {
       "display_media_access_handler.h",
     ]
     deps += [ "//chrome/browser/ui:url_identity" ]
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
   }
 
   if (is_mac) {

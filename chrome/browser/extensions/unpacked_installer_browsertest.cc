@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -25,16 +24,16 @@ class UnpackedInstallerBrowserTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+        TemplateURLServiceFactory::GetForProfile(profile()));
   }
 
   scoped_refptr<const Extension> LoadCommandLineExtension(
       const base::FilePath& path) {
     TestExtensionRegistryObserver observer(extension_registry());
     std::string extension_id;
-    UnpackedInstaller::Create(extension_service())
-        ->LoadFromCommandLine(path, &extension_id,
-                              /*only-allow-apps*/ false);
+    UnpackedInstaller::Create(profile())->LoadFromCommandLine(
+        path, &extension_id,
+        /*only-allow-apps*/ false);
 
     return observer.WaitForExtensionLoaded();
   }

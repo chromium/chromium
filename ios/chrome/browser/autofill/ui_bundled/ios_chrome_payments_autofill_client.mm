@@ -97,7 +97,7 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
-void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+void IOSChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
@@ -109,7 +109,7 @@ void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
                                                      options))));
 }
 
-void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     SaveCreditCardOptions options,

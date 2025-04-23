@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
@@ -23,7 +23,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Request config type used for testing.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ModalConfig);
 }  // namespace
 
 // Mediator used by FakeInfobarModalOverlayCoordinators.

@@ -80,6 +80,16 @@ using blink::mojom::ViewOrClickCountsPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 using network::AdAuctionEventRecord;
 
+// Allow lookups using `std::string_view`.
+struct StringViewHasher : public std::hash<std::string_view> {
+  using is_transparent = void;
+};
+
+using InterestGroupsByName = std::unordered_map<std::string,
+                                                StorageInterestGroup,
+                                                StringViewHasher,
+                                                std::equal_to<>>;
+
 // The raw view and click data for a given (provider_origin, eligible_origin)
 // tuple.
 struct ViewClickCountsForProviderAndEligible {
@@ -852,53 +862,6 @@ KAnonKeyType GetKAnonType(std::string_view unhashed_key) {
     return KAnonKeyType::kComponentBid;
   }
   return KAnonKeyType::kAdNameReporting;
-}
-
-std::set<std::string> GetAllKanonKeys(
-    const blink::InterestGroup& interest_group) {
-  std::set<std::string> hashed_keys;
-  if (interest_group.ads.has_value() &&
-      interest_group.bidding_url.has_value()) {
-    for (auto& ad : *interest_group.ads) {
-      hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
-          interest_group, ad,
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
-      if (base::FeatureList::IsEnabled(
-              blink::features::kFledgeAuctionDealSupport) &&
-          ad.selectable_buyer_and_seller_reporting_ids) {
-        size_t num_selectable_kanon_keys =
-            ad.selectable_buyer_and_seller_reporting_ids->size();
-        if (base::FeatureList::IsEnabled(
-                blink::features::
-                    kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon) &&
-            blink::features::
-                    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
-                        .Get() >= 0) {
-          num_selectable_kanon_keys = std::min(
-              num_selectable_kanon_keys,
-              static_cast<size_t>(
-                  blink::features::
-                      kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
-                          .Get()));
-        }
-        for (size_t selectable_idx = 0;
-             selectable_idx < num_selectable_kanon_keys; ++selectable_idx) {
-          hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
-              interest_group, ad,
-              (*ad.selectable_buyer_and_seller_reporting_ids)[selectable_idx]));
-        }
-      }
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdBid(interest_group, ad.render_url()));
-    }
-  }
-  if (interest_group.ad_components.has_value()) {
-    for (auto& ad : *interest_group.ad_components) {
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdComponentBid(ad.render_url()));
-    }
-  }
-  return hashed_keys;
 }
 
 // Adds indices to the `interest_group` table.
@@ -3777,7 +3740,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
   StorageInterestGroup old_group;
   base::Time last_k_anon_updated = base::Time::Min();
   base::flat_set<std::string> positive_kanon_keys;
-  std::set<std::string> all_old_kanon_keys;
+  base::flat_set<std::string> all_old_kanon_keys;
   blink::InterestGroupKey interest_group_key(data.owner, data.name);
   if (DoLoadInterestGroup(db, passkey, interest_group_key, old_group)) {
     if (old_group.interest_group.expiry <= base::Time::Now()) {
@@ -3800,12 +3763,12 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
     } else {
       last_k_anon_updated = old_group.last_k_anon_updated;
       positive_kanon_keys = std::move(old_group.hashed_kanon_keys);
-      all_old_kanon_keys = GetAllKanonKeys(old_group.interest_group);
+      all_old_kanon_keys = old_group.interest_group.GetAllKAnonKeys();
     }
   }
 
   InterestGroupKanonUpdateParameter kanon_update(last_k_anon_updated);
-  std::set<std::string> all_new_kanon_keys = GetAllKanonKeys(data);
+  base::flat_set<std::string> all_new_kanon_keys = data.GetAllKAnonKeys();
   std::set_difference(all_new_kanon_keys.begin(), all_new_kanon_keys.end(),
                       all_old_kanon_keys.begin(), all_old_kanon_keys.end(),
                       std::back_inserter(kanon_update.newly_added_hashed_keys));
@@ -4111,8 +4074,8 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   }
 
   blink::InterestGroup& updated_group = storage_interest_group.interest_group;
-  std::set<std::string> pre_existing_k_anon_keys =
-      GetAllKanonKeys(updated_group);
+  base::flat_set<std::string> pre_existing_k_anon_keys =
+      updated_group.GetAllKAnonKeys();
   base::flat_set<std::string> positive_kanon_keys =
       std::move(storage_interest_group.hashed_kanon_keys);
   bool updated_kanon_keys = false;
@@ -4215,7 +4178,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   InterestGroupKanonUpdateParameter kanon_update(
       storage_interest_group.last_k_anon_updated);
   if (updated_kanon_keys) {
-    std::set<std::string> new_keys = GetAllKanonKeys(updated_group);
+    base::flat_set<std::string> new_keys = updated_group.GetAllKAnonKeys();
     positive_kanon_keys.erase(
         std::remove_if(positive_kanon_keys.begin(), positive_kanon_keys.end(),
                        [&](const std::string& key) -> bool {
@@ -4719,74 +4682,155 @@ void DoIncrementViewClickCounts(base::Time now,
   // Older expired events may exist -- maintenance will eventually remove them.
 }
 
-// Mutates `group`'s browser signals, filling in loaded view and click counts.
-// Returns true on success, and false on failure.
-[[nodiscard]] bool DoGetViewAndClickCountsForGroup(
-    sql::Database& db,
-    base::Time now,
-    StorageInterestGroup& group) {
-  ViewAndClickCountsPtr& view_and_click_counts =
-      group.bidding_browser_signals->view_and_click_counts;
-  view_and_click_counts = blink::mojom::ViewAndClickCounts::New(
-      /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
-      /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
-
-  if (!group.interest_group.view_and_click_counts_providers) {
-    return true;
-  }
-
+// Reads in view and click counts from database, and converts them to an
+// aggregated form, just including counts for each window and category,
+// rather than the stored time info.
+//
+// If successful, the value will not be null; entries not in database
+// are represented as unexpected(kNotInDb) instead.
+[[nodiscard]] base::expected<ViewAndClickCountsPtr, MissingReason>
+DoGetViewAndClickCountsSummarized(sql::Database& db,
+                                  base::Time now,
+                                  const url::Origin& provider_origin,
+                                  const url::Origin& eligible_origin) {
   const base::TimeDelta max_window = blink::MaxInterestGroupLifetime();
 
-  for (const url::Origin& provider_origin :
-       *group.interest_group.view_and_click_counts_providers) {
-    base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
-        partial_counts = DoGetViewClickCountsForProviderAndEligible(
-            /*db=*/db,
-            /*provider_origin=*/provider_origin,
-            /*eligible_origin=*/group.interest_group.owner);
-    if (!partial_counts.has_value()) {
-      switch (partial_counts.error()) {
+  base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
+      raw_counts = DoGetViewClickCountsForProviderAndEligible(
+          /*db=*/db,
+          /*provider_origin=*/provider_origin,
+          /*eligible_origin=*/eligible_origin);
+  if (!raw_counts.has_value()) {
+    return base::unexpected(raw_counts.error());
+  }
+
+  ViewAndClickCountsPtr view_and_click_counts =
+      blink::mojom::ViewAndClickCounts::New(
+          /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+          /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
+
+  for (int64_t timestamp : raw_counts->uncompacted_view_events.timestamps()) {
+    DoIncrementViewClickCounts(
+        /*now=*/now,
+        /*view_or_click_counts=*/view_and_click_counts->view_counts,
+        /*max_window=*/max_window,
+        /*int_timestamp=*/timestamp, /*count=*/1);
+  }
+  for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+       raw_counts->compacted_view_events.timestamp_and_counts()) {
+    DoIncrementViewClickCounts(
+        /*now=*/now,
+        /*view_or_click_counts=*/view_and_click_counts->view_counts,
+        /*max_window=*/max_window,
+        /*int_timestamp=*/timestamp_and_count.timestamp(),
+        /*count=*/timestamp_and_count.count());
+  }
+  for (int64_t timestamp : raw_counts->uncompacted_click_events.timestamps()) {
+    DoIncrementViewClickCounts(
+        /*now=*/now,
+        /*view_or_click_counts=*/view_and_click_counts->click_counts,
+        /*max_window=*/max_window,
+        /*int_timestamp=*/timestamp, /*count=*/1);
+  }
+  for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+       raw_counts->compacted_click_events.timestamp_and_counts()) {
+    DoIncrementViewClickCounts(
+        /*now=*/now,
+        /*view_or_click_counts=*/view_and_click_counts->click_counts,
+        /*max_window=*/max_window,
+        /*int_timestamp=*/timestamp_and_count.timestamp(),
+        /*count=*/timestamp_and_count.count());
+  }
+  return view_and_click_counts;
+}
+
+void AggregateViewOrClickCounts(const blink::mojom::ViewOrClickCounts& in,
+                                blink::mojom::ViewOrClickCounts& out) {
+  out.past_hour += in.past_hour;
+  out.past_day += in.past_day;
+  out.past_week += in.past_week;
+  out.past_30_days += in.past_30_days;
+  out.past_90_days += in.past_90_days;
+}
+
+void AggregateViewAndClickCounts(const blink::mojom::ViewAndClickCounts& in,
+                                 blink::mojom::ViewAndClickCounts& out) {
+  AggregateViewOrClickCounts(*in.view_counts, *out.view_counts);
+  AggregateViewOrClickCounts(*in.click_counts, *out.click_counts);
+}
+
+// Mutates browser signals for each entry in `interest_groups`, filling
+// in loaded view and click counts.
+//
+// Returns true on success, and false on failure.
+[[nodiscard]] bool DoGetViewAndClickCountsForGroups(
+    sql::Database& db,
+    base::Time now,
+    const url::Origin& owner,
+    InterestGroupsByName& interest_groups_by_name) {
+  std::vector<url::Origin> default_providers = {owner};
+
+  // Figure out which click tables we need.
+  std::set<url::Origin> clickiness_providers;
+  for (auto& [unused_name, storage_group] : interest_groups_by_name) {
+    if (storage_group.interest_group.IsNegativeInterestGroup()) {
+      continue;
+    }
+    if (!storage_group.interest_group.view_and_click_counts_providers ||
+        storage_group.interest_group.view_and_click_counts_providers->empty()) {
+      clickiness_providers.insert(owner);
+      continue;
+    }
+
+    for (const url::Origin& provider_origin :
+         *storage_group.interest_group.view_and_click_counts_providers) {
+      clickiness_providers.insert(provider_origin);
+    }
+  }
+
+  // Read all the needed tables into memory.
+  std::map<url::Origin, ViewAndClickCountsPtr> clickiness_summaries;
+  for (auto& provider_origin : clickiness_providers) {
+    base::expected<ViewAndClickCountsPtr, MissingReason> summary =
+        DoGetViewAndClickCountsSummarized(db, now,
+                                          /*provider_origin=*/provider_origin,
+                                          /*eligible_origin=*/owner);
+    if (!summary.has_value()) {
+      switch (summary.error()) {
+        case MissingReason::kNotInDb:
+          continue;
         case MissingReason::kDbError:
         case MissingReason::kDecodeError:
           return false;
-        case MissingReason::kNotInDb:
-          continue;
       }
     }
+    clickiness_summaries[provider_origin] = std::move(*summary);
+  }
 
-    for (int64_t timestamp :
-         partial_counts->uncompacted_view_events.timestamps()) {
-      DoIncrementViewClickCounts(
-          /*now=*/now,
-          /*view_or_click_counts=*/view_and_click_counts->view_counts,
-          /*max_window=*/max_window,
-          /*int_timestamp=*/timestamp, /*count=*/1);
+  // Now compose the info for each group.
+  for (const auto& [unused_name, storage_group] : interest_groups_by_name) {
+    storage_group.bidding_browser_signals->view_and_click_counts =
+        blink::mojom::ViewAndClickCounts::New(
+            /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+            /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
+    if (storage_group.interest_group.IsNegativeInterestGroup()) {
+      continue;
     }
-    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
-         partial_counts->compacted_view_events.timestamp_and_counts()) {
-      DoIncrementViewClickCounts(
-          /*now=*/now,
-          /*view_or_click_counts=*/view_and_click_counts->view_counts,
-          /*max_window=*/max_window,
-          /*int_timestamp=*/timestamp_and_count.timestamp(),
-          /*count=*/timestamp_and_count.count());
-    }
-    for (int64_t timestamp :
-         partial_counts->uncompacted_click_events.timestamps()) {
-      DoIncrementViewClickCounts(
-          /*now=*/now,
-          /*view_or_click_counts=*/view_and_click_counts->click_counts,
-          /*max_window=*/max_window,
-          /*int_timestamp=*/timestamp, /*count=*/1);
-    }
-    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
-         partial_counts->compacted_click_events.timestamp_and_counts()) {
-      DoIncrementViewClickCounts(
-          /*now=*/now,
-          /*view_or_click_counts=*/view_and_click_counts->click_counts,
-          /*max_window=*/max_window,
-          /*int_timestamp=*/timestamp_and_count.timestamp(),
-          /*count=*/timestamp_and_count.count());
+
+    for (const url::Origin& provider_origin :
+         storage_group.interest_group.view_and_click_counts_providers &&
+                 !storage_group.interest_group.view_and_click_counts_providers
+                      ->empty()
+             ? *storage_group.interest_group.view_and_click_counts_providers
+             : default_providers) {
+      auto it = clickiness_summaries.find(provider_origin);
+      if (it == clickiness_summaries.end()) {
+        continue;
+      }
+
+      AggregateViewAndClickCounts(
+          *(it->second),
+          *storage_group.bidding_browser_signals->view_and_click_counts);
     }
   }
   return true;
@@ -5386,13 +5430,18 @@ DoGetAllNegativeInterestGroupNamesForOwner(sql::Database& db,
   return result;
 }
 
-bool DoGetStoredInterestGroup(sql::Database& db,
-                              StorageInterestGroup& db_interest_group,
-                              const PassKey& passkey,
-                              const blink::InterestGroupKey& group_key,
-                              base::Time now) {
+std::optional<StorageInterestGroup> DoGetStoredInterestGroup(
+    sql::Database& db,
+    const PassKey& passkey,
+    const blink::InterestGroupKey& group_key,
+    base::Time now) {
+  // We need an InterestGroupsByName for DoGetViewAndClickCountsForGroups;
+  // but that doesn't actually look at names.
+  InterestGroupsByName interest_groups_by_name;
+  StorageInterestGroup& db_interest_group = interest_groups_by_name["0"];
+
   if (!DoLoadInterestGroup(db, passkey, group_key, db_interest_group)) {
-    return false;
+    return std::nullopt;
   }
 
   db_interest_group.bidding_browser_signals =
@@ -5400,22 +5449,25 @@ bool DoGetStoredInterestGroup(sql::Database& db,
   if (!GetJoinCount(db, group_key,
                     now - blink::MaxInterestGroupLifetimeForMetadata(),
                     db_interest_group.bidding_browser_signals)) {
-    return false;
+    return std::nullopt;
   }
   if (!GetBidCount(db, group_key,
                    now - blink::MaxInterestGroupLifetimeForMetadata(),
                    db_interest_group.bidding_browser_signals)) {
-    return false;
+    return std::nullopt;
   }
   if (!GetPreviousWins(db, group_key,
                        now - blink::MaxInterestGroupLifetimeForMetadata(),
                        db_interest_group.bidding_browser_signals)) {
-    return false;
+    return std::nullopt;
   }
-  if (!DoGetViewAndClickCountsForGroup(db, now, db_interest_group)) {
-    return false;
+
+  if (!DoGetViewAndClickCountsForGroups(db, now,
+                                        db_interest_group.interest_group.owner,
+                                        interest_groups_by_name)) {
+    return std::nullopt;
   }
-  return true;
+  return std::move(db_interest_group);
 }
 
 std::optional<std::vector<InterestGroupUpdateParameter>>
@@ -5481,14 +5533,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     return std::nullopt;
   }
 
-  // Allow lookups using `std::string_view`.
-  struct StringViewHasher : public std::hash<std::string_view> {
-    using is_transparent = void;
-  };
-
-  std::unordered_map<std::string, StorageInterestGroup, StringViewHasher,
-                     std::equal_to<>>
-      interest_group_by_name;
+  InterestGroupsByName interest_group_by_name;
   {
     TRACE_EVENT("fledge", "load_from_interest_groups_table");
 
@@ -5625,16 +5670,10 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
   }
   {
     TRACE_EVENT("fledge", "load_from_clicks_views_table");
-    // TODO(crbug.com/394108643): For performance, consider loading all of the
-    // view_and_click_counts for a given providing_origin/eligible_origin pair,
-    // and then aggregating across all of the providing_origins for each
-    // interest group with a matching eligible_origin. This prevents having to
-    // load the same records again and again for each interest group of a given
-    // IG owner.
-    for (auto& [unused_name, storage_group] : interest_group_by_name) {
-      if (!DoGetViewAndClickCountsForGroup(db, now, storage_group)) {
-        return std::nullopt;
-      }
+
+    if (!DoGetViewAndClickCountsForGroups(db, now, owner,
+                                          interest_group_by_name)) {
+      return std::nullopt;
     }
   }
   if (!transaction.Commit()) {
@@ -5690,14 +5729,78 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
   return result;
 }
 
+bool DoDeleteViewClickCounts(sql::Database& db) {
+  sql::Statement remove_view_clicks(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM view_and_click_events"));
+  if (!remove_view_clicks.is_valid()) {
+    return false;
+  }
+
+  remove_view_clicks.Reset(true);
+  return remove_view_clicks.Run();
+}
+
+bool DoDeleteViewClickCountsForProvider(
+    sql::Database& db,
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_matcher) {
+  std::vector<url::Origin> providers_to_delete;
+
+  sql::Statement load(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT DISTINCT provider_origin FROM view_and_click_events"));
+  if (!load.is_valid()) {
+    return false;
+  }
+  load.Reset(true);
+  while (load.Step()) {
+    url::Origin origin = DeserializeOrigin(load.ColumnStringView(0));
+    if (storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(origin))) {
+      providers_to_delete.push_back(std::move(origin));
+    }
+  }
+
+  sql::Statement del(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM view_and_click_events WHERE provider_origin=?"));
+  if (!del.is_valid()) {
+    return false;
+  }
+  for (const url::Origin& origin : providers_to_delete) {
+    del.Reset(true);
+    del.BindString(0, origin.Serialize());
+    if (!del.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool DoDeleteInterestGroupData(
     sql::Database& db,
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion) {
   const base::Time distant_past = base::Time::Min();
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
     return false;
+  }
+
+  // For view & click events, we generally delete everything even when the user
+  // asked for a subset of sites, since we do not know what top-level site the
+  // events are associated with, so we have to be conservative to make sure to
+  // match everything that may be expected. Doing this for Clear-Site-Data,
+  // however, would let sites hostilely delete clickiness data of others,
+  // so if `user_initiated_deletion` is false, only things provided by that
+  // origin are deleted.
+  if (user_initiated_deletion || storage_key_matcher.is_null()) {
+    if (!DoDeleteViewClickCounts(db)) {
+      return false;
+    }
+  } else {
+    if (!DoDeleteViewClickCountsForProvider(db, storage_key_matcher)) {
+      return false;
+    }
   }
 
   std::vector<url::Origin> affected_origins;
@@ -7129,12 +7232,8 @@ std::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
     return std::nullopt;
   }
 
-  StorageInterestGroup db_interest_group;
-  if (DoGetStoredInterestGroup(*db_, db_interest_group, PassKey(), group_key,
-                               base::Time::Now())) {
-    return db_interest_group;
-  }
-  return std::nullopt;
+  return DoGetStoredInterestGroup(*db_, PassKey(), group_key,
+                                  base::Time::Now());
 }
 
 std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
@@ -7245,13 +7344,15 @@ void InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(
 }
 
 void InterestGroupStorage::DeleteInterestGroupData(
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
 
-  if (!DoDeleteInterestGroupData(*db_, storage_key_matcher)) {
+  if (!DoDeleteInterestGroupData(*db_, std::move(storage_key_matcher),
+                                 user_initiated_deletion)) {
     DLOG(ERROR) << "Could not delete interest group data: "
                 << db_->GetErrorMessage();
   }
@@ -7460,18 +7561,27 @@ InterestGroupStorage::ComputeCompactClickinessForTesting(
   return ComputeCompactClickiness(now, raw);
 }
 
-bool InterestGroupStorage::
-    CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
-        const url::Origin& provider_origin,
-        const url::Origin& eligible_origin) {
+std::optional<bool>
+InterestGroupStorage::CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+    const url::Origin& provider_origin,
+    const url::Origin& eligible_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return false;
+    return std::nullopt;
   }
 
   auto status = DoGetViewClickCountsForProviderAndEligible(
       *db_, provider_origin, eligible_origin);
-  return !status.has_value() && status.error() == MissingReason::kNotInDb;
+  if (status.has_value()) {
+    return true;
+  }
+  switch (status.error()) {
+    case MissingReason::kNotInDb:
+      return false;
+    case MissingReason::kDbError:
+    case MissingReason::kDecodeError:
+      return std::nullopt;
+  }
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

@@ -17,6 +17,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -25,6 +26,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  * Privacy Sandbox Dialog utility class: collects some common UI utils for Notice and Consent
  * dialogs.
  */
+@NullMarked
 public class PrivacySandboxDialogUtils {
     /**
      * Create an expand Drawable with its own animation.

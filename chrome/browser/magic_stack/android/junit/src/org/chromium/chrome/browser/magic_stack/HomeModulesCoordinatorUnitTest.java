@@ -271,7 +271,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.DEFAULT_BROWSER_PROMO,
                         ModuleType.TAB_GROUP_PROMO,
                         ModuleType.TAB_GROUP_SYNC_PROMO,
-                        ModuleType.QUICK_DELETE_PROMO);
+                        ModuleType.QUICK_DELETE_PROMO,
+                        ModuleType.HISTORY_SYNC_PROMO);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -479,7 +480,7 @@ public class HomeModulesCoordinatorUnitTest {
         verify(mHomeModulesRankingHelperJniMock)
                 .getClassificationResult(
                         any(), any(), any(), mClassificationResultCaptor.capture());
-        String[] orderedLabels = {"SingleTab", "TabResumption"};
+        String[] orderedLabels = {"SingleTab", "PriceChange"};
         ClassificationResult result =
                 new ClassificationResult(
                         PredictionStatus.SUCCEEDED, orderedLabels, /* requestId= */ 0);

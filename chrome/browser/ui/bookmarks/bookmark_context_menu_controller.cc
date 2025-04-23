@@ -228,6 +228,10 @@ void BookmarkContextMenuController::BuildMenu() {
             IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             IDS_BOOKMARK_BAR_OPEN_INCOGNITO);
+    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW,
+              IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
+    }
   } else {
     int count = chrome::OpenCount(parent_window_, selection_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
@@ -317,10 +321,12 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
-    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW: {
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
+    case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW: {
       WindowOpenDisposition initial_disposition;
       if (id == IDC_BOOKMARK_BAR_OPEN_ALL ||
-          id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
+          id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP ||
+          id == IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW) {
         initial_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) {
         initial_disposition = WindowOpenDisposition::NEW_WINDOW;
@@ -333,8 +339,15 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         base::RecordAction(*action);
       }
 
+      chrome::OpenAllBookmarksContext context =
+          chrome::OpenAllBookmarksContext::kNone;
+      if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
+        context = chrome::OpenAllBookmarksContext::kInGroup;
+      } else if (id == IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW) {
+        context = chrome::OpenAllBookmarksContext::kInSplit;
+      }
       chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
-                               id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
+                               context);
       break;
     }
 
@@ -603,6 +616,9 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return chrome::HasBookmarkURLs(selection_);
+    case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
+      return chrome::HasBookmarkURLs(selection_) &&
+             base::FeatureList::IsEnabled(features::kSideBySide);
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return chrome::HasBookmarkURLs(selection_) &&
              incognito_avail != policy::IncognitoModeAvailability::kForced;

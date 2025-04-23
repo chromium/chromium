@@ -39,6 +39,7 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothLeScannerWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothSocketWrapper;
 import org.chromium.device.bluetooth.wrapper.DeviceBondStateReceiverWrapper;
+import org.chromium.device.bluetooth.wrapper.DeviceConnectStateReceiverWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanCallbackWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
 import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
@@ -50,6 +51,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,6 +142,7 @@ class Fakes {
         private int mEnabledDeviceTransport = BluetoothDevice.DEVICE_TYPE_DUAL;
         private final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet();
         private DeviceBondStateReceiverWrapper.Callback mDeviceBondStateCallback;
+        DeviceConnectStateReceiverWrapper.Callback mDeviceConnectStateCallback;
         final long mNativeBluetoothTestAndroid;
 
         /** Creates a FakeBluetoothAdapter. */
@@ -367,7 +370,8 @@ class Fakes {
         }
 
         @CalledByNative("FakeBluetoothAdapter")
-        public @JniType("std::string") String simulatePairedClassicDevice(int deviceOrdinal) {
+        public @JniType("std::string") String simulatePairedClassicDevice(
+                int deviceOrdinal, boolean notifyCallback) {
             final FakeBluetoothDevice device;
             switch (deviceOrdinal) {
                 case 0:
@@ -402,7 +406,36 @@ class Fakes {
             }
 
             mFakePairedDevices.add(device);
+            // When a device becomes paired, it needs to be connected first. The connection state
+            // broadcast comes before the bond broadcast.
+            if (notifyCallback && mDeviceConnectStateCallback != null) {
+                mDeviceConnectStateCallback.onDeviceConnectStateChanged(
+                        device, BluetoothDevice.TRANSPORT_BREDR, true);
+            }
+            if (notifyCallback && mDeviceBondStateCallback != null) {
+                mDeviceBondStateCallback.onDeviceBondStateChanged(
+                        device, BluetoothDevice.BOND_BONDED);
+            }
             return device.getAddress();
+        }
+
+        @CalledByNative("FakeBluetoothAdapter")
+        public void unpairDevice(@JniType("std::string") String address) {
+            FakeBluetoothDevice removedDevice = null;
+            Iterator pairedDeviceIterator = mFakePairedDevices.iterator();
+            while (pairedDeviceIterator.hasNext()) {
+                BluetoothDeviceWrapper device =
+                        (BluetoothDeviceWrapper) pairedDeviceIterator.next();
+                if (device.getAddress().equals(address)) {
+                    pairedDeviceIterator.remove();
+                    removedDevice = (FakeBluetoothDevice) device;
+                    break;
+                }
+            }
+            if (removedDevice != null && mDeviceBondStateCallback != null) {
+                mDeviceBondStateCallback.onDeviceBondStateChanged(
+                        removedDevice, BluetoothDevice.BOND_NONE);
+            }
         }
 
         @CalledByNative("FakeBluetoothAdapter")
@@ -508,6 +541,20 @@ class Fakes {
             }
 
             return mFakePairedDevices;
+        }
+
+        @Override
+        public DeviceBondStateReceiverWrapper createDeviceBondStateReceiver(
+                DeviceBondStateReceiverWrapper.Callback callback) {
+            mDeviceBondStateCallback = callback;
+            return super.createDeviceBondStateReceiver(callback);
+        }
+
+        @Override
+        public DeviceConnectStateReceiverWrapper createDeviceConnectStateReceiver(
+                DeviceConnectStateReceiverWrapper.Callback callback) {
+            mDeviceConnectStateCallback = callback;
+            return super.createDeviceConnectStateReceiver(callback);
         }
     }
 
@@ -724,6 +771,16 @@ class Fakes {
                             : android.bluetooth.BluetoothProfile.STATE_DISCONNECTED);
         }
 
+        @CalledByNative("FakeBluetoothDevice")
+        private static void aclConnectionStateChange(
+                ChromeBluetoothDevice chromeDevice, int transport, boolean connected) {
+            FakeBluetoothDevice fakeDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
+            if (fakeDevice.mAdapter.mDeviceConnectStateCallback != null) {
+                fakeDevice.mAdapter.mDeviceConnectStateCallback.onDeviceConnectStateChanged(
+                        fakeDevice, transport, connected);
+            }
+        }
+
         // Create a call to onServicesDiscovered on the |chrome_device| using parameter
         // |status|.
         @CalledByNative("FakeBluetoothDevice")
@@ -795,11 +852,10 @@ class Fakes {
 
         @Override
         public int getBondState() {
-            if (mType == BluetoothDevice.DEVICE_TYPE_LE) {
-                return BluetoothDevice.BOND_NONE;
-            } else {
+            if (mAdapter.mFakePairedDevices.contains(this)) {
                 return BluetoothDevice.BOND_BONDED;
             }
+            return BluetoothDevice.BOND_NONE;
         }
 
         @Override

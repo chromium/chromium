@@ -23,7 +23,8 @@ import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.components.metrics.MetricsSwitches;
 
@@ -38,7 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class BackgroundMetricsTest {
     // Note: these rules might conflict and so calls to their methods must be handled carefully.
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private void waitForHistogram(String name, int count) {
         CriteriaHelper.pollUiThread(
@@ -81,7 +83,7 @@ public final class BackgroundMetricsTest {
     @CommandLineFlags.Add({"disable-features=UMABackgroundSessions"})
     public void testBackgroundSessionIsRecordedWithBackgroundSessionsDisabled() throws Throwable {
         // Start Chrome.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         // Background Chrome and wait for a session to be recorded.
         pressHome();
@@ -101,7 +103,7 @@ public final class BackgroundMetricsTest {
     @CommandLineFlags.Add({"enable-features=UMABackgroundSessions"})
     public void testBackgroundSessionIsRecordedWithBackgroundSessionsEnabled() throws Throwable {
         // Start Chrome.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         // Background Chrome and wait for a session to be recorded.
         pressHome();
@@ -132,7 +134,7 @@ public final class BackgroundMetricsTest {
                         "Session.Background.TotalDuration"));
 
         // Start an activity and verify the background session was recorded.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         waitForHistogram("Session.Background.TotalDuration", 1);
     }
 }

@@ -41,7 +41,7 @@ class TestItem extends CrLitElement {
     this.shadowRoot.querySelector('button')!.focus();
   }
 
-  name: string = '';
+  accessor name: string = '';
 }
 
 customElements.define('test-item', TestItem);
@@ -60,10 +60,10 @@ class TestApp extends CrLitElement {
     };
   }
 
-  chunkSize: number = 0;
-  listItems: Array<{name: string}> = [];
-  scrollOffset: number = 0;
-  private restoreFocusElement_: HTMLElement|null = null;
+  accessor chunkSize: number = 0;
+  accessor listItems: Array<{name: string}> = [];
+  accessor scrollOffset: number = 0;
+  private accessor restoreFocusElement_: HTMLElement|null = null;
 
   override render() {
     return html`
@@ -99,7 +99,7 @@ class TestDocumentTargetApp extends CrLitElement {
     };
   }
 
-  listItems: Array<{name: string}> = [];
+  accessor listItems: Array<{name: string}> = [];
 
   override render() {
     return html`
@@ -127,8 +127,8 @@ class TestListPaddingApp extends CrLitElement {
     };
   }
 
-  chunkSize: number = 0;
-  listItems: Array<{name: string}> = [];
+  accessor chunkSize: number = 0;
+  accessor listItems: Array<{name: string}> = [];
 
   override render() {
     return html`
@@ -565,8 +565,8 @@ suite('CrLazyListTest', () => {
       };
     }
 
-    itemSize?: number;
-    listItems: Array<{height: number}> = [];
+    accessor itemSize: number|undefined;
+    accessor listItems: Array<{height: number}> = [];
 
     static override get styles() {
       return css`

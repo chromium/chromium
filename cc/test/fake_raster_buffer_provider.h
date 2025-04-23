@@ -26,8 +26,6 @@ class FakeRasterBufferProviderImpl : public RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override;
-  viz::SharedImageFormat GetFormat() const override;
-  bool IsResourcePremultiplied() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;
@@ -36,8 +34,6 @@ class FakeRasterBufferProviderImpl : public RasterBufferProvider {
       base::OnceClosure callback,
       uint64_t pending_callback_id) override;
   void Shutdown() override;
-
-  bool is_software_ = false;
 
  protected:
   void Flush() override;

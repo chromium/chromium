@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DataTypeAvailable" enum="SyncDataTypes"
-    expires_after="2025-08-24">
+    expires_after="2026-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DataTypeSelected" enum="SyncDataTypes"
-    expires_after="2025-04-14">
+    expires_after="2026-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DataTypeSelectedItemPercentage"
-    units="selection" expires_after="2025-04-14">
+    units="selection" expires_after="2026-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DialogCloseReason"
-    enum="BatchUploadDialogCloseReason" expires_after="2025-08-24">
+    enum="BatchUploadDialogCloseReason" expires_after="2026-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.Opened" enum="BatchUploadEntryPoint"
-    expires_after="2025-08-24">
+    expires_after="2026-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -297,6 +297,21 @@ chromium-metrics-reviews@google.com.
     the field was left empty. Recorded when processing a remote bookmark update,
     except for permanent nodes, which are created server-side and don't have an
     originator client item ID.
+  </summary>
+</histogram>
+
+<histogram name="Sync.BookmarkModelMerger.PreviouslySyncingGaiaId"
+    enum="PreviouslySyncingGaiaIdInfoForMetrics" expires_after="2025-10-11">
+  <owner>mastiz@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records how the current gaia ID (user) compares to the last gaia ID known to
+    have turned Sync the feature on within the same profile, if any. Recorded
+    during the initial merge procedure for bookmarks, triggered when bookmark
+    Sync is first started (most notably when Sync was just turned on or the
+    bookmark toggle in Sync settings changed from off to on). The metric is not
+    recorded when bookmark Sync starts in transport mode. Recorded on desktop
+    platforms only, excluding ChromeOS.
   </summary>
 </histogram>
 
@@ -431,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CommitResponse{SyncDataType}" enum="SyncerErrorValues"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -493,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypes" enum="SyncDataTypes"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -536,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CrossUserSharingInvalidKeyVersion.EmptyKeyPair"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
@@ -547,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CrossUserSharingInvalidKeyVersion.ExpectedVersion"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
@@ -641,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CryptographerReady" enum="SyncCryptographerReadyState"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -739,7 +754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeConfigurationTime.{StorageType}{SyncDataType}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -782,7 +797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeEntityConflictResolution{SyncDataType}"
-    enum="SyncConflictResolution" expires_after="2025-08-10">
+    enum="SyncConflictResolution" expires_after="2025-10-12">
   <owner>rushans@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -806,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeMemoryKB{SyncDataType}" units="KB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -830,15 +845,29 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.DataTypeNumUnsyncedEntitiesOnModelReady{SyncDataType}"
-    units="entities" expires_after="2025-08-10">
+<histogram name="Sync.DataTypeNumUnsyncedEntities{Event}{SyncDataType}"
+    units="entities" expires_after="2026-04-10">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Counts the number of unsynced entities for each data type, including
-    tombstones. Recorded once model is ready to sync, i.e. typically soon after
-    browser startup. Recorded only if initial sync is done.
+    tombstones. Recorded {Event}.
   </summary>
+<!-- LINT.IfChange(UnsyncedDataRecordingEventVariants) -->
+
+  <token key="Event">
+    <variant name="OnModelReady"
+        summary="once model is ready to sync, i.e. typically soon after
+                 browser startup. Recorded only if initial sync is done"/>
+    <variant name="OnSignoutConfirmation"
+        summary="when the user initiates a signout flow (but has not
+                 confirmed yet) and is not in pending state."/>
+    <variant name="OnSignoutConfirmationFromPendingState"
+        summary="when the user initiates a signout flow (but has not
+                 confirmed yet), and is in pending state"/>
+  </token>
+<!-- LINT.ThenChange(//components/sync/base/data_type_histogram.h:UnsyncedDataRecordingEvent) -->
+
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
@@ -869,7 +898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeRunFailures2" enum="SyncDataTypes"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -881,7 +910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeStartFailures2" enum="SyncDataTypes"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -969,7 +998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeUpdateDrop.{Reason}" enum="SyncDataTypes"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1031,6 +1060,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.DownloadUpdatesResult" enum="SyncerErrorValues"
+    expires_after="2026-04-14">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the result of the download updates step of the sync cycle. This
+    metric is recorded only once per sync cycle and records the last error
+    encountered during the cycle.
+  </summary>
+</histogram>
+
 <histogram name="Sync.EntityEncryptionSucceeded{SyncDataType}"
     enum="BooleanSuccess" expires_after="2025-09-14">
   <owner>rushans@google.com</owner>
@@ -1077,6 +1117,29 @@ chromium-metrics-reviews@google.com.
     Size of individual sync tombstones in bytes, including the sync metadata.
     Recorded right before an entity is committed to the server. See also
     `Sync.EntitySizeOnCommit.Entity.*` for non-tombstones.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.EntityTracker.InvalidEntitiesOnLoad{SyncDataType}"
+    units="entities" expires_after="2026-04-01">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of invalid entities in the ProcessorEntityTracker on
+    creation (i.e. on sync startup), for {SyncDataType}. Compare to
+    `Sync.EntityTracker.TotalEntitiesOnLoad.*`.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.EntityTracker.TotalEntitiesOnLoad{SyncDataType}"
+    units="entities" expires_after="2026-04-01">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of entities in the ProcessorEntityTracker on creation
+    (i.e. on sync startup), for {SyncDataType}.
   </summary>
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
@@ -1245,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.Enabled2" enum="BooleanEnabled"
-    expires_after="2025-05-30">
+    expires_after="2025-10-05">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1254,7 +1317,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2025-08-03">
+<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2025-10-05">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1264,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.ReadPlatformFileError" enum="PlatformFileError"
-    expires_after="2025-05-30">
+    expires_after="2025-10-05">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1275,7 +1338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.RoamingProfileUnavailable2" enum="BooleanError"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1351,7 +1414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.NudgedUpdateResult{SyncDataType}"
-    enum="NudgedUpdateResult" expires_after="2025-08-06">
+    enum="NudgedUpdateResult" expires_after="2025-10-05">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1384,7 +1447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PassphraseType2" enum="PassphraseTypeForMetrics"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1456,7 +1519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PasswordsBatchUpload.Count" units="passwords"
-    expires_after="2025-08-06">
+    expires_after="2025-10-05">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1482,7 +1545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PendingInvalidationStatus"
-    enum="PendingInvalidationStatus" expires_after="2025-08-10">
+    enum="PendingInvalidationStatus" expires_after="2025-10-12">
   <owner>shabdan@google.com</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1493,7 +1556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PlaceholderTabResyncResult"
-    enum="SyncPlaceholderTabResyncResult" expires_after="2025-05-25">
+    enum="SyncPlaceholderTabResyncResult" expires_after="2025-10-13">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -1705,6 +1768,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SearchEngine.NewChangesCommittedUponSyncStart"
+    units="changes" expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Records the count of new changes committed to the sync server for search
+    engines upon every startup and/or initial sync.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SearchEngine.RemoteSearchEngineIsUntouchedAutogenerated"
     enum="Boolean" expires_after="2026-03-03">
   <owner>ankushkush@google.com</owner>
@@ -1739,30 +1812,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Sync.SearchEngine.UntouchedAutogeneratedChanged.IsPrepopulatedEntry"
+<histogram name="Sync.SearchEngine.UntouchedAutogenerated{Operation}"
     enum="Boolean" expires_after="2025-09-03">
   <owner>ankushkush@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
-    If an untouched and autogenerated search engine is updated, records whether
-    it is a prepopulated search engine. This should always be false.
+    If a new search engine is added/deleted/updated, records whether it is
+    untouched and autogenerated.
   </summary>
+  <token key="Operation">
+    <variant name="Added"/>
+    <variant name="Deleted"/>
+    <variant name="Updated"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Sync.SearchEngine.UntouchedAutogeneratedChanged.IsStarterPackEntry"
+    name="Sync.SearchEngine.UntouchedAutogenerated{Operation}.IsPrepopulatedEntry"
     enum="Boolean" expires_after="2025-09-03">
   <owner>ankushkush@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
-    If an untouched and autogenerated search engine is updated, records whether
-    it is a starter pack entry. This should always be false.
+    If an untouched and autogenerated search engine is added/deleted/updated,
+    records whether it is a prepopulated search engine.
   </summary>
+  <token key="Operation">
+    <variant name="Added"/>
+    <variant name="Deleted"/>
+    <variant name="Updated"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Sync.SearchEngine.UntouchedAutogenerated{Operation}.IsStarterPackEntry"
+    enum="Boolean" expires_after="2025-09-03">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    If an untouched and autogenerated search engine is added/deleted/updated,
+    records whether it is a starter pack entry. This should always be false.
+  </summary>
+  <token key="Operation">
+    <variant name="Added"/>
+    <variant name="Deleted"/>
+    <variant name="Updated"/>
+  </token>
 </histogram>
 
 <histogram name="Sync.SelectedTypesInTransportMode" enum="SyncDataTypes"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1848,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncablePrefValueChanged" enum="SyncablePref"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>ankushkush@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1902,7 +2000,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
+<histogram name="Sync.SyncErrorInfobarDisplayed2" enum="SyncErrorInfobarTypes"
     expires_after="2025-08-10">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

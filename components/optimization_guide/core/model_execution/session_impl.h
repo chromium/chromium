@@ -61,7 +61,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
-  on_device_model::mojom::Session& GetSession() override;
   const TokenLimits& GetTokenLimits() const override;
   const proto::Any& GetOnDeviceFeatureMetadata() const override;
   void SetInput(MultimodalMessage request) override;
@@ -88,6 +87,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   const SamplingParams GetSamplingParams() const override;
   on_device_model::Capabilities GetCapabilities() const override;
   std::unique_ptr<Session> Clone() override;
+  void SetPriority(on_device_model::mojom::Priority priority) override;
 
   // Returns true if the on-device model should be used.
   bool ShouldUseOnDeviceModel() const;

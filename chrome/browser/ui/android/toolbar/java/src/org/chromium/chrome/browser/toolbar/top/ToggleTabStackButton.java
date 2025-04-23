@@ -17,11 +17,18 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.IphCommand;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 /**
@@ -31,11 +38,13 @@ import org.chromium.ui.listmenu.ListMenuButton;
  */
 public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherDrawable.Observer {
     private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
-    private final Callback<Boolean> mNotificationDotObserver = this::onUpdateNotificationDot;
+    private final Callback<TabModelDotInfo> mNotificationDotObserver =
+            this::onUpdateNotificationDot;
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private ObservableSupplier<Integer> mTabCountSupplier;
-    private ObservableSupplier<Boolean> mNotificationDotSupplier;
+    private ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     private Supplier<Boolean> mIsIncognitoSupplier;
+    private @Nullable UserEducationHelper mUserEducationHelper;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -78,12 +87,14 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
      * @param tabCountSupplier A supplier used to observe the number of tabs in the current model.
      * @param notificationDotSupplier A supplier used to observe whether to show the notification
      *     dot.
-     * @param incognitoSupplier A supplier used to check for incongito state.
+     * @param isIncognitoSupplier A supplier used to check for incongito state.
+     * @param userEducationHelper Used to show an IPH.
      */
     void setSuppliers(
             ObservableSupplier<Integer> tabCountSupplier,
-            ObservableSupplier<Boolean> notificationDotSupplier,
-            Supplier<Boolean> isIncognitoSupplier) {
+            ObservableSupplier<TabModelDotInfo> notificationDotSupplier,
+            Supplier<Boolean> isIncognitoSupplier,
+            UserEducationHelper userEducationHelper) {
         assert mTabCountSupplier == null : "setSuppliers should only be called once.";
 
         mTabCountSupplier = tabCountSupplier;
@@ -93,6 +104,7 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
         notificationDotSupplier.addObserver(mNotificationDotObserver);
 
         mIsIncognitoSupplier = isIncognitoSupplier;
+        mUserEducationHelper = userEducationHelper;
     }
 
     @Override
@@ -164,8 +176,23 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
         mTabSwitcherButtonDrawable.updateForTabCount(tabCount, mIsIncognitoSupplier.get());
     }
 
-    private void onUpdateNotificationDot(boolean showDot) {
-        mTabSwitcherButtonDrawable.setNotificationIconStatus(showDot);
+    private void onUpdateNotificationDot(TabModelDotInfo tabModelDotInfo) {
+        mTabSwitcherButtonDrawable.setNotificationIconStatus(tabModelDotInfo.showDot);
+        if (tabModelDotInfo.showDot && mUserEducationHelper != null) {
+            String tabGroupTitle = tabModelDotInfo.tabGroupTitle;
+            String contentString =
+                    getResources().getString(R.string.tab_group_update_iph_text, tabGroupTitle);
+            IphCommand iphCommand =
+                    new IphCommandBuilder(
+                                    getResources(),
+                                    FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
+                                    contentString,
+                                    contentString)
+                            .setAnchorView(this)
+                            .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
+                            .build();
+            mUserEducationHelper.requestShowIph(iphCommand);
+        }
     }
 
     /** Returns whether the button should show a notification icon. */

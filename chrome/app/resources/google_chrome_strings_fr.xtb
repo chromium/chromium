@@ -264,6 +264,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4328355335528187361">Google Chrome pour les développeurs (mDNS-In)</translation>
 <translation id="4329315893554541805">Pour bénéficier de la personnalisation et d'autres fonctionnalités, ajoutez Chrome à l'activité sur le Web et les applications ainsi qu'aux services Google associés</translation>
 <translation id="4334294535648607276">Le téléchargement a bien été effectué.</translation>
+<translation id="4337324600316876133">Vous devez disposer de macOS 12 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. macOS 11 est installé sur cet ordinateur.</translation>
 <translation id="4343195214584226067">L'extension <ph name="EXTENSION_NAME" /> a été ajoutée à Chrome</translation>
 <translation id="4348548358339558429">Pour bénéficier de la personnalisation, ajoutez Chrome à l'activité sur le Web et les applications</translation>
 <translation id="436060642166082913">Chrome a bloqué ce téléchargement, car le fichier peut compromettre vos comptes personnels et de réseaux sociaux</translation>
@@ -299,7 +300,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4842397268809523050">ChromeOS Flex n'a pas pu synchroniser vos données, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> est déjà connecté.  Pour séparer votre navigation, connectez-vous à Chrome avec votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chrome dans les réglages système</translation>
-<translation id="4873692836499071887">Vous devez disposer de macOS 11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. macOS 10.15 est installé sur cet ordinateur.</translation>
 <translation id="4873783916118289636">Examinez les paramètres clés de confidentialité et de sécurité dans Chrome</translation>
 <translation id="4885446229353981848">Toujours afficher le raccourci Google Lens</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>

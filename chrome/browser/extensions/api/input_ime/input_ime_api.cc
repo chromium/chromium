@@ -165,7 +165,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
                               segments, &error)) {
     base::Value::List results;
     results.Append(false);
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         std::move(results), InformativeError(error, static_function_name())));
   }
   return RespondNow(WithArguments(true));
@@ -185,7 +185,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
                           &error)) {
     base::Value::List results;
     results.Append(false);
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         std::move(results), InformativeError(error, static_function_name())));
   }
   return RespondNow(WithArguments(true));

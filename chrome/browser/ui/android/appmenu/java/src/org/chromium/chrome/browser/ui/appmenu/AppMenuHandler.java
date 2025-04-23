@@ -18,13 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public interface AppMenuHandler {
-    @IntDef({
-        AppMenuItemType.STANDARD,
-        AppMenuItemType.TITLE_BUTTON,
-        AppMenuItemType.THREE_BUTTON_ROW,
-        AppMenuItemType.FOUR_BUTTON_ROW,
-        AppMenuItemType.FIVE_BUTTON_ROW
-    })
+    @IntDef({AppMenuItemType.STANDARD, AppMenuItemType.TITLE_BUTTON, AppMenuItemType.BUTTON_ROW})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AppMenuItemType {
         /** Regular Android menu item that contains a title and an icon if icon is specified. */
@@ -36,20 +30,17 @@ public interface AppMenuHandler {
          */
         int TITLE_BUTTON = 1;
 
-        /** Menu item that has three buttons. Every one of these buttons is displayed as an icon. */
-        int THREE_BUTTON_ROW = 2;
-
-        /** Menu item that has four buttons. Every one of these buttons is displayed as an icon. */
-        int FOUR_BUTTON_ROW = 3;
-
-        /** Menu item that has five buttons. Every one of these buttons is displayed as an icon. */
-        int FIVE_BUTTON_ROW = 4;
+        /**
+         * Menu item that has multiple buttons (no more than 5). Every one of these buttons is
+         * displayed as an icon.
+         */
+        int BUTTON_ROW = 2;
 
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 3;
     }
 
     /**

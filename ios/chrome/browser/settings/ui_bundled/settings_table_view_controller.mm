@@ -43,6 +43,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -1476,12 +1477,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _manageSyncSettingsCoordinator = nil;
 }
 
-- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
-  if ([_identity isEqual:identity]) {
-    [self reloadAccountCell];
-  }
-}
-
 - (void)showGoogleServices {
   if (_googleServicesSettingsCoordinator &&
       self.navigationController.topViewController != self) {
@@ -1957,7 +1952,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   bool promoIsTriggered = tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  CHECK(promoIsTriggered, base::NotFatalUntil::M131);
+  CHECK(promoIsTriggered);
 
   std::unique_ptr<EnhancedSafeBrowsingActivePromoData> new_data =
       std::make_unique<EnhancedSafeBrowsingActivePromoData>();
@@ -1971,7 +1966,7 @@ struct EnhancedSafeBrowsingActivePromoData
 // Check if this is the last active Enhanced Safe Browsing promo shown and
 // dismisses the FET if so.
 - (void)removeEnhancedSafeBrowsingPromoFETDataIfNeeded {
-  CHECK(_profile, base::NotFatalUntil::M131);
+  CHECK(_profile);
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(_profile);
   EnhancedSafeBrowsingActivePromoData* data =
@@ -2000,16 +1995,21 @@ struct EnhancedSafeBrowsingActivePromoData
   }
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
+  ChangeProfileContinuationProvider provider =
+      base::BindRepeating(&CreateChangeProfileSettingsContinuation);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSettings
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
-               [weakSelf didFinishSignin];
-             }];
+                      initWithOperation:AuthenticationOperation::
+                                            kSheetSigninAndHistorySync
+                               identity:nil
+                            accessPoint:signin_metrics::AccessPoint::kSettings
+                            promoAction:signin_metrics::PromoAction::
+                                            PROMO_ACTION_NO_SIGNIN_PROMO
+                             completion:^(
+                                 SigninCoordinatorResult result,
+                                 id<SystemIdentity> completionIdentity) {
+                               [weakSelf didFinishSignin];
+                             }
+      changeProfileContinuationProvider:provider];
   [self.applicationHandler showSignin:command baseViewController:self];
 }
 
@@ -2147,6 +2147,11 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - SearchEngineObserverBridge
 
 - (void)searchEngineChanged {
+  // If the model hasn't been created yet, no need to update anything.
+  if (!self.tableViewModel) {
+    return;
+  }
+
   if (_managedSearchEngineItem) {
     _managedSearchEngineItem.statusText = [self managedSearchEngineDetailText];
     [self reconfigureCellsForItems:@[ _managedSearchEngineItem ]];
@@ -2392,7 +2397,9 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self handleIdentityUpdated:identity];
+  if ([_identity isEqual:identity]) {
+    [self reloadAccountCell];
+  }
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

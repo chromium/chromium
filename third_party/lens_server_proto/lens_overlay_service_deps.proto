@@ -31,6 +31,13 @@ message LensOverlayRequestContext {
   reserved 1, 2;
 }
 
+// Context information about the viewport for the request.
+message ViewportRequestContext {
+  // Optional. Pdf page number the user is viewing for contextual search
+  // requests. Only sent with viewport requests on pdf documents.
+  int32 pdf_page_number = 1;
+}
+
 message LensOverlayObjectsRequest {
   // Required. Basic information and context for the request.
   LensOverlayRequestContext request_context = 1;
@@ -42,6 +49,9 @@ message LensOverlayObjectsRequest {
   // TODO(b/359638436): Mark required when clients have migrated to use Payload
   // field.
   Payload payload = 4;
+
+  // Optional. Viewport context for contextual search viewport requests.
+  ViewportRequestContext viewport_request_context = 5;
 
   reserved 2;
 }
@@ -186,10 +196,12 @@ enum CompressionType {
 }
 
 // Generic content message for all types of content that can be sent to Lens.
-// Next ID: 4
+// Next ID: 5
 message Content {
   // Optional. Page url for the webpage.
   string webpage_url = 1;
+  // Optional. Page title of the webpage.
+  string webpage_title = 4;
   // Optional. Content items for the request.
   repeated ContentData content_data = 2;
   // The type of the request.

@@ -64,9 +64,9 @@ export class SettingsIbanListEntryElement extends
     };
   }
 
-  iban: chrome.autofillPrivate.IbanEntry;
+  declare iban: chrome.autofillPrivate.IbanEntry;
 
-  private showNewFopDisplayEnabled_: boolean;
+  declare private showNewFopDisplayEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('ibanMenu');
@@ -84,6 +84,14 @@ export class SettingsIbanListEntryElement extends
    */
   private shouldShowGooglePaymentsIndicator_(): boolean {
     return !this.iban.metadata!.isLocal;
+  }
+
+  /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
   }
 
   /**

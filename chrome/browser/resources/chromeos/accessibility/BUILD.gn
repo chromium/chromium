@@ -24,6 +24,7 @@ group("build") {
     ":select_to_speak_manifests",
     ":switch_access_manifests",
     "accessibility_common/mv2:build",
+    "accessibility_common/mv3:build",
     "braille_ime:build",
     "chromevox/mv2:build",
     "common:build",
@@ -88,6 +89,7 @@ group("browser_tests") {
   testonly = true
   deps = [
     "accessibility_common/mv2:browser_tests",
+    "accessibility_common/mv3:browser_tests",
     "braille_ime:browser_tests",
     "chromevox/mv2:browser_tests",
     "common:browser_tests",

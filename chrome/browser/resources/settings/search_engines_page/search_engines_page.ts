@@ -151,24 +151,24 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  prefs: {[key: string]: any};
-  defaultEngines: SearchEngine[];
-  activeEngines: SearchEngine[];
-  otherEngines: SearchEngine[];
-  extensions: SearchEngine[];
-  override subpageRoute: Route;
-  private showExtensionsList_: boolean;
-  filter: string;
-  private matchingDefaultEngines_: SearchEngine[];
-  private matchingActiveEngines_: SearchEngine[];
-  private matchingOtherEngines_: SearchEngine[];
-  private matchingExtensions_: SearchEngine[];
-  private omniboxExtensionlastFocused_: HTMLElement;
-  private omniboxExtensionListBlurred_: boolean;
-  private dialogModel_: SearchEngine|null;
-  private dialogAnchorElement_: HTMLElement|null;
-  private showEditDialog_: boolean;
-  private showDeleteConfirmationDialog_: boolean;
+  declare prefs: {[key: string]: any};
+  declare defaultEngines: SearchEngine[];
+  declare activeEngines: SearchEngine[];
+  declare otherEngines: SearchEngine[];
+  declare extensions: SearchEngine[];
+  declare subpageRoute: Route;
+  declare private showExtensionsList_: boolean;
+  declare filter: string;
+  declare private matchingDefaultEngines_: SearchEngine[];
+  declare private matchingActiveEngines_: SearchEngine[];
+  declare private matchingOtherEngines_: SearchEngine[];
+  declare private matchingExtensions_: SearchEngine[];
+  declare private omniboxExtensionlastFocused_: HTMLElement;
+  declare private omniboxExtensionListBlurred_: boolean;
+  declare private dialogModel_: SearchEngine|null;
+  declare private dialogAnchorElement_: HTMLElement|null;
+  declare private showEditDialog_: boolean;
+  declare private showDeleteConfirmationDialog_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 

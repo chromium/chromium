@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -320,7 +322,6 @@ void BrowserActions::InitializeBrowserActions() {
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
-          .SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId)
           .Build());
 
   root_action_item_->AddChild(
@@ -340,7 +341,31 @@ void BrowserActions::InitializeBrowserActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
-          .SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_helper = browser->GetActiveTabInterface()
+                                       ->GetTabFeatures()
+                                       ->commerce_ui_tab_helper();
+                CHECK(tab_helper);
+
+                tab_helper->OnPriceInsightsIconClicked();
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionCommercePriceInsights)
+          // The tooltip text is used as a default text. The
+          // PriceInsightsPageActionViewController will override it based on its
+          // state.
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kShoppingBagRefreshIcon))
           .Build());
 
   //------- Chrome Menu Actions --------//
@@ -367,7 +392,7 @@ void BrowserActions::InitializeBrowserActions() {
                              },
                              base::Unretained(browser)),
                          kActionTabSearch, IDS_TAB_SEARCH_MENU,
-                         IDS_TAB_SEARCH_MENU, vector_icons::kExpandMoreIcon)
+                         IDS_TAB_SEARCH_MENU, vector_icons::kTabSearchIcon)
             .Build());
   }
 
@@ -594,6 +619,27 @@ void BrowserActions::InitializeBrowserActions() {
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
           .SetImage(ui::ImageModel::FromVectorIcon(kOpenInNewChromeRefreshIcon,
+                                                   ui::kColorIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                // Show the File System Access bubble if applicable for
+                // the current page state.
+                FileSystemAccessBubbleController::Show(browser);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionShowFileSystemAccess)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(
+                  IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(
+                  IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)))
+          .SetImage(ui::ImageModel::FromVectorIcon(kFileSaveChromeRefreshIcon,
                                                    ui::kColorIcon))
           .Build());
 

@@ -33,6 +33,7 @@ TEST_F(BackendParamsManagerTest, UnknownKeyTypePairQueryServedAsynchronously) {
   BackendParams backend_params;
   params_manager.GetParamsSyncOrCreateAsync(
       BackendType::kSqlite, "key",
+      BackendParamsManager::AccessRights::kReadWrite,
       base::BindLambdaForTesting(
           [&backend_params, &run_loop](const BackendParams& result) {
             backend_params = result.Copy();
@@ -60,6 +61,7 @@ TEST_F(BackendParamsManagerTest, ExistingKeyTypePairQueryServedSynchronously) {
     base::RunLoop run_loop;
     params_manager.GetParamsSyncOrCreateAsync(
         BackendType::kSqlite, "key",
+        BackendParamsManager::AccessRights::kReadWrite,
         base::BindLambdaForTesting(
             [&backend_params, &run_loop](const BackendParams& result) {
               backend_params = result.Copy();
@@ -83,6 +85,7 @@ TEST_F(BackendParamsManagerTest, ExistingKeyTypePairQueryServedSynchronously) {
     base::RunLoop run_loop;
     params_manager.GetParamsSyncOrCreateAsync(
         BackendType::kSqlite, "key",
+        BackendParamsManager::AccessRights::kReadWrite,
         base::BindLambdaForTesting(
             [&backend_params, &run_loop](const BackendParams& result) {
               backend_params = result.Copy();

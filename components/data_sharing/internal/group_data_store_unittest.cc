@@ -20,6 +20,11 @@ namespace {
 using testing::Eq;
 using testing::UnorderedElementsAre;
 
+constexpr char kGroupId[] = "test_group_id";
+constexpr char kGroupId1[] = "test_group_id1";
+constexpr char kGroupId2[] = "test_group_id2";
+constexpr char kGroupDisplayName[] = "Test Group";
+
 class GroupDataStoreTest : public testing::Test {
  public:
   GroupDataStoreTest() {
@@ -71,20 +76,22 @@ class GroupDataStoreTest : public testing::Test {
 };
 
 TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
-  const GroupId group_id("test_group_id");
-  GroupData group_data;
-  group_data.group_token.group_id = group_id;
-  group_data.display_name = "Test group";
+  const GroupId group_id(kGroupId);
+  data_sharing_pb::GroupData group_data_proto;
+  group_data_proto.set_group_id(kGroupId);
+  group_data_proto.set_display_name(kGroupDisplayName);
 
   const VersionToken version_token("test_version_token");
   const base::Time last_updated_timestamp = base::Time::Now();
 
-  store().StoreGroupData(version_token, last_updated_timestamp, group_data);
+  store().StoreGroupData(version_token, last_updated_timestamp,
+                         group_data_proto);
 
   auto stored_group_data = store().GetGroupData(group_id);
   ASSERT_TRUE(stored_group_data.has_value());
   EXPECT_THAT(stored_group_data->group_token.group_id, Eq(group_id));
-  EXPECT_THAT(stored_group_data->display_name, Eq(group_data.display_name));
+  EXPECT_THAT(stored_group_data->display_name,
+              Eq(kGroupDisplayName));
 
   auto stored_version_token = store().GetGroupVersionToken(group_id);
   ASSERT_TRUE(stored_version_token.has_value());
@@ -97,18 +104,18 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
 }
 
 TEST_F(GroupDataStoreTest, ShouldDeleteSingleGroup) {
-  const GroupId group_id1("test_group_id1");
-  GroupData group_data1;
-  group_data1.group_token.group_id = group_id1;
+  const GroupId group_id1(kGroupId1);
+  data_sharing_pb::GroupData group_data_proto1;
+  group_data_proto1.set_group_id(kGroupId1);
 
-  const GroupId group_id2("test_group_id2");
-  GroupData group_data2;
-  group_data2.group_token.group_id = group_id2;
+  const GroupId group_id2(kGroupId2);
+  data_sharing_pb::GroupData group_data_proto2;
+  group_data_proto2.set_group_id(kGroupId2);
 
   const VersionToken version_token("test_version_token");
 
-  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
-  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto2);
   ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
@@ -124,18 +131,18 @@ TEST_F(GroupDataStoreTest, ShouldDeleteSingleGroup) {
 }
 
 TEST_F(GroupDataStoreTest, ShouldDeleteMultipleGroups) {
-  const GroupId group_id1("test_group_id1");
-  GroupData group_data1;
-  group_data1.group_token.group_id = group_id1;
+  const GroupId group_id1(kGroupId1);
+  data_sharing_pb::GroupData group_data_proto1;
+  group_data_proto1.set_group_id(kGroupId1);
 
-  const GroupId group_id2("test_group_id2");
-  GroupData group_data2;
-  group_data2.group_token.group_id = group_id2;
+  const GroupId group_id2(kGroupId2);
+  data_sharing_pb::GroupData group_data_proto2;
+  group_data_proto2.set_group_id(kGroupId2);
 
   const VersionToken version_token("test_version_token");
 
-  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
-  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto2);
   ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
@@ -152,31 +159,31 @@ TEST_F(GroupDataStoreTest, ShouldDeleteMultipleGroups) {
 TEST_F(GroupDataStoreTest, ShouldGetAllGroupIds) {
   const VersionToken version_token("test_version_token");
 
-  const GroupId group_id1("test_group_id1");
-  GroupData group_data1;
-  group_data1.group_token.group_id = group_id1;
+  const GroupId group_id1(kGroupId1);
+  data_sharing_pb::GroupData group_data_proto1;
+  group_data_proto1.set_group_id(kGroupId1);
 
-  const GroupId group_id2("test_group_id2");
-  GroupData group_data2;
-  group_data2.group_token.group_id = group_id2;
+  const GroupId group_id2(kGroupId2);
+  data_sharing_pb::GroupData group_data_proto2;
+  group_data_proto2.set_group_id(kGroupId2);
 
-  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
-  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto2);
 
   std::vector<GroupId> stored_group_ids = store().GetAllGroupIds();
   EXPECT_THAT(stored_group_ids, UnorderedElementsAre(group_id1, group_id2));
 }
 
 TEST_F(GroupDataStoreTest, ShouldPersistChanges) {
-  const GroupId group_id("test_group_id");
-  GroupData group_data;
-  group_data.group_token.group_id = group_id;
-  group_data.display_name = "Test group";
+  const GroupId group_id(kGroupId);
+  data_sharing_pb::GroupData group_data_proto;
+  group_data_proto.set_group_id(kGroupId);
+  group_data_proto.set_display_name(kGroupDisplayName);
 
   const VersionToken version_token("test_version_token");
 
   // Store some group data first.
-  store().StoreGroupData(version_token, base::Time::Now(), group_data);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data_proto);
   ASSERT_TRUE(store().GetGroupData(group_id).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id).has_value());
 
@@ -185,7 +192,8 @@ TEST_F(GroupDataStoreTest, ShouldPersistChanges) {
   auto stored_group_data = store().GetGroupData(group_id);
   ASSERT_TRUE(stored_group_data.has_value());
   EXPECT_THAT(stored_group_data->group_token.group_id, Eq(group_id));
-  EXPECT_THAT(stored_group_data->display_name, Eq(group_data.display_name));
+  EXPECT_THAT(stored_group_data->display_name,
+              Eq(kGroupDisplayName));
 
   auto stored_version_token = store().GetGroupVersionToken(group_id);
   ASSERT_TRUE(stored_version_token.has_value());

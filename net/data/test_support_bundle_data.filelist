@@ -6,15 +6,10 @@
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/quic_http_response_cache_data/test.example.com/index.html
 data/quic_http_response_cache_data/test.example.com/map.html
-data/quic_http_response_cache_data_with_push/test.example.com/favicon.ico
-data/quic_http_response_cache_data_with_push/test.example.com/index.html
-data/quic_http_response_cache_data_with_push/test.example.com/index2.html
-data/quic_http_response_cache_data_with_push/test.example.com/kitten-1.jpg
 data/ssl/certificates/2029_globalsign_com_cert.pem
 data/ssl/certificates/2_client_certs_1_key.p12
 data/ssl/certificates/BUILD.gn
 data/ssl/certificates/README
-data/ssl/certificates/bad_validity.pem
 data/ssl/certificates/can_sign_http_exchanges_draft_extension.pem
 data/ssl/certificates/can_sign_http_exchanges_draft_extension_invalid.pem
 data/ssl/certificates/client-empty-password.p12

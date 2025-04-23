@@ -12,6 +12,9 @@
 name = "js-sys"
 version = "0.3.77"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "default" = []
 "std" = []
@@ -19,8 +22,6 @@ version = "0.3.77"
 [dependencies.once_cell]
 version = "^1.12"
 default_features = false
-features = []
 [dependencies.wasm-bindgen]
 version = "=0.2.100"
 default_features = false
-features = []

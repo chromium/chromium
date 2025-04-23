@@ -10,7 +10,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
 #include "chrome/test/base/in_process_browser_test.h"
+#endif
 
 //
 // InProcessBrowserTestMixin enables writing isolated test helpers which depend
@@ -58,6 +64,7 @@
 //
 
 class InProcessBrowserTestMixinHost;
+class PrefService;
 
 // Derive from this type to create a class which depends on the test lifecycle
 // without also becoming a test base.
@@ -133,7 +140,11 @@ class InProcessBrowserTestMixinHost final {
 };
 
 template <typename Fixture>
+#if BUILDFLAG(IS_ANDROID)
+  requires std::derived_from<Fixture, AndroidBrowserTest>
+#else
   requires std::derived_from<Fixture, InProcessBrowserTest>
+#endif
 class InProcessBrowserTestMixinHostSupport : public Fixture {
  public:
   // Fixture:
@@ -191,11 +202,19 @@ class InProcessBrowserTestMixinHostSupport : public Fixture {
   InProcessBrowserTestMixinHost mixin_host_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// An AndroidBrowserTest which supports mixins.
+using MixinBasedAndroidBrowserTest =
+    InProcessBrowserTestMixinHostSupport<AndroidBrowserTest>;
+// The implementation is included in mixin_based_in_process_browser_test.cc
+extern template class InProcessBrowserTestMixinHostSupport<AndroidBrowserTest>;
+#else
 // An InProcessBrowserTest which supports mixins.
 using MixinBasedInProcessBrowserTest =
     InProcessBrowserTestMixinHostSupport<InProcessBrowserTest>;
 // The implementation is included in mixin_based_in_process_browser_test.cc
 extern template class InProcessBrowserTestMixinHostSupport<
     InProcessBrowserTest>;
+#endif
 
 #endif  // CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_

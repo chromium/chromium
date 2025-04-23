@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image.h"
 
@@ -54,17 +56,16 @@ BrowserManagementService::BrowserManagementService(Profile* profile)
       base::BindOnce(&BrowserManagementService::UpdateManagementIconForProfile,
                      weak_ptr_factory_.GetWeakPtr(), profile));
   UpdateEnterpriseLabelForProfile(profile);
-  pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kEnterpriseLogoUrlForProfile,
-      base::BindRepeating(
-          &BrowserManagementService::UpdateManagementIconForProfile,
-          weak_ptr_factory_.GetWeakPtr(), profile));
-  pref_change_registrar_.Add(
-      prefs::kEnterpriseCustomLabelForProfile,
-      base::BindRepeating(
-          &BrowserManagementService::UpdateEnterpriseLabelForProfile,
-          weak_ptr_factory_.GetWeakPtr(), profile));
+  StartListeningToPrefChanges(profile);
+
+  policy::CloudPolicyManager* cloud_policy_manager =
+      profile->GetCloudPolicyManager();
+  if (cloud_policy_manager) {
+    provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
+        cloud_policy_manager->core(), profile);
+    policy_status_provider_observations_.Observe(provider_.get());
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
@@ -77,7 +78,31 @@ ui::ImageModel* BrowserManagementService::GetManagementIconForProfile() {
 #endif
 }
 
+void BrowserManagementService::TriggerPolicyStatusChangedForTesting() {
+  CHECK_IS_TEST();
+  OnPolicyStatusChanged();
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void BrowserManagementService::StartListeningToPrefChanges(Profile* profile) {
+  pref_change_registrar_.Init(profile->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kEnterpriseLogoUrlForProfile,
+      base::BindRepeating(
+          &BrowserManagementService::UpdateManagementIconForProfile,
+          weak_ptr_factory_.GetWeakPtr(), profile));
+  pref_change_registrar_.Add(
+      prefs::kEnterpriseCustomLabelForProfile,
+      base::BindRepeating(
+          &BrowserManagementService::UpdateEnterpriseLabelForProfile,
+          weak_ptr_factory_.GetWeakPtr(), profile));
+  pref_change_registrar_.Add(
+      prefs::kEnterpriseProfileBadgeToolbarSettings,
+      base::BindRepeating(
+          &BrowserManagementService::UpdateEnterpriseLabelForProfile,
+          weak_ptr_factory_.GetWeakPtr(), profile));
+}
+
 void BrowserManagementService::UpdateManagementIconForProfile(
     Profile* profile) {
   enterprise_util::GetManagementIcon(
@@ -89,28 +114,22 @@ void BrowserManagementService::UpdateManagementIconForProfile(
 
 void BrowserManagementService::UpdateEnterpriseLabelForProfile(
     Profile* profile) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // profile_manager might be null in testing environments.
-  if (!profile_manager) {
-    return;
-  }
-
-  ProfileAttributesEntry* entry =
-      profile_manager->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (!entry) {
-    return;
-  }
-
-  entry->SetEnterpriseProfileLabel(
-      enterprise_util::GetEnterpriseLabel(profile));
+  enterprise_util::SetEnterpriseProfileLabel(profile);
+  NotifyEnterpriseLabelUpdated();
 }
 
 void BrowserManagementService::SetManagementIconForProfile(
     const gfx::Image& management_icon) {
   management_icon_for_profile_ = ui::ImageModel::FromImage(management_icon);
 }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+void BrowserManagementService::OnPolicyStatusChanged() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  NotifyEnterpriseLabelUpdated();
+#endif
+}
 
 BrowserManagementService::~BrowserManagementService() = default;
 

@@ -113,7 +113,9 @@ class SelfDeleteInstaller
   }
 
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override {
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;

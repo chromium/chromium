@@ -176,6 +176,7 @@ class MockDownloadItemFactory final : public download::DownloadItemFactory {
       download::DownloadItemImplDelegate* delegate,
       uint32_t download_id,
       const base::FilePath& path,
+      const base::FilePath& display_name,
       const GURL& url,
       const std::string& mime_type,
       download::DownloadJob::CancelRequestCallback cancel_request_callback)
@@ -332,6 +333,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateSavePageItem(
     download::DownloadItemImplDelegate* delegate,
     uint32_t download_id,
     const base::FilePath& path,
+    const base::FilePath& display_name,
     const GURL& url,
     const std::string& mime_type,
     download::DownloadJob::CancelRequestCallback cancel_request_callback) {

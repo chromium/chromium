@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -92,6 +93,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
@@ -188,7 +190,13 @@ void WaitForTabsToLoad(Browser* browser) {
 
 class SessionRestoreTest : public InProcessBrowserTest {
  public:
-  SessionRestoreTest() = default;
+  SessionRestoreTest() {
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SessionRestoreTest::RegisterFakeServices,
+                                    base::Unretained(this)));
+  }
   ~SessionRestoreTest() override = default;
 
  protected:
@@ -198,6 +206,16 @@ class SessionRestoreTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);
   }
 #endif
+
+  void RegisterFakeServices(content::BrowserContext* context) {
+    collaboration::messaging::MessagingBackendServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  collaboration::messaging::EmptyMessagingBackendService>();
+            }));
+  }
 
   void SetUpOnMainThread() override {
     active_browser_list_ = BrowserList::GetInstance();
@@ -377,6 +395,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
   memory_pressure::test::FakeMemoryPressureMonitor
       fake_memory_pressure_monitor_;
+
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 // Activates the smart restore behaviour.
@@ -4326,15 +4346,10 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   EXPECT_TRUE(app_checked);
 }
 
-class SessionRestoreStaleSessionCookieDeletionTest
-    : public SessionRestoreTest,
-      public testing::WithParamInterface<bool> {
+class SessionRestoreStaleSessionCookieDeletionTest : public SessionRestoreTest {
  public:
   SessionRestoreStaleSessionCookieDeletionTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatureState(
-        features::kDeleteStaleSessionCookiesOnStartup,
-        ShouldDeleteStaleSessionCookiesOnStartup());
   }
 
   void SetUpOnMainThread() override {
@@ -4344,8 +4359,6 @@ class SessionRestoreStaleSessionCookieDeletionTest
     ASSERT_TRUE(https_server_.Start());
     SessionRestoreTest::SetUpOnMainThread();
   }
-
-  bool ShouldDeleteStaleSessionCookiesOnStartup() { return GetParam(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -4391,16 +4404,10 @@ class SessionRestoreStaleSessionCookieDeletionTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SessionRestoreStaleSessionCookieDeletionTest,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
+IN_PROC_BROWSER_TEST_F(SessionRestoreStaleSessionCookieDeletionTest,
                        CookieStorage) {
   GURL open_page = https_server()->GetURL("a.test", "/empty.html");
   GURL other_page = https_server()->GetURL("b.test", "/empty.html");
@@ -4442,7 +4449,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
   ASSERT_EQ(open_page,
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
   // No cookies should have been cleared except for the stale session cookie on
-  // a page that wasn't restored when kDeleteStaleSessionCookiesOnStartup is on.
+  // a page that wasn't restored.
   EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_stale_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "open_page_session_cookie"));
@@ -4450,8 +4457,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
   EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_stale_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "other_page_session_cookie"));
-  EXPECT_EQ(HasCookie(new_browser, "other_page_session_stale_cookie"),
-            !ShouldDeleteStaleSessionCookiesOnStartup());
+  EXPECT_FALSE(HasCookie(new_browser, "other_page_session_stale_cookie"));
 }
 
 class SavedTabGroupSessionRestoreTest

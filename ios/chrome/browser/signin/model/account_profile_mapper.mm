@@ -590,7 +590,7 @@ void AccountProfileMapper::Assigner::DeleteProfileNamed(std::string_view name) {
   CHECK(is_updating_profile_attributes_storage_);
 
   if (handler_) {
-    [handler_ deleteProfile:name completion:base::DoNothing()];
+    [handler_ deleteProfile:name];
     return;
   }
 
@@ -830,8 +830,8 @@ AccountProfileMapper::AccountProfileMapper(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  widget_updater_ =
-      std::make_unique<AccountWidgetUpdater>(system_identity_manager_);
+  system_account_updater_ =
+      std::make_unique<SystemAccountUpdater>(system_identity_manager_);
 
   assigner_ = std::make_unique<Assigner>(
       system_identity_manager_, profile_manager_,

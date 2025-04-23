@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.hub;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Data to asynchronously supply to {@link ShrinkExpandHubLayoutAnimatorProvider}. */
 @NullMarked

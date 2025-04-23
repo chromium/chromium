@@ -31,11 +31,12 @@ class AutofillImageFetcherImplTest : public PlatformTest {
 };
 
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
-  // ResolveCardArtURL should append FIFE parameters, specifying an image
-  // that is 40x24px scaled to the screen scale.
+  // ResolveImageURL should append FIFE parameters, specifying an image that is
+  // 40x24px scaled to the screen scale.
   autofill_image_fetcher()->SetScreenScaleForTesting(4);
-  EXPECT_EQ(autofill_image_fetcher()->ResolveCardArtURL(
-                GURL("https://www.example.com/fake_image1")),
+  EXPECT_EQ(autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage),
             GURL("https://www.example.com/fake_image1=w160-h96-s"));
 }
 

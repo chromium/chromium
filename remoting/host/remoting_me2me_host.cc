@@ -47,6 +47,8 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/authentication_method.h"
@@ -288,6 +290,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   // mojom::AgentProcess overrides.
   void ResumeProcess() override;
   void SuspendProcess() override;
+  void BindRemotingHostControl(
+      mojo::PendingReceiver<mojom::RemotingHostControl> receiver) override;
 #endif
 
  private:
@@ -417,12 +421,14 @@ class HostProcess : public ConfigWatcher::Delegate,
                     const std::string& file_name,
                     int line_number) override;
 
-#if BUILDFLAG(IS_WIN)
   // mojom::RemotingHostControl implementation.
+#if BUILDFLAG(IS_WIN)
   void ApplyHostConfig(base::Value::Dict serialized_config) override;
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
       int peer_pid) override;
@@ -539,8 +545,16 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   raw_ptr<ShutdownWatchdog> shutdown_watchdog_;
 
+// On Mac, `remoting_host_control_` is bound by the BindRemotingHostControl IPC,
+// so it's a regular mojo receiver, while on Windows, this is bound by the
+// legacy OnAssociatedInterfaceRequest, which requires using an associated
+// receiver.
+#if BUILDFLAG(IS_MAC)
+  mojo::Receiver<mojom::RemotingHostControl> remoting_host_control_{this};
+#else
   mojo::AssociatedReceiver<mojom::RemotingHostControl> remoting_host_control_{
       this};
+#endif
   mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
       this};
 
@@ -1210,6 +1224,18 @@ void HostProcess::SuspendProcess() {
   GoOffline(kHostOfflineReasonSuspended);
 }
 
+void HostProcess::BindRemotingHostControl(
+    mojo::PendingReceiver<mojom::RemotingHostControl> receiver) {
+  if (!context_->ui_task_runner()->BelongsToCurrentThread()) {
+    context_->ui_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&HostProcess::BindRemotingHostControl, this,
+                                  std::move(receiver)));
+    return;
+  }
+  DCHECK(!remoting_host_control_.is_bound());
+  remoting_host_control_.Bind(std::move(receiver));
+}
+
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1252,6 +1278,9 @@ void HostProcess::InitializePairingRegistry(
   CreateAuthenticatorFactory();
 }
 
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void HostProcess::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
     int peer_pid) {
@@ -1271,7 +1300,7 @@ void HostProcess::BindChromotingHostServices(
   host_->BindChromotingHostServices(std::move(receiver), peer_pid);
 }
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
 
@@ -1873,9 +1902,8 @@ void HostProcess::StartHost() {
     corp_host_status_logger_->StartObserving(*session_manager);
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   desktop_environment_options_.set_enable_remote_webauthn(true);
-#endif
+
 #if BUILDFLAG(IS_WIN)
   // Set a default value for whether to allow the dxgi capturer. This value can
   // be explicitly disallowed by the client when session options are applied.
@@ -1937,8 +1965,8 @@ void HostProcess::StartHost() {
   host_->Start(*host_owner_emails_.begin());
 
 #if BUILDFLAG(IS_LINUX)
-  // For Windows, ChromotingHostServices connections are handled by the daemon
-  // process, then the message pipe is forwarded to the network process.
+  // For Windows and Mac, ChromotingHostServices connections are handled by
+  // another process, then the message pipe is forwarded to the network process.
   host_->StartChromotingHostServices();
 #endif
 
@@ -2107,8 +2135,8 @@ int HostProcessMain() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
-    rtc::tracing::SetupInternalTracer();
-    rtc::tracing::StartInternalCapture(
+    webrtc::tracing::SetupInternalTracer();
+    webrtc::tracing::StartInternalCapture(
         cmd_line->GetSwitchValuePath(kWebRtcTraceEventFile)
             .AsUTF8Unsafe()
             .c_str());
@@ -2169,7 +2197,7 @@ int HostProcessMain() {
   base::ThreadPoolInstance::Get()->Shutdown();
 
   if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
-    rtc::tracing::ShutdownInternalTracer();
+    webrtc::tracing::ShutdownInternalTracer();
   }
 
   return exit_code;

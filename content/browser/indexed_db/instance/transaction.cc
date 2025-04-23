@@ -4,19 +4,39 @@
 
 #include "content/browser/indexed_db/instance/transaction.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
+#include "base/unguessable_token.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-shared.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -25,7 +45,9 @@
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/lock_request_data.h"
-#include "storage/browser/blob/blob_storage_context.h"
+#include "content/browser/indexed_db/status.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -123,13 +145,14 @@ Transaction::AbortOperation Transaction::TaskStack::pop() {
   return task;
 }
 
-Transaction::Transaction(int64_t id,
-                         Connection* connection,
-                         const std::set<int64_t>& object_store_ids,
-                         blink::mojom::IDBTransactionMode mode,
-                         blink::mojom::IDBTransactionDurability durability,
-                         BucketContextHandle bucket_context,
-                         std::unique_ptr<Delegate> backing_store_transaction)
+Transaction::Transaction(
+    int64_t id,
+    Connection* connection,
+    const std::set<int64_t>& object_store_ids,
+    blink::mojom::IDBTransactionMode mode,
+    blink::mojom::IDBTransactionDurability durability,
+    BucketContextHandle bucket_context,
+    std::unique_ptr<BackingStore::Transaction> backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),

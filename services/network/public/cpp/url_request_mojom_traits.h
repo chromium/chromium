@@ -320,14 +320,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.throttling_profile_id;
   }
-  static const net::HttpRequestHeaders& custom_proxy_pre_cache_headers(
-      const network::ResourceRequest& request) {
-    return request.custom_proxy_pre_cache_headers;
-  }
-  static const net::HttpRequestHeaders& custom_proxy_post_cache_headers(
-      const network::ResourceRequest& request) {
-    return request.custom_proxy_post_cache_headers;
-  }
   static const std::optional<base::UnguessableToken>& fetch_window_id(
       const network::ResourceRequest& request) {
     return request.fetch_window_id;
@@ -424,9 +416,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.socket_tag;
   }
-  static bool allows_device_bound_sessions(
+  static bool allows_device_bound_session_registration(
       const network::ResourceRequest& request) {
-    return request.allows_device_bound_sessions;
+    return request.allows_device_bound_session_registration;
   }
   static const std::optional<network::PermissionsPolicy>& permissions_policy(
       const network::ResourceRequest& request) {

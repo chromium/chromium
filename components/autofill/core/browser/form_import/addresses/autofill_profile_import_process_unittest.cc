@@ -965,13 +965,19 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileRecordType) {
               AutofillProfile::RecordType::kAccount);
 
     // Profiles with an ineligible country are not stored in the account.
-    AutofillProfile ineligible_profile = test::StandardProfile();
-    ineligible_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"SD");
-    import_data = ProfileImportProcess(ineligible_profile, "en_US", url_,
-                                       ukm_source_id(), &address_data_manager(),
-                                       /*allow_only_silent_updates=*/false);
-    EXPECT_EQ(import_data.import_candidate()->record_type(),
-              AutofillProfile::RecordType::kLocalOrSyncable);
+    {
+      base::test::ScopedFeatureList feature;
+      feature.InitAndDisableFeature(
+          features::kAutofillEnableAccountStorageForIneligibleCountries);
+      AutofillProfile ineligible_profile = test::StandardProfile();
+      ineligible_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"SD");
+      import_data =
+          ProfileImportProcess(ineligible_profile, "en_US", url_,
+                               ukm_source_id(), &address_data_manager(),
+                               /*allow_only_silent_updates=*/false);
+      EXPECT_EQ(import_data.import_candidate()->record_type(),
+                AutofillProfile::RecordType::kLocalOrSyncable);
+    }
   }
 }
 

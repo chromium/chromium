@@ -49,7 +49,7 @@ build_webui("build") {
     ]
   }
 
-  non_web_component_files = [
+  ts_files = [
     "sync_confirmation/sync_confirmation.ts",
     "sync_confirmation/sync_confirmation_app.html.ts",
     "sync_confirmation/sync_confirmation_app.ts",
@@ -59,7 +59,7 @@ build_webui("build") {
   ]
 
   if (!is_chromeos) {
-    non_web_component_files += [
+    ts_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.html.ts",
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.ts",
       "managed_user_profile_notice/managed_user_profile_notice_app.html.ts",
@@ -84,7 +84,7 @@ build_webui("build") {
     ]
   }
   if (enable_dice_support) {
-    non_web_component_files += [
+    ts_files += [
       "dice_web_signin_intercept/chrome_signin/chrome_signin_app.html.ts",
       "dice_web_signin_intercept/chrome_signin/chrome_signin_app.ts",
       "dice_web_signin_intercept/dice_web_signin_intercept_app.html.ts",

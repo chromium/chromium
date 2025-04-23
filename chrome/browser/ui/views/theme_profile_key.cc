@@ -48,6 +48,9 @@ void SetThemeProfileForWindow(aura::Window* window, Profile* profile) {
 }
 
 Profile* GetThemeProfileForWindow(aura::Window* window) {
+  if (!window) {
+    return nullptr;
+  }
   ProfileTracker* const tracker = window->GetProperty(kThemeProfileKey);
   return tracker ? tracker->profile() : nullptr;
 }

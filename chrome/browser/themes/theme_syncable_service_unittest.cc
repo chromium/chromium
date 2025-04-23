@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,6 +58,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -290,7 +290,7 @@ class ThemeSyncableServiceTest : public testing::Test,
     extensions::ExtensionPrefs::Get(profile_.get())
         ->AddGrantedPermissions(theme_extension_->id(),
                                 extensions::PermissionSet());
-    service->AddExtension(theme_extension_.get());
+    registrar->AddExtension(theme_extension_.get());
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile_.get());
     ASSERT_EQ(1u, registry->enabled_extensions().size());
@@ -3711,8 +3711,9 @@ class ThemeSyncableServiceTestForThemeExtension
   }
 
   void InstallExtension() {
-    service_->OnExtensionInstalled(theme_extension(), syncer::StringOrdinal(),
-                                   extensions::kInstallFlagInstallImmediately);
+    registrar()->OnExtensionInstalled(
+        theme_extension(), syncer::StringOrdinal(),
+        extensions::kInstallFlagInstallImmediately);
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return theme_service()->UsingExtensionTheme(); }));
     EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())->GetExtensionById(

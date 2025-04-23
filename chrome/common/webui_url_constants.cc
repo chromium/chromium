@@ -37,6 +37,7 @@ bool IsSystemWebUIHost(std::string_view host) {
       kChromeUIBluetoothPairingHost,
       kChromeUIBorealisCreditsHost,
       kChromeUIBorealisInstallerHost,
+      kChromeUIBorealisMOTDHost,
       kChromeUICertificateManagerHost,
       kChromeUICloudUploadHost,
       kChromeUICrostiniCreditsHost,
@@ -194,6 +195,9 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
       kChromeUIConnectorsInternalsHost,
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
       kChromeUIDiscardsHost,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

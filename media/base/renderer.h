@@ -25,9 +25,9 @@ class RendererClient;
 // renumbered and numeric values should not be reused. When adding new entries,
 // also update media::mojom::RendererType & tools/metrics/histograms/enums.xml.
 enum class RendererType {
-  kRendererImpl = 0,     // RendererImplFactory
-  kMojo = 1,             // MojoRendererFactory
-  kMediaPlayer = 2,      // MediaPlayerRendererClientFactory
+  kRendererImpl = 0,  // RendererImplFactory
+  kMojo = 1,          // MojoRendererFactory
+  // kMediaPlayer = 2,   // Deprecated
   kCourier = 3,          // CourierRendererFactory
   kFlinging = 4,         // FlingingRendererClientFactory
   kCast = 5,             // CastRendererClientFactory

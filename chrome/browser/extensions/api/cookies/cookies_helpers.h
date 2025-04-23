@@ -122,7 +122,7 @@ ToNetCookiePartitionKey(
 
 // Returns empty collection if no partition_key.
 // Returns CookiePartitionKeyCollection::ContainsAll() if top_level_site has no
-// value. Returns CookiePartitionKeyCollection::FromOptional() if partition_key
+// value. Returns CookiePartitionKeyCollection(partition_key) if partition_key
 // and top_level_site are both present.
 //
 // If no value for partition_key->has_cross_site_ancestor is provided, keys with

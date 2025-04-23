@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.hub;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Helper class to manage Animator object creation for views during a hub color scheme change. */
+@NullMarked
 public class HubColorBlendAnimatorSetHelper {
     private List<HubViewColorBlend> mColorBlendList;
     private @Nullable @HubColorScheme Integer mPrevColorScheme;

@@ -11,6 +11,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -109,7 +110,7 @@ class ContinueButton : public views::MdTextButton {
     }
 
     const SkColor dialog_background_color =
-        bubble_view_->background_color().ConvertToSkColor(GetColorProvider());
+        bubble_view_->background_color().ResolveToSkColor(GetColorProvider());
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
         color_utils::kMinimumVisibleContrastRatio) {
@@ -185,10 +186,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   DCHECK(
       idp_title.has_value() ||
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
-  set_margins(idp_title.has_value()
-                  ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)
-                  : gfx::Insets::TLBR(kTopBottomPadding + kVerticalSpacing, 0,
-                                      kTopBottomPadding, 0));
+  set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
   // TODO(crbug.com/40224637): we are currently using a custom header because
   // the icon, title, and close buttons from a bubble are not customizable
   // enough to satisfy the UI requirements. However, this adds complexity to the

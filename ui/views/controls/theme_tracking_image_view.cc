@@ -43,7 +43,7 @@ ThemeTrackingImageView::~ThemeTrackingImageView() = default;
 void ThemeTrackingImageView::OnThemeChanged() {
   ImageView::OnThemeChanged();
   SetImage(
-      color_utils::IsDark(get_background_color_callback_.Run().ConvertToSkColor(
+      color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
           GetColorProvider()))
           ? dark_image_model_
           : light_image_model_);
@@ -53,7 +53,7 @@ void ThemeTrackingImageView::SetLightImage(
     const ui::ImageModel& light_image_model) {
   light_image_model_ = light_image_model;
   if (!color_utils::IsDark(
-          get_background_color_callback_.Run().ConvertToSkColor(
+          get_background_color_callback_.Run().ResolveToSkColor(
               GetColorProvider()))) {
     SetImage(light_image_model_);
   }
@@ -62,7 +62,7 @@ void ThemeTrackingImageView::SetLightImage(
 void ThemeTrackingImageView::SetDarkImage(
     const ui::ImageModel& dark_image_model) {
   dark_image_model_ = dark_image_model;
-  if (color_utils::IsDark(get_background_color_callback_.Run().ConvertToSkColor(
+  if (color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
           GetColorProvider()))) {
     SetImage(dark_image_model_);
   }

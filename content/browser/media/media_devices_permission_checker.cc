@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -50,8 +51,10 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
       frame_host->GetBrowserContext()
           ->GetPermissionController()
           ->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::SPEAKER_SELECTION, frame_host) ==
-      blink::mojom::PermissionStatus::GRANTED;
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::SPEAKER_SELECTION),
+              frame_host) == blink::mojom::PermissionStatus::GRANTED;
 
   bool mic_permissions_policy = frame_host->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kMicrophone);
@@ -122,7 +125,10 @@ void GetSpeakerSelectionAndMicrophoneState(
       frame_host->GetBrowserContext()
           ->GetPermissionController()
           ->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::SPEAKER_SELECTION, frame_host);
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::SPEAKER_SELECTION),
+              frame_host);
 
   bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSpeakerSelection);
@@ -250,7 +256,10 @@ bool MediaDevicesPermissionChecker::HasPanTiltZoomPermissionGrantedOnUIThread(
 
   blink::mojom::PermissionStatus status =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::CAMERA_PAN_TILT_ZOOM, frame_host);
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::CAMERA_PAN_TILT_ZOOM),
+          frame_host);
 
   return status == blink::mojom::PermissionStatus::GRANTED;
 #endif

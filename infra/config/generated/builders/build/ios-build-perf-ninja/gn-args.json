@@ -9,6 +9,8 @@
     "target_environment": "simulator",
     "target_os": "ios",
     "use_clang_coverage": true,
-    "use_remoteexec": true
+    "use_reclient": true,
+    "use_remoteexec": true,
+    "use_siso": false
   }
 }

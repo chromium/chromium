@@ -10,6 +10,7 @@
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
 class AuthenticationService;
 class ChromeAccountManagerService;
@@ -129,15 +130,18 @@ enum class SigninPromoAction {
 // Designated initializer.
 // `baseViewController` is the view to present UI for sign-in.
 - (instancetype)
-     initWithIdentityManager:(signin::IdentityManager*)identityManager
-       accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                 authService:(AuthenticationService*)authService
-                 prefService:(PrefService*)prefService
-                 syncService:(syncer::SyncService*)syncService
-                 accessPoint:(signin_metrics::AccessPoint)accessPoint
-             signinPresenter:(id<SigninPresenter>)signinPresenter
-    accountSettingsPresenter:
-        (id<AccountSettingsPresenter>)accountSettingsPresenter
+              initWithIdentityManager:(signin::IdentityManager*)identityManager
+                accountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                          authService:(AuthenticationService*)authService
+                          prefService:(PrefService*)prefService
+                          syncService:(syncer::SyncService*)syncService
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      signinPresenter:(id<SigninPresenter>)signinPresenter
+             accountSettingsPresenter:
+                 (id<AccountSettingsPresenter>)accountSettingsPresenter
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

@@ -31,34 +31,34 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
 
   // Start a port allocation session to generate port(s) from which connections
   // may be created.
-  void Prepare(uint32_t allocator_flags = cricket::kDefaultPortAllocatorFlags);
+  void Prepare(uint32_t allocator_flags = webrtc::kDefaultPortAllocatorFlags);
 
   // Create a connection to a remote candidate represented as the type, IP
   // address, port, and an optional candidate priority.
-  cricket::Connection* CreateConnection(webrtc::IceCandidateType type,
-                                        std::string_view remote_ip,
-                                        int remote_port,
-                                        int priority = 0);
+  webrtc::Connection* CreateConnection(webrtc::IceCandidateType type,
+                                       std::string_view remote_ip,
+                                       int remote_port,
+                                       int priority = 0);
 
   // Count of created ports.
   int port_count() { return ports_.size(); }
 
  private:
-  void OnPortReady(cricket::PortAllocatorSession* session,
-                   cricket::PortInterface* port);
+  void OnPortReady(webrtc::PortAllocatorSession* session,
+                   webrtc::PortInterface* port);
 
-  cricket::Candidate CreateUdpCandidate(webrtc::IceCandidateType type,
-                                        std::string_view ip,
-                                        int port,
-                                        int priority,
-                                        std::string_view ufrag = "");
+  webrtc::Candidate CreateUdpCandidate(webrtc::IceCandidateType type,
+                                       std::string_view ip,
+                                       int port,
+                                       int priority,
+                                       std::string_view ufrag = "");
 
   base::WaitableEvent* readyEvent_;
 
-  std::unique_ptr<rtc::SocketFactory> sf_;
-  std::unique_ptr<cricket::PortAllocator> allocator_;
-  std::vector<std::unique_ptr<cricket::PortAllocatorSession>> sessions_;
-  std::vector<cricket::PortInterface*> ports_;
+  std::unique_ptr<webrtc::SocketFactory> sf_;
+  std::unique_ptr<webrtc::PortAllocator> allocator_;
+  std::vector<std::unique_ptr<webrtc::PortAllocatorSession>> sessions_;
+  std::vector<webrtc::PortInterface*> ports_;
 };
 
 }  // namespace blink

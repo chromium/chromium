@@ -22,7 +22,7 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static TemplateURLServiceFactory* GetInstance();
 
   // Returns the default factory used to build TemplateURLServices. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:

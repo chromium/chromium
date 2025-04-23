@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="GroupSuggestionReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="RecentlyOpened"/>
+  <int value="2" label="SwitchedBetween"/>
+  <int value="3" label="SimilarSource"/>
+  <int value="4" label="SameOrigin"/>
+</enum>
+
 <enum name="ScoredURLUserAction">
   <int value="0" label="Unknown"/>
   <int value="1" label="Seen"/>

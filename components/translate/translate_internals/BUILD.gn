@@ -29,7 +29,7 @@ build_webui("build") {
     "translate_internals.html",
   ]
 
-  non_web_component_files = [ "translate_internals.js" ]
+  ts_files = [ "translate_internals.js" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",

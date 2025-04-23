@@ -36,19 +36,33 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
-    WebContentsPressedCallback inactive_view_pressed_callback)
+    WebContentsFocusedCallback inactive_view_focused_callback,
+    WebContentsResizeCallback split_tab_resize_callback)
     : browser_view_(browser_view),
-      inactive_view_pressed_callback_(inactive_view_pressed_callback) {
-  contents_views_.push_back(AddChildView(
-      std::make_unique<ContentsWebView>(browser_view_->GetProfile())));
-  contents_views_[0]->set_is_primary_web_contents_for_window(true);
+      inactive_view_focused_callback_(inactive_view_focused_callback),
+      split_tab_resize_callback_(split_tab_resize_callback) {
+  contents_container_views_.push_back(
+      AddChildView(std::make_unique<ContentsContainerView>(
+          std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
+  contents_container_views_[0]
+      ->GetContentsView()
+      ->set_is_primary_web_contents_for_window(true);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
 
-  contents_views_.push_back(AddChildView(
-      std::make_unique<ContentsWebView>(browser_view_->GetProfile())));
-  contents_views_[1]->SetVisible(false);
+  contents_container_views_.push_back(
+      AddChildView(std::make_unique<ContentsContainerView>(
+          std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
+  contents_container_views_[1]->SetVisible(false);
+
+  for (auto* contents_container_view : contents_container_views_) {
+    web_contents_focused_subscriptions_.push_back(
+        contents_container_view->GetContentsView()
+            ->AddWebContentsFocusedCallback(
+                base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
+                                    base::Unretained(this))));
+  }
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -58,12 +72,12 @@ MultiContentsView::MultiContentsView(
 MultiContentsView::~MultiContentsView() = default;
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
-  return contents_views_[active_index_];
+  return contents_container_views_[active_index_]->GetContentsView();
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
   int inactive_index = active_index_ == 0 ? 1 : 0;
-  return contents_views_[inactive_index];
+  return contents_container_views_[inactive_index]->GetContentsView();
 }
 
 bool MultiContentsView::IsInSplitView() {
@@ -75,11 +89,13 @@ void MultiContentsView::SetWebContentsAtIndex(
     int index) {
   CHECK(web_contents);
   CHECK(index >= 0 && index < 2);
-  contents_views_[index]->SetWebContents(web_contents);
+  contents_container_views_[index]->GetContentsView()->SetWebContents(
+      web_contents);
 
-  if (index == 1 && !contents_views_[1]->GetVisible()) {
-    contents_views_[1]->SetVisible(true);
+  if (index == 1 && !contents_container_views_[1]->GetVisible()) {
+    contents_container_views_[1]->SetVisible(true);
     resize_area_->SetVisible(true);
+    UpdateContentsBorder();
   }
 }
 
@@ -88,15 +104,16 @@ void MultiContentsView::CloseSplitView() {
     return;
   }
   if (active_index_ == 1) {
-    // Move the active WebContents so that the first ContentsWebView in
-    // contents_views_ can always be visible.
-    std::iter_swap(contents_views_.begin(),
-                   contents_views_.begin() + active_index_);
+    // Move the active WebContents so that the first ContentsContainerView in
+    // contents_container_views_ can always be visible.
+    std::iter_swap(contents_container_views_.begin(),
+                   contents_container_views_.begin() + active_index_);
     active_index_ = 0;
   }
-  contents_views_[1]->SetWebContents(nullptr);
-  contents_views_[1]->SetVisible(false);
+  contents_container_views_[1]->GetContentsView()->SetWebContents(nullptr);
+  contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
+  UpdateContentsBorder();
 }
 
 void MultiContentsView::SetActiveIndex(int index) {
@@ -104,28 +121,15 @@ void MultiContentsView::SetActiveIndex(int index) {
   // number of contents views.
   CHECK(index >= 0 && index < 2);
   // We will only activate a visible contents view.
-  CHECK(contents_views_[index]->GetVisible());
+  CHECK(contents_container_views_[index]->GetVisible());
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-  // Schedule paint to be sure that the active/inactive outline is correctly
-  // painted after the active contents changes.
-  SchedulePaint();
+
+  UpdateContentsBorder();
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
-  if (event.GetTypeAsUiEventType() == ui::EventType::kMousePressed &&
-      inactive_contents_view->GetVisible()) {
-    gfx::Rect inactive_contents_view_bounds =
-        inactive_contents_view->GetWebContents()->GetContainerBounds();
-    const gfx::PointF& event_position = event.PositionInScreen();
-    if (inactive_contents_view_bounds.Contains(event_position.x(),
-                                               event_position.y())) {
-      inactive_view_pressed_callback_.Run(
-          inactive_contents_view->GetWebContents());
-    }
-  }
   // Always allow the event to propagate to the WebContents, regardless of
   // whether it was also handled above.
   return false;
@@ -133,9 +137,9 @@ bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
 
 void MultiContentsView::ExecuteOnEachVisibleContentsView(
     base::RepeatingCallback<void(ContentsWebView*)> callback) {
-  for (auto* contents_view : contents_views_) {
-    if (contents_view->GetVisible()) {
-      callback.Run(contents_view);
+  for (auto* contents_container_view : contents_container_views_) {
+    if (contents_container_view->GetVisible()) {
+      callback.Run(contents_container_view->GetContentsView());
     }
   }
 }
@@ -143,15 +147,27 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (!initial_start_width_on_resize_.has_value()) {
     initial_start_width_on_resize_ =
-        std::make_optional(contents_views_[0]->size().width());
+        std::make_optional(contents_container_views_[0]->size().width());
   }
-  double total_width =
-      contents_views_[0]->size().width() + contents_views_[1]->size().width();
-  start_ratio_ =
+
+  double total_width = contents_container_views_[0]->size().width() +
+                       contents_container_views_[1]->size().width();
+  double start_ratio =
       (initial_start_width_on_resize_.value() + resize_amount) / total_width;
+
+  split_tab_resize_callback_.Run(start_ratio);
+
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
   }
+}
+
+void MultiContentsView::UpdateSplitRatio(double ratio) {
+  if (start_ratio_ == ratio) {
+    return;
+  }
+
+  start_ratio_ = ratio;
   InvalidateLayout();
 }
 
@@ -173,60 +189,49 @@ void MultiContentsView::Layout(PassKey) {
     end_rect.Inset(gfx::Insets(kSplitViewContentInset).set_left(0));
     corner_radius = kContentCornerRadius;
   }
-  for (auto* contents_view : contents_views_) {
-    contents_view->layer()->SetRoundedCornerRadius(
+  for (auto* contents_container_view : contents_container_views_) {
+    contents_container_view->GetContentsView()->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{corner_radius});
   }
-  contents_views_[0]->SetBoundsRect(start_rect);
+  contents_container_views_[0]->SetBoundsRect(start_rect);
   resize_area_->SetBoundsRect(resize_rect);
-  contents_views_[1]->SetBoundsRect(end_rect);
+  contents_container_views_[1]->SetBoundsRect(end_rect);
 }
 
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
-  if (!IsInSplitView()) {
-    return;
-  }
-
   // Paint the multi contents area background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
+}
 
-  // Draw active/inactive outlines around the contents areas.
-  const auto draw_contents_outline = [this, canvas](views::View* content_view) {
-    const bool is_active = content_view == GetActiveContentsView();
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(kContentOutlineThickness);
-    const SkColor color =
-        is_active ? GetColorProvider()->GetColor(
-                        kColorMulitContentsViewActiveContentOutline)
-                  : GetColorProvider()->GetColor(
-                        kColorMulitContentsViewInactiveContentOutline);
-    flags.setColor(color);
-    flags.setAntiAlias(true);
-    gfx::RectF main_content_border_rect = gfx::RectF(content_view->bounds());
-    const float outset =
-        kSplitViewContentPadding + (kContentOutlineThickness / 2.0f);
-    main_content_border_rect.Outset(outset);
-    canvas->DrawRoundRect(main_content_border_rect, kContentOutlineCornerRadius,
-                          flags);
-  };
-  for (auto* contents_view : contents_views_) {
-    draw_contents_outline(contents_view);
+void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
+  if (IsInSplitView()) {
+    if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
+      inactive_view_focused_callback_.Run(web_view->web_contents());
+    }
   }
 }
+
+MultiContentsView::ContentsContainerView::ContentsContainerView(
+    std::unique_ptr<ContentsWebView> contents_view) {
+  SetUseDefaultFillLayout(true);
+  contents_view_ = AddChildView(std::move(contents_view));
+}
+BEGIN_METADATA(MultiContentsView, ContentsContainerView)
+END_METADATA
 
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
     gfx::Rect available_space) {
   ViewWidths widths;
   if (IsInSplitView()) {
-    CHECK(contents_views_[0]->GetVisible() && contents_views_[1]->GetVisible());
+    CHECK(contents_container_views_[0]->GetVisible() &&
+          contents_container_views_[1]->GetVisible());
     widths.resize_width = resize_area_->GetPreferredSize().width();
     widths.start_width =
         start_ratio_ * (available_space.width() - widths.resize_width);
     widths.end_width =
         available_space.width() - widths.start_width - widths.resize_width;
   } else {
-    CHECK(!contents_views_[1]->GetVisible());
+    CHECK(!contents_container_views_[1]->GetVisible());
     widths.start_width = available_space.width();
   }
   return ClampToMinWidth(widths);
@@ -249,6 +254,36 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     widths.start_width -= diff;
   }
   return widths;
+}
+
+void MultiContentsView::UpdateContentsBorder() {
+  if (!IsInSplitView()) {
+    for (auto* contents_container_view : contents_container_views_) {
+      if (contents_container_view->GetBorder()) {
+        contents_container_view->SetBorder(nullptr);
+      }
+    }
+    return;
+  }
+
+  // Draw active/inactive outlines around the contents areas.
+  const auto set_contents_border =
+      [this](ContentsContainerView* contents_container_view) {
+        const bool is_active = contents_container_view->GetContentsView() ==
+                               GetActiveContentsView();
+        const SkColor color =
+            is_active ? GetColorProvider()->GetColor(
+                            kColorMulitContentsViewActiveContentOutline)
+                      : GetColorProvider()->GetColor(
+                            kColorMulitContentsViewInactiveContentOutline);
+        contents_container_view->SetBorder(views::CreatePaddedBorder(
+            views::CreateRoundedRectBorder(kContentOutlineThickness,
+                                           kContentOutlineCornerRadius, color),
+            gfx::Insets(kSplitViewContentPadding)));
+      };
+  for (auto* contents_container_view : contents_container_views_) {
+    set_contents_border(contents_container_view);
+  }
 }
 
 BEGIN_METADATA(MultiContentsView)

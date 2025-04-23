@@ -888,6 +888,7 @@ export class SearchboxElement extends SearchboxElementBase {
     this.dispatchEvent(new CustomEvent('query-autocomplete', {
       bubbles: true,
       composed: true,
+      detail: {inputValue: input},
     }));
   }
 

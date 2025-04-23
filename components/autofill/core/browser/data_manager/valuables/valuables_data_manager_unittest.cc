@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +24,7 @@
 
 namespace autofill {
 namespace {
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
@@ -46,9 +49,11 @@ class ValuablesDataManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<ValuablesTable> valuables_table_;
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncAutofillLoyaltyCard};
 };
 
-// Tests that the `PassseDataManager` correctly loads loyalty cards from the
+// Tests that the `ValuablesDataManager` correctly loads loyalty cards from the
 // database in the constructor.
 TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
@@ -76,7 +81,8 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
               UnorderedElementsAre(card1));
 
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
-  valuables_table().SetLoyaltyCards({card1, card2});
+  // Loyalty cards are passed unsorted by sync.
+  valuables_table().SetLoyaltyCards({card2, card1});
   // Make sure all async tasks are executed.
   helper().WaitUntilIdle();
 
@@ -93,8 +99,9 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   //   the UI sequence.
   helper().WaitUntilIdle();
   helper().WaitUntilIdle();
+  // Assert the cards are stored sorted by merchant name.
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
-              UnorderedElementsAre(card1, card2));
+              ElementsAre(card1, card2));
 }
 
 }  // namespace

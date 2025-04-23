@@ -34,8 +34,8 @@ build_webui_tests("build") {
     "checkbox_test.ts",
     "chooser_exception_list_entry_test.ts",
     "chooser_exception_list_test.ts",
-    "clear_browsing_data_test.ts",
     "clear_browsing_data_dialog_v2_test.ts",
+    "clear_browsing_data_test.ts",
     "clear_browsing_data_time_picker_test.ts",
     "collapse_radio_button_test.ts",
     "controlled_button_test.ts",
@@ -52,9 +52,12 @@ build_webui_tests("build") {
     "file_system_site_entry_test.ts",
     "file_system_site_list_test.ts",
     "fingerprint_progress_arc_test.ts",
+    "geolocation_page_test.ts",
     "help_page_test.ts",
     "idle_load_test.ts",
+    "incognito_tracking_protections_page_test.ts",
     "memory_page_test.ts",
+    "notifications_page_test.ts",
     "offer_writing_help_page_test.ts",
     "on_startup_page_test.ts",
     "payments_section_card_dialogs_test.ts",
@@ -179,7 +182,6 @@ build_webui_tests("build") {
   if (is_chromeos) {
     files += [
       "people_page_test_cros.ts",
-      "smart_card_reader_origin_entry_test.ts",
       "smart_card_readers_page_test.ts",
     ]
   } else {

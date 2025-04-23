@@ -66,6 +66,11 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     }
 
     @Override
+    public boolean canShowManualOverride(int manualOverride) {
+        return true;
+    }
+
+    @Override
     public boolean useRawResults() {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }

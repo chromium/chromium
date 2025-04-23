@@ -54,18 +54,16 @@ uint8_t D3D12VideoEncoderLevelsHevcToH265LevelIDC(
 }  // namespace
 
 D3D12VideoEncodeH265ReferenceFrameManager::
-    D3D12VideoEncodeH265ReferenceFrameManager(size_t max_num_ref_frames)
-    : max_num_ref_frames_(max_num_ref_frames) {
-  CHECK_GT(max_num_ref_frames, 0u);
-  CHECK_LE(max_num_ref_frames, kMaxDpbSize);
-}
+    D3D12VideoEncodeH265ReferenceFrameManager() = default;
+
 D3D12VideoEncodeH265ReferenceFrameManager::
     ~D3D12VideoEncodeH265ReferenceFrameManager() = default;
 
 void D3D12VideoEncodeH265ReferenceFrameManager::EndFrame(
     uint32_t pic_order_count,
     uint32_t temporal_layer_id) {
-  if (descriptors_.size() == max_num_ref_frames_) {
+  InsertCurrentFrame(0);
+  if (descriptors_.size() == size()) {
     descriptors_.pop_back();
   }
   descriptors_.insert(descriptors_.begin(),
@@ -234,19 +232,18 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
     pic_params_.List0ReferenceFramesCount = 0;
     pic_params_.pList0ReferenceFrames = nullptr;
   } else {
-    input_arguments_.PictureControlDesc.ReferenceFrames =
-        dpb_->ToD3D12VideoEncodeReferenceFrames();
     pic_params_.FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_P_FRAME;
     list0_reference_frames_[0] = 0;
     pic_params_.List0ReferenceFramesCount = 1;
     pic_params_.pList0ReferenceFrames = list0_reference_frames_.data();
     reference_frame_manager_
-        ->WriteReferencePictureDescriptorsToPictureParameters(
+        .WriteReferencePictureDescriptorsToPictureParameters(
             &pic_params_, base::span(list0_reference_frames_).first(1u));
+    input_arguments_.PictureControlDesc.ReferenceFrames =
+        reference_frame_manager_.ToD3D12VideoEncodeReferenceFrames();
+    input_arguments_.PictureControlDesc.ReferenceFrames.NumTexture2Ds =
+        pic_params_.ReferenceFramesReconPictureDescriptorsCount;
   }
-  input_arguments_.PictureControlDesc.ReferenceFrames.NumTexture2Ds = std::min(
-      input_arguments_.PictureControlDesc.ReferenceFrames.NumTexture2Ds,
-      pic_params_.ReferenceFramesReconPictureDescriptorsCount);
 
   // Rate control.
   int qp = -1;
@@ -286,7 +283,8 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
       D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE;
   input_arguments_.pInputFrame = input_frame;
   input_arguments_.InputFrameSubresource = input_frame_subresource;
-  D3D12PictureBuffer reconstructed_picture = dpb_->GetCurrentFrame();
+  D3D12PictureBuffer reconstructed_picture =
+      reference_frame_manager_.GetCurrentFrame();
   EncoderStatus result = video_encoder_wrapper_->Encode(
       input_arguments_,
       {
@@ -297,9 +295,8 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
     return result;
   }
 
-  dpb_->InsertCurrentFrame(0);
-  reference_frame_manager_->EndFrame(pic_params_.PictureOrderCountNumber,
-                                     pic_params_.TemporalLayerIndex);
+  reference_frame_manager_.EndFrame(pic_params_.PictureOrderCountNumber,
+                                    pic_params_.TemporalLayerIndex);
 
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;
@@ -432,13 +429,12 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
 
   h265_level_ = suggested_level;
 
-  dpb_.emplace(max_num_ref_frames_);
-  if (!dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
-                                    input_format_)) {
+  if (!reference_frame_manager_.InitializeTextureArray(
+          device_.Get(), config.input_visible_size, input_format_,
+          max_num_ref_frames_)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             "Failed to initialize DPB"};
   }
-  reference_frame_manager_.emplace(max_num_ref_frames_);
 
   video_encoder_wrapper_ = video_encoder_wrapper_factory_.Run(
       video_device_.Get(), D3D12_VIDEO_ENCODER_CODEC_HEVC,

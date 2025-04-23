@@ -1,0 +1,145 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.toolbar.extensions;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.profiles.Profile;
+
+/** A JNI bridge providing access to information of extension actions in the toolbar. */
+public class ExtensionActionsBridge {
+    private long mNativeExtensionActionsBridge;
+    @NonNull private final ObserverList<Observer> mObservers = new ObserverList<>();
+
+    @CalledByNative
+    private ExtensionActionsBridge(long nativeExtensionActionsBridge) {
+        mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
+    }
+
+    /** Returns an instance for the given profile. */
+    @NonNull
+    public static ExtensionActionsBridge get(@NonNull Profile profile) {
+        return ExtensionActionsBridgeJni.get().get(profile);
+    }
+
+    @CalledByNative
+    private void destroy() {
+        assert mNativeExtensionActionsBridge != 0;
+        mNativeExtensionActionsBridge = 0;
+    }
+
+    public void addObserver(@NonNull Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    public void removeObserver(@NonNull Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    /**
+     * Returns whether actions have been initialized.
+     *
+     * <p>If it returns false, you can install an observer to wait for initialization.
+     */
+    public boolean areActionsInitialized() {
+        return ExtensionActionsBridgeJni.get().areActionsInitialized(mNativeExtensionActionsBridge);
+    }
+
+    /** Returns a sorted list of enabled action IDs. */
+    @NonNull
+    public String[] getActionIds() {
+        return ExtensionActionsBridgeJni.get().getActionIds(mNativeExtensionActionsBridge);
+    }
+
+    /** Returns the state of an action for a particular tab. */
+    @Nullable
+    public ExtensionAction getAction(@NonNull String actionId, int tabId) {
+        return ExtensionActionsBridgeJni.get()
+                .getAction(mNativeExtensionActionsBridge, actionId, tabId);
+    }
+
+    @CalledByNative
+    private void onActionAdded(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionAdded(actionId);
+        }
+    }
+
+    @CalledByNative
+    private void onActionRemoved(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionRemoved(actionId);
+        }
+    }
+
+    @CalledByNative
+    private void onActionUpdated(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionUpdated(actionId);
+        }
+    }
+
+    @CalledByNative
+    private void onActionModelInitialized() {
+        for (Observer observer : mObservers) {
+            observer.onActionModelInitialized();
+        }
+    }
+
+    @CalledByNative
+    private void onPinnedActionsChanged() {
+        for (Observer observer : mObservers) {
+            observer.onPinnedActionsChanged();
+        }
+    }
+
+    /** The interface for observing action events. */
+    public interface Observer {
+        /**
+         * Signals that actionId has been added to the toolbar. This will only be called after the
+         * toolbar model has been initialized.
+         */
+        void onActionAdded(@NonNull String actionId);
+
+        /** Signals that the given action with actionId has been removed from the toolbar. */
+        void onActionRemoved(@NonNull String actionId);
+
+        /**
+         * Signals that the browser action with actionId has been updated. This method covers lots
+         * of different extension updates.
+         */
+        void onActionUpdated(@NonNull String actionId);
+
+        /**
+         * Signals that the toolbar model has been initialized, so that if any observers were
+         * postponing animation during the initialization stage, they can catch up.
+         */
+        void onActionModelInitialized();
+
+        /** Called whenever the pinned actions change. */
+        void onPinnedActionsChanged();
+    }
+
+    @NativeMethods
+    public interface Natives {
+        ExtensionActionsBridge get(@JniType("Profile*") Profile profile);
+
+        boolean areActionsInitialized(long nativeExtensionActionsBridge);
+
+        @JniType("std::vector<std::string>")
+        String[] getActionIds(long nativeExtensionActionsBridge);
+
+        ExtensionAction getAction(
+                long nativeExtensionActionsBridge,
+                @JniType("std::string") String actionId,
+                int tabId);
+    }
+}

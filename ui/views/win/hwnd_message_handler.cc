@@ -303,24 +303,6 @@ constexpr auto kTouchDownContextResetTimeout = base::Milliseconds(500);
 // same location as the cursor.
 constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
 
-// TODO(dloehr): As of SDK version 10.0.26100.0, IsWindowArranged is now
-// declared in a header file, so we no longer need this version. Remove this
-// code once the SDK update is finalized.
-#ifndef NTDDI_WIN11_GE
-// Returns true if the window is arranged via Snap. For example, the browser
-// window is snapped via buttons shown when the mouse is hovered over window
-// maximize button.
-bool IsWindowArranged(HWND window) {
-  // IsWindowArranged() is not a part of any header file.
-  // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-iswindowarranged
-  using IsWindowArrangedFuncType = BOOL(WINAPI*)(HWND);
-  static const auto is_window_arranged_func =
-      reinterpret_cast<IsWindowArrangedFuncType>(
-          base::win::GetUser32FunctionPointer("IsWindowArranged"));
-  return is_window_arranged_func ? is_window_arranged_func(window) : false;
-}
-#endif  // NTDDI_WIN11_GE
-
 }  // namespace
 
 // A scoping class that prevents a window from being able to redraw in response
@@ -1017,7 +999,7 @@ void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
 
   // Convert to pixels.
   excluded_margin_ =
-      display::win::ScreenWin::DIPToScreenSize(hwnd(), excluded_margin);
+      display::win::GetScreenWin()->DIPToScreenSize(hwnd(), excluded_margin);
 
   // When the aspect ratio is set, size the window to adhere to it. This keeps
   // the same origin point as the original window.
@@ -1191,7 +1173,7 @@ void HWNDMessageHandler::OnCaretBoundsChanged(
 
   const gfx::Rect dip_caret_bounds(client->GetCaretBounds());
   gfx::Rect caret_bounds =
-      display::win::ScreenWin::DIPToScreenRect(hwnd(), dip_caret_bounds);
+      display::win::GetScreenWin()->DIPToScreenRect(hwnd(), dip_caret_bounds);
   // Collapse any selection.
   caret_bounds.set_width(1);
   ax_system_caret_->MoveCaretTo(caret_bounds);
@@ -1611,7 +1593,8 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
 
 bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
                                              HMONITOR monitor) const {
-  if (delegate_->GetClientAreaInsets(insets, monitor)) {
+  int frame_thickness = ui::GetFrameThickness(monitor);
+  if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
     return true;
   }
   DCHECK(insets->IsEmpty());
@@ -1625,7 +1608,6 @@ bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
   if (IsMaximized()) {
     // Windows automatically adds a standard width border to all sides when a
     // window is maximized.
-    int frame_thickness = ui::GetFrameThickness(monitor);
     if (!delegate_->HasFrame()) {
       frame_thickness -= 1;
     }
@@ -1846,7 +1828,7 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
   // the DPI and thus must initialize dpi_ now. See https://crbug.com/1282804
   // for details.
   if (initial_bounds_valid_) {
-    dpi_ = display::win::ScreenWin::GetDPIForHWND(hwnd());
+    dpi_ = display::win::GetScreenWin()->GetDPIForHWND(hwnd());
   }
 
   // TODO(beng): move more of NWW::OnCreate here.
@@ -1883,7 +1865,7 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
   // that case, when monitors are added or removed, without a lot of extra
   // updates of the global ScreenWin DisplayInfos state. See
   // https://crbug.com/1413940 for more info.
-  display::win::ScreenWin::UpdateDisplayInfosIfNeeded();
+  display::win::GetScreenWin()->UpdateDisplayInfosIfNeeded();
 
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   delegate_->HandleDisplayChange();
@@ -1919,7 +1901,7 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
     dpi = display::win::GetDPIFromScalingFactor(scaling_factor);
   } else {
     dpi = LOWORD(w_param);
-    scaling_factor = display::win::ScreenWin::GetScaleFactorForDPI(dpi);
+    scaling_factor = display::win::GetScreenWin()->GetScaleFactorForDPI(dpi);
   }
 
   // The first WM_DPICHANGED originates from EnableChildWindowDpiMessage during
@@ -1939,7 +1921,7 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   // in which the display a window is on has a different scale factor than the
   // window, when the window handles the scale factor change.
   // See https://crbug.com/1368455 for more info.
-  display::win::ScreenWin::UpdateDisplayInfos();
+  display::win::GetScreenWin()->UpdateDisplayInfos();
   SetBoundsInternal(gfx::Rect(*reinterpret_cast<RECT*>(l_param)), false);
   delegate_->HandleWindowScaleFactorChanged(scaling_factor);
   return 0;
@@ -2875,6 +2857,16 @@ void HWNDMessageHandler::OnSysCommand(UINT notification_code,
                                 modifiers);
     delegate_->HandleAccelerator(accelerator);
     return;
+  }
+
+  // Identify a End Task from Task Manager by a SC_CLOSE which is sent using
+  // SendMessage (ISMEX_SEND) as opposed to SendNotifyMessage (ISMEX_NOTIFY).
+  if (notification_code == SC_CLOSE) {
+    DWORD send_message_ex = ::InSendMessageEx(nullptr);
+    if (send_message_ex == ISMEX_SEND) {
+      delegate_->HandleRequestClose();
+      return;
+    }
   }
 
   if (delegate_->HandleCommand(static_cast<int>(notification_code))) {

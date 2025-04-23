@@ -4,6 +4,8 @@
 
 #include "remoting/base/protobuf_http_request.h"
 
+#include <optional>
+
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -45,8 +47,7 @@ base::TimeDelta ProtobufHttpRequest::GetRequestTimeoutDuration() const {
   return timeout_duration_;
 }
 
-void ProtobufHttpRequest::OnResponse(
-    std::unique_ptr<std::string> response_body) {
+void ProtobufHttpRequest::OnResponse(std::optional<std::string> response_body) {
   HttpStatus url_loader_status = GetUrlLoaderStatus();
   // Move variables out of |this| as the callback can potentially delete |this|.
   auto invalidator = std::move(invalidator_);
@@ -56,8 +57,8 @@ void ProtobufHttpRequest::OnResponse(
   } else {
     // Parse the status from the response.
     protobufhttpclient::Status api_status;
-    if (response_body && api_status.ParseFromString(*response_body) &&
-        api_status.code() > 0) {
+    if (response_body.has_value() &&
+        api_status.ParseFromString(*response_body) && api_status.code() > 0) {
       RunResponseCallback(HttpStatus(api_status, *response_body));
     } else {
       // Fallback to just return the status from URL loader.
@@ -70,8 +71,8 @@ void ProtobufHttpRequest::OnResponse(
 }
 
 HttpStatus ProtobufHttpRequest::ParseResponse(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
+    std::optional<std::string> response_body) {
+  if (!response_body.has_value()) {
     LOG(ERROR) << "Server returned no response body";
     return HttpStatus(net::ERR_EMPTY_RESPONSE);
   }

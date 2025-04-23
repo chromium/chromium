@@ -280,8 +280,6 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceGuestExperience};
   bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -908,8 +906,11 @@ class SearchEngineRepromptBrowserTest
         {switches::kSearchEngineChoiceTriggerRepromptParams.name,
          reprompt_param}};
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
+    feature_list_.InitWithFeaturesAndParameters(
+        /* enabled_features= */
+        {{switches::kSearchEngineChoiceTrigger, std::move(field_trial_params)},
+         {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection, {}}},
+        /* disabled_features= */ {});
   }
 
   bool select_google_in_pre() const { return GetParam().select_google_in_pre; }

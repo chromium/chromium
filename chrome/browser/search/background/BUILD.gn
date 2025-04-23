@@ -8,10 +8,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("background") {
   public = [
-    "ntp_background_data.h",
-    "ntp_background_service.h",
     "ntp_background_service_factory.h",
-    "ntp_background_service_observer.h",
     "ntp_custom_background_service.h",
     "ntp_custom_background_service_factory.h",
     "ntp_custom_background_service_observer.h",
@@ -20,8 +17,6 @@ source_set("background") {
     "wallpaper_search/wallpaper_search_data.h",
   ]
   sources = [
-    "ntp_background_data.cc",
-    "ntp_background_service.cc",
     "ntp_background_service_factory.cc",
     "ntp_custom_background_service.cc",
     "ntp_custom_background_service_factory.cc",
@@ -29,7 +24,6 @@ source_set("background") {
     "wallpaper_search/wallpaper_search_data.cc",
   ]
   public_deps = [
-    ":ntp_background_proto",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/themes",
@@ -38,6 +32,7 @@ source_set("background") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/themes:ntp_background_proto",
     "//content/public/browser",
     "//net",
     "//services/network/public/cpp",
@@ -48,11 +43,14 @@ source_set("background") {
   deps = [
     ":constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/image_fetcher",
     "//chrome/common",
+    "//components/application_locale_storage",
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/search",
+    "//components/themes",
     "//components/version_info",
     "//ui/base:features",
     "//ui/base/mojom",
@@ -64,9 +62,4 @@ source_set("background") {
 source_set("constants") {
   sources = [ "ntp_custom_background_service_constants.h" ]
   deps = []
-}
-
-proto_library("ntp_background_proto") {
-  sources = [ "ntp_background.proto" ]
-  generate_python = false
 }

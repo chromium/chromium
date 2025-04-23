@@ -10,7 +10,6 @@
 namespace signin {
 class IdentityManager;
 }
-
 class AuthenticationService;
 
 @class NonModalSignInPromoMediator;
@@ -18,7 +17,10 @@ class AuthenticationService;
 // Protocol for mediator to set the delay timer for the promo.
 @protocol NonModalSignInPromoMediatorDelegate <NSObject>
 // Handles mediator timer expiration event.
-- (bool)nonModalSignInPromoMediatorTimerExpired:
+- (void)nonModalSignInPromoMediatorTimerExpired:
+    (NonModalSignInPromoMediator*)mediator;
+// Handles timeout or dismissal events
+- (void)nonModalSignInPromoMediatorShouldDismiss:
     (NonModalSignInPromoMediator*)mediator;
 @end
 
@@ -39,11 +41,8 @@ class AuthenticationService;
 // Starts showing the promo based on promoType.
 - (void)startPromoDisplayTimer;
 
-// Stops showing the promo.
-- (void)stopShowingPromo;
-
-// Handles the user tapping the sign-in button.
-- (void)handleSignInButtonTapped;
+// Stops non modal sign-in promo timeout timer.
+- (void)stopTimeOutTimers;
 
 // The delegate that responds to the mediator's actions.
 @property(nonatomic, weak) id<NonModalSignInPromoMediatorDelegate> delegate;

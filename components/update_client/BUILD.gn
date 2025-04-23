@@ -123,6 +123,8 @@ static_library("update_client") {
     "ping_manager.h",
     "pipeline.cc",
     "pipeline.h",
+    "pipeline_util.cc",
+    "pipeline_util.h",
     "protocol_definition.cc",
     "protocol_definition.h",
     "protocol_handler.cc",

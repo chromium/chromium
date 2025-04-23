@@ -242,7 +242,7 @@ public class ToolbarPositionControllerTest {
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
 
-    static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
+    public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
 
         public void setVisibilityForTests(boolean isShowing) {
@@ -469,6 +469,18 @@ public class ToolbarPositionControllerTest {
         assertControlsAtTop();
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
+        assertControlsAtBottom();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    public void testUpdatePositionFormField_MiniOriginBar() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
         assertControlsAtBottom();
     }
 

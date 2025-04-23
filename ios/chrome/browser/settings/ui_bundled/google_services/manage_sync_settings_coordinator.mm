@@ -18,6 +18,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -90,7 +91,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   // Account menu coordinator.
-  SigninCoordinator* _accountMenuCoordinator;
+  SigninCoordinator<StopAnimatedChromeCoordinator>* _accountMenuCoordinator;
 }
 
 // View controller.
@@ -191,7 +192,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self.mediator disconnect];
   [self stopBulkUpload];
   [self stopManageAccountsCoordinator];
-  [self interruptAccountMenuCoordinator];
+  [self stopAccountMenuCoordinatorAnimated:YES];
   self.mediator = nil;
   self.viewController = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
@@ -247,13 +248,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _personalizeGoogleServicesCoordinator = nil;
 }
 
-- (void)stopAccountMenuCoordinator {
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator = nil;
-}
-
-- (void)interruptAccountMenuCoordinator {
-  [_accountMenuCoordinator interruptAnimated:YES];
+- (void)stopAccountMenuCoordinatorAnimated:(BOOL)animated {
+  [_accountMenuCoordinator stopAnimated:animated];
   _accountMenuCoordinator = nil;
 }
 
@@ -341,7 +337,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _manageAccountsCoordinator, base::NotFatalUntil::M133);
+  CHECK_EQ(coordinator, _manageAccountsCoordinator);
   [self stopManageAccountsCoordinator];
 }
 
@@ -417,7 +413,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                             view:self.viewController.view
         forceSnackbarOverToolbar:NO
                       withSource:metricSignOut
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];
                       }];
   self.signoutActionSheetCoordinator.delegate = self;
@@ -490,16 +486,18 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openAccountMenu {
-  // TODO(crbug.com/336719357): Update to use ApplicationCommands.
   _accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:self.viewController
                                            browser:self.browser
-                                        anchorView:_viewController.view];
+                                      contextStyle:SigninContextStyle::kDefault
+                                        anchorView:_viewController.view
+                                       accessPoint:AccountMenuAccessPoint::
+                                                       kSettings];
 
   __weak __typeof(self) weakself = self;
   _accountMenuCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakself stopAccountMenuCoordinator];
+        [weakself stopAccountMenuCoordinatorAnimated:YES];
       };
 
   [_accountMenuCoordinator start];

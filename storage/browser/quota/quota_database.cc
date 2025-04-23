@@ -34,7 +34,6 @@
 #include "url/gurl.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 namespace {
@@ -151,7 +150,6 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
   CHECK_EQ(statement.ColumnInt(2), 0);
   BucketInfo bucket_info(
       BucketId(statement.ColumnInt64(0)), storage_key.value(),
-      static_cast<StorageType>(statement.ColumnInt(2)),
       statement.ColumnString(3), statement.ColumnTime(4),
       statement.ColumnInt64(5), statement.ColumnBool(6),
       static_cast<blink::mojom::BucketDurability>(statement.ColumnInt(7)));
@@ -705,7 +703,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     }
 
     BucketLocator locator(read_bucket_id, std::move(read_storage_key).value(),
-                          StorageType::kTemporary, is_default);
+                          is_default);
     const auto& bucket_usage = usage_map.find(locator);
     total_usage += (bucket_usage == usage_map.end()) ? 1 : bucket_usage->second;
     buckets_to_evict.insert(locator);
@@ -774,7 +772,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
       continue;
     }
     buckets.emplace(BucketId(statement.ColumnInt64(0)),
-                    read_storage_key.value(), StorageType::kTemporary,
+                    read_storage_key.value(),
                     statement.ColumnStringView(2) == kDefaultBucketName);
   }
   return buckets;

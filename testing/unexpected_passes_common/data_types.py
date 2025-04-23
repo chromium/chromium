@@ -191,6 +191,21 @@ class BaseExpectation():
       A string containing all of the information in the expectation in a format
       that is compatible with expectation files.
     """
+    return self.AsExpectationFileStringWithTrailingComment(None)
+
+  def AsExpectationFileStringWithTrailingComment(
+      self, trailing_comment: Optional[str]) -> str:
+    """Gets a string representation of the expectation usable in files.
+
+    |trailing_comment| is included as a trailing comment.
+
+    The trailing comment is handled via this method instead of being stored
+    internally because the trailing comment is not useful when doing actual
+    comparisons. It is only needed to preserve trailing comments when splitting
+    semi-stale expectations.
+
+    trailing_comment: An optional string to include as a trailing comment.
+    """
     is_glob = self.wildcard_type != WildcardType.NON_WILDCARD
     full_wildcard_support = self.wildcard_type == WildcardType.FULL_WILDCARD
 
@@ -203,7 +218,8 @@ class BaseExpectation():
         # we're manually creating an expectation, we have to specify the
         # glob-ness manually.
         is_glob=is_glob,
-        full_wildcard_support=full_wildcard_support)
+        full_wildcard_support=full_wildcard_support,
+        trailing_comments=trailing_comment)
     return typ_expectation.to_string()
 
   def _ProcessTagsForFileUse(self) -> List[str]:

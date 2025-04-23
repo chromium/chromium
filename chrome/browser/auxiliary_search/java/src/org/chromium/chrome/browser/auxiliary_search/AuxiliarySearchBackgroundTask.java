@@ -21,6 +21,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -85,7 +86,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         mAuxiliarySearchController =
                 AuxiliarySearchControllerFactory.getInstance()
                         .createAuxiliarySearchController(
-                                mContext, profile, /* tabModelSelector= */ null);
+                                mContext,
+                                profile,
+                                /* tabModelSelector= */ null,
+                                AuxiliarySearchHostType.CTA_BACKGROUND_TASK);
 
         long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.

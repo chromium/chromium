@@ -73,9 +73,10 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
 // Loads data related to the device restore. This method needs to be called
 // before IO is disallowed on UI thread. This method is called by
 // `IsFirstSessionAfterDeviceRestore()` or `LastDeviceRestoreTimestamp()`.
-const signin::RestoreData& LoadDeviceRestoreData() {
+const signin::RestoreData& LoadDeviceRestoreData(
+    base::OnceClosure completion = base::DoNothing()) {
   if (!g_restore_data.has_value()) {
-    g_restore_data = LoadDeviceRestoreDataInternal();
+    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion));
   }
   return g_restore_data.value();
 }
@@ -115,11 +116,12 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
   return CGSizeMake(size, size);
 }
 
-signin::Tribool IsFirstSessionAfterDeviceRestore() {
+signin::Tribool IsFirstSessionAfterDeviceRestore(base::OnceClosure completion) {
   if (SimulatePostDeviceRestore()) {
     return signin::Tribool::kTrue;
   }
-  const signin::RestoreData& restore_data = LoadDeviceRestoreData();
+  const signin::RestoreData& restore_data =
+      LoadDeviceRestoreData(std::move(completion));
   return restore_data.is_first_session_after_device_restore;
 }
 

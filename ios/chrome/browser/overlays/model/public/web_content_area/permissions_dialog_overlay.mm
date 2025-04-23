@@ -38,8 +38,6 @@ std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
 
 #pragma mark - PermissionsDialogRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(PermissionsDialogRequest);
-
 PermissionsDialogRequest::PermissionsDialogRequest(
     const GURL& url,
     NSArray<NSNumber*>* requested_permissions) {
@@ -84,8 +82,6 @@ void PermissionsDialogRequest::CreateAuxiliaryData(
 }
 
 #pragma mark - PermissionsDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(PermissionsDialogResponse);
 
 PermissionsDialogResponse::PermissionsDialogResponse(bool capture_allow)
     : capture_allow_(capture_allow) {}

@@ -46,10 +46,7 @@ public interface CollaborationService {
      * @param delegate The delegate to perform action on the Android UI.
      * @param url The URL of the join request.
      */
-    void startJoinFlow(
-            CollaborationControllerDelegate delegate,
-            GURL url,
-            @CollaborationServiceJoinEntryPoint int entry);
+    void startJoinFlow(CollaborationControllerDelegate delegate, GURL url);
 
     /**
      * Starts a new collaboration share or manage flow.

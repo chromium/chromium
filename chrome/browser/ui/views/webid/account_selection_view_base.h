@@ -119,6 +119,9 @@ class AccountHoverButton : public HoverButton {
   // Should only be invoked when the button has a secondary view.
   void ReplaceSecondaryViewWithSpinner();
 
+  // Used for testing.
+  void SetCallbackForTesting(PressedCallback callback);
+
  private:
   PressedCallback callback_;
   // The order of this account button relative to other account buttons in

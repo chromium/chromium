@@ -81,6 +81,15 @@ class TwoWayMap<K, V> extends Map<K, V> {
     super.clear();
     this.#reverseMap.clear();
   }
+  override delete(key: K): boolean {
+    const v = this.get(key);
+    let wasReverseDeleted = false;
+    if (v) {
+      wasReverseDeleted = this.#reverseMap.delete(v);
+    }
+
+    return wasReverseDeleted && super.delete(key);
+  }
 }
 
 export enum PauseActionSource {
@@ -140,6 +149,9 @@ export interface WordBoundaryState {
   // just the correct index within the current string.
   // Default is 0.
   speechUtteranceStartIndex: number;
+  // The length of the current word if it was provided by the speech engine. If
+  // not, this is 0.
+  speechUtteranceLength: number;
   // If we have to break a string because the text is too long, we need to
   // offset future word boundaries within this utterance by this offset so
   // that they appear in the correct locations.
@@ -336,6 +348,7 @@ export class AppElement extends AppElementBase {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,
+    speechUtteranceLength: 0,
     tooLongTextOffset: 0,
   };
 
@@ -455,24 +468,13 @@ export class AppElement extends AppElementBase {
             anchorNodeId, anchorOffset, focusNodeId, focusOffset);
       }
 
-      // If there's been a selection, clear the current
-      // Read Aloud highlight.
-      const elements =
-          this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
-      if (elements && anchorNodeId && focusNodeId) {
-        elements.forEach(el => el.classList.remove(currentReadHighlightClass));
+      // If there's been a selection, clear the current Read Aloud highlight.
+      if (anchorNodeId && focusNodeId) {
+        // If speech is resumed, this won't be restored.
+        // TODO: crbug.com/40927698 - Restore the previous highlight after
+        // speech is resumed after a selection.
+        this.clearHighlightFormatting_();
       }
-
-      // Clear the previously read highlight if there's been a selection.
-      // If speech is resumed, this won't be restored.
-      // TODO: crbug.com/40927698 - Restore the previous highlight after speech
-      // is resumed after a selection.
-      this.previousHighlights_.forEach((element) => {
-        if (element) {
-          element.classList.remove(previousReadHighlightClass);
-        }
-      });
-      this.previousHighlights_ = [];
     };
 
     this.$.containerParent.onscroll = () => {
@@ -546,6 +548,25 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.onTtsEngineInstalled = () => {
       this.onTtsEngineInstalled();
     };
+
+    chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
+      this.onNodeWillBeDeleted(nodeId);
+    };
+  }
+
+  private clearHighlightFormatting_() {
+    const elements =
+        this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
+    if (elements) {
+      elements.forEach(el => el.classList.remove(currentReadHighlightClass));
+    }
+
+    this.previousHighlights_.forEach((element) => {
+      if (element) {
+        element.classList.remove(previousReadHighlightClass);
+      }
+    });
+    this.previousHighlights_ = [];
   }
 
   private getOffsetInAncestor(node: Node): number {
@@ -596,6 +617,15 @@ export class AppElement extends AppElementBase {
 
     // Only one body tag is allowed per document.
     if (htmlTag === 'body') {
+      htmlTag = 'div';
+    }
+
+    // details tags hide content beneath them if closed. If opened, there is
+    // content underneath we should show, but surrounding it with a generic
+    // details tag causes it to be hidden in reading mode. So use a div instead.
+    // In the cases that the details are closed, then nothing will be returned
+    // beneath the details tag so nothing is rendered on reading mode.
+    if (htmlTag === 'details') {
       htmlTag = 'div';
     }
 
@@ -759,9 +789,17 @@ export class AppElement extends AppElementBase {
 
     this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
     const node = this.buildSubtree_(rootId);
-    // If there is not text or images in the node, do not prodeed. The empty
+    // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
     if (!node.textContent && this.imageNodeIdsToFetch_.size === 0) {
+      // Sometimes the controller thinks there will be content and redraws
+      // without showing the empty page, but we end up not actually having any
+      // content and also not showing the empty page sometimes. In this case,
+      // send that info back to the controller.
+      if (this.hasContent_) {
+        this.hasContent_ = false;
+        chrome.readingMode.onNoTextContent();
+      }
       return;
     }
 
@@ -1534,7 +1572,8 @@ export class AppElement extends AppElementBase {
     this.resetToDefaultWordBoundaryState();
     chrome.readingMode.movePositionToPreviousGranularity();
 
-    if (!this.highlightAndPlayMessage()) {
+    if (!this.highlightAndPlayMessage(/*isInterrupted=*/ false,
+                                      /*isMovingBackward=*/ true)) {
       this.onSpeechFinished();
     }
   }
@@ -1694,19 +1733,26 @@ export class AppElement extends AppElementBase {
       return false;
     }
 
-    const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
-        this.getSelectedIds();
+    const anchorNodeId = chrome.readingMode.startNodeId;
+    const anchorOffset = chrome.readingMode.startOffset;
+    const focusNodeId = chrome.readingMode.endNodeId;
+    const focusOffset = chrome.readingMode.endOffset;
+
     // If only one of the ids is present, use that one.
     let startingNodeId: number|undefined =
         anchorNodeId ? anchorNodeId : focusNodeId;
     let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
     // If both are present, start with the node that is sooner in the page.
     if (anchorNodeId && focusNodeId) {
-      const pos =
-          selection.anchorNode.compareDocumentPosition(selection.focusNode);
-      const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
-      startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
-      startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+      if (anchorNodeId === focusNodeId) {
+        startingOffset = Math.min(anchorOffset, focusOffset);
+      } else {
+        const pos =
+            selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
+        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
+        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+      }
     }
 
     if (!startingNodeId) {
@@ -1765,7 +1811,9 @@ export class AppElement extends AppElementBase {
   // following text.
   // TODO: crbug.com/1474951 - Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  highlightAndPlayMessage(isInterrupted: boolean = false): boolean {
+  highlightAndPlayMessage(
+      isInterrupted: boolean = false,
+      isMovingBackward: boolean = false): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
     // highlighted.
     const axNodeIds: number[] = chrome.readingMode.getCurrentText();
@@ -1777,27 +1825,19 @@ export class AppElement extends AppElementBase {
     }
 
     if (axNodeIds.every(id => this.hiddenImageNodesIds_.has(id))) {
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
     const utteranceText = this.extractTextOf(axNodeIds);
     // If node ids were returned but they don't exist in the Reading Mode panel,
     // there's been a mismatch between Reading Mode and Read Aloud. In this
     // case, we should move to the next Read Aloud node and attempt to continue
-    // playing.
-    if (!utteranceText) {
-      // TODO: crbug.com/332694565 - This fallback should never be needed, but
-      // it is. Investigate root cause of Read Aloud / Reading Mode mismatch.
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
-    }
-
-    // The TTS engine may not like attempts to speak whitespace, so move to the
-    // next utterance.
-    if (utteranceText.trim().length === 0) {
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
+    // playing. TODO: crbug.com/332694565 - This fallback should never be
+    // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
+    // mismatch. Additionally, the TTS engine may not like attempts to speak
+    // whitespace, so move to the next utterance in that case.
+    if (!utteranceText || utteranceText.trim().length === 0) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
     // If we're resuming a previously interrupted message, use word
@@ -1815,8 +1855,8 @@ export class AppElement extends AppElementBase {
       // ending punctuation.
       if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
-        chrome.readingMode.movePositionToNextGranularity();
-        return this.highlightAndPlayMessage(isInterrupted);
+        this.resetToDefaultWordBoundaryState();
+        return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
       } else {
         this.playText(utteranceTextForWordBoundary);
       }
@@ -1826,6 +1866,16 @@ export class AppElement extends AppElementBase {
 
     this.highlightCurrentGranularity(axNodeIds);
     return true;
+  }
+
+  private skipCurrentPosition_(
+      isInterrupted: boolean, isMovingBackward: boolean): boolean {
+    if (isMovingBackward) {
+      chrome.readingMode.movePositionToPreviousGranularity();
+    } else {
+      chrome.readingMode.movePositionToNextGranularity();
+    }
+    return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
   }
 
   // Highlights or rehighlights the current granularity, sentence or word.
@@ -1973,7 +2023,7 @@ export class AppElement extends AppElementBase {
       // the sentence granularity level, so we'll retrieve these boundaries in
       // message.onEnd instead.
       if (event.name === 'word') {
-        this.updateBoundary(event.charIndex);
+        this.updateBoundary(event.charIndex, event.charLength);
 
         // No need to update the highlight on word boundary events if
         // highlighting is off or if sentence highlighting is used.
@@ -2154,10 +2204,11 @@ export class AppElement extends AppElementBase {
     this.stopSpeech(PauseActionSource.DEFAULT);
   }
 
-  updateBoundary(charIndex: number) {
+  updateBoundary(charIndex: number, charLength: number = 0) {
     this.wordBoundaryState.previouslySpokenIndex =
         charIndex + this.wordBoundaryState.tooLongTextOffset;
     this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+    this.wordBoundaryState.speechUtteranceLength = charLength;
   }
 
   resetToDefaultWordBoundaryState(
@@ -2179,6 +2230,7 @@ export class AppElement extends AppElementBase {
           WordBoundaryMode.NO_BOUNDARIES :
           WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
+      speechUtteranceLength: 0,
       tooLongTextOffset: 0,
     };
   }
@@ -2234,13 +2286,15 @@ export class AppElement extends AppElementBase {
     this.resetPreviousHighlight_();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
+    const length = this.wordBoundaryState.speechUtteranceLength;
+
     const highlightNodes =
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
     let anyHighlighted: boolean = false;
     for (const highlightNode of highlightNodes) {
       const nodeId = highlightNode.nodeId;
-      const highlightLength: number = highlightNode.length;
+      const highlightLength: number = length ? length : highlightNode.length;
       const highlightStartIndex = highlightNode.start;
       const endIndex = highlightStartIndex + highlightLength;
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
@@ -2412,8 +2466,6 @@ export class AppElement extends AppElementBase {
     if (chrome.readingMode.linksEnabled) {
       this.updateLinks_();
     }
-    // Clear the formatting we added for highlighting.
-    this.updateContent();
     this.logSpeechPlaySession_();
   }
 
@@ -2427,7 +2479,7 @@ export class AppElement extends AppElementBase {
       isSpeechBeingRepositioned: false,
     };
 
-    this.previousHighlights_ = [];
+    this.clearHighlightFormatting_();
     this.resetToDefaultWordBoundaryState();
   }
 
@@ -2777,6 +2829,19 @@ export class AppElement extends AppElementBase {
 
   onTtsEngineInstalled() {
     this.waitingForNewEngine_ = true;
+  }
+
+  onNodeWillBeDeleted(nodeId: number) {
+    const deletedNode = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as ChildNode;
+    if (deletedNode) {
+      this.domNodeToAxNodeIdMap_.delete(deletedNode);
+      deletedNode.remove();
+    }
+    const root = this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.rootId);
+    if (this.hasContent_ && !root?.textContent) {
+      this.hasContent_ = false;
+      chrome.readingMode.onNoTextContent();
+    }
   }
 
   languageChanged() {

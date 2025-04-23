@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_WINDOWS_VIDEO_RATE_CONTROL_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_VIDEO_RATE_CONTROL_WRAPPER_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 
@@ -46,19 +47,19 @@ class VideoRateControlWrapper {
     VideoEncodeAccelerator::Config::ContentType content_type =
         VideoEncodeAccelerator::Config::ContentType::kCamera;
     // Target bitrate for svc layers.
-    int layer_target_bitrate[kMaxLayers] = {};
+    std::array<int, kMaxLayers> layer_target_bitrate = {};
     // Rate decimator for temporal layers.
-    int ts_rate_decimator[kMaxTemporalLayers] = {};
+    std::array<int, kMaxTemporalLayers> ts_rate_decimator = {};
     // Number of spatial layers.
     int ss_number_layers = 0;
     // Number of temporal layers.
     int ts_number_layers = 0;
     // Quantizer parameter for svc layers.
-    int max_quantizers[kMaxLayers] = {};
-    int min_quantizers[kMaxLayers] = {};
+    std::array<int, kMaxLayers> max_quantizers = {};
+    std::array<int, kMaxLayers> min_quantizers = {};
     // Scaling factor parameters for spatial layers.
-    int scaling_factor_num[kMaxSpatialLayers] = {};
-    int scaling_factor_den[kMaxSpatialLayers] = {};
+    std::array<int, kMaxSpatialLayers> scaling_factor_num = {};
+    std::array<int, kMaxSpatialLayers> scaling_factor_den = {};
     // If defined, the H.264 BRC uses fixed QP difference between layers. Should
     // not be defined for other SW BRCs.
     std::optional<int> fixed_delta_qp;

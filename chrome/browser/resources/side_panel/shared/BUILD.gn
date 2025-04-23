@@ -11,7 +11,7 @@ build_webui("build") {
   grd_prefix = "side_panel_shared"
   grd_resource_path_prefix = "shared"
 
-  non_web_component_files = [
+  ts_files = [
     "sp_empty_state.html.ts",
     "sp_empty_state.ts",
     "sp_footer.html.ts",

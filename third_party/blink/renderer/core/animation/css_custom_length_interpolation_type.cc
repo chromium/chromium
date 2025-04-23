@@ -17,12 +17,13 @@ InterpolationValue CSSCustomLengthInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSCustomLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   InterpolableLength* maybe_length =
       InterpolableLength::MaybeConvertCSSValue(value);
-  if (!maybe_length || maybe_length->HasPercentage())
+  if (!maybe_length || maybe_length->HasPercentage()) {
     return nullptr;
+  }
   return InterpolationValue(maybe_length);
 }
 
@@ -33,6 +34,17 @@ const CSSValue* CSSCustomLengthInterpolationType::CreateCSSValue(
   const auto& interpolable_length = To<InterpolableLength>(interpolable_value);
   DCHECK(!interpolable_length.HasPercentage());
   return interpolable_length.CreateCSSValue(Length::ValueRange::kAll);
+}
+
+InterpolationValue
+CSSCustomLengthInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  InterpolableLength* maybe_length =
+      InterpolableLength::MaybeConvertCSSValue(value);
+  if (!maybe_length || maybe_length->HasPercentage()) {
+    return nullptr;
+  }
+  return InterpolationValue(maybe_length);
 }
 
 }  // namespace blink

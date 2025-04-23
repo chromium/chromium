@@ -106,6 +106,9 @@ struct TemplateURLData {
   // Returns whether this search engine was created by the
   // EnterpriseSearchAggregatorSettings policy.
   bool CreatedByEnterpriseSearchAggregatorPolicy() const;
+  // Returns whether this search engine was created by the SiteSearchSettings
+  // policy.
+  bool CreatedBySiteSearchPolicy() const;
 
   // Optional additional raw URLs.
   std::string suggestions_url;

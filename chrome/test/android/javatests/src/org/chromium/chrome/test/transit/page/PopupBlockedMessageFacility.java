@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import android.view.View;
+
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.transit.MessageFacility;
 
 /**
@@ -15,10 +17,9 @@ import org.chromium.chrome.test.transit.MessageFacility;
  */
 public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         extends MessageFacility<HostStationT> {
-
-    public static final ViewSpec ALWAYS_SHOW_BUTTON = primaryButtonViewSpec("Always show");
-
     private final int mCount;
+    public ViewElement<View> titleElement;
+    public ViewElement<View> alwaysShowButtonElement;
 
     public PopupBlockedMessageFacility(int count) {
         mCount = count;
@@ -34,9 +35,8 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         } else {
             title = String.format("%s pop-ups blocked", mCount);
         }
-        elements.declareView(titleViewSpec(title));
-
-        elements.declareView(ALWAYS_SHOW_BUTTON);
+        titleElement = elements.declareView(titleViewSpec(title));
+        alwaysShowButtonElement = elements.declareView(primaryButtonViewSpec("Always show"));
     }
 
     public WebPageStation clickAlwaysAllow() {
@@ -46,6 +46,6 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(popupPage, ALWAYS_SHOW_BUTTON::click);
+        return mHostStation.travelToSync(popupPage, alwaysShowButtonElement.clickTrigger());
     }
 }

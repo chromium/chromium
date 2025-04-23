@@ -145,6 +145,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ден и }one{# ден и }other{# дена и }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Слика.</translation>
+<translation id="5860491529813859533">Вклучи</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{за 1 г.}one{за # г.}other{за # г.}}</translation>
 <translation id="588258955323874662">Цел екран</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Преостана 1 секунда}one{Преостана # секунда}other{Преостанаа # секунди}}</translation>

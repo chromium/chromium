@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,7 +14,11 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -32,6 +37,30 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+namespace autofill {
+class MockCreditCardFormEventLogger
+    : public autofill_metrics::CreditCardFormEventLogger {
+ public:
+  using autofill_metrics::CreditCardFormEventLogger::CreditCardFormEventLogger;
+  MOCK_METHOD(void, OnBnplSuggestionShown, (), (override));
+};
+
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
+ public:
+  explicit MockBrowserAutofillManager(TestAutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
+  MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
+  MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
+      delete;
+  ~MockBrowserAutofillManager() override = default;
+
+  MOCK_METHOD(autofill_metrics::CreditCardFormEventLogger&,
+              GetCreditCardFormEventLogger,
+              (),
+              (override));
+};
+}  // namespace autofill
+
 namespace autofill::payments {
 
 using testing::_;
@@ -40,7 +69,9 @@ using testing::Eq;
 using testing::Field;
 using testing::FieldsAre;
 using testing::InSequence;
+using ::testing::NiceMock;
 using testing::Property;
+using testing::ReturnRef;
 using testing::Test;
 
 namespace {
@@ -155,8 +186,22 @@ class BnplManagerTest : public Test {
             autofill_client_.get()));
     autofill_client_->GetPaymentsAutofillClient()
         ->set_payments_network_interface(std::move(payments_network_interface));
+    autofill_driver_ =
+        std::make_unique<TestAutofillDriver>(autofill_client_.get());
+    auto mock_manager_unique_ptr =
+        std::make_unique<NiceMock<MockBrowserAutofillManager>>(
+            autofill_driver_.get());
+    credit_card_form_event_logger_ =
+        std::make_unique<NiceMock<autofill::MockCreditCardFormEventLogger>>(
+            mock_manager_unique_ptr.get());
 
-    bnpl_manager_ = std::make_unique<BnplManager>(autofill_client_.get());
+    ON_CALL(*mock_manager_unique_ptr, GetCreditCardFormEventLogger())
+        .WillByDefault(ReturnRef(*credit_card_form_event_logger_));
+
+    autofill_driver_->set_autofill_manager(std::move(mock_manager_unique_ptr));
+    bnpl_manager_ =
+        std::make_unique<BnplManager>(static_cast<BrowserAutofillManager*>(
+            &autofill_driver_->GetAutofillManager()));
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
@@ -218,9 +263,17 @@ class BnplManagerTest : public Test {
         autofill_client_->GetPaymentsAutofillClient());
   }
 
+  void TearDown() override {
+    credit_card_form_event_logger_->OnDestroyed();
+    credit_card_form_event_logger_.reset();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
+  std::unique_ptr<TestAutofillDriver> autofill_driver_;
+  std::unique_ptr<autofill::MockCreditCardFormEventLogger>
+      credit_card_form_event_logger_;
   std::unique_ptr<BnplManager> bnpl_manager_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -597,7 +650,8 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingUrl)
       .WillOnce(base::test::RunOnceCallback<1>(
-          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+          PaymentsAutofillClient::PaymentsRpcResult::
+              kVcnRetrievalPermanentFailure,
           response));
 
   OnIssuerSelected(linked_issuer);
@@ -1294,89 +1348,6 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
   bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
-// Tests that BNPL settings toggle should not be shown if all BNPL
-// feature flags are disabled.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
-                             features::kAutofillEnableBuyNowPayLater});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-}
-
-// Tests that BNPL settings toggle should not be shown if BNPL
-// issuer feature flags are disabled.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-}
-
-// Tests that BNPL settings toggle should be shown only after BNPL suggestions
-// have been generated before.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  EXPECT_FALSE(autofill_client_->GetPersonalDataManager()
-                   .payments_data_manager()
-                   .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(autofill_client_->GetPersonalDataManager()
-                  .payments_data_manager()
-                  .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
-}
-
 // Tests that when CreateBnplPaymentInstrument and responds with a success
 // response, expecting GetBnplPaymentInstrumentForFetchingUrl call with the
 // returned instrument ID.
@@ -1430,6 +1401,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, ""));
+  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos);
 
   test_api(*bnpl_manager_).CreateBnplPaymentInstrument();
 
@@ -1630,6 +1602,74 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
       ElementsAre(EqualsBnplIssuerContext(
           "unlinked",
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
+}
+
+// Tests that the `kBnplSuggestionAccepted` event is logged once when
+// `InitBnplFlow()` is called.
+TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
+  base::HistogramTester histogram_tester;
+
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
+      /*expected_bucket_count=*/1);
+
+  // Test that `kBnplSuggestionAccepted` is logged only once even if
+  // `InitBnplFlow()` is called more than once on the same page.
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_SuggestionUpdatedAndOnBnplSuggestionShownCalled) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
+
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+
+  EXPECT_CALL(callback, Run);
+  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown());
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  bnpl_manager_->OnAmountExtractionReturned(50'000'000ULL);
+}
+
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_SuggestionNotUpdatedAndOnBnplSuggestionShownNotCalled) {
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+
+  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown())
+      .Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

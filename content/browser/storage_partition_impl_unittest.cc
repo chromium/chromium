@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -152,7 +153,7 @@ class RemoveCookieTester {
     base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->GetCookieList(
         origin.GetURL(), net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key),
+        net::CookiePartitionKeyCollection(cookie_partition_key),
         base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();
@@ -271,6 +272,31 @@ class RemoveInterestGroupTester {
     k_anon_key = HashedKAnonKeyForAdBid(
         group, GURL("https://owner.example.com/ad1").spec());
     interest_group_manager->UpdateLastKAnonymityReported(k_anon_key);
+  }
+
+  void AddClick(const url::Origin& provider_origin,
+                const url::Origin& eligible_origin) {
+    ASSERT_TRUE(storage_partition_->GetInterestGroupManager());
+    network::AdAuctionEventRecord event;
+    event.type = network::AdAuctionEventRecord::Type::kClick;
+    event.providing_origin = provider_origin;
+    event.eligible_origins.push_back(eligible_origin);
+    InterestGroupManagerImpl* interest_group_manager =
+        static_cast<InterestGroupManagerImpl*>(
+            storage_partition_->GetInterestGroupManager());
+    interest_group_manager->RecordViewClickForTesting(std::move(event));
+  }
+
+  std::optional<bool> ClickInDb(const url::Origin& provider_origin,
+                                const url::Origin& eligible_origin) {
+    base::test::TestFuture<std::optional<bool>> future;
+    InterestGroupManagerImpl* interest_group_manager =
+        static_cast<InterestGroupManagerImpl*>(
+            storage_partition_->GetInterestGroupManager());
+    interest_group_manager->CheckViewClickInfoInDbForTesting(
+        /*provider_origin=*/provider_origin,
+        /*eligible_origin=*/eligible_origin, future.GetCallback());
+    return future.Get();
   }
 
  private:
@@ -415,27 +441,44 @@ class RemoveLocalStorageTester {
 
   static std::vector<uint8_t> CreateAccessMetaDataKey(
       const url::Origin& origin) {
-    const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', 'A', 'C',
-                                   'C', 'E', 'S', 'S', ':'};
+    const auto kMetaPrefix = std::to_array<uint8_t>({
+        'M',
+        'E',
+        'T',
+        'A',
+        'A',
+        'C',
+        'C',
+        'E',
+        'S',
+        'S',
+        ':',
+    });
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
                                            origin_str.end());
     std::vector<uint8_t> key;
     key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+    key.insert(key.end(), kMetaPrefix.data(),
+               base::span<const uint8_t>(kMetaPrefix)
+                   .subspan(std::size(kMetaPrefix))
+                   .data());
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     return key;
   }
 
   static std::vector<uint8_t> CreateWriteMetaDataKey(
       const url::Origin& origin) {
-    const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
+    const auto kMetaPrefix = std::to_array<uint8_t>({'M', 'E', 'T', 'A', ':'});
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
                                            origin_str.end());
     std::vector<uint8_t> key;
     key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+    key.insert(key.end(), kMetaPrefix.data(),
+               base::span<const uint8_t>(kMetaPrefix)
+                   .subspan(std::size(kMetaPrefix))
+                   .data());
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     return key;
   }
@@ -733,6 +776,30 @@ void ClearInterestGroups(content::StoragePartition* partition,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                        blink::StorageKey(), delete_begin, delete_end,
                        run_loop->QuitClosure());
+}
+
+void ClearInterestGroupsViewClick(content::StoragePartition* partition,
+                                  const url::Origin& origin,
+                                  bool user_action,
+                                  base::RunLoop* run_loop) {
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+          (user_action
+               ? StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR
+               : 0),
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      blink::StorageKey::CreateFirstParty(origin), base::Time(),
+      base::Time::Max(), run_loop->QuitClosure());
+}
+
+void ClearInterestGroupsViewClickOnRunLoop(content::StoragePartition* partition,
+                                           const url::Origin& origin,
+                                           bool user_action) {
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearInterestGroupsViewClick, partition,
+                                origin, user_action, &run_loop));
+  run_loop.Run();
 }
 
 void ClearInterestGroupsAndKAnon(content::StoragePartition* partition,
@@ -1222,6 +1289,69 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
   }
   EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
   EXPECT_FALSE(tester.ContainsInterestGroupKAnon(kOrigin));
+}
+
+TEST_F(StoragePartitionImplTest, RemoveInterestGroupClicks) {
+  const url::Origin kProvider1 =
+      url::Origin::Create(GURL("https://provider1.test"));
+  const url::Origin kProvider2 =
+      url::Origin::Create(GURL("https://provider2.test"));
+  const url::Origin kEligible1 =
+      url::Origin::Create(GURL("https://elig1.test"));
+  const url::Origin kEligible2 =
+      url::Origin::Create(GURL("https://elig2.test"));
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  RemoveInterestGroupTester tester(partition);
+  tester.AddClick(kProvider1, kEligible1);
+  tester.AddClick(kProvider2, kEligible2);
+  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
+
+  // Deleting based on eligible origin doesn't match.
+  ClearInterestGroupsViewClickOnRunLoop(partition, kEligible1,
+                                        /*user_action=*/false);
+  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
+
+  // Provider origin does.
+  ClearInterestGroupsViewClickOnRunLoop(partition, kProvider2,
+                                        /*user_action=*/false);
+  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
+
+  ClearInterestGroupsViewClickOnRunLoop(partition, kProvider1,
+                                        /*user_action=*/false);
+  EXPECT_EQ(false, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
+}
+
+TEST_F(StoragePartitionImplTest, RemoveInterestGroupClicksUserAction) {
+  const url::Origin kProvider1 =
+      url::Origin::Create(GURL("https://provider1.test"));
+  const url::Origin kProvider2 =
+      url::Origin::Create(GURL("https://provider2.test"));
+  const url::Origin kEligible1 =
+      url::Origin::Create(GURL("https://elig1.test"));
+  const url::Origin kEligible2 =
+      url::Origin::Create(GURL("https://elig2.test"));
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  RemoveInterestGroupTester tester(partition);
+  tester.AddClick(kProvider1, kEligible1);
+  tester.AddClick(kProvider2, kEligible2);
+  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
+
+  // If the delete is in response to a user request, it just clears everything.
+  ClearInterestGroupsViewClickOnRunLoop(partition, kEligible1,
+                                        /*user_action=*/true);
+  EXPECT_EQ(false, tester.ClickInDb(kProvider1, kEligible1));
+  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
 }
 
 TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {

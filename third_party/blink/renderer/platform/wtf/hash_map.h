@@ -18,17 +18,13 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
 #include <iterator>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -69,7 +65,7 @@ struct KeyValuePairExtractor {
     if (IsTraceable<ValueType>::value) {
       AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
     } else {
-      memset(static_cast<void*>(&p.value), 0, sizeof(p.value));
+      UNSAFE_TODO(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
     }
   }
 };

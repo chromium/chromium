@@ -428,8 +428,8 @@ export function getHtml(this: MyExampleElement) {
 ```python
 build_webui("build") {
   …
-  # Use non_web_component_files since the .html.ts file is checked in.
-  non_web_component_files = [
+  # Use ts_files since the .html.ts file is checked in.
+  ts_files = [
      "my_example.html.ts",
      "my_example.ts",
   ]
@@ -446,11 +446,10 @@ build_webui("build") {
 }
 ```
 ***note
-Note that unlike for Polymer custom elements,
-both `.ts` and `.html.ts` files are passed as `non_web_component_files`. This
-indicates to `build_webui()` that they do not have a corresponding `.html` file
-that needs to be passed to `html_to_wrapper()` (since in the case of Lit
-elements, `.html.ts` files are checked in directly).
+Note that unlike for Polymer custom elements, both `.ts` and `.html.ts` files
+are passed as `ts_files`. This indicates to `build_webui()` that they do not
+have a corresponding `.html` file that needs to be passed to `html_to_wrapper()`
+(since in the case of Lit elements, `.html.ts` files are checked in directly).
 ***
 
 ## Polymer to Lit migrations

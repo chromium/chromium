@@ -134,7 +134,7 @@ class TestUrlData : public UrlData {
  public:
   TestUrlData(const KURL& url,
               CorsMode cors_mode,
-              UrlIndex* url_index,
+              base::WeakPtr<UrlIndex> url_index,
               UrlData::CacheMode cache_mode,
               scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : UrlData(url, cors_mode, url_index, cache_mode, task_runner),
@@ -177,7 +177,7 @@ class TestUrlIndex : public UrlIndex {
                                     UrlData::CacheMode cache_mode) override {
     NotifyNewUrlData(url, cors_mode, cache_mode);
     last_url_data_ = base::MakeRefCounted<TestUrlData>(
-        url, cors_mode, this, cache_mode, task_runner_);
+        url, cors_mode, weak_factory_.GetWeakPtr(), cache_mode, task_runner_);
     return last_url_data_;
   }
 
@@ -1313,7 +1313,7 @@ TEST_F(MultiBufferDataSourceTest,
 
   ReadAt(kDataSize);
 
-  data_source_->OnBufferingHaveEnough(false);
+  data_source_->StopPreloading();
   ASSERT_TRUE(active_loader());
 
   EXPECT_CALL(*this, ReadCallback(kDataSize));
@@ -1344,7 +1344,7 @@ TEST_F(MultiBufferDataSourceTest,
 
   ReadAt(kDataSize);
 
-  data_source_->OnBufferingHaveEnough(false);
+  data_source_->StopPreloading();
   ASSERT_TRUE(active_loader());
 
   EXPECT_CALL(*this, ReadCallback(kDataSize));
@@ -1395,7 +1395,7 @@ TEST_F(MultiBufferDataSourceTest,
   data_source_->Read(kDataSize * 10, kDataSize, buffer_,
                      WTF::BindOnce(&MultiBufferDataSourceTest::ReadCallback,
                                    WTF::Unretained(this)));
-  data_source_->OnBufferingHaveEnough(false);
+  data_source_->StopPreloading();
   EXPECT_TRUE(active_loader_allownull());
   EXPECT_CALL(*this, ReadCallback(-1));
   Stop();
@@ -1418,7 +1418,7 @@ TEST_F(MultiBufferDataSourceTest,
   // data source to start buffering beyond the initial load.
   EXPECT_FALSE(data_source_->cancel_on_defer_for_testing());
   data_source_->OnMediaIsPlaying();
-  data_source_->OnBufferingHaveEnough(false);
+  data_source_->StopPreloading();
   CheckCapacityDefer();
   ASSERT_TRUE(active_loader());
 
@@ -1427,7 +1427,7 @@ TEST_F(MultiBufferDataSourceTest,
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize * 2));
   ReceiveData(kDataSize);
   ASSERT_TRUE(active_loader());
-  data_source_->OnBufferingHaveEnough(true);
+  data_source_->StopPreloading();
   EXPECT_TRUE(data_source_->cancel_on_defer_for_testing());
   ASSERT_TRUE(active_loader());
   ASSERT_FALSE(data_provider()->deferred());
@@ -1481,7 +1481,7 @@ TEST_F(MultiBufferDataSourceTest,
 
   // Reset the reader on defer. As a result, during the next unbuffered range
   // read, a locked resource loader will be created.
-  data_source_->OnBufferingHaveEnough(true);
+  data_source_->StopPreloading();
 
   // Deliver data until capacity is reached and verify deferral.
   int bytes_received = 0;

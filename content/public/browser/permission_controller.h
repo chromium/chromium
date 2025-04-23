@@ -50,7 +50,7 @@ class CONTENT_EXPORT PermissionController
   // |worker_origin| running in the renderer corresponding to
   // |render_process_host|.
   virtual PermissionStatus GetPermissionStatusForWorker(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) = 0;
 
@@ -59,33 +59,33 @@ class CONTENT_EXPORT PermissionController
   // document (i.e. whether it's in back-forward cache or being prerendered) in
   // addition to its origin.
   virtual PermissionStatus GetPermissionStatusForCurrentDocument(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host) = 0;
 
   // The method does the same as `GetPermissionStatusForCurrentDocument` but
   // additionally returns a source or reason for the permission status.
   virtual PermissionResult GetPermissionResultForCurrentDocument(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host) = 0;
 
   // The method does the same as `GetPermissionStatusForCurrentDocument` but it
   // also takes into account the device's status (OS permission status).
   // Currently, this function is only used for Page Embedded Permission Control.
   virtual PermissionStatus GetCombinedPermissionAndDeviceStatus(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host) = 0;
 
   // Returns the permission status for a given origin. Use this API only if
   // there is no document and it is not a ServiceWorker.
   virtual PermissionResult GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& origin) = 0;
 
   // The method does the same as `GetPermissionResultForOriginWithoutContext`
   // but it can be used for `PermissionType` that are keyed on a combination of
   // requesting and embedding origins, e.g., Notifications or StorageAccess.
   virtual PermissionResult GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;
 

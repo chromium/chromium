@@ -1412,8 +1412,7 @@ StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
 
   auto get_storage_access_value_outcome_if_omitted =
       [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
-    if (!network_delegate()->IsStorageAccessHeaderEnabled(
-            base::OptionalToPtr(isolation_info().top_frame_origin()), url())) {
+    if (!network_delegate()->IsStorageAccessHeaderEnabled()) {
       return net::cookie_util::StorageAccessStatusOutcome::
           kOmittedFeatureDisabled;
     }

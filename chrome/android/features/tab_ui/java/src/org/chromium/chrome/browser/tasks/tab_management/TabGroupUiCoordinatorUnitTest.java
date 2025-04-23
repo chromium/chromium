@@ -18,18 +18,23 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
@@ -54,6 +59,9 @@ public class TabGroupUiCoordinatorUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
+    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private Activity mActivity;
 
@@ -84,7 +92,10 @@ public class TabGroupUiCoordinatorUnitTest {
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mUndoBarThrottle,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
         coordinator.destroy();
         // When called before #initializeWithNative, it should not result in a crash.
     }

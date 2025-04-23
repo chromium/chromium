@@ -43,11 +43,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -185,7 +183,7 @@ public class OptionalButtonCoordinatorTest {
         View mockView = mock(View.class);
         when(mMockOptionalButtonView.getButtonView()).thenReturn(mockView);
 
-        assertEquals(mockView, mOptionalButtonCoordinator.getButtonViewForTesting());
+        assertEquals(mockView, mOptionalButtonCoordinator.getButtonView());
 
         verify(mMockOptionalButtonView).getButtonView();
     }

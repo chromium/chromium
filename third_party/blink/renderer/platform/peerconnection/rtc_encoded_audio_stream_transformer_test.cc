@@ -73,7 +73,7 @@ class RTCEncodedAudioStreamTransformerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> webrtc_task_runner_;
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   MockTransformerCallbackHolder mock_transformer_callback_holder_;
   RTCEncodedAudioStreamTransformer encoded_audio_stream_transformer_;
 };
@@ -117,7 +117,7 @@ TEST_F(RTCEncodedAudioStreamTransformerTest,
   EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
   encoded_audio_stream_transformer_.StartShortCircuiting();
 
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
       new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
   EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
   encoded_audio_stream_transformer_.RegisterTransformedFrameCallback(

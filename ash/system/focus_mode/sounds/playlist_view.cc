@@ -14,6 +14,7 @@
 #include "ash/system/focus_mode/sounds/playlist_image_button.h"
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

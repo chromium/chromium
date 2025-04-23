@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.search_engines.settings;
 
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -12,11 +13,14 @@ import androidx.fragment.app.ListFragment;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
 /**
@@ -26,10 +30,11 @@ import org.chromium.components.regional_capabilities.RegionalCapabilitiesService
  *
  * <p>TODO(crbug.com/41473490): Add on scroll shadow to action bar.
  */
+@NullMarked
 public class SearchEngineSettings extends ListFragment
         implements EmbeddableSettingsPage, ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     String getValueForTesting() {
@@ -45,7 +50,7 @@ public class SearchEngineSettings extends ListFragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPageTitle.set(getString(R.string.search_engine_settings));
         createAdapterIfNecessary();
@@ -58,12 +63,13 @@ public class SearchEngineSettings extends ListFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ListView listView = getListView();
         listView.setDivider(null);
         listView.setItemsCanFocus(true);
 
+        assert mProfile != null;
         RegionalCapabilitiesService regionalCapabilities =
                 RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
         if (regionalCapabilities.isInEeaCountry()) {
@@ -108,5 +114,10 @@ public class SearchEngineSettings extends ListFragment
 
     public void overrideSearchEngineAdapterForTesting(SearchEngineAdapter searchEngineAdapter) {
         mSearchEngineAdapter = searchEngineAdapter;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

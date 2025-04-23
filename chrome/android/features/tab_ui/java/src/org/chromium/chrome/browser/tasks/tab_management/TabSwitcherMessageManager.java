@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
@@ -311,7 +312,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                                             MessageService.MessageType.ARCHIVED_TABS_MESSAGE),
                             mTabListCoordinatorSupplier,
                             mDesktopWindowStateManager,
-                            mEdgeToEdgeSupplier);
+                            mEdgeToEdgeSupplier,
+                            TabGroupSyncServiceFactory.getForProfile(mProfile));
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

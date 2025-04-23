@@ -111,6 +111,7 @@ class LensOverlayQueryController {
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const PageContent> underlying_page_contents,
       lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_current_page,
       float ui_scale_factor,
       base::TimeTicks invocation_time);
 
@@ -144,6 +145,8 @@ class LensOverlayQueryController {
           underlying_page_contents,
       std::optional<lens::MimeType> primary_content_type,
       std::optional<GURL> new_page_url,
+      std::optional<std::string> new_page_title,
+      std::optional<uint32_t> pdf_current_page,
       const SkBitmap& screenshot);
 
   // Sends a request to the server with a portion of the page content.
@@ -418,7 +421,11 @@ class LensOverlayQueryController {
 
   // Creates the PageContentRequest that is sent to the server and performs the
   // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
-  // it calls this method after doing the necessary preprocessing.
+  // it calls this method after doing the necessary preprocessing. By this
+  // point, the preprocessing should be complete and it is expected that the
+  // request will be sent. If a check needs to be done before sending the
+  // request, it myst be done in PrepareAndFetchPageContentRequest() instead of
+  // this method.
   void PrepareAndFetchPageContentRequestPart2(
       lens::LensOverlayRequestId request_id,
       lens::Payload payload);
@@ -623,8 +630,9 @@ class LensOverlayQueryController {
 
   // Returns whether or not the contextual search query should be sent now or
   // held until the full page content upload is finished. This is only true if
-  // the page content upload is in progress and the partial page content upload
-  // will not yield detailed enough results.
+  // the page content upload is finished and the cluster info is available. If
+  // the cluster info is not available, the query should be held until the
+  // cluster info becomes available.
   bool ShouldSendContextualSearchQuery();
 
   // Returns whether the partial page content contains enough text to yield
@@ -646,6 +654,9 @@ class LensOverlayQueryController {
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // The current page of the PDF document if page_content_type_ is kPdf.
+  std::optional<uint32_t> pdf_current_page_;
 
   // Options needed to send a translate request with the proper parameters.
   struct TranslateOptions {

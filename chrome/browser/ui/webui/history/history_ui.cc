@@ -355,5 +355,5 @@ void HistoryUI::CreateProductSpecificationsHandler(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           profile->GetPrefs(),
-          shopping_service->GetProductSpecificationsService());
+          shopping_service->GetProductSpecificationsService(), nullptr);
 }

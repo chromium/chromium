@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <array>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -426,7 +427,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
 
   std::string read_buffer(100, '\0');
   uint32_t num_bytes = static_cast<uint32_t>(read_buffer.size());
-  MojoHandle handles[255];  // Maximum number to receive.
+  std::array<MojoHandle, 255> handles;  // Maximum number to receive.
   uint32_t num_handlers = std::size(handles);
 
   CHECK_EQ(MojoReadMessage(h, &read_buffer[0], &num_bytes, &handles[0],
@@ -1387,7 +1388,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SpotaneouslyDyingProcess,
 }
 
 TEST_F(MultiprocessMessagePipeTest, MessagePipeStatusChangeInTransit) {
-  MojoHandle local_handles[4];
+  std::array<MojoHandle, 4> local_handles;
   MojoHandle sent_handles[4];
   for (size_t i = 0; i < 4; ++i)
     CreateMessagePipe(&local_handles[i], &sent_handles[i]);

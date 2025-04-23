@@ -105,8 +105,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // Used to ensure `UpdateSnapshotWithCallback()` is not run when this object
   // is destroyed.
   base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_TAB_HELPER_H_

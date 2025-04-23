@@ -1213,7 +1213,7 @@
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
-      name: "IsHTMLInert",
+      name: "IsInert",
       inherited: true,
       independent: true,
       field_template: "primitive",

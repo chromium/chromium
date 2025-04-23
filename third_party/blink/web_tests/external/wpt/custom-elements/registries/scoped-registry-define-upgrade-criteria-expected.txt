@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Adding definition to global registry should not affect shadow roots using scoped registry
+  assert_false: expected false got true
+[FAIL] Adding definition to scoped registry should affect all associated shadow roots
+  assert_true: expected true got false
+[FAIL] Adding definition to scoped registry should not affect document tree scope
+  assert_true: expected true got false
+[FAIL] Adding definition to scoped registry should not affect shadow roots using other registries
+  assert_true: expected true got false
+[FAIL] Adding definition to global registry should not upgrade nodes no longer using the registry
+  assert_false: expected false got true
+[FAIL] Adding definition to scoped registry affects associated shadow roots in all iframes
+  assert_true: expected true got false
+[FAIL] Adding definition to scoped registry affects associated shadow roots in other frame trees
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

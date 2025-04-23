@@ -217,6 +217,7 @@ class FocusTraversalTest : public FocusManagerTest {
   std::unique_ptr<Widget> CreateBubbleDialog() {
     auto delegate = std::make_unique<BubbleDialogDelegate>(
         style_tab_, BubbleBorder::TOP_LEFT);
+    delegate->SetOwnedByWidget(WidgetDelegate::OwnedByWidgetPassKey());
     auto root_view = std::make_unique<MdTextButton>(Button::PressedCallback(),
                                                     u"bubble button");
     delegate->SetContentsView(std::move(root_view));

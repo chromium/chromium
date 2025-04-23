@@ -151,7 +151,11 @@ class SyncActiveWithoutPasswordsChecker
 // define it out to prevent a compile error due to the unused function.
 #if !BUILDFLAG(IS_CHROMEOS)
 content::WebContents* GetNewTab(Browser* browser) {
-  return PasswordManagerBrowserTestBase::GetNewTab(browser);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser, GURL("data:text/html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  return browser->tab_strip_model()->GetActiveWebContents();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -168,7 +172,11 @@ class PasswordManagerSyncTest : public SyncTest {
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kFillOnAccountSelect},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            // TODO(crbug.com/407501588): Tests fail with
+            // kPostponeOnLoginSuccessful enabled. Fix tests before launching
+            // the feature.
+            password_manager::features::kPostponeOnLoginSuccessful});
   }
 
   ~PasswordManagerSyncTest() override = default;

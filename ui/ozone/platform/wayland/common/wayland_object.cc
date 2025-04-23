@@ -5,13 +5,13 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <appmenu-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
-#include <gtk-shell-client-protocol.h>
 #include <idle-client-protocol.h>
 #include <idle-inhibit-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
@@ -47,15 +47,6 @@
 
 namespace wl {
 namespace {
-
-void delete_gtk_surface1(gtk_surface1* surface) {
-  if (wl::get_version_of_object(surface) >=
-      GTK_SURFACE1_RELEASE_SINCE_VERSION) {
-    gtk_surface1_release(surface);
-  } else {
-    gtk_surface1_destroy(surface);
-  }
-}
 
 void delete_data_device(wl_data_device* data_device) {
   if (wl::get_version_of_object(data_device) >=
@@ -105,6 +96,10 @@ void delete_touch(wl_touch* touch) {
   } else {
     wl_touch_destroy(touch);
   }
+}
+
+void delete_appmenu(org_kde_kwin_appmenu* appmenu) {
+  org_kde_kwin_appmenu_release(appmenu);
 }
 
 }  // namespace
@@ -158,8 +153,9 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_source)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_shell1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(gtk_surface1, delete_gtk_surface1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(org_kde_kwin_appmenu,
+                                             delete_appmenu)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_appmenu_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle_timeout)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritizer)

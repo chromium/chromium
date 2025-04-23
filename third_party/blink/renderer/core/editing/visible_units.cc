@@ -292,23 +292,17 @@ AdjustForwardPositionToAvoidCrossingEditingBoundariesTemplate(
   ContainerNode* highest_root = HighestEditableRoot(anchor);
 
   if (highest_root && !pos.AnchorNode()->IsDescendantOf(highest_root)) {
-    if (RuntimeEnabledFeatures::EditableBoundaryAdjustmentEnabled()) {
-      // Return last position in node if |pos| is not somewhere inside the
-      // editable region containing this position
-      const Node* last_editable = anchor.ComputeContainerNode();
-      if (last_editable->IsTextNode()) {
-        PositionTemplate<Strategy> last_position =
-            PositionTemplate<Strategy>::LastPositionInNode(*last_editable);
-        if (anchor != last_position) {
-          return PositionWithAffinityTemplate<Strategy>(last_position);
-        }
+    // Return last position in node if |pos| is not somewhere inside the
+    // editable region containing this position
+    const Node* last_editable = anchor.ComputeContainerNode();
+    if (last_editable->IsTextNode()) {
+      PositionTemplate<Strategy> last_position =
+          PositionTemplate<Strategy>::LastPositionInNode(*last_editable);
+      if (anchor != last_position) {
+        return PositionWithAffinityTemplate<Strategy>(last_position);
       }
-      return PositionWithAffinityTemplate<Strategy>();
-    } else {
-      // Return empty position if |pos| is not somewhere inside the editable
-      // region containing this position
-      return PositionWithAffinityTemplate<Strategy>();
     }
+    return PositionWithAffinityTemplate<Strategy>();
   }
 
   // Return |pos| itself if the two are from the very same editable region, or

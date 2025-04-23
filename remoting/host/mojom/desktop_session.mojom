@@ -450,6 +450,9 @@ interface VideoCapturer {
   // request). This ensures the frames are correctly ordered relative to the
   // shared-memory events.
   CaptureFrame();
+
+  // Indicates whether the mouse cursor should be embedded in the video frame.
+  SetComposeEnabled(bool enabled);
 };
 
 // Enables receiving capture information (shared-memory, video-frames) from a
@@ -542,6 +545,12 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the keyboard layout has changed.
   OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);
+
+  // Notifies the network process that local mouse movement was detected.
+  OnLocalMouseMoveDetected(DesktopVector new_position);
+
+  // Notifies the network process that local keyboard input was detected.
+  OnLocalKeyboardInputDetected(int32 usb_keycode);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

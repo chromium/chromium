@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/url_formatter.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -250,6 +251,12 @@ const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
              : turl_service->GetEnterpriseSearchAggregatorEngine();
 }
 
+EnterpriseSearchAggregatorProvider::RelevanceData GetServerRelevanceData(
+    const base::Value::Dict& result) {
+  return {static_cast<int>(result.FindDouble("score").value_or(0) * 1000), 0, 0,
+          "server"};
+}
+
 // Helpers to convert vector of strings to sets of words.
 std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
   std::set<std::u16string> words = {};
@@ -330,7 +337,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   // Skip if there aren't at least 1 strong match or 2 weak matches.
   if (!in_keyword_mode && strong_word_matches == 0 && weak_word_matches < 2) {
     return {0, strong_word_matches, weak_word_matches,
-            "less than 1 strong or 2 weak word matches"};
+            "local, less than 1 strong or 2 weak word matches"};
   }
 
   // Skip when less than half the input words had matches. The backend
@@ -338,7 +345,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   // input word to match.
   if ((strong_word_matches + weak_word_matches) * 2 < input_words.size()) {
     return {0, strong_word_matches, weak_word_matches,
-            "less than half the input words matched"};
+            "local, less than half the input words matched"};
   }
 
   // Compute `relevance` using text similarity. See comments for
@@ -363,7 +370,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
       AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
     if (strong_word_matches + weak_word_matches < input_words.size()) {
       return {0, strong_word_matches, weak_word_matches,
-              "unmatched input word for PEOPLE type"};
+              "local, unmatched input word for PEOPLE type"};
     } else {
       // See comment for `kPeopleScoreBoost`.
       relevance += kPeopleScoreBoost();
@@ -379,7 +386,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     relevance += 10;
   }
 
-  return {relevance, strong_word_matches, weak_word_matches, "scored"};
+  return {relevance, strong_word_matches, weak_word_matches, "local"};
 }
 
 void LogResultCounts(const base::Value::List* queryResults,
@@ -677,8 +684,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     const base::Value::Dict& result = result_value.GetDict();
 
-    auto url = GetMatchDestinationUrl(result, template_url_->url_ref(),
-                                      suggestion_type);
+    auto url = GetMatchDestinationUrl(result, suggestion_type);
     // All matches must have a URL.
     if (url.empty()) {
       continue;
@@ -688,19 +694,26 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     std::string image_url;
     std::string icon_url;
     if (suggestion_type == SuggestionType::PEOPLE) {
+      // For people suggestions, `icon_url` must always be set to the favicon
+      // for the TemplateURL, which is used as the Omnibox icon. `image_url` is
+      // used for the match icon, falling back to the favicon if not present.
       image_url = ptr_to_string(result.FindStringByDottedPath(
           "document.derivedStructData.displayPhoto.url"));
       // Ensure that image URLs from lh3.googleusercontent.com include an image
       // size parameter.
       if (base::StartsWith(image_url, "https://lh3.googleusercontent.com")) {
         // Check for existing size parameters (e.g., -s128, =w256, -h64).
-        RE2 size_regex("[-=][s|w|h]\\d+");
+        RE2 size_regex("=(?:[swh]\\d+|[^=]*?-[swh]\\d+)");
         if (!RE2::PartialMatch(image_url, size_regex)) {
           image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
         }
       }
+      icon_url = template_url_->favicon_url().spec();
     } else if (suggestion_type == SuggestionType::CONTENT) {
-      icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
+      icon_url = ptr_to_string(result.FindString("iconUri"));
+    } else if (suggestion_type == SuggestionType::QUERY &&
+               !adjusted_input_.InKeywordMode()) {
+      icon_url = template_url_->favicon_url().spec();
     }
 
     auto description = GetMatchDescription(result, suggestion_type);
@@ -715,11 +728,23 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    auto additional_scoring_fields =
-        GetAdditionalScoringFields(result, suggestion_type);
-    auto relevance_data = CalculateRelevanceData(
-        input_words, adjusted_input_.InKeywordMode(), suggestion_type,
-        description, contents, additional_scoring_fields);
+    EnterpriseSearchAggregatorProvider::RelevanceData relevance_data;
+    std::string relevance_scoring_mode =
+        omnibox_feature_configs::SearchAggregatorProvider::Get()
+            .relevance_scoring_mode;
+    // If mode is `server|client`, always use server|client scoring; otherwise,
+    // use server scoring in scoped mode, and client scoring in unscoped mode.
+    if (relevance_scoring_mode == "server" ||
+        (relevance_scoring_mode != "client" &&
+         adjusted_input_.InKeywordMode())) {
+      relevance_data = GetServerRelevanceData(result);
+    } else {
+      auto additional_scoring_fields =
+          GetAdditionalScoringFields(result, suggestion_type);
+      relevance_data = CalculateRelevanceData(
+          input_words, adjusted_input_.InKeywordMode(), suggestion_type,
+          description, contents, additional_scoring_fields);
+    }
     if (relevance_data.relevance) {
       // Decrement scores to keep sorting stable. Add 10 to avoid going below
       // "weak" threshold or change the hundred's digit; e.g. a score of
@@ -756,7 +781,6 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
-    const TemplateURLRef& url_ref,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::CONTENT) {
     std::string destination_uri =
@@ -776,6 +800,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     return "";
   }
 
+  const TemplateURLRef& url_ref = template_url_->url_ref();
   return url_ref.ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(query)), {}, nullptr);
 }
@@ -796,9 +821,13 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
 std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
-  if (suggestion_type == SuggestionType::QUERY ||
-      suggestion_type == SuggestionType::PEOPLE) {
+  if (suggestion_type == SuggestionType::QUERY) {
     return ptr_to_string(result.FindString("suggestion"));
+  } else if (suggestion_type == SuggestionType::PEOPLE) {
+    std::string url = GetMatchDestinationUrl(result, suggestion_type);
+    return base::UTF16ToUTF8(url_formatter::FormatUrl(
+        GURL(url), AutocompleteMatch::GetFormatTypes(false, true),
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
@@ -914,10 +943,20 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
                                text.size(), ACMatchClassification::MATCH,
                                ACMatchClassification::NONE);
   };
-  ACMatchClassifications secondary_text_class =
-      (contents.empty() || description.empty())
-          ? std::vector<ACMatchClassification>{}
-          : std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
+  ACMatchClassifications secondary_text_class;
+  if (contents.empty() || description.empty()) {
+    secondary_text_class = std::vector<ACMatchClassification>{};
+  } else {
+    secondary_text_class =
+        suggestion_type == SuggestionType::PEOPLE
+            ? ClassifyTermMatches(
+                  FindTermMatches(adjusted_input_.text(), match.contents),
+                  match.contents.size(),
+                  ACMatchClassification::MATCH | ACMatchClassification::URL,
+                  ACMatchClassification::URL)
+            : std::vector<ACMatchClassification>{
+                  {0, ACMatchClassification::DIM}};
+  }
   match.description_class = is_navigation
                                 ? primary_text_class(match.description)
                                 : secondary_text_class;
@@ -942,7 +981,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.RecordAdditionalInfo(
       "relevance weak word matches",
       static_cast<int>(relevance_data.weak_word_matches));
-  match.RecordAdditionalInfo("relevance rule", relevance_data.rule);
+  match.RecordAdditionalInfo("relevance source", relevance_data.source);
 
   return match;
 }

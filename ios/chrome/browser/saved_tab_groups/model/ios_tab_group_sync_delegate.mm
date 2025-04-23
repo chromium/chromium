@@ -75,6 +75,11 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
 
 }  // namespace
 
+IOSTabGroupSyncDelegate::IOSScopedBatchOperation::IOSScopedBatchOperation(
+    std::vector<std::unique_ptr<WebStateList::ScopedBatchOperation>>
+        web_state_list_batches)
+    : web_state_list_batches_(std::move(web_state_list_batches)) {}
+
 IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
     BrowserList* browser_list,
     TabGroupSyncService* sync_service,
@@ -85,7 +90,25 @@ IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
   CHECK(local_update_observer_);
 }
 
+IOSTabGroupSyncDelegate::IOSScopedBatchOperation::~IOSScopedBatchOperation() {}
+
 IOSTabGroupSyncDelegate::~IOSTabGroupSyncDelegate() {}
+
+IOSTabGroupSyncDelegate::IOSScopedBatchOperation::IOSScopedBatchOperation(
+    IOSScopedBatchOperation&& other)
+    : web_state_list_batches_(std::move(other.web_state_list_batches_)) {}
+
+std::unique_ptr<TabGroupSyncDelegate::ScopedBatchOperation>
+IOSTabGroupSyncDelegate::StartBatchOperation() {
+  std::vector<std::unique_ptr<WebStateList::ScopedBatchOperation>> batches;
+  for (Browser* browser :
+       browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    batches.push_back(std::make_unique<WebStateList::ScopedBatchOperation>(
+        browser->GetWebStateList()->StartBatchOperation()));
+  }
+
+  return std::make_unique<IOSScopedBatchOperation>(std::move(batches));
+}
 
 std::optional<LocalTabGroupID>
 IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
@@ -247,8 +270,13 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
   WebStateList* web_state_list = tab_group_info.web_state_list;
 
   // Start a batch operation.
-  WebStateList::ScopedBatchOperation observer_lock =
-      web_state_list->StartBatchOperation();
+  std::unique_ptr<WebStateList::ScopedBatchOperation> observer;
+  if (!web_state_list->IsBatchInProgress()) {
+    // The `UpdateLocalTabGroup` can be part of a batch operation, in which case
+    // the WebStateList is already in batch operation.
+    observer = std::make_unique<WebStateList::ScopedBatchOperation>(
+        web_state_list->StartBatchOperation());
+  }
 
   // Update the visual data.
   UpdateLocalGroupVisualData(tab_group_info, saved_tab_group);

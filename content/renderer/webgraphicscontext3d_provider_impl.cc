@@ -13,7 +13,6 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
@@ -195,13 +194,6 @@ cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
 gpu::SharedImageInterface*
 WebGraphicsContext3DProviderImpl::SharedImageInterface() {
   return provider_->SharedImageInterface();
-}
-
-void WebGraphicsContext3DProviderImpl::CopyVideoFrame(
-    media::PaintCanvasVideoRenderer* video_renderer,
-    media::VideoFrame* video_frame,
-    cc::PaintCanvas* canvas) {
-  video_renderer->Copy(video_frame, canvas, provider_.get());
 }
 
 viz::RasterContextProvider*

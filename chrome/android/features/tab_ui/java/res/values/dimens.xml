@@ -80,7 +80,6 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_thumbnail_height">135dp</dimen>
     <dimen name="tab_hover_card_text_content_margin">16dp</dimen>
     <dimen name="tab_hover_card_url_top_margin">4dp</dimen>
-    <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>
     <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
@@ -94,8 +93,6 @@ found in the LICENSE file.
     <dimen name="tab_group_color_icon_stroke">2dp</dimen>
     <dimen name="tab_group_color_icon_item_size">18dp</dimen>
     <dimen name="tab_group_color_icon_item_radius">9dp</dimen>
-    <dimen name="tab_group_color_icon_with_avatar_item_size">24dp</dimen>
-    <dimen name="tab_group_color_icon_with_avatar_item_radius">12dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
 
@@ -105,6 +102,7 @@ found in the LICENSE file.
     <dimen name="tab_card_label_icon_radius">8dp</dimen>
     <dimen name="tab_card_label_height">24dp</dimen>
     <dimen name="tab_card_label_list_margin_end">9dp</dimen>
+    <dimen name="tab_card_label_elev">6dp</dimen>
 
     <!-- Dimens for TabGroupSync features -->
     <dimen name="tab_group_row_height">96dp</dimen>

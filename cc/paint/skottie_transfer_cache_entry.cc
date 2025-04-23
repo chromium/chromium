@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/paint/skottie_transfer_cache_entry.h"
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "cc/paint/skottie_wrapper.h"
 
 namespace cc {
@@ -31,8 +27,7 @@ uint32_t ClientSkottieTransferCacheEntry::SerializedSize() const {
 
 bool ClientSkottieTransferCacheEntry::Serialize(
     base::span<uint8_t> data) const {
-  DCHECK_GE(data.size(), SerializedSize());
-  memcpy(data.data(), skottie_->raw_data().data(), SerializedSize());
+  data.copy_prefix_from(skottie_->raw_data());
   return true;
 }
 

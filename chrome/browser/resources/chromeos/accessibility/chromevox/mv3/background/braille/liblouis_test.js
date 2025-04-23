@@ -15,7 +15,7 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    const path = chrome.extension.getURL(
+    const path = chrome.runtime.getURL(
         'chromevox/third_party/liblouis/liblouis_wrapper.js');
     this.liblouis = await LibLouis.create(path, '');
   }

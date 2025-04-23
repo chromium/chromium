@@ -480,6 +480,10 @@ void WebApp::SetStartUrl(const GURL& start_url) {
   // `SetSyncProto` will populate an unset `start_url` on the proto.
   sync_proto_.clear_start_url();
   SetSyncProto(sync_proto_);
+  // Ensure that scope is always set.
+  if (scope_.is_empty()) {
+    scope_ = start_url_.GetWithoutFilename();
+  }
 }
 
 void WebApp::SetScope(const GURL& scope) {
@@ -495,6 +499,8 @@ void WebApp::SetScope(const GURL& scope) {
   scope_replacements.ClearRef();
   scope_replacements.ClearQuery();
   scope_ = scope_for_app.ReplaceComponents(scope_replacements);
+  // Post-migration check: Scope should never be empty after setting.
+  CHECK(!scope_.is_empty());
 }
 
 void WebApp::SetThemeColor(std::optional<SkColor> theme_color) {
@@ -702,6 +708,8 @@ void WebApp::SetLaunchQueryParams(
 }
 
 void WebApp::SetManifestUrl(const GURL& manifest_url) {
+  CHECK(manifest_url.is_valid() || manifest_url.is_empty(),
+        base::NotFatalUntil::M138);
   manifest_url_ = manifest_url;
 }
 
@@ -768,6 +776,12 @@ void WebApp::SetCurrentOsIntegrationStates(
 }
 
 void WebApp::SetIsolationData(IsolationData isolation_data) {
+  if (isolation_data.pending_update_info().has_value()) {
+    DCHECK_EQ(isolation_data.location().dev_mode(),
+              isolation_data.pending_update_info()->location.dev_mode())
+        << "IsolationData dev_mode mismatch between current location and "
+           "pending update location.";
+  }
   isolation_data_ = isolation_data;
 }
 

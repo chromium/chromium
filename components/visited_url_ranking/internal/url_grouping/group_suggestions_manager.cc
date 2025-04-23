@@ -7,8 +7,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
@@ -20,6 +23,9 @@
 namespace visited_url_ranking {
 
 namespace {
+
+const base::FeatureParam<int> kConsecutiveComputationDelaySec{
+    &features::kGroupSuggestionService, "consecutive_computation_delay_sec", 0};
 
 FetchOptions GetFetchOptionsForSuggestions() {
   std::vector<URLVisitAggregatesTransformType> transforms{
@@ -98,13 +104,26 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
 };
 
 GroupSuggestionsManager::GroupSuggestionsManager(
-    VisitedURLRankingService* visited_url_ranking_service)
-    : visited_url_ranking_service_(visited_url_ranking_service) {}
+    VisitedURLRankingService* visited_url_ranking_service,
+    PrefService* pref_service)
+    : visited_url_ranking_service_(visited_url_ranking_service),
+      consecutive_computation_delay_(
+          base::Seconds(kConsecutiveComputationDelaySec.Get())),
+      suggestion_tracker_(
+          std::make_unique<GroupSuggestionsTracker>(pref_service)) {}
 
 GroupSuggestionsManager::~GroupSuggestionsManager() = default;
 
 void GroupSuggestionsManager::MaybeTriggerSuggestions(
     const GroupSuggestionsService::Scope& scope) {
+  // Skip computation if it ran recently to avoid overhead.
+  if (!last_computation_time_.is_null() &&
+      base::Time::Now() - last_computation_time_ <
+          consecutive_computation_delay_) {
+    return;
+  }
+  last_computation_time_ = base::Time::Now();
+
   VLOG(1)
       << "GroupSuggestionsManager::MaybeTriggerSuggestions. Ongoing compute: "
       << !!suggestion_computer_;
@@ -116,7 +135,7 @@ void GroupSuggestionsManager::MaybeTriggerSuggestions(
   suggestion_computer_ = std::make_unique<GroupSuggestionComputer>(
       visited_url_ranking_service_, scope);
   suggestion_computer_->Start(
-      base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+      base::BindOnce(&GroupSuggestionsManager::OnFinishComputeSuggestions,
                      weak_ptr_factory_.GetWeakPtr(), scope));
 }
 
@@ -136,13 +155,12 @@ void GroupSuggestionsManager::UnregisterDelegate(
   registered_delegates_.erase(delegate);
 }
 
-bool GroupSuggestionsManager::GetCurrentComputationForTesting() const {
-  return !!suggestion_computer_;
-}
-
-void GroupSuggestionsManager::ShowSuggestion(
+void GroupSuggestionsManager::OnFinishComputeSuggestions(
     const GroupSuggestionsService::Scope& scope,
     std::optional<GroupSuggestions> suggestions) {
+  base::UmaHistogramCounts100(
+      "GroupSuggestionsService.SuggestionsCount",
+      suggestions ? suggestions->suggestions.size() : 0);
   if (!suggestions) {
     if (!suggestion_computed_callback_.is_null()) {
       suggestion_computed_callback_.Run();
@@ -150,8 +168,12 @@ void GroupSuggestionsManager::ShowSuggestion(
     return;
   }
   std::erase_if(suggestions->suggestions, [&](const auto& suggestion) {
-    return !suggestion_tracker_.ShouldShowSuggestion(suggestion);
+    return !suggestion_tracker_->ShouldShowSuggestion(suggestion);
   });
+  base::UmaHistogramCounts100(
+      "GroupSuggestionsService.SuggestionsCountAfterThrottling",
+      suggestions->suggestions.size());
+
   if (suggestions->suggestions.empty()) {
     if (!suggestion_computed_callback_.is_null()) {
       suggestion_computed_callback_.Run();
@@ -159,42 +181,59 @@ void GroupSuggestionsManager::ShowSuggestion(
     return;
   }
 
-  GroupSuggestionsDelegate* delegate = nullptr;
+  base::UmaHistogramEnumeration("GroupSuggestionsService.TopSuggestionReason",
+                                suggestions->suggestions[0].suggestion_reason);
+  base::UmaHistogramCounts100("GroupSuggestionsService.TopSuggestionTabCount",
+                              suggestions->suggestions[0].tab_ids.size());
+  base::UmaHistogramCounts100(
+      base::StrCat({"GroupSuggestionsService.TopSuggestionTabCount.",
+                    GetSuggestionReasonString(
+                        suggestions->suggestions[0].suggestion_reason)}),
+      suggestions->suggestions[0].tab_ids.size());
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+                                weak_ptr_factory_.GetWeakPtr(), scope,
+                                std::move(*suggestions)));
+}
+
+void GroupSuggestionsManager::ShowSuggestion(
+    const GroupSuggestionsService::Scope& scope,
+    std::optional<GroupSuggestions> suggestions) {
+  VLOG(1) << "Showing suggestion to group tabs "
+          << suggestions->suggestions.size();
+
   for (auto it : registered_delegates_) {
-    if (it.second.scope == scope) {
-      delegate = it.second.delegate;
+    if (it.second.scope != scope) {
+      continue;
     }
-  }
-  if (delegate) {
-    VLOG(1) << "Showing suggestion to group tabs "
-            << suggestions->suggestions.size();
+    GroupSuggestionsDelegate* delegate = it.second.delegate;
     auto result_callback =
         base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        suggestions->suggestions.front().DeepCopy());
 
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
-                       base::Unretained(delegate), std::move(*suggestions),
-                       std::move(result_callback)),
-        suggestion_computed_callback_.is_null()
-            ? base::DoNothing()
-            : suggestion_computed_callback_);
-  } else {
-    VLOG(1) << "Suggestion discarded for " << scope.tab_session_id;
-    if (!suggestion_computed_callback_.is_null()) {
-      suggestion_computed_callback_.Run();
-    }
+    delegate->ShowSuggestion(std::move(*suggestions),
+                             std::move(result_callback));
+  }
+  if (!suggestion_computed_callback_.is_null()) {
+    suggestion_computed_callback_.Run();
   }
 }
 
 void GroupSuggestionsManager::OnSuggestionResult(
     GroupSuggestion shown_suggestion,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
+  if (user_response.user_response ==
+          GroupSuggestionsDelegate::UserResponse::kNotShown ||
+      user_response.user_response ==
+          GroupSuggestionsDelegate::UserResponse::kUnknown) {
+    return;
+  }
   // TODO(ssid): Track all suggestions instead of assuming UI shows the first.
-  suggestion_tracker_.AddSuggestion(shown_suggestion,
-                                    user_response.user_response);
+  DCHECK_EQ(user_response.suggestion_id, shown_suggestion.suggestion_id);
+  suggestion_tracker_->AddSuggestion(shown_suggestion,
+                                     user_response.user_response);
 }
 
 }  // namespace visited_url_ranking

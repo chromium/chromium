@@ -38,7 +38,7 @@ build_webui("build") {
 
   web_component_files = [ "data_sharing_app.ts" ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",
@@ -57,7 +57,7 @@ build_webui("build") {
     mojo_files += [ "//third_party/data_sharing_sdk/data_sharing_sdk_types.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
-    non_web_component_files += [
+    ts_files += [
       "data_sharing_sdk_types.ts",
       "dummy_data_sharing_sdk.ts",
     ]

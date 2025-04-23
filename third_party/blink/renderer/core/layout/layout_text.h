@@ -148,6 +148,20 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                              unsigned end_offset = INT_MAX) const;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
+  std::optional<bool> IgnoreWhitespaceForAccessibility() const {
+    NOT_DESTROYED();
+    if (has_cached_ignore_whitespace_for_accessibility_) {
+      return static_cast<bool>(ignore_whitespace_for_accessibility_);
+    }
+    return std::nullopt;
+  }
+
+  void SetIgnoreWhitespaceForAccessibility(bool value) const {
+    NOT_DESTROYED();
+    ignore_whitespace_for_accessibility_ = value;
+    has_cached_ignore_whitespace_for_accessibility_ = true;
+  }
+
   enum ClippingOption { kNoClipping, kClipToEllipsis };
   void LocalQuadsInFlippedBlocksDirection(Vector<gfx::QuadF>&,
                                           ClippingOption = kNoClipping) const;
@@ -448,6 +462,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   unsigned has_abstract_inline_text_box_ : 1;
 
   unsigned has_variable_length_transform_ : 1;
+
+  // If the entire text is whitespace, the node may be ignored for
+  // accessibility. ignore_whitespace_for_accessibility_ caches whether
+  // this node is such an ignored node. Only meaningful if
+  // has_cached_ignore_whitespace_for_accessibility_ is true.
+  mutable unsigned ignore_whitespace_for_accessibility_ : 1 = 0;
+  mutable unsigned has_cached_ignore_whitespace_for_accessibility_ : 1 = 0;
 
   DOMNodeId node_id_ = kInvalidDOMNodeId;
 

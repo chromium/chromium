@@ -416,7 +416,7 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
         base::DoNothing(),
         base::BindLambdaForTesting(
             [&run_loop](const update_client::CrxInstaller::Result& result) {
-              ASSERT_EQ(result.result.category_,
+              ASSERT_EQ(result.result.category,
                         update_client::ErrorCategory::kNone);
               run_loop.QuitClosure().Run();
             }));
@@ -478,7 +478,7 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallSuccess) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(result.result.category_, update_client::ErrorCategory::kNone);
+        EXPECT_EQ(result.result.category, update_client::ErrorCategory::kNone);
       }));
 
   task_environment_.RunUntilIdle();
@@ -508,9 +508,9 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(result.result.category_,
+        EXPECT_EQ(result.result.category,
                   update_client::ErrorCategory::kInstall);
-        EXPECT_EQ(result.result.code_,
+        EXPECT_EQ(result.result.code,
                   static_cast<int>(
                       update_client::InstallError::NO_DIR_COMPONENT_USER));
       }));
@@ -543,7 +543,7 @@ TEST_F(ComponentInstallerTest, GetInstalledFile) {
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindLambdaForTesting(
           [&](const update_client::CrxInstaller::Result& result) {
-            EXPECT_EQ(result.result.category_,
+            EXPECT_EQ(result.result.category,
                       update_client::ErrorCategory::kNone);
             runloop.Quit();
           }));
@@ -669,7 +669,7 @@ TEST_F(ComponentInstallerTest, Uninstall) {
             base::DoNothing(),
             base::BindLambdaForTesting(
                 [&](const update_client::CrxInstaller::Result& result) {
-                  EXPECT_EQ(result.result.category_,
+                  EXPECT_EQ(result.result.category,
                             update_client::ErrorCategory::kNone);
                   installer->Uninstall();
                 }));

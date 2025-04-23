@@ -45,6 +45,11 @@ class IpProtectionCore {
   // This function is called on every URL load, so it should complete quickly.
   virtual bool AreAuthTokensAvailable() = 0;
 
+  // Check whether probabilistic reveal tokens are available.
+  // This function is called during the URL loads, so it should complete
+  // quickly.
+  virtual bool IsProbabilisticRevealTokenAvailable() = 0;
+
   // Check whether the tokens in either cache have ever been filled.
   //
   // If even one cache has not been filled at least once, this method should

@@ -92,7 +92,7 @@ static_assert(sizeof(TouchData) == 4, "TouchPadData has incorrect size");
 
 struct TouchPadData {
   uint8_t touch_data_timestamp;
-  TouchData touch[2];
+  std::array<TouchData, 2> touch;
 };
 
 static_assert(sizeof(TouchPadData) == 9, "TouchPadData has incorrect size");

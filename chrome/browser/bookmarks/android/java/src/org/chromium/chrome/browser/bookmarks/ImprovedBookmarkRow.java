@@ -271,7 +271,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     void updateView() {
         mContainer.setBackgroundResource(
                 mIsSelected
-                        ? R.drawable.rounded_rectangle_surface_1
+                        ? R.drawable.rounded_rectangle_surface_container_low
                         : R.drawable.rounded_rectangle_surface_0);
 
         boolean checkVisible = mSelectionEnabled && mIsSelected;

@@ -11,6 +11,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,6 +43,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         public boolean visible;
         public long frameDepth;
         public boolean intersectsViewport;
+        public boolean isSpareRenderer;
         @ChildProcessImportance public int importance;
 
         public ConnectionWithRank(
@@ -49,11 +51,13 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 boolean visible,
                 long frameDepth,
                 boolean intersectsViewport,
+                boolean isSpareRenderer,
                 @ChildProcessImportance int importance) {
             this.connection = connection;
             this.visible = visible;
             this.frameDepth = frameDepth;
             this.intersectsViewport = intersectsViewport;
+            this.isSpareRenderer = isSpareRenderer;
             this.importance = importance;
         }
 
@@ -64,7 +68,8 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         // important or that it only has waived binding.
         public boolean shouldBeInLowRankGroup() {
             boolean inViewport = visible && (frameDepth == 0 || intersectsViewport);
-            return importance == ChildProcessImportance.NORMAL && !inViewport;
+            return (isSpareRenderer && ChildProcessRanking.isSpareRendererOfLowestRanking())
+                    || (importance == ChildProcessImportance.NORMAL && !inViewport);
         }
     }
 
@@ -88,9 +93,11 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             // Ranking order:
             // * (visible and main frame) or ChildProcessImportance.IMPORTANT
             // * (visible and subframe and intersect viewport) or ChildProcessImportance.MODERATE
+            // * ChildProcessImportance.PERCEPTIBLE
             // ---- cutoff for shouldBeInLowRankGroup ----
             // * visible subframe and not intersect viewport
             // * invisible main and sub frames (not ranked by frame depth)
+            // * spare renderer (if lowest-ranking parameter is set).
             // Within each group, ties are broken by intersect viewport and then frame depth where
             // applicable. Note boostForPendingViews is not used for ranking.
 
@@ -124,12 +131,30 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 return 1;
             }
 
+            boolean o1Perceptible = o1.importance == ChildProcessImportance.PERCEPTIBLE;
+            boolean o2Perceptible = o2.importance == ChildProcessImportance.PERCEPTIBLE;
+            if (o1Perceptible && o2Perceptible) {
+                return compareByIntersectsViewportAndDepth(o1, o2);
+            } else if (o1Perceptible && !o2Perceptible) {
+                return -1;
+            } else if (!o1Perceptible && o2Perceptible) {
+                return 1;
+            }
+
             if (o1.visible && o2.visible) {
                 return compareByIntersectsViewportAndDepth(o1, o2);
             } else if (o1.visible && !o2.visible) {
                 return -1;
             } else if (!o1.visible && o2.visible) {
                 return 1;
+            }
+
+            if (isSpareRendererOfLowestRanking()) {
+                if (!o1.isSpareRenderer && o2.isSpareRenderer) {
+                    return -1;
+                } else if (o1.isSpareRenderer && !o2.isSpareRenderer) {
+                    return 1;
+                }
             }
 
             // Invisible are in one group and are purposefully not ranked by frame depth.
@@ -180,6 +205,10 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
     private boolean mEnableServiceGroupImportance;
     private boolean mRebindRunnablePending;
 
+    private static boolean isSpareRendererOfLowestRanking() {
+        return ContentFeatureList.sSpareRendererLowestRanking.getValue();
+    }
+
     public ChildProcessRanking() {
         mMaxSize = -1;
     }
@@ -212,6 +241,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             boolean visible,
             long frameDepth,
             boolean intersectsViewport,
+            boolean isSpareRenderer,
             @ChildProcessImportance int importance) {
         assert connection != null;
         assert indexOf(connection) == -1;
@@ -221,7 +251,12 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         }
         mRankings.add(
                 new ConnectionWithRank(
-                        connection, visible, frameDepth, intersectsViewport, importance));
+                        connection,
+                        visible,
+                        frameDepth,
+                        intersectsViewport,
+                        isSpareRenderer,
+                        importance));
         reposition(mRankings.size() - 1);
     }
 
@@ -241,6 +276,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             boolean visible,
             long frameDepth,
             boolean intersectsViewport,
+            boolean isSpareRenderer,
             @ChildProcessImportance int importance) {
         assert connection != null;
         assert mRankings.size() > 0;
@@ -252,6 +288,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         rank.frameDepth = frameDepth;
         rank.intersectsViewport = intersectsViewport;
         rank.importance = importance;
+        rank.isSpareRenderer = isSpareRenderer;
         reposition(i);
     }
 

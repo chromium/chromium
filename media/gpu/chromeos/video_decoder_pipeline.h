@@ -209,6 +209,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   static std::unique_ptr<VideoDecoder> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      std::unique_ptr<FrameResourceConverter> frame_converter,
       std::unique_ptr<MediaLog> media_log,
       bool ignore_resolution_changes_to_smaller_for_testing = false);
 

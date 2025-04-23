@@ -66,13 +66,24 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="10"
       label="The nudge was not shown as the user already has the feature
-             window open.">
+             window open">
     The page was eligible for the nudge, but the user already has the feature
     window open.
   </int>
   <int value="11"
-      label="User closes the tab/window as a nudge decision is being computed.">
+      label="User closes the tab/window as a nudge decision is being computed">
     User closes the tab/window as a nudge decision is being computed.
+  </int>
+  <int value="12"
+      label="Not enough time has elapsed since last time nudge was shown">
+    The page was eligible for the nudge, but not enough time has elapsed since
+    the last nudge shown to the user.
+  </int>
+  <int value="13"
+      label="The nudge was not shown as the user has another window level call
+             to action UI shown in this window.">
+    The page was eligible for the nudge, but the user already has a window modal
+    UI showing.
   </int>
 </enum>
 
@@ -97,6 +108,10 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="6" label="Closed via new navigation">
     The nudge was dismissed by the navigation changing.
+  </int>
+  <int value="7" label="Not Shown due to existing call to action in window">
+    The server sent data, but another window level call to action UI was already
+    shown.&quot;&gt;
   </int>
 </enum>
 

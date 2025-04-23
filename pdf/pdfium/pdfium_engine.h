@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -169,7 +170,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     // If a parameter stands for the x/y coordinates, it should be transformed
     // into the corresponding in-screen coordinates before it's sent to the
     // viewport.
-    float params[kMaxViewParams];
+    std::array<float, kMaxViewParams> params;
 
     // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
     // where x and y parameters are the in-screen coordinates and zoom is the

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
@@ -17,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -81,7 +83,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final int mToolbarLayoutHeight;
 
     private View mToolbarHairline;
-    private View mToolbarView;
+    private ViewGroup mToolbarView;
+    private boolean mShowLocationBarOnly;
+    private View mLocationBarView;
 
     /**
      * Constructs a new control container.
@@ -201,6 +205,32 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     @Override
+    public void toggleLocationBarOnlyMode(boolean showLocationBarOnly) {
+        if (mShowLocationBarOnly == showLocationBarOnly) return;
+
+        mShowLocationBarOnly = showLocationBarOnly;
+        if (showLocationBarOnly) {
+            mLocationBarView = mToolbar.removeLocationBarView();
+            assert mLocationBarView != null
+                    : "Trying to remove location bar view from toolbar when there is no location"
+                            + " bar";
+            mToolbar.getProgressBar().setVisibility(View.INVISIBLE);
+            mToolbarView.setVisibility(View.INVISIBLE);
+            mToolbarView.removeView(mLocationBarView);
+            mToolbarContainer.addView(mLocationBarView);
+            setBackgroundColor(mToolbar.getPrimaryColor());
+        } else {
+            assert mLocationBarView != null
+                    : "Trying to restore location bar view to toolbar without removing it first";
+            mToolbar.getProgressBar().setVisibility(View.VISIBLE);
+            mToolbarView.setVisibility(View.VISIBLE);
+            mToolbarContainer.removeView(mLocationBarView);
+            mToolbar.restoreLocationBarView();
+            setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
+
+    @Override
     public void destroy() {
         ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).destroy();
         if (mToolbarContainerDragListener != null) {
@@ -290,6 +320,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      */
     public void setPostInitializationDependencies(
             Toolbar toolbar,
+            ViewGroup toolbarView,
             boolean isIncognito,
             ObservableSupplier<Integer> constraintsSupplier,
             Supplier<Tab> tabSupplier,
@@ -313,7 +344,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 fullscreenManager,
                 () -> mMidVisibilityToggle);
 
-        mToolbarView = findViewById(R.id.toolbar);
+        mToolbarView = toolbarView;
         assert mToolbarView != null;
 
         if (mToolbarView instanceof ToolbarTablet) {
@@ -795,5 +826,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     void setToolbarForTesting(Toolbar testToolbar) {
         mToolbar = testToolbar;
+    }
+
+    ToolbarViewResourceFrameLayout getToolbarContainerForTesting() {
+        return mToolbarContainer;
     }
 }

@@ -21,6 +21,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -37,8 +38,10 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
@@ -291,6 +294,19 @@ bool IsAccountDataActive(const TemplateURL* turl) {
   }
   CHECK_EQ(&turl->GetLocalData().value(), &turl->data());
   return false;
+}
+
+std::string_view SyncChangeTypeToHistogramSuffix(
+    syncer::SyncChange::SyncChangeType type) {
+  switch (type) {
+    case syncer::SyncChange::ACTION_ADD:
+      return "Added";
+    case syncer::SyncChange::ACTION_UPDATE:
+      return "Updated";
+    case syncer::SyncChange::ACTION_DELETE:
+      return "Deleted";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -600,20 +616,23 @@ bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
 bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
   switch (t_url->policy_origin()) {
     case TemplateURLData::PolicyOrigin::kNoPolicy:
-      // Hide if the preferred search engine for the keyword is created by
-      // policy. The call to `GetTemplateURLForKeyword` already ensure
+      // Hide if another engine (e.g., one set by policy) takes precedence for
+      // the same keyword. `GetTemplateURLForKeyword` already ensures
       // prioritization of search engines, so there is no need to replicate the
       // logic here.
-      return GetTemplateURLForKeyword(t_url->keyword())->CreatedByPolicy();
+      return t_url != GetTemplateURLForKeyword(t_url->keyword());
 
     case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
       return false;
 
     case TemplateURLData::PolicyOrigin::kSiteSearch:
     case TemplateURLData::PolicyOrigin::kSearchAggregator: {
-      // Always show featured Enterprise site search engines.
-      if (t_url->featured_by_policy()) {
-        return false;
+      // Hide if another engine (e.g., one set by the user) takes precedence for
+      // the same keyword. `GetTemplateURLForKeyword` already ensures
+      // prioritization of search engines, so there is no need to replicate the
+      // logic here.
+      if (t_url != GetTemplateURLForKeyword(t_url->keyword())) {
+        return true;
       }
 
       // A featured site search engine with keyword "work" is represented by two
@@ -624,11 +643,6 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
       // In the settings page, we want to show only one entry with both keywords
       // separated by a comma ("@work, work"). The logic below hides the one
       // that doesn't start with the "@" symbol.
-      //
-      // It also handles one corner case when the user explicitly created a site
-      // search engine with keyword "work", which overrides the one with the
-      // same keyword created by policy. In that case, we want to show both the
-      // Enterprise one with keyword "@work" and the user-defined one.
       const TemplateURL* t_url_with_at =
           GetTemplateURLForKeyword(u"@" + t_url->keyword());
       return t_url_with_at &&
@@ -1158,7 +1172,7 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
         search_engines::ChoiceMadeLocation::kChoiceScreen);
   }
 
-  CHECK(default_search_provider_, base::NotFatalUntil::M132);
+  CHECK(default_search_provider_);
   return true;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1466,7 +1480,7 @@ base::CallbackListSubscription TemplateURLService::RegisterOnLoadedCallback(
                  : on_loaded_callbacks_.Add(std::move(callback));
 }
 
-void TemplateURLService::EmitTemplateURLActiveOnStartupHistogram(
+void TemplateURLService::LogActiveTemplateUrlsOnStartup(
     OwnedTemplateURLVector* template_urls) {
   DCHECK(template_urls);
 
@@ -1480,6 +1494,127 @@ void TemplateURLService::EmitTemplateURLActiveOnStartupHistogram(
         histogram_name, turl->GetBuiltinEngineType(),
         BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
   }
+}
+
+void TemplateURLService::LogTemplateUrlTypesOnStartup(
+    OwnedTemplateURLVector* template_urls) {
+  DCHECK(template_urls);
+
+  // Initialize counts for each type of `TemplateURL`.
+  int num_total_turl = 0;
+  int num_prepopulated = 0;
+  int num_featured_policy_set_site_search = 0;
+  int num_policy_set_aggregator = 0;
+  int num_starter_pack = 0;
+  int num_extension_set_search = 0;
+  int num_non_featured_policy_set_site_search = 0;
+  int num_policy_set_default_search = 0;
+  int num_user_set_default_search = 0;
+  int num_user_set_substituting_site_search = 0;
+  int num_user_set_non_substituting_site_search = 0;
+
+  // Count the number of each type of `TemplateURL`.
+  for (auto& turl : *template_urls) {
+    const TemplateURLData& data = turl->data();
+    // When search aggregator policy specifies keyword '@xyz', it also generates
+    // a non-featured 'xyz' aggregator. Skip the non-featured keyword to prevent
+    // double counting.
+    if (data.CreatedByEnterpriseSearchAggregatorPolicy() &&
+        !turl->featured_by_policy()) {
+      continue;
+    }
+    // Prepopulated keywords can have `is_active()` equal to
+    // `ActiveStatus::kTrue` or `ActiveStatus::kUnspecified`.
+    bool is_prepopulated =
+        data.prepopulate_id != 0 &&
+        turl->is_active() != TemplateURLData::ActiveStatus::kFalse;
+    if ((!is_prepopulated &&
+         turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified) ||
+        turl->is_active() == TemplateURLData::ActiveStatus::kFalse) {
+      continue;
+    }
+    num_total_turl++;
+    if (is_prepopulated) {
+      num_prepopulated++;
+    } else if (turl->featured_by_policy()) {
+      if (data.CreatedBySiteSearchPolicy()) {
+        num_featured_policy_set_site_search++;
+      } else if (data.CreatedByEnterpriseSearchAggregatorPolicy()) {
+        num_policy_set_aggregator++;
+      } else {
+        NOTREACHED();
+      }
+    } else if (data.starter_pack_id != 0) {
+      num_starter_pack++;
+    } else if (turl->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
+               turl->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+      num_extension_set_search++;
+    } else if (data.CreatedBySiteSearchPolicy()) {
+      num_non_featured_policy_set_site_search++;
+    } else if (data.CreatedByDefaultSearchProviderPolicy()) {
+      num_policy_set_default_search++;
+    } else if (GetDefaultSearchProvider() &&
+               data.url() == GetDefaultSearchProvider()->url()) {
+      num_user_set_default_search++;
+    } else if (!data.CreatedByPolicy()) {
+      turl->SupportsReplacement(search_terms_data())
+          ? num_user_set_substituting_site_search++
+          : num_user_set_non_substituting_site_search++;
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  base::UmaHistogramExactLinear(base::StringPrintf(kKeywordCountHistogramName),
+                                num_total_turl, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.FeaturedSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_featured_policy_set_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SearchAggregatorSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_policy_set_aggregator, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.StarterPack", kKeywordCountHistogramName),
+      num_starter_pack, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.Prepopulated", kKeywordCountHistogramName),
+      num_prepopulated, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SearchEngineSetByExtension",
+                         kKeywordCountHistogramName),
+      num_extension_set_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.NonFeaturedSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_non_featured_policy_set_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.DefaultSearchEngineSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_policy_set_default_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.DefaultSearchEngineSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_default_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SubstitutingSiteSearchSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_substituting_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.NonSubstitutingSiteSearchSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_non_substituting_site_search, 50);
 }
 
 void TemplateURLService::OnWebDataServiceRequestDone(
@@ -1525,7 +1660,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   {
     PatchMissingSyncGUIDs(template_urls.get());
     MaybeSetIsActiveSearchEngines(template_urls.get());
-    EmitTemplateURLActiveOnStartupHistogram(template_urls.get());
+    LogActiveTemplateUrlsOnStartup(template_urls.get());
+    LogTemplateUrlTypesOnStartup(template_urls.get());
     SetTemplateURLs(std::move(template_urls));
 
     // This initializes provider_map_ which should be done before
@@ -1940,6 +2076,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   // valid changes to sync_processor_.
   PruneSyncChanges(&sync_data_map, &new_changes);
 
+  base::UmaHistogramCounts100(
+      "Sync.SearchEngine.NewChangesCommittedUponSyncStart", new_changes.size());
   std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
@@ -2029,15 +2167,25 @@ void TemplateURLService::ProcessTemplateURLChange(
 
   // Avoid syncing autogenerated search engines that the user has never
   // interacted with (if feature is enabled).
-  if (IsUntouchedAutogeneratedTemplateURLDataAndShouldNotSync(data)) {
+  const bool is_untouched_autogenerated_turl_and_should_not_sync =
+      IsUntouchedAutogeneratedTemplateURLDataAndShouldNotSync(data);
+  const std::string_view histogram_suffix =
+      SyncChangeTypeToHistogramSuffix(type);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Sync.SearchEngine.UntouchedAutogenerated", histogram_suffix}),
+      is_untouched_autogenerated_turl_and_should_not_sync);
+  if (is_untouched_autogenerated_turl_and_should_not_sync) {
     const bool is_prepopulated_entry = turl->prepopulate_id() != 0;
     base::UmaHistogramBoolean(
-        "Sync.SearchEngine.UntouchedAutogeneratedChanged."
-        "IsPrepopulatedEntry",
+        base::StringPrintf(
+            "Sync.SearchEngine.UntouchedAutogenerated%s.IsPrepopulatedEntry",
+            histogram_suffix),
         is_prepopulated_entry);
     base::UmaHistogramBoolean(
-        "Sync.SearchEngine.UntouchedAutogeneratedChanged."
-        "IsStarterPackEntry",
+        base::StringPrintf(
+            "Sync.SearchEngine.UntouchedAutogenerated%s.IsStarterPackEntry",
+            histogram_suffix),
         turl->starter_pack_id() != 0);
     // Avoid ignoring prepopulated search engines. See crbug.com/404407977.
     if (!is_prepopulated_entry) {

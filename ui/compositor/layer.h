@@ -327,6 +327,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // this Layer's coordinate space. Backdrop effects are only visible and can
   // only sample from the intersection of the Layer's bounds and any set
   // backdrop filter bounds.
+  void SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds);
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
   void ClearBackdropFilterBounds();
 

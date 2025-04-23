@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/pedal_section_extractor.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
+#import "ios/chrome/browser/omnibox/model/suggest_action.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 

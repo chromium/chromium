@@ -88,7 +88,9 @@ void PermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    base::OnceCallback<void()> hats_shown_callback_) {}
+    base::OnceCallback<void()> hats_shown_callback,
+    std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+        preview_parameters) {}
 
 void PermissionsClient::OnPromptResolved(
     RequestType request_type,
@@ -102,7 +104,9 @@ void PermissionsClient::OnPromptResolved(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents,
+    std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+        preview_parameters) {}
 
 std::optional<bool>
 PermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(

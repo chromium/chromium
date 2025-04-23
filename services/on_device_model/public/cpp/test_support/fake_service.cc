@@ -133,14 +133,23 @@ void FakeOnDeviceSession::Score(const std::string& text,
   std::move(callback).Run(0.5);
 }
 
+void FakeOnDeviceSession::GetProbabilitiesBlocking(
+    const std::string& text,
+    GetProbabilitiesBlockingCallback callback) {
+  std::move(callback).Run({0.5});
+}
+
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
-  auto new_session =
-      std::make_unique<FakeOnDeviceSession>(settings_, model_, capabilities_);
-  for (const auto& c : context_) {
-    new_session->context_.push_back(c->Clone());
-  }
-  model_->AddSession(std::move(session), std::move(new_session));
+  // Post a task to sequence with calls to Append.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeOnDeviceSession::CloneImpl,
+                     weak_factory_.GetWeakPtr(), std::move(session)));
+}
+
+void FakeOnDeviceSession::SetPriority(mojom::Priority priority) {
+  priority_ = priority;
 }
 
 void FakeOnDeviceSession::GenerateImpl(
@@ -162,6 +171,12 @@ void FakeOnDeviceSession::GenerateImpl(
     auto chunk = mojom::ResponseChunk::New();
     chunk->text =
         "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
+
+  if (priority_ == on_device_model::mojom::Priority::kBackground) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Priority: background\n";
     remote->OnResponse(std::move(chunk));
   }
 
@@ -206,6 +221,17 @@ void FakeOnDeviceSession::AppendImpl(
   if (client) {
     client->OnComplete(tokens_processed);
   }
+}
+
+void FakeOnDeviceSession::CloneImpl(
+    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
+  auto new_session =
+      std::make_unique<FakeOnDeviceSession>(settings_, model_, capabilities_);
+  for (const auto& c : context_) {
+    new_session->context_.push_back(c->Clone());
+  }
+  new_session->priority_ = priority_;
+  model_->AddSession(std::move(session), std::move(new_session));
 }
 
 FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,

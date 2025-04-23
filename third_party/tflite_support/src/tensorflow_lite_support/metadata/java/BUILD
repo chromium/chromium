@@ -2,6 +2,7 @@
 # TensorFlow Lite Support API in Java for metadata.
 
 load("@build_bazel_rules_android//android:rules.bzl", "android_library")
+load("//third_party/bazel_rules/rules_java/java:defs.bzl", "java_library")
 
 package(
     default_visibility = ["//visibility:public"],

@@ -269,31 +269,31 @@ export class SettingsAppearancePageElement extends
     ];
   }
 
-  pageVisibility: AppearancePageVisibility;
-  private defaultZoom_: number;
-  private isWallpaperPolicyControlled_: boolean;
-  private fontSizeOptions_: DropdownMenuOptionList;
-  private colorSchemeModeOptions_:
+  declare pageVisibility: AppearancePageVisibility;
+  declare private defaultZoom_: number;
+  declare private isWallpaperPolicyControlled_: boolean;
+  declare private fontSizeOptions_: DropdownMenuOptionList;
+  declare private colorSchemeModeOptions_:
       Array<{value: ColorSchemeMode, name: string}>;
-  private selectedColorSchemeMode_: ColorSchemeMode|undefined;
-  private pageZoomLevels_: number[];
-  private themeSublabel_: string;
-  private themeUrl_: string;
-  private systemTheme_: SystemTheme;
-  private focusConfig_: Map<string, string>;
-  private isForcedTheme_: boolean;
-  private showHoverCardImagesOption_: boolean;
-  private showResetPinnedActionsButton_: boolean;
+  declare private selectedColorSchemeMode_: ColorSchemeMode|undefined;
+  declare private pageZoomLevels_: number[];
+  declare private themeSublabel_: string;
+  declare private themeUrl_: string;
+  declare private systemTheme_: SystemTheme;
+  declare private focusConfig_: Map<string, string>;
+  declare private isForcedTheme_: boolean;
+  declare private showHoverCardImagesOption_: boolean;
+  declare private showResetPinnedActionsButton_: boolean;
 
   // <if expr="is_linux">
-  private showCustomChromeFrame_: boolean;
+  declare private showCustomChromeFrame_: boolean;
   // </if>
 
-  private showTabSearchPositionSettings_: boolean;
-  private showTabSearchPositionRestartButton_: boolean;
-  private showManagedThemeDialog_: boolean;
-  private sidePanelOptions_: DropdownMenuOptionList;
-  private tabSearchOptions_: DropdownMenuOptionList;
+  declare private showTabSearchPositionSettings_: boolean;
+  declare private showTabSearchPositionRestartButton_: boolean;
+  declare private showManagedThemeDialog_: boolean;
+  declare private sidePanelOptions_: DropdownMenuOptionList;
+  declare private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -500,7 +500,7 @@ export class SettingsAppearancePageElement extends
 
   private async toolbarPinningStateChanged_(): Promise<void> {
     this.showResetPinnedActionsButton_ =
-        !await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault();
+        !(await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault());
   }
 
   private isSelectedColorSchemeMode_(colorSchemeMode: ColorSchemeMode):

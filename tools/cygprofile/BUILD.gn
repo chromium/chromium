@@ -28,9 +28,6 @@ template("generate_orderfile_test") {
       "--target-arch",
       invoker.arch,
       "-v",
-
-      # TODO(http://crbug.com/380082658): Remove this when the bots are stable.
-      "--streamline-for-debugging",
     ]
 
     deps = [ ":generate_orderfile_py" ]

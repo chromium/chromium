@@ -19,6 +19,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/result_catcher.h"

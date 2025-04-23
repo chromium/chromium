@@ -21,8 +21,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebNavigationBrowserAgent)
-
 WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
     : web_state_list_(browser->GetWebStateList()), browser_(browser) {}
 

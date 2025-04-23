@@ -10,11 +10,17 @@
 
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
+
+// Type of a LocalRecoveryFactor. Overwritten by sub-classes according to how
+// they manage recovery keys locally.
+enum class LocalRecoveryFactorType {
+  kPhysicalDevice,
+};
 
 // Interface for a local recovery factor.
 // Classes that implement this interface are used by
@@ -42,14 +48,16 @@ class LocalRecoveryFactor {
   LocalRecoveryFactor& operator=(const LocalRecoveryFactor&) = delete;
   virtual ~LocalRecoveryFactor() = default;
 
+  // Returns the type of this local recovery factor.
+  virtual LocalRecoveryFactorType GetRecoveryFactorType() const = 0;
+
   // Attempts a key recovery.
-  // Note: If `connection_requests_throttled` is true, implementations of this
-  // method are not allowed to make requests to `connection`.
-  virtual void AttemptRecovery(TrustedVaultConnection* connection,
-                               bool connection_requests_throttled,
+  virtual void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                                AttemptRecoveryCallback cb,
                                AttemptRecoveryFailureCallback failure_cb) = 0;
 
+  // Returns whether the recovery factor is marked as registered.
+  virtual bool IsRegistered() = 0;
   // Marks the recovery factor as not registered, which makes it eligible for
   // future registration attempts.
   virtual void MarkAsNotRegistered() = 0;
@@ -61,11 +69,8 @@ class LocalRecoveryFactor {
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
   // recording.
-  // Note: If `connection_requests_throttled` is true, implementations of this
-  // method are not allowed to make requests to `connection`.
   virtual TrustedVaultDeviceRegistrationStateForUMA MaybeRegister(
-      TrustedVaultConnection* connection,
-      bool connection_requests_throttled,
+      TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) = 0;
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
@@ -28,10 +29,9 @@ constexpr size_t kAssociatedDataLength = kLargeBlobADPrefix.size() + 8;
 std::array<uint8_t, kAssociatedDataLength> GenerateLargeBlobAdditionalData(
     size_t size) {
   std::array<uint8_t, kAssociatedDataLength> additional_data;
-  const std::array<uint8_t, 8>& size_array =
-      fido_parsing_utils::Uint64LittleEndian(size);
+  const auto size_bytes = base::U64ToLittleEndian(size);
   std::ranges::copy(kLargeBlobADPrefix, additional_data.begin());
-  std::ranges::copy(size_array,
+  std::ranges::copy(size_bytes,
                     additional_data.begin() + kLargeBlobADPrefix.size());
   return additional_data;
 }
@@ -107,9 +107,8 @@ void LargeBlobsRequest::SetPinParam(
                                 pin::kPinUvAuthTokenSafetyPadding.end());
   pin_auth.insert(pin_auth.end(), kLargeBlobPinPrefix.begin(),
                   kLargeBlobPinPrefix.end());
-  const std::array<uint8_t, 4> offset_array =
-      fido_parsing_utils::Uint32LittleEndian(offset_);
-  pin_auth.insert(pin_auth.end(), offset_array.begin(), offset_array.end());
+  const auto offset_bytes = base::U32ToLittleEndian(offset_);
+  pin_auth.insert(pin_auth.end(), offset_bytes.begin(), offset_bytes.end());
   std::array<uint8_t, crypto::kSHA256Length> set_hash =
       crypto::SHA256Hash(*set_);
   pin_auth.insert(pin_auth.end(), set_hash.begin(), set_hash.end());

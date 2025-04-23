@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 
@@ -158,7 +159,7 @@ static GLuint CompileShader(GLenum type, const char *data) {
 #endif
 TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
   const GLsizei kTextureSize = 4;
-  const GLfloat kDrawColor[4] = { -10.9f, 0.5f, 10.5f, 100.12f };
+  const std::array<GLfloat, 4> kDrawColor = {-10.9f, 0.5f, 10.5f, 100.12f};
   const GLfloat kEpsilon = 0.01f;
 
   struct TestFormat {
@@ -166,7 +167,7 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
     GLint type;
     uint32_t comp_count;
   };
-  TestFormat test_formats[4];
+  std::array<TestFormat, 4> test_formats;
   size_t test_count = 0;
   const char *extensions = reinterpret_cast<const char*>(
       glGetString(GL_EXTENSIONS));
@@ -242,7 +243,7 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
   glEnableVertexAttribArray(position_location);
 
   glUseProgram(program);
-  glUniform4fv(glGetUniformLocation(program, "u_color"), 1, kDrawColor);
+  glUniform4fv(glGetUniformLocation(program, "u_color"), 1, kDrawColor.data());
 
   EXPECT_EQ(glGetError(), GLenum(GL_NO_ERROR));
 

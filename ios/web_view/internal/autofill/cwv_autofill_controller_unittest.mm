@@ -41,6 +41,7 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -190,10 +191,10 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
                                                 frameID:frame_id_
                                       completionHandler:fetch_completion];
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return fetch_completion_was_called;
-  }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                          /*run_message_loop=*/true, ^bool {
+                                            return fetch_completion_was_called;
+                                          }));
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }
@@ -240,10 +241,10 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
                                                 frameID:frame_id_
                                       completionHandler:fetch_completion];
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return fetch_completion_was_called;
-  }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                          /*run_message_loop=*/true, ^bool {
+                                            return fetch_completion_was_called;
+                                          }));
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }
@@ -270,15 +271,34 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
                          accept_completion_was_called = YES;
                        }];
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return accept_completion_was_called;
-  }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                          /*run_message_loop=*/true, ^bool {
+                                            return accept_completion_was_called;
+                                          }));
   EXPECT_NSEQ(
       form_suggestion,
       [autofill_agent_ selectedSuggestionForFormName:kTestFormName
                                      fieldIdentifier:kTestFieldIdentifier
                                              frameID:frame_id_]);
+}
+
+// Tests CWVAutofillController accepts credit card as suggestion.
+TEST_F(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
+  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
+  CWVCreditCard* cwv_credit_card =
+      [[CWVCreditCard alloc] initWithCreditCard:credit_card];
+
+  __block BOOL accept_completion_was_called = NO;
+  [autofill_controller_ acceptCreditCardAsSuggestion:cwv_credit_card
+                                             atIndex:0
+                                   completionHandler:^{
+                                     accept_completion_was_called = YES;
+                                   }];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                          /*run_message_loop=*/true, ^bool {
+                                            return accept_completion_was_called;
+                                          }));
 }
 
 // Tests CWVAutofillController delegate focus callback is invoked.

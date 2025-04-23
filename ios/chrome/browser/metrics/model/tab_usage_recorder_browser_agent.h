@@ -101,7 +101,6 @@ class TabUsageRecorderBrowserAgent
   friend class TabUsageRecorderBrowserAgentTest;
 
   friend class BrowserUserData<TabUsageRecorderBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit TabUsageRecorderBrowserAgent(Browser* browser);
 

@@ -13,7 +13,6 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -192,16 +191,6 @@ bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {
   }
 
   return false;
-}
-
-OptionalBool IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details) {
-  if (!base::FeatureList::IsEnabled(
-          network::features::kSkipTpcdMitigationsForAds) ||
-      !network::features::kSkipTpcdMitigationsForAdsHeuristics.Get()) {
-    return OptionalBool::kUnknown;
-  }
-  return ToOptionalBool(details.cookie_setting_overrides.Has(
-      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant));
 }
 
 bool HasCHIPS(const net::CookieAccessResultList& cookie_access_result_list) {

@@ -516,6 +516,16 @@ chromium-metrics-reviews@google.com.
              policy"/>
 </enum>
 
+<!-- LINT.IfChange(LoginDbDeprecationExportProgress) -->
+
+<enum name="LoginDbDeprecationExportProgress">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Finished"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_runner.h:LoginDbDeprecationExportProgress) -->
+
 <!-- LINT.IfChange(LoginDbDeprecationExportResult) -->
 
 <enum name="LoginDbDeprecationExportResult">
@@ -1275,6 +1285,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(PasswordManagerNotAvailableReason) -->
+
+<enum name="PasswordManagerNotAvailableReason">
+  <int value="0" label="Internal backend missing"/>
+  <int value="1" label="No GMS, no Play Store"/>
+  <int value="2" label="Outdated GMS"/>
+  <int value="3" label="Auto-export pending"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/android/password_manager_android_util.h:PasswordManagerNotAvailableReason) -->
+
 <enum name="PasswordManagerOfferedAndroidCredentials">
   <int value="0" label="None from Android"/>
   <int value="1" label="1+ from Android"/>
@@ -1621,23 +1642,6 @@ chromium-metrics-reviews@google.com.
 <enum name="PostPasswordMigrationSheetOutcome">
   <int value="0" label="The sheet was acknowledged"/>
   <int value="1" label="The sheet was dismissed"/>
-</enum>
-
-<enum name="PrefilledUsernameFillOutcome">
-  <int value="0" label="Prefilled placeholder username overridden">
-    1) the page has a username input element whose value was prefilled by the
-    website itself. 2) the prefilled value was found in a list of known
-    placeholder values (e.g. &quot;username or email&quot;). 3) the user had a
-    credential stored and the field content was overridden with the username of
-    this credential due to 2).
-  </int>
-  <int value="1" label="Prefilled username not overridden">
-    1) the page has a username input element whose value was prefilled by the
-    website itself. 2) the prefilled value was NOT found in a list of known
-    placeholder values (e.g. &quot;username or email&quot;). 3) the user had a
-    credential stored and the field content was NOT overridden with the username
-    of this credential due to 2).
-  </int>
 </enum>
 
 <enum name="ProactivePasswordGenerationBottomSheetTransitionType">

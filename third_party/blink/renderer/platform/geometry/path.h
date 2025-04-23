@@ -29,15 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 
-#include <optional>
-
 #include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 #include "ui/gfx/geometry/transform.h"
@@ -46,7 +42,6 @@ namespace gfx {
 class PointF;
 class QuadF;
 class RectF;
-class Vector2dF;
 }  // namespace gfx
 
 namespace blink {
@@ -139,50 +134,13 @@ class PLATFORM_EXPORT Path {
     SkScalar accumulated_length_;
   };
 
-  void Clear();
   bool IsEmpty() const;
   bool IsClosed() const;
   bool IsLine() const;
 
-  // Specify whether this path is volatile. Temporary paths that are discarded
-  // or modified after use should be marked as volatile. This is a hint to the
-  // device to not cache this path.
-  void SetIsVolatile(bool);
-
-  // Gets the current point of the current path, which is conceptually the final
-  // point reached by the path so far. Note the Path can be empty
-  // (isEmpty() == true) and still have a current point.
-  std::optional<gfx::PointF> CurrentPoint() const;
-
-  // TODO(crbug.com/378688986): convert clients to PathBuilder and remove all
-  // editing (non-const) methods.
-  void MoveTo(const gfx::PointF&);
-  void AddLineTo(const gfx::PointF&);
-  void AddQuadCurveTo(const gfx::PointF& control_point,
-                      const gfx::PointF& end_point);
-  void AddBezierCurveTo(const gfx::PointF& control_point1,
-                        const gfx::PointF& control_point2,
-                        const gfx::PointF& end_point);
-  void AddArcTo(const gfx::PointF&, const gfx::PointF&, float radius);
-  void CloseSubpath();
-
-  void AddArc(const gfx::PointF&,
-              float radius,
-              float start_angle,
-              float end_angle);
-  void AddEllipse(const gfx::PointF&,
-                  float radius_x,
-                  float radius_y,
-                  float rotation,
-                  float start_angle,
-                  float end_angle);
-  void AddPath(const Path&, const AffineTransform&);
-
-  void Translate(const gfx::Vector2dF&);
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;
-  Path& Transform(const AffineTransform&);
 
   // Utility factories for simple shapes.
   static Path MakeRect(const gfx::RectF&);
@@ -197,11 +155,6 @@ class PLATFORM_EXPORT Path {
                           float radius_y);
 
  private:
-  void AddEllipse(const gfx::PointF&,
-                  float radius_x,
-                  float radius_y,
-                  float start_angle,
-                  float end_angle);
   SkPath StrokePath(const StrokeData&, float stroke_precision) const;
 
   SkPath path_;

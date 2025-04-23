@@ -16,10 +16,12 @@ namespace {
 // Maps |component| to constants defined in
 // https://w3c.github.io/webrtc-pc/#dom-rtcicecomponent
 String CandidateComponentToString(int component) {
-  if (component == cricket::ICE_CANDIDATE_COMPONENT_RTP)
+  if (component == webrtc::ICE_CANDIDATE_COMPONENT_RTP) {
     return String("rtp");
-  if (component == cricket::ICE_CANDIDATE_COMPONENT_RTCP)
+  }
+  if (component == webrtc::ICE_CANDIDATE_COMPONENT_RTCP) {
     return String("rtcp");
+  }
   return String();
 }
 
@@ -66,7 +68,7 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
 }
 
 void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
-  cricket::Candidate c;
+  webrtc::Candidate c;
   if (!webrtc::ParseCandidate(candidate_.Utf8(), &c, nullptr, true))
     return;
 

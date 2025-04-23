@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_check.helper;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +14,7 @@ import android.provider.Browser;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordChangeType;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
@@ -23,6 +26,7 @@ import java.util.Objects;
  * Helper to launch apps, settings screens, or Chrome Custom tabs that enable the user to change a
  * compromised password.
  */
+@NullMarked
 public class PasswordCheckChangePasswordHelper {
     private final Context mContext;
     private final PasswordCheckComponentUi.CustomTabIntentHelper mCustomTabIntentHelper;
@@ -62,9 +66,10 @@ public class PasswordCheckChangePasswordHelper {
     }
 
     private Intent getPackageLaunchIntent(String packageName) {
-        return Objects.requireNonNull(mContext)
-                .getPackageManager()
-                .getLaunchIntentForPackage(packageName);
+        return assumeNonNull(
+                Objects.requireNonNull(mContext)
+                        .getPackageManager()
+                        .getLaunchIntentForPackage(packageName));
     }
 
     /**

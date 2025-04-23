@@ -33,12 +33,22 @@ void ContentDecodingURLLoaderThrottle::WillProcessResponse(
     return;
   }
 
+  // Attempt to create the data pipe needed for content decoding.
+  auto data_pipe_pair = network::ContentDecodingInterceptor::CreateDataPipePair(
+      network::ContentDecodingInterceptor::ClientType::kURLLoaderThrottle);
+  if (!data_pipe_pair) {
+    // If pipe creation fails, cancel the request with an error.
+    delegate_->CancelWithError(net::ERR_INSUFFICIENT_RESOURCES);
+    return;
+  }
+
   // Intercept the response using ContentDecodingInterceptor. The provided
   // callback is used to swap the URLLoaderClientEndpoints and data pipe with
   // the interceptor's versions. This ensures that subsequent data flows through
   // the decoding pipeline.
   network::ContentDecodingInterceptor::Intercept(
       response_head->client_side_content_decoding_types,
+      std::move(*data_pipe_pair),
       base::BindOnce(
           [](Delegate* delegate,
              network::mojom::URLLoaderClientEndpointsPtr& endpoints,

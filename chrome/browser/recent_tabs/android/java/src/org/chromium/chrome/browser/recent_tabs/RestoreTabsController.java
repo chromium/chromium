@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 import java.util.List;
 
 /** An interface for a RestoreTabsController instance. */
+@NullMarked
 public interface RestoreTabsController {
     /** Destroy when lifecycle of the controller ends. */
     public void destroy();

@@ -121,6 +121,7 @@ build_webui("build") {
     "privacy_page/cookies_page.ts",
     "privacy_page/do_not_track_toggle.ts",
     "privacy_page/fingerprint_progress_arc.ts",
+    "privacy_page/incognito_tracking_protections_page.ts",
     "privacy_page/personalization_options.ts",
     "privacy_page/privacy_guide/privacy_guide_ad_topics_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_completion_fragment.ts",
@@ -198,7 +199,6 @@ build_webui("build") {
     "site_settings/site_entry.ts",
     "site_settings/site_list.ts",
     "site_settings/site_list_entry.ts",
-    "site_settings/smart_card_reader_origin_entry.ts",
     "site_settings/smart_card_readers_page.ts",
     "site_settings/storage_access_site_list.ts",
     "site_settings/storage_access_site_list_entry.ts",
@@ -257,9 +257,9 @@ build_webui("build") {
 
   # -----------------web_component_files end ----------------------------------
 
-  # -----------------non_web_component_files start ----------------------------
+  # -----------------ts_files start ----------------------------
 
-  non_web_component_files = [
+  ts_files = [
     "a11y_page/a11y_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
     "ai_page/ai_learn_more_url_util.ts",
@@ -316,10 +316,9 @@ build_webui("build") {
   ]
 
   if (is_chromeos) {
-    non_web_component_files +=
-        [ "people_page/account_manager_browser_proxy.ts" ]
+    ts_files += [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
-    non_web_component_files += [
+    ts_files += [
       "default_browser_page/default_browser_browser_proxy.ts",
       "languages_page/languages.ts",
       "languages_page/languages_browser_proxy.ts",
@@ -332,17 +331,17 @@ build_webui("build") {
   }
 
   if (is_win) {
-    non_web_component_files += [ "incompatible_applications_page/incompatible_applications_browser_proxy.ts" ]
+    ts_files += [ "incompatible_applications_page/incompatible_applications_browser_proxy.ts" ]
   }
   if (is_win || is_mac) {
-    non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
+    ts_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
   }
 
   if (enable_glic) {
-    non_web_component_files += [ "glic_page/glic_browser_proxy.ts" ]
+    ts_files += [ "glic_page/glic_browser_proxy.ts" ]
   }
 
-  # -----------------non_web_component_files end -------------------------------
+  # -----------------ts_files end -------------------------------
 
   icons_html_files = [
     "icons.html",
@@ -375,7 +374,6 @@ build_webui("build") {
   ]
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [
     "//tools/typescript/definitions/autofill_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",

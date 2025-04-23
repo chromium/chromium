@@ -191,12 +191,6 @@
     </div>
   </div>
 </div>
-<template is="dom-if" if="[[showMovePasswordsDialog_]]" restamp>
-  <move-passwords-dialog on-close="onMovePasswordsDialogClose_"
-      id="movePasswordsDialog" passwords="[[passwordsOnDevice_]]"
-      trigger="[[getMovePasswordsDialogTrigger_()]]">
-  </move-passwords-dialog>
-</template>
 <template is="dom-if" if="[[showDisconnectCloudAuthenticatorDialog_]]" restamp>
   <disconnect-cloud-authenticator-dialog id="disconnectCloudAuthenticatorDialog"
       on-close="onCloseDisconnectCloudAuthenticatorDialog_"

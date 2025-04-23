@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
@@ -149,9 +150,13 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
                                         root_transform);
 }
 
-Path SVGGeometryElement::ToClipPath() const {
+Path SVGGeometryElement::ToClipPath(
+    const AffineTransform* clip_transform) const {
   PathBuilder path = AsMutablePath();
   path.Transform(CalculateTransform(SVGElement::kIncludeMotionTransform));
+  if (clip_transform) {
+    path.Transform(*clip_transform);
+  }
 
   DCHECK(GetLayoutObject());
   DCHECK(GetLayoutObject()->Style());

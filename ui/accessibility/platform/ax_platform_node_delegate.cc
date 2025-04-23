@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -83,8 +84,9 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
     // const_cast.
     const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
         const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
-    if (!child || !child->GetDelegate())
+    if (!child) {
       continue;
+    }
     text_content += child->GetDelegate()->GetTextContentUTF16();
   }
   return text_content;
@@ -950,16 +952,7 @@ ax::mojom::DescriptionFrom AXPlatformNodeDelegate::GetDescriptionFrom() const {
 
 const AXSelection AXPlatformNodeDelegate::GetUnignoredSelection() const {
   if (node_)
-    return node_->GetUnignoredSelection(/*non_text_endpoints*/ false);
-
-  NOTIMPLEMENTED();
-  return AXSelection();
-}
-
-const AXSelection AXPlatformNodeDelegate::GetHypertextSelection() const {
-  if (node_) {
-    return node_->GetUnignoredSelection(/*non_text_endpoints*/ true);
-  }
+    return node_->GetUnignoredSelection();
 
   NOTIMPLEMENTED();
   return AXSelection();

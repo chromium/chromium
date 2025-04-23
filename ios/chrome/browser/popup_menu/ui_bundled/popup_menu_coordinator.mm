@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -65,6 +66,7 @@
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -297,6 +299,10 @@ using base::UserMetricsAction;
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =
         HandlerForProtocol(dispatcher, FindInPageCommands);
+    if (IsReaderModeSnackbarEnabled()) {
+      mediator.readerModeHandler =
+          HandlerForProtocol(dispatcher, ReaderModeCommands);
+    }
     mediator.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);
     mediator.overflowMenuCustomizationHandler =
         HandlerForProtocol(dispatcher, OverflowMenuCustomizationCommands);
@@ -418,11 +424,11 @@ using base::UserMetricsAction;
   }
 
   self.mediator = [[PopupMenuMediator alloc]
-         initWithIsIncognito:self.profile->IsOffTheRecord()
-            readingListModel:ReadingListModelFactory::GetForProfile(
-                                 self.profile)
-      browserPolicyConnector:GetApplicationContext()
-                                 ->GetBrowserPolicyConnector()];
+      initWithReadingListModel:ReadingListModelFactory::GetForProfile(
+                                   self.profile)
+               policyConnector:GetApplicationContext()
+                                   ->GetBrowserPolicyConnector()
+                     incognito:self.profile->IsOffTheRecord()];
   self.mediator.engagementTracker = tracker;
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.readingListBrowserAgent =

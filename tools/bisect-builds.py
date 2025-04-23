@@ -2341,8 +2341,8 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       '--user-data-dir',
       type=str,
       default='%t/profile',
-      help='Profile to use; this will not reset every run. Defaults to a clean '
-      'profile.',
+      help='Profile to use; this will not reset every run. Defaults to a new, '
+      'clean profile for every run.',
   )
   parser.add_argument(
       '-t',

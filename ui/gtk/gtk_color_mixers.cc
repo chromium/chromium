@@ -35,7 +35,6 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
 
   const SkColor primary_bg = GetBgColor("");
   const SkColor button_bg_disabled = GetBgColor("button.text-button:disabled");
-  const SkColor button_border = GetBorderColor("button");
   const SkColor frame_color =
       SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
   const SkColor frame_color_inactive =
@@ -91,7 +90,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorButtonBackgroundProminentFocused] = {
       ui::kColorButtonBackgroundProminent};
   mixer[ui::kColorButtonBackgroundProminentDisabled] = {button_bg_disabled};
-  mixer[ui::kColorButtonBorder] = {button_border};
+  mixer[ui::kColorButtonBorder] = {GetBorderColor("button")};
   mixer[ui::kColorButtonBorderDisabled] = {button_bg_disabled};
   mixer[ui::kColorButtonForeground] = {GetFgColor("button.text-button label")};
   mixer[ui::kColorButtonForegroundDisabled] = {
@@ -231,7 +230,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetFgColor(header_selector_inactive + " label.title")};
   mixer[ui::kColorNativeToolbarBackground] = {toolbar_color};
   mixer[ui::kColorNativeTextfieldBorderUnfocused] = {entry_border};
-  mixer[ui::kColorNativeButtonBorder] = {button_border};
+  mixer[ui::kColorNativeBoxFrameBorder] = {GetBorderColor("box.frame")};
   mixer[ui::kColorNativeLabelForeground] = {label_fg};
 }
 

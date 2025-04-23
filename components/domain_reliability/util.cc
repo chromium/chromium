@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -23,10 +25,11 @@ namespace domain_reliability {
 
 namespace {
 
-const struct NetErrorMapping {
+struct NetErrorMapping {
   int net_error;
   const char* beacon_status;
-} net_error_map[] = {
+};
+const auto net_error_map = std::to_array<NetErrorMapping>({
     {net::OK, "ok"},
     {net::ERR_ABORTED, "aborted"},
     {net::ERR_TIMED_OUT, "tcp.connection.timed_out"},
@@ -72,7 +75,8 @@ const struct NetErrorMapping {
      "http.response.headers.multiple_content_disposition"},
     {net::ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH,
      "http.response.headers.multiple_content_length"},
-    {net::ERR_SSL_UNRECOGNIZED_NAME_ALERT, "ssl.unrecognized_name_alert"}};
+    {net::ERR_SSL_UNRECOGNIZED_NAME_ALERT, "ssl.unrecognized_name_alert"},
+});
 
 bool CanReportFullBeaconURLToCollector(const GURL& beacon_url,
                                        const GURL& collector_url) {

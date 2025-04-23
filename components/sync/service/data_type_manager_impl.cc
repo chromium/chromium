@@ -279,8 +279,8 @@ void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
   }
 
   if (state_ != STOPPED) {
-    DCHECK_EQ(context.authenticated_account_id,
-              last_requested_context_.authenticated_account_id);
+    DCHECK_EQ(context.authenticated_gaia_id,
+              last_requested_context_.authenticated_gaia_id);
     DCHECK_EQ(context.cache_guid, last_requested_context_.cache_guid);
   }
 
@@ -486,7 +486,7 @@ void DataTypeManagerImpl::Restart() {
   // restarts.
   if (reason == CONFIGURE_REASON_RECONFIGURATION ||
       reason == CONFIGURE_REASON_NEW_CLIENT ||
-      reason == CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE) {
+      reason == CONFIGURE_REASON_EXISTING_CLIENT_RESTART) {
     for (DataType type : preferred_types_) {
       UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypes",
                                 DataTypeHistogramValue(type));
@@ -896,14 +896,16 @@ DataTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {
 
 void DataTypeManagerImpl::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> callback) const {
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+    const {
   // NIGORI currently isn't supported, because its controller isn't managed by
   // DataTypeManager. If needed, support could be added via SyncEngine.
   CHECK(!requested_types.Has(NIGORI));
 
   if (requested_types.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), DataTypeSet()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  absl::flat_hash_map<DataType, size_t>()));
     return;
   }
 
@@ -913,13 +915,14 @@ void DataTypeManagerImpl::GetTypesWithUnsyncedData(
   for (DataType type : requested_types) {
     auto it = controllers_.find(type);
     if (it == controllers_.end()) {
-      // This should be rare, but can happen e.g. if a requested type is
-      // disabled via feature flag.
+      // This can happen if the requested data type is not supported on the
+      // current platform, or in some rare cases, for example, if the requested
+      // data type is disabled via feature flag.
       helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
       continue;
     }
     DataTypeController* controller = it->second.get();
-    controller->HasUnsyncedData(base::BindOnce(
+    controller->GetUnsyncedDataCount(base::BindOnce(
         &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
         helper, type));
   }

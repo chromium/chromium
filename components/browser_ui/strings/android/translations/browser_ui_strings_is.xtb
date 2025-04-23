@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Vefsvæði geta beðið um staðsetningarupplýsingar</translation>
 <translation id="3658847490588580244">Blað neðst í sjálfgefnum vafra</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}one{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}other{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}}</translation>
+<translation id="3670480940339182416">Vefsvæðum er heimilt að nota fínstillingu V8</translation>
 <translation id="3676777756440746804">Lokað er á að vefsvæði geti beðið um að fá að nota upplýsingar sem þau hafa vistað um þig</translation>
 <translation id="3697164069658504920">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota USB-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað USB-tæki.</translation>
+<translation id="3703430731944883733">Stjórna straumnum þínum</translation>
 <translation id="3707034683772193706">Vefsvæði sem þú heimsækir getur vistað lítið magn upplýsinga í Chrome, aðallega til að staðfesta að þú sért raunverulegur notandi</translation>
 <translation id="3708684582558000260">Ekki leyfa vefsvæðum sem er búið að loka að ljúka við að senda eða móttaka gögn</translation>
 <translation id="3709818294139939629">Aðgangur vefsvæðisins að skránni var fjarlægður</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Spyrja áður en vefsvæði fá að sjá og breyta upplýsingum í NFC-tækjum (ráðlagt)</translation>
 <translation id="4200726100658658164">Opna staðsetningarstillingar</translation>
 <translation id="421742575134139848">Vefsvæði gætu spilað hljóð til að þú heyrir tónlist og hljóð í myndskeiðum og öðru efni</translation>
+<translation id="4217710972110098902">Tengd við raðtengi</translation>
 <translation id="4226663524361240545">Tilkynningar gætu látið tækið titra</translation>
 <translation id="4259722352634471385">Lokað er fyrir skoðun: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Þegar þú ferð af vefsvæði getur það haldið áfram að samstilla til að ljúka verkefnum eins og að hlaða upp myndum eða senda spjallskilaboð</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
+<translation id="4578289292431526768">Hefjumst handa</translation>
 <translation id="4598549027014564149">Þegar þú ert í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, jafnvel tengdum vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="461356340001513807">Gerir þér kleift að skrá þig inn á vefsvæði með reikningi hjá auðkenningarþjónustu</translation>
 <translation id="4635969503923889910">Ekki leyfa vefsvæðum að nota NFC-tæki</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">Slökkt er á myndavél í stillingum Android</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
 <translation id="5706552988683188916">Þetta eyðir fótsporum og öðrum vefsvæðagögnum fyrir <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum</translation>
 <translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
 <translation id="5740126560802162366">Vefsvæði geta vistað gögn í tækinu þínu</translation>
+<translation id="5743425052258407233">Fáðu ferilinn þinn í öllum tækjunum þínum, svo þú getir auðveldlega haldið áfram þar sem frá var horfið</translation>
 <translation id="5750869797196646528">Rakning handahreyfinga</translation>
 <translation id="5771720122942595109">Lokað er fyrir <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Heimildir</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5876056640971328065">Gera hlé á spilun</translation>
 <translation id="5877248419911025165">Minnka allar beiðnir</translation>
+<translation id="5878945009165002849">Útiloka innskráningartilkynningar frá auðkenningarþjónustum</translation>
 <translation id="5884085660368669834">Stilling vefsvæðis</translation>
 <translation id="5887687176710214216">Síðast opnað í gær</translation>
 <translation id="5908617755156109052">Ekki leyfa vefsvæðum að búa til þrívíddarkort af umhverfi þínu eða rekja stöðu myndavélar</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6320088164292336938">Titringur</translation>
-<translation id="6344622098450209924">Rakningarvörn</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="640163077447496506">Rennur út í dag</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Afturkalla tækjaheimild</translation>
 <translation id="8471525937465764768">Vefsvæði tengjast yfirleitt USB-tækjum til að nota eiginleika eins og að prenta skjal eða vista í geymslutæki</translation>
 <translation id="8473055640493819707">„<ph name="APP_NAME" />“ er úrelt. Settu forritið aftur upp.</translation>
+<translation id="847433688444405067">Skoðaðu á milli tækja</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="848952951823693243">Biðja alltaf um símaútgáfu vefsvæða</translation>
 <translation id="8492822722330266509">Vefsvæði geta sent sprettiglugga og notað framsendingu</translation>

@@ -19,7 +19,7 @@ using BackgroundScriptsManifestTest = ChromeManifestTest;
 
 TEST_F(BackgroundScriptsManifestTest, FailLoadingNonJsScripts) {
   scoped_refptr<Extension> extension = LoadAndExpectWarning(
-      "background_bad_mime_type_manifest.json",
+      "mime_type/bad_background_script.json",
       ErrorUtils::FormatErrorMessage(errors::kInvalidBackgroundScriptMimeType,
                                      base::NumberToString(0)));
   EXPECT_FALSE(BackgroundInfo::HasPersistentBackgroundPage(extension.get()));

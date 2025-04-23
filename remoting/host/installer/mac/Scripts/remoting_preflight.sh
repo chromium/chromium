@@ -80,9 +80,6 @@ if [[ -f "$OLD_SCRIPT_FILE" ]]; then
   cp "$OLD_SCRIPT_FILE" "$INSTALLER_TEMP/script_backup"
 fi
 
-logger Unloading broker service
-launchctl unload -w $BROKER_PLIST
-
 # Stop and unload the service for each user currently running the service, and
 # record the user IDs so the service can be restarted for the same users in the
 # postflight script.
@@ -123,6 +120,9 @@ for uid in $(find_users_with_active_hosts); do
     $bootstrap_user $sudo_user $unload
   fi
 done
+
+logger Unloading broker service
+launchctl unload -w $BROKER_PLIST
 
 # The installer no longer includes a preference-pane applet, so remove any
 # pref-pane from a previous installation.

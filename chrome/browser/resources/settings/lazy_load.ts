@@ -28,6 +28,7 @@ import './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 import './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
 import './privacy_sandbox/privacy_sandbox_interest_item.js';
 import './privacy_sandbox/privacy_sandbox_page.js';
+import './privacy_page/incognito_tracking_protections_page.js';
 import './privacy_sandbox/privacy_sandbox_manage_topics_subpage.js';
 import './privacy_sandbox/privacy_sandbox_topics_subpage.js';
 import './privacy_page/security_keys_subpage.js';
@@ -259,8 +260,7 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
-export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, SmartCardReaderGrants, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
-export {SmartCardReaderOriginEntryElement} from './site_settings/smart_card_reader_origin_entry.js';
+export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
 export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
@@ -270,6 +270,7 @@ export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
+export {IncognitoTrackingProtectionsPageElement} from './privacy_page/incognito_tracking_protections_page.js';
 // <if expr="not chromeos_ash">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';

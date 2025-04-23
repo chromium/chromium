@@ -93,7 +93,7 @@ const gfx::ImageSkia& MakeShadowImageOnce(
   // Resolve the color with color type.
   const SkColor color = params.color.GetSkColor()
                             ? *params.color.GetSkColor()
-                            : params.color.ConvertToSkColor(color_provider);
+                            : params.color.ResolveToSkColor(color_provider);
 
   // Generate the shadow features key.
   const ShadowFeaturesKey features_key{ShadowImageSize(params),

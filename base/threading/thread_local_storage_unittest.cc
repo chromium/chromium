@@ -190,7 +190,7 @@ class UseTLSDuringDestructionRunner {
 
   static base::ThreadLocalStorage::Slot slot_;
   bool teardown_works_correctly_ = false;
-  TLSState tls_states_[kKeyCount];
+  std::array<TLSState, kKeyCount> tls_states_;
 };
 
 base::ThreadLocalStorage::Slot UseTLSDuringDestructionRunner::slot_;

@@ -1345,8 +1345,8 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
 }
 
 // TODO(crbug.com/40601162): Times out in debug builds.
-// TODO(crbug.com/40916095, crbug.com/348996697): Test flakiness.
-#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40916095): Test flakiness.
+#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #else
 #define MAYBE_MultipleCdmTypes MultipeCdmTypes

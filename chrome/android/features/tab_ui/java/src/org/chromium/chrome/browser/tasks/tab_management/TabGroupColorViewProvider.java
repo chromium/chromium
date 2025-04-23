@@ -27,6 +27,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -165,40 +166,41 @@ public class TabGroupColorViewProvider implements Destroyable {
         assert drawable != null;
 
         final @ColorInt int fillColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, mColorId, mIsIncognito);
         drawable.setColor(fillColor);
 
-        boolean isColorDot = mSharedImageTilesCoordinator == null;
-
         Resources res = mContext.getResources();
-        float radius =
-                isColorDot
-                        ? res.getDimension(R.dimen.tab_group_color_icon_item_radius)
-                        : res.getDimension(R.dimen.tab_group_color_icon_with_avatar_item_radius);
+        final float radius;
+        final @Px int size;
+        if (mSharedImageTilesCoordinator == null) {
+            size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_item_size);
+            radius = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
+        } else {
+            SharedImageTilesConfig config =
+                    mSharedImageTilesConfigBuilder.setTabGroupColor(mContext, mColorId).build();
+
+            mSharedImageTilesCoordinator.updateConfig(config);
+
+            final @Px int stroke = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
+            size = config.getBorderAndTotalIconSizes(res).second + 2 * stroke;
+            // Ceiling division does not exist in the Math package; although there is a JDK proposal
+            // for it to be added. Ceiling division is required here to ensure the radius is >= half
+            // the size.
+            int divCeilRadius = (size + 1) / 2;
+            radius = divCeilRadius;
+        }
+
         float[] radii = new float[8];
         Arrays.fill(radii, radius);
         drawable.setCornerRadii(radii);
 
-        @Px
-        int size =
-                isColorDot
-                        ? res.getDimensionPixelSize(R.dimen.tab_group_color_icon_item_size)
-                        : res.getDimensionPixelSize(
-                                R.dimen.tab_group_color_icon_with_avatar_item_size);
         if (mFrameLayout.getMinimumWidth() != size) {
             mFrameLayout.setMinimumWidth(size);
             mFrameLayout.setMinimumHeight(size);
         }
 
         mFrameLayout.invalidate();
-
-        if (mSharedImageTilesCoordinator != null) {
-            int tabGroupColor =
-                    ColorPickerUtils.getTabGroupColorPickerItemColor(
-                            mContext, mColorId, mIsIncognito);
-            mSharedImageTilesCoordinator.updateConfig(
-                    mSharedImageTilesConfigBuilder.setTabGroupColor(tabGroupColor).build());
-        }
     }
 
     private void maybeCreateAndAttachSharedImageTiles() {
@@ -221,11 +223,8 @@ public class TabGroupColorViewProvider implements Destroyable {
                 mTransitiveSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
-        @ColorInt
-        int tabGroupColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
         mSharedImageTilesConfigBuilder =
-                SharedImageTilesConfig.Builder.createThumbnail(mContext, tabGroupColor);
+                SharedImageTilesConfig.Builder.createThumbnail(mContext, mColorId);
 
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
@@ -242,8 +241,7 @@ public class TabGroupColorViewProvider implements Destroyable {
                         FrameLayout.LayoutParams.WRAP_CONTENT);
         // Margin is required to properly center the view. Using gravity results in inconsistent
         // behaviors between devices.
-        @Px
-        int margin =
+        final @Px int margin =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
         params.setMarginStart(margin);
         params.topMargin = margin;

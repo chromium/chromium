@@ -27,7 +27,7 @@ FilteringNetworkManager::FilteringNetworkManager(
 // Doing so would bind its WeakFactory to the constructing thread (main thread)
 // instead of the thread `this` lives in (signaling thread).
 FilteringNetworkManager::FilteringNetworkManager(
-    base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+    base::WeakPtr<webrtc::NetworkManager> network_manager_for_signaling_thread,
     media::MediaPermission* media_permission,
     bool allow_mdns_obfuscation)
     : network_manager_for_signaling_thread_(
@@ -55,7 +55,7 @@ base::WeakPtr<FilteringNetworkManager> FilteringNetworkManager::GetWeakPtr() {
 }
 
 void FilteringNetworkManager::Initialize() {
-  rtc::NetworkManagerBase::Initialize();
+  webrtc::NetworkManagerBase::Initialize();
   if (media_permission_)
     CheckPermission();
 }
@@ -93,13 +93,14 @@ void FilteringNetworkManager::StopUpdating() {
   --start_count_;
 }
 
-std::vector<const rtc::Network*> FilteringNetworkManager::GetNetworks() const {
+std::vector<const webrtc::Network*> FilteringNetworkManager::GetNetworks()
+    const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<const rtc::Network*> networks;
+  std::vector<const webrtc::Network*> networks;
 
   if (enumeration_permission() == ENUMERATION_ALLOWED) {
-    for (const rtc::Network* network : GetNetworksInternal()) {
-      networks.push_back(const_cast<rtc::Network*>(network));
+    for (const webrtc::Network* network : GetNetworksInternal()) {
+      networks.push_back(const_cast<webrtc::Network*>(network));
     }
   }
 
@@ -168,8 +169,8 @@ void FilteringNetworkManager::OnNetworksChanged() {
   pending_network_update_ = false;
 
   // Update the default local addresses.
-  rtc::IPAddress ipv4_default;
-  rtc::IPAddress ipv6_default;
+  webrtc::IPAddress ipv4_default;
+  webrtc::IPAddress ipv6_default;
   network_manager_for_signaling_thread_->GetDefaultLocalAddress(AF_INET,
                                                                 &ipv4_default);
   network_manager_for_signaling_thread_->GetDefaultLocalAddress(AF_INET6,
@@ -178,12 +179,12 @@ void FilteringNetworkManager::OnNetworksChanged() {
 
   // Copy and merge the networks. Fire a signal if the permission status is
   // known.
-  std::vector<const rtc::Network*> networks =
+  std::vector<const webrtc::Network*> networks =
       network_manager_for_signaling_thread_->GetNetworks();
-  std::vector<std::unique_ptr<rtc::Network>> copied_networks;
+  std::vector<std::unique_ptr<webrtc::Network>> copied_networks;
   copied_networks.reserve(networks.size());
-  for (const rtc::Network* network : networks) {
-    auto copied_network = std::make_unique<rtc::Network>(*network);
+  for (const webrtc::Network* network : networks) {
+    auto copied_network = std::make_unique<webrtc::Network>(*network);
     copied_network->set_default_local_address_provider(this);
     copied_network->set_mdns_responder_provider(this);
     copied_networks.push_back(std::move(copied_network));

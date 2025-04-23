@@ -11,9 +11,6 @@ struct AlertBridgeInitParams {
   mojo_base.mojom.String16 title;
   mojo_base.mojom.String16 message_text;
 
-  // Set if the application icon should be hidden.
-  bool hide_application_icon;
-
   // Text for the primary button (which is also the default button).
   mojo_base.mojom.String16 primary_button_text;
 

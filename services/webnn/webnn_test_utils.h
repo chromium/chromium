@@ -388,7 +388,6 @@ class GraphInfoBuilder final {
   //  std::optional<uint64_t> scale_operand_id;
   //  std::optional<uint64_t> bias_operand_id;
   //  float epsilon = 1e-5;
-  //  mojom::InputOperandLayout input_layout;
   // };
   template <typename InstanceNormalizationAttributes>
   void BuildInstanceNormalization(
@@ -402,7 +401,6 @@ class GraphInfoBuilder final {
 
     instance_normalization->scale_operand_id = attributes.scale_operand_id;
     instance_normalization->bias_operand_id = attributes.bias_operand_id;
-    instance_normalization->layout = attributes.layout;
     instance_normalization->epsilon = attributes.epsilon;
 
     graph_info_->operations.push_back(

@@ -20,5 +20,6 @@ source_set("experimental_ai_data") {
     "//chrome/browser/ai",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
+    "//pdf/mojom",
   ]
 }

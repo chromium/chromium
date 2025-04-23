@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -103,8 +105,8 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
   CHECK(!expect_fallback_to_rgb_);
   if (image_backing_memory_.empty())
     return false;
-  size_t plane_sizes[SkYUVAInfo::kMaxPlanes];
-  yuva_pixmap_info_.computeTotalBytes(plane_sizes);
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_sizes;
+  yuva_pixmap_info_.computeTotalBytes(plane_sizes.data());
   uint8_t* src_plane_memory = image_backing_memory_.data();
   int num_planes = pixmaps.numPlanes();
   for (int i = 0; i < num_planes; ++i) {

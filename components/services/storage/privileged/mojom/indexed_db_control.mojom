@@ -18,16 +18,10 @@ import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
-// Recorded in histograms, so append only.
 enum ForceCloseReason {
   FORCE_CLOSE_DELETE_ORIGIN = 0,
   FORCE_CLOSE_BACKING_STORE_FAILURE = 1,
   FORCE_CLOSE_INTERNALS_PAGE = 2,
-  FORCE_CLOSE_COPY_ORIGIN = 3,
-
-  // Deprecated: FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
-  // Append new values here and update IDBContextForcedCloseReason in
-  // enums.xml.
 };
 
 // Communicates with IndexedDB clients about changes in IndexedDB. These clients
@@ -101,5 +95,5 @@ interface IndexedDBControl {
 
   // Binds the testing interface for extra functionality only available in
   // tests.
-  BindTestInterface(pending_receiver<IndexedDBControlTest> receiver);
+  BindTestInterfaceForTesting(pending_receiver<IndexedDBControlTest> receiver);
 };

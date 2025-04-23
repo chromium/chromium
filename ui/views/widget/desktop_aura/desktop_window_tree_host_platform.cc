@@ -328,6 +328,9 @@ void DesktopWindowTreeHostPlatform::OnWidgetInitDone() {
       GetWindowMaskForClipping().isEmpty());
 }
 
+void DesktopWindowTreeHostPlatform::OnWidgetThemeChanged(
+    ui::ColorProviderKey::ColorMode color_mode) {}
+
 void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
 #if BUILDFLAG(IS_OZONE)
   // When bubbles are accelerated widgets, `window_children_` can contain a

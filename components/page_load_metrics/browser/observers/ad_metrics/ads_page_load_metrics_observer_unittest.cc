@@ -29,6 +29,7 @@
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
@@ -3562,7 +3563,7 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
         {
             {blink::features::kFencedFrames,
              {{"implementation_type", "mparch"}}},
-            {::features::kV8PerFrameMemoryMonitoring, {}},
+            {page_load_metrics::features::kV8PerFrameMemoryMonitoring, {}},
         },
         {});
   }

@@ -246,5 +246,3 @@ void AnnotationsTabHelper::ProcessAnnotations(
   base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
                               detected_measurements);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)

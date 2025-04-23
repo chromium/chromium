@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
@@ -53,30 +51,9 @@ class WifiP2PControllerTest : public ::testing::Test {
     shill_clients::Shutdown();
   }
 
-  void Init(bool enable_flag = true) {
-    if (enable_flag) {
-      feature_list_.InitAndEnableFeature(features::kWifiDirect);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kWifiDirect);
-    }
+  void Init() {
     WifiP2PController::Initialize();
     base::RunLoop().RunUntilIdle();
-  }
-
-  void OnGetManagerCallback(const std::string& property_name,
-                            bool expected_value,
-                            std::optional<base::Value::Dict> result) {
-    if (!result) {
-      ADD_FAILURE() << "Error getting Shill manager properties";
-      return;
-    }
-    std::optional<bool> actual_value = result->FindBool(property_name);
-    if (!actual_value) {
-      ADD_FAILURE()
-          << "Error getting TetheringAllowed in Shill manager properties";
-      return;
-    }
-    EXPECT_EQ(expected_value, *actual_value);
   }
 
   WifiP2POperationTestResult CreateP2PGroup(
@@ -155,24 +132,30 @@ class WifiP2PControllerTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WifiP2PControllerTest, FeatureEnabled) {
   Init();
+  base::RunLoop run_loop;
   ShillManagerClient::Get()->GetProperties(
-      base::BindOnce(&WifiP2PControllerTest::OnGetManagerCallback,
-                     base::Unretained(this), shill::kP2PAllowedProperty,
-                     /*expected_value=*/true));
-}
-
-TEST_F(WifiP2PControllerTest, FeatureDisabled) {
-  Init(/*enable_flag=*/false);
-  ShillManagerClient::Get()->GetProperties(
-      base::BindOnce(&WifiP2PControllerTest::OnGetManagerCallback,
-                     base::Unretained(this), shill::kP2PAllowedProperty,
-                     /*expected_value=*/false));
+      base::BindLambdaForTesting([&](std::optional<base::Value::Dict> result) {
+        if (!result) {
+          ADD_FAILURE() << "Error getting Shill manager properties";
+          run_loop.Quit();
+          return;
+        }
+        std::optional<bool> p2p_allowed =
+            result->FindBool(shill::kP2PAllowedProperty);
+        if (!p2p_allowed) {
+          ADD_FAILURE()
+              << "Error getting TetheringAllowed in Shill manager properties";
+        } else {
+          EXPECT_EQ(true, *p2p_allowed);
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(WifiP2PControllerTest, CreateP2PGroupWithCredentials_Success) {

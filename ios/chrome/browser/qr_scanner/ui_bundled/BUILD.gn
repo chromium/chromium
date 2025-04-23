@@ -83,6 +83,7 @@ source_set("eg_app_support+eg2") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/location_bar/ui_bundled",
+    "//ios/chrome/browser/location_bar/ui_bundled:protocols",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/scanner/ui_bundled:camera_state",

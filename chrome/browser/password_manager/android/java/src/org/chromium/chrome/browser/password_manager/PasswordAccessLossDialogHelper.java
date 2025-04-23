@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 
 import android.content.Context;
 
@@ -111,9 +110,7 @@ public class PasswordAccessLossDialogHelper {
             PrefService prefService) {
         // TODO(crbug.com/323149739): Enable the access loss warning feature flag in
         //  SafetyCheckMediatorTest and PasswordManagerHelperTest in all tests before launch.
-        if (!ChromeFeatureList.isEnabled(
-                        UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-                || ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)) {
             // If the login db deprecation has started, the warning is no longer relevant.
             return PasswordAccessLossWarningType.NONE;
         }

@@ -104,9 +104,6 @@ public class ExpandablePaymentHandlerTest {
                             .value(ServerCertificate.CERT_SHA1_LEAF)
                             .name("CERT_SHA1_LEAF"),
                     new ParameterSet()
-                            .value(ServerCertificate.CERT_BAD_VALIDITY)
-                            .name("CERT_BAD_VALIDITY"),
-                    new ParameterSet()
                             .value(ServerCertificate.CERT_TEST_NAMES)
                             .name("CERT_TEST_NAMES"));
         }

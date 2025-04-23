@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/singleton_tabs.h"
 
-#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -14,19 +14,26 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/web_contents.h"
-
 namespace {
 
 // Returns true if two URLs are equal after taking |replacements| into account.
 bool CompareURLsWithReplacements(const GURL& url,
                                  const GURL& other,
                                  const GURL::Replacements& replacements,
-                                 ChromeAutocompleteProviderClient* client) {
+                                 TemplateURLService* template_url_service) {
   GURL url_replaced = url.ReplaceComponents(replacements);
   GURL other_replaced = other.ReplaceComponents(replacements);
-  return client->StrippedURLsAreEqual(url_replaced, other_replaced, nullptr);
+  AutocompleteInput input;
+  return AutocompleteMatch::GURLToStrippedGURL(
+             url_replaced, input, template_url_service, std::u16string(),
+             /*keep_search_intent_params=*/false) ==
+         AutocompleteMatch::GURLToStrippedGURL(
+             other_replaced, input, template_url_service, std::u16string(),
+             /*keep_search_intent_params=*/false);
 }
 
 }  // namespace
@@ -110,7 +117,8 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
       &rewritten_url, browser->profile());
 
-  ChromeAutocompleteProviderClient client(browser->profile());
+  TemplateURLService* turl_service =
+      TemplateURLServiceFactory::GetForProfile(browser->profile());
   // If there are several matches: prefer the active tab by starting there.
   int start_index = std::max(0, browser->tab_strip_model()->active_index());
   int tab_count = browser->tab_strip_model()->count();
@@ -140,9 +148,9 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
     }
 
     if (CompareURLsWithReplacements(tab_url, params.url, replacements,
-                                    &client) ||
+                                    turl_service) ||
         CompareURLsWithReplacements(rewritten_tab_url, rewritten_url,
-                                    replacements, &client)) {
+                                    replacements, turl_service)) {
       return tab_index;
     }
   }

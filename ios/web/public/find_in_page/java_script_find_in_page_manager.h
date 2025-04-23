@@ -26,8 +26,6 @@ class JavaScriptFindInPageManager
   JavaScriptFindInPageManager& operator=(const JavaScriptFindInPageManager&) =
       delete;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  protected:
   ~JavaScriptFindInPageManager() override = default;
 };

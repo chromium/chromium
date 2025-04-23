@@ -12,6 +12,7 @@
 #include <va/va_backend.h>
 #include <va/va_drmcommon.h>
 
+#include <array>
 #include <set>
 
 #include "base/check.h"
@@ -38,7 +39,7 @@ struct Capability {
   int num_attribs;
   VAConfigAttrib attrib_list[MAX_CAPABILITY_ATTRIBUTES];
 };
-const struct Capability kCapabilities[] = {
+const auto kCapabilities = std::to_array<Capability>({
     {VAProfileH264ConstrainedBaseline,
      VAEntrypointVLD,
      1,
@@ -174,10 +175,12 @@ const struct Capability kCapabilities[] = {
          {VAConfigAttribRateControl, VA_RC_CQP | VA_RC_CBR},
          {VAConfigAttribEncPackedHeaders, VA_ENC_PACKED_HEADER_NONE},
          {VAConfigAttribEncMaxRefFrames, 1},
-     }}};
+     }},
+});
 
 const size_t kCapabilitiesSize =
-    sizeof(kCapabilities) / sizeof(struct Capability);
+    (kCapabilities.size() * sizeof(decltype(kCapabilities)::value_type)) /
+    sizeof(struct Capability);
 
 /**
  * Original comment:

@@ -277,6 +277,7 @@
 #include "content/public/common/main_function_params.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "extensions/common/switches.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_passive.h"
 #include "printing/backend/print_backend.h"
@@ -539,9 +540,7 @@ class DBusServices {
 
     disks::DiskMountManager::Initialize();
 
-    if (ash::features::IsWifiDirectEnabled()) {
-      WifiP2PController::Initialize();
-    }
+    WifiP2PController::Initialize();
     NetworkHandler::Initialize();
 
     chromeos::sensors::SensorHalDispatcher::Initialize();
@@ -573,9 +572,7 @@ class DBusServices {
     rollback_network_config::Shutdown();
     chromeos::sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
-    if (ash::features::IsWifiDirectEnabled()) {
-      WifiP2PController::Shutdown();
-    }
+    WifiP2PController::Shutdown();
     disks::DiskMountManager::Shutdown();
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();
@@ -672,7 +669,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   if (command_line->HasSwitch(switches::kGuestSession)) {
     // Disable sync and extensions if we're in "browse without sign-in" mode.
     command_line->AppendSwitch(::syncer::kDisableSync);
-    command_line->AppendSwitch(::switches::kDisableExtensions);
+    command_line->AppendSwitch(extensions::switches::kDisableExtensions);
     browser_defaults::bookmarks_enabled = false;
   }
 

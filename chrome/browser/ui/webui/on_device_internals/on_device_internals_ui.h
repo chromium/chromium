@@ -13,6 +13,8 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace on_device_internals {
+
 class OnDeviceInternalsUI;
 
 // WebUIConfig for chrome://on-device-internals
@@ -28,7 +30,7 @@ class OnDeviceInternalsUIConfig
 
 // A dev UI for testing the OnDeviceModelService.
 class OnDeviceInternalsUI : public ui::MojoWebUIController,
-                            public mojom::OnDeviceInternalsPageHandlerFactory {
+                            public mojom::PageHandlerFactory {
  public:
   explicit OnDeviceInternalsUI(content::WebUI* web_ui);
   ~OnDeviceInternalsUI() override;
@@ -36,22 +38,20 @@ class OnDeviceInternalsUI : public ui::MojoWebUIController,
   OnDeviceInternalsUI(const OnDeviceInternalsUI&) = delete;
   OnDeviceInternalsUI& operator=(const OnDeviceInternalsUI&) = delete;
 
-  void BindInterface(
-      mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandlerFactory>
-          receiver);
+  void BindInterface(mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
 
  private:
-  // mojom::OnDeviceInternalsPageHandlerFactory:
+  // mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<mojom::OnDeviceInternalsPage> page,
-      mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandler> receiver)
-      override;
+      mojo::PendingRemote<mojom::Page> page,
+      mojo::PendingReceiver<mojom::PageHandler> receiver) override;
 
-  std::unique_ptr<mojom::OnDeviceInternalsPageHandler> page_handler_;
-  mojo::Receiver<mojom::OnDeviceInternalsPageHandlerFactory>
-      page_factory_receiver_{this};
+  std::unique_ptr<mojom::PageHandler> page_handler_;
+  mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
+
+}  // namespace on_device_internals
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_UI_H_

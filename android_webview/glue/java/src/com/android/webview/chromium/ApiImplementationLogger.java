@@ -255,7 +255,7 @@ public final class ApiImplementationLogger {
         WebChromeClientMethod.ONRECEIVEDTOUCHICONURL_WEBVIEW_STRING_BOOLEAN,
         WebChromeClientMethod.ONSHOWCUSTOMVIEW_VIEW_CUSTOMVIEWCALLBACK,
         WebChromeClientMethod.ONSHOWCUSTOMVIEW_VIEW_INT_CUSTOMVIEWCALLBACK,
-        WebChromeClientMethod.ONHIDECUSTOMVIEW_,
+        WebChromeClientMethod.ONHIDECUSTOMVIEW,
         WebChromeClientMethod.ONCREATEWINDOW_WEBVIEW_BOOLEAN_BOOLEAN_MESSAGE,
         WebChromeClientMethod.ONREQUESTFOCUS_WEBVIEW,
         WebChromeClientMethod.ONCLOSEWINDOW_WEBVIEW,
@@ -266,14 +266,14 @@ public final class ApiImplementationLogger {
         WebChromeClientMethod.ONEXCEEDEDDATABASEQUOTA_STRING_STRING_LONG_LONG_LONG_QUOTAUPDATER,
         WebChromeClientMethod.ONREACHEDMAXAPPCACHESIZE_LONG_LONG_QUOTAUPDATER,
         WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSSHOWPROMPT_STRING_CALLBACK,
-        WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT_,
+        WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT,
         WebChromeClientMethod.ONPERMISSIONREQUEST_PERMISSIONREQUEST,
         WebChromeClientMethod.ONPERMISSIONREQUESTCANCELED_PERMISSIONREQUEST,
-        WebChromeClientMethod.ONJSTIMEOUT_,
+        WebChromeClientMethod.ONJSTIMEOUT,
         WebChromeClientMethod.ONCONSOLEMESSAGE_STRING_INT_STRING,
         WebChromeClientMethod.ONCONSOLEMESSAGE_CONSOLEMESSAGE,
-        WebChromeClientMethod.GETDEFAULTVIDEOPOSTER_,
-        WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW_,
+        WebChromeClientMethod.GETDEFAULTVIDEOPOSTER,
+        WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW,
         WebChromeClientMethod.GETVISITEDHISTORY_VALUECALLBACK,
         WebChromeClientMethod.ONSHOWFILECHOOSER_WEBVIEW_VALUECALLBACK_FILECHOOSERPARAMS,
         WebChromeClientMethod.OPENFILECHOOSER_VALUECALLBACK_STRING_STRING,
@@ -289,7 +289,7 @@ public final class ApiImplementationLogger {
         int ONRECEIVEDTOUCHICONURL_WEBVIEW_STRING_BOOLEAN = 4;
         int ONSHOWCUSTOMVIEW_VIEW_CUSTOMVIEWCALLBACK = 5;
         int ONSHOWCUSTOMVIEW_VIEW_INT_CUSTOMVIEWCALLBACK = 6;
-        int ONHIDECUSTOMVIEW_ = 7;
+        int ONHIDECUSTOMVIEW = 7;
         int ONCREATEWINDOW_WEBVIEW_BOOLEAN_BOOLEAN_MESSAGE = 8;
         int ONREQUESTFOCUS_WEBVIEW = 9;
         int ONCLOSEWINDOW_WEBVIEW = 10;
@@ -305,14 +305,14 @@ public final class ApiImplementationLogger {
         @Deprecated int ONREACHEDMAXAPPCACHESIZE_LONG_LONG_QUOTAUPDATER = 16;
 
         int ONGEOLOCATIONPERMISSIONSSHOWPROMPT_STRING_CALLBACK = 17;
-        int ONGEOLOCATIONPERMISSIONSHIDEPROMPT_ = 18;
+        int ONGEOLOCATIONPERMISSIONSHIDEPROMPT = 18;
         int ONPERMISSIONREQUEST_PERMISSIONREQUEST = 19;
         int ONPERMISSIONREQUESTCANCELED_PERMISSIONREQUEST = 20;
-        int ONJSTIMEOUT_ = 21;
+        int ONJSTIMEOUT = 21;
         int ONCONSOLEMESSAGE_STRING_INT_STRING = 22;
         int ONCONSOLEMESSAGE_CONSOLEMESSAGE = 23;
-        int GETDEFAULTVIDEOPOSTER_ = 24;
-        int GETVIDEOLOADINGPROGRESSVIEW_ = 25;
+        int GETDEFAULTVIDEOPOSTER = 24;
+        int GETVIDEOLOADINGPROGRESSVIEW = 25;
         int GETVISITEDHISTORY_VALUECALLBACK = 26;
         int ONSHOWFILECHOOSER_WEBVIEW_VALUECALLBACK_FILECHOOSERPARAMS = 27;
         int OPENFILECHOOSER_VALUECALLBACK_STRING_STRING = 28;
@@ -344,7 +344,7 @@ public final class ApiImplementationLogger {
                     + "android.view.View,int,android.webkit.WebChromeClient$CustomViewCallback)":
                 return WebChromeClientMethod.ONSHOWCUSTOMVIEW_VIEW_INT_CUSTOMVIEWCALLBACK;
             case "public void" + " android.webkit.WebChromeClient.onHideCustomView()":
-                return WebChromeClientMethod.ONHIDECUSTOMVIEW_;
+                return WebChromeClientMethod.ONHIDECUSTOMVIEW;
             case "public boolean android.webkit.WebChromeClient.onCreateWindow("
                     + "android.webkit.WebView,boolean,boolean,android.os.Message)":
                 return WebChromeClientMethod.ONCREATEWINDOW_WEBVIEW_BOOLEAN_BOOLEAN_MESSAGE;
@@ -383,7 +383,7 @@ public final class ApiImplementationLogger {
                 return WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSSHOWPROMPT_STRING_CALLBACK;
             case "public void"
                     + " android.webkit.WebChromeClient.onGeolocationPermissionsHidePrompt()":
-                return WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT_;
+                return WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT;
             case "public void android.webkit.WebChromeClient.onPermissionRequest("
                     + "android.webkit.PermissionRequest)":
                 return WebChromeClientMethod.ONPERMISSIONREQUEST_PERMISSIONREQUEST;
@@ -391,7 +391,7 @@ public final class ApiImplementationLogger {
                     + "android.webkit.PermissionRequest)":
                 return WebChromeClientMethod.ONPERMISSIONREQUESTCANCELED_PERMISSIONREQUEST;
             case "public boolean" + " android.webkit.WebChromeClient.onJsTimeout()":
-                return WebChromeClientMethod.ONJSTIMEOUT_;
+                return WebChromeClientMethod.ONJSTIMEOUT;
             case "public void android.webkit.WebChromeClient.onConsoleMessage("
                     + "java.lang.String,int,java.lang.String)":
                 return WebChromeClientMethod.ONCONSOLEMESSAGE_STRING_INT_STRING;
@@ -400,10 +400,10 @@ public final class ApiImplementationLogger {
                 return WebChromeClientMethod.ONCONSOLEMESSAGE_CONSOLEMESSAGE;
             case "public android.graphics.Bitmap"
                     + " android.webkit.WebChromeClient.getDefaultVideoPoster()":
-                return WebChromeClientMethod.GETDEFAULTVIDEOPOSTER_;
+                return WebChromeClientMethod.GETDEFAULTVIDEOPOSTER;
             case "public android.view.View"
                     + " android.webkit.WebChromeClient.getVideoLoadingProgressView()":
-                return WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW_;
+                return WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW;
             case "public void android.webkit.WebChromeClient.getVisitedHistory("
                     + "android.webkit.ValueCallback)":
                 return WebChromeClientMethod.GETVISITEDHISTORY_VALUECALLBACK;
@@ -445,7 +445,7 @@ public final class ApiImplementationLogger {
                     WebChromeClientMethod.ONRECEIVEDTOUCHICONURL_WEBVIEW_STRING_BOOLEAN,
                     WebChromeClientMethod.ONSHOWCUSTOMVIEW_VIEW_CUSTOMVIEWCALLBACK,
                     WebChromeClientMethod.ONSHOWCUSTOMVIEW_VIEW_INT_CUSTOMVIEWCALLBACK,
-                    WebChromeClientMethod.ONHIDECUSTOMVIEW_,
+                    WebChromeClientMethod.ONHIDECUSTOMVIEW,
                     WebChromeClientMethod.ONCREATEWINDOW_WEBVIEW_BOOLEAN_BOOLEAN_MESSAGE,
                     WebChromeClientMethod.ONREQUESTFOCUS_WEBVIEW,
                     WebChromeClientMethod.ONCLOSEWINDOW_WEBVIEW,
@@ -456,14 +456,14 @@ public final class ApiImplementationLogger {
                     WebChromeClientMethod
                             .ONEXCEEDEDDATABASEQUOTA_STRING_STRING_LONG_LONG_LONG_QUOTAUPDATER,
                     WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSSHOWPROMPT_STRING_CALLBACK,
-                    WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT_,
+                    WebChromeClientMethod.ONGEOLOCATIONPERMISSIONSHIDEPROMPT,
                     WebChromeClientMethod.ONPERMISSIONREQUEST_PERMISSIONREQUEST,
                     WebChromeClientMethod.ONPERMISSIONREQUESTCANCELED_PERMISSIONREQUEST,
-                    WebChromeClientMethod.ONJSTIMEOUT_,
+                    WebChromeClientMethod.ONJSTIMEOUT,
                     WebChromeClientMethod.ONCONSOLEMESSAGE_STRING_INT_STRING,
                     WebChromeClientMethod.ONCONSOLEMESSAGE_CONSOLEMESSAGE,
-                    WebChromeClientMethod.GETDEFAULTVIDEOPOSTER_,
-                    WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW_,
+                    WebChromeClientMethod.GETDEFAULTVIDEOPOSTER,
+                    WebChromeClientMethod.GETVIDEOLOADINGPROGRESSVIEW,
                     WebChromeClientMethod.GETVISITEDHISTORY_VALUECALLBACK,
                     WebChromeClientMethod.ONSHOWFILECHOOSER_WEBVIEW_VALUECALLBACK_FILECHOOSERPARAMS,
                     WebChromeClientMethod.OPENFILECHOOSER_VALUECALLBACK_STRING_STRING,

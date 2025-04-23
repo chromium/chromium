@@ -39,7 +39,7 @@ class SolidBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override {
     // Fill the background. Note that we don't constrain to the bounds as
     // canvas is already clipped for us.
-    canvas->DrawColor(color().ConvertToSkColor(view->GetColorProvider()));
+    canvas->DrawColor(color().ResolveToSkColor(view->GetColorProvider()));
   }
 
   void OnViewThemeChanged(View* view) override {
@@ -75,7 +75,7 @@ class RoundedRectBackground : public Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
     canvas->DrawPath(path, flags);
   }
 

@@ -11,11 +11,13 @@
 #import <memory>
 #import <unordered_map>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
+class ProfileIOS;
 class PushNotificationClient;
 
 // A PushNotificationClientManager maintains a list of push notification enabled
@@ -24,9 +26,15 @@ class PushNotificationClient;
 // the notification. The PushNotificationClientManager routes each notification
 // to its appropriate PushNotificationClient based on the incoming
 // notification's `push_notification_client_id` property.
-// TODO(crbug.com/325254943): Inject a profile to pass in to clients.
 class PushNotificationClientManager {
  public:
+  // Creates a Profile-scoped PushNotificationClientManager for notification
+  // clients that require a Profile-specific context.
+  explicit PushNotificationClientManager(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ProfileIOS* profile);
+  // Creates an app-scoped PushNotificationClientManager for notification
+  // clients that operate independently of any specific Profile context.
   explicit PushNotificationClientManager(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~PushNotificationClientManager();
@@ -66,15 +74,14 @@ class PushNotificationClientManager {
   // during application startup.
   void RegisterActionableNotifications();
 
+  // Returns the client that can handle events related to the given
+  // `notification`.
+  PushNotificationClient* GetClientForNotification(
+      UNNotification* notification);
+
   // This function returns a list of `PushNotificationClientId` for the features
   // that support push notifications.
   static std::vector<PushNotificationClientId> GetClients();
-
-  // This function returns a the `client_id`'s string representation which is
-  // used to store the client's push notification permission settings in the
-  // pref service and preference key on the push notification server.
-  static std::string PushNotificationClientIdToString(
-      PushNotificationClientId client_id);
 
   // Signals to client manager that a browser with scene level
   // SceneActivationLevelForegroundActive is ready. Without this
@@ -85,7 +92,24 @@ class PushNotificationClientManager {
   void OnSceneActiveForegroundBrowserReady();
 
  private:
+  // Initializes and adds push notification clients that operate per-Profile
+  // (scope kPerProfile). Requires `profile_` to be non-null. Called during
+  // construction of per-Profile manager instances. Considers feature flags
+  // to determine which specific per-Profile clients to add.
+  void AddPerProfilePushNotificationClients();
+
+  // Initializes and adds push notification clients that operate app-wide
+  // (scope kAppWide). Requires `profile_` to be null. Called during
+  // construction of the app-wide manager instance. Considers feature flags
+  // to determine which specific app-wide clients to add.
+  void AddAppWidePushNotificationClients();
+
+  // Task runner used for scheduling asynchronous tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Profile associated with this client manager, used to provide context
+  // for notification clients that require profile-specific data.
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 
   using ClientMap = std::unordered_map<PushNotificationClientId,
                                        std::unique_ptr<PushNotificationClient>>;

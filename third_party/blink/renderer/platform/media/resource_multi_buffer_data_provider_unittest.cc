@@ -23,8 +23,10 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/seekable_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -70,7 +72,12 @@ static bool CorrectAcceptEncoding(const WebURLRequest& request) {
 
 class ResourceMultiBufferDataProviderTest : public testing::Test {
  public:
-  ResourceMultiBufferDataProviderTest() {
+  ResourceMultiBufferDataProviderTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        url_index_(std::make_unique<UrlIndex>(
+            &fetch_context_,
+            0,
+            task_environment_.GetMainThreadTaskRunner())) {
     for (int i = 0; i < kDataSize; ++i) {
       data_[i] = i;
     }
@@ -87,7 +94,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   void Initialize(const char* url, int first_position) {
     url_ = KURL(url);
     url_data_ =
-        url_index_.GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
+        url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
@@ -159,10 +166,11 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     response.SetHttpStatusCode(kHttpPartialContent);
     loader_->DidReceiveResponse(response);
 
-    EXPECT_EQ(instance_size, url_data_->length());
-
     // A valid partial response should always result in this being true.
-    EXPECT_TRUE(url_data_->range_supported());
+    if (url_index_) {
+      EXPECT_EQ(instance_size, url_data_->length());
+      EXPECT_TRUE(url_data_->range_supported());
+    }
   }
 
   void Redirect(const char* url) {
@@ -204,8 +212,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   int32_t first_position_;
 
   NiceMock<MockResourceFetchContext> fetch_context_;
-  UrlIndex url_index_{&fetch_context_, 0,
-                      task_environment_.GetMainThreadTaskRunner()};
+  std::unique_ptr<UrlIndex> url_index_;
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.
@@ -231,6 +238,39 @@ TEST_F(ResourceMultiBufferDataProviderTest, BadHttpResponse) {
   response.SetHttpStatusCode(404);
   response.SetHttpStatusText("Not Found\n");
   loader_->DidReceiveResponse(response);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexFullResponse) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  FullResponse(1024, false);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexPartialResponse) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  PartialResponse(100, 200, 1024);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFail) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_));
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFinish) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  FullResponse(1024, true);
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFinishLoading();
 }
 
 // Tests that partial content is requested but not fulfilled.
@@ -320,6 +360,64 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
   Redirect(kHttpRedirect);
   PartialResponse(2048, 4096, 32000);
   StopWhenLoad();
+}
+
+// Tests stale reporting works properly.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimer) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+  loader_ = nullptr;
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 0u);
+}
+
+// Tests stale reporting clears properly.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimerClear) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+  loader_->SetDeferred(false);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+}
+
+// Tests stale reporting doesn't extend forever on repeated deferrals.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimerFinite) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+
+  constexpr auto kInterval = base::Milliseconds(250);
+  base::TimeDelta elapsed;
+
+  auto local_loader = loader_.ExtractAsDangling();
+  while (url_data_->multibuffer()->writer_index_size_for_testing() > 0 &&
+         elapsed < base::Seconds(5)) {
+    local_loader->SetDeferred(true);
+    task_environment_.FastForwardBy(kInterval);
+    elapsed += kInterval;
+  }
+
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 0u);
 }
 
 }  // namespace blink

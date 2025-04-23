@@ -24,7 +24,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -96,10 +96,8 @@ class PipeReaderWrapper final {
       return;
     }
 
-    JSONStringValueDeserializer json_reader(result.value());
-    std::unique_ptr<base::Value> logs(
-        json_reader.Deserialize(nullptr, nullptr));
-    if (!logs.get() || !logs->is_dict()) {
+    std::optional<base::Value::Dict> logs = base::JSONReader::ReadDict(*result);
+    if (!logs.has_value()) {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorDeserializingJSonLogs);
@@ -107,7 +105,7 @@ class PipeReaderWrapper final {
       return;
     }
     std::map<std::string, std::string> data;
-    for (const auto [dict_key, dict_value] : logs->GetDict()) {
+    for (const auto [dict_key, dict_value] : *logs) {
       data[dict_key] = dict_value.GetString();
     }
     RunCallbackAndDestroy(std::move(data));

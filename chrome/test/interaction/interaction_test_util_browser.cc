@@ -285,9 +285,11 @@ class InteractionTestUtilSimulatorBrowser
     return ui::test::ActionResult::kSucceeded;
   }
 
-  ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type) override {
+  ui::test::ActionResult SelectTab(
+      ui::TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type,
+      std::optional<size_t> expected_index_after_selection) override {
     // This handler *explicitly* only handles Browser and TabStrip; it will
     // reject any other element or View type.
     if (!tab_collection->IsA<views::TrackedElementViews>())
@@ -317,7 +319,10 @@ class InteractionTestUtilSimulatorBrowser
     Tab* const tab = tab_strip->tab_at(index);
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
-    if (static_cast<int>(index) != tab_strip->GetActiveIndex()) {
+
+    const int expected =
+        static_cast<int>(expected_index_after_selection.value_or(index));
+    if (expected != tab_strip->GetActiveIndex()) {
       LOG(ERROR) << "Failed to select tabstrip tab " << index;
       return ui::test::ActionResult::kFailed;
     }

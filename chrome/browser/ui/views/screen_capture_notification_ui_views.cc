@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
@@ -97,6 +98,8 @@ BEGIN_METADATA(NotificationBarClientView)
 ADD_PROPERTY_METADATA(gfx::Rect, ClientRect)
 END_METADATA
 
+}  // namespace
+
 class ScreenCaptureNotificationUIViews : public views::WidgetDelegateView,
                                          public views::ViewObserver {
   METADATA_HEADER(ScreenCaptureNotificationUIViews, views::WidgetDelegateView)
@@ -139,34 +142,6 @@ class ScreenCaptureNotificationUIViews : public views::WidgetDelegateView,
   raw_ptr<views::View> hide_link_ = nullptr;
 };
 
-// ScreenCaptureNotificationUI implementation using Views.
-class ScreenCaptureNotificationUIImpl : public ScreenCaptureNotificationUI {
- public:
-  ScreenCaptureNotificationUIImpl(const std::u16string& text,
-                                  content::WebContents* capturing_web_contents);
-  ScreenCaptureNotificationUIImpl(const ScreenCaptureNotificationUIImpl&) =
-      delete;
-  ScreenCaptureNotificationUIImpl& operator=(
-      const ScreenCaptureNotificationUIImpl&) = delete;
-  ~ScreenCaptureNotificationUIImpl() override = default;
-
-  // ScreenCaptureNotificationUI override:
-  gfx::NativeViewId OnStarted(
-      base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback,
-      const std::vector<content::DesktopMediaID>& media_ids) override;
-
- private:
-  // Helper to set window id to parent browser window id for task bar grouping.
-#if BUILDFLAG(IS_WIN)
-  void SetWindowsAppId(views::Widget* widget);
-#endif
-
-  std::u16string text_;
-  base::WeakPtr<content::WebContents> capturing_web_contents_;
-  std::unique_ptr<views::Widget> widget_;
-};
-
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
     const std::u16string& text,
     content::WebContents* capturing_web_contents,
@@ -181,7 +156,6 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
   SetShowTitle(false);
   SetTitle(text);
 
-  SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(
       RegisterDeleteCallbackPassKey(),
       base::BindOnce(&ScreenCaptureNotificationUIViews::NotifyStopped,
@@ -300,6 +274,36 @@ void ScreenCaptureNotificationUIViews::NotifyStopped() {
 
 BEGIN_METADATA(ScreenCaptureNotificationUIViews)
 END_METADATA
+
+namespace {
+
+// ScreenCaptureNotificationUI implementation using Views.
+class ScreenCaptureNotificationUIImpl : public ScreenCaptureNotificationUI {
+ public:
+  ScreenCaptureNotificationUIImpl(const std::u16string& text,
+                                  content::WebContents* capturing_web_contents);
+  ScreenCaptureNotificationUIImpl(const ScreenCaptureNotificationUIImpl&) =
+      delete;
+  ScreenCaptureNotificationUIImpl& operator=(
+      const ScreenCaptureNotificationUIImpl&) = delete;
+  ~ScreenCaptureNotificationUIImpl() override = default;
+
+  // ScreenCaptureNotificationUI override:
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
+
+ private:
+  // Helper to set window id to parent browser window id for task bar grouping.
+#if BUILDFLAG(IS_WIN)
+  void SetWindowsAppId(views::Widget* widget);
+#endif
+
+  std::u16string text_;
+  base::WeakPtr<content::WebContents> capturing_web_contents_;
+  std::unique_ptr<views::Widget> widget_;
+};
 
 ScreenCaptureNotificationUIImpl::ScreenCaptureNotificationUIImpl(
     const std::u16string& text,

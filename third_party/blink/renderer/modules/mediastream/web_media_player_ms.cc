@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/media/player_id_generator.h"
+#include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -377,6 +379,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
       gpu_factories_(gpu_factories),
       initial_audio_output_device_id_(sink_id),
       volume_(1.0),
+      volume_before_muted_(1.0),
       volume_multiplier_(1.0),
       should_play_upon_shown_(false),
       create_bridge_callback_(std::move(create_bridge_callback)),
@@ -665,6 +668,24 @@ void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
     audio_renderer_->Stop();
 }
 
+void WebMediaPlayerMS::EnabledStateChangedForWebRtcAudio(bool is_enabled) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  SendLogMessage(String::Format("%s({is_enabled=%s})", __func__,
+                                base::ToString(is_enabled).c_str()));
+  if (enabled_ == is_enabled) {
+    return;
+  }
+
+  if (is_enabled) {
+    enabled_ = true;
+    SetVolume(volume_ != 0.0 ? volume_ : volume_before_muted_);
+  } else {
+    volume_before_muted_ = volume_;
+    SetVolume(0.0);
+    enabled_ = false;
+  }
+}
+
 std::optional<viz::SurfaceId> WebMediaPlayerMS::GetSurfaceId() {
   if (bridge_)
     return bridge_->GetSurfaceId();
@@ -897,7 +918,12 @@ void WebMediaPlayerMS::SetRate(double rate) {
 void WebMediaPlayerMS::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(String::Format("%s({volume=%.2f})", __func__, volume));
+
   volume_ = volume;
+  if (!enabled_) {
+    return;
+  }
+
   if (audio_renderer_.get())
     audio_renderer_->SetVolume(volume_ * volume_multiplier_);
   if (watch_time_reporter_)
@@ -1149,7 +1175,8 @@ void WebMediaPlayerMS::OnPageHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool in_picture_in_picture =
-      client_->GetDisplayType() == DisplayType::kVideoPictureInPicture;
+      client_->GetDisplayType() ==
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture;
 
   if (watch_time_reporter_ && !in_picture_in_picture)
     watch_time_reporter_->OnHidden();
@@ -1275,7 +1302,8 @@ void WebMediaPlayerMS::ActivateSurfaceLayerForVideo(
   // TODO(872056): the surface should be activated but for some reason, it
   // does not. It is possible that this will no longer be needed after 872056
   // is fixed.
-  if (client_->GetDisplayType() == DisplayType::kVideoPictureInPicture) {
+  if (client_->GetDisplayType() ==
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture) {
     OnSurfaceIdUpdated(bridge_->GetSurfaceId());
   }
 }
@@ -1333,7 +1361,8 @@ void WebMediaPlayerMS::OnTransformChanged(
 bool WebMediaPlayerMS::IsInPictureInPicture() const {
   DCHECK(client_);
   return (!client_->IsInAutoPIP() &&
-          client_->GetDisplayType() == DisplayType::kVideoPictureInPicture);
+          client_->GetDisplayType() ==
+              WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 }
 
 void WebMediaPlayerMS::RepaintInternal() {
@@ -1390,27 +1419,29 @@ void WebMediaPlayerMS::SetMediaStreamRendererFactoryForTesting(
   renderer_factory_ = std::move(renderer_factory);
 }
 
-void WebMediaPlayerMS::OnDisplayTypeChanged(DisplayType display_type) {
+void WebMediaPlayerMS::OnDisplayTypeChanged(
+    WebMediaPlayer::DisplayType display_type) {
   if (!bridge_)
     return;
 
   PostCrossThreadTask(
       *compositor_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&WebMediaPlayerMSCompositor::SetForceSubmit,
-                          CrossThreadUnretained(compositor_.get()),
-                          display_type == DisplayType::kVideoPictureInPicture));
+      CrossThreadBindOnce(
+          &WebMediaPlayerMSCompositor::SetForceSubmit,
+          CrossThreadUnretained(compositor_.get()),
+          display_type == WebMediaPlayer::DisplayType::kVideoPictureInPicture));
 
   if (!watch_time_reporter_)
     return;
 
   switch (display_type) {
-    case DisplayType::kInline:
+    case WebMediaPlayer::DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case DisplayType::kFullscreen:
+    case WebMediaPlayer::DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case DisplayType::kVideoPictureInPicture:
+    case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
       watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
       break;
     case DisplayType::kDocumentPictureInPicture:
@@ -1529,13 +1560,13 @@ void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
       watch_time_reporter_->OnNativeControlsDisabled();
 
     switch (client_->GetDisplayType()) {
-      case DisplayType::kInline:
+      case WebMediaPlayer::DisplayType::kInline:
         watch_time_reporter_->OnDisplayTypeInline();
         break;
-      case DisplayType::kFullscreen:
+      case WebMediaPlayer::DisplayType::kFullscreen:
         watch_time_reporter_->OnDisplayTypeFullscreen();
         break;
-      case DisplayType::kVideoPictureInPicture:
+      case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
         watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
         break;
       case DisplayType::kDocumentPictureInPicture:

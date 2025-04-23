@@ -156,7 +156,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="4790638144988730920">Jatka Chromium-datan käyttöä Google-tilillä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="4856138222358683580">Chromium-toiminnot</translation>
-<translation id="4863800915967098115">Kirjautumisen jälkeen tilisi lisätään Chromiumiin työhön liittyvää selaamista varten.</translation>
 <translation id="4904452304169763785">Ilmoittaa yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
 <translation id="4962295957157529683">Siirry toiseen avoimeen Chromium-ikkunaan ja viimeistele aloittamasi.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
@@ -211,6 +210,7 @@ Huomioitavaa:
 <translation id="593808800391107017">Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee automaattisesti puolestasi.</translation>
 <translation id="5951593919357934226">Paras hyöty Chromiumista.</translation>
 <translation id="5985254578475526217">Jos haluat saada ilmoituksia Chromiumista, laita ilmoitukset päälle iOS-asetuksista.</translation>
+<translation id="6041226255405329731">Kirjaudu Chromiumiin, niin voit jakaa välilehtiryhmiä, liittyä niihin ja ideoida yhdessä</translation>
 <translation id="6104024151682120539">Avaa Chromiumissa</translation>
 <translation id="61109258320235597">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi.</translation>
 <translation id="6132149203299792222">Kirjaudu sisään Google-tililläsi, niin voit synkronoida esimerkiksi salasanat ja kirjanmerkit.</translation>

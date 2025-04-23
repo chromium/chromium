@@ -6,15 +6,15 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The builder interface to build a module and its view. */
+@NullMarked
 public interface ModuleProviderBuilder {
     /**
      * Builds a module {@link ModuleProvider}. The module will be returned to the caller in the
@@ -24,9 +24,7 @@ public interface ModuleProviderBuilder {
      * @param onModuleBuiltCallback The callback which is called when the module is built.
      * @return Whether a module is built successfully.
      */
-    boolean build(
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Callback<ModuleProvider> onModuleBuiltCallback);
+    boolean build(ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback);
 
     /**
      * Creates a view for the module.
@@ -34,7 +32,7 @@ public interface ModuleProviderBuilder {
      * @param parentView The parent view which holds the view of the module.
      * @return The view created.
      */
-    ViewGroup createView(@NonNull ViewGroup parentView);
+    ViewGroup createView(ViewGroup parentView);
 
     /**
      * Binds the given model and the view.
@@ -43,10 +41,7 @@ public interface ModuleProviderBuilder {
      * @param view The instance of the {@link ViewGroup}.
      * @param propertyKey The {@link PropertyKey} to handle by the view.
      */
-    void bind(
-            @NonNull PropertyModel model,
-            @NonNull ViewGroup view,
-            @NonNull PropertyKey propertyKey);
+    void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey);
 
     /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
     default void destroy() {}

@@ -403,7 +403,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Api_class_data_ =
             Api::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Api::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Api::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Api_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Api_class_data_.tc_table);
   return Api_class_data_.base();
@@ -902,7 +904,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Method_class_data_ =
             Method::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Method::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Method::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Method_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Method_class_data_.tc_table);
   return Method_class_data_.base();
@@ -1369,7 +1373,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Mixin_class_data_ =
             Mixin::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Mixin::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Mixin::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Mixin_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Mixin_class_data_.tc_table);
   return Mixin_class_data_.base();

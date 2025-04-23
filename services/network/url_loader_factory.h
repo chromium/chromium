@@ -76,23 +76,16 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   bool ShouldRequireIsolationInfo() const override;
   const cors::OriginAccessList& GetOriginAccessList() const override;
   const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
-  mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
-  mojom::TrustTokenAccessObserver* GetTrustTokenAccessObserver() const override;
   mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
   mojom::DocumentIsolationPolicyReporter* GetDipReporter() const override;
-  mojom::DevToolsObserver* GetDevToolsObserver() const override;
   mojom::NetworkContextClient* GetNetworkContextClient() const override;
   mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
-      const override;
-  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const override;
   net::URLRequestContext* GetUrlRequestContext() const override;
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
-  mojom::DeviceBoundSessionAccessObserver* GetDeviceBoundSessionAccessObserver()
-      const override;
   scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
   GetDeviceBoundSessionAccessObserverSharedRemote() const override;
 
@@ -107,6 +100,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
+  mojom::DevToolsObserver* GetDevToolsObserver() const;
+
   // Returns the network that URLLoaders, created out of this factory, will
   // target. If == net::handles::kInvalidNetworkHandle, then no network is being
   // targeted and the system default network will be used (see
@@ -118,6 +113,9 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
 
  private:
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const;
+
   // The NetworkContext that indirectly owns |this|.
   const raw_ptr<NetworkContext> context_;
   mojom::URLLoaderFactoryParamsPtr params_;

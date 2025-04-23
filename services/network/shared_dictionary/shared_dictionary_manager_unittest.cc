@@ -153,7 +153,7 @@ void WriteDictionary(
   ASSERT_TRUE(writer.has_value());
   ASSERT_TRUE(*writer);
   for (const std::string& data : data_list) {
-    (*writer)->Append(data.c_str(), data.size());
+    (*writer)->Append(base::as_byte_span(data));
   }
   (*writer)->Finish();
 }
@@ -649,7 +649,7 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
     }
     ASSERT_TRUE(writer.has_value());
     ASSERT_TRUE(*writer);
-    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Append(base::as_byte_span(kTestData1));
     (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
@@ -723,7 +723,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
     }
     ASSERT_TRUE(writer.has_value());
     ASSERT_TRUE(*writer);
-    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Append(base::as_byte_span(kTestData1));
     (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
@@ -819,7 +819,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
     }
     ASSERT_TRUE(writer.has_value());
     ASSERT_TRUE(*writer);
-    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Append(base::as_byte_span(kTestData1));
     (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
@@ -980,7 +980,7 @@ TEST_P(SharedDictionaryManagerTest, SameDictionaryFromDiskCache) {
           }));
   ASSERT_TRUE(writer1.has_value());
   ASSERT_TRUE(*writer1);
-  (*writer1)->Append(kTestData1.c_str(), kTestData1.size());
+  (*writer1)->Append(base::as_byte_span(kTestData1));
   (*writer1)->Finish();
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
@@ -1036,7 +1036,7 @@ TEST_P(SharedDictionaryManagerTest, DifferentDictionaryFromDiskCache) {
           }));
   ASSERT_TRUE(writer1.has_value());
   ASSERT_TRUE(*writer1);
-  (*writer1)->Append(kTestData1.c_str(), kTestData1.size());
+  (*writer1)->Append(base::as_byte_span(kTestData1));
   (*writer1)->Finish();
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();

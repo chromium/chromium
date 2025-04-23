@@ -1789,8 +1789,6 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       resource.InstallSoftwareBacking(sii_, "TextureLayerTest");
 
       resource.backing()->mailbox_sync_token = sii_->GenVerifiedSyncToken();
-
-      is_software_ = true;
     }
     return std::make_unique<TestRasterBuffer>(resource.size(),
                                               resource.backing());
@@ -2400,7 +2398,6 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
                                   gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
   resource.set_backing(std::move(backing));
-  raster_buffer_provider.is_software_ = true;
   host_impl->resource_pool()->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest);
 
@@ -2468,8 +2465,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
-          gfx::ColorSpace::CreateSRGB());
+          kTileSize, host_impl->GetTileFormat(), gfx::ColorSpace::CreateSRGB());
   host_impl->resource_pool()->OnContentReplaced(resource, kInvalidatedId);
   host_impl->resource_pool()->ReleaseResource(std::move(resource));
 
@@ -2569,6 +2565,7 @@ TEST_F(TileManagerTest, PartialRasterSuccessfullyDisabled) {
 class InvalidResourceRasterBufferProvider
     : public FakeRasterBufferProviderImpl {
  public:
+  InvalidResourceRasterBufferProvider() = default;
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
@@ -2634,6 +2631,7 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
 class MockReadyToDrawRasterBufferProviderImpl
     : public FakeRasterBufferProviderImpl {
  public:
+  MockReadyToDrawRasterBufferProviderImpl() = default;
   MOCK_METHOD1(IsResourceReadyToDraw,
                bool(const ResourcePool::InUsePoolResource& resource));
   MOCK_METHOD3(
@@ -2661,7 +2659,6 @@ class MockReadyToDrawRasterBufferProviderImpl
       backing->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       resource.set_backing(std::move(backing));
-      is_software_ = true;
     }
     return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);
   }

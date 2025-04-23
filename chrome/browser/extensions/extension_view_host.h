@@ -16,8 +16,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
 
-class Browser;
-
 namespace content {
 class SiteInstance;
 class WebContents;
@@ -36,14 +34,42 @@ class ExtensionViewHost
       public web_modal::WebContentsModalDialogHost,
       public ExtensionHostRegistry::Observer {
  public:
-  // |browser| may be null, since extension views may be bound to TabContents
-  // hosted in ExternalTabContainer objects, which do not instantiate Browsers.
+  class Delegate {
+   public:
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    virtual ~Delegate();
+
+    // Opens a URL with the given disposition.
+    virtual content::WebContents* OpenURL(
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)>
+            navigation_handle_callback) = 0;
+
+    // Allows handling keyboard events before sending to the renderer.
+    virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+        content::WebContents* source,
+        const input::NativeWebKeyboardEvent& event) = 0;
+
+    // Called when an eye dropper should open. Returns the eye dropper window.
+    virtual std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+        content::RenderFrameHost* frame,
+        content::EyeDropperListener* listener) = 0;
+
+    // Returns the WindowController associated with this ExtensionViewHost, or
+    // nullptr if no window is associated with the delegate.
+    virtual WindowController* GetExtensionWindowController() const = 0;
+
+   protected:
+    Delegate();
+  };
+
   ExtensionViewHost(const Extension* extension,
                     content::SiteInstance* site_instance,
                     content::BrowserContext* browser_context,
                     const GURL& url,
                     mojom::ViewType host_type,
-                    Browser* browser);
+                    std::unique_ptr<Delegate> delegate);
 
   ExtensionViewHost(const ExtensionViewHost&) = delete;
   ExtensionViewHost& operator=(const ExtensionViewHost&) = delete;
@@ -52,9 +78,6 @@ class ExtensionViewHost
 
   void set_view(ExtensionView* view) { view_ = view; }
   ExtensionView* view() { return view_; }
-
-  // Returns the browser associated with this ExtensionViewHost.
-  virtual Browser* GetBrowser();
 
   // ExtensionHost
   void OnDidStopFirstLoad() override;
@@ -124,11 +147,7 @@ class ExtensionViewHost
   bool UnhandledKeyboardEvent(content::WebContents* source,
                               const input::NativeWebKeyboardEvent& event);
 
-  // The browser associated with the ExtensionView, if any. Note: since this
-  // ExtensionViewHost could be associated with a browser even if `browser_` is
-  // null (see ExtensionSidePanelViewHost), this variable should not be used
-  // directly. Instead, use GetBrowser().
-  raw_ptr<Browser> browser_;
+  std::unique_ptr<Delegate> delegate_;
 
   // View that shows the rendered content in the UI.
   raw_ptr<ExtensionView, DanglingUntriaged> view_ = nullptr;

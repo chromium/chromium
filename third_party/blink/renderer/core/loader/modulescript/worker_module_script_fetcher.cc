@@ -49,7 +49,7 @@ void WorkerModuleScriptFetcher::Fetch(
   expected_module_type_ = expected_module_type;
 
   // Use WorkerMainScriptLoader to load the main script when
-  // dedicated workers (PlzDedicatedWorker) and shared workers.
+  // dedicated workers and shared workers.
   std::unique_ptr<WorkerMainScriptLoadParameters>
       worker_main_script_load_params =
           global_scope_->TakeWorkerMainScriptLoadingParametersForModules();
@@ -89,7 +89,7 @@ void WorkerModuleScriptFetcher::Fetch(
                         this, global_scope_->GetIsolate(),
                         ScriptResource::kNoStreaming, kNoCompileHintsProducer,
                         kNoCompileHintsConsumer,
-                        v8_compile_hints::MagicCommentMode::kNever);
+                        v8_compile_hints::MagicCommentMode::kNone);
 }
 
 void WorkerModuleScriptFetcher::Trace(Visitor* visitor) const {

@@ -127,7 +127,7 @@ class ReaderModeTabHelperTest : public PlatformTest {
 // metrics on page load.
 TEST_F(ReaderModeTabHelperTest, TriggerHeuristicOnPageLoaded) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristic,
+      kEnableReaderModeDistillerHeuristicForMetrics,
       {
           {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
           {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
@@ -145,7 +145,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicOnPageLoaded) {
 // heuristic.
 TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityLow) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristic,
+      kEnableReaderModeDistillerHeuristicForMetrics,
       {
           {kReaderModeDistillerPageLoadProbabilityName, "0.0"},
           {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
@@ -163,7 +163,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityLow) {
 // heuristic.
 TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityHigh) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristic,
+      kEnableReaderModeDistillerHeuristicForMetrics,
       {
           {kReaderModeDistillerPageLoadProbabilityName, "1.1"},
           {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
@@ -181,7 +181,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityHigh) {
 // records metrics from the latest navigation.
 TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristic,
+      kEnableReaderModeDistillerHeuristicForMetrics,
       {
           {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
           {kReaderModeDistillerPageLoadDelayDurationStringName, "10s"},
@@ -218,12 +218,12 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
 TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kEnableReaderModeDistillerHeuristic,
+      {{kEnableReaderModeDistillerHeuristicForMetrics,
         {
             {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
             {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
         }},
-       {kEnableReaderModeDistiller, {}}},
+       {kEnableReaderModeDistillerForMetrics, {}}},
       /*disabled_features=*/{});
 
   auto test_web_state = std::make_unique<web::FakeWebState>();

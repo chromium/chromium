@@ -50,33 +50,21 @@ using content::ContentBrowserTest;
 
 namespace dom_distiller {
 
-namespace {
-
-typedef std::unordered_map<std::string, std::string> FileToUrlMap;
-}
-
 // Factory for creating a Distiller that creates different DomDistillerOptions
 // for different URLs, i.e. a specific kOriginalUrl option for each URL.
 class TestDistillerFactoryImpl : public DistillerFactory {
  public:
   TestDistillerFactoryImpl(
       std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
-      const dom_distiller::proto::DomDistillerOptions& dom_distiller_options,
-      const FileToUrlMap& file_to_url_map)
+      const dom_distiller::proto::DomDistillerOptions& dom_distiller_options)
       : distiller_url_fetcher_factory_(
             std::move(distiller_url_fetcher_factory)),
-        dom_distiller_options_(dom_distiller_options),
-        file_to_url_map_(file_to_url_map) {}
+        dom_distiller_options_(dom_distiller_options) {}
 
   ~TestDistillerFactoryImpl() override = default;
 
-  std::unique_ptr<Distiller> CreateDistillerForUrl(const GURL& url) override {
+  std::unique_ptr<Distiller> CreateDistiller() override {
     dom_distiller::proto::DomDistillerOptions options;
-    options = dom_distiller_options_;
-    FileToUrlMap::const_iterator it = file_to_url_map_.find(url.spec());
-    if (it != file_to_url_map_.end()) {
-      options.set_original_url(it->second);
-    }
     return std::make_unique<DistillerImpl>(*distiller_url_fetcher_factory_,
                                            options);
   }
@@ -84,7 +72,6 @@ class TestDistillerFactoryImpl : public DistillerFactory {
  private:
   std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory_;
   dom_distiller::proto::DomDistillerOptions dom_distiller_options_;
-  FileToUrlMap file_to_url_map_;
 };
 
 namespace {
@@ -111,9 +98,6 @@ const char* kExtractTextOnly = "extract-text-only";
 // Indicates to include debug output.
 const char* kDebugLevel = "debug-level";
 
-// The original URL of the page if |kUrlSwitch| is a file.
-const char* kOriginalUrl = "original-url";
-
 // A semi-colon-separated (i.e. ';') list of original URLs corresponding to
 // "kUrlsSwitch".
 const char* kOriginalUrls = "original-urls";
@@ -126,8 +110,7 @@ const int kMaxExtractorTasks = 8;
 
 std::unique_ptr<DomDistillerService> CreateDomDistillerService(
     content::BrowserContext* context,
-    sync_preferences::TestingPrefServiceSyncable* pref_service,
-    const FileToUrlMap& file_to_url_map) {
+    sync_preferences::TestingPrefServiceSyncable* pref_service) {
   // Setting up PrefService for DistilledPagePrefs.
   DistilledPagePrefs::RegisterProfilePrefs(pref_service->registry());
 
@@ -161,7 +144,7 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
   }
 
   auto distiller_factory = std::make_unique<TestDistillerFactoryImpl>(
-      std::move(distiller_url_fetcher_factory), options, file_to_url_map);
+      std::move(distiller_url_fetcher_factory), options);
 
   return std::make_unique<DomDistillerService>(
       std::move(distiller_factory), std::move(distiller_page_factory),
@@ -229,8 +212,7 @@ class ContentExtractionRequest : public ViewRequestDelegate {
   }
 
   static std::vector<std::unique_ptr<ContentExtractionRequest>>
-  CreateForCommandLine(const base::CommandLine& command_line,
-                       FileToUrlMap* file_to_url_map) {
+  CreateForCommandLine(const base::CommandLine& command_line) {
     std::vector<std::unique_ptr<ContentExtractionRequest>> requests;
     if (command_line.HasSwitch(kUrlSwitch)) {
       GURL url;
@@ -238,10 +220,6 @@ class ContentExtractionRequest : public ViewRequestDelegate {
       url = GURL(url_string);
       if (url.is_valid()) {
         requests.push_back(std::make_unique<ContentExtractionRequest>(url));
-        if (command_line.HasSwitch(kOriginalUrl)) {
-          (*file_to_url_map)[url.spec()] =
-              command_line.GetSwitchValueASCII(kOriginalUrl);
-        }
       }
     } else if (command_line.HasSwitch(kUrlsSwitch)) {
       std::string urls_string = command_line.GetSwitchValueASCII(kUrlsSwitch);
@@ -264,10 +242,6 @@ class ContentExtractionRequest : public ViewRequestDelegate {
         GURL url(urls[i]);
         if (url.is_valid()) {
           requests.push_back(std::make_unique<ContentExtractionRequest>(url));
-          // Only regard non-empty original urls.
-          if (!original_urls.empty() && !original_urls[i].empty()) {
-              (*file_to_url_map)[url.spec()] = original_urls[i];
-          }
         } else {
           ADD_FAILURE() << "Bad url";
         }
@@ -325,16 +299,13 @@ class ContentExtractor : public ContentBrowserTest {
     quit_closure_ = std::move(quit_closure);
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
-    FileToUrlMap file_to_url_map;
-    requests_ = ContentExtractionRequest::CreateForCommandLine(
-        command_line, &file_to_url_map);
+    requests_ = ContentExtractionRequest::CreateForCommandLine(command_line);
     content::BrowserContext* context =
         shell()->web_contents()->GetBrowserContext();
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
 
-    service_ = CreateDomDistillerService(context, pref_service_.get(),
-                                         file_to_url_map);
+    service_ = CreateDomDistillerService(context, pref_service_.get());
     PumpQueue();
   }
 

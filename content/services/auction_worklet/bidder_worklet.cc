@@ -1313,7 +1313,9 @@ void BidderWorklet::V8State::ReportWin(
         std::move(callback), /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/result ==
+                AuctionV8Helper::Result::kFailure),
         /*pmt_request_data=*/nullptr, elapsed,
         /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
         std::move(errors_out));
@@ -1363,6 +1365,8 @@ void BidderWorklet::V8State::ReportWin(
         report_aggregate_win_args);
 
     if (report_aggregate_win_signals_set) {
+      // TODO(crbug.com/408002788): We should not reuse the same
+      // PrivateAggregationBindings here.
       v8::MaybeLocal<v8::Value> maybe_report_aggregate_win_result_ret;
       result = v8_helper_->CallFunction(
           context, debug_id_.get(),
@@ -1414,7 +1418,8 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
       context_recycler.private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/false),
       std::move(maybe_pmt_request_data), elapsed,
       /*script_timed_out=*/false, std::move(errors_out));
 }
@@ -2124,7 +2129,9 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         context_recycler->set_priority_signals_override_bindings()
             ->TakeSetPrioritySignalsOverrides(),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/script_result ==
+                AuctionV8Helper::Result::kFailure),
         std::move(real_time_contributions),
         context_recycler->set_bid_bindings()->reject_reason(), script_timed_out,
         std::move(errors_out)));
@@ -2143,7 +2150,9 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       context_recycler->set_priority_signals_override_bindings()
           ->TakeSetPrioritySignalsOverrides(),
       context_recycler->private_aggregation_bindings()
-          ->TakePrivateAggregationRequests(),
+          ->TakePrivateAggregationRequests(
+              /*did_uncaught_error_occur=*/script_result ==
+              AuctionV8Helper::Result::kFailure),
       std::move(real_time_contributions), mojom::RejectReason::kNotAvailable,
       script_timed_out, std::move(errors_out)));
 }

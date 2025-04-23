@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -21,6 +22,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -750,14 +752,15 @@ void TestRewriteProcSelfHelper(bool fast_check_in_client) {
 
     // Reading /proc/self/status should return the same PID as the current
     // process's PID, not the broker's.
-    char buf[4096];
+    std::array<char, 4096> buf;
 
-    ssize_t num_read = HANDLE_EINTR(read(fd, buf, sizeof(buf)));
+    ssize_t num_read = HANDLE_EINTR(
+        read(fd, buf.data(), (buf.size() * sizeof(decltype(buf)::value_type))));
     ASSERT_GE(IGNORE_EINTR(close(fd)), 0);
 
     ASSERT_GT(num_read, 0);
 
-    std::string_view status(buf, static_cast<size_t>(num_read));
+    std::string_view status(buf.data(), static_cast<size_t>(num_read));
     std::string_view tracer("Pid:\t");
 
     std::string_view::size_type pid_index = status.find(tracer);
@@ -766,7 +769,8 @@ void TestRewriteProcSelfHelper(bool fast_check_in_client) {
     std::string_view::size_type pid_end_index = status.find('\n', pid_index);
     ASSERT_NE(pid_end_index, std::string_view::npos);
 
-    std::string_view pid_str(buf + pid_index, pid_end_index - pid_index);
+    std::string_view pid_str(base::span<char>(buf).subspan(pid_index).data(),
+                             pid_end_index - pid_index);
     int pid = 0;
     ASSERT_TRUE(base::StringToInt(pid_str, &pid));
 

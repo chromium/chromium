@@ -17,7 +17,6 @@
 
 #include <mach-o/loader.h>
 #include <mach/mach.h>
-#include <signal.h>
 #include <sys/types.h>
 
 #include <map>

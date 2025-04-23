@@ -18,6 +18,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -89,6 +90,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::VotesUploader& GetVotesUploader() override;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
+  autofill::ValuablesDataManager* GetValuablesDataManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
   autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;

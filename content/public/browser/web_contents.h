@@ -66,6 +66,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/android/child_process_importance.h"
 #include "third_party/jni_zero/jni_zero.h"
 #endif
 
@@ -1443,6 +1444,16 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // scoped to this WebContents. This provides access to interfaces implemented
   // in Java in the browser process to C++ code in the browser process.
   virtual service_manager::InterfaceProvider* GetJavaInterfaces() = 0;
+
+  // Returns the primary main frame importance. This is for testing only.
+  virtual ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() = 0;
+
+  // Set an importance of the page to the primary main frame.
+  //
+  // Note this does not affect importance of subframe processes or main frames
+  // processeses for non-primary pages.
+  virtual void SetPrimaryMainFrameImportance(
+      ChildProcessImportance importance) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if the WebContents has completed its first meaningful paint
@@ -1551,6 +1562,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // - `prefetch_url` is the url the prefetch will be performed.
   // - If `use_prefetch_proxy` is set to true, private prefetch proxy is used in
   //   this prefetch request.
+  // - `embedder_histogram_suffix` is used for generating internal histogram
+  //   names recorded per trigger.
   // - `referrer` is utilized as a value of Referer HTTP request header in this
   //   prefetch request.
   // - `referring_origin` represents the initiator origin of prefetch request,
@@ -1570,6 +1583,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,

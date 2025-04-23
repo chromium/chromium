@@ -8,6 +8,7 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"

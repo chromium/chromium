@@ -268,8 +268,8 @@ bool CanAddCompileHintsMagicToCompileOption(
     v8::ScriptCompiler::CompileOptions compile_options) {
   // Adding compile hints to kConsumeCodeCache or kEagerCompile doesn't make
   // sense. kProduceCompileHints and kConsumeCompileHints can be combined with
-  // kFollowCompileHintsMagicComment, since they still affect scripts which
-  // don't have the magic comment.
+  // kFollowCompileHintsMagicComment / kFollowCompileHintsPerFunctionMagic,
+  // since they still affect scripts which don't have the magic comment.
 
   // This fails if new compile options are added.
   DCHECK((compile_options &
@@ -292,17 +292,23 @@ MaybeAddCompileHintsMagic(
                v8::ScriptCompiler::NoCacheReason> input,
     v8_compile_hints::MagicCommentMode magic_comment_mode) {
   auto [compile_options, produce_cache_options, no_cache_reason] = input;
-  if (CanAddCompileHintsMagicToCompileOption(compile_options) &&
-      (magic_comment_mode == v8_compile_hints::MagicCommentMode::kAlways ||
-       (magic_comment_mode ==
-            v8_compile_hints::MagicCommentMode::kWhenProducingCodeCache &&
-        produce_cache_options ==
-            V8CodeCache::ProduceCacheOptions::kProduceCodeCache))) {
-    return std::make_tuple(
-        v8::ScriptCompiler::CompileOptions(
-            compile_options |
-            v8::ScriptCompiler::kFollowCompileHintsMagicComment),
-        produce_cache_options, no_cache_reason);
+  if (CanAddCompileHintsMagicToCompileOption(compile_options)) {
+    if (magic_comment_mode ==
+        v8_compile_hints::MagicCommentMode::kOnlyTopLevel) {
+      return std::make_tuple(
+          v8::ScriptCompiler::CompileOptions(
+              compile_options |
+              v8::ScriptCompiler::kFollowCompileHintsMagicComment),
+          produce_cache_options, no_cache_reason);
+    } else if (magic_comment_mode ==
+               v8_compile_hints::MagicCommentMode::kTopLevelAndFunctions) {
+      return std::make_tuple(
+          v8::ScriptCompiler::CompileOptions(
+              compile_options |
+              v8::ScriptCompiler::kFollowCompileHintsMagicComment |
+              v8::ScriptCompiler::kFollowCompileHintsPerFunctionMagicComment),
+          produce_cache_options, no_cache_reason);
+    }
   }
   return input;
 }

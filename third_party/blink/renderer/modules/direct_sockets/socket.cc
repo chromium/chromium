@@ -91,6 +91,8 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
+    // TODO(crbug.com/407883159): Replace IsFeatureEnabled() with
+    // CrossOriginIsolatedCapability() once Chrome Apps are deprecated.
     if (!execution_context->IsIsolatedContext() ||
         !execution_context->IsFeatureEnabled(
             network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
@@ -108,8 +110,11 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
     }
     return true;
   } else if (execution_context->IsWorkerGlobalScope()) {
-    if (!execution_context->CrossOriginIsolatedCapability() ||
-        !execution_context->IsIsolatedContext()) {
+    // TODO(crbug.com/407883159): Replace IsFeatureEnabled() with
+    // CrossOriginIsolatedCapability() once Chrome Apps are deprecated.
+    if (!execution_context->IsIsolatedContext() ||
+        !execution_context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Frame is not sufficiently isolated to use Direct Sockets.");

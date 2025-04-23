@@ -37,7 +37,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
   COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
-  static Pointer Create(AXFragmentRootWin* delegate) {
+  static Pointer Create(AXFragmentRootWin& delegate) {
     // Make sure ATL is initialized in this module.
     win::CreateATLModuleIfNeeded();
 
@@ -241,10 +241,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     UIA_VALIDATE_CALL();
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_ADDED);
 
-    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(delegate_);
-    if (!root) {
-      return S_OK;
-    }
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
 
     base::win::ScopedSafearray safe_array(property_ids);
     absl::Cleanup release_safe_array(
@@ -263,10 +260,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     UIA_VALIDATE_CALL();
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_REMOVED);
 
-    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(delegate_);
-    if (!root) {
-      return S_OK;
-    }
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
 
     base::win::ScopedSafearray safe_array(property_ids);
     absl::Cleanup release_safe_array(
@@ -322,7 +316,7 @@ AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
                                      AXFragmentRootDelegateWin* delegate)
     : widget_(widget),
       delegate_(delegate),
-      platform_node_(AXFragmentRootPlatformNodeWin::Create(this)) {
+      platform_node_(AXFragmentRootPlatformNodeWin::Create(*this)) {
   AXFragmentRootMapWin::GetInstance().AddFragmentRoot(widget, this);
 }
 

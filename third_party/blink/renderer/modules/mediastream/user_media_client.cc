@@ -488,6 +488,8 @@ void UserMediaClient::KeepDeviceAliveForTransfer(
 
 UserMediaClient::RequestQueue* UserMediaClient::GetRequestQueue(
     mojom::blink::MediaStreamType media_stream_type) {
+  // TODO(crbug.com/410466097): Remove the additional DISPLAY_AUDIO_CAPTURE
+  // check once kDisplayAudioCaptureKillSwitch is removed.
   if (IsScreenCaptureMediaType(media_stream_type) ||
       media_stream_type ==
           mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {

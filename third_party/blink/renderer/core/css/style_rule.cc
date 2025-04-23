@@ -593,7 +593,7 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       }
       auto* new_rule = StyleRule::Create(
           selectors, To<StyleRule>(this)->Properties().ImmutableCopyIfNeeded());
-      if (HeapVector<Member<StyleRuleBase>>* child_rules =
+      if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
               To<StyleRule>(this)->ChildRules()) {
         for (StyleRuleBase* child_rule : *child_rules) {
           new_rule->AddChildRule(child_rule->Renest(new_rule));

@@ -914,6 +914,9 @@ public class OverlayPanel extends OverlayPanelAnimation
     @Override
     public void onHoverExit() {}
 
+    @Override
+    public void onScroll(float horizontalAxisScroll, float verticalAxisScroll) {}
+
     // SwipeHandler implementation.
 
     @Override

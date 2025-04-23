@@ -166,7 +166,7 @@ void IceTransport::OnChannelIceCredentials(IceTransportChannel* channel,
 }
 
 void IceTransport::OnChannelCandidate(IceTransportChannel* channel,
-                                      const cricket::Candidate& candidate) {
+                                      const webrtc::Candidate& candidate) {
   EnsurePendingTransportInfoMessage();
   pending_transport_info_message_->candidates.push_back(
       IceTransportInfo::NamedCandidate(channel->name(), candidate));

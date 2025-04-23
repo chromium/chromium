@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -340,7 +341,7 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
     // window switcher.
     SetShowTitle(false);
     SetTitle(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
   }
 
   OverlayWindowWidgetDelegate(const OverlayWindowWidgetDelegate&) = delete;

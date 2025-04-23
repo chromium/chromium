@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -716,15 +715,6 @@ public class NewTabPageLayout extends LinearLayout {
      */
     public void setSearchProviderLogoAlpha(float alpha) {
         mLogoCoordinator.setAlpha(alpha);
-    }
-
-    /**
-     * Set the search box background drawable.
-     *
-     * @param drawable The search box background.
-     */
-    public void setSearchBoxBackground(Drawable drawable) {
-        mSearchBoxCoordinator.setBackground(drawable);
     }
 
     /**

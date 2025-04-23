@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">画像をコピー</translation>
 <translation id="1612754831519568745">現在、セーフ ブラウジングはオフになっています。危険なサイト、ダウンロード、拡張機能からの保護を強化してください。</translation>
 <translation id="1620510694547887537">カメラ</translation>
-<translation id="1622195983844804153">既存の閲覧データは仕事用アカウントに移動されません。ログアウトするか、個人アカウントを追加すると、引き続きアクセスできます。</translation>
 <translation id="1622717322707146952">[Google カレンダーに追加] または [Apple カレンダーに追加] を選択します。</translation>
 <translation id="1629162218487290695">本人確認…</translation>
 <translation id="1636234353664774105">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">再読み込み</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="201759455285471444">タブグループを開く。</translation>
+<translation id="202070562065520783">この内容を説明</translation>
 <translation id="2021670401941426298">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="2044394949148788042">タブグリッドを開く</translation>
 <translation id="20485545164632846">新しいアイテム</translation>
@@ -480,6 +480,7 @@
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
+<translation id="297667759942911166">タブグループでの共同作業</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="2996291259634659425">パスフレーズの作成</translation>
@@ -525,6 +526,7 @@
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">保存したパスワードを他のデバイスで使用することもできます。</translation>
+<translation id="3177338796769255211">ログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できるようになります</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3208260410153224535">ログインは組織によってオフにされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
@@ -1125,6 +1127,7 @@
 <translation id="573974402615125334">タブグループの共有、参加、共同作業を行うには、履歴とタブを同期してください</translation>
 <translation id="5740123193752401435">タブを検索…</translation>
 <translation id="5744274077973758795">「<ph name="FEATURE_NAME" />」の通知をオンにしました</translation>
+<translation id="5745598824054949526">テキストが見つかりません</translation>
 <translation id="574762237186762643">予定</translation>
 <translation id="5749158352074143502">このタブを続行</translation>
 <translation id="5753021559215751319">パスワードを保存</translation>
@@ -1288,6 +1291,7 @@
 <translation id="6410883413783534063">タブを開くと、さまざまなページに同時にアクセスできます</translation>
 <translation id="6416807286621280684">追跡中の荷物と配送に関する最新情報。</translation>
 <translation id="6418346271604475326">PDF を準備しています</translation>
+<translation id="6421038304268477484">翻訳されたテキスト</translation>
 <translation id="6429213933892582367">[パスワードのオプション] を開きます</translation>
 <translation id="6434591244308415567">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6435307030888827407">ログアウト状態を保持する</translation>
@@ -1310,7 +1314,6 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="647867789226964031">パスワードを変更してください</translation>
 <translation id="6494931198667773526">終了</translation>
-<translation id="6495521251906266731">このデバイスの既存の閲覧データ（パスワードや履歴など）の処理方法を選択してください。</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>
 <translation id="6505334220040167806">タブグループを閉じる。</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8697136149718343437">アドレスバーを一番下に移動</translation>
 <translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8706253136355675497">温度</translation>
+<translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>
 <translation id="8709409604518538305">タブを閉じました</translation>
 <translation id="8712534545803964353">ページ内を検索…</translation>
 <translation id="8712637175834984815">理解した</translation>
@@ -1966,6 +1970,7 @@
 <translation id="9097506547406246598">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> 件のパスワードを削除しますか？</translation>
 <translation id="9099233023029360602">使用するアカウントを毎回確認する</translation>
+<translation id="9099821309562615674">翻訳するテキストが明瞭で、フレームに収まっていることを確認してください。</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="91023216973987714">お支払い方法</translation>
 <translation id="9106655997975673326">「<ph name="SOURCE_DEVICE" />」から</translation>

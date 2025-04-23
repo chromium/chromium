@@ -57,6 +57,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -584,8 +585,12 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
-  // Create Assistant new entry point button in this method if eligibile.
-  SearchBoxView::ShowAssistantNewEntryPointChanged();
+  views::ImageButton* assistant_new_entry_point_button =
+      CreateAssistantNewEntryPointButton(base::BindRepeating(
+          &SearchBoxView::AssistantNewEntryPointButtonPressed,
+          base::Unretained(this)));
+  assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
+  ShowAssistantNewEntryPointChanged();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   UpdateAccessibleValue();
@@ -1759,31 +1764,23 @@ void SearchBoxView::ShowAssistantNewEntryPointChanged() {
                         ->search_box()
                         ->show_assistant_new_entry_point_button();
 
-  if (show && !assistant_new_entry_point_button()) {
-    views::ImageButton* assistant_new_entry_point_button =
-        CreateAssistantNewEntryPointButton(base::BindRepeating(
-            &SearchBoxView::AssistantNewEntryPointButtonPressed,
-            base::Unretained(this)));
-    assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
+  if (show) {
+    ui::ImageModel gemini_icon = AppListModelProvider::Get()
+                                     ->search_model()
+                                     ->search_box()
+                                     ->gemini_icon();
+    // In prod, gemini icon is provided as an image. We can assume that this is
+    // an image instead of other data types.
+    if (gemini_icon.IsImage()) {
+      // Gemini icon includes margins. Use button size instead of search box
+      // icon size, which contains margins, to avoid having duplicated margins.
+      gemini_icon = ui::ImageModel::FromImage(gfx::ResizedImage(
+          gemini_icon.GetImage(),
+          assistant_new_entry_point_button()->GetPreferredSize()));
+    }
 
-    // `AssistantBrowserDelegate::Get` has `DCHECK`. It's not allowed to call if
-    // `AssistantBrowserDelegate` is not available, and that is the case for
-    // some tests. `AssistantBrowserDelegate` should be available if visibility
-    // is determined to be eligible (i.e., show=true) as querying visibility
-    // requires access to the delegate.
-    assistant::AssistantBrowserDelegate* assistant_browser_delegate =
-        assistant::AssistantBrowserDelegate::Get();
-    CHECK(assistant_browser_delegate);
-
-    // Assistant new entry point icon includes margins. Use button size
-    // instead of search box icon size, which contains margins, to avoid
-    // having duplicated margins.
-    assistant_new_entry_point_button->SetImageModel(
-        views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromImage(gfx::ResizedImage(
-            ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-                assistant_browser_delegate->GetNewEntryPointIconResourceId()),
-            assistant_new_entry_point_button->GetPreferredSize())));
+    assistant_new_entry_point_button()->SetImageModel(
+        views::ImageButton::STATE_NORMAL, gemini_icon);
 
     std::string name = AppListModelProvider::Get()
                            ->search_model()
@@ -1792,8 +1789,8 @@ void SearchBoxView::ShowAssistantNewEntryPointChanged() {
     CHECK(!name.empty())
         << "New entry point name must be set if a profile is eligible for the "
            "new entry point";
-    assistant_new_entry_point_button->SetTooltipText(base::UTF8ToUTF16(name));
-    assistant_new_entry_point_button->GetViewAccessibility().SetName(name);
+    assistant_new_entry_point_button()->SetTooltipText(base::UTF8ToUTF16(name));
+    assistant_new_entry_point_button()->GetViewAccessibility().SetName(name);
   }
 
   SetShowAssistantNewEntryPointButton(show);

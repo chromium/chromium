@@ -74,7 +74,7 @@ export class ViewerBottomToolbarElement extends ViewerBottomToolbarElementBase {
     const option = options.find(option => option.size === this.currentSize);
     assert(option);
 
-    return 'pdf:' + option.icon;
+    return 'pdf-ink:' + option.icon;
   }
 
   protected getSizeTitle_(): string {

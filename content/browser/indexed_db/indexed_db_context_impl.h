@@ -100,7 +100,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
-  void BindTestInterface(
+  void BindTestInterfaceForTesting(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
       override;
   void AddObserver(
@@ -112,26 +112,19 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void GetFilePathForTesting(const storage::BucketLocator& bucket_locator,
                              GetFilePathForTestingCallback callback) override;
   void ResetCachesForTesting(base::OnceClosure callback) override;
-  void WriteToIndexedDBForTesting(const storage::BucketLocator& bucket_locator,
-                                  const std::string& key,
-                                  const std::string& value,
-                                  base::OnceClosure callback) override;
   void GetPathForBlobForTesting(
       const storage::BucketLocator& bucket_locator,
       int64_t database_id,
       int64_t blob_number,
       GetPathForBlobForTestingCallback callback) override;
-  void CompactBackingStoreForTesting(
-      const storage::BucketLocator& bucket_locator,
-      base::OnceClosure callback) override;
+  void FlushBackingStoreForTesting(const storage::BucketLocator& bucket_locator,
+                                   base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
   void GetSchedulingPriorityForTesting(
       GetSchedulingPriorityForTestingCallback callback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
       override;
-  void GetDatabaseKeysForTesting(
-      GetDatabaseKeysForTestingCallback callback) override;
   void ForceInitializeFromFilesForTesting(
       ForceInitializeFromFilesForTestingCallback callback) override;
 

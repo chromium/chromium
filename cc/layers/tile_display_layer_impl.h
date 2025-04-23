@@ -34,22 +34,22 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   class CC_EXPORT Client {
    public:
     virtual ~Client() = default;
-    virtual void DidAppendQuadsWithResources(
-        const std::vector<viz::TransferableResource>& resource) = 0;
+
+    // To notify client to Import or Discard a TransferableResource.
+    virtual void ImportResource(viz::TransferableResource resource) = 0;
+    virtual void DiscardResource(viz::ResourceId resource) = 0;
   };
 
   struct NoContents {};
 
   struct CC_EXPORT TileResource {
     TileResource(const viz::TransferableResource& resource,
-                 bool is_premultiplied,
                  bool is_checkered);
     TileResource(const TileResource&);
     TileResource& operator=(const TileResource&);
     ~TileResource();
 
     viz::TransferableResource resource;
-    bool is_premultiplied;
     bool is_checkered;
   };
 
@@ -162,10 +162,12 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   void RecordDamage(const gfx::Rect& damage_rect);
 
+  void ImportResource(viz::TransferableResource resource);
+  void DiscardResource(viz::ResourceId resource);
+
  private:
   raw_ref<Client> client_;
   std::vector<std::unique_ptr<Tiling>> tilings_;
-  std::vector<viz::TransferableResource> discarded_resources_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
 

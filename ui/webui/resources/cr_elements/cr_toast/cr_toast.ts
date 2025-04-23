@@ -40,6 +40,12 @@ export class CrToastElement extends CrLitElement {
   accessor open: boolean = false;
   private hideTimeoutId_: number|null = null;
 
+  constructor() {
+    super();
+    this.addEventListener('focusin', this.clearTimeout_);
+    this.addEventListener('focusout', this.resetAutoHide_);
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -48,14 +54,18 @@ export class CrToastElement extends CrLitElement {
     }
   }
 
-  /**
-   * Cancels existing auto-hide, and sets up new auto-hide.
-   */
-  private resetAutoHide_() {
+  private clearTimeout_() {
     if (this.hideTimeoutId_ !== null) {
       window.clearTimeout(this.hideTimeoutId_);
       this.hideTimeoutId_ = null;
     }
+  }
+
+  /**
+   * Cancels existing auto-hide, and sets up new auto-hide.
+   */
+  private resetAutoHide_() {
+    this.clearTimeout_();
 
     if (this.open && this.duration !== 0) {
       this.hideTimeoutId_ = window.setTimeout(() => {

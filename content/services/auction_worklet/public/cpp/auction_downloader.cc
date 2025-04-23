@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +23,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -33,7 +35,9 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/gurl.h"
@@ -200,7 +204,6 @@ std::unique_ptr<network::ResourceRequest> MakeResourceRequest(
     base::optional_ref<const url::Origin> request_initiator,
     std::optional<network::ResourceRequest::TrustedParams> trusted_params,
     std::string_view request_id) {
-  DCHECK(!(allow_stale_response && post));
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = source_url;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
@@ -217,8 +220,12 @@ std::unique_ptr<network::ResourceRequest> MakeResourceRequest(
     resource_request->request_initiator = *request_initiator;
     resource_request->mode = network::mojom::RequestMode::kCors;
   }
-  if (allow_stale_response) {
-    DCHECK(!request_initiator);
+  // Stale-while-revalidate is not supported for POST in the http cache,
+  // so do not try to support it here -- so we do not need to hold onto
+  // the post body. The `request_initiator` constructor is, in production,
+  // currently only used with POSTs, so no need to support
+  // stale-while-revalidate when it is populated, either.
+  if (allow_stale_response && !post && !request_initiator) {
     DCHECK(!resource_request->trusted_params);
     resource_request->load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
@@ -244,6 +251,8 @@ AuctionDownloader::AuctionDownloader(
                         source_url,
                         download_mode,
                         mime_type,
+                        /*url_loader_client_endpoints=*/nullptr,
+                        /*request_id=*/std::nullopt,
                         std::move(post_body),
                         std::move(content_type),
                         num_igs_for_trusted_bidding_signals_kvv1,
@@ -269,6 +278,8 @@ AuctionDownloader::AuctionDownloader(
           source_url,
           download_mode,
           mime_type,
+          /*url_loader_client_endpoints=*/nullptr,
+          /*request_id=*/std::nullopt,
           std::move(post_body),
           std::move(content_type),
           /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
@@ -278,6 +289,30 @@ AuctionDownloader::AuctionDownloader(
           std::move(auction_downloader_callback),
           std::move(network_events_delegate)) {}
 
+AuctionDownloader::AuctionDownloader(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojom::InProgressAuctionDownloadPtr in_progress_load,
+    DownloadMode download_mode,
+    AuctionDownloader::MimeType mime_type,
+    std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
+    ResponseStartedCallback response_started_callback,
+    AuctionDownloaderCallback auction_downloader_callback,
+    std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
+    : AuctionDownloader(url_loader_factory,
+                        std::move(in_progress_load->url),
+                        download_mode,
+                        mime_type,
+                        std::move(in_progress_load->endpoints),
+                        std::move(in_progress_load->devtools_request_id),
+                        /*post_body=*/std::nullopt,
+                        /*content_type=*/std::nullopt,
+                        num_igs_for_trusted_bidding_signals_kvv1,
+                        /*request_initiator=*/std::nullopt,
+                        /*trusted_params=*/std::nullopt,
+                        std::move(response_started_callback),
+                        std::move(auction_downloader_callback),
+                        std::move(network_events_delegate)) {}
+
 AuctionDownloader::NetworkEventsDelegate::~NetworkEventsDelegate() = default;
 AuctionDownloader::~AuctionDownloader() = default;
 
@@ -286,6 +321,8 @@ AuctionDownloader::AuctionDownloader(
     const GURL& source_url,
     DownloadMode download_mode,
     MimeType mime_type,
+    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    std::optional<std::string> request_id,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type,
     std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1,
@@ -299,34 +336,35 @@ AuctionDownloader::AuctionDownloader(
       mime_type_(mime_type),
       num_igs_for_trusted_bidding_signals_kvv1_(
           num_igs_for_trusted_bidding_signals_kvv1),
-      request_id_(base::UnguessableToken::Create().ToString()),
+      request_id_(request_id ? std::move(request_id).value()
+                             : base::UnguessableToken::Create().ToString()),
       response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
       network_events_delegate_(std::move(network_events_delegate)) {
   DCHECK(auction_downloader_callback_);
 
-  // Stale-while-revalidate is not supported for POST in the http cache,
-  // so do not try to support it here -- so we do not need to hold onto
-  // the post body. The `request_initiator` constructor is, in production,
-  // currently only used with POSTs, so no need to support
-  // stale-while-revalidate when it is populated, either.
-  bool allow_stale_response =
-      base::FeatureList::IsEnabled(
-          features::kFledgeAuctionDownloaderStaleWhileRevalidate) &&
-      !post_body.has_value() && !request_initiator;
+  bool in_progress_load = !url_loader_client_endpoints.is_null();
 
-  auto resource_request = MakeResourceRequest(
-      source_url_, mime_type_, post_body.has_value(), allow_stale_response,
-      request_initiator, std::move(trusted_params), request_id_);
-
-  if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnNetworkSendRequest(*resource_request);
+  if (in_progress_load) {
+    simple_url_loader_ = network::SimpleURLLoader::Create(
+        source_url_, std::move(url_loader_client_endpoints));
+  } else {
+    auto resource_request = MakeResourceRequest(
+        source_url_, mime_type_, post_body.has_value(),
+        /*allow_stale_response=*/
+        base::FeatureList::IsEnabled(
+            features::kFledgeAuctionDownloaderStaleWhileRevalidate),
+        request_initiator, std::move(trusted_params), request_id_);
+    if (network_events_delegate_ != nullptr) {
+      network_events_delegate_->OnNetworkSendRequest(*resource_request);
+    }
+    simple_url_loader_ = network::SimpleURLLoader::Create(
+        std::move(resource_request), kTrafficAnnotation);
   }
 
-  simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kTrafficAnnotation);
-
   if (post_body.has_value()) {
+    // We cannot attach an upload to an in-progress load.
+    CHECK(!in_progress_load);
     // Although content type header is not required in POST request, but we
     // should have one.
     CHECK(content_type.has_value());
@@ -339,7 +377,7 @@ AuctionDownloader::AuctionDownloader(
       base::TimeTicks::Now(), "data", [&](perfetto::TracedValue dest) {
         auto dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", request_id_);
-        dict.Add("url", source_url.spec());
+        dict.Add("url", source_url_.spec());
         // Value derived from CDP ResourceType enum:
         // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
         // TODO: Import the enum strings directly
@@ -358,14 +396,18 @@ AuctionDownloader::AuctionDownloader(
 
   simple_url_loader_->SetTimeoutDuration(kRequestTimeout);
 
+  // SimpleURLLoader does not use an URLLoaderFactory when it's created for an
+  // in-progress load.
+  network::mojom::URLLoaderFactory* factory_for_download =
+      in_progress_load ? nullptr : &url_loader_factory_.get();
   // TODO(mmenke): Consider limiting the size of response bodies.
   if (download_mode == DownloadMode::kActualDownload) {
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory, base::BindOnce(&AuctionDownloader::OnBodyReceived,
-                                           base::Unretained(this)));
+        factory_for_download, base::BindOnce(&AuctionDownloader::OnBodyReceived,
+                                             base::Unretained(this)));
   } else {
     simple_url_loader_->DownloadHeadersOnly(
-        url_loader_factory,
+        factory_for_download,
         base::BindOnce(&AuctionDownloader::OnHeadersOnlyReceived,
                        base::Unretained(this)));
   }
@@ -488,6 +530,46 @@ void AuctionDownloader::OnRedirect(
   FailRequest(network::URLLoaderCompletionStatus(net::ERR_ABORTED),
               base::StringPrintf("Unexpected redirect on %s.",
                                  source_url_.spec().c_str()));
+}
+
+// static
+mojom::InProgressAuctionDownloadPtr AuctionDownloader::StartDownload(
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    const GURL& source_url,
+    AuctionDownloader::MimeType mime_type,
+    AuctionDownloader::NetworkEventsDelegate& network_events_delegate,
+    std::optional<std::string> post_body,
+    std::optional<std::string> content_type) {
+  // We only use the content_type when we have a post body.
+  CHECK_EQ(post_body.has_value(), content_type.has_value());
+  auto script_url_loader_endpoints =
+      network::mojom::URLLoaderClientEndpoints::New();
+  std::string request_id = base::UnguessableToken::Create().ToString();
+  auto resource_request = MakeResourceRequest(
+      source_url, mime_type,
+      /*post=*/post_body.has_value(), /*allow_stale_response=*/
+      base::FeatureList::IsEnabled(
+          features::kFledgeAuctionDownloaderStaleWhileRevalidate),
+      /*request_initiator=*/std::nullopt, /*trusted_params=*/std::nullopt,
+      /*request_id=*/request_id);
+  if (post_body.has_value() && content_type.has_value()) {
+    resource_request->request_body =
+        network::ResourceRequestBody::CreateFromCopyOfBytes(
+            base::as_byte_span(std::move(post_body.value())));
+    resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                        content_type.value());
+  }
+  network_events_delegate.OnNetworkSendRequest(*resource_request);
+  url_loader_factory.CreateLoaderAndStart(
+      script_url_loader_endpoints->url_loader.InitWithNewPipeAndPassReceiver(),
+      /*request_id=*/0, network::mojom::kURLLoadOptionNone, *resource_request,
+      script_url_loader_endpoints->url_loader_client
+          .InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation));
+
+  return mojom::InProgressAuctionDownload::New(
+      std::move(source_url), std::move(script_url_loader_endpoints),
+      std::move(request_id));
 }
 
 // static

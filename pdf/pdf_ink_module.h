@@ -334,6 +334,9 @@ class PdfInkModule {
   void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
+  void HandleGetTextAnnotFontNamesMessage(const base::Value::Dict& message);
+  void HandleSetTextAnnotationFontMessage(const base::Value::Dict& message);
+  void HandleSetTextAnnotTextBoxRectMessage(const base::Value::Dict& message);
 
   bool is_drawing_stroke() const {
     return std::holds_alternative<DrawingStrokeState>(current_tool_state_);

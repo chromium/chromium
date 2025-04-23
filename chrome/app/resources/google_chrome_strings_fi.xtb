@@ -261,6 +261,7 @@
 <translation id="4328355335528187361">Google Chromen kehittäjäversio (saapuva mDNS)</translation>
 <translation id="4329315893554541805">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromen verkko- ja sovellustoimintaan ja linkitettyihin Googlen palveluihin</translation>
 <translation id="4334294535648607276">Lataus on valmis.</translation>
+<translation id="4337324600316876133">Sinulla on oltava macOS 12 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 11.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on lisätty Chromeen</translation>
 <translation id="4348548358339558429">Voit käyttää personointia, kun lisäät Chromen verkko- ja sovellustoimintaan</translation>
 <translation id="436060642166082913">Chrome on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
@@ -296,7 +297,6 @@
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> on jo kirjautunut sisään.  Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
-<translation id="4873692836499071887">Sinulla on oltava macOS 11 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.15.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="4885446229353981848">Näytä aina Google Lens ‐pikanäppäin</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>

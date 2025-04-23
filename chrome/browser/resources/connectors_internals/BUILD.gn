@@ -16,7 +16,7 @@ build_webui("build") {
     "managed_client_certificate.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "connectors_utils.ts",
   ]

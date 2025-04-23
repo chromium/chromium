@@ -366,6 +366,14 @@ const ComputedStyle* PseudoElement::AdjustedLayoutStyle(
     // the originating element of the scroll marker.
     StyleAdjuster::AdjustStyleForDisplay(builder, layout_parent_style, this,
                                          &GetDocument());
+    if (style.IsInertIsInherited() &&
+        style.IsInert() != layout_parent_style.IsInert()) {
+      // A ::scroll-marker gets its inertness from its ::scroll-marker-group
+      // instead of its originating element unless the inertness is applied
+      // directly to the ::scroll-marker itself.
+      builder.SetIsInert(layout_parent_style.IsInert());
+      builder.SetIsInertIsInherited(false);
+    }
     return builder.TakeStyle();
   }
 

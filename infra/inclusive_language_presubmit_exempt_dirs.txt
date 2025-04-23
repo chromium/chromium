@@ -106,7 +106,6 @@ chrome/test/data/safe_browsing/download_protection 1 1
 chrome/test/data/third_party/kraken/tests/kraken-1.1 20 4
 chrome/test/data/third_party/spaceport 1 1
 chrome/test/data/updater 2 1
-chrome/test/data/variations/http_server 1 1
 chrome/test/data/webui 1 1
 chrome/test/data/webui/chromeos 1 1
 chrome/updater/win 1 1
@@ -209,7 +208,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/generators 2 1
 infra/config/gn_args 1 1
@@ -304,9 +303,9 @@ third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/json 1 1
 third_party/android_deps/autorolled/committed/libs/com_google_auto_service_auto_service_annotations 1 1
 third_party/android_deps/autorolled/committed/libs/com_google_errorprone_error_prone_annotations 1 1
+third_party/android_deps/autorolled/committed/libs/com_google_protobuf_protobuf_javalite 1 1
 third_party/android_deps/buildSrc/src/main/groovy 37 2
 third_party/android_deps/libs 1 1
-third_party/android_deps/libs/com_google_protobuf_protobuf_javalite 1 1
 third_party/android_toolchain 1 1
 third_party/arcore-android-sdk 1 1
 third_party/axe-core 2 1
@@ -684,6 +683,7 @@ third_party/rust/chromium_crates_io/vendor/itoa-v1 2 1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/src 1 1
 third_party/rust/chromium_crates_io/vendor/libm-v0_2 1 1
+third_party/rust/chromium_crates_io/vendor/llguidance-v0_7 1 1
 third_party/rust/chromium_crates_io/vendor/log-v0_4 1 1
 third_party/rust/chromium_crates_io/vendor/log-v0_4/.github/workflows 8 1
 third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8 4 2
@@ -711,6 +711,7 @@ third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/dfa 11 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/hybrid 7 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/meta 6 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/nfa/thompson/backtrack 2 1
+third_party/rust/chromium_crates_io/vendor/regex-syntax-v0_8 2 2
 third_party/rust/chromium_crates_io/vendor/rust_decimal-v1 3 2
 third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/rustversion-v1 2 1
@@ -721,12 +722,17 @@ third_party/rust/chromium_crates_io/vendor/ryu-v1/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/ryu-v1/src 1 1
 third_party/rust/chromium_crates_io/vendor/serde_derive-v1 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-v0_2 1 1
+third_party/rust/chromium_crates_io/vendor/serde_json-v1 6 1
+third_party/rust/chromium_crates_io/vendor/serde_json-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde-v1 1 1
 third_party/rust/chromium_crates_io/vendor/serde-v1/src 1 1
 third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/smallvec-v1/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-v1 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-v1/src 2 1
+third_party/rust/chromium_crates_io/vendor/strum_macros-v0_27 1 1
+third_party/rust/chromium_crates_io/vendor/strum-v0_27 1 1
+third_party/rust/chromium_crates_io/vendor/strum-v0_27/src 1 1
 third_party/rust/chromium_crates_io/vendor/subtle-v2 1 1
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src 1 1
 third_party/rust/chromium_crates_io/vendor/synstructure-v0_13 1 1

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
@@ -131,7 +132,12 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       return false;
   }
 }
@@ -224,7 +230,12 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -318,7 +329,12 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -401,7 +417,12 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       return nullptr;
   }
 }
@@ -483,7 +504,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+    case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
       return nullptr;
   }
 }
@@ -582,6 +608,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
 }
 
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -666,22 +693,27 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (instancetype)
-     initWithIdentityManager:(signin::IdentityManager*)identityManager
-       accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                 authService:(AuthenticationService*)authService
-                 prefService:(PrefService*)prefService
-                 syncService:(syncer::SyncService*)syncService
-                 accessPoint:(signin_metrics::AccessPoint)accessPoint
-             signinPresenter:(id<SigninPresenter>)signinPresenter
-    accountSettingsPresenter:
-        (id<AccountSettingsPresenter>)accountSettingsPresenter {
+              initWithIdentityManager:(signin::IdentityManager*)identityManager
+                accountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                          authService:(AuthenticationService*)authService
+                          prefService:(PrefService*)prefService
+                          syncService:(syncer::SyncService*)syncService
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      signinPresenter:(id<SigninPresenter>)signinPresenter
+             accountSettingsPresenter:
+                 (id<AccountSettingsPresenter>)accountSettingsPresenter
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider {
   self = [super init];
   if (self) {
+    CHECK(changeProfileContinuationProvider);
     CHECK(identityManager);
     CHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
+    _changeProfileContinuationProvider = changeProfileContinuationProvider;
     _authService = authService;
     _prefService = prefService;
     _syncService = syncService;
@@ -725,7 +757,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
-      [self handleIdentityListChanged];
+      [self onAccountsOnDeviceChanged];
     }
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);
@@ -999,12 +1031,13 @@ id<SystemIdentity> GetDisplayedIdentity(
           [weakConsumer signinDidFinish];
         }
       };
-  ShowSigninCommand* command =
-      [[ShowSigninCommand alloc] initWithOperation:operation
-                                          identity:identity
-                                       accessPoint:self.accessPoint
-                                       promoAction:promoAction
-                                        completion:completion];
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+                      initWithOperation:operation
+                               identity:identity
+                            accessPoint:self.accessPoint
+                            promoAction:promoAction
+                             completion:completion
+      changeProfileContinuationProvider:_changeProfileContinuationProvider];
   [self.signinPresenter showSignin:command];
 }
 
@@ -1029,7 +1062,9 @@ id<SystemIdentity> GetDisplayedIdentity(
   return self.dataTypeToWaitForInitialSync != syncer::DataType::UNSPECIFIED;
 }
 
-- (void)handleIdentityListChanged {
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
   id<SystemIdentity> currentIdentity = self.displayedIdentity;
   id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
       _authService, _identityManager, _accountManagerService);
@@ -1041,18 +1076,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 }
 
-- (void)handleIdentityUpdated {
-  [self sendConsumerNotificationWithIdentityChanged:NO];
-}
-
-#pragma mark -  IdentityManagerObserver
-
-- (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
-}
-
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self handleIdentityUpdated];
+  [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 
 #pragma mark - SigninPromoViewDelegate

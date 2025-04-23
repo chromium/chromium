@@ -64,6 +64,16 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chromium-android-device-flasher",
+    # android-device-flasher runs only once a week. So have it sends
+    # notifications whenever there is an infra failure.
+    on_occurrence = ["INFRA_FAILURE"],
+    notify_emails = [
+        "chromium-infra+failures@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chromium-androidx-packager",
     on_new_status = ["FAILURE"],
     notify_emails = [

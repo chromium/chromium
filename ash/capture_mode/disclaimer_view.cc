@@ -292,7 +292,7 @@ std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
       std::move(press_learn_more_link_callback));
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   delegate->SetAccessibleTitle(GetTextTitle(is_reminder));
   delegate->SetInitiallyFocusedView(disclaimer_view->accept_button());

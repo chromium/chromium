@@ -9,6 +9,8 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 
+#include <optional>
+
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -56,33 +59,32 @@ namespace content {
 
 class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
  protected:
-  void LoadInitialAccessibilityTreeFromUrl(
-      const GURL& url,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete) {
+  void SetUpOnMainThread() override {
+    accessibility_mode_.emplace(ui::kAXModeComplete);
+  }
+
+  void TearDownOnMainThread() override { accessibility_mode_.reset(); }
+
+  void LoadInitialAccessibilityTreeFromUrl(const GURL& url) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           accessibility_mode,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
-      const std::string& html_file_path,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete) {
+      const std::string& html_file_path) {
     if (!embedded_test_server()->Started()) {
       ASSERT_TRUE(embedded_test_server()->Start());
     }
     ASSERT_TRUE(embedded_test_server()->Started());
     LoadInitialAccessibilityTreeFromUrl(
-        embedded_test_server()->GetURL(html_file_path), accessibility_mode);
+        embedded_test_server()->GetURL(html_file_path));
   }
 
-  void LoadInitialAccessibilityTreeFromHtml(
-      const std::string& html,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete) {
+  void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
     LoadInitialAccessibilityTreeFromUrl(
-        GURL("data:text/html," + base::EscapeQueryParamValue(html, false)),
-        accessibility_mode);
+        GURL("data:text/html," + base::EscapeQueryParamValue(html, false)));
   }
 
   ui::BrowserAccessibilityManager* GetManagerAndAssertNonNull() {
@@ -164,6 +166,7 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,

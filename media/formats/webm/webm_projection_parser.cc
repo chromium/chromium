@@ -69,7 +69,7 @@ bool WebMProjectionParser::OnUInt(int id, int64_t val) {
 
 // WebMParserClient
 bool WebMProjectionParser::OnFloat(int id, double val) {
-  double* dst = NULL;
+  double* dst = nullptr;
   bool is_valid = false;
 
   switch (id) {

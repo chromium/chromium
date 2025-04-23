@@ -39,7 +39,7 @@ void ExpectUpdateRectEquals(const gfx::Rect& expected,
   EXPECT_EQ(expected.height(), actual.height);
 }
 
-class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+class MockVideoSink : public webrtc::VideoSinkInterface<webrtc::VideoFrame> {
  public:
   MOCK_METHOD1(OnFrame, void(const webrtc::VideoFrame&));
 };
@@ -74,7 +74,7 @@ class WebRtcVideoTrackSourceTest
             base::BindLambdaForTesting([] {}),
             /*gpu_factories=*/nullptr,
             shared_resources_)) {
-    track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
+    track_source_->AddOrUpdateSink(&mock_sink_, webrtc::VideoSinkWants());
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   }
@@ -363,7 +363,7 @@ TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {
   const gfx::Size kScaleToSize = gfx::Size(320, 180);
   const float k5Fps = 5.0;
 
-  rtc::VideoSinkWants sink_wants;
+  webrtc::VideoSinkWants sink_wants;
   sink_wants.max_pixel_count = kScaleToSize.GetArea();
   sink_wants.max_framerate_fps = static_cast<int>(k5Fps);
   track_source_->SetSinkWantsForTesting(sink_wants);

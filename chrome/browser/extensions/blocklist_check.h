@@ -9,6 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/preload_check.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

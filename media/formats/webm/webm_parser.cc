@@ -9,6 +9,11 @@
 
 #include "media/formats/webm/webm_parser.h"
 
+#include <array>
+
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+
 // This file contains code to parse WebM file elements. It was created
 // from information in the Matroska spec.
 // http://www.matroska.org/technical/specs/index.html
@@ -58,7 +63,7 @@ struct ElementIdInfo {
 struct ListElementInfo {
   int id_;
   int level_;
-  raw_ptr<const ElementIdInfo> id_info_;
+  base::raw_span<const ElementIdInfo> id_info_;
   int id_info_count_;
 };
 
@@ -75,12 +80,16 @@ static const ElementIdInfo kEBMLHeaderIds[] = {
     {UINT, kWebMIdDocTypeReadVersion},
 };
 
-static const ElementIdInfo kSegmentIds[] = {
-    {LIST, kWebMIdSeekHead}, {LIST, kWebMIdInfo},
-    {LIST, kWebMIdCluster},  {LIST, kWebMIdTracks},
-    {LIST, kWebMIdCues},     {SKIP_LIST, kWebMIdAttachments},
-    {LIST, kWebMIdChapters}, {LIST, kWebMIdTags},
-};
+static const auto kSegmentIds = std::to_array<ElementIdInfo>({
+    {LIST, kWebMIdSeekHead},
+    {LIST, kWebMIdInfo},
+    {LIST, kWebMIdCluster},
+    {LIST, kWebMIdTracks},
+    {LIST, kWebMIdCues},
+    {SKIP_LIST, kWebMIdAttachments},
+    {LIST, kWebMIdChapters},
+    {LIST, kWebMIdTags},
+});
 
 static const ElementIdInfo kSeekHeadIds[] = {
     {LIST, kWebMIdSeek},
@@ -390,7 +399,7 @@ static const ElementIdInfo kSimpleTagIds[] = {
 #define LIST_ELEMENT_INFO(id, level, id_info) \
   { (id), (level), (id_info), std::size(id_info) }
 
-static const ListElementInfo kListElementInfo[] = {
+static const auto kListElementInfo = std::to_array<ListElementInfo>({
     LIST_ELEMENT_INFO(kWebMIdCluster, 1, kClusterIds),
     LIST_ELEMENT_INFO(kWebMIdEBMLHeader, 0, kEBMLHeaderIds),
     LIST_ELEMENT_INFO(kWebMIdSegment, 0, kSegmentIds),
@@ -440,7 +449,7 @@ static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdColour, 4, kColourIds),
     LIST_ELEMENT_INFO(kWebMIdColorVolumeMetadata, 5, kColorVolumeMetadataIds),
     LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
-};
+});
 
 // Parses an element header id or size field. These fields are variable length
 // encoded. The first byte indicates how many bytes the field occupies.
@@ -555,7 +564,7 @@ int WebMParseElementHeader(const uint8_t* buf,
 
 // Finds ElementType for a specific ID.
 static ElementType FindIdType(int id,
-                              const ElementIdInfo* id_info,
+                              base::span<const ElementIdInfo> id_info,
                               int id_info_count) {
   // Check for global element IDs that can be anywhere.
   if (id == kWebMIdVoid || id == kWebMIdCRC32) {
@@ -579,7 +588,7 @@ static const ListElementInfo* FindListInfo(int id) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 static int FindListLevel(int id) {
@@ -674,7 +683,7 @@ static int ParseString(const uint8_t* buf,
                        int id,
                        WebMParserClient* client) {
   const uint8_t* end = static_cast<const uint8_t*>(memchr(buf, '\0', size));
-  int length = (end != NULL) ? static_cast<int>(end - buf) : size;
+  int length = (end != nullptr) ? static_cast<int>(end - buf) : size;
   std::string str(reinterpret_cast<const char*>(buf), length);
   return client->OnString(id, str) ? size : -1;
 }
@@ -722,7 +731,7 @@ WebMParserClient::~WebMParserClient() = default;
 
 WebMParserClient* WebMParserClient::OnListStart(int id) {
   DVLOG(1) << "Unexpected list element start with ID " << std::hex << id;
-  return NULL;
+  return nullptr;
 }
 
 bool WebMParserClient::OnListEnd(int id) {
@@ -960,7 +969,7 @@ bool WebMListParser::OnListStart(int id, int64_t size) {
     return false;
   }
 
-  WebMParserClient* current_list_client = NULL;
+  WebMParserClient* current_list_client = nullptr;
   if (!list_state_stack_.empty()) {
     // Make sure the new list doesn't go past the end of the current list.
     ListState current_list_state = list_state_stack_.back();
@@ -1001,7 +1010,7 @@ bool WebMListParser::OnListEnd() {
 
     list_state_stack_.pop_back();
 
-    WebMParserClient* client = NULL;
+    WebMParserClient* client = nullptr;
     if (!list_state_stack_.empty()) {
       // Update the bytes_parsed_ for the parent element.
       list_state_stack_.back().bytes_parsed_ += bytes_parsed;

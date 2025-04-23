@@ -64,14 +64,14 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 }  // namespace
 
 ExtensionApiTest::ExtensionApiTest(ContextType context_type)
-    : ExtensionApiTestBase(context_type), platform_delegate_(*this) {
+    : ExtensionBrowserTest(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 
 ExtensionApiTest::~ExtensionApiTest() = default;
 
 void ExtensionApiTest::SetUpOnMainThread() {
-  ExtensionApiTestBase::SetUpOnMainThread();
+  ExtensionBrowserTest::SetUpOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
   // See comment in SetUpTestDataDir().
@@ -94,7 +94,7 @@ void ExtensionApiTest::SetUpOnMainThread() {
 }
 
 void ExtensionApiTest::TearDownOnMainThread() {
-  ExtensionApiTestBase::TearDownOnMainThread();
+  ExtensionBrowserTest::TearDownOnMainThread();
   TestGetConfigFunction::set_test_config_state(nullptr);
   test_config_.reset();
 }
@@ -194,7 +194,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
 }
 
 void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
-  platform_delegate_.OpenURL(url, open_in_incognito);
+  platform_delegate().OpenURL(url, open_in_incognito);
 }
 
 bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
@@ -267,7 +267,7 @@ void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
 }
 
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
-  ExtensionApiTestBase::SetUpCommandLine(command_line);
+  ExtensionBrowserTest::SetUpCommandLine(command_line);
 
 #if !BUILDFLAG(IS_ANDROID)
   // On Android this is handled later.

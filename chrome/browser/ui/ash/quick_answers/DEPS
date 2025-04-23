@@ -17,6 +17,7 @@ specific_include_rules = {
     "+chrome/browser/ash/accessibility",
     "+chrome/browser/ash/login/users",
     "+chrome/browser/ash/profiles",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/notifications",
   ],
   ".*pixeltest\.cc": [
@@ -26,7 +27,6 @@ specific_include_rules = {
     "+chrome/browser/ui/browser.h",
   ],
   "quick_answers_view\.cc": [
-    "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/color/chrome_color_id.h",
   ],
 }

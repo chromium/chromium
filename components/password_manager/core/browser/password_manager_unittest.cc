@@ -1128,9 +1128,6 @@ TEST_P(PasswordManagerTest,
 // Tests that the user input in a single username form is correctly added to
 // the possible usernames.
 TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -1176,9 +1173,6 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
 // corresponding PasswordFormManager can be retrieved based on the unique field
 // ID.
 TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -1212,9 +1206,6 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
 // the autocomplete attribute.
 TEST_P(PasswordManagerTest,
        AddUserInputToPossibleUsernames_AutocompleteWithUsername) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -1252,9 +1243,6 @@ TEST_P(PasswordManagerTest,
 // correctly set to true when there is a username value in the autocomplete
 // attribute.
 TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -1316,9 +1304,6 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_DisabledByDefault) {
 // Tests that a user input on a password field isn't considered as a possible
 // username.
 TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSimpleFormData();
@@ -1348,9 +1333,6 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
 // Tests that a user input on a non-text field isn't considered as a possible
 // username.
 TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -1389,9 +1371,6 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
 // possible username.
 TEST_P(PasswordManagerTest,
        AddUserInputToPossibleUsernames_NotConsideredAsUsername) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
-
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
@@ -3118,7 +3097,12 @@ TEST_P(PasswordManagerTest, UpdateFormManagers) {
 
 TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   PasswordForm android_form(MakeAndroidCredential());
+
   PasswordForm observed_form(MakeSimpleForm());
+  // Clear username and password values to test autofilling on page load.
+  test_api(observed_form.form_data).field(0).set_value(std::u16string());
+  test_api(observed_form.form_data).field(1).set_value(std::u16string());
+
   std::vector<FormData> observed_forms;
   observed_forms.push_back(observed_form.form_data);
 
@@ -6635,6 +6619,154 @@ TEST_P(PasswordManagerTest, OnResourceLoadingFailedFeatureDisabled) {
   manager()->OnResourceLoadingFailed(&driver_, form_data.url());
 
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+}
+
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginIsDelayed) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin is invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value));
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin);
+}
+
+TEST_P(PasswordManagerTest,
+       DelayedNotifyOnSuccessfulLoginWorksEvenAfterNavigation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // Now navigate to a second page.
+  manager()->DidNavigateMainFrame(false);
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin is invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value));
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin);
+}
+
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginInvokedOnce) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  observed.clear();
+  for (int i = 0; i < 10; i++) {
+    manager()->OnPasswordFormsParsed(&driver_, observed);
+    manager()->OnPasswordFormsRendered(&driver_, observed);
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(1);
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin * 2);
+}
+
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginIsNotInvokedAfterFailure) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  // Emulate a navigation to a different page without a form, only for a form to
+  // appear shortly after. This will result into considering login failed.
+  manager()->OnPasswordFormsParsed(&driver_, std::vector<FormData>());
+  manager()->OnPasswordFormsRendered(&driver_, std::vector<FormData>());
+  task_environment_.RunUntilIdle();
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin does not get
+  // invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin * 2);
+}
+
+TEST_P(PasswordManagerTest, LoginFormClearingIsConsideredFailedLoginAttempt) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnFormClearEvent);
+
+  PasswordForm form(MakeSimpleForm());
+  FormData form_data = form.form_data;
+  std::vector<FormData> observed = {form_data};
+
+  // Emulate page load.
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+
+  OnPasswordFormSubmitted(form_data);
+
+  // Verify no successful submission is detected.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  test_api(form_data).field(0).set_value(u"");
+  test_api(form_data).field(1).set_value(u"");
+  manager()->OnPasswordFormCleared(&driver_, form.form_data);
+  task_environment_.RunUntilIdle();
+
+  // Verify submitted manager is reset.
+  EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());

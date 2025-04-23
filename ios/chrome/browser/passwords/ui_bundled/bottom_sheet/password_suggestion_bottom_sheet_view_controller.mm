@@ -412,12 +412,8 @@ CGFloat const kSpacingAfterTitle = 4;
                                                   atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
 
-  [cell
-      setFaviconContainerBackgroundColor:
-          (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
-              ? [UIColor colorNamed:kSeparatorColor]
-              : [UIColor colorNamed:kPrimaryBackgroundColor]];
-  [cell setFaviconContainerBorderColor:UIColor.clearColor];
+  [cell setFaviconContainerBackgroundColor:
+            [UIColor colorNamed:kPrimaryBackgroundColor]];
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 

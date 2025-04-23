@@ -17,11 +17,11 @@ InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertNeutral(
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow));
 }
 
-InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertValue(
+InterpolationValue
+CSSCustomTransformInterpolationType::MaybeConvertTransformList(
     const CSSValue& value,
-    const StyleResolverState*,
-    ConversionCheckers&) const {
-  auto* list_value = DynamicTo<CSSValueList>(value);
+    const CSSToLengthConversionData& conversion_data) const {
+  const auto* list_value = DynamicTo<CSSValueList>(value);
   if (!list_value) {
     return nullptr;
   }
@@ -36,8 +36,15 @@ InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertValue(
   }
 
   return InterpolationValue(InterpolableTransformList::ConvertCSSValue(
-      value, CSSToLengthConversionData(/*element=*/nullptr),
+      value, conversion_data,
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow));
+}
+
+InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertValue(
+    const CSSValue& value,
+    const StyleResolverState& state,
+    ConversionCheckers&) const {
+  return MaybeConvertTransformList(value, state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSCustomTransformInterpolationType::CreateCSSValue(
@@ -49,6 +56,13 @@ const CSSValue* CSSCustomTransformInterpolationType::CreateCSSValue(
     return nullptr;
   }
   return ComputedStyleUtils::ValueForTransformList(list_value->operations(), 1);
+}
+
+InterpolationValue
+CSSCustomTransformInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  return MaybeConvertTransformList(
+      value, CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 }  // namespace blink

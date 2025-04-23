@@ -728,7 +728,7 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
         flags);
   }
 
-  flags.setColor(color().ConvertToSkColor(view.GetColorProvider()));
+  flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setStrokeWidth(1.0);
   flags.setAntiAlias(true);
@@ -743,7 +743,7 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(border_->color().ConvertToSkColor(view->GetColorProvider()));
+  flags.setColor(border_->color().ResolveToSkColor(view->GetColorProvider()));
   gfx::RectF bounds(view->GetLocalBounds());
   bounds.Inset(gfx::InsetsF(border_->GetInsets()));
 

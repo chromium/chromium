@@ -34,10 +34,6 @@ a warning similar to
 ```
 error: function 'memcpy' is unsafe [-Werror,-Wunsafe-buffer-usage-in-libc-call]
 ```
-These warnings are not yet enabled by default for chromium builds.
-Suppressions are being incrementally added prior to enabling these
-warnings.
-
 ## Unsafe buffer warning suppressions
 
 Because the Chromium codebase is not yet compliant with these warnings,
@@ -142,13 +138,13 @@ expressions to suppress (see the next section).
 ### Opting out individual expressions
 
 Individual expressions or blocks of code are opted out by using the
-`UNSAFE_BUFFERS()` macro as defined in [`//base/compiler_specific.h`[(../base/compiler_specific.h)
+`UNSAFE_BUFFERS()` macro as defined in [`//base/compiler_specific.h`](../base/compiler_specific.h)
 file. These should be rare once a project is fully converted, except
 perhaps when working with C-style external APIs. These must
 always be accompanied by a `// SAFETY:` comment explaining in detail
 how the code has been evaluated to be safe for all possible input.
 
-Code introducing UNSAFE_BUFFERS() macro invocations without corresponding
+Code introducing `UNSAFE_BUFFERS()` macro invocations without corresponding
 `// SAFETY:` comment should be summarily rejected during code review.
 
 To allow for incremental conversion, code can be temporarily opted out by

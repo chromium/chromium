@@ -326,7 +326,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     /**
      * @param context The {@link Context} for accessing colors.
      * @param useLightPulseColor Whether or not to use a light or dark color for the pulse.
-     * */
+     */
     public void setUseLightPulseColor(Context context, boolean useLightPulseColor) {
         @ColorInt
         int color =

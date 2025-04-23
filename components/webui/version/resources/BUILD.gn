@@ -16,7 +16,7 @@ build_webui("build") {
     static_files += [ "about_version_mobile.css" ]
   }
 
-  non_web_component_files = [ "about_version.ts" ]
+  ts_files = [ "about_version.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   if (is_chromeos) {

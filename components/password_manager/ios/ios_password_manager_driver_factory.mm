@@ -49,8 +49,6 @@ IOSPasswordManagerDriverFactory::GetRetainableDriver(web::WebState* web_state,
       ->RetainableDriver();
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(IOSPasswordManagerDriverFactory)
-
 // static
 void IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
     web::WebState* web_state,

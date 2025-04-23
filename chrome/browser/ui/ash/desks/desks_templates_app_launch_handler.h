@@ -28,7 +28,7 @@ class DeskTemplate;
 // The DesksTemplatesAppLaunchHandler class is passed a profile, and will launch
 // apps and web pages based on the template or coral group. Note that a new
 // handler should be created for each launch.
-// TODO(sammiequon): Rename this to `DeskAppLaunchHandler`.
+// TODO: Rename this to `DeskAppLaunchHandler`.
 class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
  public:
   enum class Type {

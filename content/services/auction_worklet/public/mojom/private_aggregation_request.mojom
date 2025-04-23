@@ -67,12 +67,32 @@ struct SignalValue {
   int32 offset = 0;
 };
 
-// Designations of events that are automatically triggered by the browser.
-enum ReservedEventType {
+// Designations of events that are automatically triggered by the browser and
+// do not measure the occurrence of an error.
+enum ReservedNonErrorEventType {
   kReservedAlways,
   kReservedWin,
   kReservedLoss,
   kReservedOnce,
+};
+
+// Designations of events that are automatically triggered by the browser to
+// measure errors. See `PrivateAggregationErrorEvent`, which this set will be
+// eventually mapped to by the browser. A different type is used to allow
+// certain errors to be ignored and Protected Audience-specific ones to be
+// defined.
+enum ReservedErrorEventType {
+  // These are defined identically to `PrivateAggregationErrorEvent`.
+  kReportSuccess,
+  kTooManyContributions,
+  kEmptyReportDropped,
+  kPendingReportLimitReached,
+  kInsufficientBudget,
+  // kContributionTimeoutReached is intentionally omitted as it does not
+  // currently apply to Protected Audience.
+
+  // An exception or other error occurred and was not caught.
+  kUncaughtError,
 };
 
 // A bucket which is a 128bit ID or a SignalBucket which tells the browser how
@@ -94,7 +114,8 @@ union ForEventSignalValue {
 // reserved one automatically triggered by the browser, or a custom user-
 // defined one.
 union EventType {
-  ReservedEventType reserved;
+  ReservedNonErrorEventType reserved_non_error;
+  ReservedErrorEventType reserved_error;
   string non_reserved;
 };
 
@@ -135,4 +156,8 @@ struct FinalizedPrivateAggregationRequest {
   blink.mojom.AggregatableReportHistogramContribution contribution;
   blink.mojom.AggregationServiceMode aggregation_mode;
   blink.mojom.DebugModeDetails debug_mode_details;
+
+  // If null, this contribution is unconditional. If populated, this
+  // contribution is conditional on that error event.
+  blink.mojom.PrivateAggregationErrorEvent? error_event;
 };

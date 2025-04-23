@@ -43,9 +43,8 @@ class ExtremeLightweightDetectorMallocShimsTest
         /*brp_extra_extras_size=*/0, allocator_shim::EnableMemoryTagging(false),
         partition_alloc::TagViolationReportingMode::kDisabled,
         allocator_shim::BucketDistribution::kNeutral,
-        allocator_shim::SchedulerLoopQuarantine(false),
-        /*scheduler_loop_quarantine_capacity_in_bytes=*/0,
-        allocator_shim::ZappingByFreeFlags(false),
+        /*scheduler_loop_quarantine_global_config=*/{},
+        /*scheduler_loop_quarantine_thread_local_config=*/{},
         allocator_shim::EventuallyZeroFreedMemory(false),
         allocator_shim::FewerMemoryRegions(false),
         allocator_shim::UseSmallSingleSlotSpans(true));

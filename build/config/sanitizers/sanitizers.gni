@@ -415,3 +415,36 @@ fuzzing_engine_remove_configs = [
 # are added back for the same reason.
 fuzzing_engine_add_configs =
     [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
+
+# Expose clang_rt dynamic lib name to the dependents that need it as an input
+# when running an exeutable.
+if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
+  if (is_mac || (is_ios && target_environment == "catalyst")) {
+    if (is_asan) {
+      clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "darwin/libclang_rt.ubsan_osx_dynamic.dylib"
+    }
+  } else if (is_ios) {
+    if (is_asan) {
+      if (target_environment == "simulator") {
+        clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      } else {
+        clang_rt_dso_path = "darwin/libclang_rt.asan_ios_dynamic.dylib"
+      }
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
+    }
+  } else if (is_win && current_cpu == "x64") {
+    if (is_asan) {
+      clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "windows/clang_rt.ubsan_dynamic-x86_64.dll"
+    }
+  }
+
+  clang_rt_dso = get_path_info(clang_rt_dso_path, "file")
+}

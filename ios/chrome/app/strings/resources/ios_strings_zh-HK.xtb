@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">複製圖片</translation>
 <translation id="1612754831519568745">「安全瀏覽」目前處於關閉狀態，此功能可助你防範危險網站、下載項目和擴充程式。</translation>
 <translation id="1620510694547887537">相機</translation>
-<translation id="1622195983844804153">現有的瀏覽資料不會轉移至公司帳戶，但你仍可登出或新增個人帳戶以存取這些資料。</translation>
 <translation id="1622717322707146952">選取「新增至 Google 日曆」或「新增至 Apple 日曆」。</translation>
 <translation id="1629162218487290695">驗證你的身分…</translation>
 <translation id="1636234353664774105">使用導航功能即時規劃前往目的地的路線</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">重新載入</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
+<translation id="202070562065520783">為我說明</translation>
 <translation id="2021670401941426298">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="20485545164632846">新項目</translation>
@@ -480,6 +480,7 @@
 <translation id="2952278131021475699">智能鏡頭相機搜尋功能</translation>
 <translation id="2962516096219646456">睇下所有自動填入資料</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
+<translation id="297667759942911166">在分頁群組中協作</translation>
 <translation id="2989523299700148168">最近使用的搜尋引擎</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="2996291259634659425">建立密碼短語</translation>
@@ -525,6 +526,7 @@
 <translation id="3167868116600277716">探索動態消息</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3174662312949010067">您亦可在其他裝置上使用已儲存的密碼。</translation>
+<translation id="3177338796769255211">登入帳戶即可在任何裝置上存取自己的書籤及其他內容</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3208260410153224535">你的機構已關閉登入功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
@@ -1125,6 +1127,7 @@
 <translation id="573974402615125334">如要分享、加入分頁群組和協作，請同步處理記錄和分頁</translation>
 <translation id="5740123193752401435">搜尋分頁…</translation>
 <translation id="5744274077973758795">已開啟「<ph name="FEATURE_NAME" />」通知功能</translation>
+<translation id="5745598824054949526">找不到文字</translation>
 <translation id="574762237186762643">活動</translation>
 <translation id="5749158352074143502">繼續使用此分頁</translation>
 <translation id="5753021559215751319">儲存密碼</translation>
@@ -1288,6 +1291,7 @@
 <translation id="6410883413783534063">開啟分頁即可同時瀏覽不同網頁</translation>
 <translation id="6416807286621280684">你追蹤的包裹和最新運送情況。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
+<translation id="6421038304268477484">譯文</translation>
 <translation id="6429213933892582367">開啟 [密碼選項]</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
 <translation id="6435307030888827407">保持不登入狀態</translation>
@@ -1310,7 +1314,6 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
 <translation id="647867789226964031">變更密碼</translation>
 <translation id="6494931198667773526">結束時間</translation>
-<translation id="6495521251906266731">選擇如何處理此裝置上現有的瀏覽資料，例如密碼、記錄等。</translation>
 <translation id="6503077044568424649">最常瀏覽</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>
 <translation id="6505334220040167806">收埋分頁群組。</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8697136149718343437">將網址列移至底部</translation>
 <translation id="8703372953981978786">此連結無法運作</translation>
 <translation id="8706253136355675497">溫度</translation>
+<translation id="8706806585855470492">你將可以分享、加入分頁群組和協作</translation>
 <translation id="8709409604518538305">分頁已關閉</translation>
 <translation id="8712534545803964353">在網頁中搜尋…</translation>
 <translation id="8712637175834984815">我知道了</translation>
@@ -1966,6 +1970,7 @@
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
 <translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9099233023029360602">每次都詢問要使用哪個帳戶</translation>
+<translation id="9099821309562615674">請確保要翻譯的文字清晰且在框內。</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
 <translation id="91023216973987714">付款方法</translation>
 <translation id="9106655997975673326">來自「<ph name="SOURCE_DEVICE" />」</translation>

@@ -59,6 +59,15 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
   virtual bool SupportsPointerLock() = 0;
   virtual void LockPointer(bool enabled) = 0;
 
+  // Associates a dbus appmenu that has the specified service name and the
+  // object path with this toplevel. The dbus appmenu implements the
+  // com.canonical.dbusmenu interface.
+  virtual void SetAppmenu(const std::string& service_name,
+                          const std::string& object_path) = 0;
+
+  // Unsets the appmenu associated with this toplevel.
+  virtual void UnsetAppmenu() = 0;
+
  protected:
   virtual ~WaylandToplevelExtension();
 

@@ -81,5 +81,3 @@ void OverscrollActionsTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void OverscrollActionsTabHelper::Clear() {
   [overscroll_actions_controller_ clear];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OverscrollActionsTabHelper)

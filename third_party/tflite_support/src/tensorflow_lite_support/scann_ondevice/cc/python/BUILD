@@ -10,6 +10,10 @@ package(
 pybind_extension(
     name = "index_builder",
     srcs = ["index_builder_py_wrapper.cc"],
+    data = [
+        "index_builder.pyi",
+    ],
+    enable_stub_generation = True,
     module_name = "index_builder",
     deps = [
         "//tensorflow_lite_support/scann_ondevice/cc:index_builder",

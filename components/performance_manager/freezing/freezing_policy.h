@@ -53,7 +53,7 @@ namespace performance_manager {
 // freezing.
 class FreezingPolicy : public PageNodeObserver,
                        public FrameNodeObserver,
-                       public PageLiveStateObserverDefaultImpl,
+                       public PageLiveStateObserver,
                        public resource_attribution::QueryResultObserver,
                        public GraphOwnedAndRegistered<FreezingPolicy>,
                        public NodeDataDescriberDefaultImpl {
@@ -175,7 +175,7 @@ class FreezingPolicy : public PageNodeObserver,
       const FrameNode* previous_parent_or_outer_document_or_embedder) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
 
-  // PageLiveStateObserverDefaultImpl:
+  // PageLiveStateObserver:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
   void OnIsConnectedToBluetoothDeviceChanged(
       const PageNode* page_node) override;

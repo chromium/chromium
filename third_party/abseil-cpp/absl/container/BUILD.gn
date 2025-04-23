@@ -398,6 +398,19 @@ absl_source_set("hashtable_control_bytes") {
   ]
 }
 
+absl_source_set("raw_hash_set_resize_impl") {
+  public = [ "internal/raw_hash_set_resize_impl.h" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}
+
+absl_test("raw_hash_set_resize_impl_test") {
+  sources = [ "internal/raw_hash_set_resize_impl_test.cc" ]
+  deps = [
+    ":raw_hash_set_resize_impl",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
+}
+
 absl_source_set("raw_hash_set") {
   sources = [ "internal/raw_hash_set.cc" ]
   public = [ "internal/raw_hash_set.h" ]
@@ -411,6 +424,7 @@ absl_source_set("raw_hash_set") {
     ":hashtable_control_bytes",
     ":hashtable_debug_hooks",
     ":hashtablez_sampler",
+    ":raw_hash_set_resize_impl",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:dynamic_annotations",

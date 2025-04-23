@@ -35,6 +35,8 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator_util.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -119,6 +121,9 @@
          presentsModal:config->has_badge()
                   type:config->infobar_type()];
   mediator.consumer = self.bannerViewController;
+  // Set the nonModalSignInPromoHandler for non modal sign-in promo.
+  mediator.nonModalSignInPromoHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), NonModalSignInPromoCommands);
   mediator.engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
 

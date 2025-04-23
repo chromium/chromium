@@ -371,6 +371,11 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
+  "experimentalActor": {
+    "extension_types": ["extension"],
+    "channel": "beta",
+    "command_line_switch": "extension-actor-api"
+  },
   "experimentalAiData": {
     "extension_types": ["extension"],
     "channel": "beta",

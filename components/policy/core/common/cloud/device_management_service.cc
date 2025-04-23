@@ -342,6 +342,10 @@ std::string JobConfigurationBase::GetContentType() {
   return kPostContentType;
 }
 
+bool JobConfigurationBase::AreCookiesUsed() {
+  return use_cookies_;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 JobConfigurationBase::GetUrlLoaderFactory() {
   return factory_;

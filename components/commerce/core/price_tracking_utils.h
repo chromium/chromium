@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 
 class PrefService;
@@ -65,14 +66,17 @@ void SetPriceTrackingStateForClusterId(ShoppingService* service,
 // if successful, all bookmarks with the same cluster ID will be updated.
 // |callback| will be called with a bool representing whether the operation was
 // successful iff all of |service|, |model|, and |node| are non-null and the
-// bookmark has been determined to be a product.
+// bookmark has been determined to be a product. ProductInfo can be passed
+// in optionally here and used as a fallback, in the event that ShoppingService
+// is unaware of ProductInfo.
 void SetPriceTrackingStateForBookmark(
     ShoppingService* service,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node,
     bool enabled,
     base::OnceCallback<void(bool)> callback,
-    bool was_bookmark_created_by_price_tracking = false);
+    bool was_bookmark_created_by_price_tracking = false,
+    std::optional<ProductInfo> product_info = std::nullopt);
 
 // Get all bookmarks with the specified product cluster ID. If |max_count| is
 // specified, this function will return that number of bookmarks at most,

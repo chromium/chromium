@@ -235,10 +235,14 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // Sets `host_`.
   void SetFinalPolicies(PolicyContainerPolicies policies);
 
-  // Helper for `FinalizePolicies()`. Appends the delivered Content Security
-  // Policies to `policies`.
-  void IncorporateDeliveredPolicies(const GURL& url,
-                                    PolicyContainerPolicies& policies);
+  // Helper for `FinalizePolicies()`. Called for local scheme urls only,
+  // incorporates `delivered_policies_` into `policies` (e.g. appending the
+  // delivered Content Security Policies). This is needed for example for CSP
+  // Embedded Enforcement, in order to merge the inherited policies with the
+  // policies forced by the `csp` attribute (which are contained in
+  // `delivered_policies_`).
+  void IncorporateDeliveredPoliciesForLocalURL(
+      PolicyContainerPolicies& policies);
 
   // Helper for `FinalizePolicies()`. Returns, depending on `url`, the policies
   // that this document inherits from parent/initiator.

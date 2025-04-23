@@ -19,21 +19,29 @@ CSSCustomTransformFunctionInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue
-CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
+CSSCustomTransformFunctionInterpolationType::MaybeConvertTransformFunction(
     const CSSValue& value,
-    const StyleResolverState*,
-    ConversionCheckers&) const {
-  auto* function_value = DynamicTo<CSSFunctionValue>(value);
+    const CSSToLengthConversionData& conversion_data) const {
+  const auto* function_value = DynamicTo<CSSFunctionValue>(value);
   if (!function_value || !IsTransformFunction(function_value->FunctionType())) {
     return nullptr;
   }
 
   InterpolableTransformList* interpolable =
       InterpolableTransformList::ConvertCSSValue(
-          value, CSSToLengthConversionData(/*element=*/nullptr),
+          value, conversion_data,
           TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);
   CHECK_EQ(interpolable->operations().size(), 1u);
   return InterpolationValue(std::move(interpolable));
+}
+
+InterpolationValue
+CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
+    const CSSValue& value,
+    const StyleResolverState& state,
+    ConversionCheckers&) const {
+  return MaybeConvertTransformFunction(value,
+                                       state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSCustomTransformFunctionInterpolationType::CreateCSSValue(
@@ -48,6 +56,12 @@ const CSSValue* CSSCustomTransformFunctionInterpolationType::CreateCSSValue(
   // failure inside ValueForTransformFunction().
   return ComputedStyleUtils::ValueForTransformFunction(
       list_value->operations());
+}
+
+InterpolationValue CSSCustomTransformFunctionInterpolationType::
+    MaybeConvertCustomPropertyUnderlyingValue(const CSSValue& value) const {
+  return MaybeConvertTransformFunction(
+      value, CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 InterpolationValue

@@ -374,8 +374,8 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
 bool LayoutImage::IsUnsizedImage() const {
   NOT_DESTROYED();
   const ComputedStyle& style = this->StyleRef();
-  const auto explicit_width = style.LogicalWidth().IsSpecified();
-  const auto explicit_height = style.LogicalHeight().IsSpecified();
+  const auto explicit_width = style.LogicalWidth().HasOnlyFixedAndPercent();
+  const auto explicit_height = style.LogicalHeight().HasOnlyFixedAndPercent();
   bool has_aspect_ratio =
       style.AspectRatio().GetType() == EAspectRatioType::kRatio;
   const bool is_fixed_size =

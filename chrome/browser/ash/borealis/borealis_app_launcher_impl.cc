@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"
+#include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
 
 namespace borealis {
 BorealisAppLauncherImpl::~BorealisAppLauncherImpl() = default;
@@ -33,6 +34,18 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
                                      BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
+  borealis::MaybeShowBorealisMOTDDialog(
+      base::BindOnce(&BorealisAppLauncherImpl::LaunchAfterMOTD,
+                     weak_factory_.GetWeakPtr(), std::move(app_id),
+                     std::move(args), std::move(source), std::move(callback)),
+      profile_);
+}
+
+void BorealisAppLauncherImpl::LaunchAfterMOTD(
+    std::string app_id,
+    const std::vector<std::string>& args,
+    BorealisLaunchSource source,
+    OnLaunchedCallback callback) {
   if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {

@@ -20,7 +20,8 @@ namespace printing {
 
 HWND PrintingContextSystemDialogWin::GetWindow() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledPerformSystemCalls) {
     // Delving through the view tree to get to root window happens separately
     // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
     // before sending the identified window owner to the Print Backend service.
@@ -37,8 +38,8 @@ HWND PrintingContextSystemDialogWin::GetWindow() {
 
 PrintingContextSystemDialogWin::PrintingContextSystemDialogWin(
     Delegate* delegate,
-    ProcessBehavior process_behavior)
-    : PrintingContextWin(delegate, process_behavior) {}
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContextWin(delegate, out_of_process_behavior) {}
 
 PrintingContextSystemDialogWin::~PrintingContextSystemDialogWin() {}
 

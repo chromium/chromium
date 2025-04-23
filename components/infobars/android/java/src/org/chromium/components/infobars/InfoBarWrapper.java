@@ -12,8 +12,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.core.content.ContextCompat;
+
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Layout that holds an infobar's contents and provides a background color and a top shadow. */
 @NullMarked
@@ -37,8 +38,7 @@ class InfoBarWrapper extends FrameLayout {
         ColorDrawable colorDrawable =
                 (ColorDrawable) layerDrawable.findDrawableByLayerId(R.id.infobar_wrapper_bg_fill);
         colorDrawable.mutate();
-        colorDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.infobar_elevation));
+        colorDrawable.setColor(ContextCompat.getColor(getContext(), R.color.infobar_color));
     }
 
     InfoBarUiItem getItem() {

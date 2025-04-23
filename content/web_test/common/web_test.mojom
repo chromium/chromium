@@ -278,14 +278,6 @@ interface WebTestControlHost {
   // Clears all persistent Trust Tokens state.
   ClearTrustTokenState() => ();
 
-  // Sets WebSQL quota size. If |quota| is the same to kDefaultDatabaseQuota,
-  // this resets quota to settings with a zero refresh interval to force
-  // QuotaManager to refresh settings immediately.
-  SetDatabaseQuota(int32 quota);
-
-  // Clears all WebSQL databases.
-  ClearAllDatabases();
-
   // Simulates a click on the notification.
   //   - |title|: the title of the notification.
   //   - |action_index|: indicates which action was clicked.

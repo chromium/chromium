@@ -24,7 +24,7 @@ bool PermissionControllerDelegate::IsPermissionOverridable(
 
 PermissionResult
 PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   return PermissionResult(PermissionStatus::DENIED,

@@ -405,15 +405,17 @@ class AutofillCapturedSitesInteractiveTest
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::test::kAutofillServerCommunication,
-                               {}},
-                              {features::test::kAutofillShowTypePredictions,
-                               {}},
-                              {features::test::
-                                   kAutofillCapturedSiteTestsUseAutofillFlow,
-                               {}}},
-        /*disabled_features=*/{features::kAutofillOverwritePlaceholdersOnly,
-                               features::kAutofillSkipPreFilledFields});
+        /*enabled_features=*/
+        {{features::test::kAutofillServerCommunication, {}},
+         {features::test::kAutofillShowTypePredictions,
+          {
+              // TODO(crbug.com/410879924): Investigate why the test fails when
+              // kAutofillShowTypePredictions is enabled without parameters.
+              {features::test::kAutofillShowTypePredictionsAsTitleParam.name,
+               "true"},
+          }},
+         {features::test::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
+        /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     // SelectParserRelaxation affects the results from the test data because the

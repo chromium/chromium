@@ -6,14 +6,15 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class IncognitoReauthViewBinder {
     public static void bind(
             PropertyModel model, View incognitoReauthView, PropertyKey propertyKey) {

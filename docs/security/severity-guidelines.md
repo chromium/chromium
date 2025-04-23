@@ -129,6 +129,9 @@ information that an attacker can exfiltrate. Bugs that would normally be rated
 at a higher severity level with unusual mitigating factors may be rated as
 medium severity.
 
+Certain vulnerabilities in [sandboxed GPU shader compilers](#TOC-Sandboxed-shader-compilers)
+should be marked as medium severity.
+
 They are normally assigned Priority **P1** and assigned to the current stable
 milestone (or earliest milestone affected). If the fix seems too complicated to
 merge to the current stable milestone, they may be assigned to the next stable
@@ -232,3 +235,20 @@ BRP is now enabled in all active release channels.
 As of 128, if a bug is marked `MiraclePtr Status:PROTECTED`, it is not
 considered a security issue. It should be converted to type:Bug and assigned to
 the appropriate engineering team as functional issue.
+
+## Sandboxed GPU Shader Compilers {#TOC-Sandboxed-shader-compilers}
+
+If a GPU shader compiler is in a separate process outside the GPU process and sandboxed, the
+overall attack surface of a vulnerability in that specific compiler may be much lower than an
+in-GPU-process shader compiler. Unlike the renderer process, which can make hundreds of different
+IPCs to the browser process, a well sandboxed shader compiler process can make a very limited number
+of IPCs back to the GPU process. Furthermore, code execution in a sandboxed GPU shader compiler
+is now limited to writing arbitrary shaders, which is a much lower threat surface than code execution
+in the GPU process as a whole.
+
+Currently, only the Metal shader compiler is in its own sandboxed process, so vulnerabilities that would
+otherwise be high severity should be considered medium severity if they are specific to that compiler.
+
+Vulnerabilities specific to the Metal shader compiler will typically call into the `MTLCompiler` in
+the stack trace, and a PoC will only be reproducible on MacOS devices. An example of a stack trace
+specific to the metal shader compiler can be found at ([40074630](https://crbug.com/40074630)).

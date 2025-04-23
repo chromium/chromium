@@ -1,5 +1,14 @@
 # Releases
 
+## 2.9.0 (2025-04-04)
+
+- Added a `get_disjoint_mut` method to `IndexMap`, matching Rust 1.86's
+  `HashMap` method.
+- Added a `get_disjoint_indices_mut` method to `IndexMap` and `map::Slice`,
+  matching Rust 1.86's `get_disjoint_mut` method on slices.
+- Deprecated the `borsh` feature in favor of their own `indexmap` feature,
+  solving a cyclic dependency that occured via `borsh-derive`.
+
 ## 2.8.0 (2025-03-10)
 
 - Added `indexmap_with_default!` and `indexset_with_default!` to be used with

@@ -24,8 +24,6 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/page_transition_types.h"
 
-BROWSER_USER_DATA_KEY_IMPL(TabUsageRecorderBrowserAgent)
-
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     : restore_start_time_(base::TimeTicks::Now()),
       web_state_list_(browser->GetWebStateList()),

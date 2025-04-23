@@ -206,5 +206,3 @@ void SadTabTabHelper::OnAppDidBecomeActive() {
   }
   requires_reload_on_becoming_active_ = false;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SadTabTabHelper)

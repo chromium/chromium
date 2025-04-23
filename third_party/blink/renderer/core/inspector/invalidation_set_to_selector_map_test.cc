@@ -5,11 +5,17 @@
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -362,6 +368,28 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
     }
   }
   EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, SpeculationRule) {
+  // All we expect from this test is not to crash.
+  // https://crbug.com/411163926
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(<a></a>)HTML");
+  StartTracing();
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      GetDocument(), GetDocument().GetStyleEngine());
+  EXPECT_NE(GetInstance(), nullptr);
+
+  HTMLElement* script_element =
+      To<HTMLElement>(GetDocument().CreateRawElement(html_names::kScriptTag));
+  script_element->setAttribute(html_names::kTypeAttr,
+                               AtomicString("speculationrules"));
+  script_element->setInnerText(
+      String("{\"prerender\": [ {\"where\":"
+             "{\"not\": {\"selector_matches\": \".no-prerender\"}}}]}"));
+  GetDocument().head()->appendChild(script_element);
+  UpdateAllLifecyclePhasesForTest();
+  StopTracing();
 }
 
 TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
@@ -1079,6 +1107,99 @@ TEST_F(InvalidationSetToSelectorMapTest, HostSelector) {
     }
   }
   EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, UserStylesheet) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=parent class=a>Parent
+      <div class=x>Child</div>
+    </div>
+  )HTML");
+
+  StyleSheetContents* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(
+      ".a .x { color: red; }"
+      ".b .x { color: green; }"
+      ".c .x { color: blue; }");
+  StyleSheetKey user_key("user");
+  GetDocument().GetStyleEngine().InjectSheet(user_key, user_sheet,
+                                             WebCssOrigin::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, UserAgentStylesheet) {
+  SetBodyInnerHTML(R"HTML(
+    <details id=target>Details
+      <summary>Summary text</summary>
+    </details>
+  )HTML");
+
+  StartTracing();
+
+  GetElementById("target")->setAttribute(html_names::kOpenAttr,
+                                         AtomicString("true"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched tagName") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        // Tolerate some variance in what gets returned, to avoid coupling this
+        // test tightly to the contents of the UA stylesheet.
+        EXPECT_GE(selector_list->size(), 1u);
+        for (size_t index = 0; index < selector_list->size(); index++) {
+          // nullptr represents the UA stylesheet.
+          if (StyleSheetIdAtIndex(selector_list, index) ==
+              IdentifiersFactory::IdForCSSStyleSheet(nullptr).Utf8()) {
+            const std::string& selector = SelectorAtIndex(selector_list, index);
+            if (selector.starts_with("details") &&
+                (selector.find(" summary") != std::string::npos)) {
+              found_event_count++;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  EXPECT_GE(found_event_count, 1u);
 }
 
 }  // namespace blink

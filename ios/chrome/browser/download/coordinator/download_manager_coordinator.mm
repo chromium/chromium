@@ -163,6 +163,10 @@
 
 // Similar to stop, but the coordinator can be restarted later.
 - (void)pause {
+  if (_stopped) {
+    return;
+  }
+
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
   _mediator.SetIdentityManager(nullptr);
@@ -181,9 +185,7 @@
   _shouldObserveFullscreen = NO;
   _downloadTask = nullptr;
 
-  if (self.browser) {
-    (self.browser->GetWebStateList())->RemoveObserver(&_unopenedDownloads);
-  }
+  self.browser->GetWebStateList()->RemoveObserver(&_unopenedDownloads);
 
   [self stopStoreKitCoordinator];
 
@@ -450,7 +452,7 @@
       [[OpenNewTabCommand alloc] initWithURL:filePathURL
                                   virtualURL:virtualFilePathURL
                                     referrer:web::Referrer()
-                                 inIncognito:self.profile->IsOffTheRecord()
+                                 inIncognito:self.isOffTheRecord
                                 inBackground:NO
                                     appendTo:OpenPosition::kCurrentTab];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
@@ -486,7 +488,7 @@
 
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
-  // `stop` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
+  // `pause` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
   // first to perform all coordinator cleanups, but copy `_downloadTask`
   // pointer to destroy the task.
   web::DownloadTask* downloadTask = _downloadTask;

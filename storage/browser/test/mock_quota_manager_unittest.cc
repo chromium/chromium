@@ -24,7 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -35,9 +34,9 @@ constexpr QuotaClientType kClientDB = QuotaClientType::kIndexedDatabase;
 
 bool ContainsBucket(const std::set<BucketLocator>& buckets,
                     const BucketInfo& target_bucket) {
-  BucketLocator target_bucket_locator(
-      target_bucket.id, target_bucket.storage_key, target_bucket.type,
-      target_bucket.name == kDefaultBucketName);
+  BucketLocator target_bucket_locator(target_bucket.id,
+                                      target_bucket.storage_key,
+                                      target_bucket.name == kDefaultBucketName);
   auto it = buckets.find(target_bucket_locator);
   return it != buckets.end();
 }

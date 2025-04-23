@@ -17,6 +17,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -102,16 +103,17 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     account_settings_presenter_ =
         OCMStrictProtocolMock(@protocol(AccountSettingsPresenter));
     mediator_ = [[SigninPromoViewMediator alloc]
-         initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                     profile_.get())
-           accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForProfile(profile_.get())
-                     authService:GetAuthenticationService()
-                     prefService:profile_.get()->GetPrefs()
-                     syncService:GetSyncService()
-                     accessPoint:access_point
-                 signinPresenter:signin_presenter_
-        accountSettingsPresenter:account_settings_presenter_];
+                  initWithIdentityManager:IdentityManagerFactory::GetForProfile(
+                                              profile_.get())
+                    accountManagerService:ChromeAccountManagerServiceFactory::
+                                              GetForProfile(profile_.get())
+                              authService:GetAuthenticationService()
+                              prefService:profile_.get()->GetPrefs()
+                              syncService:GetSyncService()
+                              accessPoint:access_point
+                          signinPresenter:signin_presenter_
+                 accountSettingsPresenter:account_settings_presenter_
+        changeProfileContinuationProvider:NotReachedContinuationProvider()];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);

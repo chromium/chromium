@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -87,13 +88,14 @@ public class AuxiliarySearchControllerFactory {
     public @Nullable AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,
             @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector) {
+            @Nullable TabModelSelector tabModelSelector,
+            @AuxiliarySearchHostType int hostType) {
         if (!isEnabled()) {
             return null;
         }
 
         assert ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled();
-        return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
+        return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector, hostType);
     }
 
     public void setSchemaTypeVisibilityForPackage(

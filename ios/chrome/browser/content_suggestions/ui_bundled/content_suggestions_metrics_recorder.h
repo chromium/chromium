@@ -73,6 +73,12 @@ enum class SetUpListItemType;
 // Logs a Set Up List item being selected.
 - (void)recordSetUpListItemSelected:(SetUpListItemType)type;
 
+// Logs a ShopCard was rendered
+- (void)recordShopCardImpression:(ShopCardData*)shopCardData atIndex:(int)index;
+
+// Logs a ShopCard was opened
+- (void)recordShopCardOpened:(ShopCardData*)shopCardData;
+
 - (void)recordContentNotificationSnackbarEvent:
     (ContentNotificationSnackbarEvent)event;
 

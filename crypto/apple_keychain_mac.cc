@@ -4,8 +4,11 @@
 
 #include "crypto/apple_keychain.h"
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/types/expected.h"
 #include "crypto/mac_security_services_lock.h"
 
 namespace {
@@ -53,42 +56,39 @@ AppleKeychain::AppleKeychain() = default;
 
 AppleKeychain::~AppleKeychain() = default;
 
-OSStatus AppleKeychain::FindGenericPassword(
-    UInt32 service_name_length,
-    const char* service_name,
-    UInt32 account_name_length,
-    const char* account_name,
-    UInt32* password_length,
-    void** password_data,
-    AppleSecKeychainItemRef* item) const {
+base::expected<std::vector<uint8_t>, OSStatus>
+AppleKeychain::FindGenericPassword(std::string_view service_name,
+                                   std::string_view account_name) const {
   base::AutoLock lock(GetMacSecurityServicesLock());
-  return SecKeychainFindGenericPassword(
-      nullptr, service_name_length, service_name, account_name_length,
-      account_name, password_length, password_data, item);
-}
+  uint32_t password_length = 0;
+  void* password_data = nullptr;
+  OSStatus status = SecKeychainFindGenericPassword(
+      nullptr, service_name.length(), service_name.data(),
+      account_name.length(), account_name.data(), &password_length,
+      &password_data, nullptr);
+  if (status != noErr) {
+    return base::unexpected(status);
+  }
 
-OSStatus AppleKeychain::ItemFreeContent(void* data) const {
-  base::AutoLock lock(GetMacSecurityServicesLock());
-  return SecKeychainItemFreeContent(nullptr, data);
+  // SAFETY: SecKeychainFindGenericPassword returns an allocation of
+  // `password_length` bytes in size.
+  UNSAFE_BUFFERS(base::span password_span(
+      static_cast<const uint8_t*>(password_data), password_length));
+  auto result = base::ToVector(password_span);
+  SecKeychainItemFreeContent(nullptr, password_data);
+  return result;
 }
 
 OSStatus AppleKeychain::AddGenericPassword(
-    UInt32 service_name_length,
-    const char* service_name,
-    UInt32 account_name_length,
-    const char* account_name,
-    UInt32 password_length,
-    const void* password_data,
-    AppleSecKeychainItemRef* item) const {
+    std::string_view service_name,
+    std::string_view account_name,
+    base::span<const uint8_t> password) const {
   base::AutoLock lock(GetMacSecurityServicesLock());
   return SecKeychainAddGenericPassword(
-      nullptr, service_name_length, service_name, account_name_length,
-      account_name, password_length, password_data, item);
-}
-
-OSStatus AppleKeychain::ItemDelete(AppleSecKeychainItemRef item) const {
-  base::AutoLock lock(GetMacSecurityServicesLock());
-  return SecKeychainItemDelete(item);
+      nullptr, base::checked_cast<uint32_t>(service_name.length()),
+      service_name.data(), base::checked_cast<uint32_t>(account_name.length()),
+      account_name.data(), base::checked_cast<uint32_t>(password.size()),
+      password.data(), nullptr);
 }
 
 ScopedKeychainUserInteractionAllowed::ScopedKeychainUserInteractionAllowed(

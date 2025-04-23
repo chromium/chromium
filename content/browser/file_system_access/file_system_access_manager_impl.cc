@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -49,6 +45,7 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -64,7 +61,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -584,6 +580,18 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
+  // Consume user activation to address this issue: crbug.com/40059071
+  // TODO(crbug.com/411125804): Consider moving this user activation check to
+  // the renderer process or informing the renderer that it lost user
+  // activation.
+  if (content_browser_client
+          ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+              web_contents)) {
+    FrameTreeNode::From(rfh)->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+        blink::mojom::UserActivationNotificationType::kNone);
+  }
+
   // Don't show the file picker if there is an already active file picker for
   // this render frame host.
   GlobalRenderFrameHostId global_rfh_id = rfh->GetGlobalId();
@@ -960,9 +968,13 @@ std::string SerializePath(const base::FilePath& path) {
 }
 
 base::FilePath DeserializePath(const std::string& bytes) {
+  const size_t bytes_per_char = sizeof(base::FilePath::CharType);
+  const size_t num_chars = bytes.size() / bytes_per_char;
+  const size_t num_bytes = num_chars * bytes_per_char;  // Truncated if odd.
   base::FilePath::StringType s;
-  s.resize(bytes.size() / sizeof(base::FilePath::CharType));
-  std::memcpy(&s[0], bytes.data(), s.size() * sizeof(base::FilePath::CharType));
+  s.resize(num_chars);
+  base::as_writable_byte_span(s).copy_from(
+      base::as_byte_span(bytes).first(num_bytes));
   return base::FilePath(s);
 }
 

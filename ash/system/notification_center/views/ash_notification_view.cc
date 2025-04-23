@@ -42,6 +42,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -666,6 +667,7 @@ AshNotificationView::~AshNotificationView() {
   // b/330585555: We need to abort any in progress animations before we destroy
   // the views hierarchy to make sure there are no dangling pointers associated
   // with an animations' OnAborted callback.
+  weak_factory_.InvalidateWeakPtrs();
   layer()->GetAnimator()->AbortAllAnimations();
 }
 

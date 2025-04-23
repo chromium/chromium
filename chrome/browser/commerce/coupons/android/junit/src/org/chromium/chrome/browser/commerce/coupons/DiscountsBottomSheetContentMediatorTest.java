@@ -77,8 +77,16 @@ public class DiscountsBottomSheetContentMediatorTest {
         doReturn(mMockProfile).when(mMockTab).getProfile();
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        doReturn(true).when(mMockShoppingService).isDiscountEligibleToShowOnNavigation();
 
         mMediator = new DiscountsBottomSheetContentMediator(mActivity, () -> mMockTab, mModelList);
+    }
+
+    @Test
+    public void testRequestShowContent_discountNotEligible() {
+        doReturn(false).when(mMockShoppingService).isDiscountEligibleToShowOnNavigation();
+        mMediator.requestShowContent(mMockCallback);
+        verify(mMockCallback).onResult(false);
     }
 
     @Test

@@ -13,7 +13,8 @@
 // This macro declares a static variable inside the class that inherits from
 // BrwoserUserData. The address of this static variable is used as the key to
 // store/retrieve an instance of the class on/from a Browser.
-#define BROWSER_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
+#define BROWSER_USER_DATA_KEY_DECL() \
+  [[maybe_unused]] static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .mm/.cc file to ensure that there is only one instantiation
@@ -67,7 +68,11 @@ class BrowserUserData : public base::SupportsUserData::Data {
     browser->RemoveUserData(UserDataKey());
   }
 
-  static const void* UserDataKey() { return &T::kUserDataKey; }
+  // The key under which to store the user data.
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_USER_DATA_H_

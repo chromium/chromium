@@ -33,7 +33,7 @@ build_webui("build") {
     "synced_device_manager.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
@@ -59,7 +59,6 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",

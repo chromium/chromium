@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterInMemory
   explicit SharedDictionaryWriterInMemory(FinishCallback finish_callback);
 
   // SharedDictionaryWriter
-  void Append(const char* buf, int num_bytes) override;
+  void Append(base::span<const uint8_t> data) override;
   void Finish() override;
 
  private:

@@ -12,6 +12,7 @@ source_set("passwords") {
     "//base",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model",
@@ -21,6 +22,7 @@ source_set("passwords") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/passwords/model:infobar_delegates",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
   ]

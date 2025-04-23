@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
@@ -85,7 +86,7 @@ ValuablesTable::~ValuablesTable() = default;
 
 // static
 ValuablesTable* ValuablesTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<ValuablesTable*>(db->GetTable(GetKey()));
+  return static_cast<ValuablesTable*>(CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey ValuablesTable::GetTypeKey() const {

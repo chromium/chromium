@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "url/mojom/origin.mojom";
+
+// TODO(crbug.com/408486729): This mojom should be moved to a test-only target.
+
+// This interface exists solely for the content_shell and
+// InternalsProtectedAudience and similar implementations, as the
+// ChromeDriver-based code path uses CDP to achieve the same results.
+interface WebPrivacySandboxAutomation {
+  // Sets which hashes are considered k-anonymous for the Protected
+  // Audience interest group with specified `owner` and `name`.
+  SetProtectedAudienceKAnonymity(
+      url.mojom.Origin owner_origin, string name, array<string> hashes) => ();
+};

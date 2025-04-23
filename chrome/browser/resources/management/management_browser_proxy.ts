@@ -45,6 +45,8 @@ interface ManagedDataResponse {
   eolMessage: string;
   eolAdminMessage: string;
   showMonitoredNetworkPrivacyDisclosure: boolean;
+  showWindowsNoticeForDeskSync: boolean;
+  showCookiesNoticeForDeskSync: boolean;
 }
 
 interface ThreatProtectionPermission {

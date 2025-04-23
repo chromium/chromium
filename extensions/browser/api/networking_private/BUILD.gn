@@ -32,6 +32,7 @@ source_set("networking_private") {
     "//components/keyed_service/content",
     "//components/onc",
     "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
     "//net",

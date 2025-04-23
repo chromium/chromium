@@ -379,7 +379,9 @@ void RemoveDisusedSuggestions(
   auto is_profile_disused =
       [&min_last_used](
           const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
-        return profile->usage_history().use_date() <= min_last_used;
+        return std::max(profile->usage_history().use_date(),
+                        profile->usage_history().modification_date()) <=
+               min_last_used;
       };
   const size_t original_size = profiles.size();
   // Exclude the first address from the list of potentially removed ones so that

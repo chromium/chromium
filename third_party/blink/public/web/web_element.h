@@ -82,6 +82,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString TextContentAbridged(unsigned int max_length) const;
   WebString InnerHTML() const;
 
+  void Focus();
+
   // Returns true if the element's computed writing suggestions value is true.
   // https://html.spec.whatwg.org/#writing-suggestions:computed-writing-suggestions-value
   bool WritingSuggestions() const;

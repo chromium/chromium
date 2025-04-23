@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -205,8 +207,8 @@ class ProcessSingletonTest : public InProcessBrowserTest {
 
   // The idea is to start chrome from multiple threads all at once.
   static const size_t kNbThreads = 5;
-  scoped_refptr<ChromeStarter> chrome_starters_[kNbThreads];
-  std::unique_ptr<base::Thread> chrome_starter_threads_[kNbThreads];
+  std::array<scoped_refptr<ChromeStarter>, kNbThreads> chrome_starters_;
+  std::array<std::unique_ptr<base::Thread>, kNbThreads> chrome_starter_threads_;
 
   // The event that will get all threads to wake up simultaneously and try
   // to start a chrome process at the same time.

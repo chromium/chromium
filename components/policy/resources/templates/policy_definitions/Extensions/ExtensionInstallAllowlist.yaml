@@ -12,6 +12,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 label: Extension IDs to exempt from the blocklist
 owners:

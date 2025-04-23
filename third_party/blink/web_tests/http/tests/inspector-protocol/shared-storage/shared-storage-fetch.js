@@ -29,7 +29,9 @@
   }
 
   function dumpSharedStorageEvents(events) {
-    testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
+    testRunner.log(events, 'Events: ', [
+      'accessTime', 'mainFrameId', 'batchUpdateId', 'serializedData'
+    ]);
   }
 
   const events = [];
@@ -46,12 +48,12 @@
   await dp.Network.setCacheDisabled({cacheDisabled: true});
   await dp.Storage.setSharedStorageTracking({enable: true});
 
-  eventPromise = getPromiseForEventCount(5);
+  eventPromise = getPromiseForEventCount(6);
 
   // The following calls should trigger events if shared storage is enabled, as
   // tracking is now enabled.
   //
-  // Generates 5 events.
+  // Generates 6 events.
   session.evaluateAsync(`
       fetch("${imageUrl}?write=${writeHeader}", {sharedStorageWritable: true});
   `);
@@ -63,6 +65,9 @@
   await getSharedStorageMetadata(baseOrigin);
   await getSharedStorageEntries(baseOrigin);
   await dumpSharedStorageEvents(events);
+
+  // Clean up shared storage.
+  await session.evaluateAsync(`sharedStorage.clear();`);
 
   testRunner.completeTest();
 })

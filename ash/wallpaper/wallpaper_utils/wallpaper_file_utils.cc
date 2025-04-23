@@ -156,17 +156,6 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
                             const WallpaperLayout layout,
                             const gfx::Size preferred_size,
                             const std::string& image_metadata) {
-  if (layout == WALLPAPER_LAYOUT_CENTER) {
-    // TODO(b/325498873) remove this.
-    if (base::PathExists(path)) {
-      DVLOG(1) << "Deleting path " << path;
-      base::DeleteFile(path);
-    }
-    DVLOG(1) << "Skipping resize and save for WALLPAPER_LAYOUT_CENTER path "
-             << path;
-    return false;
-  }
-
   gfx::ImageSkia resized_image = ResizeImage(image, layout, preferred_size);
   if (resized_image.isNull()) {
     LOG(WARNING) << "Failed to resize image";

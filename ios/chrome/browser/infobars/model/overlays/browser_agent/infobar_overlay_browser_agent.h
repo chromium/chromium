@@ -42,7 +42,6 @@ class InfobarOverlayBrowserAgent
 
  private:
   friend class BrowserUserData<InfobarOverlayBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   // Constructor used by CreateForBrowser().
   explicit InfobarOverlayBrowserAgent(Browser* browser);

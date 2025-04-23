@@ -80,6 +80,10 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
           kCancelledDueToMainFrameNavigation;
     case webapps::InstallResultCode::kNoValidIconsInManifest:
       return crosapi::mojom::WebAppInstallResultCode::kNoValidIconsInManifest;
+    case webapps::InstallResultCode::kNoCustomManifestId:
+      return crosapi::mojom::WebAppInstallResultCode::kNoCustomManifestId;
+    case webapps::InstallResultCode::kManifestIdMismatch:
+      return crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch;
   };
 }
 
@@ -178,6 +182,12 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
     case crosapi::mojom::WebAppInstallResultCode::kNoValidIconsInManifest:
       *output = webapps::InstallResultCode::kNoValidIconsInManifest;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::kNoCustomManifestId:
+      *output = webapps::InstallResultCode::kNoCustomManifestId;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch:
+      *output = webapps::InstallResultCode::kManifestIdMismatch;
       return true;
   };
 

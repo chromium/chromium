@@ -6,6 +6,7 @@
 
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,8 +23,6 @@
 #include "extensions/common/file_util.h"
 
 namespace extensions {
-
-using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
 namespace {
 
@@ -68,7 +67,7 @@ ShellExtensionLoader::ShellExtensionLoader(
       extension_registrar_(ExtensionRegistrar::Get(browser_context)),
       keep_alive_requester_(browser_context) {
   extension_registrar_->Init(
-      this, /*extensions_enabled=*/true,
+      this, /*extensions_enabled=*/true, base::CommandLine::ForCurrentProcess(),
       browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
       browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 }
@@ -99,8 +98,7 @@ void ShellExtensionLoader::ReloadExtension(ExtensionId extension_id) {
   // the reload so that the first step, disabling the extension, doesn't release
   // the last remaining keep-alive and shut down the application.
   keep_alive_requester_.StartTrackingReload(extension);
-  extension_registrar_->ReloadExtension(extension_id,
-                                        LoadErrorBehavior::kQuiet);
+  extension_registrar_->ReloadExtensionWithQuietFailure(extension_id);
   if (did_schedule_reload_)
     return;
 
@@ -155,13 +153,9 @@ void ShellExtensionLoader::PostUninstallExtension(
     scoped_refptr<const Extension> extension,
     base::OnceClosure done_callback) {}
 
-void ShellExtensionLoader::PostNotifyUninstallExtension(
-    scoped_refptr<const Extension> extension) {}
-
-void ShellExtensionLoader::LoadExtensionForReload(
+void ShellExtensionLoader::DoLoadExtensionForReload(
     const ExtensionId& extension_id,
-    const base::FilePath& path,
-    LoadErrorBehavior load_error_behavior) {
+    const base::FilePath& path) {
   CHECK(!path.empty());
 
   GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
@@ -171,11 +165,21 @@ void ShellExtensionLoader::LoadExtensionForReload(
   did_schedule_reload_ = true;
 }
 
+void ShellExtensionLoader::LoadExtensionForReload(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path);
+}
+
+void ShellExtensionLoader::LoadExtensionForReloadWithQuietFailure(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path);
+}
+
 void ShellExtensionLoader::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {}
-
-void ShellExtensionLoader::FinishDelayedInstallationsIfAny() {}
 
 bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
   return true;
@@ -191,6 +195,14 @@ void ShellExtensionLoader::GrantActivePermissions(const Extension* extension) {
 }
 
 void ShellExtensionLoader::UpdateExternalExtensionAlert() {
+  NOTIMPLEMENTED();
+}
+
+void ShellExtensionLoader::OnExtensionInstalled(
+    const Extension* extension,
+    const syncer::StringOrdinal& page_ordinal,
+    int install_flags,
+    base::Value::Dict ruleset_install_prefs) {
   NOTIMPLEMENTED();
 }
 

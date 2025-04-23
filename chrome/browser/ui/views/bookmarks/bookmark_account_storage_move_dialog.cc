@@ -47,6 +47,7 @@ void ShowBookmarkAccountStorageMoveDialog(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* target_folder,
     size_t index,
+    BookmarkAccountStorageMoveDialogType dialog_type,
     base::OnceClosure closed_callback) {
   // Note: All keyed services are retrieved for GetOriginalProfile() because the
   // dialog can be shown in incognito.
@@ -61,26 +62,41 @@ void ShowBookmarkAccountStorageMoveDialog(
   bool is_local_node = bookmark_model->IsLocalOnlyNode(*node);
   CHECK_NE(is_local_node, bookmark_model->IsLocalOnlyNode(*target_folder));
 
-  int title_id = is_local_node ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE
+  int title_id = IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE;
+  std::u16string subtitle;
+  switch (dialog_type) {
+    case BookmarkAccountStorageMoveDialogType::kDownloadOrUpload: {
+      title_id = is_local_node ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE
                                : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_TITLE;
-  int subtitle_id =
-      is_local_node
-          ? (node->is_folder()
-                 ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE
-                 : IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE)
-          : (node->is_folder()
-                 ? IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE
-                 : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE);
+      subtitle = l10n_util::GetStringFUTF16(
+          is_local_node
+              ? (node->is_folder()
+                     ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE
+                     : IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE)
+              : (node->is_folder()
+                     ? IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE
+                     : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE),
+          target_folder->GetTitle());
+      break;
+    }
+    case BookmarkAccountStorageMoveDialogType::kUpload: {
+      subtitle = l10n_util::GetStringFUTF16(
+          IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
+          node->GetTitle());
+    }
+  }
+
   int ok_button_id = is_local_node
                          ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL
                          : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_OK_BUTTON_LABEL;
+
   auto [ok_callback, cancel_callback] =
       base::SplitOnceCallback(std::move(closed_callback));
+
   ui::DialogModel::Builder builder;
   builder.SetInternalName("BookmarkAccountStorageMoveDialog")
       .SetTitle(l10n_util::GetStringUTF16(title_id))
-      .SetSubtitle(
-          l10n_util::GetStringFUTF16(subtitle_id, target_folder->GetTitle()))
+      .SetSubtitle(subtitle)
       .AddOkButton(base::BindOnce(&bookmarks::BookmarkModel::Move,
                                   bookmark_model->AsWeakPtr(), node,
                                   target_folder, index)
@@ -104,18 +120,21 @@ void ShowBookmarkAccountStorageMoveDialog(
     AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
     CHECK(!account_info.IsEmpty());
+
     auto avatar_and_email_view = std::make_unique<views::View>();
+    int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL);
+
     avatar_and_email_view->AddChildView(std::make_unique<views::ImageView>(
         ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
             account_info.account_image, kAvatarSize, kAvatarSize,
             profiles::SHAPE_CIRCLE))));
     avatar_and_email_view->AddChildView(
         std::make_unique<views::Label>(base::UTF8ToUTF16(account_info.email)));
-    int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL);
     avatar_and_email_view
         ->SetLayoutManager(std::make_unique<views::BoxLayout>())
         ->set_between_child_spacing(horizontal_spacing);
+
     builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::move(avatar_and_email_view),

@@ -579,21 +579,7 @@ component("base") {
   }
 
   if (use_glib) {
-    configs += [ "//build/config/linux:glib" ]
-    sources += [
-      "glib/glib_cast.h",
-      "glib/glib_integers.h",
-      "glib/scoped_gobject.h",
-      "glib/scoped_gsignal.cc",
-      "glib/scoped_gsignal.h",
-    ]
-    if (use_gio) {
-      configs += [ "//build/linux:gio_config" ]
-      sources += [
-        "glib/gsettings.cc",
-        "glib/gsettings.h",
-      ]
-    }
+    public_deps += [ "//ui/base/glib" ]
   }
 
   if (is_chromeos || (use_aura && is_linux) || is_fuchsia) {
@@ -1325,6 +1311,7 @@ test("ui_base_unittests") {
 
   if (use_glib) {
     sources += [ "glib/scoped_gsignal_unittest.cc" ]
+    deps += [ "//ui/base/glib" ]
   }
 
   if (is_linux) {

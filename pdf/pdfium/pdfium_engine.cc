@@ -24,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -460,7 +461,7 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
   return xyz_params;
 }
 
-void SetXYZParamsInScreenCoords(PDFiumPage* page, float* params) {
+void SetXYZParamsInScreenCoords(PDFiumPage* page, base::span<float> params) {
   UNSAFE_TODO({
     gfx::PointF page_coords(params[0], params[1]);
     gfx::PointF screen_coords = page->TransformPageToScreenXY(page_coords);
@@ -469,7 +470,7 @@ void SetXYZParamsInScreenCoords(PDFiumPage* page, float* params) {
   });
 }
 
-void SetFitRParamsInScreenCoords(PDFiumPage* page, float* params) {
+void SetFitRParamsInScreenCoords(PDFiumPage* page, base::span<float> params) {
   UNSAFE_TODO({
     gfx::PointF point_1 =
         page->TransformPageToScreenXY(gfx::PointF(params[0], params[1]));
@@ -487,7 +488,7 @@ void SetFitRParamsInScreenCoords(PDFiumPage* page, float* params) {
 // input and a output parameter.
 void ParamsTransformPageToScreen(unsigned long view_fit_type,
                                  PDFiumPage* page,
-                                 float* params) {
+                                 base::span<float> params) {
   switch (view_fit_type) {
     case PDFDEST_VIEW_XYZ:
       SetXYZParamsInScreenCoords(page, params);
@@ -2642,7 +2643,7 @@ std::optional<PDFiumEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   NamedDestination result;
   result.page = page;
   unsigned long view_int =
-      FPDFDest_GetView(dest, &result.num_params, result.params);
+      FPDFDest_GetView(dest, &result.num_params, result.params.data());
 
   // FPDFDest_GetView() gets the in-page coordinates directly from the PDF
   // document. The in-page coordinates need to be transformed into in-screen

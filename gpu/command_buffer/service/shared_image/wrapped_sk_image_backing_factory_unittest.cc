@@ -157,7 +157,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
       EXPECT_EQ(plane_size.height(), backend_texture.height());
     }
   } else {
-    ASSERT_TRUE(context_state_->graphite_context());
+    ASSERT_TRUE(context_state_->graphite_shared_context());
     for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
       auto graphite_texture = scoped_read_access->graphite_texture(plane);
       EXPECT_TRUE(graphite_texture.isValid());

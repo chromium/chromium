@@ -22,12 +22,11 @@ class OverlayResponseInfo : public OverlayUserData<InfoType> {
 };
 
 // Macro used to define an OverlayResponseInfo that holds no data.  Should be
-// declared in headers and accompanied by OVERLAY_USER_DATA_SETUP_IMPL() in the
-// implementation.
+// used in headers.
 #define DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(InfoType)  \
   class InfoType : public OverlayResponseInfo<InfoType> { \
    private:                                               \
-    OVERLAY_USER_DATA_SETUP(InfoType);                    \
+    friend class OverlayUserData<InfoType>;               \
   }
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_RESPONSE_INFO_H_

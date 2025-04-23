@@ -380,5 +380,3 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   }
   return {PolicyDecision::Cancel(), std::move(optional_app_launch_request)};
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AppLauncherTabHelper)

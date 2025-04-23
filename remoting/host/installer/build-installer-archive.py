@@ -156,7 +156,7 @@ def copyZipIntoArchive(out_dir, files_root, zip_file):
 
 
 def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
-                     gen_files, gen_files_dst, defs):
+                     gen_files, gen_files_dst, removed_files, defs):
   """Builds a zip archive with the files needed to build the installer.
 
   Args:
@@ -169,6 +169,9 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
     gen_files: Full path to binaries to add to archive.
     gen_files_dst: Relative path of where to add binary files in archive.
                    This array needs to parallel |binaries_src|.
+    removed_files: Relative path of files to be removed from the archive. Useful
+                   to remove files in a subdirectory of |gen_files| that you
+                   don't want to be included in the archive.
     defs: Dictionary of variable definitions.
   """
   cleanDir(temp_dir)
@@ -193,6 +196,13 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
     else:
       shutil.copy2(bs, dst_file)
 
+  for f in removed_files:
+    removed_file = os.path.join(temp_dir, f)
+    if os.path.isdir(removed_file):
+      shutil.rmtree(removed_file)
+    else:
+      os.remove(removed_file)
+
   zip_helpers.zip_directory(
     zip_path, temp_dir,
     compress=True,
@@ -212,6 +222,7 @@ def usage():
         '  --source-files <list of source files...>\n'
         '  --generated-files <list of generated target files...>\n'
         '  --generated-files-dst <dst for each generated file...>\n'
+        '  --removed-files <list of files to be removed from the archive...>\n'
         '  --defs <list of VARIABLE=value definitions...>'
         ) % sys.argv[0]
 
@@ -229,6 +240,7 @@ def main():
   source_files = []
   generated_files = []
   generated_files_dst = []
+  removed_files = []
   definitions = []
   for arg in sys.argv[3:]:
     if arg == '--source-file-roots':
@@ -239,6 +251,8 @@ def main():
       arg_mode = 'gen-src'
     elif arg == '--generated-files-dst':
       arg_mode = 'gen-dst'
+    elif arg == '--removed-files':
+      arg_mode = 'rm-files'
     elif arg == '--defs':
       arg_mode = 'defs'
 
@@ -250,6 +264,8 @@ def main():
       generated_files.append(arg)
     elif arg_mode == 'gen-dst':
       generated_files_dst.append(arg)
+    elif arg_mode == 'rm-files':
+      removed_files.append(arg)
     elif arg_mode == 'defs':
       definitions.append(arg)
     else:
@@ -273,7 +289,7 @@ def main():
 
   result = buildHostArchive(temp_dir, zip_path, source_file_roots,
                             source_files, generated_files, generated_files_dst,
-                            defs)
+                            removed_files, defs)
 
   return 0
 

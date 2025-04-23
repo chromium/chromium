@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -18,19 +19,11 @@
 namespace crash_reporter {
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BindingStateCombo {
-  kNoWaivedNoModerateNoStrong = 0,
-  kNoWaivedNoModerateHasStrong = 1,
-  kNoWaivedHasModerateNoStrong = 2,
-  kNoWaivedHasModerateHasStrong = 3,
-  kHasWaivedNoModerateNoStrong = 4,
-  kHasWaivedNoModerateHasStrong = 5,
-  kHasWaivedHasModerateNoStrong = 6,
-  kHasWaivedHasModerateHasStrong = 7,
-  kMaxValue = kHasWaivedHasModerateHasStrong
-};
+constexpr char kKillSpareRendererAvailabilityIntentionalKillUMAName[] =
+    "Stability.Android.KillSpareRendererAvailability.IntentionalKill";
+
+constexpr char kKillSpareRendererAvailabilityOOMUMAName[] =
+    "Stability.Android.KillSpareRendererAvailability.OOM";
 
 void ReportCrashCount(CrashMetricsReporter::ProcessedCrashCounts crash_type,
                       CrashMetricsReporter::ReportedCrashTypeSet* counts) {
@@ -60,6 +53,31 @@ void RecordSystemExitReason(
     ProcessExitReasonFromSystem::RecordExitReasonToUma(
         pid, base::StrCat({"Stability.Android.SystemExitReason.", suffix}));
   }
+}
+
+void RecordSpareRendererAvailability(bool is_oom_kill,
+                                     bool is_intentioal_kill,
+                                     bool is_spare_renderer_killed,
+                                     bool has_spare_renderer) {
+  if (!is_oom_kill && !is_intentioal_kill) {
+    return;
+  }
+  using SpareRendererAvailabilityWhenKilled =
+      CrashMetricsReporter::SpareRendererAvailabilityWhenKilled;
+  SpareRendererAvailabilityWhenKilled availability;
+  if (is_spare_renderer_killed) {
+    availability = SpareRendererAvailabilityWhenKilled::kKillSpareRenderer;
+  } else if (has_spare_renderer) {
+    availability = SpareRendererAvailabilityWhenKilled::
+        kKillNonSpareRendererWithSpareRender;
+  } else {
+    availability = SpareRendererAvailabilityWhenKilled::
+        kKillNonSpareRendererWithoutSpareRenderer;
+  }
+  const char* target_uma_name =
+      is_oom_kill ? kKillSpareRendererAvailabilityOOMUMAName
+                  : kKillSpareRendererAvailabilityIntentionalKillUMAName;
+  base::UmaHistogramEnumeration(target_uma_name, availability);
 }
 
 }  // namespace
@@ -108,6 +126,10 @@ void CrashMetricsReporter::ChildProcessExited(
       info.blink_oom_metrics.current_available_memory_kb;
   const uint64_t swap_free_kb = info.blink_oom_metrics.current_swap_free_kb;
 
+  RecordSpareRendererAvailability(android_oom_kill, intentional_kill,
+                                  info.is_spare_renderer,
+                                  info.has_spare_renderer);
+
   if (app_foreground && android_oom_kill) {
     if (info.process_type == content::PROCESS_TYPE_GPU) {
       ReportCrashCount(ProcessedCrashCounts::kGpuForegroundOom,
@@ -123,10 +145,11 @@ void CrashMetricsReporter::ChildProcessExited(
       renderer_allocation_failed) {
     ReportCrashCount(ProcessedCrashCounts::kRendererAllocationFailureAll,
                      &reported_counts);
-    if (app_foreground && renderer_visible)
+    if (app_foreground && renderer_visible) {
       ReportCrashCount(
           ProcessedCrashCounts::kRendererForegroundVisibleAllocationFailure,
           &reported_counts);
+    }
   }
 
   if (info.process_type == content::PROCESS_TYPE_RENDERER && app_foreground) {

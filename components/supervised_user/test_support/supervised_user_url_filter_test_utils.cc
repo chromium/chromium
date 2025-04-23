@@ -22,6 +22,12 @@ version_info::Channel FakePlatformDelegate::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
+// The fake should be used in supervised user context, true is a reasonable
+// return default.
+bool FakePlatformDelegate::ShouldCloseIncognitoTabs() const {
+  return true;
+}
+
 void FakePlatformDelegate::CloseIncognitoTabs() {
   return;
 }

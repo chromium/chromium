@@ -10,7 +10,7 @@ build_webui("build") {
     "segmentation_internals.html",
     "segmentation_survey.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "segmentation_internals.ts",
     "segmentation_internals_browser_proxy.ts",
     "segmentation_survey.ts",

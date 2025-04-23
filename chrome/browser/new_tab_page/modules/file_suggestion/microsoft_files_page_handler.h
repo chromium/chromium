@@ -42,6 +42,19 @@ enum class MicrosoftFilesRequestResult {
   kMaxValue = kAuthError,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MicrosoftFilesSubstitutionType {
+  // No substitution occurred.
+  kNone = 0,
+  // More non-insight files than it's initial limit were added to the files
+  // list.
+  kExtraNonInsights = 1,
+  // More trending files than it's initial limit were added to the files list.
+  kExtraTrending = 2,
+  kMaxValue = kExtraTrending,
+};
+
 class MicrosoftFilesPageHandler
     : public file_suggestion::mojom::MicrosoftFilesPageHandler {
  public:

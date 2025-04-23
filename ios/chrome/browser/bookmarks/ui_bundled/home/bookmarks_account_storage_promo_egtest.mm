@@ -71,8 +71,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Verify that identity1 is signed-in and the promo is hidden.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
   // Sign-out and verify that the promo is shown without the spinner.
   [SigninEarlGrey signOut];
@@ -104,8 +103,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail];
 }
 
 // Tests that signin promo is shown even if local data exists.
@@ -130,8 +128,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
   // Verify that the batch upload dialog is visible.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -155,8 +152,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
 }
 
 // Tests that account bookmarks are not shown on sign-out.
@@ -178,7 +174,7 @@ using chrome_test_util::SecondarySignInButton;
   // Sign-out.
   [SigninEarlGrey signOut];
 
-  // Verify that the acocunt model is not shown.
+  // Verify that the account model is not shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_notVisible()];

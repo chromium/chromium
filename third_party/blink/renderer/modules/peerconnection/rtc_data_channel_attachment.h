@@ -16,7 +16,7 @@ class MODULES_EXPORT RTCDataChannelAttachment
     : public SerializedScriptValue::Attachment {
  public:
   using NativeDataChannelVector =
-      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+      Vector<webrtc::scoped_refptr<webrtc::DataChannelInterface>>;
 
   static const void* const kAttachmentKey;
   RTCDataChannelAttachment() = default;

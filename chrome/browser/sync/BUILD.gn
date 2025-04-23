@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -57,6 +58,7 @@ source_set("sync") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/browser_sync",
+    "//components/collaboration/public",
     "//components/favicon/core",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -216,6 +218,10 @@ source_set("sync") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/session",
     ]
+  }
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 

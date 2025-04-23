@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Svetainės gali klausti jūsų vietovės</translation>
 <translation id="3658847490588580244">Numatytosios naršyklės apatinis lapas</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}one{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}few{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}many{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}other{<ph name="RWS_MEMBERS_COUNT" /> svetainių, priklausančių <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}}</translation>
+<translation id="3670480940339182416">Svetainėse galima naudoti V8 optimizavimo priemonę</translation>
 <translation id="3676777756440746804">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
 <translation id="3697164069658504920">Įjungus svetainėse gali būti prašoma naudoti USB įrenginius. Išjungus svetainėse negalima naudoti USB įrenginių.</translation>
+<translation id="3703430731944883733">Sklaidos kanalo tvarkymas</translation>
 <translation id="3707034683772193706">Svetainė, kurioje lankotės, gali išsaugoti nedidelį kiekį informacijos „Chrome“, kad būtų galima patvirtinti, jog nesate robotas</translation>
 <translation id="3708684582558000260">Neleisti uždarytoms svetainėms užbaigti duomenų siuntimo ar gavimo proceso</translation>
 <translation id="3709818294139939629">Pašalinta prieiga prie failo</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
 <translation id="421742575134139848">Svetainėse galima leisti garsą norint teikti muzikos, vaizdo įrašų ir kitos medijos garso įrašus</translation>
+<translation id="4217710972110098902">Prijungta prie nuosekliojo prievado</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Išėjus iš svetainės, joje gali būti toliau sinchronizuojama, kad būtų užbaigtos užduotys, pvz., įkeltos nuotraukos arba išsiųstas pokalbio pranešimas</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų mikrofoną, taip pat įjunkite jį <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
+<translation id="4578289292431526768">Pirmyn</translation>
 <translation id="4598549027014564149">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie jūsų naršymo veiklą skirtingose ar susijusiose svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="461356340001513807">Leidžiama prisijungti prie svetainių naudojant tapatybės paslaugos paskyrą</translation>
 <translation id="4635969503923889910">Neleisti svetainėms naudoti NFC įrenginių</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">Fotoaparatas išjungtas „Android“ nustatymuose</translation>
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5706552988683188916">Bus ištrinti <ph name="WEBSITE" /> slapukai ir kiti svetainės duomenys</translation>
+<translation id="571222594670061844">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5723967018671998714">Trečiosios šalies slapukai užblokuoti inkognito režimu</translation>
 <translation id="5740126560802162366">Svetainės gali išsaugoti duomenis įrenginyje</translation>
+<translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>
 <translation id="5771720122942595109">Užblokuota: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Leidimai</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5876056640971328065">Pristabdyti vaizdo įrašą</translation>
 <translation id="5877248419911025165">Sutraukti visas užklausas</translation>
+<translation id="5878945009165002849">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5884085660368669834">Svetainės nuostata</translation>
 <translation id="5887687176710214216">Paskutinį kartą lankytasi vakar</translation>
 <translation id="5908617755156109052">Neleisti svetainėms sukurti aplinkos 3D žemėlapio ir stebėti vaizdo kameros padėties</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6320088164292336938">Vibruoti</translation>
-<translation id="6344622098450209924">Apsauga nuo stebėjimo</translation>
 <translation id="6367753977865761591">Blokuoti trečiosios šalies prisijungimą prie konkrečios svetainės.</translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="640163077447496506">Galiojimo laikas baigsis šiandien</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8473055640493819707">„<ph name="APP_NAME" />“ pasenusi. Iš naujo įdiekite programą.</translation>
+<translation id="847433688444405067">Naršymas įrenginiuose</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="848952951823693243">Visada galite pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="8492822722330266509">Svetainėse galima siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>

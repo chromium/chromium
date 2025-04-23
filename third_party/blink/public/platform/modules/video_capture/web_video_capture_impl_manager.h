@@ -16,8 +16,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {

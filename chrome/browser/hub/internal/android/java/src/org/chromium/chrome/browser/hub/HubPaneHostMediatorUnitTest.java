@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
 import android.view.ViewGroup;
 
@@ -29,7 +30,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyObservable;
 
 /** Tests for {@link HubPaneHostMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,6 +44,7 @@ public class HubPaneHostMediatorUnitTest {
     private @Mock PaneManager mPaneManager;
     private @Mock FullButtonData mButtonData;
     private @Mock ViewGroup mRootView;
+    private @Mock ViewGroup mSnackbarContainer;
     private @Mock HubColorMixer mColorMixer;
 
     private ObservableSupplierImpl<Pane> mPaneSupplier;
@@ -53,6 +57,7 @@ public class HubPaneHostMediatorUnitTest {
                 new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)
                         .build();
+        mModel.addObserver(this::onPropertyChange);
 
         when(mPane.getRootView()).thenReturn(mRootView);
 
@@ -63,6 +68,12 @@ public class HubPaneHostMediatorUnitTest {
         when(mPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mIncognitoPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
+    }
+
+    private void onPropertyChange(PropertyObservable<PropertyKey> model, PropertyKey key) {
+        if (key == SNACKBAR_CONTAINER_CALLBACK) {
+            mModel.get(SNACKBAR_CONTAINER_CALLBACK).onResult(mSnackbarContainer);
+        }
     }
 
     @Test

@@ -48,8 +48,7 @@ BASE_FEATURE(kDisableVPBLTUpscale,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This flag attempts to enable MPO for P010 SDR video content. The feature
-// should only enabled when P010 pixel format is detected as displayable
-// surface at the same time.
+// should only be enabled when P010 MPO is detected as supported.
 BASE_FEATURE(kP010MPOForSDR, "P010MPOForSDR", base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
@@ -491,9 +490,12 @@ SwapChainPresenter::SwapChainPresenter(
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
               ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
-          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {}
+          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {
+  DVLOG(1) << __func__ << "(" << this << ")";
+}
 
 SwapChainPresenter::~SwapChainPresenter() {
+  DVLOG(1) << __func__ << "(" << this << ")";
   base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
@@ -509,33 +511,31 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     return DXGI_FORMAT_R10G10B10A2_UNORM;
   }
 
-  // Prefer P010 swapchain when playing P010 SDR content on SDR system with
-  // P010 displayable.
-  if (base::FeatureList::IsEnabled(kP010MPOForSDR) &&
-      use_p010_for_sdr_swap_chain) {
-    return DXGI_FORMAT_P010;
-  }
-
-  DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
-  // Always prefer YUV swap chain for hardware protected video for now.
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
-    return yuv_overlay_format;
-
   if (failed_to_create_yuv_swapchain_ ||
       !DirectCompositionHardwareOverlaysSupported()) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   }
 
-  // Start out as YUV.
-  if (!presentation_history_.Valid())
-    return yuv_overlay_format;
+  DXGI_FORMAT sdr_yuv_overlay_format =
+      use_p010_for_sdr_swap_chain ? DXGI_FORMAT_P010
+                                  : GetDirectCompositionSDROverlayFormat();
+  // Always prefer YUV swap chain for hardware protected video for now.
+  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
+    return sdr_yuv_overlay_format;
+  }
+
+  if (!presentation_history_.Valid()) {
+    // Prefer P010 swapchain when playing P010 SDR content on SDR system with
+    // P010 MPO supported.
+    return sdr_yuv_overlay_format;
+  }
 
   int composition_count = presentation_history_.composed_count();
 
   // It's more efficient to use a BGRA backbuffer instead of YUV if overlays
   // aren't being used, as otherwise DWM will use the video processor a second
   // time to convert it to BGRA before displaying it on screen.
-  if (swap_chain_format_ == yuv_overlay_format) {
+  if (swap_chain_format_ != DXGI_FORMAT_B8G8R8A8_UNORM) {
     // Switch to BGRA once 3/4 of presents are composed.
     if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4)) {
       switched_to_BGRA8888_time_tick_ = base::TimeTicks::Now();
@@ -550,7 +550,7 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
         base::TimeTicks::Now() - switched_to_BGRA8888_time_tick_;
     if (time_delta >= kDelayForRetryingYUVFormat) {
       presentation_history_.Clear();
-      return yuv_overlay_format;
+      return sdr_yuv_overlay_format;
     }
   }
   return swap_chain_format_;
@@ -1416,6 +1416,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
       return false;
     }
     DCHECK(decode_swap_chain_);
+    DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
     SetSwapChainPresentDuration();
 
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
@@ -1583,11 +1584,13 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       (content_is_pq10 || use_vp_auto_hdr);
 
   // Try to use P010 swapchain when playing 10-bit content on SDR monitor where
-  // P010 pixel format is also detected as displayable surface, due to the
-  // better quality over 8-bit swapchain.
+  // P010 MPO support is detected, due to the better quality over 8-bit
+  // swapchain.
   bool use_p010_for_sdr_swap_chain =
+      base::FeatureList::IsEnabled(kP010MPOForSDR) &&
+      (gl::GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_P010) != 0) &&
       !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
-      CheckDisplayableSupportForP010() && params.video_params.is_p010_content;
+      params.video_params.is_p010_content;
 
   DXGI_FORMAT swap_chain_format =
       GetSwapChainFormat(params.video_params.protected_video_type,
@@ -1997,6 +2000,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
 
 void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
   if (dcomp_surface_handle_ != INVALID_HANDLE_VALUE) {
+    DVLOG(2) << __func__ << "(" << this << ")";
     dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
     last_overlay_image_.reset();
     content_.Reset();
@@ -2256,6 +2260,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
 void SwapChainPresenter::ReleaseSwapChainResources() {
   if (swap_chain_ || decode_swap_chain_) {
+    DVLOG(2) << __func__ << "(" << this << ")";
     output_view_.Reset();
     swap_chain_.Reset();
     swap_chain_handle_.Close();
@@ -2360,6 +2365,9 @@ bool SwapChainPresenter::ReallocateSwapChain(
                   << "\nFalling back to BGRA";
       use_yuv_swap_chain = false;
       swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    } else {
+      DVLOG(2) << "Update visual's content (yuv). " << __func__ << "(" << this
+               << ")";
     }
   }
   if (!use_yuv_swap_chain) {
@@ -2400,6 +2408,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
                   << ". Disable overlay swap chains";
       return false;
     }
+
+    DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
   }
 
   if (DXGIWaitableSwapChainEnabled()) {

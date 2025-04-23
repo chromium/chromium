@@ -248,6 +248,7 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithModelPredictions(
 void BrowserSavePasswordProgressLogger::LogFormStructure(
     StringID label,
     const FormStructure& form_structure,
+    const autofill::EncodeUploadRequestOptions& vote_metadata,
     std::optional<PasswordAttributesMetadata> password_attributes) {
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
@@ -260,7 +261,7 @@ void BrowserSavePasswordProgressLogger::LogFormStructure(
              ScrubURL(form_structure.source_url()) + "\n";
   message += GetStringFromID(STRING_ACTION) + ": " +
              ScrubURL(form_structure.target_url()) + "\n";
-  message += FormStructureToFieldsLogString(form_structure);
+  message += FormStructureToFieldsLogString(form_structure, vote_metadata);
   message += VotesPasswordAttributesLogString(password_attributes);
   message += "}";
   SendLog(message);
@@ -321,7 +322,8 @@ std::string BrowserSavePasswordProgressLogger::VotesPasswordAttributesLogString(
 
 // static
 std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
-    const FormStructure& form_structure) {
+    const FormStructure& form_structure,
+    const autofill::EncodeUploadRequestOptions& vote_metadata) {
   std::string result;
   result += GetStringFromID(STRING_FIELDS) + ": " + "\n";
   for (const auto& field : form_structure) {
@@ -357,13 +359,19 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       field_info += NumberToString(field->initial_value_hash().value());
     }
 
-    std::string generation = GenerationTypeToString(field->generation_type());
-    if (!generation.empty()) {
-      field_info += ", GENERATION_EVENT: " + generation;
-    }
+    if (auto it = vote_metadata.fields.find(field->global_id());
+        it != vote_metadata.fields.end()) {
+      const autofill::EncodeUploadRequestOptions::Field& field_metadata =
+          it->second;
+      std::string generation =
+          GenerationTypeToString(field_metadata.generation_type);
+      if (!generation.empty()) {
+        field_info += ", GENERATION_EVENT: " + generation;
+      }
 
-    if (field->generated_password_changed()) {
-      field_info += ", generated password changed";
+      if (field_metadata.generated_password_changed) {
+        field_info += ", generated password changed";
+      }
     }
 
     if (field->password_requirements()) {

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -2061,7 +2062,13 @@ class AutofillIbanSuggestionContentTest
     did_set_up_image_resource_for_test_ = true;
   }
 
-  bool IsNewFopDisplayEnabled() const { return GetParam(); }
+  bool IsNewFopDisplayEnabled() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return false;
+#else
+    return GetParam();
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_metadata_;
@@ -2271,16 +2278,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
               EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
                   /*obfuscation_length=*/2, u"1111")}}));
 #else
-  // There should be 1 lines of labels with 3 columns:
-  // 1. Card Network + last 4 digits.
-  // 2. A dot ("•") separator.
-  // 3. Expiration date.
+  // The label for virtual card suggestion should be:
+  // Card Network + last 4 digits.
   EXPECT_THAT(
       virtual_card_name_field_suggestion,
       EqualLabels(
-          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-            kEllipsisDotSeparator,
-            server_card.AbbreviatedExpirationDateForDisplay(false)}}));
+          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2)}}));
 #endif
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_name_field_suggestion.iph_metadata.feature,
@@ -2837,17 +2840,12 @@ TEST_P(
     EXPECT_THAT(
         virtual_card_name_field_suggestion,
         EqualLabels(
-            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-              kEllipsisDotSeparator,
-              server_card.AbbreviatedExpirationDateForDisplay(false)},
+            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2)},
              {l10n_util::GetStringUTF16(expected_message_id())}}));
   } else {
-    EXPECT_THAT(
-        virtual_card_name_field_suggestion,
-        EqualLabels(
-            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-              kEllipsisDotSeparator,
-              server_card.AbbreviatedExpirationDateForDisplay(false)}}));
+    EXPECT_THAT(virtual_card_name_field_suggestion,
+                EqualLabels({{server_card.NetworkAndLastFourDigits(
+                    /*obfuscation_length=*/2)}}));
   }
 #endif
 }
@@ -3027,7 +3025,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion = CreateCreditCardSuggestionForTest(
       server_card, *autofill_client(), CREDIT_CARD_NUMBER,
@@ -3080,7 +3078,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
   payments_data().AddServerCreditCard(server_card);
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -3200,7 +3198,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   gfx::Image fake_image = CustomIconForTest();
   payments_data().AddServerCreditCard(server_card);
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(

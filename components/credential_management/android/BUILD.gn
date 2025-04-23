@@ -39,8 +39,6 @@ static_library("browser_sources") {
   sources = [
     "third_party_credential_manager_bridge.cc",
     "third_party_credential_manager_bridge.h",
-    "third_party_credential_manager_factory.cc",
-    "third_party_credential_manager_factory.h",
     "third_party_credential_manager_impl.cc",
     "third_party_credential_manager_impl.h",
   ]

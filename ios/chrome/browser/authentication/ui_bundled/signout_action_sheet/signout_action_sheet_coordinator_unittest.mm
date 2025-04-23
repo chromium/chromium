@@ -125,7 +125,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                               view:view_controller_.view
           forceSnackbarOverToolbar:NO
                         withSource:metricSignOut
-                        completion:^(BOOL success) {
+                        completion:^(BOOL success, SceneState* scene_state) {
+                          signout_coordinator_ = nil;
                           completion_callback_.Run(success);
                         }];
     return signout_coordinator_;
@@ -202,8 +203,10 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
           [](syncer::DataTypeSet requested_types,
-             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
-            std::move(callback).Run(syncer::DataTypeSet());
+             base::OnceCallback<void(
+                 absl::flat_hash_map<syncer::DataType, size_t>)> callback) {
+            std::move(callback).Run(
+                absl::flat_hash_map<syncer::DataType, size_t>());
           });
   EXPECT_CALL(completion_callback_, Run);
 
@@ -224,11 +227,17 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
           [](syncer::DataTypeSet requested_types,
-             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+             base::OnceCallback<void(
+                 absl::flat_hash_map<syncer::DataType, size_t>)> callback) {
             constexpr syncer::DataTypeSet kUnsyncedTypes = {
                 syncer::BOOKMARKS, syncer::PREFERENCES};
-            std::move(callback).Run(
-                base::Intersection(kUnsyncedTypes, requested_types));
+            syncer::DataTypeSet returned_types =
+                base::Intersection(kUnsyncedTypes, requested_types);
+            absl::flat_hash_map<syncer::DataType, size_t> type_counts;
+            for (auto type : returned_types) {
+              type_counts[type] = 1u;
+            }
+            std::move(callback).Run(std::move(type_counts));
           });
   EXPECT_CALL(completion_callback_, Run);
 

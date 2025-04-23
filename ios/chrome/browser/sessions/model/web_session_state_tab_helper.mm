@@ -198,5 +198,3 @@ void WebSessionStateTabHelper::MarkStale() {
 
   stale_ = true;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebSessionStateTabHelper)

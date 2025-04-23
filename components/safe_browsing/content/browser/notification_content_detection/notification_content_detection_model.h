@@ -39,7 +39,17 @@ class NotificationContentDetectionModel
     : public optimization_guide::BertModelHandler {
  public:
   // The callback for displaying a persistent notification.
-  using ModelVerdictCallback = base::OnceCallback<void(bool is_suspicious)>;
+  using ModelVerdictCallback = base::OnceCallback<void(
+      bool is_suspicious,
+      std::optional<std::string> serialized_content_detection_metadata)>;
+  // Create a `Value::Dict` for storing the values of:
+  // `is_on_global_cache_list`, `is_allowlisted_by_user`, and
+  // `suspicious_score`. Then, serialize the dictionary as a string for storing
+  // in the notification database.
+  static std::string GetSerializedMetadata(
+      bool is_on_global_cache_list,
+      bool is_allowlisted_by_user,
+      std::optional<double> suspicious_score);
   NotificationContentDetectionModel(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,

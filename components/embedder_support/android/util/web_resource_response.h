@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -44,10 +45,20 @@ class WebResourceResponse {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  bool input_stream_transferred_;
 };
 
 }  // namespace embedder_support
+
+namespace jni_zero {
+template <>
+inline std::unique_ptr<embedder_support::WebResourceResponse> FromJniType(
+    JNIEnv*,
+    const base::android::JavaRef<jobject>& obj) {
+  if (!obj) {
+    return nullptr;
+  }
+  return std::make_unique<embedder_support::WebResourceResponse>(obj);
+}
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_WEB_RESOURCE_RESPONSE_H_

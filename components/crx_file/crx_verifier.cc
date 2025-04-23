@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crx_file/crx_verifier.h"
 
 #include <algorithm>
@@ -23,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crx_file/crx3.pb.h"
@@ -49,21 +45,19 @@ constexpr uint8_t kPublisherTestKeyHash[] = {
     0x5f, 0x64, 0xf3, 0xa6, 0x17, 0x03, 0x0d, 0xde, 0x21, 0x61, 0xbe,
     0xb7, 0x95, 0x91, 0x95, 0x83, 0x68, 0x12, 0xe9, 0x78, 0x1e};
 
-constexpr uint8_t kEocd[] = {'P', 'K', 0x05, 0x06};
-constexpr uint8_t kEocd64[] = {'P', 'K', 0x06, 0x07};
+constexpr auto kEocd = std::to_array<uint8_t>({'P', 'K', 0x05, 0x06});
+constexpr auto kEocd64 = std::to_array<uint8_t>({'P', 'K', 0x06, 0x07});
 
 using VerifierCollection =
     std::vector<std::unique_ptr<crypto::SignatureVerifier>>;
 using RepeatedProof = google::protobuf::RepeatedPtrField<AsymmetricKeyProof>;
 
-int ReadAndHashBuffer(uint8_t* buffer,
-                      int length,
-                      base::File* file,
-                      crypto::SecureHash* hash) {
-  static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
-  int read = file->ReadAtCurrentPos(reinterpret_cast<char*>(buffer), length);
-  if (read > 0) {
-    hash->Update(buffer, read);
+std::optional<size_t> ReadAndHashBuffer(base::span<uint8_t> buffer,
+                                        base::File* file,
+                                        crypto::SecureHash* hash) {
+  auto read = file->ReadAtCurrentPos(buffer);
+  if (read.value_or(0) > 0) {
+    hash->Update(buffer.first(*read));
   }
   return read;
 }
@@ -72,22 +66,23 @@ int ReadAndHashBuffer(uint8_t* buffer,
 // returns the read uint32.
 uint32_t ReadAndHashLittleEndianUInt32(base::File* file,
                                        crypto::SecureHash* hash) {
-  uint8_t buffer[4] = {};
-  if (ReadAndHashBuffer(buffer, 4, file, hash) != 4) {
+  std::array<uint8_t, 4> buffer;
+  if (ReadAndHashBuffer(buffer, file, hash).value_or(4) != buffer.size()) {
     return UINT32_MAX;
   }
-  return buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
+  return base::I32FromLittleEndian(buffer);
 }
 
 // Read to the end of the file, updating the hash and all verifiers.
 bool ReadHashAndVerifyArchive(base::File* file,
                               crypto::SecureHash* hash,
                               const VerifierCollection& verifiers) {
-  uint8_t buffer[1 << 12] = {};
-  size_t len = 0;
-  while ((len = ReadAndHashBuffer(buffer, std::size(buffer), file, hash)) > 0) {
+  std::array<uint8_t, 1 << 12> buffer;
+  std::optional<size_t> len;
+  while ((len = ReadAndHashBuffer(buffer, file, hash)).value_or(0) > 0) {
+    auto to_verify = base::span<const uint8_t>(buffer).first(*len);
     for (auto& verifier : verifiers) {
-      verifier->VerifyUpdate(base::span(buffer, len));
+      verifier->VerifyUpdate(to_verify);
     }
   }
   for (auto& verifier : verifiers) {
@@ -95,7 +90,10 @@ bool ReadHashAndVerifyArchive(base::File* file,
       return false;
     }
   }
-  return len == 0;
+  // A final read with a length of 0 signals the end of the input file. A read
+  // with no length at all signals a read error and should be treated as a
+  // failure.
+  return len.has_value() && len.value() == 0;
 }
 
 // The remaining contents of a Crx3 file are [header-size][header][archive].
@@ -119,19 +117,14 @@ VerifierResult VerifyCrx3(
     return VerifierResult::ERROR_HEADER_INVALID;
   }
   std::vector<uint8_t> header_bytes(header_size);
-  if (ReadAndHashBuffer(header_bytes.data(), header_size, file, hash) !=
-      header_size) {
+  if (ReadAndHashBuffer(header_bytes, file, hash) != header_size) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
 
   // If the header contains a ZIP EOCD or EOCD64 token, unzipping may not work
   // correctly.
-  if (std::search(std::begin(header_bytes), std::end(header_bytes),
-                  std::begin(kEocd),
-                  std::end(kEocd)) != std::end(header_bytes) ||
-      std::search(std::begin(header_bytes), std::end(header_bytes),
-                  std::begin(kEocd64),
-                  std::end(kEocd64)) != std::end(header_bytes)) {
+  if (std::ranges::search(header_bytes, kEocd) ||
+      std::ranges::search(header_bytes, kEocd64)) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
 
@@ -158,12 +151,8 @@ VerifierResult VerifyCrx3(
       id_util::GenerateIdFromHex(base::HexEncode(crx_id_encoded));
 
   // Create a little-endian representation of [signed-header-size].
-  const int signed_header_size = signed_header_data_str.size();
-  const uint8_t header_size_octets[] = {
-      static_cast<uint8_t>(signed_header_size),
-      static_cast<uint8_t>(signed_header_size >> 8),
-      static_cast<uint8_t>(signed_header_size >> 16),
-      static_cast<uint8_t>(signed_header_size >> 24)};
+  const auto header_size_octets =
+      base::I32ToLittleEndian(signed_header_data_str.size());
 
   // Create a set of all required key hashes.
   std::set<std::vector<uint8_t>> required_key_set(required_key_hashes.begin(),
@@ -211,8 +200,6 @@ VerifierResult VerifyCrx3(
           found_publisher_key || key_hash == publisher_key ||
           (accept_publisher_test_key && key_hash == *publisher_test_key);
       auto v = std::make_unique<crypto::SignatureVerifier>();
-      static_assert(sizeof(unsigned char) == sizeof(uint8_t),
-                    "Unsupported char size.");
       if (!v->VerifyInit(proof_type.second, base::as_byte_span(sig),
                          base::as_byte_span(key))) {
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
@@ -263,17 +250,16 @@ VerifierResult Verify(
 
   // Magic number.
   bool diff = false;
-  char buffer[kCrxFileHeaderMagicSize] = {};
-  if (file.ReadAtCurrentPos(buffer, kCrxFileHeaderMagicSize) !=
-      kCrxFileHeaderMagicSize) {
+  std::array<uint8_t, std::size(kCrxFileHeaderMagic)> buffer;
+  if (!file.ReadAtCurrentPosAndCheck(buffer)) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
-  if (!strncmp(buffer, kCrxDiffFileHeaderMagic, kCrxFileHeaderMagicSize)) {
+  if (std::ranges::equal(buffer, kCrxDiffFileHeaderMagic)) {
     diff = true;
-  } else if (strncmp(buffer, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize)) {
+  } else if (!std::ranges::equal(buffer, kCrxFileHeaderMagic)) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
-  file_hash->Update(buffer, sizeof(buffer));
+  file_hash->Update(buffer);
 
   // Version number.
   const uint32_t version =

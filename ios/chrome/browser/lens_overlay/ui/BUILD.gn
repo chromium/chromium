@@ -41,6 +41,7 @@ source_set("results_page_presenter") {
     "//base",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/common/ui/colors:colors",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -105,6 +106,7 @@ source_set("view_controller") {
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//url",

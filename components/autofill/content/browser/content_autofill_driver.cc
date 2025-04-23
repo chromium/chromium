@@ -480,17 +480,17 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
       form_id, WithNewVersion(std::move(final_handler)));
 }
 
+void ContentAutofillDriver::ExposeDomNodeIDs() {
+  GetAutofillAgent()->ExposeDomNodeIDs();
+}
+
 void ContentAutofillDriver::SendTypePredictionsToRenderer(
-    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
-  if (!base::FeatureList::IsEnabled(
-          features::test::kAutofillShowTypePredictions)) {
-    return;
-  }
-  std::vector<FormDataPredictions> type_predictions =
-      FormStructure::GetFieldTypePredictions(forms);
+    const FormStructure& form) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions));
   RouteToAgent(router(), &AutofillDriverRouter::SendTypePredictionsToRenderer,
                &mojom::AutofillAgent::FieldTypePredictionsAvailable,
-               type_predictions);
+               form.GetFieldTypePredictions());
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(

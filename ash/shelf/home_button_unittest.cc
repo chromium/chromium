@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -44,6 +45,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,6 +69,10 @@
 namespace ash {
 
 namespace {
+
+constexpr std::string_view kNoAssistantForNewEntryPoint =
+    "Assistant is not available if new entry point is enabled. "
+    "crbug.com/388361414";
 
 ui::GestureEvent CreateGestureEvent(ui::GestureEventDetails details) {
   return ui::GestureEvent(0, 0, ui::EF_NONE, base::TimeTicks(), details);
@@ -1032,6 +1038,10 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
 inline constexpr LoginInfo k2ndRegularUserLoginInfo = {"user1@tray"};
 
 TEST_P(HomeButtonTest, LongPressGestureAssistant) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   // Simulate two users with primary user as active.
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
   SimulateUserLogin(k2ndRegularUserLoginInfo);
@@ -1151,6 +1161,10 @@ TEST_P(HomeButtonTest, LongPressGestureSunfishScannerWithAssistant) {
 }
 
 TEST_P(HomeButtonTest, LongPressGestureInTabletModeAssistant) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   // Simulate two users with primary user as active.
   auto primary = SimulateUserLogin({kDefaultUserEmail});
   SimulateUserLogin({kDefaultUserEmail});

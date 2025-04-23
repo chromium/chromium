@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
+#include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
@@ -250,6 +251,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
   map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());

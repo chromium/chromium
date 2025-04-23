@@ -78,12 +78,10 @@ bool CollaborationServiceAndroid::IsEmptyService(
 void CollaborationServiceAndroid::StartJoinFlow(
     JNIEnv* env,
     jlong delegateNativePtr,
-    const JavaParamRef<jobject>& j_url,
-    jint entry) {
+    const JavaParamRef<jobject>& j_url) {
   collaboration_service_->StartJoinFlow(
       conversion::GetDelegateUniquePtrFromJava(delegateNativePtr),
-      url::GURLAndroid::ToNativeGURL(env, j_url),
-      static_cast<CollaborationServiceJoinEntryPoint>(entry));
+      url::GURLAndroid::ToNativeGURL(env, j_url));
 }
 
 void CollaborationServiceAndroid::StartShareOrManageFlow(

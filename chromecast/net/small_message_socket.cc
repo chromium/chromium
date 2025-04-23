@@ -354,7 +354,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
   // unsoundly claim that the span has 6 bytes here.
   auto span = UNSAFE_TODO(base::as_bytes(base::span(ptr, 6u)));
 
-  uint16_t first_size = base::numerics::U16FromBigEndian(span.first<2u>());
+  uint16_t first_size = base::U16FromBigEndian(span.first<2u>());
   span = span.subspan(sizeof(uint16_t));
   data_offset = sizeof(uint16_t);
   if (first_size < kMax2ByteSize) {
@@ -363,7 +363,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
     if (bytes_read < sizeof(uint16_t) + sizeof(uint32_t)) {
       return false;
     }
-    uint32_t real_size = base::numerics::U32FromBigEndian(span.first<4u>());
+    uint32_t real_size = base::U32FromBigEndian(span.first<4u>());
     span = span.subspan(sizeof(uint32_t));
     data_offset += sizeof(uint32_t);
     message_size = real_size;

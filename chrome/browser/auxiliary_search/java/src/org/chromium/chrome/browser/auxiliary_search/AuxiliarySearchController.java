@@ -34,6 +34,20 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
         int NUM_ENTRIES = 3;
     }
 
+    @IntDef({
+        AuxiliarySearchHostType.CTA,
+        AuxiliarySearchHostType.CTA_BACKGROUND_TASK,
+        AuxiliarySearchHostType.CCT_BACKGROUND_TASK,
+        AuxiliarySearchHostType.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AuxiliarySearchHostType {
+        int CTA = 0;
+        int CTA_BACKGROUND_TASK = 1;
+        int CCT_BACKGROUND_TASK = 2;
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * Registers to the given lifecycle dispatcher.
      *

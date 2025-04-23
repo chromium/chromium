@@ -14,7 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 
 namespace content {
 class PepperMediaDeviceManager;

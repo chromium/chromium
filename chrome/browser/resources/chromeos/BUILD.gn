@@ -30,6 +30,7 @@ group("resources") {
     "enterprise_reporting:resources",
     "gaia_action_buttons:resources",
     "healthd_internals:resources",
+    "input_method:resources",
     "internet_config_dialog:resources",
     "internet_detail_dialog:resources",
     "kerberos:resources",

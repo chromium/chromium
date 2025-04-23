@@ -16,6 +16,7 @@ namespace sql::features {
 // Alphabetical:
 COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kEnableWALModeByDefault);
 COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kPreOpenPreloadDatabase);
+COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kUnlockDatabaseOnClose);
 
 }  // namespace sql::features
 

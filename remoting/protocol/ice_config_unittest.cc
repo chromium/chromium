@@ -48,29 +48,29 @@ TEST(IceConfigTest, ParseValid) {
   EXPECT_TRUE(config.expiration_time < base::Time::Now() + base::Hours(12));
 
   ASSERT_EQ(config.turn_servers.size(), 6U);
-  EXPECT_TRUE(cricket::RelayServerConfig("8.8.8.8", 19234, "123", "abc",
-                                         cricket::PROTO_UDP,
-                                         false) == config.turn_servers[0]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 333, "123",
-                                         "abc", cricket::PROTO_UDP,
-                                         false) == config.turn_servers[1]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 3478, "123",
-                                         "abc", cricket::PROTO_UDP,
-                                         false) == config.turn_servers[2]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 333, "123",
-                                         "abc", cricket::PROTO_TCP,
-                                         false) == config.turn_servers[3]);
-  EXPECT_TRUE(cricket::RelayServerConfig("the_server.com", 5349, "123", "abc",
-                                         cricket::PROTO_TCP,
-                                         true) == config.turn_servers[4]);
-  EXPECT_TRUE(cricket::RelayServerConfig("the_server.com", 5349, "123", "abc",
-                                         cricket::PROTO_UDP,
-                                         true) == config.turn_servers[5]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("8.8.8.8", 19234, "123", "abc",
+                                        webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[0]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 333, "123",
+                                        "abc", webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[1]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 3478, "123",
+                                        "abc", webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[2]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 333, "123",
+                                        "abc", webrtc::PROTO_TCP,
+                                        false) == config.turn_servers[3]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("the_server.com", 5349, "123", "abc",
+                                        webrtc::PROTO_TCP,
+                                        true) == config.turn_servers[4]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("the_server.com", 5349, "123", "abc",
+                                        webrtc::PROTO_UDP,
+                                        true) == config.turn_servers[5]);
 
   ASSERT_EQ(config.stun_servers.size(), 2U);
-  EXPECT_EQ(rtc::SocketAddress("stun_server.com", 18344),
+  EXPECT_EQ(webrtc::SocketAddress("stun_server.com", 18344),
             config.stun_servers[0]);
-  EXPECT_EQ(rtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[1]);
+  EXPECT_EQ(webrtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[1]);
   EXPECT_EQ(8000.0, config.max_bitrate_kbps);
 }
 
@@ -99,29 +99,29 @@ TEST(IceConfigTest, ParseGetIceConfigResponse) {
   EXPECT_TRUE(config.expiration_time < base::Time::Now() + base::Hours(12));
 
   ASSERT_EQ(config.turn_servers.size(), 6U);
-  EXPECT_TRUE(cricket::RelayServerConfig("8.8.8.8", 19234, "123", "abc",
-                                         cricket::PROTO_UDP,
-                                         false) == config.turn_servers[0]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 333, "123",
-                                         "abc", cricket::PROTO_UDP,
-                                         false) == config.turn_servers[1]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 3478, "123",
-                                         "abc", cricket::PROTO_UDP,
-                                         false) == config.turn_servers[2]);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 333, "123",
-                                         "abc", cricket::PROTO_TCP,
-                                         false) == config.turn_servers[3]);
-  EXPECT_TRUE(cricket::RelayServerConfig("the_server.com", 5349, "123", "abc",
-                                         cricket::PROTO_TCP,
-                                         true) == config.turn_servers[4]);
-  EXPECT_TRUE(cricket::RelayServerConfig("the_server.com", 5349, "123", "abc",
-                                         cricket::PROTO_UDP,
-                                         true) == config.turn_servers[5]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("8.8.8.8", 19234, "123", "abc",
+                                        webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[0]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 333, "123",
+                                        "abc", webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[1]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 3478, "123",
+                                        "abc", webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[2]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 333, "123",
+                                        "abc", webrtc::PROTO_TCP,
+                                        false) == config.turn_servers[3]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("the_server.com", 5349, "123", "abc",
+                                        webrtc::PROTO_TCP,
+                                        true) == config.turn_servers[4]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("the_server.com", 5349, "123", "abc",
+                                        webrtc::PROTO_UDP,
+                                        true) == config.turn_servers[5]);
 
   ASSERT_EQ(config.stun_servers.size(), 2U);
-  EXPECT_EQ(rtc::SocketAddress("stun_server.com", 18344),
+  EXPECT_EQ(webrtc::SocketAddress("stun_server.com", 18344),
             config.stun_servers[0]);
-  EXPECT_EQ(rtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[1]);
+  EXPECT_EQ(webrtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[1]);
   EXPECT_EQ(8000.0, config.max_bitrate_kbps);
 }
 
@@ -142,7 +142,7 @@ TEST(IceConfigTest, ParseDataEnvelope) {
       IceConfig::Parse(*base::JSONReader::ReadDict(kTestConfigJson));
 
   ASSERT_EQ(config.stun_servers.size(), 1U);
-  EXPECT_EQ(rtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[0]);
+  EXPECT_EQ(webrtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[0]);
 }
 
 // Verify that we can still proceed if some servers cannot be parsed.
@@ -170,9 +170,9 @@ TEST(IceConfigTest, ParsePartiallyInvalid) {
   EXPECT_TRUE(config.expiration_time <= base::Time::Now());
 
   ASSERT_EQ(config.turn_servers.size(), 1U);
-  EXPECT_TRUE(cricket::RelayServerConfig("2001:4860:4860::8888", 333, "123",
-                                         "abc", cricket::PROTO_UDP,
-                                         false) == config.turn_servers[0]);
+  EXPECT_TRUE(webrtc::RelayServerConfig("2001:4860:4860::8888", 333, "123",
+                                        "abc", webrtc::PROTO_UDP,
+                                        false) == config.turn_servers[0]);
 }
 
 TEST(IceConfigTest, InvalidConfig) {

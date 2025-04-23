@@ -166,7 +166,7 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
 
     @Override
     public ListItem getDivider() {
-        return BasicListMenu.buildMenuDivider();
+        return BasicListMenu.buildMenuDivider(/* isIncognito= */ false);
     }
 
     @Override

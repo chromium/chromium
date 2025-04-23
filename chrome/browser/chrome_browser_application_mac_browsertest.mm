@@ -68,6 +68,14 @@ class ChromeBrowserAppMacBrowserTest : public InProcessBrowserTest {
     SetVoiceOverEnabled(VoiceOverEnabledAtStartUp());
   }
 
+  void SetUpOnMainThread() override {
+    // Enable platform activation since that is what is begin tested here.
+    content::BrowserAccessibilityState::GetInstance()
+        ->SetActivationFromPlatformEnabled(
+            /*enabled=*/true);
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
   // Whether or not we simulate VoiceOver active before the test runs.
   virtual BOOL VoiceOverEnabledAtStartUp() { return NO; }
 

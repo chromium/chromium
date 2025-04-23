@@ -18,8 +18,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 
@@ -29,9 +32,18 @@ constexpr char16_t kTooltipText[] = u"tooltip text";
 scoped_refptr<OmniboxExtensionAction> CreateSimpleAction(
     base::RepeatingClosure on_action_executed) {
   return base::MakeRefCounted<OmniboxExtensionAction>(
-      kLabel, kTooltipText, std::move(on_action_executed));
+      kLabel, kTooltipText, std::move(on_action_executed), gfx::Image());
 }
 
+scoped_refptr<OmniboxExtensionAction> CreateSimpleActionWithIcon(
+    base::RepeatingClosure on_action_executed) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  return base::MakeRefCounted<OmniboxExtensionAction>(
+      kLabel, kTooltipText, std::move(on_action_executed), image);
+}
 }  // namespace
 
 TEST(OmniboxExtensionActionTest, BasicInfo) {
@@ -62,4 +74,17 @@ TEST(OmniboxExtensionActionTest, ActionRunnerIsInvoked) {
       OmniboxAction::ExecutionContext::OpenUrlCallback(), {},
       WindowOpenDisposition::CURRENT_TAB);
   action->Execute(context);
+}
+
+TEST(OmniboxExtensionActionTest, ImageIsSet) {
+  auto on_action_executed = base::MockRepeatingClosure();
+  scoped_refptr<OmniboxExtensionAction> action =
+      CreateSimpleActionWithIcon(on_action_executed.Get());
+
+  gfx::Image image = action->GetIconImage();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
 }

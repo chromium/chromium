@@ -697,9 +697,7 @@
         "crossbench": {
             "speedometer_2.1": {
                 "display_name": "speedometer2.1.crossbench",
-                "arguments": [
-                    "--fileserver"
-                ]
+                "arguments": []
             }
         }
     },
@@ -865,7 +863,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1333,
+        "num_stories": 1335,
         "predicted_min_shard_time": 1086.0,
         "predicted_min_shard_index": 35,
         "predicted_max_shard_time": 1826.0,
@@ -875,10 +873,10 @@
         "shard #2": 1622.0,
         "shard #3": 1295.0,
         "shard #4": 1304.0,
-        "shard #5": 1304.0,
+        "shard #5": 1314.0,
         "shard #6": 1318.0,
         "shard #7": 1306.0,
-        "shard #8": 1315.0,
+        "shard #8": 1325.0,
         "shard #9": 1345.0,
         "shard #10": 1273.0,
         "shard #11": 1307.0,

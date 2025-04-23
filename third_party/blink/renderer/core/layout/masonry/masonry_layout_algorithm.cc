@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
@@ -56,6 +57,27 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
+namespace {
+
+LayoutUnit CalculateAlignmentOffset(AxisEdge alignment, LayoutUnit free_space) {
+  if (!free_space) {
+    return LayoutUnit();
+  }
+
+  switch (alignment) {
+    case AxisEdge::kCenter:
+      return free_space / 2;
+    case AxisEdge::kEnd:
+      return free_space;
+    case AxisEdge::kStart:
+      return LayoutUnit();
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items) {
@@ -75,6 +97,9 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
       is_for_columns ? border_scrollbar_padding.block_start
                      : border_scrollbar_padding.inline_start,
       CalculateTieThreshold(Style()));
+
+  const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
+      Style(), ChildAvailableSize(), is_for_columns ? kForRows : kForColumns);
 
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
@@ -109,10 +134,28 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
 
+    // Adjust item's position in the track based on style.
+    auto FreeSpace = [&]() -> LayoutUnit {
+      const auto free_space =
+          is_for_columns
+              ? containing_rect.size.inline_size - fragment.InlineSize()
+              : containing_rect.size.block_size - fragment.BlockSize();
+
+      // If overflow is 'safe', make sure we don't overflow the 'start' edge
+      // (potentially causing some data loss as the overflow is unreachable).
+      return masonry_item.IsOverflowSafe(grid_axis_direction)
+                 ? free_space.ClampNegativeToZero()
+                 : free_space;
+    };
+    const auto offset = CalculateAlignmentOffset(
+        masonry_item.Alignment(grid_axis_direction), FreeSpace());
+    (is_for_columns ? containing_rect.offset.inline_offset
+                    : containing_rect.offset.block_offset) += offset;
+
     // Update `running_positions` of the tracks that the items spans to include
-    // the size of the item in the stacking axis.
-    const auto new_running_position =
-        max_position +
+    // the size of the item + the size of the gap in the stacking axis.
+    auto new_running_position =
+        max_position + stacking_axis_gap +
         (is_for_columns ? fragment.BlockSize() : fragment.InlineSize());
     running_positions.UpdateRunningPositionsForSpan(item_span,
                                                     new_running_position);
@@ -125,8 +168,11 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         ComputeMarginsFor(space, item_node.Style(), container_space));
   }
 
-  intrinsic_block_size_ += is_for_columns ? border_scrollbar_padding.block_end
-                                          : border_scrollbar_padding.inline_end;
+  // Remove last gap that was added, since there is not item after it.
+  intrinsic_block_size_ +=
+      (is_for_columns ? border_scrollbar_padding.block_end
+                      : border_scrollbar_padding.inline_end) -
+      stacking_axis_gap;
 }
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
@@ -299,19 +345,18 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item) const {
   auto containing_size = ChildAvailableSize();
-
-  (Style().MasonryTrackSizingDirection() == kForColumns)
-      ? containing_size.inline_size = kIndefiniteSize
-      : containing_size.block_size = kIndefiniteSize;
-
+  // This method is only used for passing a constraint space into
+  // `ComputeMinAndMaxContentContributionForSelf`, and the inline size should
+  // always be indefinite in that case to allow for text flow.
+  containing_size.inline_size = kIndefiniteSize;
   return CreateConstraintSpace(masonry_item, containing_size,
                                LayoutResultCacheSlot::kMeasure);
 }
 
 LayoutUnit MasonryLayoutAlgorithm::CalculateTieThreshold(
     const ComputedStyle& style) const {
-  return style.MasonrySlack() ? LayoutUnit(style.MasonrySlack()->Pixels())
-                              : LayoutUnit();
+  return style.ItemTolerance() ? LayoutUnit(style.ItemTolerance()->Pixels())
+                               : LayoutUnit();
 }
 
 }  // namespace blink

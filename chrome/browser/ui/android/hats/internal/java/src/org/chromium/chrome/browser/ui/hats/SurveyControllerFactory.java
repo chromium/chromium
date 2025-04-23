@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Creates a {@link SurveyController}. */
+@NullMarked
 public interface SurveyControllerFactory {
     /** Return a SurveyController associated with the given profile. */
     SurveyController create(Profile profile);

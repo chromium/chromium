@@ -37,6 +37,12 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
       return features::kPageActionsMigrationZoom.Get();
     case PageActionIconType::kPaymentsOfferNotification:
       return features::kPageActionsMigrationOfferNotification.Get();
+    case PageActionIconType::kFileSystemAccess:
+      return features::kPageActionsMigrationFileSystemAccess.Get();
+    case PageActionIconType::kPwaInstall:
+      return features::kPageActionsMigrationPwaInstall.Get();
+    case PageActionIconType::kPriceInsights:
+      return features::kPageActionsMigrationPriceInsights.Get();
     default:
       return false;
   }

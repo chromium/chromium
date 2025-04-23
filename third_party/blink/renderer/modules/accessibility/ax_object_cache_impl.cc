@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
@@ -93,6 +94,8 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -379,10 +382,10 @@ bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   if (!layout_text.Parent())
     return false;
 
+#if DCHECK_IS_ON()
   Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
-#if DCHECK_IS_ON()
   DCHECK(node->GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
@@ -402,21 +405,16 @@ bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   // recompute block subtrees when inline nodes change. It also helps ensure
   // that whitespace nodes do not change whether they store a layout object
   // at inopportune times.
-  // TODO(accessibility) Convert this method and callers of it to member
-  // methods so we can access whitespace_ignored_map_ directly.
-  AXObjectCacheImpl* cache = static_cast<AXObjectCacheImpl*>(
-      node->GetDocument().ExistingAXObjectCache());
-  auto& whitespace_ignored_map = cache->whitespace_ignored_map();
-  DOMNodeId whitespace_node_id = node->GetDomNodeId();
-  auto it = whitespace_ignored_map.find(whitespace_node_id);
-  if (it != whitespace_ignored_map.end()) {
-    return it->value;
+  if (std::optional<bool> ignore_whitespace =
+          layout_text.IgnoreWhitespaceForAccessibility();
+      ignore_whitespace.has_value()) {
+    return *ignore_whitespace;
   }
 
   // Compute ignored value for whitespace and record decision.
   bool ignore_whitespace = CanIgnoreSpace(layout_text);
   // Memoize the result.
-  whitespace_ignored_map.insert(whitespace_node_id, ignore_whitespace);
+  layout_text.SetIgnoreWhitespaceForAccessibility(ignore_whitespace);
   return ignore_whitespace;
 }
 
@@ -1849,7 +1847,6 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
       << "AXObject cannot be backed by both a layout object and node.";
 
   AXID axid = node->GetDomNodeId();
-  whitespace_ignored_map_.erase(axid);
 
   if (node == active_aria_modal_dialog_ &&
       lifecycle_.StateAllowsAXObjectsToBeDirtied()) {
@@ -3019,10 +3016,47 @@ void AXObjectCacheImpl::FinalizeTree() {
     }
   }
   if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    LocalFrameView* frame_view = GetDocument().View();
+    PhysicalRect viewport_rect(
+        frame_view->GetPage()->GetVisualViewport().VisibleContentRect());
+
+    // We only care about the y-axis content scrolling to determine what will be
+    // included. So expand the rectangle to the left and right.
+    // TODO(accessibility): this seems to not be matching the following example,
+    // where the expanded rectangle should be matching:
+    //   <style>
+    //   .screen-reader-only {
+    //     position: absolute;
+    //     left: -9999px;
+    //     width: 1px;
+    //     height: 1px;
+    //     overflow: hidden;
+    //   }
+    // </style>
+    // <p class="screen-reader-only">
+    // some text
+    // </p>
+    // TODO(accessibility): consider expanding the top of the rectangle to
+    // capture content that may be put there.
+    viewport_rect.ExpandEdges(/*top=*/LayoutUnit(0),
+                              /*right=*/LayoutUnit(99999),
+                              /*bottom=*/LayoutUnit(0),
+                              /*left=*/LayoutUnit(99999));
+
+    // We include two view ports of content that can be considered on-screen.
+    viewport_rect.SetHeight(viewport_rect.Height() * 2);
+    HitTestLocation location(viewport_rect);
+    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                           HitTestRequest::kListBased |
+                           HitTestRequest::kPenetratingList);
+    HitTestResult result(request, location);
+    GetDocument().GetLayoutView()->HitTestNoLifecycleUpdate(location, result);
+    const HitTestResult::NodeSet& set = result.ListBasedTestResult();
+
     // From here, there are no more operations to be performed on the tree, so
     // we can mark the nodes that will be serialized and the ones that will be
     // cut.
-    MarkOnScreenNodes(Root());
+    MarkOnScreenNodes(Root(), &set);
   }
 
   CheckTreeIsFinalized();
@@ -5870,8 +5904,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
         << "Did not serialize original node, so it was probably not included "
            "in its parent's children, and should never have been marked dirty "
            "in the first place: "
-        << obj->ToString()
-        << "\nParent: " << obj->ParentObjectIncludedInTree()
+        << obj->ToString() << "\nParent: " << obj->ParentObjectIncludedInTree()
         << "\nIndex in parent: "
         << obj->ParentObjectIncludedInTree()
                ->CachedChildrenIncludingIgnored()
@@ -6712,13 +6745,21 @@ void AXObjectCacheImpl::RemoveNodeRequiringCacheUpdate(AXID ax_id) {
 }
 #endif
 
-bool AXObjectCacheImpl::MarkOnScreenNodes(AXObject* obj) {
+bool AXObjectCacheImpl::MarkOnScreenNodes(
+    AXObject* obj,
+    const HitTestResult::NodeSet* on_screen_nodes) {
   const bool was_on_screen = obj->WasEverOnScreen();
   const bool can_flip = obj->CanFlipFromOffScreenToOnScreen();
+
+  // We can skip the check in the set to improve performance a bit here. If a
+  // node was ever on screen, it will always be.
+  const bool should_be_considered_on_screen =
+      was_on_screen || (obj->GetClosestNode() &&
+                        on_screen_nodes->Contains(obj->GetClosestNode()));
   if (obj->ChildCountIncludingIgnored() == 0) {  // This is a leaf node.
     // If this node was ever on-screen, keep serializing it or at least allow
     // serializations to happen.
-    obj->SetIsOnScreen(was_on_screen || !obj->ComputeIsOffScreen());
+    obj->SetIsOnScreen(should_be_considered_on_screen);
     if (!obj->WasEverOnScreen()) {
       // This node is still offscreen, so check if it can still be included by
       // the extra nodes rule.
@@ -6738,15 +6779,14 @@ bool AXObjectCacheImpl::MarkOnScreenNodes(AXObject* obj) {
     bool any_child_visible = false;
     for (AXObject* child : obj->CachedChildrenIncludingIgnored()) {
       CHECK(child->IsIncludedInTree());
-      if (MarkOnScreenNodes(child)) {
+      if (MarkOnScreenNodes(child, on_screen_nodes)) {
         any_child_visible = true;
       }
     }
 
     // Marking phase: Mark the node as on-screen if any child is on-screen OR if
     // the node itself is/was on-screen.
-    obj->SetIsOnScreen(any_child_visible || was_on_screen ||
-                       !obj->ComputeIsOffScreen());
+    obj->SetIsOnScreen(any_child_visible || should_be_considered_on_screen);
   }
 
   // Serialization phase: If this node flipped (was off-screen now on-screen,

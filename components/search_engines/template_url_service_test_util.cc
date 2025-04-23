@@ -10,11 +10,14 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
@@ -26,6 +29,7 @@ void RegisterPrefsForTemplateURLService(
     user_prefs::PrefRegistrySyncable* registry) {
   TemplateURLService::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
+  regional_capabilities::prefs::RegisterProfilePrefs(registry);
   DefaultSearchManager::RegisterProfilePrefs(registry);
 }
 
@@ -89,10 +93,9 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
+          std::make_unique<FakeSearchEngineChoiceServiceClient>(),
           pref_service_, &local_state_, *regional_capabilities_service_,
-          *prepopulate_data_resolver_,
-          /*is_profile_eligible_for_dse_guest_propagation=*/false,
-          country_codes::CountryId());
+          *prepopulate_data_resolver_);
 
   template_url_service_ = CreateService();
 }
@@ -149,7 +152,7 @@ void LoadedTemplateURLServiceUnitTestBase::SetUp() {
   template_url_service_load_waiter_.WaitForLoadComplete(template_url_service());
 
   ASSERT_EQ(GetKeywordTemplateURLs().size(),
-            TemplateURLPrepopulateData::GetDefaultPrepopulatedEngines().size());
+            regional_capabilities::GetDefaultPrepopulatedEngines().size());
 }
 
 void LoadedTemplateURLServiceUnitTestBase::TearDown() {

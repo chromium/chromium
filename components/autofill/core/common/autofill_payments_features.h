@@ -47,6 +47,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 
 COMPONENT_EXPORT(AUTOFILL)
@@ -55,8 +57,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableNewFopDisplayDesktop);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
@@ -69,8 +69,9 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSaveAndFill);
-
 #if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableShowSaveCardSecurelyMessage);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts);
 #endif
@@ -78,9 +79,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVcn3dsAuthentication);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableVerveCardSupport);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 #if BUILDFLAG(IS_IOS)
@@ -115,6 +114,11 @@ BASE_DECLARE_FEATURE(kAutofillVcnEnrollRequestTimeout);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillVcnEnrollRequestTimeoutMilliseconds;
+
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays;
 
 // Return whether a [No thanks] button and new messaging is shown in the save
 // card bubbles. This will be called only on desktop platforms.

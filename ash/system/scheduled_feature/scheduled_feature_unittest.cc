@@ -196,7 +196,9 @@ class TestScheduledFeature : public ScheduledFeature {
   // ScheduledFeature:
   const char* GetFeatureName() const override { return "TestFeature"; }
   const char* GetScheduleTypeHistogramName() const override {
-    return schedule_type_histogram_name_.c_str();
+    return schedule_type_histogram_name_.empty()
+               ? nullptr  // No histogram to be omitted when name is empty.
+               : schedule_type_histogram_name_.c_str();
   }
   MOCK_METHOD(void, RefreshFeatureState, (RefreshReason reason), (override));
 

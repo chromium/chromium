@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -152,6 +153,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private IdentityManager mIdentityManager;
 
     private AppCompatActivity mActivity;
@@ -214,7 +216,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
                         CallbackUtils.emptyRunnable(),
-                        mEdgeToEdgeManager) {
+                        mEdgeToEdgeManager,
+                        mDesktopWindowStateManager) {
 
                     @Nullable
                     @Override

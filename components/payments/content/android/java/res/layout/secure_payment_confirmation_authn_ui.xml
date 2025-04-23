@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
@@ -84,7 +85,7 @@ found in the LICENSE file.
                 android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:layout_centerHorizontal="true"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
-                android:text="@string/secure_payment_confirmation_verify_purchase"/>
+                tools:text="Verify your purchase"/>
 
             <!-- "Store" label -->
             <TextView
@@ -208,7 +209,7 @@ found in the LICENSE file.
                 android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="@string/payments_continue_button"
+                tools:text="Verify"
                 style="@style/FilledButton"/>
 
             <!-- "Cancel" button -->

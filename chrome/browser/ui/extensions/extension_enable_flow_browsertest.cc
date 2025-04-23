@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
@@ -54,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTest,
                        TryEnablingPolicyForbiddenExtension) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension").Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
 
   {
     extensions::ScopedTestDialogAutoConfirm auto_confirm(

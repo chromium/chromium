@@ -49,6 +49,9 @@ const char kResponseResultHistogramName[] =
 const char kThrottlingTimeHistogramName[] =
     "NewTabPage.MicrosoftFiles.ThrottlingWaitTime";
 
+const char kSubstitutionTypeHistogramName[] =
+    "NewTabPage.MicrosoftFiles.SubstitutionType";
+
 }  // namespace
 
 class MicrosoftFilesPageHandlerTest : public testing::Test {
@@ -1458,6 +1461,8 @@ TEST_F(MicrosoftFilesPageHandlerTestForCombinedSuggestions,
   histogram_tester().ExpectBucketCount(
       kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 11, 1);
+  histogram_tester().ExpectBucketCount(
+      kSubstitutionTypeHistogramName, MicrosoftFilesSubstitutionType::kNone, 1);
 }
 
 // Ensures that when non-insight files do not fill up the card based on their
@@ -1612,6 +1617,9 @@ TEST_F(MicrosoftFilesPageHandlerTestForCombinedSuggestions,
   histogram_tester().ExpectBucketCount(
       kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 7, 1);
+  histogram_tester().ExpectBucketCount(
+      kSubstitutionTypeHistogramName,
+      MicrosoftFilesSubstitutionType::kExtraTrending, 1);
 }
 
 // Ensures that when trending files do not fill up the card based on their
@@ -1761,4 +1769,7 @@ TEST_F(MicrosoftFilesPageHandlerTestForCombinedSuggestions,
   histogram_tester().ExpectBucketCount(
       kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 6, 1);
+  histogram_tester().ExpectBucketCount(
+      kSubstitutionTypeHistogramName,
+      MicrosoftFilesSubstitutionType::kExtraNonInsights, 1);
 }

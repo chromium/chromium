@@ -382,10 +382,21 @@ using segmentation_platform::TipIdentifier;
         optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
                                      profile)
           impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
-                                     profile)];
+                                     profile)
+                 shoppingService:commerce::ShoppingServiceFactory::
+                                     GetForProfile(profile)
+                   bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                     profile)
+         pushNotificationService:GetApplicationContext()
+                                     ->GetPushNotificationService()
+           authenticationService:self.authService];
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
+    _tabResumptionMediator.dispatcher = static_cast<
+        id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
+        self.browser->GetCommandDispatcher());
+
     [moduleMediators addObject:_tabResumptionMediator];
   }
   if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService,
@@ -427,7 +438,12 @@ using segmentation_platform::TipIdentifier;
                                     image_fetcher::ImageDataFetcher>(
                                     profile->GetSharedURLLoaderFactory())
                   faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile)
+         impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile)];
+    _shopCardMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+    _shopCardMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }
@@ -497,7 +513,8 @@ using segmentation_platform::TipIdentifier;
                             sceneState:self.browser->GetSceneState()
                  isDefaultSearchEngine:isDefaultSearchEngine
                    segmentationService:_segmentationService
-        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher
+                  priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
     if (IsSegmentedDefaultBrowserPromoEnabled()) {
       [_setUpListMediator retrieveUserSegment];
     }

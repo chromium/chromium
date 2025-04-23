@@ -44,13 +44,6 @@
  * https://bugs.chromium.org/p/chromium/issues/detail?id=392191#c17
  */
 
-/* Weak symbol import */
-void __system_property_read_callback(
-    const prop_info* info,
-    void (*callback)(
-        void* cookie, const char* name, const char* value, uint32_t serial),
-    void* cookie) __attribute__((weak));
-
 /* Callback used with __system_property_read_callback. */
 static void prop_read_int(void* cookie,
                           const char* name,
@@ -63,7 +56,7 @@ static void prop_read_int(void* cookie,
 
 static int system_property_get_int(const char* name) {
   int result = 0;
-  if (__system_property_read_callback) {
+  if (__builtin_available(android 26, *)) {
     const prop_info* info = __system_property_find(name);
     if (info)
       __system_property_read_callback(info, &prop_read_int, &result);

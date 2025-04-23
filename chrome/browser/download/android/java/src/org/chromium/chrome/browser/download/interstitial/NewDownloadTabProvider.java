@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.download.interstitial;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Provides the {@link NewDownloadTab} attached to a given {@link WindowAndroid}. */
+@NullMarked
 public class NewDownloadTabProvider {
     private static final UnownedUserDataKey<NewDownloadTab> KEY =
             new UnownedUserDataKey<>(NewDownloadTab.class);

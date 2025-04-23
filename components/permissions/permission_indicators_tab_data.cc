@@ -8,6 +8,7 @@
 #include "content/public/browser/web_contents.h"
 
 namespace permissions {
+constexpr int kMinElapsedTimeSinceLastUsage = 4;
 
 PermissionIndicatorsTabData::PermissionIndicatorsTabData(
     content::WebContents* web_contents)
@@ -39,9 +40,13 @@ void PermissionIndicatorsTabData::RecordActivity(
     return;
   }
 
-  PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
-      request_type,
-      base::TimeTicks::Now() - last_usage_time_[request_type].value());
+  // Data with time interval less than 4 seconds is meaningless.
+  const base::TimeDelta time_delta =
+      base::TimeTicks::Now() - last_usage_time_[request_type].value();
+  if (time_delta > base::Seconds(kMinElapsedTimeSinceLastUsage)) {
+    PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
+        request_type, time_delta);
+  }
   last_usage_time_[request_type] = base::TimeTicks::Now();
 }
 

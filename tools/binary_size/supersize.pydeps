@@ -24,6 +24,7 @@
 ../grit/grit/gather/skeleton_gatherer.py
 ../grit/grit/gather/tr_html.py
 ../grit/grit/gather/txt.py
+../grit/grit/gender.py
 ../grit/grit/lazy_re.py
 ../grit/grit/node/__init__.py
 ../grit/grit/node/base.py

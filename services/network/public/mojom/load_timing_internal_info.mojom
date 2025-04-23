@@ -8,5 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Mirror of net::LoadTimingInternalInfo.
 struct LoadTimingInternalInfo {
+  mojo_base.mojom.TimeDelta create_stream_delay;
+  mojo_base.mojom.TimeDelta connected_callback_delay;
   mojo_base.mojom.TimeDelta initialize_stream_delay;
 };

@@ -60,8 +60,6 @@ class JavaScriptDialogBlockingState
   size_t dialog_count_ = 0;
   // The NavigationItem for which JavaScript dialogs were blocked.
   raw_ptr<web::NavigationItem> blocked_item_ = nullptr;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_

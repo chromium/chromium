@@ -1841,8 +1841,12 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kWebViewDocumentStartJavascriptChanged:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           WebViewDocumentStartJavascriptChanged;
-    case Reason::kCacheLimitPruned:
-      return Page::BackForwardCacheNotRestoredReasonEnum::CacheLimitPruned;
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheLimitPrunedOnModerateMemoryPressure;
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheLimitPrunedOnCriticalMemoryPressure;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1930,8 +1934,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           OutstandingNetworkRequestXHR;
     case WebSchedulerTrackedFeature::kPrinting:
       return Page::BackForwardCacheNotRestoredReasonEnum::Printing;
-    case WebSchedulerTrackedFeature::kWebDatabase:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebDatabase;
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return Page::BackForwardCacheNotRestoredReasonEnum::PictureInPicture;
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
@@ -2142,7 +2144,8 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kWebViewMessageListenerInjected:
     case Reason::kWebViewSafeBrowsingAllowlistChanged:
     case Reason::kWebViewDocumentStartJavascriptChanged:
-    case Reason::kCacheLimitPruned:
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
@@ -2169,7 +2172,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kSharedWorker:
     case WebSchedulerTrackedFeature::kWebHID:
     case WebSchedulerTrackedFeature::kWebShare:
-    case WebSchedulerTrackedFeature::kWebDatabase:
     case WebSchedulerTrackedFeature::kPaymentManager:
     case WebSchedulerTrackedFeature::kKeyboardLock:
     case WebSchedulerTrackedFeature::kWebOTPService:

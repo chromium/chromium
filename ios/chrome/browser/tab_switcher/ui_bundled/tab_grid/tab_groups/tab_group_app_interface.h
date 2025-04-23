@@ -32,6 +32,14 @@
 // Sets the mock response for getting the shared entities preview of a group.
 + (void)mockSharedEntitiesPreview;
 
+// Adds a tab to the group specified by `index`. `index` considers only groups
+// not tabs. The group should be shared already and the tab is added by a member
+// (fakeIdentity3).
++ (void)addSharedTabToGroupAtIndex:(unsigned int)index;
+
+// Returns the URL of the activity logs.
++ (NSString*)activityLogsURL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUP_APP_INTERFACE_H_

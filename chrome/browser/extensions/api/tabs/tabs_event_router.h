@@ -39,14 +39,13 @@ namespace extensions {
 // extension process renderers.
 // TabsEventRouter will only route events from windows/tabs within a profile to
 // extension processes in the same profile.
-class TabsEventRouter
-    : public TabStripModelObserver,
-      public BrowserTabStripTrackerDelegate,
-      public BrowserListObserver,
-      public favicon::FaviconDriverObserver,
-      public zoom::ZoomObserver,
-      public resource_coordinator::LifecycleUnitObserver,
-      public performance_manager::PageLiveStateObserverDefaultImpl {
+class TabsEventRouter : public TabStripModelObserver,
+                        public BrowserTabStripTrackerDelegate,
+                        public BrowserListObserver,
+                        public favicon::FaviconDriverObserver,
+                        public zoom::ZoomObserver,
+                        public resource_coordinator::LifecycleUnitObserver,
+                        public performance_manager::PageLiveStateObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
 
@@ -99,7 +98,7 @@ class TabsEventRouter
       ::mojom::LifecycleUnitState previous_state,
       ::mojom::LifecycleUnitStateChangeReason reason) override;
 
-  // performance_manager::PageLiveStateObserverDefaultImpl:
+  // performance_manager::PageLiveStateObserver:
   void OnIsAutoDiscardableChanged(
       const performance_manager::PageNode* page_node) override;
 

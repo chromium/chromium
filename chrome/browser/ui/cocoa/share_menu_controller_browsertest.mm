@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -108,18 +107,15 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, PopulatesMenu) {
       sharingServiceNamed:NSSharingServiceNameAddToSafariReadingList];
   NSSharingService* email_service =
       [NSSharingService sharingServiceNamed:NSSharingServiceNameComposeEmail];
-  bool direct_email =
-      base::FeatureList::IsEnabled(features::kMacDirectEmailShare);
 
-  // If the `kMacDirectEmailShare` feature is enabled, the first menu item
-  // doesn't use the share system.
-  NSUInteger i = direct_email ? 1 : 0;
+  // The email menu item doesn't use the share system.
+  NSUInteger i = 1;
   // Ensure there's a menu item for each service besides reading list.
   for (NSSharingService* service in sharing_services_for_url) {
     if ([service isEqual:reading_list_service]) {
       continue;
     }
-    if (direct_email && [service isEqual:email_service]) {
+    if ([service isEqual:email_service]) {
       continue;
     }
     NSMenuItem* menu_item = [menu itemAtIndex:i];

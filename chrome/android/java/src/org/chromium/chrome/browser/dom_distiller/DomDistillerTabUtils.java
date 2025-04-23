@@ -9,6 +9,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -106,6 +107,12 @@ public class DomDistillerTabUtils {
      */
     public static boolean shouldExcludeMobileFriendly(Tab tab) {
         if (sExcludeMobileFriendlyForTesting != null) return sExcludeMobileFriendlyForTesting;
+        if (ChromeFeatureList.sReaderModeImprovements.isEnabled()
+                && ChromeFeatureList.sReaderModeImprovementsTriggerOnMobileFriendlyPages
+                        .getValue()) {
+            return false;
+        }
+
         return !isReaderModeAccessibilitySettingEnabled(tab.getProfile())
                 && getDistillerHeuristics() == DistillerHeuristicsType.ADABOOST_MODEL;
     }

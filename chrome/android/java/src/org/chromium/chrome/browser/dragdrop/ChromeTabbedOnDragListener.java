@@ -156,10 +156,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
         // Reparent the dragged tab group to destination window.
         mMultiInstanceManager.moveTabGroupToWindow(
-                mWindowAndroid.getActivity().get(),
-                tabGroupMetadata,
-                destIndex,
-                /* onFinishedRunnable= */ null);
+                mWindowAndroid.getActivity().get(), tabGroupMetadata, destIndex);
         return true;
     }
 }

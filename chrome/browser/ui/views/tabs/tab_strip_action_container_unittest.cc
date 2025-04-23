@@ -126,6 +126,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
             ::testing::Return(tab_strip_->controller()->GetProfile()));
     ON_CALL(*browser_window_interface_, GetActiveTabInterface)
         .WillByDefault(::testing::Return(tab_interface_.get()));
+    ON_CALL(*browser_window_interface_, CanShowCallToAction)
+        .WillByDefault(::testing::Return(true));
     ON_CALL(*tab_interface_, GetContents)
         .WillByDefault(::testing::Return(web_contents_.get()));
 
@@ -135,11 +137,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>(
         browser_window_interface_.get());
 
-    locked_expansion_view_ = std::make_unique<views::View>();
-
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
-        tab_strip_->controller(), locked_expansion_view_.get(),
-        tab_declutter_controller_.get(), glic_nudge_controller_.get());
+        tab_strip_->controller(), tab_declutter_controller_.get(),
+        glic_nudge_controller_.get());
   }
 
  protected:

@@ -182,8 +182,8 @@ class CORE_EXPORT StyleEnvironmentVariables
   virtual void InvalidateVariable(const AtomicString& name);
 
  private:
-  typedef HeapVector<HeapVector<Member<CSSVariableData>>>
-      TwoDimensionVariableValues;
+  using TwoDimensionVariableValues =
+      GCedHeapVector<HeapVector<Member<CSSVariableData>>>;
 
   HeapVector<Member<StyleEnvironmentVariables>> children_;
   HeapHashMap<AtomicString, Member<CSSVariableData>> data_;

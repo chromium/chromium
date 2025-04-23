@@ -177,7 +177,6 @@ void DemoClient::DidReceiveCompositorFrameAck(
 
 void DemoClient::OnBeginFrame(const viz::BeginFrameArgs& args,
                               const viz::FrameTimingDetailsMap& timing_details,
-                              bool frame_ack,
                               std::vector<viz::ReturnedResource> resources) {
   // Generate a new compositor-frame for each begin-frame. This demo client
   // generates and submits the compositor-frame immediately. But it is possible

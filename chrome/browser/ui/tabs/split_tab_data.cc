@@ -4,27 +4,44 @@
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include <memory>
+
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
 
-SplitTabData::SplitTabData(TabStripModel* controller,
+SplitTabData::SplitTabData(tabs::SplitTabCollection* controller,
                            const split_tabs::SplitTabId& id,
-                           tabs::SplitTabLayout split_layout)
-    : controller_(controller), split_layout_(split_layout), id_(id) {}
+                           const SplitTabVisualData& visual_data)
+    : controller_(controller), visual_data_(visual_data), id_(id) {}
 
 SplitTabData::~SplitTabData() = default;
 
 std::vector<tabs::TabInterface*> SplitTabData::ListTabs() const {
-  std::vector<tabs::TabInterface*> tabs;
-  for (int i = 0; i < controller_->GetTabCount(); i++) {
-    tabs::TabInterface* tab = controller_->GetTabAtIndex(i);
-    if (tab->GetSplit() == id_) {
-      tabs.emplace_back(tab);
-    }
+  return controller_->GetTabsRecursive();
+}
+
+SplitTabActiveLocation SplitTabData::GetActiveTabLocation() {
+  std::vector<tabs::TabInterface*> tabs_in_split = ListTabs();
+  CHECK_EQ(tabs_in_split.size(), 2U);
+
+  const bool first_tab_activated = tabs_in_split[0]->IsActivated();
+  const bool second_tab_activated = tabs_in_split[1]->IsActivated();
+
+  if (!first_tab_activated && !second_tab_activated) {
+    return SplitTabActiveLocation::kNone;
   }
-  return tabs;
+
+  if (visual_data_.split_layout() == SplitTabLayout::kHorizontal) {
+    return first_tab_activated ? SplitTabActiveLocation::kLeft
+                               : SplitTabActiveLocation::kRight;
+  } else {
+    return first_tab_activated ? SplitTabActiveLocation::kTop
+                               : SplitTabActiveLocation::kBottom;
+  }
 }
 
 }  // namespace split_tabs

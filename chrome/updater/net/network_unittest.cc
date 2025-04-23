@@ -62,7 +62,7 @@ class UpdaterNetworkTest : public ::testing::Test {
   }
 
   void PostRequestCompleteCallback(const std::string& expected_body,
-                                   std::unique_ptr<std::string> response_body,
+                                   std::optional<std::string> response_body,
                                    int net_error,
                                    const std::string& header_etag,
                                    const std::string& header_x_cup_server_proof,

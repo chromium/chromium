@@ -101,7 +101,7 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenPhysicalPixels:
-      return display::win::ScreenWin::DIPToScreenRect(
+      return display::win::GetScreenWin()->DIPToScreenRect(
           HWNDForView(view()), view()->GetBoundsInScreen());
     case ui::AXCoordinateSystem::kScreenDIPs:
       // We could optionally add clipping here if ever needed.
@@ -121,7 +121,7 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetInnerTextRangeBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenPhysicalPixels:
-      return display::win::ScreenWin::DIPToScreenRect(
+      return display::win::GetScreenWin()->DIPToScreenRect(
           HWNDForView(view()),
           ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
               start_offset, end_offset, ui::AXCoordinateSystem::kScreenDIPs,
@@ -147,8 +147,8 @@ gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
   // This is because Chromium transforms the screen physical coordinates it
   // receives from Windows into an internal representation of screen physical
   // coordinates adjusted for multiple displays of different resolutions.
-  return ToRoundedPoint(
-      display::win::ScreenWin::ScreenToDIPPoint(gfx::PointF(screen_point)));
+  return ToRoundedPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
+      gfx::PointF(screen_point)));
 }
 
 }  // namespace views

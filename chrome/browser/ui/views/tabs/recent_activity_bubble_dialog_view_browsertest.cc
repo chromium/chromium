@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -650,12 +651,6 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
   EXPECT_TRUE(bubble);
 
   bubble->GetRowForTesting(0)->ManageSharing();
-
-  auto sharing_bubble =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser())
-          ->BubbleViewForTesting();
-
-  EXPECT_TRUE(sharing_bubble.get());
 }
 
 }  // namespace tab_groups

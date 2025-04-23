@@ -4728,25 +4728,11 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift() {
   return invalidated;
 }
 
-void StyleEngine::RevisitStyleSheetForInspector(StyleSheetContents* contents) {
-  // We need to revisit the sheet twice, once with the global rule set and
-  // once with the sheet's associated rule set.
-  // The global rule set contains the rule invalidation data we're currently
-  // using for style invalidations. However, if a stylesheet change occurs,
-  // we may throw out the global rule set data and rebuild it from the
-  // individual sheets' data, so the inspector needs to know about both.
-  InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(
-      contents);
-  RevisitStyleRulesForInspector(GetRuleFeatureSet(), contents->ChildRules());
-  if (contents->HasRuleSet()) {
-    RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
-                                  contents->ChildRules());
-  }
-}
+namespace {
 
-void StyleEngine::RevisitStyleRulesForInspector(
-    const RuleFeatureSet& features,
-    const HeapVector<Member<StyleRuleBase>>& rules) {
+template <typename VectorType>
+void RevisitStyleRulesForInspector(const RuleFeatureSet& features,
+                                   const VectorType& rules) {
   for (StyleRuleBase* rule : rules) {
     if (StyleRule* style_rule = DynamicTo<StyleRule>(rule)) {
       for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
@@ -4759,6 +4745,25 @@ void StyleEngine::RevisitStyleRulesForInspector(
                    DynamicTo<StyleRuleGroup>(rule)) {
       RevisitStyleRulesForInspector(features, style_rule_group->ChildRules());
     }
+  }
+}
+
+}  // namespace
+
+void StyleEngine::RevisitStyleSheetForInspector(
+    StyleSheetContents* contents,
+    const RuleFeatureSet* features) const {
+  // We need to revisit the sheet twice, once with the global rule set and
+  // once with the sheet's associated rule set.
+  // The global rule set contains the rule invalidation data we're currently
+  // using for style invalidations. However, if a stylesheet change occurs,
+  // we may throw out the global rule set data and rebuild it from the
+  // individual sheets' data, so the inspector needs to know about both.
+  InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(
+      contents);
+  RevisitStyleRulesForInspector(GetRuleFeatureSet(), contents->ChildRules());
+  if (features) {
+    RevisitStyleRulesForInspector(*features, contents->ChildRules());
   }
 }
 

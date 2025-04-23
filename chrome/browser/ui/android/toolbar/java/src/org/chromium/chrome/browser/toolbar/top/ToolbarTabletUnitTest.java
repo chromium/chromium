@@ -43,7 +43,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
-import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -55,8 +54,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -64,6 +61,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -182,7 +181,6 @@ public final class ToolbarTabletUnitTest {
                 () -> false,
                 null,
                 null,
-                null,
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator);
@@ -274,7 +272,6 @@ public final class ToolbarTabletUnitTest {
                 mTabSwitcherButtonCoordinator,
                 null,
                 () -> false,
-                null,
                 null,
                 null,
                 mProgressBar,
@@ -374,12 +371,6 @@ public final class ToolbarTabletUnitTest {
                 View.VISIBLE,
                 mToolbarTablet.getVisibility());
         verify(mLocationBar).setUrlBarFocusable(false);
-    }
-
-    @Test
-    public void testOnLongClick() {
-        longClickAndVerifyToast(R.id.bookmark_button, R.string.menu_bookmark);
-        longClickAndVerifyToast(R.id.save_offline_button, R.string.menu_download);
     }
 
     @Test
@@ -677,8 +668,8 @@ public final class ToolbarTabletUnitTest {
         var buttonSpec =
                 new ButtonSpec(
                         AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
-                        (OnClickListener) v -> {},
-                        (OnLongClickListener) v -> false,
+                        v -> {},
+                        v -> false,
                         "",
                         true,
                         null,
@@ -727,14 +718,5 @@ public final class ToolbarTabletUnitTest {
                 ((ImageButton) mToolbarTablet.getOptionalButtonViewForTesting())
                         .getImageTintList()
                         .getDefaultColor());
-    }
-
-    private void longClickAndVerifyToast(int viewId, int stringId) {
-        mToolbarTablet.onLongClick(mToolbarTablet.findViewById(viewId));
-        assertTrue(
-                "Toast is not as expected",
-                ShadowToast.showedCustomToast(
-                        mActivity.getResources().getString(stringId), R.id.toast_text));
-        ToastManager.resetForTesting();
     }
 }

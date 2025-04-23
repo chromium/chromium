@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
-    enum="BooleanAvailable" expires_after="2025-08-17">
+    enum="BooleanAvailable" expires_after="2025-10-19">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2025-08-17">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2025-10-19">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2025-08-17">
+    enum="ULPTopLanguageMatch" expires_after="2025-10-19">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.SplitInstallFinalStatus"
-    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-04-13">
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -327,6 +327,16 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of accepted languages in the user preferences recored once per
+    profile initialization. Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguage.FirstAcceptLanguage"
+    enum="LanguageName" expires_after="2025-11-24">
+  <owner>victortan@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    The first accept language with country codes removed. Recorded once per
     profile initialization. Incognito profiles are ignored.
   </summary>
 </histogram>
@@ -517,7 +527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2025-04-13">
+    expires_after="2025-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

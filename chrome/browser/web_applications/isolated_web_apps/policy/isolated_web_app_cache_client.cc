@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_paths.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -119,15 +120,6 @@ std::optional<IwaCacheClient::CachedBundleData> GetCacheFilePathImpl(
       std::move(newest_version.value()));
 }
 
-base::FilePath GetCacheDir(const base::FilePath& base) {
-  if (chromeos::IsManagedGuestSession()) {
-    return base.AppendASCII(IwaCacheClient::kMgsDirName);
-  } else if (chromeos::IsKioskSession()) {
-    return base.AppendASCII(IwaCacheClient::kKioskDirName);
-  }
-  NOTREACHED() << "Unsupported session type for IWA caching";
-}
-
 // This function is blocking. It should be called by `CopyBundleToCache`.
 base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
                IwaCacheClient::CopyBundleToCacheError>
@@ -158,11 +150,33 @@ CopyBundleToCacheImpl(const base::FilePath& copy_from_bundle_path,
   return IwaCacheClient::CopyBundleToCacheSuccess(destination_bundle_path);
 }
 
+base::FilePath GetIwaCacheDirectoryForCurrentSession(
+    const base::FilePath& base = base::PathService::CheckedGet(
+        ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE)) {
+  if (chromeos::IsManagedGuestSession()) {
+    return GetManagedGuestSessionBundleCacheDirectory(base);
+  } else if (chromeos::IsKioskSession()) {
+    return base.AppendASCII(IwaCacheClient::kKioskDirName);
+  }
+  NOTREACHED() << "Unsupported session type for IWA caching";
+}
+
 }  // namespace
 
 bool IsIwaBundleCacheEnabled() {
   return base::FeatureList::IsEnabled(features::kIsolatedWebAppBundleCache) &&
          (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession());
+}
+
+base::FilePath GetCacheBundleDirectory(
+    const base::FilePath& main_cache_dir,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return main_cache_dir.AppendASCII(web_bundle_id.id());
+}
+
+base::FilePath GetManagedGuestSessionBundleCacheDirectory(
+    const base::FilePath& base) {
+  return base.AppendASCII(IwaCacheClient::kMgsDirName);
 }
 
 // static
@@ -177,8 +191,7 @@ std::string IwaCacheClient::CopyErrorToString(
 }
 
 IwaCacheClient::IwaCacheClient()
-    : cache_dir_(GetCacheDir(base::PathService::CheckedGet(
-          ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE))) {
+    : cache_dir_(GetIwaCacheDirectoryForCurrentSession()) {
   CHECK(IsIwaBundleCacheEnabled())
       << "IwaCacheClient should only be created "
          "inside mgs or kiosk sessions and when the feature is enabled";
@@ -208,7 +221,7 @@ void IwaCacheClient::CopyBundleToCache(
 }
 
 void IwaCacheClient::SetCacheDirForTesting(const base::FilePath& cache_dir) {
-  cache_dir_ = GetCacheDir(cache_dir);
+  cache_dir_ = GetIwaCacheDirectoryForCurrentSession(cache_dir);
 }
 
 }  // namespace web_app

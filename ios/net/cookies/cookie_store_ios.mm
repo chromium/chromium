@@ -551,7 +551,7 @@ CookieChangeDispatcher& CookieStoreIOS::GetChangeDispatcher() {
 }
 
 void CookieStoreIOS::SetCookieableSchemes(
-    const std::vector<std::string>& schemes,
+    std::vector<std::string> schemes,
     SetCookieableSchemesCallback callback) {
   // Not supported on iOS.
   std::move(callback).Run(false);

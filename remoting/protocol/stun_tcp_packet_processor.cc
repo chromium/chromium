@@ -36,10 +36,10 @@ int GetExpectedStunPacketSize(const uint8_t* data_ptr,
   DCHECK_LE(kTurnChannelDataHeaderSize, data.size());
 
   // Get packet type (STUN or TURN).
-  uint16_t msg_type = base::numerics::U16FromBigEndian(data.subspan<0u, 2u>());
+  uint16_t msg_type = base::U16FromBigEndian(data.subspan<0u, 2u>());
   // Both stun and turn had length at offset 2.
   size_t packet_size =
-      base::numerics::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>());
+      base::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>());
 
   *pad_bytes = 0;
   // Add header length to packet length.
@@ -125,9 +125,9 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Unpack(
 void StunTcpPacketProcessor::ApplyPacketOptions(
     uint8_t* data,
     size_t data_size,
-    const rtc::PacketTimeUpdateParams& packet_time_params) const {
-  cricket::ApplyPacketOptions(data, data_size, packet_time_params,
-                              rtc::TimeMicros());
+    const webrtc::PacketTimeUpdateParams& packet_time_params) const {
+  webrtc::ApplyPacketOptions(data, data_size, packet_time_params,
+                             webrtc::TimeMicros());
 }
 
 }  // namespace remoting::protocol

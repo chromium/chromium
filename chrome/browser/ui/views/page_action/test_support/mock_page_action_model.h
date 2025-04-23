@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/action_id.h"
 
 namespace page_actions {
 
@@ -20,7 +22,9 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetVisible, (), (const, override));
   MOCK_METHOD(bool, GetShowSuggestionChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
+  MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionItemIsShowingBubble, (), (const, override));
@@ -46,8 +50,9 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool show),
               (override));
   MOCK_METHOD(void,
-              SetShouldAnimateChip,
-              (base::PassKey<PageActionController>, bool animate),
+              SetSuggestionChipConfig,
+              (base::PassKey<PageActionController>,
+               const SuggestionChipConfig& config),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,
@@ -63,6 +68,11 @@ class MockPageActionModel : public PageActionModelInterface {
                const std::optional<std::u16string>& text),
               (override));
   MOCK_METHOD(void,
+              SetOverrideAccessibleName,
+              (base::PassKey<PageActionController>,
+               const std::optional<std::u16string>& override_accessible_name),
+              (override));
+  MOCK_METHOD(void,
               SetOverrideImage,
               (base::PassKey<PageActionController>,
                const std::optional<ui::ImageModel>& override_text),
@@ -76,6 +86,27 @@ class MockPageActionModel : public PageActionModelInterface {
               SetShouldHidePageAction,
               (base::PassKey<PageActionController>, bool should_hide),
               (override));
+};
+
+template <typename PageActionModelType>
+class FakePageActionModelFactory : public PageActionModelFactory {
+ public:
+  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
+    auto model = std::make_unique<PageActionModelType>();
+    model_map_.emplace(action_id, model.get());
+    return model;
+  }
+
+  // Model getter for tests to set expectations.
+  PageActionModelType& Get(int action_id) {
+    auto id_to_model = model_map_.find(action_id);
+    CHECK(id_to_model != model_map_.end());
+    CHECK_NE(id_to_model->second, nullptr);
+    return *id_to_model->second;
+  }
+
+ private:
+  std::map<actions::ActionId, PageActionModelType*> model_map_;
 };
 
 }  // namespace page_actions

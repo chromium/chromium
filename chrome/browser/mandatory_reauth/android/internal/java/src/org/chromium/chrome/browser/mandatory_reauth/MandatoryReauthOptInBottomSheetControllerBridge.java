@@ -8,10 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 
 /** JNI wrapper for C++ MandatoryReauthBubbleController. Delegates calls from Java to native. */
 @JNINamespace("autofill")
+@NullMarked
 class MandatoryReauthOptInBottomSheetControllerBridge
         implements MandatoryReauthOptInBottomSheetComponent.Delegate {
     private long mNativeMandatoryReauthBubbleControllerImpl;

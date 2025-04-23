@@ -279,7 +279,7 @@ public class ScreenOrientationProviderImpl
     }
 
     @Override
-    public void setOrientationDelegate(ScreenOrientationDelegate delegate) {
+    public void setOrientationDelegate(@Nullable ScreenOrientationDelegate delegate) {
         mDelegate = delegate;
     }
 

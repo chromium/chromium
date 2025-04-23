@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LOAD_TRACKER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LOAD_TRACKER_H_
 
+#include <array>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -165,7 +167,8 @@ class TabLoadTracker {
   TabMap tabs_;
 
   // The counts of tabs in each state.
-  size_t state_counts_[static_cast<size_t>(LoadingState::kMaxValue) + 1] = {};
+  std::array<size_t, static_cast<size_t>(LoadingState::kMaxValue) + 1>
+      state_counts_ = {};
 
   base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 

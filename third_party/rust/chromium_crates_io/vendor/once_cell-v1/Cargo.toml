@@ -12,6 +12,9 @@
 name = "once_cell"
 version = "1.21.3"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "alloc" = []
 "atomic-polyfill" = []

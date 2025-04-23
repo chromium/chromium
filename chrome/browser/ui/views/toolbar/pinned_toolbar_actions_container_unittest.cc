@@ -198,7 +198,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
           container()->GetAnimatingLayoutManager()->target_layout_manager())
           ->interior_margin()
           .left(),
-      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+      0);
   ASSERT_EQ(
       static_cast<PinnedToolbarActionsContainerLayout*>(
           container()->GetAnimatingLayoutManager()->target_layout_manager())
@@ -425,7 +425,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
   UpdateActionItem(actions::kActionCopy);
 
   // Set pinned state for an action item that isn't registered
-  model()->UpdatePinnedState(kActionRouteMedia, true);
+  model()->UpdatePinnedState(kActionExit, true);
   model()->UpdatePinnedState(actions::kActionCut, true);
   model()->UpdatePinnedState(actions::kActionCopy, true);
 

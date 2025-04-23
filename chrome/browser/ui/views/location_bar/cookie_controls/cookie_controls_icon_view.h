@@ -50,9 +50,8 @@ class CookieControlsIconView : public PageActionIconView,
   // Button:
   std::u16string GetAlternativeAccessibleName() const override;
 
-  CookieControlsBubbleCoordinator* GetCoordinatorForTesting() const;
-  void SetCoordinatorForTesting(
-      std::unique_ptr<CookieControlsBubbleCoordinator> coordinator);
+  CookieControlsBubbleCoordinator& GetCoordinatorForTesting() const;
+  void SetCoordinatorForTesting(CookieControlsBubbleCoordinator& coordinator);
 
   void DisableUpdatesForTesting();
 
@@ -101,8 +100,7 @@ class CookieControlsIconView : public PageActionIconView,
   raw_ptr<Browser> browser_ = nullptr;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
-  std::unique_ptr<CookieControlsBubbleCoordinator> bubble_coordinator_ =
-      nullptr;
+  raw_ref<CookieControlsBubbleCoordinator> bubble_coordinator_;
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};

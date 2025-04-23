@@ -7,11 +7,12 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 
-std::u16string_view GetButtonOrLabelText(const views::View& button_or_label) {
+std::optional<std::u16string_view> GetButtonOrLabelText(
+    const views::View& button_or_label) {
   if (button_or_label.GetClassName() == "MdTextButton") {
     return static_cast<const views::MdTextButton&>(button_or_label).GetText();
   } else if (button_or_label.GetClassName() == "Label") {
     return static_cast<const views::Label&>(button_or_label).GetText();
   }
-  NOTREACHED();
+  return std::nullopt;
 }

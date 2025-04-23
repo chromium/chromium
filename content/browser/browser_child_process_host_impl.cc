@@ -34,6 +34,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/metrics/histogram_shared_memory_config.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -53,7 +54,7 @@
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 #include "content/browser/child_process_task_port_provider_mac.h"
 #endif
 
@@ -153,7 +154,7 @@ BrowserChildProcessHost* BrowserChildProcessHost::FromID(int child_process_id) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 base::PortProvider* BrowserChildProcessHost::GetPortProvider() {
   return ChildProcessTaskPortProvider::GetInstance();
 }
@@ -499,6 +500,8 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     ChildProcessTerminationInfo info =
         GetTerminationInfo(true /* known_dead */);
 #if BUILDFLAG(IS_ANDROID)
+    info.has_spare_renderer =
+        SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
     exited_abnormally_ = true;
     // Do not treat clean_exit, ie when child process exited due to quitting
     // its main loop, as a crash.
@@ -664,6 +667,10 @@ void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   delegate_->OnProcessLaunchFailed(error_code);
   ChildProcessTerminationInfo info =
       child_process_launcher_->GetChildTerminationInfo(/*known_dead=*/true);
+#if BUILDFLAG(IS_ANDROID)
+  info.has_spare_renderer =
+      SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
+#endif
   DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
 
   for (auto& observer : g_browser_child_process_observers.Get())

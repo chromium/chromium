@@ -118,6 +118,13 @@ BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxEnrollmentOverrides[];
 
+#if BUILDFLAG(IS_ANDROID)
+// Allow the Privacy Sandbox Attestations component to load the pre-installed
+// attestation list from Android APK assets.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset);
+#endif
+
 // Enables attribution reporting transitional debug reporting for the cookie
 // deprecation experiment.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -162,10 +169,6 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 // Enables displaying ACT features in User Bypass.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kActUserBypassUx);
-
-// Enables TP settings page to display TRACKING_PROTECTION content settings.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingInSettings);
 
 // Enables UserBypass to set/reset TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

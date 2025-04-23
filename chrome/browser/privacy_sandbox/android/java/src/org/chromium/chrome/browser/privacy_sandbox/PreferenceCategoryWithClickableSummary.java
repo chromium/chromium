@@ -8,17 +8,17 @@ import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** Like a regular PreferenceCategory but with a summary text that can contain link. */
+@NullMarked
 public class PreferenceCategoryWithClickableSummary extends PreferenceCategory {
-    public PreferenceCategoryWithClickableSummary(
-            @NonNull Context context, @Nullable AttributeSet attrs) {
+    public PreferenceCategoryWithClickableSummary(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.category_with_clickable_summary_preference);
     }

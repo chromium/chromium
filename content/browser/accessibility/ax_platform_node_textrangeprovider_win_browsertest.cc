@@ -128,6 +128,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    AccessibilityContentBrowserTest::SetUpOnMainThread();
   }
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -324,8 +325,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
                            ui::AXClippingBehavior::kUnclipped);
 
     AccessibilityNotificationWaiter location_changed_waiter(
-        GetWebContentsAndAssertNonNull(), ui::kAXModeComplete,
-        ax::mojom::Event::kLocationChanged);
+        GetWebContentsAndAssertNonNull(), ax::mojom::Event::kLocationChanged);
     ASSERT_HRESULT_SUCCEEDED(text_range_provider->ScrollIntoView(align_to_top));
     ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
@@ -987,7 +987,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   AccessibilityNotificationWaiter edit_waiter(shell()->web_contents(),
-                                              ui::kAXModeComplete,
                                               ax::mojom::Event::kValueChanged);
   ui::AXActionData edit_data;
   edit_data.target_node_id = input_text_node->GetId();
@@ -996,8 +995,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   input_text_node->AccessibilityPerformAction(edit_data);
   ASSERT_TRUE(edit_waiter.WaitForNotification());
 
-  AccessibilityNotificationWaiter focus_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+  AccessibilityNotificationWaiter focus_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kFocus);
   ui::AXActionData focus_data;
   focus_data.target_node_id = input_text_node->GetId();
   focus_data.action = ax::mojom::Action::kFocus;
@@ -1177,7 +1176,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
 
   AccessibilityNotificationWaiter edit_waiter(shell()->web_contents(),
-                                              ui::kAXModeComplete,
                                               ax::mojom::Event::kValueChanged);
   ui::AXActionData edit_data;
   edit_data.target_node_id = input_text_node->GetId();
@@ -1186,8 +1184,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   input_text_node->AccessibilityPerformAction(edit_data);
   ASSERT_TRUE(edit_waiter.WaitForNotification());
 
-  AccessibilityNotificationWaiter focus_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+  AccessibilityNotificationWaiter focus_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kFocus);
   ui::AXActionData focus_data;
   focus_data.target_node_id = input_text_node->GetId();
   focus_data.action = ax::mojom::Action::kFocus;
@@ -1307,8 +1305,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // "Node 1" is still functional.
   {
     AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+        shell()->web_contents(), ui::AXEventGenerator::Event::CHILDREN_CHANGED);
     EXPECT_TRUE(
         ExecJs(shell()->web_contents(),
                "document.getElementById('wrapper').removeChild(document."
@@ -1326,8 +1323,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // "Node 1" is still valid (it got moved to a non-deleted ancestor node).
   {
     AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+        shell()->web_contents(), ui::AXEventGenerator::Event::CHILDREN_CHANGED);
     EXPECT_TRUE(ExecJs(shell()->web_contents(),
                        "while(document.body.childElementCount > 0) {"
                        "  document.body.removeChild(document.body.firstChild);"
@@ -3000,7 +2996,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   DCHECK(iframe_web_contents);
   {
     AccessibilityNotificationWaiter waiter(iframe_web_contents,
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, iframe_url));
     ASSERT_TRUE(waiter.WaitForNotification());
@@ -3622,8 +3617,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   // Validate this selection with a waiter.
   AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kDocumentSelectionChanged);
+      shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->Select());
 
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -3726,7 +3720,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_text*/ L"iframe\nAfter frame",
         /*expected_count*/ -1);
 
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+    AccessibilityNotificationWaiter waiter(web_contents,
                                            ax::mojom::Event::kEndOfTest);
 
     // Updating the style on that particular node is going to invalidate the
@@ -3767,8 +3761,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     shell()->Reload();
 
     AccessibilityNotificationWaiter waiter(
-        web_contents, ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::FOCUS_CHANGED);
+        web_contents, ui::AXEventGenerator::Event::FOCUS_CHANGED);
 
     // We do a style change here only to trigger an AXTree update - apparently,
     // a shell reload doesn't update the tree by itself.
@@ -3805,7 +3798,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_text*/ L"Some text 3.14159",
         /*expected_count*/ 1);
 
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+    AccessibilityNotificationWaiter waiter(web_contents,
                                            ax::mojom::Event::kEndOfTest);
 
     // We do a style change here only to trigger an AXTree update.
@@ -4225,8 +4218,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // `deletion_text_range_provider` should have "<h>ello<>".
 
   AccessibilityNotificationWaiter sel_waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kDocumentSelectionChanged);
+      shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
 
   EXPECT_HRESULT_SUCCEEDED(deletion_text_range_provider->Select());
 

@@ -40,7 +40,7 @@ build_webui("build") {
   }
 
   web_component_files = all_web_component_files
-  non_web_component_files = all_non_web_component_files
+  ts_files = all_ts_files
   css_files = all_css_files
 
   html_to_wrapper_template = "detect"

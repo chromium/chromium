@@ -23,15 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtmf_sender.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -107,7 +103,7 @@ void RTCDTMFSender::insertDTMF(const String& tones,
     return;
   }
   // Spec: Throw on illegal characters
-  if (strspn(tones.Ascii().c_str(), "0123456789abcdABCD#*,") !=
+  if (UNSAFE_TODO(strspn(tones.Ascii().c_str(), "0123456789abcdABCD#*,")) !=
       tones.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,

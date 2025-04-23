@@ -63,7 +63,7 @@ extern const char kPermissionPromptSurveyUrlKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyHadGestureKey[];
 
-// The key in `Product Specific Bits Data` under which the release channel on
+// The key in `Product Specific Strings Data` under which the release channel on
 // which the prompt was triggered is recorded in the prompt HaTS survey.
 // Note that a finch config typically defines a min_version to run the
 // experiment. When Version V is stable, Beta (V+1), Dev (V+2) and Canary (V+3)
@@ -73,18 +73,57 @@ extern const char kPermissionsPromptSurveyHadGestureKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 
-// The key in `Product Specific Bits Data` under which the prompt position is
+// The key in `Product Specific Strings Data` under which the prompt position is
 // recorded if relevant. The prompt position is only recorded for PEPC
 // permission prompts.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionPromptSurveyPepcPromptPositionKey[];
 
-// The key in `Product Specific Bits Data` under which the initial permission
+// The key in `Product Specific Strings Data` under which the initial permission
 // status is recorded. The initial permission status refers to the permission
 // status before the prompt has been shown. For prompts other than PEPC
 // permission prompts, this will always be "ask".
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionPromptSurveyInitialPermissionStatusKey[];
+
+// The key in `Product Specific Bits Data` under which the information about
+// whether a permissions prompt preview for camera / microphone permissions
+// was visible at all (i.e. whether camera preview received video frames, and
+// whether microphone preview received audio samples). For prompts not related
+// to camera/microphone permissions, this will always be false.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPreviewVisibleKey[];
+
+// The key in `Product Specific Bits Data` under which the information about
+// whether a permissions prompt preview for camera / microphone permissions
+// had a device selection dropdown that was interacted with by the user.
+// For prompts not related to camera/microphone permissions, this will always
+// be false.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPreviewDropdownInteractedKey[];
+
+// The key in `Product Specific Bits Data` under which the information about
+// whether a permissions prompt preview for camera / microphone permissions
+// was a combined prompt.
+// For prompts not related to camera/microphone permissions, this will always
+// be false.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPreviewWasCombinedKey[];
+
+// The key in `Product Specific String Data` under which the information about
+// how long it took (in milliseconds) for the user to make a decision. For
+// prompts not related to camera/microphone permissions, this will always be
+// empty string.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPreviewTimeToDecisionKey[];
+
+// The key in `Product Specific String Data` under which the information about
+// how long it took (in milliseconds) for the video or audio preview to become
+// visible (i.e. to start displaying video frames / audio levels to users). For
+// prompts not related to camera/microphone permissions, this will always be
+// empty string.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPreviewTimeToVisibleKey[];
 
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.

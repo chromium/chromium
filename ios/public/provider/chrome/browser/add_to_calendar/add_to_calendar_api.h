@@ -7,13 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// TODO(crbug.com/405195613): Cleanup imports when provider migration is
-// complete.
-#import <memory>
-
-#import "base/memory/weak_ptr.h"
-#import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
-
 namespace web {
 class WebState;
 }  // namespace web
@@ -34,15 +27,6 @@ enum class AddToCalendarIntegrationProvider {
 void PresentAddToCalendar(UIViewController* presenting_view_controller,
                           web::WebState* web_state,
                           EnhancedCalendarConfiguration* config);
-
-// TODO(crbug.com/405195613): Cleanup function when provider migration is
-// complete.
-void PresentAddToCalendar(
-    UIViewController* presenting_view_controller,
-    AddToCalendarIntegrationProvider provider,
-    base::WeakPtr<web::WebState> web_state,
-    std::unique_ptr<optimization_guide::proto::EnhancedCalendarResponse>
-        enhanced_calendar_response);
 
 }  // namespace ios::provider
 

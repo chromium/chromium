@@ -446,7 +446,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
     // Create a proxy to the audio processor in the audio service.
     audio_processor_proxy_ =
-        new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+        new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
 
     // The output format of this ProcessedLocalAudioSource is the audio capture
     // format.
@@ -468,7 +468,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
                 CrossThreadUnretained(this)));
 
     media_stream_audio_processor_ =
-        new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+        new webrtc::RefCountedObject<MediaStreamAudioProcessor>(
             std::move(processing_callback), audio_processing_settings,
             audio_capture_params, rtc_audio_device);
 

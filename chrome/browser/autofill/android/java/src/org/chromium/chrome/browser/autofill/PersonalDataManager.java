@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -16,18 +15,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
-import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
@@ -36,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Android wrapper of the PersonalDataManager which provides access from the Java layer.
@@ -653,15 +648,10 @@ public class PersonalDataManager implements Destroyable {
             new ArrayList<PersonalDataManagerObserver>();
 
     private long mPersonalDataManagerAndroid;
-    private AutofillImageFetcher mImageFetcher;
 
     PersonalDataManager(Profile profile) {
         mPersonalDataManagerAndroid = PersonalDataManagerJni.get().init(this, profile);
         mPrefService = UserPrefs.get(profile);
-        // Get the AutofillImageFetcher instance that was created during browser startup.
-        mImageFetcher =
-                PersonalDataManagerJni.get()
-                        .getOrCreateJavaImageFetcher(mPersonalDataManagerAndroid);
     }
 
     @Override
@@ -677,7 +667,6 @@ public class PersonalDataManager implements Destroyable {
         for (PersonalDataManagerObserver observer : mDataObservers) {
             observer.onPersonalDataChanged();
         }
-        fetchCreditCardArtImages();
     }
 
     /** Registers a PersonalDataManagerObserver on the native side. */
@@ -1134,35 +1123,6 @@ public class PersonalDataManager implements Destroyable {
                 .isAutofillCreditCardManaged(mPersonalDataManagerAndroid);
     }
 
-    private void fetchCreditCardArtImages() {
-        List<CreditCard> cardsToSuggest = getCreditCardsToSuggest();
-        int size = cardsToSuggest.size();
-        GURL[] cardArtUrls = new GURL[size];
-        for (int i = 0; i < size; ++i) {
-            cardArtUrls[i] = cardsToSuggest.get(i).getCardArtUrl();
-        }
-        mImageFetcher.prefetchImages(cardArtUrls, new int[] {ImageSize.SMALL, ImageSize.LARGE});
-    }
-
-    /**
-     * Return the card art image for the given `customImageUrl`.
-     *
-     * @param customImageUrl URL of the image. If the image is available, it is returned, otherwise
-     *     it is fetched from this URL.
-     * @param cardIconSpecs {@code CardIconSpecs} instance containing the specs for the card icon.
-     * @return Bitmap image if found in the local cache, else return an empty object.
-     */
-    public Optional<Bitmap> getCustomImageForAutofillSuggestionIfAvailable(
-            GURL customImageUrl, AutofillUiUtils.CardIconSpecs cardIconSpecs) {
-        return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
-    }
-
-    public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
-        var oldValue = this.mImageFetcher;
-        this.mImageFetcher = new AutofillImageFetcher(imageFetcher);
-        ResettersForTesting.register(() -> this.mImageFetcher = oldValue);
-    }
-
     /** Sets the preference value for supporting payments using Pix. */
     public void setFacilitatedPaymentsPixPref(boolean value) {
         mPrefService.setBoolean(Pref.FACILITATED_PAYMENTS_PIX, value);
@@ -1280,8 +1240,6 @@ public class PersonalDataManager implements Destroyable {
 
         @JniType("std::string")
         String toCountryCode(@JniType("std::u16string") String countryName);
-
-        AutofillImageFetcher getOrCreateJavaImageFetcher(long nativePersonalDataManagerAndroid);
 
         void addServerIbanForTest(long nativePersonalDataManagerAndroid, Iban iban); // IN-TEST
 

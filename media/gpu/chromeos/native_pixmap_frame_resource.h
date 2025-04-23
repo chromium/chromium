@@ -53,10 +53,6 @@ class NativePixmapFrameResource : public FrameResource {
       delete;
 
   // Creates a NativePixmapFrameResource that assumes ownership of |dmabuf_fds|.
-  // NOTE: This is only intended to be used to wrap DMA buffers that were not
-  // allocated by miniGBM. If this changes, additional arguments for the buffer
-  // modifier and whether WebGPU can directly import the handle to create
-  // texture from it will need to be added.
   static scoped_refptr<NativePixmapFrameResource> Create(
       const media::VideoFrameLayout& layout,
       const gfx::Rect& visible_rect,
@@ -132,14 +128,24 @@ class NativePixmapFrameResource : public FrameResource {
       const override;
 
   // CreateVideoFrame() is used to create a VideoFrame from the underlying
-  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
-  // type GPU_MEMORY_BUFFER is created. The GpuMemoryBufferId of the returned
-  // frame equals |this->id_|. This is important to allow for frame pool frame
-  // reclamation.
-  scoped_refptr<VideoFrame> CreateVideoFrame() const;
+  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with the
+  // specified storage type is created. |storage_type| must be STORAGE_DMABUFS
+  // or STORAGE_GPU_MEMORY_BUFFER.
+  scoped_refptr<VideoFrame> CreateVideoFrame(
+      VideoFrame::StorageType storage_type) const;
 
  private:
   ~NativePixmapFrameResource() override;
+
+  // CreateDmabufVideoFrame() is used to create a VideoFrame from the underlying
+  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
+  // type STORAGE_DMABUFS is created.
+  scoped_refptr<VideoFrame> CreateDmabufVideoFrame() const;
+
+  // CreateGmbVideoFrame() is used to create a VideoFrame from the underlying
+  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
+  // type STORAGE_GPU_MEMORY_BUFFER is created.
+  scoped_refptr<VideoFrame> CreateGmbVideoFrame() const;
 
   // |pixmap_| is the underlying NativePixmap. It is is set by the constructors.
   const scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap_;
@@ -155,7 +161,8 @@ class NativePixmapFrameResource : public FrameResource {
 
   // |buffer_usage_| affects how a buffer can be used. It is only set if it was
   // provided by the caller of Create(), or if the NativePixmap was allocated by
-  // MiniGBM. If this not set, then CreateVideoFrame() will fail.
+  // MiniGBM. If this not set, then a CreateVideoFrame() should not be used to
+  // create a STORAGE_GPU_MEMORY_BUFFER VideoFrame.
   const std::optional<gfx::BufferUsage> buffer_usage_;
 
   // VideoFrameLayout (includes format, coded_size, and strides). Per-plane

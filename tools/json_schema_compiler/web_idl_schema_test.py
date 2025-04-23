@@ -50,6 +50,25 @@ def getType(schema: dict, name: str) -> dict:
   raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
+def getEvent(schema: dict, name: str) -> dict:
+  """Gets the event dictionary with the specified name from the schema.
+
+  Args:
+    schema: The processed API schema dictionary to look for the event in.
+    name: The name of the event to look for.
+
+  Returns:
+    The dictionary for the event with the specified name.
+
+  Raises:
+    KeyError: If the given event name was not found in the list of events.
+  """
+  for item in schema['events']:
+    if item['name'] == name:
+      return item
+  raise KeyError('Could not find "event" with name "%s" in schema' % name)
+
+
 def getFunctionReturn(schema: dict, name: str) -> dict:
   """Gets the return dictionary for the function with the specified name.
 
@@ -266,6 +285,34 @@ class WebIdlSchemaTest(unittest.TestCase):
             '$ref': 'ExampleType'
         }, function_parameters[1])
 
+  # Tests that API events are processed as expected.
+  # TODO(crbug.com/379052294): Add description testing when it is added to the
+  # processor.
+  def testEvents(self):
+    schema = self.idl_basics
+
+    event_one = getEvent(schema, 'onTestOne')
+    # This is a bit of a tautology for now, as getEvent() uses name to retrieve
+    # the object and raises a KeyError if it is not found.
+    self.assertEqual('onTestOne', event_one.get('name'))
+    self.assertEqual('function', event_one.get('type'))
+    self.assertEqual([{
+        'name': 'argument1',
+        'type': 'string'
+    }, {
+        'name': 'argument2',
+        'optional': True,
+        'type': 'number'
+    }], event_one['parameters'])
+
+    event_two = getEvent(schema, 'onTestTwo')
+    self.assertEqual('onTestTwo', event_two.get('name'))
+    self.assertEqual('function', event_two.get('type'))
+    self.assertEqual([{
+        'name': 'customType',
+        '$ref': 'ExampleType'
+    }], event_two['parameters'])
+
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):
@@ -333,8 +380,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # support for shared types to the new parser.
   def testMissingBrowserInterfaceError(self):
     expected_error_regex = (
-        '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
-        ' partial Browser interface not found in schema\.')
+        r'.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
+        r' partial Browser interface not found in schema\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -346,8 +393,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # throws an error.
   def testMissingAttributeOnBrowserError(self):
     expected_error_regex = (
-        '.* Interface\(Browser\): The partial Browser interface should have'
-        ' exactly one attribute for the name the API will be exposed under\.')
+        r'.* Interface\(Browser\): The partial Browser interface should have'
+        r' exactly one attribute for the name the API will be exposed under\.')
     self.assertRaisesRegex(
         Exception,
         expected_error_regex,
@@ -359,8 +406,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedBasicTypeError(self):
     expected_error_regex = (
-        '.* PrimitiveType\(float\): Unsupported basic type found when'
-        ' processing type\.')
+        r'.* PrimitiveType\(float\): Unsupported basic type found when'
+        r' processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -372,7 +419,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedTypeClassError(self):
     expected_error_regex = (
-        '.* Any\(\): Unsupported type class when processing type\.')
+        r'.* Any\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -380,13 +427,28 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/unsupported_type_class.idl',
     )
 
+  # Tests that an event trying to say it uses an Interface that is not defined
+  # in the IDL file will throw an error. This is largely in place to help catch
+  # spelling mistakes in event names or forgetting to add the Interface
+  # definition.
+  def testMissingEventInterface(self):
+    expected_error_regex = (
+        r'.* Error processing node Attribute\(onTestTwo\): Could not find'
+        r' Interface definition for event\.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_interface.idl',
+    )
+
   # Tests that if description parsing from file comments reaches the top of the
   # file, a schema compiler error is thrown (as the top of the file should
   # always be copyright lines and not part of the description).
   def testDocumentationCommentReachedTopOfFileError(self):
     expected_error_regex = (
-        '.* Reached top of file when trying to parse description from file'
-        ' comment. Make sure there is a blank line before the comment.')
+        r'.* Reached top of file when trying to parse description from file'
+        r' comment. Make sure there is a blank line before the comment.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -398,8 +460,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # 'void' has been deprecated and 'undefined' should be used instead.
   def testVoidUsageTriggersError(self):
     expected_error_regex = (
-        'Error processing node PrimitiveType\(void\): Usage of "void" in IDL is'
-        ' deprecated, use "Undefined" instead.')
+        r'Error processing node PrimitiveType\(void\): Usage of "void" in IDL'
+        r' is deprecated, use "Undefined" instead.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -411,8 +473,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # processing for results in a schema compiler error.
   def testUnknownNamespaceExtendedAttributeNameError(self):
     expected_error_regex = (
-        '.* Interface\(TestWebIdl\): Unknown extended attribute with name'
-        ' "UnknownExtendedAttribute" when processing namespace.')
+        r'.* Interface\(TestWebIdl\): Unknown extended attribute with name'
+        r' "UnknownExtendedAttribute" when processing namespace.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,

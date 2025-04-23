@@ -57,10 +57,6 @@ void AddCommonStrings(base::Value::Dict* dict) {
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
-  dict->Set("pdfCr23Enabled",
-            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfCr23)
-                ? "pdfCr23Enabled"
-                : "");
   dict->Set("pdfOopifEnabled",
             chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
 }

@@ -34,14 +34,14 @@ echo "Installing GoogleUpdater."
 "${INSTALLATION_PATH}/${FRAMEWORK_DIR}/Helpers/GoogleUpdater.app/Contents/MacOS/GoogleUpdater" "--install" "--system"
 
 
-# 2. Create the brand file, if specified.
+# 2. If specified, create the brand file if it does not yet exist.
 
 brand_file_written="false"
+readonly BRAND_PLIST="/Library/Google/${APP_PRODUCT} Brand.plist"
 
-if [[ -n "${BRAND_CODE}" ]]; then
+if [[ -n "${BRAND_CODE}" ]] && [[ ! -f "${BRAND_PLIST}" ]]; then
   echo "Creating the brand file."
 
-  readonly BRAND_PLIST="/Library/Google/${APP_PRODUCT} Brand.plist"
   readonly KS_BRAND_KEY="KSBrandID"
 
   # Failure to write a brand file is less important than getting automatic

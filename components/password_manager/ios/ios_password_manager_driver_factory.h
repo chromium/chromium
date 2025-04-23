@@ -58,8 +58,6 @@ class IOSPasswordManagerDriverFactory
   id<PasswordManagerDriverBridge> bridge_;
   raw_ptr<password_manager::PasswordManagerInterface> password_manager_;
   int next_free_id = 0;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 // This class is tied to the web frame and owns a reference to

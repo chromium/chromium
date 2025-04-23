@@ -200,7 +200,7 @@ void GenerateResponseDesl(base::span<const uint8_t, kNtlmHashLen> hash,
 
   const DES_cblock* challenge_block =
       reinterpret_cast<const DES_cblock*>(challenge.data());
-  uint8_t keys[block_count * block_size];
+  std::array<uint8_t, block_count * block_size> keys;
 
   // Map the NTLM hash to three 8 byte DES keys, with 7 bits of the key in each
   // byte and the least significant bit set with odd parity. Then encrypt the
@@ -208,7 +208,8 @@ void GenerateResponseDesl(base::span<const uint8_t, kNtlmHashLen> hash,
   // encrypted blocks into |response|.
   Create3DesKeysFromNtlmHash(hash, keys);
   for (size_t ix = 0; ix < block_count * block_size; ix += block_size) {
-    DES_cblock* key_block = reinterpret_cast<DES_cblock*>(keys + ix);
+    DES_cblock* key_block = reinterpret_cast<DES_cblock*>(
+        base::span<uint8_t>(keys).subspan(ix).data());
     DES_cblock* response_block =
         reinterpret_cast<DES_cblock*>(response.data() + ix);
 

@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
-namespace tabs {
-enum class SplitTabLayout;
-}  // namespace tabs
+namespace split_tabs {
+class SplitTabVisualData;
+}
 
 class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
   METADATA_HEADER(SplitTabsToolbarButton, ToolbarButton)
@@ -30,13 +30,21 @@ class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
   void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
                          split_tabs::SplitTabId split_id,
                          TabStripModelObserver::SplitTabAddReason reason,
-                         tabs::SplitTabLayout tab_layout) override;
+                         split_tabs::SplitTabVisualData visual_data) override;
+
+  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabRemoveReason reason) override;
+
+  const std::optional<ToolbarButton::VectorIcons>& GetIconsForTesting();
 
  private:
   void ButtonPressed(const ui::Event& event);
 
   void UpdateButtonVisibility();
+  void UpdateButtonIcon();
 
+  BooleanPrefMember pin_state_;
   raw_ptr<Browser> browser_;
 };
 

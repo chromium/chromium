@@ -11,7 +11,7 @@ package content;
 // Stores information about a Web Notification. This message is the protocol
 // buffer meant to serialize the content::NotificationDatabaseData structure.
 //
-// Next tag: 16
+// Next tag: 17
 message NotificationDatabaseDataProto {
   enum ClosedReason {
     USER = 0;
@@ -91,4 +91,8 @@ message NotificationDatabaseDataProto {
   // Flag for notifications shown by the browser that should not be visible to
   // the origin when requesting a list of notifications.
   optional bool is_shown_by_browser = 15;
+
+  // Notification metadata map, where the key is the type of metadata and the
+  // value is any string value of data, such as a serialized dictionary.
+  map<string, string> serialized_metadata = 16;
 }

@@ -127,11 +127,40 @@ class TestAdTracker : public AdTracker {
     run_loop.Run();
   }
 
+  // Intercepts `IsAdScriptInStack` to capture and store the ad script's
+  // ancestry for frame creation scenario.
+  bool IsAdScriptInStack(StackType stack_type,
+                         std::vector<AdScriptIdentifier>*
+                             out_ad_script_ancestry = nullptr) override {
+    bool result =
+        AdTracker::IsAdScriptInStack(stack_type, out_ad_script_ancestry);
+
+    // We are only interested in the output parameter for a frame creation
+    // scenario (implied by non-null `out_ad_script_ancestry`).
+    if (sim_test_ && out_ad_script_ancestry) {
+      last_ad_script_ancestry_ = *out_ad_script_ancestry;
+    }
+
+    return result;
+  }
+
+  const std::vector<AdScriptIdentifier>& last_ad_script_ancestry() const {
+    return last_ad_script_ancestry_;
+  }
+
  protected:
-  String ScriptAtTopOfStack() override {
-    if (sim_test_ && !script_at_top_)
-      return AdTracker::ScriptAtTopOfStack();
-    return script_at_top_;
+  // Override ScriptAtTopofStack to allow us to mock out the returned script
+  // (via `SetScriptAtTopOfStack`).
+  String ScriptAtTopOfStack(
+      std::optional<AdScriptIdentifier>* out_ad_script = nullptr) override {
+    if (script_at_top_) {
+      return script_at_top_;
+    }
+    if (!sim_test_) {
+      return "";
+    }
+
+    return AdTracker::ScriptAtTopOfStack(out_ad_script);
   }
 
   ExecutionContext* GetCurrentExecutionContext() override {
@@ -169,6 +198,7 @@ class TestAdTracker : public AdTracker {
   Member<ExecutionContext> execution_context_;
   String ad_suffix_;
   bool sim_test_ = false;
+  std::vector<AdScriptIdentifier> last_ad_script_ancestry_;
 
   base::OnceClosure quit_closure_;
   String url_to_wait_for_;
@@ -226,14 +256,17 @@ class AdTrackerTest : public testing::Test {
   }
 
   std::optional<AdScriptIdentifier> BottommostAdScript() {
-    std::optional<AdScriptIdentifier> bottom_most_ad_script;
-    ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                   /*out_ad_script=*/&bottom_most_ad_script);
-    return bottom_most_ad_script;
+    std::vector<AdScriptIdentifier> ad_script_ancestry;
+    ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomOnly,
+                                   /*out_ad_script=*/&ad_script_ancestry);
+
+    return !ad_script_ancestry.empty() ? std::optional{ad_script_ancestry[0]}
+                                       : std::nullopt;
   }
 
   void AppendToKnownAdScripts(const String& url) {
-    ad_tracker_->AppendToKnownAdScripts(*GetExecutionContext(), url);
+    ad_tracker_->AppendToKnownAdScripts(*GetExecutionContext(), url,
+                                        /*stack_ad_script=*/std::nullopt);
   }
 
   void AppendToKnownAdScripts(int script_id) {
@@ -1593,6 +1626,809 @@ TEST_F(AdTrackerSimTest, InlineAdScriptWithSourceURLAtTopOfStack_StillTagged) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
+}
+
+// Tests that when the script at the top of the stack is an ad script,
+// `IsAdScriptInStack` correctly identifies it and returns the expected
+// `AdScriptIdentifier`.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfStack) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The vanilla script calls a
+  // function on the ad script which creates an ad iframe. The ad script is at
+  // top of stack when it creates the frame and IsAdScriptInStack should return
+  // the script id, verify that they look right.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    function createIframe() {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    createIframe();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  // Verify that IsAdScriptInStack() returned the right script information.
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  EXPECT_GT(ad_tracker_->last_ad_script_ancestry()[0].id, 0);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Tests that when the script at the top of the *async* stack is an ad script,
+// `IsAdScriptInStack` correctly identifies it (via the bottommost async ad
+// script) and returns the expected `AdScriptIdentifier`.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The vanilla script calls a
+  // function on the ad script which asynchronously calls a function on the
+  // vanilla script to create an ad iframe. The ad script is at top of *async*
+  // stack when it creates the frame and IsAdScriptInStack should return
+  // the script id, verify that they look right.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    function createIframeAsync() {
+      setTimeout(() => {
+        createIframe();
+      });
+    }
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    function createIframe() {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+
+    createIframeAsync();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  // Verify that IsAdScriptInStack() returned the right script information.
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  EXPECT_GT(ad_tracker_->last_ad_script_ancestry()[0].id, 0);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
+// the final ad frame is created through script execution originating from an
+// initial subresource-filter-flagged ad script. The stack ad script for this
+// iframe is tagged because the initial ad script is present at the bottom of
+// the creation stack.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_TransitiveScriptTaggedDueToBottomOfStackMatch) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script creates an iframe (child_frame1).
+  // 3. The ad script also loads a vanilla script (vanilla_script_url).
+  // 4. The vanilla script (vanilla_script_url) creates another iframe
+  //    (child_frame2).
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document1.html';
+    document.body.appendChild(iframe);
+
+    const script = document.createElement('script');
+    script.src = 'vanilla-script.js';
+    document.body.appendChild(script);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame1, there is one ad script in the ancestry (the initiating
+  // subresource-filter-flagged script).
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame1_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  vanilla_script.Complete(R"SCRIPT(
+    const iframe2 = document.createElement('iframe');
+    iframe2.src = 'ad_document2.html';
+    document.body.appendChild(iframe2);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there are two ad scripts in the ancestry. The source ad
+  // script should match the one captured during the creation of child_frame1.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame1_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
+}
+
+// Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
+// the final ad frame is created through script execution originating from an
+// initial subresource-filter-flagged ad script. The stack ad script for this
+// iframe is tagged because the initial ad script is present at the top of the
+// creation stack.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_TransitiveScriptTaggedDueToTopOfStackMatch) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+  String trigger_script_url = "https://example.com/trigger-script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script creates an iframe (child_frame1).
+  // 3. The ad script also defines a function `createScript()`.
+  // 4. A trigger script (trigger_script_url) is loaded directly in the main
+  //    frame, which invokes `createScript()` to create a vanilla script
+  //    (vanilla_script_url).
+  // 5. The vanilla script (vanilla_script_url) creates another iframe
+  //    (child_frame2).
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest trigger_script(trigger_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+      <script src="trigger-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document1.html';
+    document.body.appendChild(iframe);
+
+    function createScript() {
+      const script = document.createElement('script');
+      script.src = 'vanilla-script.js';
+      document.body.appendChild(script);
+    }
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame1, there is one ad script in the ancestry (the initiating
+  // subresource-filter-flagged script).
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame1_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  trigger_script.Complete(R"SCRIPT(
+    createScript();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  vanilla_script.Complete(R"SCRIPT(
+    const iframe2 = document.createElement('iframe');
+    iframe2.src = 'ad_document2.html';
+    document.body.appendChild(iframe2);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there are two ad scripts in the ancestry. The source ad
+  // script should match the one captured during the creation of child_frame1.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame1_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
+}
+
+// Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
+// the final ad frame is created through inline script execution originating
+// from an initial subresource-filter-flagged ad script.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_TransitiveInlineScript) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String trigger_script_url = "https://example.com/trigger-script.js";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script creates an iframe (child_frame1).
+  // 3. The ad script also loads a inline script that defines a function
+  //    (createIframe()) to create an ad iframe.
+  // 4. A trigger script (trigger_script_url) is loaded directly in the main
+  //    frame, which invokes createIframe().
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest trigger_script(trigger_script_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+      <script src="trigger-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document1.html';
+    document.body.appendChild(iframe);
+
+    const inlineScript = `
+      function createIframe() {
+        const iframe2 = document.createElement('iframe');
+        iframe2.src = 'ad_document2.html';
+        document.body.appendChild(iframe2);
+      }
+    `;
+
+    const script = document.createElement('script');
+    script.textContent = inlineScript;
+    document.body.appendChild(script);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame1, there is one ad script in the ancestry (the initiating
+  // subresource-filter-flagged script).
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame1_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  trigger_script.Complete(R"SCRIPT(
+    createIframe();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there are two ad scripts in the ancestry. The source ad
+  // script should match the one captured during the creation of child_frame1.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame1_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(trigger_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
+}
+
+// Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
+// the final ad frame is created through multiple levels of asynchronous script
+// execution originating from an initial subresource-filter-flagged ad script.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_TransitiveScript_MultipleLevelsAndAsync) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+  String vanilla_script2_url = "https://example.com/vanilla-script2.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_script2_url = "https://example.com/script2.js?ad=true";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+  String ad_document3_url = "https://example.com/ad_document3.html";
+  String ad_document4_url = "https://example.com/ad_document4.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script creates an iframe (child_frame1), and asynchronously
+  //    loads an ad script (ad_script2_url).
+  // 3. The new ad script creates an iframe (child_frame2), and asynchronously
+  //    loads a vanilla script (vanilla_script_url).
+  // 4. The vanilla script creates an iframe (child_frame3), and asynchronously
+  //    loads another vanilla script (vanilla_script2_url).
+  // 5. The new vanilla script asynchronously creates another iframe
+  //    (child_frame4).
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script2(vanilla_script2_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest ad_script2(ad_script2_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+  SimRequest ad_document3(ad_document3_url, "text/html");
+  SimRequest ad_document4(ad_document4_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    setTimeout(() => {
+      const script = document.createElement('script');
+      script.src = 'script2.js?ad=true';
+      document.body.appendChild(script);
+    });
+
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document1.html';
+    document.body.appendChild(iframe);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame1, there is one ad script in the ancestry (script.js).
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame1_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  ad_script2.Complete(R"SCRIPT(
+    setTimeout(() => {
+      const script = document.createElement('script');
+      script.src = 'vanilla-script.js';
+      document.body.appendChild(script);
+    });
+
+    const iframe2 = document.createElement('iframe');
+    iframe2.src = 'ad_document2.html';
+    document.body.appendChild(iframe2);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there is one ad script in the ancestry (script2.js).
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame2_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+  EXPECT_NE(frame1_stack_ad_script, frame2_stack_ad_script);
+
+  vanilla_script.Complete(R"SCRIPT(
+    setTimeout(() => {
+      const script = document.createElement('script');
+      script.src = 'vanilla-script2.js';
+      document.body.appendChild(script);
+    });
+
+    const iframe3 = document.createElement('iframe');
+    iframe3.src = 'ad_document3.html';
+    document.body.appendChild(iframe3);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame3, there are two ad scripts in the ancestry. The source ad
+  // script should match the one captured during the creation of child_frame2
+  // (script2.js). This is the nearest subresource-filter-flagged script in
+  // vanilla-script.js's creation ancestry.
+  auto* child_frame3 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/2));
+  EXPECT_TRUE(child_frame3->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame2_stack_ad_script);
+  auto frame3_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  vanilla_script2.Complete(R"SCRIPT(
+    setTimeout(() => {
+      const iframe4 = document.createElement('iframe');
+      iframe4.src = 'ad_document4.html';
+      document.body.appendChild(iframe4);
+    });
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame4, there are three ad scripts in the ancestry:
+  // - The source ad script should match the one captured during the creation of
+  //   child_frame2 (script2.js). This is the nearest
+  //   subresource-filter-flagged script in vanilla-script.js's creation
+  //   ancestry.
+  // - The next script down the ancestry should match the one captured during
+  //   the creation of child_frame3 (vanilla-script.js). This is the direct
+  //   ancestor script of vanilla-script2.js.
+  auto* child_frame4 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/3));
+  EXPECT_TRUE(child_frame4->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 3u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[2]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame3_stack_ad_script);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[2], frame2_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script2_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script2_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
+  ad_document3.Complete("<body></body>");
+  ad_document4.Complete("<body></body>");
+}
+
+// Tests a scenario where a transitively added, subresource-filter-flagged
+// script redirects to a non-subresource-filter-flagged URL, and this script
+// creates an iframe. No further ancestor attribution is required, because the
+// resource request itself made the URL ad-tagged. `IsAdScriptInStack` should
+// return just one script.
+TEST_F(
+    AdTrackerSimTest,
+    AdScriptAncestry_TransitiveScriptRedirectedFromFilterlistedUrlToNonFilterlistedUrl) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+
+  SimRequest::Params params;
+  params.redirect_url = vanilla_script_url;
+
+  String redirect_from_script_url =
+      "https://example.com/redirect-from-script.js?ad=true";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script loads another ad script (redirect_from_script_url), which
+  //    gets redirected to a non-subresource-filter-flagged URL
+  //    (vanilla_script_url).
+  // 3. The vanilla script (vanilla_script_url) creates an iframe (child_frame).
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest redirect_from_script(redirect_from_script_url,
+                                             "text/javascript", params);
+
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const script = document.createElement('script');
+    script.src = 'redirect-from-script.js?ad=true';
+    document.body.appendChild(script);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  vanilla_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document.html';
+    document.body.appendChild(iframe);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // There is one ad script in the ancestry. The resource request's initial
+  // ad-tagged status propagates to the final URL after the redirect, so the
+  // script does not require further ancestor attribution.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(redirect_from_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Tests a scenario where the same vanilla script is loaded from two different
+// ancestor ad scripts. The vanilla script is designed to create an ad iframe
+// only on its second execution.
+//
+// Expectation: The ancestor ad script attributed to the final iframe is the
+// *first* ad script that loaded the vanilla script. This verifies that the
+// ancestor ad script is associated with the vanilla script upon its initial
+// load and persists across subsequent loads from different ad scripts.
+TEST_F(AdTrackerSimTest,
+       AdScriptAncestry_SameTransitiveScriptLoadedFromDifferentAncestors) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+  String ad_script1_url = "https://example.com/script1.js?ad=true";
+  String ad_script2_url = "https://example.com/script2.js?ad=true";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+  String ad_document3_url = "https://example.com/ad_document3.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script1_url) is loaded directly in the main frame.
+  // 2. This ad script creates an iframe (child_frame1).
+  // 3. The ad script also loads a vanilla script (vanilla_script_url).
+  // 4. A second ad script (ad_script2_url) is loaded directly in the main
+  //    frame.
+  // 5. This second ad script creates an iframe (child_frame2).
+  // 6. This second ad script also loads the same vanilla script
+  //    (vanilla_script_url).
+  // 7. The vanilla script, in this second load, creates an iframe
+  //    (child_frame3).
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script1(ad_script1_url, "text/javascript");
+  SimSubresourceRequest ad_script2(ad_script2_url, "text/javascript");
+
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+  SimRequest ad_document3(ad_document3_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script>
+        let vanillaScriptLoadCount = 0;
+      </script>
+      <script src="script1.js?ad=true"></script>
+      <script src="script2.js?ad=true"></script>
+    </body>
+  )HTML");
+
+  ad_script1.Complete(R"SCRIPT(
+    const iframe1 = document.createElement('iframe');
+    iframe1.src = 'ad_document1.html';
+    document.body.appendChild(iframe1);
+
+    const script1 = document.createElement('script');
+    script1.src = 'vanilla-script.js';
+    document.body.appendChild(script1);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame1, there is one ad script in the ancestry (`ad_script1`).
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame1->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame1_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  ad_script2.Complete(R"SCRIPT(
+    const iframe2 = document.createElement('iframe');
+    iframe2.src = 'ad_document2.html';
+    document.body.appendChild(iframe2);
+
+    const script2 = document.createElement('script');
+    script2.src = 'vanilla-script.js';
+    document.body.appendChild(script2);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there is one ad script in the ancestry (`ad_script2`).
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto frame2_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  EXPECT_NE(frame1_stack_ad_script, frame2_stack_ad_script);
+
+  vanilla_script.Complete(R"SCRIPT(
+    vanillaScriptLoadCount += 1;
+
+    if (vanillaScriptLoadCount > 1) {
+      const iframe3 = document.createElement('iframe');
+      iframe3.src = 'ad_document3.html';
+      document.body.appendChild(iframe3);
+    }
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame3, the source ad script should be the one that *first*
+  // loaded this `vanilla_script` (`ad_script1`).
+  auto* child_frame3 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/2));
+  EXPECT_TRUE(child_frame3->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1], frame1_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script1_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script2_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
+  ad_document3.Complete("<body></body>");
+}
+
+// Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
+// the originating ad script executes in a different browsing context than the
+// final ad frame's creation.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_TrackedAcrossContexts) {
+  String vanilla_script_url = "https://example.com/vanilla-script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+
+  String vanilla_document_url = "https://example.com/vanilla_document.html";
+  String ad_document1_url = "https://example.com/ad_document1.html";
+  String ad_document2_url = "https://example.com/ad_document2.html";
+
+  // Scenario:
+  // 1. An child frame (vanilla_document_url) is embedded in the main frame.
+  // 2. An ad script (ad_script_url) is loaded within the child frame.
+  // 3. The ad script creates a nested ad iframe (ad_document1_url).
+  // 4. The ad script also injects a vanilla script (vanilla_script_url) into
+  //    the parent (main) frame's context.
+  // 5. This injected non-ad script then creates another ad iframe
+  //    (ad_document2_url) in the main frame.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  SimRequest vanilla_document(vanilla_document_url, "text/html");
+  SimRequest ad_document1(ad_document1_url, "text/html");
+  SimRequest ad_document2(ad_document2_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <iframe src="vanilla_document.html"></iframe>
+    </body>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  // child_frame1 is not an ad frame.
+  auto* child_frame1 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame1->IsFrameCreatedByAdScript());
+
+  vanilla_document.Complete(R"HTML(
+    <body>
+      <script src="script.js?ad=true"></script>
+    </body>
+  )HTML");
+  base::RunLoop().RunUntilIdle();
+
+  ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document1.html';
+    document.body.appendChild(iframe);
+
+    const parentWindow = window.parent;
+    const parentDocument = parentWindow.document;
+
+    const script = document.createElement('script');
+    script.src = 'vanilla-script.js';
+    parentDocument.body.appendChild(script);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For nested_frame, there is one ad script in the ancestry (`ad_script`).
+  auto* nested_frame = To<LocalFrame>(child_frame1->Tree().FirstChild());
+  EXPECT_TRUE(nested_frame->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto nested_frame_stack_ad_script = ad_tracker_->last_ad_script_ancestry()[0];
+
+  vanilla_script.Complete(R"SCRIPT(
+    const ad_iframe = document.createElement('iframe');
+    ad_iframe.src = 'ad_document2.html';
+    document.body.appendChild(ad_iframe);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // For child_frame2, there are two ad scripts in the ancestry. The source ad
+  // script should match the one captured during the creation of nested_frame.
+  // This confirms that the ancestry tracking mechanism spans across browsing
+  // context boundaries.
+  auto* child_frame2 =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild(/*index=*/1));
+  EXPECT_TRUE(child_frame2->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+  EXPECT_NE(ad_tracker_->last_ad_script_ancestry()[0],
+            ad_tracker_->last_ad_script_ancestry()[1]);
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry()[1],
+            nested_frame_stack_ad_script);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document1.Complete("<body></body>");
+  ad_document2.Complete("<body></body>");
 }
 
 class AdTrackerDisabledSimTest : public SimTest,

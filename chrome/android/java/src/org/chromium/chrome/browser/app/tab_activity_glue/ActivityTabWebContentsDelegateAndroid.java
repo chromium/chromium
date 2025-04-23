@@ -27,7 +27,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -199,13 +199,23 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
 
-        // Creating new Tabs asynchronously requires starting a new Activity to create the Tab,
-        // so the Tab returned will always be null.  There's no way to know synchronously
-        // whether the Tab is created, so assume it's always successful.
-        boolean success =
+        boolean openingPopup =
+                PopupCreator.arePopupsEnabled(mActivity)
+                        && (disposition == WindowOpenDisposition.NEW_POPUP);
+
+        Tab tab =
                 tabCreator.createTabWithWebContents(
-                        mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
-        if (!success) return false;
+                        mTab,
+                        webContents,
+                        TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                        url,
+                        !openingPopup);
+        if (tab == null) return false;
+
+        if (openingPopup) {
+            PopupCreator.moveTabToNewPopup(
+                    tab, windowFeatures, mTab.getWindowAndroid().getDisplay());
+        }
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             RecordUserAction.record("LinkNavigationOpenedInForegroundTab");

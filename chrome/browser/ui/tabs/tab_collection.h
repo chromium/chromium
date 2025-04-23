@@ -9,27 +9,97 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <stack>
 #include <unordered_set>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 
 namespace tabs {
 
 class TabInterface;
-class TabModel;
 
 // This is an interface that representing the hierarchical storage of tabs.
 // This can be used to access and manipulate tabs and the state of the tabstrip.
 // Different types of collections should implement this base class based on how
 // their feature works. For example, a pinned collection can implement tab
 // collection that does not store any collection.
-// TODO(crbug.com/392950857): Use TabInterface instead of TabModel here and in
-// collections inheriting from this.
 class TabCollection {
  public:
+  // Iterator provides a way to traverse all tab objects within this
+  // TabCollection and its sub-collections in a depth first inorder traversal
+  // manner. This should not be mutated while holding reference to an iterator
+  // as otherwise it will break as it is holding access to the index and tab
+  // pointer.
+  class Iterator {
+    STACK_ALLOCATED();
+
+   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = const tabs::TabInterface*;
+    using difference_type = ptrdiff_t;
+    using pointer = value_type;
+    using reference = value_type;
+
+    Iterator();
+    Iterator(base::PassKey<TabCollection>,
+             const tabs::TabCollection* root,
+             bool is_end = false);
+    Iterator(const Iterator& iterator);
+    ~Iterator();
+
+    pointer operator->() const { return cur_; }
+    reference operator*() const { return cur_; }
+
+    Iterator& operator++() {
+      Next();
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator it(*this);
+      Next();
+      return it;
+    }
+
+    bool operator==(const Iterator& other) const { return cur_ == other.cur_; }
+
+    bool operator!=(const Iterator& other) const { return !(*this == other); }
+
+   private:
+    Iterator(const tabs::TabCollection* root, bool is_end);
+    void Next();
+
+    // Contains information of the index within a collection to access during
+    // the tree traversal. Multiple frames can be stored in the stack which
+    // corresponds to children for multiple subcollection.
+    struct Frame {
+      raw_ptr<const TabCollection> collection;
+      size_t index;
+    };
+
+    // Points to the currently accessed tab during iteration.
+    raw_ptr<const tabs::TabInterface> cur_;
+
+    // Points to the root tab collection that the iterator is traversing.
+    raw_ptr<const tabs::TabCollection> root_;
+
+    // A stack used to maintain the traversal state for inorder traversal
+    // of tabs within the TabCollection hierarchy. Each Frame on the stack
+    // is a TabCollection in the current path of traversal, along
+    // with the index of the next child to be visited.
+    std::stack<Frame> stack_;
+  };
+
+  using iterator = Iterator;
+  using const_iterator = Iterator;
+
+  const_iterator begin() const { return Iterator(GetPassKey(), this, false); }
+  const_iterator end() const { return Iterator(GetPassKey(), this, true); }
+
   // Type describes the various kinds of tab collections:
   // - TABSTRIP:  The main container for tabs in a browser window.
   // - PINNED:    A container for pinned tabs.
@@ -53,13 +123,13 @@ class TabCollection {
   std::optional<size_t> GetIndexOfTabRecursive(const TabInterface* tab) const;
 
   // Recursively get the tab at the index.
-  TabModel* GetTabAtIndexRecursive(size_t index) const;
+  TabInterface* GetTabAtIndexRecursive(size_t index) const;
 
   // Returns a flattened list of all tabs in this collection and its
   // subcollections. Prefer using the result of this function instead of looping
   // over an index and using GetTabAtIndexRecursive, as this function will only
   // do one pass over the subcollections.
-  std::list<TabModel*> GetTabsRecursive() const;
+  std::vector<TabInterface*> GetTabsRecursive() const;
 
   // Non-recursively get the index of a collection.
   std::optional<size_t> GetIndexOfCollection(TabCollection* collection) const;
@@ -89,12 +159,14 @@ class TabCollection {
   void OnTabRemovedFromTree();
 
   // Manipulate direct child tabs.
-  TabModel* AddTab(std::unique_ptr<TabModel> tab_model, size_t index);
+  TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
+  void MoveTab(TabInterface* tab, size_t index);
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not
   // support removing tabs.
-  [[nodiscard]] virtual std::unique_ptr<TabModel> MaybeRemoveTab(TabModel* tab);
+  [[nodiscard]] virtual std::unique_ptr<TabInterface> MaybeRemoveTab(
+      TabInterface* tab);
 
   // Manipulate direct child collections.
   // Adds a collection as a direct child of this collection. If this succeeds it
@@ -134,6 +206,12 @@ class TabCollection {
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
+
+  // Helper function for GetTabsRecursive that uses std::list, in order to take
+  // advantage of constant-time concatenation.
+  std::list<TabInterface*> GetTabsRecursiveAsList() const;
+
+  const ChildrenVector& GetChildren() const { return impl_->GetChildren(); }
 
   // Total number of tabs in the collection.
   size_t recursive_tab_count_ = 0;

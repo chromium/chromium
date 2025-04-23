@@ -85,7 +85,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
       const String video_scalability_mode,
       const CodecSupport support) {
     auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
-    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
+    webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
         blink::CreateWebrtcAudioEncoderFactory();
     if (sdp_video_format) {
       const std::optional<std::string> expected_scalability_mode =

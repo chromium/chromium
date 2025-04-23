@@ -67,6 +67,12 @@ bool SqlDatabase::Initialize() {
     return false;
   }
 
+  // base::Unretained is safe because `this` owns (and therefore outlives) the
+  // sql::Database held by `db_`. That is, `db_` calls the error callback and
+  // if `this` destroyed then `db_` is destroyed, as well.
+  db_.set_error_callback(base::BindRepeating(&SqlDatabase::OnErrorCallback,
+                                             base::Unretained(this)));
+
   if (!db_.Open(path_to_db_)) {
     LOG(ERROR) << "Unable to open " << path_to_db_;
     LogStatusUma(db_.histogram_tag(), Status::kFailedToOpenDb);
@@ -91,6 +97,7 @@ bool SqlDatabase::Initialize() {
     const int new_version_number = create_table_schema_.Run(this);
     DCHECK_GT(new_version_number, 1);
 
+    // Sets the version number when db is initialized.
     if (!meta_table_.SetVersionNumber(new_version_number) ||
         !meta_table_.SetCompatibleVersionNumber(new_version_number)) {
       LogStatusUma(db_.histogram_tag(), Status::kFailedToSetVersionNumber);
@@ -101,17 +108,21 @@ bool SqlDatabase::Initialize() {
     return true;
   }
 
-  if (!MigrateDatabaseSchema()) {
+  if (MigrateDatabaseSchema()) {
+    // If the database schema migration succeed, also update the version number.
+    if (!meta_table_.SetVersionNumber(current_version_number_) ||
+        !meta_table_.SetCompatibleVersionNumber(current_version_number_)) {
+      LogStatusUma(db_.histogram_tag(), Status::kFailedToSetVersionNumber);
+      RazeDb();
+      return false;
+    }
+  } else {
     LOG(ERROR) << "Unable to migrate the schema";
     LogStatusUma(db_.histogram_tag(), Status::kFailedToMigrateSchema);
     RazeDb();
     return false;
   }
-  // base::Unretained is safe because `this` owns (and therefore outlives) the
-  // sql::Database held by `db_`. That is, `db_` calls the error callback and
-  // if `this` destroyed then `db_` is destroyed, as well.
-  db_.set_error_callback(base::BindRepeating(&SqlDatabase::OnErrorCallback,
-                                             base::Unretained(this)));
+
   LogStatusUma(db_.histogram_tag(), Status::kOk);
   return true;
 }

@@ -82,5 +82,6 @@ int main(void)
    test_rotation(23, 5);
    test_rotation(50, 3);
    test_rotation(80, 1);
+   RESTORE_STACK;
    return ret;
 }

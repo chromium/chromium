@@ -113,6 +113,7 @@ class MEDIA_EXPORT AUAudioInputStream
  private:
   bool OpenAUHAL();
   bool OpenVoiceProcessingAU();
+  void SetSystemAGC(bool enable);
 
   // Callback functions called on a real-time priority I/O thread from the audio
   // unit. These methods are called when recorded audio is available.

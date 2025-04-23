@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.password_check;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused. To be kept in sync with PasswordChangeType in
- * enums.xml.
+ * These values are persisted to logs. Entries should not be renumbered and numeric values should
+ * never be reused. To be kept in sync with PasswordChangeType in enums.xml.
  */
+@NullMarked
 @IntDef({PasswordChangeType.UNKNOWN, PasswordChangeType.MANUAL_CHANGE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PasswordChangeType {

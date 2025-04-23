@@ -33,7 +33,10 @@ class TestIsolateHolder : public BindingsIsolateHolder {
   TestIsolateHolder() = default;
   TestIsolateHolder(const TestIsolateHolder&) = delete;
   TestIsolateHolder& operator=(const TestIsolateHolder&) = delete;
-  virtual ~TestIsolateHolder() = default;
+  virtual ~TestIsolateHolder() {
+    v8::HandleScope handle_scope(GetIsolate());
+    context_holder_.reset();
+  }
 
   // BindingsIsolateHolder:
   v8::Isolate* GetIsolate() const override {

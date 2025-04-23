@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/extension_telemetry_service_verdict_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace extensions {
 
@@ -43,10 +43,10 @@ void ReportOffstoreExtensionReenabled(BitMapBlocklistState state) {
 ExtensionTelemetryServiceVerdictHandler::
     ExtensionTelemetryServiceVerdictHandler(ExtensionPrefs* extension_prefs,
                                             ExtensionRegistry* registry,
-                                            ExtensionService* extension_service)
+                                            ExtensionRegistrar* registrar)
     : extension_prefs_(extension_prefs),
       registry_(registry),
-      extension_service_(extension_service) {}
+      registrar_(registrar) {}
 
 void ExtensionTelemetryServiceVerdictHandler::PerformActionBasedOnVerdicts(
     const Blocklist::BlocklistStateMap& state_map) {
@@ -73,14 +73,14 @@ void ExtensionTelemetryServiceVerdictHandler::PerformActionBasedOnVerdicts(
         blocklist_prefs::SetExtensionTelemetryServiceBlocklistState(
             extension_id, BitMapBlocklistState::NOT_BLOCKLISTED,
             extension_prefs_);
-        extension_service_->OnBlocklistStateRemoved(extension_id);
+        registrar_->OnBlocklistStateRemoved(extension_id);
         ReportOffstoreExtensionReenabled(current_state);
         break;
       case BLOCKLISTED_MALWARE:
         blocklist_prefs::SetExtensionTelemetryServiceBlocklistState(
             extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
             extension_prefs_);
-        extension_service_->OnBlocklistStateAdded(extension_id);
+        registrar_->OnBlocklistStateAdded(extension_id);
         ReportOffstoreExtensionDisabled(
             ExtensionTelemetryDisableReason::kMalware);
         break;

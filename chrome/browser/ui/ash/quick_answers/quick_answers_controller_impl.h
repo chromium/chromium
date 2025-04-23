@@ -20,6 +20,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 class QuickAnswersUiController;
 
@@ -31,9 +32,13 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
  public:
   using TimeTickNowFunction = base::RepeatingCallback<base::TimeTicks()>;
 
-  explicit QuickAnswersControllerImpl(
-      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
+  // `application_locale_storage` must not be null and must outlive `this`.
   QuickAnswersControllerImpl(
+      ApplicationLocaleStorage* application_locale_storage,
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
+  // `application_locale_storage` must not be null and must outlive `this`.
+  QuickAnswersControllerImpl(
+      ApplicationLocaleStorage* application_locale_storage,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller,
       std::unique_ptr<QuickAnswersState> quick_answers_state);
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;

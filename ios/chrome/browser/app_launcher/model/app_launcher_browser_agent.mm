@@ -26,8 +26,6 @@
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
-BROWSER_USER_DATA_KEY_IMPL(AppLauncherBrowserAgent)
-
 using app_launcher_overlays::AllowAppLaunchResponse;
 using app_launcher_overlays::AppLaunchConfirmationRequest;
 

@@ -57,6 +57,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"

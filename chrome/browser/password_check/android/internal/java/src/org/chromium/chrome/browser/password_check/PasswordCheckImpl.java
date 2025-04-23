@@ -9,11 +9,13 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
 /** This class is responsible for managing the saved passwords check for signed-in users. */
+@NullMarked
 class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     private final PasswordCheckBridge mPasswordCheckBridge;
     private final ObserverList<Observer> mObserverList;

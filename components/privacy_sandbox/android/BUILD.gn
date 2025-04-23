@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragment.java",
+    "java/src/org/chromium/components/privacy_sandbox/IncognitoTrackingProtectionsFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/PrivacySandboxBaseFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionDelegate.java",
@@ -43,6 +44,7 @@ android_library("javatests") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragmentTest.java",
+    "javatests/src/org/chromium/components/privacy_sandbox/IncognitoTrackingProtectionsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreferenceTest.java",
   ]
@@ -80,6 +82,7 @@ android_resources("java_resources") {
     "java/res/menu/tracking_protection_menu.xml",
     "java/res/values/ids.xml",
     "java/res/xml/fp_protection_preferences.xml",
+    "java/res/xml/incognito_tracking_protections_preferences.xml",
     "java/res/xml/ip_protection_preferences.xml",
     "java/res/xml/tracking_protection_preferences.xml",
   ]

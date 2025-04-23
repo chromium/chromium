@@ -1463,6 +1463,12 @@ void ServiceWorkerVersion::OnStarting() {
   }
 }
 
+void ServiceWorkerVersion::OnStartWorkerMessageSent() {
+  for (auto& observer : observers_) {
+    observer.OnStartWorkerMessageSent(this);
+  }
+}
+
 void ServiceWorkerVersion::OnStarted(
     blink::mojom::ServiceWorkerStartStatus start_status,
     FetchHandlerType new_fetch_handler_type,

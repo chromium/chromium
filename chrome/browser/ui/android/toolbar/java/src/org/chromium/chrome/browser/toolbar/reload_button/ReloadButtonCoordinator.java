@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -18,8 +19,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
 
 /**
- * Root component for the reload button. Exposes public API to change button's state and allows
- * consumers to react to button state changes.
+ * Root component for the reload button that maintains UI representations like stop/loading states.
+ * Exposes public API to change button's state and allows consumers to react to button state
+ * changes.
  */
 @NullMarked
 public class ReloadButtonCoordinator {
@@ -34,6 +36,7 @@ public class ReloadButtonCoordinator {
     }
 
     private final ReloadButtonMediator mMediator;
+    private final ImageButton mView;
 
     /**
      * Creates an instance of {@link ReloadButtonCoordinator}
@@ -51,22 +54,24 @@ public class ReloadButtonCoordinator {
             ObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ThemeColorProvider themeColorProvider) {
+        mView = view;
+
         // ThemeColorProvider might not be updated by this time. Keep existing color list.
         final ColorStateList tint =
                 themeColorProvider.getActivityFocusTint() == null
-                        ? view.getImageTintList()
+                        ? mView.getImageTintList()
                         : themeColorProvider.getActivityFocusTint();
         final var model =
                 new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS)
-                        .with(ReloadButtonProperties.ALPHA, view.getAlpha())
+                        .with(ReloadButtonProperties.ALPHA, mView.getAlpha())
                         .with(
                                 ReloadButtonProperties.IS_VISIBLE,
-                                view.getVisibility() == View.VISIBLE)
+                                mView.getVisibility() == View.VISIBLE)
                         .with(
                                 ReloadButtonProperties.CONTENT_DESCRIPTION,
-                                view.getContentDescription())
+                                mView.getContentDescription())
                         .with(ReloadButtonProperties.TINT_LIST, tint)
-                        .with(ReloadButtonProperties.DRAWABLE_LEVEL, view.getDrawable().getLevel())
+                        .with(ReloadButtonProperties.DRAWABLE_LEVEL, mView.getDrawable().getLevel())
                         .build();
         mMediator =
                 new ReloadButtonMediator(
@@ -75,9 +80,9 @@ public class ReloadButtonCoordinator {
                         themeColorProvider,
                         tabSupplier,
                         ntpLoadingSupplier,
-                        (text) -> Toast.showAnchoredToast(view.getContext(), view, text),
-                        view.getResources());
-        PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);
+                        (text) -> Toast.showAnchoredToast(mView.getContext(), mView, text),
+                        mView.getResources());
+        PropertyModelChangeProcessor.create(model, mView, ReloadButtonViewBinder::bind);
     }
 
     /**
@@ -115,6 +120,17 @@ public class ReloadButtonCoordinator {
      */
     public ObjectAnimator getFadeAnimator(boolean shouldShow) {
         return mMediator.getFadeAnimator(shouldShow);
+    }
+
+    /**
+     * Gets an area of the button that are touchable/clickable.
+     *
+     * @return a {@link Rect} that contains touchable/clickable area.
+     */
+    public Rect getHitRect() {
+        final var rect = new Rect();
+        mView.getHitRect(rect);
+        return rect;
     }
 
     /** Destroys current object instance. It can't be used after this call. */

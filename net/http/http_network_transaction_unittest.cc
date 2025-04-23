@@ -18097,7 +18097,7 @@ TEST_P(HttpNetworkTransactionTest, GenerateAuthToken) {
     int first_generate_server_token_rv;
     int num_auth_rounds;
     int first_ssl_round;
-    TestRound rounds[4];
+    std::array<TestRound, 4> rounds;
   } test_configs[] = {
       // Non-authenticating HTTP server with a direct connection.
       {__LINE__,

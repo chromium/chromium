@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -26,6 +29,7 @@ import java.util.Map;
  * A class that provides a subset of {@link Filters} to be used as a chip selector for filtering
  * downloads.
  */
+@NullMarked
 public class FilterChipsProvider implements OfflineItemFilterObserver {
     /** A delegate responsible for handling UI actions like selecting filters. */
     public interface Delegate {
@@ -186,6 +190,7 @@ public class FilterChipsProvider implements OfflineItemFilterObserver {
             boolean shouldEnable = filters.containsKey(chipId);
             chip.model.set(ChipProperties.ENABLED, shouldEnable);
             if (chip.model.get(ChipProperties.ENABLED)) {
+                assertNonNull(filters.get(chipId));
                 chip.model.set(
                         ChipProperties.CONTENT_DESCRIPTION,
                         UiUtils.getChipContentDescription(

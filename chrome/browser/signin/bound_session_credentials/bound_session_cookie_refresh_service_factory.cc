@@ -23,15 +23,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/network_service_instance.h"
 
-BASE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass,
-             "EnableBoundSessionCredentialsWsbetaBypass",
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // static
 BoundSessionCookieRefreshServiceFactory*
 BoundSessionCookieRefreshServiceFactory::GetInstance() {
@@ -80,7 +71,8 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
       !base::FeatureList::IsEnabled(
-          kEnableBoundSessionCredentialsWsbetaBypass)) {
+          kEnableBoundSessionCredentialsWsbetaBypass) &&
+      !base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity)) {
     return nullptr;
   }
 

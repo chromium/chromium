@@ -51,6 +51,17 @@ namespace {
 // overlap with any value of the net::Error range, including net::OK).
 const int kSSLServerSocketNoPendingResult = 1;
 
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> ChainFromX509Certificate(
+    X509Certificate* cert) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
+  cert_chain.reserve(1 + cert->intermediate_buffers().size());
+  cert_chain.push_back(bssl::UpRef(cert->cert_buffer()));
+  for (const auto& handle : cert->intermediate_buffers()) {
+    cert_chain.push_back(bssl::UpRef(handle.get()));
+  }
+  return cert_chain;
+}
+
 }  // namespace
 
 class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
@@ -812,14 +823,13 @@ int SSLServerContextImpl::SocketImpl::Init() {
 
   // Set certificate and private key.
   if (context_->pkey_) {
-    DCHECK(context_->cert_->cert_buffer());
-    if (!SetSSLChainAndKey(ssl_.get(), context_->cert_.get(),
+    if (!SetSSLChainAndKey(ssl_.get(), context_->cert_chain_,
                            context_->pkey_.get(), nullptr)) {
       return ERR_UNEXPECTED;
     }
   } else {
     DCHECK(context_->private_key_);
-    if (!SetSSLChainAndKey(ssl_.get(), context_->cert_.get(), nullptr,
+    if (!SetSSLChainAndKey(ssl_.get(), context_->cert_chain_, nullptr,
                            &kPrivateKeyMethod)) {
       return ERR_UNEXPECTED;
     }
@@ -907,6 +917,19 @@ std::unique_ptr<SSLServerContext> CreateSSLServerContext(
 }
 
 std::unique_ptr<SSLServerContext> CreateSSLServerContext(
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    EVP_PKEY* pkey,
+    const SSLServerConfig& ssl_server_config) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> copied_cert_chain;
+  copied_cert_chain.reserve(cert_chain.size());
+  for (const auto& handle : cert_chain) {
+    copied_cert_chain.push_back(bssl::UpRef(handle.get()));
+  }
+  return std::make_unique<SSLServerContextImpl>(std::move(copied_cert_chain),
+                                                pkey, ssl_server_config);
+}
+
+std::unique_ptr<SSLServerContext> CreateSSLServerContext(
     X509Certificate* certificate,
     const crypto::RSAPrivateKey& key,
     const SSLServerConfig& ssl_server_config) {
@@ -926,7 +949,7 @@ SSLServerContextImpl::SSLServerContextImpl(
     scoped_refptr<net::SSLPrivateKey> key,
     const SSLServerConfig& ssl_server_config)
     : ssl_server_config_(ssl_server_config),
-      cert_(certificate),
+      cert_chain_(ChainFromX509Certificate(certificate)),
       private_key_(key) {
   CHECK(private_key_);
   Init();
@@ -936,7 +959,16 @@ SSLServerContextImpl::SSLServerContextImpl(
     X509Certificate* certificate,
     EVP_PKEY* pkey,
     const SSLServerConfig& ssl_server_config)
-    : ssl_server_config_(ssl_server_config), cert_(certificate) {
+    : SSLServerContextImpl(ChainFromX509Certificate(certificate),
+                           pkey,
+                           ssl_server_config) {}
+
+SSLServerContextImpl::SSLServerContextImpl(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    EVP_PKEY* pkey,
+    const SSLServerConfig& ssl_server_config)
+    : ssl_server_config_(ssl_server_config),
+      cert_chain_(std::move(cert_chain)) {
   CHECK(pkey);
   pkey_ = bssl::UpRef(pkey);
   Init();

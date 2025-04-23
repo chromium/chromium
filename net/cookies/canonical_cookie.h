@@ -300,9 +300,21 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   bool IsEquivalentForSecureCookieMatching(
       const CanonicalCookie& secure_cookie) const;
 
+  // Returns true if the |other| cookie's data members match, except for the
+  // value. The heuristic is that, if the value changes, then `LastUpdateDate`
+  // is likely different.
+  bool IsProbablyEquivalentTo(const CanonicalCookie& other) const;
+
   // Returns true if the |other| cookie's data members (instance variables)
   // match, for comparing cookies in collections.
   bool HasEquivalentDataMembers(const CanonicalCookie& other) const;
+
+  // Checks if a another cookie is equivalent to this one with respect to what
+  // information about cookies is revealed to the web platform.
+  //
+  // If true, it implies that the two cookies would appear identical to cookie
+  // change subscribers such as the CookieStore API or service workers.
+  bool IsWebEquivalentTo(const CanonicalCookie& other) const;
 
   void SetLastAccessDate(const base::Time& date) {
     last_access_date_ = date;

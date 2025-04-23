@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <algorithm>
 #include <array>
 #include <limits>
+
 #include "services/audio/mixing_graph.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +34,8 @@ class MixingGraphInputTest : public ::testing::Test {
     for (int i = 0; i < num_runs; i++) {
       mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                                 dest_.get());
-      float* data = dest_.get()->channel(0);
-      for (int j = 0; j < dest_.get()->frames(); ++j) {
-        EXPECT_NEAR(data[j], expected_data, epsilon);
+      for (auto sample : dest_->channel_span(0)) {
+        EXPECT_NEAR(sample, expected_data, epsilon);
         expected_data += expected_sample_increment;
       }
     }
@@ -67,7 +63,7 @@ class SampleCounter : public media::AudioOutputStream::AudioSourceCallback {
                  media::AudioBus* dest) final {
     // Fill the audio bus with a simple, predictable pattern.
     for (int channel = 0; channel < dest->channels(); ++channel) {
-      float* data = dest->channel(channel);
+      auto data = dest->channel_span(channel);
       for (int frame = 0; frame < dest->frames(); frame++) {
         data[frame] = counter_ + increment_ * frame + increment_ * channel;
       }
@@ -93,11 +89,8 @@ class CallbackCounter : public media::AudioOutputStream::AudioSourceCallback {
                  const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     // Fill the audio bus with the counter value.
-    for (int channel = 0; channel < dest->channels(); ++channel) {
-      float* data = dest->channel(channel);
-      for (int frame = 0; frame < dest->frames(); frame++) {
-        data[frame] = counter_;
-      }
+    for (auto channel : dest->AllChannels()) {
+      std::ranges::fill(channel, counter_);
     }
     counter_ += increment_;
     return 0;
@@ -118,11 +111,8 @@ class ConstantInput : public media::AudioOutputStream::AudioSourceCallback {
                  const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     // Fill the audio bus with the value specified at construction.
-    for (int channel = 0; channel < dest->channels(); ++channel) {
-      float* data = dest->channel(channel);
-      for (int frame = 0; frame < dest->frames(); frame++) {
-        data[frame] = value_;
-      }
+    for (auto channel : dest->AllChannels()) {
+      std::ranges::fill(channel, value_);
     }
     return 0;
   }
@@ -294,7 +284,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   // Get the last sample of the first output.
   mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
-  float last_sample = dest_.get()->channel(0)[dest_.get()->frames() - 1];
+  float last_sample = dest_->channel_span(0).back();
 
   // Stop and restart.
   input->Stop();
@@ -303,7 +293,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   // Get the first sample of the second output.
   mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
-  float first_sample = dest_.get()->channel(0)[0];
+  float first_sample = dest_->channel_span(0).front();
 
   // If the first sample of the second output is equal to the last sample of
   // the first output left-over data has been consumed.

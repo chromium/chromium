@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_view.h"

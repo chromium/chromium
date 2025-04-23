@@ -92,12 +92,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
                   ? "masked"
                   : "printing",
               "Printing"};
-    case WebSchedulerTrackedFeature::kWebDatabase:
-      return {base::FeatureList::IsEnabled(
-                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
-                  ? "masked"
-                  : "web-database",
-              "WebDatabase"};
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return {"pictureinpicturewindow", "PictureInPicture"};
     case WebSchedulerTrackedFeature::kSpeechRecognizer:

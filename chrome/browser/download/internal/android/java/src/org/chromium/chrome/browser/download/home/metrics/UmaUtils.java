@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home.metrics;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -15,6 +16,7 @@ import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import java.util.Collection;
 
 /** Utility methods related to metrics collection on download home. */
+@NullMarked
 public class UmaUtils {
     /**
      * Called to log metrics about shared {@link OfflineItem}s.  Note that this relies on both

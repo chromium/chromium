@@ -166,8 +166,7 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
       &x_retry_after_sec);
 
   std::move(post_request_complete_callback_)
-      .Run(std::make_unique<std::string>(
-               winhttp_network_fetcher_->GetResponseBody()),
+      .Run(winhttp_network_fetcher_->GetResponseBody(),
            winhttp_network_fetcher_->GetNetError(), base::SysWideToUTF8(etag),
            base::SysWideToUTF8(x_cup_server_proof), x_retry_after_sec);
 }

@@ -274,6 +274,8 @@ class Command(object):
       _Method.POST, '/session/:sessionId/pressuresource/:type')
   REMOVE_VIRTUAL_PRESSURE_SOURCE = (
       _Method.DELETE, '/session/:sessionId/pressuresource/:type')
+  SET_PROTECTED_AUDIENCE_KANONYMITY = (
+      _Method.POST, '/session/:sessionId/protected_audience/set_k_anonymity')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

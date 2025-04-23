@@ -81,7 +81,8 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return nullptr;
   }
   uintptr_t Id() const override { return internal_->id(); }
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override {
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override {
     return nullptr;
   }
   webrtc::DtlsTransportInformation DtlsTransportInformation() override {
@@ -174,7 +175,8 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
     return nullptr;
   }
   uintptr_t Id() const override { return id_; }
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override {
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override {
     return nullptr;
   }
   webrtc::DtlsTransportInformation DtlsTransportInformation() override {
@@ -426,7 +428,7 @@ MockRTCPeerConnectionHandlerPlatform::RemoveTrack(
   return std::unique_ptr<RTCRtpTransceiverPlatform>(std::move(copy));
 }
 
-rtc::scoped_refptr<webrtc::DataChannelInterface>
+webrtc::scoped_refptr<webrtc::DataChannelInterface>
 MockRTCPeerConnectionHandlerPlatform::CreateDataChannel(
     const String& label,
     const webrtc::DataChannelInit&) {

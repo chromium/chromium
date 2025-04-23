@@ -25,7 +25,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="2025-05-25">
+    enum="InstanceIDResult" expires_after="2025-10-05">
   <owner>asumaneev@google.com</owner>
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
-    enum="FCMInvalidationMessageStatus" expires_after="2025-06-08">
+    enum="FCMInvalidationMessageStatus" expires_after="2025-10-05">
   <owner>asumaneev@google.com</owner>
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>

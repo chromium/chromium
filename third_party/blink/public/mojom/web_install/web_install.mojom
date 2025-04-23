@@ -7,11 +7,12 @@ module blink.mojom;
 import "url/mojom/url.mojom";
 
 // The result of an installation request.
+// See this explainer section for usage details:
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/WebInstall/explainer.md#installing-the-web-app
 enum WebInstallServiceResult {
   kSuccess,
   kAbortError,
-  // TODO(crbug.com/333795265): Follow up later when implementation is complete
-  // and add appropriate error codes.
+  kDataError,
 };
 
 // Parameters passed into calls to Install.

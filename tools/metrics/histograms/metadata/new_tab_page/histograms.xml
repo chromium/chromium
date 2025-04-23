@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.BackgroundService.Images.Headers.StatusCode"
-    units="HttpResponseCode" expires_after="2025-08-10">
+    units="HttpResponseCode" expires_after="2025-10-12">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
-    enum="NTPCustomizeChromeSidePanelAction" expires_after="2025-08-10">
+    enum="NTPCustomizeChromeSidePanelAction" expires_after="2025-10-12">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.GoogleCalendar.EventClickIndex" units="count"
-    expires_after="2025-08-06">
+    expires_after="2025-10-05">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.GoogleCalendar.ShownEvents" units="count"
-    expires_after="2025-08-06">
+    expires_after="2025-10-05">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.GoogleCalendar.UserAction" enum="NTPCalendarAction"
-    expires_after="2025-08-06">
+    expires_after="2025-10-05">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -795,6 +795,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MicrosoftFiles.RecommendationTypeClick"
+    enum="MicrosoftFilesRecommendationType" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the type of recommendation for Microsoft Sharepoint/OneDrive files that
+    was clicked. Only logged on the 1P NTP. Note that even if the user has
+    Google as their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MicrosoftFiles.RequestResult"
     enum="MicrosoftFilesRequestResult" expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
@@ -821,6 +834,41 @@ chromium-metrics-reviews@google.com.
     logged on the 1P NTP. Note that even if the user has Google as their default
     search engine, Incognito and Guest mode NTPs are not considered 1P and don't
     log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.ShownFiles.{RecommendationType}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Count of {RecommendationType} file recommendations shown in the
+    SharePoint/OneDrive card. Recorded after all file suggestions have been
+    created. Note that even if the user has Google as their default search
+    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
+    this histogram.
+  </summary>
+  <token key="RecommendationType">
+    <variant name="Shared"/>
+    <variant name="Trending"/>
+    <variant name="Used"/>
+  </token>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.SubstitutionType"
+    enum="MicrosoftFilesSubstitutionType" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the type of substitution that occurred (whether non-insight files
+    are subsituted by trending files and vice versa). Recorded after all file
+    suggestions have been combined. Should only be recorded for the
+    &quot;Combined&quot; variation that shows both non-insight and trending
+    files. Only logged on the 1P NTP. Note that even if the user has Google as
+    their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
@@ -978,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.ImpressionRatio{NewTabPageModules}"
-    units="perdecage" expires_after="2025-07-13">
+    units="perdecage" expires_after="2025-10-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1334,7 +1382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NavigationOrActivationToFirstMeaningfulPaint"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-08-24">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1379,7 +1427,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.OneGoogleBar.RequestLatency{NewTabPage_OneGoogleBar_RequestLatency}"
-    units="ms" expires_after="2025-08-04">
+    units="ms" expires_after="2025-10-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1396,13 +1444,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.OneGoogleBar.ShownTime" units="ms"
-    expires_after="2025-08-04">
+    expires_after="2025-10-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
     the OneGoogleBar showed up on the NTP. Recorded only on the local NTP.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.OpenedInNewTab" enum="TabLaunchType"
+    expires_after="2025-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>hanxi@chromium.org</owner>
+  <summary>
+    Records the TabLaunchType enum when a New Tab Page (NTP) is created in a new
+    tab. This histogram is logged when a new tab is created, including manually
+    created New Tab or the initial tab at Chrome startup. This histogram is
+    Android-only.
   </summary>
 </histogram>
 
@@ -1494,7 +1554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.PrerenderNavigationToActivation" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1569,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.{ResponseStatus}.Duration"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1685,6 +1745,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.SuggestionsImpression{NewTabPageProviders}"
+    enum="MostVisitedTileIndex" expires_after="2025-08-24">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram for impressions on the various most visited tiles. The value is
+    equal to the index of the thumbnail. {NewTabPageProviders}
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"
     enum="SuggestTileType" expires_after="2025-09-14">
   <owner>ender@google.com</owner>
@@ -1785,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.Visit.ClickSource"
-    enum="NtpURLVisitAggregateTypes" expires_after="2025-08-10">
+    enum="NtpURLVisitAggregateTypes" expires_after="2025-10-12">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1797,7 +1868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.VisitDismissIndex" units="index"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2026,7 +2097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.WallpaperSearch.Status"
-    enum="NtpWallpaperSearchStatus" expires_after="2025-08-17">
+    enum="NtpWallpaperSearchStatus" expires_after="2025-10-19">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>

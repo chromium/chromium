@@ -256,17 +256,24 @@ TEST_F(BookmarkUtilsTest, GetParentForNewNodes_ClientOverride) {
   std::unique_ptr<BookmarkModel> model(
       TestBookmarkClient::CreateModelWithClient(std::move(client)));
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_EQ(model->mobile_node(), GetParentForNewNodes(model.get(), GURL()));
+#else
+  EXPECT_EQ(model->bookmark_bar_node(),
+            GetParentForNewNodes(model.get(), GURL()));
+  model->CreateAccountPermanentFolders();
+  EXPECT_EQ(model->account_other_node(),
+            GetParentForNewNodes(model.get(), GURL()));
+#endif
+
   const BookmarkNode* folder_to_suggest =
       model->AddFolder(model->bookmark_bar_node(), 0, u"Suggested");
   const BookmarkNode* folder1 =
       model->AddFolder(model->bookmark_bar_node(), 1, u"Folder 1");
-
-  ASSERT_EQ(folder1, GetParentForNewNodes(model.get(), GURL()));
+  EXPECT_EQ(folder1, GetParentForNewNodes(model.get(), GURL()));
 
   client_ptr->SetSuggestedSaveLocation(folder_to_suggest);
-
-  ASSERT_EQ(folder_to_suggest, GetParentForNewNodes(model.get(), GURL()));
-
+  EXPECT_EQ(folder_to_suggest, GetParentForNewNodes(model.get(), GURL()));
   client_ptr = nullptr;
 }
 

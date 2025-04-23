@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/activity.h"
@@ -304,12 +305,6 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::RESPONSE_NOT_TRUSTED"))},
-        {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::MISSING_PUBLIC_KEY),
-         {},
-         base::WideToUTF8(GetLocalizedStringF(
-             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
-             L"update_client::ProtocolError::MISSING_PUBLIC_KEY"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::MISSING_URLS),
          {},

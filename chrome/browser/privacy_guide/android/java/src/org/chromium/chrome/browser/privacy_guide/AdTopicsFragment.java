@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -20,17 +22,20 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
 
 /** Controls the behavior of the Topics privacy guide page. */
+@NullMarked
 public class AdTopicsFragment extends PrivacyGuideBasePage {
     private MaterialSwitchWithText mAdTopicsSwitch;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_ad_topics_step, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mAdTopicsSwitch = view.findViewById(R.id.ad_topics_switch);
         setAdTopicsSwitchState();
 

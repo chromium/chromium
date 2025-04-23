@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -22,6 +22,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -47,6 +49,7 @@ import org.chromium.ui.base.WindowAndroid;
  * and Navigation Bars. For Chrome, we intentend to sometimes draw under the Nav Bar but not the
  * Status Bar.
  */
+@NullMarked
 @RequiresApi(VERSION_CODES.R)
 public class EdgeToEdgeControllerImpl
         implements EdgeToEdgeController,
@@ -58,19 +61,19 @@ public class EdgeToEdgeControllerImpl
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
 
-    private final @NonNull Activity mActivity;
-    private final @NonNull WindowAndroid mWindowAndroid;
-    private final @NonNull TabSupplierObserver mTabSupplierObserver;
+    private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
+    private final TabSupplierObserver mTabSupplierObserver;
     private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
     private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
-    private final @NonNull TabObserver mTabObserver;
+    private final TabObserver mTabObserver;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final Callback<LayoutManager> mOnLayoutManagerCallback =
             new ValueChangedCallback<>(this::updateLayoutStateProvider);
     private final FullscreenManager mFullscreenManager;
-    private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
-    private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private final EdgeToEdgeManager mEdgeToEdgeManager;
+    private final EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private final int mEdgeToEdgeToken;
 
     // Cached rects used for adding under fullscreen.
@@ -85,8 +88,8 @@ public class EdgeToEdgeControllerImpl
     private final @Nullable EdgeToEdgeOSWrapper mEdgeToEdgeOsWrapper;
     private @Nullable LayoutManager mLayoutManager;
 
-    private Tab mCurrentTab;
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable Tab mCurrentTab;
+    private @Nullable WebContentsObserver mWebContentsObserver;
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
@@ -110,7 +113,7 @@ public class EdgeToEdgeControllerImpl
     private boolean mHasSafeAreaConstraint;
 
     private InsetObserver mInsetObserver;
-    private @NonNull Insets mSystemInsets;
+    private Insets mSystemInsets = Insets.NONE;
     private Insets mAppliedContentViewPadding = Insets.NONE;
     private @Nullable Insets mKeyboardInsets;
     private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
@@ -135,14 +138,14 @@ public class EdgeToEdgeControllerImpl
      * @param fullscreenManager The {@link FullscreenManager} for checking the fullscreen state.
      */
     public EdgeToEdgeControllerImpl(
-            @NonNull Activity activity,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Tab> tabObservableSupplier,
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ObservableSupplier<Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOsWrapper,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            @NonNull FullscreenManager fullscreenManager) {
+            EdgeToEdgeManager edgeToEdgeManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            FullscreenManager fullscreenManager) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mEdgeToEdgeManager = edgeToEdgeManager;
@@ -194,10 +197,11 @@ public class EdgeToEdgeControllerImpl
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
 
-        mInsetObserver = mWindowAndroid.getInsetObserver();
-        assert mInsetObserver != null
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        assert insetObserver != null
                 : "The EdgeToEdgeControllerImpl needs access to a valid InsetObserver to listen to"
                         + " the system insets!";
+        mInsetObserver = insetObserver;
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL);
@@ -444,9 +448,8 @@ public class EdgeToEdgeControllerImpl
         }
     }
 
-    @NonNull
     @VisibleForTesting
-    WindowInsetsCompat handleWindowInsets(View rootView, @NonNull WindowInsetsCompat windowInsets) {
+    WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
         if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
@@ -601,6 +604,7 @@ public class EdgeToEdgeControllerImpl
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
     }
 
+    @SuppressWarnings("NullAway")
     @CallSuper
     @Override
     public void destroy() {
@@ -611,6 +615,7 @@ public class EdgeToEdgeControllerImpl
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mTabSupplierObserver.destroy();
         if (mInsetObserver != null) {
+            assumeNonNull(mWindowInsetsConsumer);
             mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
             mInsetObserver = null;
         }
@@ -668,7 +673,7 @@ public class EdgeToEdgeControllerImpl
         return mAppliedContentViewPadding;
     }
 
-    private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {
+    private static Insets getSystemInsets(WindowInsetsCompat windowInsets) {
         return windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
     }
 }

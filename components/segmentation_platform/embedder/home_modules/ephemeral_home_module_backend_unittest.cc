@@ -94,6 +94,10 @@ TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
   ExpectExecutionWithInput({0, 0, 0}, /*expected_error=*/false,
                            /*expected_result=*/
                            {kNotShownResultValue, kNotShownResultValue});
+#elif BUILDFLAG(IS_ANDROID)
+  ExpectExecutionWithInput(
+      {0}, /*expected_error=*/false,
+      /*expected_result=*/{kNotShownResultValue, kNotShownResultValue});
 #else
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
                            /*expected_result=*/{kNotShownResultValue});

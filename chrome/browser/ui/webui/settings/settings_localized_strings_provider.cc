@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -294,6 +293,8 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       {"overscrollHistoryNavigationSubtitle",
        IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+      {"axTreeFixingTitle", IDS_SETTINGS_AX_TREE_FIXING_TITLE},
+      {"axTreeFixingSubtitle", IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -511,6 +512,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("aiPageMainManagedLearnMoreUrl",
                          chrome::kAiSettingsLearnMorePageManagedUrl);
 
+  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
+                         chrome::kGlicKeyboardShortcutLearnMoreURL);
+  html_source->AddString("glicKeyboardShortcutLearnMoreManagedUrl",
+                         chrome::kGlicKeyboardShortcutLearnMoreManagedURL);
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchLearnMoreManagedUrl",
@@ -740,9 +745,13 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
       {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
       {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},
+      {"glicOsWidgetToggleSublabel",
+       IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL},
       {"glicKeyboardShortcut", IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT},
       {"glicKeyboardShortcutSublabel",
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
+      {"glicKeyboardShortcutLearnMoreLabel",
+       IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL},
       {"glicLocationToggle", IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE},
       {"glicLocationToggleSublabel",
        IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL},

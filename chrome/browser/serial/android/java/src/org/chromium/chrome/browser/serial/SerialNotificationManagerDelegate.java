@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.serial;
 
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate for {@link SerialNotificationManager}. */
+@NullMarked
 public interface SerialNotificationManagerDelegate {
     /**
      * Creates an Intent to bring an Activity for a particular Tab back to the foreground.

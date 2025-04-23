@@ -133,7 +133,10 @@ class CONTENT_EXPORT ClipboardEndpoint {
 // Struct that holds metadata for data being copied or pasted that is relevant
 // to evaluating enterprise policies.
 struct ClipboardMetadata {
-  // Size of the clipboard data. null when files are copied.
+  // Size of the clipboard data. null when files are copied, or sometimes when
+  // created from Android JNI.
+  // TODO(crbug.com/344593255): Ensure that Android JNI consistently passes in
+  //  non-null size.
   std::optional<size_t> size;
 
   // Format type of clipboard data.

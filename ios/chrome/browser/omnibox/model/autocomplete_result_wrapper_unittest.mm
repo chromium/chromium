@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"

@@ -213,7 +213,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         FieldMask_class_data_ =
             FieldMask::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL FieldMask::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    FieldMask::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&FieldMask_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(FieldMask_class_data_.tc_table);
   return FieldMask_class_data_.base();

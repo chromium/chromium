@@ -474,17 +474,15 @@ void WebContentsHandler::ReadyToCommitNavigation(
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::POPUPS) ==
       CONTENT_SETTING_ALLOW;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  content_settings->allow_image =
-      map_->GetContentSetting(primary_url, secondary_url,
-                              ContentSettingsType::IMAGES) ==
-      CONTENT_SETTING_ALLOW;
+#if !BUILDFLAG(IS_IOS)
   content_settings->allow_mixed_content =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::MIXEDSCRIPT) ==
       CONTENT_SETTING_ALLOW;
-#endif
-#if !BUILDFLAG(IS_IOS)
+  content_settings->allow_image =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::IMAGES) ==
+      CONTENT_SETTING_ALLOW;
   content_settings->allow_controlled_frame =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::CONTROLLED_FRAME) ==

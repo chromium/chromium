@@ -39,8 +39,6 @@ class SearchBoxViewBinder
             // Disable the search box contents if it is the process of being animated away.
             ViewUtils.setEnabledRecursive(
                     searchBoxContainer, searchBoxContainer.getAlpha() == 1.0f);
-        } else if (SearchBoxProperties.BACKGROUND == propertyKey) {
-            searchBoxContainer.setBackground(model.get(SearchBoxProperties.BACKGROUND));
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
             ImageViewCompat.setImageTintList(
                     voiceSearchButton,

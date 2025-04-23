@@ -50,4 +50,14 @@ public interface VirtualView {
      * @param time The time of the click action.
      */
     void handleClick(long time);
+
+    /**
+     * Set keyboard focus state of {@link VirtualView} to {@param isFocused}.
+     *
+     * @param isFocused Whether this {@link VirtualView} is focused.
+     */
+    void setKeyboardFocused(boolean isFocused);
+
+    /** Returns whether this {@link VirtualView} is keyboard focused. */
+    boolean isKeyboardFocused();
 }

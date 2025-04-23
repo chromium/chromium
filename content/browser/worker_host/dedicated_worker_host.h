@@ -111,8 +111,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
-      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
+      net::StorageAccessApiStatus storage_access_api_status);
 
   DedicatedWorkerHost(const DedicatedWorkerHost&) = delete;
   DedicatedWorkerHost& operator=(const DedicatedWorkerHost&) = delete;
@@ -160,6 +160,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+  bool WasStorageAccessGranted();
   void CreateBlobUrlStoreProvider(
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
@@ -413,10 +414,6 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // class's lifetime is aligned with the associated frame.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
 
-  // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` now that
-  // PlzDedicatedWorker is enabled by default.
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
-
   // This is valid after DidStartScriptLoad() and remains non-null for the
   // lifetime of `this`.
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
@@ -429,6 +426,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   BackForwardCacheBlockingDetails bfcache_blocking_details_;
+
+  // This tracks whether the document that created this dedicated worker had
+  // been granted storage access when the dedicated worker was created, which
+  // also grants storage access to the dedicated worker.
+  net::StorageAccessApiStatus storage_access_api_status_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };

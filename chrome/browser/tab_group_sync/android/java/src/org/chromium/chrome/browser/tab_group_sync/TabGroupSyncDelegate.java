@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,21 @@ import java.util.List;
  * TabGroupSyncService} and responsible for being the glue layer between the service and tab model
  * in all windows. TODO(crbug.com/379699409): Finish implementation.
  */
+@NullMarked
 @JNINamespace("tab_groups")
 public class TabGroupSyncDelegate implements TabWindowManager.Observer {
 
     /** Convenient wrapper to pass dependencies needed by the delegate from chrome layer. */
     public static class Deps {
         /** For accessing tab models across multiple activities. */
-        public TabWindowManager tabWindowManager;
+        public final TabWindowManager tabWindowManager;
+
+        /**
+         * @param tabWindowManager For accessing tab models across multiple activities.
+         */
+        public Deps(TabWindowManager tabWindowManager) {
+            this.tabWindowManager = tabWindowManager;
+        }
     }
 
     private final TabWindowManager mTabWindowManager;
@@ -39,10 +48,9 @@ public class TabGroupSyncDelegate implements TabWindowManager.Observer {
         return new TabGroupSyncDelegate(nativePtr, delegateDeps);
     }
 
-    private TabGroupSyncDelegate(long nativePtr, @NonNull TabGroupSyncDelegate.Deps delegateDeps) {
+    private TabGroupSyncDelegate(long nativePtr, TabGroupSyncDelegate.Deps delegateDeps) {
         assert nativePtr != 0;
-        mTabWindowManager = delegateDeps.tabWindowManager;
-        assert mTabWindowManager != null;
+        mTabWindowManager = assertNonNull(delegateDeps.tabWindowManager);
         mTabWindowManager.addObserver(this);
     }
 

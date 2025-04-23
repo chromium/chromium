@@ -8,6 +8,7 @@
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace content {
@@ -118,7 +119,9 @@ void KeySystemSupportImpl::InitializePermissions() {
       ->RequestPermissionFromCurrentDocument(
           &render_frame_host(),
           PermissionRequestDescription(
-              blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER),
               render_frame_host().HasTransientUserActivation()),
           base::BindOnce(&KeySystemSupportImpl::
                              OnProtectedMediaIdentifierPermissionInitialized,

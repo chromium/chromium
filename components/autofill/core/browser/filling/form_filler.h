@@ -141,7 +141,7 @@ class FormFiller {
       FormStructure& form_structure,
       AutofillField& autofill_field,
       AutofillTriggerSource trigger_source,
-      bool is_refill = false);
+      std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt);
 
   // May or may not trigger a refill operation on `form`. `field` and
   // `old_value` are only needed when `refill_trigger_reason` is

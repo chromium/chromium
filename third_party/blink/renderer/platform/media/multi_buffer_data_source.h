@@ -97,7 +97,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Returns true if the resource is local.
   bool AssumeFullyBuffered() const override;
 
-  void OnBufferingHaveEnough(bool must_cancel_netops) override;
+  void StopPreloading() override;
 
   int64_t GetMemoryUsage() override;
 
@@ -186,7 +186,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // The total size of the resource. Set during StartCallback() if the size is
   // known, otherwise it will remain kPositionNotSpecified until the size is
   // determined by reaching EOF.
-  int64_t total_bytes_;
+  int64_t total_bytes_ = kPositionNotSpecified;
 
   // Bytes we've read but not reported to the url_data yet.
   // SeekTask handles the reporting.
@@ -199,14 +199,14 @@ class PLATFORM_EXPORT MultiBufferDataSource
 
   // This value will be true if this data source can only support streaming.
   // i.e. range request is not supported.
-  bool streaming_;
+  bool streaming_ = false;
 
   // This is the loading state that we last reported to our owner through
   // |downloading_cb_|.
-  bool loading_;
+  bool loading_ = false;
 
   // True if a failure has occured.
-  bool failed_;
+  bool failed_ = false;
 
   // The task runner of the render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> render_task_runner_;
@@ -229,37 +229,37 @@ class PLATFORM_EXPORT MultiBufferDataSource
   base::Lock lock_;
 
   // Whether we've been told to stop via Abort() or Stop().
-  bool stop_signal_received_;
+  bool stop_signal_received_ = false;
 
   // This variable is true when the user has requested the video to play at
   // least once.
-  bool media_has_played_;
+  bool media_has_played_ = false;
 
   // As we follow redirects, we set this variable to false if redirects
   // go between different origins.
-  bool single_origin_;
+  bool single_origin_ = true;
 
   // Callback used when a redirect occurs.
   RedirectCB redirect_cb_;
 
-  // Close the connection when we have enough data.
-  bool cancel_on_defer_;
+  // Stops preloading and closes the connection when we have enough data.
+  bool cancel_on_defer_ = false;
 
   // This variable holds the value of the preload attribute for the video
   // element.
-  media::DataSource::Preload preload_;
+  media::DataSource::Preload preload_ = AUTO;
 
   // Bitrate of the content, 0 if unknown.
-  int bitrate_;
+  int bitrate_ = 0;
 
   // Current playback rate.
-  double playback_rate_;
+  double playback_rate_ = 0;
 
   std::unique_ptr<media::MediaLog> media_log_;
 
   bool is_client_audio_element_ = false;
 
-  int buffer_size_update_counter_;
+  int buffer_size_update_counter_ = 0;
 
   // Host object to report buffered byte range changes to.
   raw_ptr<BufferedDataSourceHost, DanglingUntriaged> host_;

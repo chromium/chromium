@@ -276,9 +276,17 @@ FakeSystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
   return base::DoNothing();
 }
 
+void FakeSystemIdentityManager::SetInteractionManagerFactory(
+    base::RepeatingCallback<id<SystemIdentityInteractionManager>()> factory) {
+  interaction_manager_factory_ = factory;
+}
+
 id<SystemIdentityInteractionManager>
 FakeSystemIdentityManager::CreateInteractionManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (interaction_manager_factory_) {
+    return interaction_manager_factory_.Run();
+  }
   return [[FakeSystemIdentityInteractionManager alloc]
       initWithManager:GetWeakPtr()];
 }

@@ -427,12 +427,20 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
           "Attestation check for Attribution Reporting on " +
               reporting_origin.Serialize() + " failed.");
     }
+    dwa::builders::PrivacySandbox_IsAttributionReportingAllowed()
+        .SetContent(reporting_origin.Serialize())
+        .SetStatus(static_cast<int64_t>(attestation_status))
+        .Record(metrics::dwa::DwaRecorder::Get());
     return false;
   }
 
   Status status =
       GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
   JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
+  dwa::builders::PrivacySandbox_IsAttributionReportingAllowed()
+      .SetContent(reporting_origin.Serialize())
+      .SetStatus(static_cast<int64_t>(status))
+      .Record(metrics::dwa::DwaRecorder::Get());
   return IsAllowed(status);
 }
 

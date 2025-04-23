@@ -544,7 +544,8 @@ enum class FieldTypeGroup {
   kIban,
   kStandaloneCvcField,
   kAutofillAi,
-  kMaxValue = kAutofillAi,
+  kLoyaltyCard,
+  kMaxValue = kLoyaltyCard,
 };
 
 template <>

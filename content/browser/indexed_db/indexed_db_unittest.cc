@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <inttypes.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -33,12 +29,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/clamped_math.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -50,6 +47,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -61,15 +59,13 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
-#include "content/public/common/content_features.h"
+#include "content/browser/indexed_db/status.h"
 #include "env_chromium.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -890,12 +886,9 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
       blink::mojom::IDBBlobInfo::New(std::move(blob), std::u16string(), 100,
                                      nullptr)));
 
-  std::string value = "hello";
-  const char* value_data = value.data();
-  std::vector<uint8_t> value_vector(value_data, value_data + value.length());
-
   auto new_value = blink::mojom::IDBValue::New();
-  new_value->bits = std::move(value_vector);
+  auto value = base::span_from_cstring("hello");
+  new_value->bits.assign(value.begin(), value.end());
   new_value->external_objects = std::move(external_objects);
 
   connection->version_change_transaction->Put(
@@ -1210,12 +1203,9 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   connection1->version_change_transaction->CreateObjectStore(
       kObjectStoreId, kObjectStoreName, blink::IndexedDBKeyPath(), false);
 
-  std::string value = "value";
-  const char* value_data = value.data();
-  std::vector<uint8_t> value_vector(value_data, value_data + value.length());
-
   auto new_value = blink::mojom::IDBValue::New();
-  new_value->bits = std::move(value_vector);
+  auto value = base::span_from_cstring("value");
+  new_value->bits.assign(value.begin(), value.end());
 
   connection1->version_change_transaction->Put(
       kObjectStoreId, std::move(new_value), IndexedDBKey(u"key"),
@@ -1838,15 +1828,14 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     // The pre-close tasks should be running now.
     EXPECT_EQ(BucketContext::ClosingState::kRunningPreCloseTasks,
               bucket_context->closing_stage());
-    ASSERT_TRUE(bucket_context->pre_close_task_queue());
-    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
 
   {
     // Stop sweep by opening a connection.
     BucketContextHandle bucket_context_handle(*bucket_context);
     storage::BucketId bucket_id = bucket_context_handle->bucket_locator().id;
-    EXPECT_FALSE(bucket_context_handle->pre_close_task_queue());
+    EXPECT_NE(BucketContext::ClosingState::kRunningPreCloseTasks,
+              bucket_context->closing_stage());
 
     // Move clock forward to trigger next sweep, but storage key has longer
     // sweep minimum, so no tasks should execute.
@@ -1878,56 +1867,7 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     ASSERT_TRUE(context_->BucketContextExists(bucket_id));
     EXPECT_EQ(BucketContext::ClosingState::kRunningPreCloseTasks,
               bucket_context->closing_stage());
-    ASSERT_TRUE(bucket_context->pre_close_task_queue());
-    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
-}
-
-TEST_P(IndexedDBTest, TombstoneSweeperTiming) {
-  // Open a connection.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BackingStore* backing_store = bucket_context_handle->backing_store();
-  EXPECT_FALSE(backing_store->ShouldRunTombstoneSweeper());
-
-  // Move the clock to run the tasks in the next close sequence.
-  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunTombstoneSweeper());
-
-  // Move clock forward to trigger next sweep, but storage key has longer
-  // sweep minimum, so no tasks should execute.
-  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
-
-  EXPECT_FALSE(backing_store->ShouldRunTombstoneSweeper());
-
-  //  Finally, move the clock forward so the storage key should allow a sweep.
-  task_environment_.FastForwardBy(kMaxBucketSweepDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunTombstoneSweeper());
-}
-
-TEST_P(IndexedDBTest, CompactionTaskTiming) {
-  // Open a connection.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BackingStore* backing_store = bucket_context_handle->backing_store();
-  EXPECT_FALSE(backing_store->ShouldRunCompaction());
-
-  // Move the clock to run the tasks in the next close sequence.
-  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunCompaction());
-
-  // Move clock forward to trigger next compaction, but storage key has longer
-  // compaction minimum, so no tasks should execute.
-  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
-
-  EXPECT_FALSE(backing_store->ShouldRunCompaction());
-
-  // Finally, move the clock forward so the storage key should allow a
-  // compaction.
-  task_environment_.FastForwardBy(kMaxBucketCompactionDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunCompaction());
 }
 
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
@@ -1936,7 +1876,7 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
-  EXPECT_TRUE(bucket_context_handle->backing_store()->in_memory());
+  EXPECT_TRUE(bucket_context_handle->in_memory());
   BucketContext* bucket_context = bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
   RunPostedTasks();
@@ -1994,7 +1934,8 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
-  bucket_context_handle->ForceClose(/*doom=*/false);
+  bucket_context_handle->ForceClose(
+      /*doom=*/false, "The database is force-closed for testing.");
   BucketContext* bucket_context = bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
 

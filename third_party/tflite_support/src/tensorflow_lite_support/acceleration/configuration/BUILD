@@ -1,6 +1,6 @@
-load("@org_tensorflow//tensorflow/lite/java:aar_with_jni.bzl", "aar_with_jni")
 load("@build_bazel_rules_android//android:rules.bzl", "android_library")
 load("@org_tensorflow//tensorflow/lite:build_def.bzl", "tflite_jni_binary")
+load("@org_tensorflow//tensorflow/lite/java:aar_with_jni.bzl", "aar_with_jni")
 
 package(
     default_visibility = [

@@ -108,6 +108,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   void UntrackEntitiesForCollaboration(
       const syncer::CollaborationId& collaboration_id);
 
+  // Generates specifics for a shared tab based on the information of `tab`.
+  // Used only for tests.
+  static sync_pb::SharedTabGroupDataSpecifics
+  SharedTabGroupTabToSpecificsForTest(const SavedTabGroupTab& tab);
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
@@ -206,6 +211,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // published to the model. See comments in the method for more details.
   void FixLocalTabGroupIDsForSharedGroupsDuringFeatureEnabling(
       std::vector<proto::SharedTabGroupData>& stored_entries);
+
+  // Resolves tabs missing groups by adding them to the model if a corresponding
+  // group exists in the model.
+  std::optional<syncer::ModelError> ResolveTabsMissingGroups(
+      syncer::MetadataChangeList& metadata_change_list);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -31,6 +31,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_restore:app_restore",
     "//chrome/browser/ash/boca",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/input_device_settings",

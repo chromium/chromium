@@ -25,13 +25,16 @@ class CollaborationServiceFactoryTest : public PlatformTest {
           {
               kTabGroupSync,
               kTabGroupsIPad,
-              data_sharing::features::kDataSharingFeature,
+              data_sharing::features::kDataSharingJoinOnly,
           },
           /*disable_features=*/{});
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
+      scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
-          /*disable_features=*/{{data_sharing::features::kDataSharingFeature}});
+          /*disable_features=*/{
+              data_sharing::features::kDataSharingJoinOnly,
+              data_sharing::features::kDataSharingFeature,
+          });
     }
     profile_ = TestProfileIOS::Builder().Build();
   }

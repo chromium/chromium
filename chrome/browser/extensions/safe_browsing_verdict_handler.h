@@ -10,18 +10,21 @@
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionPrefs;
-class ExtensionService;
+class ExtensionRegistrar;
 
 // Manages the Safe Browsing blocklist/greylist state in extension pref.
 class SafeBrowsingVerdictHandler : public ExtensionRegistryObserver {
  public:
   SafeBrowsingVerdictHandler(ExtensionPrefs* extension_prefs,
                              ExtensionRegistry* registry,
-                             ExtensionService* extension_service);
+                             ExtensionRegistrar* registrar);
   SafeBrowsingVerdictHandler(const SafeBrowsingVerdictHandler&) = delete;
   SafeBrowsingVerdictHandler& operator=(const SafeBrowsingVerdictHandler&) =
       delete;
@@ -59,7 +62,7 @@ class SafeBrowsingVerdictHandler : public ExtensionRegistryObserver {
 
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  raw_ptr<ExtensionRegistrar> registrar_ = nullptr;
 
   // Set of blocklisted extensions. These extensions are unloaded if they are
   // already installed in Chromium at the time when they are added to

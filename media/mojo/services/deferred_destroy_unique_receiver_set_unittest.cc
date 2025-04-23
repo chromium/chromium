@@ -9,6 +9,7 @@
 
 #include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -82,7 +83,7 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, Destructor) {
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
   mojo::PendingRemote<PingService> ping[4];
-  DeferredDestroyPingImpl* impl[4];
+  std::array<DeferredDestroyPingImpl*, 4> impl;
   auto receivers =
       std::make_unique<DeferredDestroyUniqueReceiverSet<PingService>>();
 
@@ -118,7 +119,7 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, CloseAllReceivers) {
   mojo::PendingRemote<PingService> ping[3];
-  DeferredDestroyPingImpl* impl[3];
+  std::array<DeferredDestroyPingImpl*, 3> impl;
   DeferredDestroyUniqueReceiverSet<PingService> receivers;
 
   for (int i = 0; i < 2; ++i)

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 /**
  * Navigates focus through nested elements given a HTMLElement parent
  * node with child nodes with specific element types such as `div` or custom
@@ -189,4 +191,15 @@ export class KeyArrowNavigationService {
 
     return treeElements;
   }
+
+  static getInstance(): KeyArrowNavigationService {
+    assert(instance);
+    return instance;
+  }
+
+  static setInstance(obj: KeyArrowNavigationService) {
+    instance = obj;
+  }
 }
+
+let instance: KeyArrowNavigationService|null = null;

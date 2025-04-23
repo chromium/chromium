@@ -57,6 +57,32 @@ namespace ntp_tiles {
 
 class IconCacher;
 
+// NTPTilesVector wrapper with HasUrl(), to store Custom Links.
+class CustomLinksCache {
+ public:
+  CustomLinksCache();
+  ~CustomLinksCache();
+
+  // Adds a tile to the list.
+  void PushBack(const NTPTile& tile);
+
+  // Removes all stored tiles.
+  void Clear();
+
+  // Returns whether a tile with specified `url` exists.
+  bool HasUrl(const GURL& url) const;
+
+  // Accessor to stored tiles.
+  const NTPTilesVector& GetList() const;
+
+ private:
+  // List of custom tiles, in the order of appearance, with distinct URLs.
+  NTPTilesVector list_;
+
+  // Set of URLs in |list|, for deduping.
+  std::set<GURL> url_set_;
+};
+
 // Tracks the list of most visited sites.
 class MostVisitedSites :
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -201,6 +227,9 @@ class MostVisitedSites :
   // fails. Custom links must be enabled.
   bool DeleteCustomLink(const GURL& url);
 
+  // Returns whether a custom link with the specified |url| exists.
+  bool HasCustomLink(const GURL& url);
+
   // Restores the previous state of custom links before the last action that
   // modified them. If there was no action, does nothing. If this is undoing the
   // first action after initialization, uninitializes the links. Custom links
@@ -287,9 +316,10 @@ class MostVisitedSites :
   // Callback for when an update is reported by CustomLinksManager.
   void OnCustomLinksChanged();
 
-  // Creates tiles for |links| up to |max_num_sites_|. |links| will never exceed
-  // a certain maximum.
-  void BuildCustomLinks(const std::vector<CustomLinksManager::Link>& links);
+  // Clears |custom_links_cache_|, then if custom links are initialized,
+  // populate it with |custom_links_manager_->GetLinks()| data up to
+  // |max_num_sites_|.
+  void ReloadCustomLinksCache();
 
   // Initiates a query for the homepage tile if needed and calls
   // |SaveTilesAndNotify| in the end.
@@ -301,6 +331,10 @@ class MostVisitedSites :
 
   // Removes pre installed apps which turn invalid because of migration.
   NTPTilesVector RemoveInvalidPreinstallApps(NTPTilesVector new_tiles);
+
+  // Creates a new tiles vector consisting of |custom_links_cache_| combined
+  // with |tiles|.
+  NTPTilesVector ImposeCustomLinks(NTPTilesVector tiles);
 
   // Saves the new tiles and notifies the observer if the tiles were actually
   // changed.
@@ -368,6 +402,9 @@ class MostVisitedSites :
       top_sites_observation_{this};
 
   base::CallbackListSubscription custom_links_subscription_;
+
+  // Cached custom links data that also supports URL existence query.
+  CustomLinksCache custom_links_cache_;
 
   // Current set of tiles. Optional so that the observer can be notified
   // whenever it changes, including possibily an initial change from

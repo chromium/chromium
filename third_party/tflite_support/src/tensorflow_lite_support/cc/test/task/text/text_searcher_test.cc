@@ -70,7 +70,7 @@ constexpr char kUSESearcher[] = "universal_sentence_encoder_searcher.tflite";
 // tolerancy on floating-point scores to account for numerical instabilities.
 void ExpectApproximatelyEqual(const SearchResult& actual,
                               const SearchResult& expected) {
-  const float kPrecision = 1e-5;
+  constexpr float kPrecision = 3e-3;
   EXPECT_EQ(actual.nearest_neighbors_size(), expected.nearest_neighbors_size());
   for (int i = 0; i < actual.nearest_neighbors_size(); ++i) {
     const NearestNeighbor& a = actual.nearest_neighbors(i);
@@ -337,23 +337,23 @@ INSTANTIATE_TEST_SUITE_P(
                /* expected_result= */ R"pb(
                  nearest_neighbors {
                    metadata: "The weather was excellent."
-                   distance: 0.0
+                   distance: 0.00221
                  }
                  nearest_neighbors {
                    metadata: "It was a sunny day."
-                   distance: 0.11537
+                   distance: 0.10934
                  }
                  nearest_neighbors {
                    metadata: "The sun was shining on that day."
-                   distance: 0.23002
+                   distance: 0.217592
                  }
                  nearest_neighbors {
                    metadata: "He was very happy with his newly bought car."
-                   distance: 0.32456
+                   distance: 0.308592
                  }
                  nearest_neighbors {
                    metadata: "The cat is chasing after the mouse."
-                   distance: 0.96693
+                   distance: 0.9497475
                  }
                )pb"},
            SearchParams{

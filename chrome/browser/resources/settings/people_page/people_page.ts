@@ -222,26 +222,26 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
-  prefs: any;
-  private signinAllowed_: boolean;
-  private isDasherlessProfile_: boolean;
-  syncStatus: SyncStatus|null;
-  pageVisibility: PageVisibility;
-  private authToken_: string;
-  private profileIconUrl_: string;
-  private isProfileActionable_: boolean;
-  private profileName_: string;
-  private enableAiSettingsPageRefresh_: boolean;
-  private showHistorySearchControl_: boolean;
+  declare prefs: any;
+  declare private signinAllowed_: boolean;
+  declare private isDasherlessProfile_: boolean;
+  declare syncStatus: SyncStatus|null;
+  declare pageVisibility: PageVisibility;
+  declare private authToken_: string;
+  declare private profileIconUrl_: string;
+  declare private isProfileActionable_: boolean;
+  declare private profileName_: string;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private showHistorySearchControl_: boolean;
 
   // <if expr="not chromeos_ash">
-  storedAccounts: StoredAccount[]|null;
-  private shouldShowGoogleAccount_: boolean;
-  private showImportDataDialog_: boolean;
-  private showSignoutDialog_: boolean;
+  declare storedAccounts: StoredAccount[]|null;
+  declare private shouldShowGoogleAccount_: boolean;
+  declare private showImportDataDialog_: boolean;
+  declare private showSignoutDialog_: boolean;
   // </if>
 
-  private focusConfig_: FocusConfig;
+  declare private focusConfig_: FocusConfig;
 
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();

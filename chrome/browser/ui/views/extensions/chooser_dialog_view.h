@@ -39,9 +39,7 @@ class ChooserDialogView : public views::DialogDelegateView,
   // views::TableViewObserver:
   void OnSelectionChanged() override;
 
-  DeviceChooserContentView* device_chooser_content_view_for_test() const {
-    return device_chooser_content_view_;
-  }
+  DeviceChooserContentView* device_chooser_content_view_for_test() const;
 
  private:
   raw_ptr<DeviceChooserContentView> device_chooser_content_view_;

@@ -74,9 +74,12 @@ bool ResolvePath(const base::FilePath& file_path,
           visited_env_variables.insert(env_variable_name);
         }
 
-        if (!environment->GetVar(env_variable_name, &path_components[0])) {
+        std::optional<std::string> env_value =
+            environment->GetVar(env_variable_name);
+        if (!env_value.has_value()) {
           return false;
         }
+        path_components[0] = env_value.value();
       }
 
       starts_with_tilde = StringStartsWith(path_components[0], kTilde);

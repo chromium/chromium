@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
+#include "chromeos/ash/components/boca/session_api/update_session_config_request.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/ash/components/boca/session_api/upload_token_request.h"
@@ -67,6 +68,11 @@ void SessionClientImpl::UploadToken(
 
 void SessionClientImpl::UpdateSession(
     std::unique_ptr<UpdateSessionRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::UpdateSessionConfig(
+    std::unique_ptr<UpdateSessionConfigRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 

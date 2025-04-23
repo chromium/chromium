@@ -5,7 +5,7 @@
 GEN_INCLUDE(['facegaze_test_base.js']);
 
 /** FazeGaze MediaPipe tests. */
-FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
+FaceGazeMV2MediaPipeTest = class extends FaceGazeTestBase {
   /** @override */
   async setUpDeferred() {
     this.overrideIntervalFunctions_ = false;
@@ -25,7 +25,7 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
+AX_TEST_F('FaceGazeMV2MediaPipeTest', 'CreateFaceLandmarker', async function() {
   const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
   await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
   await webCamFaceLandmarker.createFaceLandmarker_();

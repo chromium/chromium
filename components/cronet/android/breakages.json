@@ -55,6 +55,12 @@
       "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
       "bugs": ["crbug/1449478"],
       "comment": "Connection migration crash"
+    },
+    {
+      "bad_change_id": "I18c238cf073938fc1bd8bf2f9ee752d79a291e15",
+      "good_change_id": "Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf",
+      "bugs": ["b/410846554"],
+      "comment": "JniAndroid class not found when app is already crashing."
     }
   ],
   "_end_comment": "Add new breakages to the top of the list"

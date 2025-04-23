@@ -83,7 +83,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     testing::InSequence s;
 
     if (client) {
-      EXPECT_CALL(*mock_sink_, Stop());
+      EXPECT_CALL(*mock_sink_, Stop()).Times(0);
       EXPECT_CALL(*this, SetFormat(params_.channels(), params_.sample_rate()));
     }
     wasp_impl_->SetClient(client);
@@ -134,9 +134,9 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientBeforeInitialize) {
   // setClient() with a nullptr client should do nothing if no client is set.
   wasp_impl_->SetClient(nullptr);
 
-  // If |mock_sink_| is not null, it should be stopped during setClient(this).
+  // `mock_sink_` should not be stopped during setClient(this).
   if (mock_sink_)
-    EXPECT_CALL(*mock_sink_.get(), Stop());
+    EXPECT_CALL(*mock_sink_.get(), Stop()).Times(0);
 
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
@@ -170,10 +170,9 @@ TEST_F(WebAudioSourceProviderImplTest, SinkMethods) {
   SetClient(this);
   CallAllSinkMethodsAndVerify(false);
 
-  // Removing the client should cause WASP to revert to the underlying sink;
-  // this shouldn't crash, but shouldn't do anything either.
+  // Removing the client should cause WASP to revert to the underlying sink.
   SetClient(nullptr);
-  CallAllSinkMethodsAndVerify(false);
+  CallAllSinkMethodsAndVerify(true);
 }
 
 // Test tainting effects on Render().
@@ -366,9 +365,9 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   wasp_impl_->Initialize(params_, &fake_callback_);
   base::RunLoop().RunUntilIdle();
 
-  // If |mock_sink_| is not null, it should be stopped during setClient(this).
+  // `mock_sink_` should not be stopped during setClient(this).
   if (mock_sink_)
-    EXPECT_CALL(*mock_sink_.get(), Stop());
+    EXPECT_CALL(*mock_sink_.get(), Stop()).Times(0);
 
   // setClient() with the same client should do nothing.
   wasp_impl_->SetClient(this);
@@ -459,7 +458,7 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
 
   // SetClient when called with a valid client should trigger the callback once.
   EXPECT_CALL(*this, OnClientSet()).Times(1);
-  EXPECT_CALL(*mock_sink_, Stop());
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(this);
@@ -472,6 +471,35 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   base::RunLoop().RunUntilIdle();
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(WebAudioSourceProviderImplTest, ConnectToDestinationReadyCallStop) {
+  wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
+      mock_sink_, &media_log_,
+      WTF::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
+                    weak_factory_.GetWeakPtr()));
+
+  // ConnectToDestinationReady call without client does not call stop().
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->ConnectToDestinationReady();
+
+  EXPECT_CALL(*this, OnClientSet()).Times(1);
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->SetClient(this);
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
+
+  // ConnectToDestinationReady after client calls sink stop()
+  EXPECT_CALL(*mock_sink_, Stop()).Times(1);
+  wasp_impl_->ConnectToDestinationReady();
+  base::RunLoop().RunUntilIdle();
+
+  // ConnectToDestinationReady again after Stop() does not call stop() again.
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->ConnectToDestinationReady();
+  base::RunLoop().RunUntilIdle();
+
   ::testing::Mock::VerifyAndClearExpectations(this);
 }
 

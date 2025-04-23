@@ -20,6 +20,7 @@ build_webui("build") {
     "privacy_sandbox_notice_dialog.html",
     "privacy_sandbox_notice_restricted_dialog.html",
     "privacy_sandbox_privacy_policy.html",
+    "base_dialog.html",
   ]
 
   web_component_files = [
@@ -31,7 +32,7 @@ build_webui("build") {
     "privacy_sandbox_notice_restricted_dialog_app.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "privacy_sandbox_dialog_browser_proxy.ts",
     "privacy_sandbox_dialog_mixin.ts",
     "privacy_sandbox_dialog_resize_mixin.ts",
@@ -46,7 +47,6 @@ build_webui("build") {
   ]
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

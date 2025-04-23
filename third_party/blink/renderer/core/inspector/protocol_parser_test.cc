@@ -18,14 +18,10 @@ using protocol::Value;
 static std::unique_ptr<protocol::Value> ParseJSON(const String& string) {
   std::vector<uint8_t> cbor;
   if (string.Is8Bit()) {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint8_t>(string.Characters8(), string.length()), &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint8_t>(string.Span8()), &cbor);
   } else {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint16_t>(
-            reinterpret_cast<const uint16_t*>(string.Characters16()),
-            string.length()),
-        &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint16_t>(string.SpanUint16()),
+                                   &cbor);
   }
   return protocol::Value::parseBinary(cbor.data(), cbor.size());
 }

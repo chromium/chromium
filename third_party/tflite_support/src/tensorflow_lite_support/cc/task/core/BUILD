@@ -20,6 +20,7 @@ cc_library_with_tflite(
         # to get included in the executable.
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
         "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite/c:c_api",
         "@org_tensorflow//tensorflow/lite/tools:verifier",
         "//tensorflow_lite_support/cc/port:tflite_wrapper",
     ],
@@ -38,6 +39,7 @@ cc_library_with_tflite(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@org_tensorflow//tensorflow/lite:kernel_api",
+        "@org_tensorflow//tensorflow/lite/core/api:error_reporter",
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
     ],
 )
@@ -75,6 +77,7 @@ cc_library_with_tflite(
         "//tensorflow_lite_support:internal",
     ],
     deps = [
+        "//tensorflow_lite_support/cc:common",
         "//tensorflow_lite_support/cc/port:configuration_proto_inc",
         "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
@@ -129,11 +132,9 @@ cc_library(
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
         "//tensorflow_lite_support/cc/task/core/proto:external_file_proto_inc",
-        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",

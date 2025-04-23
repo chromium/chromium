@@ -52,6 +52,11 @@ struct CONTENT_EXPORT SavePackagePathPickedParams {
 #if BUILDFLAG(IS_MAC)
   std::vector<std::string> file_tags;
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android file path may be content URI, thus we need display name here.
+  base::FilePath display_name;
+#endif
 };
 using SavePackagePathPickedCallback =
     base::OnceCallback<void(SavePackagePathPickedParams,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
 #include <array>
@@ -284,12 +279,12 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
 
 bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
   uint32_t utf8_length = 0;
-  const void* utf8_data = nullptr;
-  if (!ReadUint32(&utf8_length) || !ReadRawBytes(utf8_length, &utf8_data))
+  base::span<const uint8_t> utf8_data;
+  if (!ReadUint32(&utf8_length) ||
+      !ReadRawBytesToSpan(utf8_length, &utf8_data)) {
     return false;
-  // SAFETY: ReadRawBytes() guarantees `utf8_data` and `utf8_length` are safe.
-  *string = String::FromUTF8(UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const LChar*>(utf8_data), utf8_length)));
+  }
+  *string = String::FromUTF8(utf8_data);
 
   // Decoding must have failed; this encoding does not distinguish between null
   // and empty strings.
@@ -452,8 +447,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           SerializedPredefinedColorSpace::kSRGB;
       SerializedImageDataPixelFormat image_data_pixel_format =
           SerializedImageDataPixelFormat::kRgbaUnorm8;
-      uint32_t width = 0, height = 0;
-      const void* pixels = nullptr;
       if (Version() >= 18) {
         bool is_done = false;
         do {
@@ -488,12 +481,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         } while (!is_done);
       }
 
+      uint32_t width = 0, height = 0;
+      if (!ReadUint32(&width) || !ReadUint32(&height)) {
+        return nullptr;
+      }
+
       uint64_t byte_length_64 = 0;
       size_t byte_length = 0;
-      if (!ReadUint32(&width) || !ReadUint32(&height) ||
-          !ReadUint64(&byte_length_64) ||
+      base::span<const uint8_t> pixel_data;
+      if (!ReadUint64(&byte_length_64) ||
           !base::MakeCheckedNum(byte_length_64).AssignIfValid(&byte_length) ||
-          !ReadRawBytes(byte_length, &pixels)) {
+          !ReadRawBytesToSpan(byte_length, &pixel_data)) {
         return nullptr;
       }
 
@@ -502,12 +500,14 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       ImageData* image_data = ImageData::ValidateAndCreate(
           width, height, std::nullopt, settings.GetImageDataSettings(),
           ImageData::ValidateAndCreateParams(), exception_state);
-      if (!image_data)
+      if (!image_data) {
         return nullptr;
-      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
-      if (image_data_pixmap.computeByteSize() != byte_length)
+      }
+      base::span<uint8_t> image_data_bytes = image_data->RawByteSpan();
+      if (image_data_bytes.size() != pixel_data.size()) {
         return nullptr;
-      memcpy(image_data_pixmap.writable_addr(), pixels, byte_length);
+      }
+      image_data_bytes.copy_from(pixel_data);
       return image_data;
     }
     case kDOMPointTag: {

@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -22,19 +20,18 @@ CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator() = default;
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
 void CookieControlsBubbleCoordinator::ShowBubble(
+    ToolbarButtonProvider* toolbar_button_provider,
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller) {
+  CHECK(toolbar_button_provider);
   if (bubble_view_ != nullptr) {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // TODO(crbug.com/376283777): An action ID should be created and used here
   // when Cookie Controls is migrated to the new page actions framework.
   views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
-
+      toolbar_button_provider->GetAnchorView(std::nullopt);
   auto bubble_view = std::make_unique<CookieControlsBubbleViewImpl>(
       anchor_view, web_contents,
       base::BindOnce(&CookieControlsBubbleCoordinator::OnViewIsDeleting,
@@ -42,9 +39,8 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   bubble_view_ = bubble_view.get();
   bubble_view_->View::AddObserver(this);
 
-  auto* icon_view =
-      browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kCookieControls);
+  auto* icon_view = toolbar_button_provider->GetPageActionIconView(
+      PageActionIconType::kCookieControls);
   CHECK(icon_view);
   bubble_view_->SetHighlightedButton(icon_view);
 
@@ -57,8 +53,16 @@ void CookieControlsBubbleCoordinator::ShowBubble(
 
   views::Widget* const widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  view_controller_->SetIsReloadingState(false);
   controller->Update(web_contents);
   widget->Show();
+}
+
+bool CookieControlsBubbleCoordinator::IsReloadingState() const {
+  if (!view_controller_) {
+    return false;
+  }
+  return view_controller_->IsReloadingState();
 }
 
 CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble()

@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
@@ -21,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A Coordinator responsible for showing the tab filter selection UI for downloads home. */
+@NullMarked
 public class FilterCoordinator {
     @IntDef({TabType.FILES, TabType.PREFETCH})
     @Retention(RetentionPolicy.SOURCE)

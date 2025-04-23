@@ -14,16 +14,16 @@
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/suggest_action.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/omnibox_popup_carousel_cell.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -345,7 +345,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 }
 
-#pragma mark - AutocompleteResultConsumer
+#pragma mark - OmniboxPopupConsumer
 
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
     preselectedMatchGroupIndex:(NSInteger)groupIndex {
@@ -363,9 +363,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
   id<AutocompleteSuggestion> firstSuggestionOfPreselectedGroup =
       [self suggestionAtIndexPath:[NSIndexPath indexPathForRow:0
                                                      inSection:groupIndex]];
-  [self.matchPreviewDelegate
-      setPreviewSuggestion:firstSuggestionOfPreselectedGroup
-             isFirstUpdate:YES];
+  [self.mutator previewSuggestion:firstSuggestionOfPreselectedGroup
+                    isFirstUpdate:YES];
 }
 
 /// Set text alignment for popup cells.
@@ -394,7 +393,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   if (self.shouldUpdateVisibleSuggestionCount) {
     [self updateVisibleSuggestionCount];
   }
-  [self.dataSource
+  [self.mutator
       requestResultsWithVisibleSuggestionCount:self.visibleSuggestionCount];
 }
 
@@ -532,7 +531,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 
   [self.tableView scrollToRowAtIndexPath:path
-                        atScrollPosition:UITableViewScrollPositionTop
+                        atScrollPosition:UITableViewScrollPositionNone
                                 animated:NO];
 
   self.highlightedIndexPath = path;
@@ -575,7 +574,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 
   [self.tableView scrollToRowAtIndexPath:path
-                        atScrollPosition:UITableViewScrollPositionBottom
+                        atScrollPosition:UITableViewScrollPositionNone
                                 animated:NO];
 
   // There is a row below, move highlight there.
@@ -604,7 +603,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   id<AutocompleteSuggestion> suggestion =
       [self suggestionAtIndexPath:self.highlightedIndexPath];
   DCHECK(suggestion);
-  [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
+  [self.mutator previewSuggestion:suggestion isFirstUpdate:NO];
 }
 
 /// Whether the Return/Enter action can be performed.
@@ -624,9 +623,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
       [self suggestionAtIndexPath:self.highlightedIndexPath];
   NSInteger absoluteRow =
       [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
-  [self.delegate autocompleteResultConsumer:self
-                        didSelectSuggestion:suggestion
-                                      inRow:absoluteRow];
+  [self.mutator selectSuggestion:suggestion inRow:absoluteRow];
 }
 
 #pragma mark - OmniboxPopupRowDelegate
@@ -639,9 +636,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   if (suggestion != configuration.suggestion) {
     return;
   }
-  [self.delegate autocompleteResultConsumer:self
-           didTapTrailingButtonOnSuggestion:suggestion
-                                      inRow:indexPath.row];
+  [self.mutator tapTrailingButtonOnSuggestion:suggestion inRow:indexPath.row];
 }
 
 - (void)omniboxPopupRowWithConfiguration:
@@ -669,10 +664,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   CHECK(suggestion == configuration.suggestion);
 
-  [self.delegate autocompleteResultConsumer:self
-                  didSelectSuggestionAction:action
-                                 suggestion:suggestion
-                                      inRow:configuration.indexPath.row];
+  [self.mutator selectSuggestionAction:action
+                            suggestion:suggestion
+                                 inRow:configuration.indexPath.row];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -705,9 +699,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
     return;
   }
   NSInteger absoluteRow = [self absoluteRowIndexForIndexPath:indexPath];
-  [self.delegate
-      autocompleteResultConsumer:self
-             didSelectSuggestion:[self suggestionAtIndexPath:indexPath]
+  [self.mutator selectSuggestion:[self suggestionAtIndexPath:indexPath]
                            inRow:absoluteRow];
 }
 
@@ -810,9 +802,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
       [self suggestionAtIndexPath:indexPath];
   DCHECK(suggestion);
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    [self.delegate autocompleteResultConsumer:self
-               didSelectSuggestionForDeletion:suggestion
-                                        inRow:indexPath.row];
+    [self.mutator selectSuggestionForDeletion:suggestion inRow:indexPath.row];
   }
 }
 
@@ -990,9 +980,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   NSInteger absoluteRow =
       [self absoluteRowIndexForIndexPath:carouselItem.indexPath];
-  [self.delegate autocompleteResultConsumer:self
-                        didSelectSuggestion:suggestion
-                                      inRow:absoluteRow];
+  [self.mutator selectSuggestion:suggestion inRow:absoluteRow];
 }
 
 #pragma mark - Internal API methods
@@ -1031,7 +1019,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   // dismisses the keyboard, but involves many layers of plumbing, and should be
   // refactored.
   if (self.forwardsScrollEvents) {
-    [self.delegate autocompleteResultConsumerDidScroll:self];
+    [self.mutator onScroll];
   }
 
   [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
@@ -1197,7 +1185,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 - (void)updateUIOnTraitChange {
   [self updateBackgroundColor];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [self.delegate autocompleteResultConsumerDidChangeTraitCollection:self];
+    [self.mutator onTraitCollectionChange];
   }
 }
 

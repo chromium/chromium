@@ -220,7 +220,9 @@ class EntityInstance final {
                                 AttributeInstance::CompareByType> attributes,
                  base::Uuid guid,
                  std::string nickname,
-                 base::Time date_modified);
+                 base::Time date_modified,
+                 int use_count,
+                 base::Time use_date);
 
   EntityInstance(const EntityInstance&);
   EntityInstance& operator=(const EntityInstance&);
@@ -230,6 +232,16 @@ class EntityInstance final {
 
   // Transparent less-than relation based on the the GUID.
   struct CompareByGuid;
+
+  // Comparator that returns the entity with the higher frecency score.
+  struct RankingOrder {
+   public:
+    explicit RankingOrder(base::Time now);
+    bool operator()(const EntityInstance& lhs, const EntityInstance& rhs) const;
+
+   private:
+    const base::Time now_;
+  };
 
   // Comparator that ranks instances by their priority for import on form
   // submission.
@@ -260,6 +272,16 @@ class EntityInstance final {
 
   // The latest time the instance, including any of its attributes, was edited.
   base::Time date_modified() const { return date_modified_; }
+
+  // Updates the last time an entity was used to fill a form and
+  // increases the entity use count.
+  void RecordEntityUsed(base::Time date);
+
+  // Returns the last time an entity was used to fill a form.
+  base::Time use_date() const { return use_date_; }
+
+  // Returns how many times an entity was used to fill a form.
+  size_t use_count() const { return use_count_; }
 
   struct EntityMergeability {
     EntityMergeability();
@@ -305,6 +327,8 @@ class EntityInstance final {
   base::Uuid guid_;
   std::string nickname_;
   base::Time date_modified_;
+  size_t use_count_;
+  base::Time use_date_;
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);

@@ -281,6 +281,8 @@ cronet_shared_java_deps_to_package = [
   ":cronet_stats_log_java",
   "//base:metrics_ScopedSysTraceEvent_java",
   "//build/android:build_java",
+  ":base_feature_overrides_java_proto",
+  ":flags_java_proto",
 ]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
@@ -294,6 +296,9 @@ cronet_shared_java_deps_to_package = [
 android_library("cronet_shared_java") {
   srcjar_deps = [ ":url_request_close_source_java" ]
   sources = [
+    "java/src/org/chromium/net/httpflags/BaseFeature.java",
+    "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
+    "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
     "java/src/org/chromium/net/impl/CronetLogger.java",
     "java/src/org/chromium/net/impl/CronetLoggerFactory.java",
     "java/src/org/chromium/net/impl/CronetManifest.java",
@@ -308,8 +313,10 @@ android_library("cronet_shared_java") {
 
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
   # Please add to cronet_shared_java_deps_to_package instead.
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ] +
-         cronet_shared_java_deps_to_package
+  deps = [
+           "//third_party/android_deps:protobuf_lite_runtime_java",
+           "//third_party/androidx:androidx_annotation_annotation_java",
+         ] + cronet_shared_java_deps_to_package
 
   proguard_configs =
       [ "//components/cronet/android/cronet_shared_proguard.cfg" ]
@@ -337,6 +344,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/ExperimentalCronetEngine.java",
     "api/src/org/chromium/net/ExperimentalOptionsTranslator.java",
     "api/src/org/chromium/net/ExperimentalUrlRequest.java",
+    "api/src/org/chromium/net/HttpFlagsForApi.java",
     "api/src/org/chromium/net/ICronetEngineBuilder.java",
     "api/src/org/chromium/net/InlineExecutionProhibitedException.java",
     "api/src/org/chromium/net/NetworkException.java",
@@ -355,6 +363,7 @@ android_library("cronet_api_java") {
   deps = [
     ":api_version",
     ":cronet_shared_java",
+    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -414,6 +423,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/CronetExceptionImpl.java",
     "java/src/org/chromium/net/impl/CronetMetrics.java",
+    "java/src/org/chromium/net/impl/HttpFlagsForImpl.java",
     "java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
     "java/src/org/chromium/net/impl/QuicExceptionImpl.java",
@@ -433,6 +443,7 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
+    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -472,6 +483,7 @@ android_library("cronet_impl_platform_java") {
     ":cronet_impl_common_java",
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
+    ":httpengine_native_provider_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//net/android:net_thread_stats_uid_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -529,11 +541,9 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
-  ":base_feature_overrides_java_proto",
-  ":flags_java_proto",
   ":request_context_config_java_proto",
-  "//base:base_java",
   "//base/version_info/android:version_constants_java",
+  "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
@@ -542,9 +552,6 @@ cronet_impl_native_java_deps_to_package = [
 # cronet_impl_native_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_java") {
   sources = [
-    "java/src/org/chromium/net/httpflags/BaseFeature.java",
-    "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
-    "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
@@ -560,9 +567,12 @@ android_library("cronet_impl_native_java") {
   # Adding deps here won't include those deps in the cronet_impl_native_java.jar.
   # Please add to cronet_impl_native_java_deps_to_package instead.
   deps = [
+    ":base_feature_overrides_java_proto",
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
+    ":flags_java_proto",
+    "//base:log_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -1286,7 +1296,19 @@ cronet_javatests_deps_to_package = [
   ":cronet_common_javatests",
   ":cronet_test_apk_java",
   ":flags_java_proto",
-  "//base:base_java",
+  "//base:build_info_java",
+  "//base:log_java",
+  "//base:metrics_java",
+  "//base:path_utils_java",
+  "//base:resetters_java",
+  "//base:supplier_java",
+  "//base:lifetime_java",
+  "//base:features_java",
+  "//base:file_utils_java",
+  "//base:callback_java",
+  "//base:activity_state_java",
+  "//base:command_line_init_utils_java",
+  "//base:clang_profiler_java",
   "//base:base_java_test_support",
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
@@ -1350,13 +1372,13 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
     "test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
     "test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+    "test/javatests/src/org/chromium/net/ZstdTest.java",
     "test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
     "test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
     "test/javatests/src/org/chromium/net/httpflags/BaseFeatureTest.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsLoaderTest.java",
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
     "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
-    "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
     "test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java",
@@ -1449,7 +1471,6 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
            # This is used by base_test utility classes, proguard complains about missing classes
            # but in reality, we don't even use those classes at all.
            "//third_party/android_deps:espresso_java",
-           "//third_party/android_deps:protobuf_lite_runtime_java",
            "//third_party/android_sdk:android_test_mock_java",
 
            # This is used by base_test utility classes, proguard complains about missing classes
@@ -1794,7 +1815,6 @@ zip("jar_cronet_sample_source") {
 jar_src("jar_cronet_impl_native_java_source") {
   src_search_dirs = [
     "//base/android/java/src",
-    "//base/test/android/javatests/src/stub",
     "//build/android/java/src",
     "//components/cronet/android/java/src",
     "//net/android/java/src",
@@ -2044,21 +2064,11 @@ action("cronet_gn2bp_aosp_feedback_loop") {
             ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
+    "--wait-for-presubmit-verified",
     "--stamp",
     rebase_path(_stamp_path, root_build_dir),
   ]
   outputs = [ _stamp_path ]
-}
-
-action("gn2bp_check") {
-  script = "//components/cronet/gn2bp/validate_gn2bp.py"
-  sources = GN2BP_SOURCES + LICENSE_SOURCES
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  args = [
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-  testonly = true
 }
 
 if (!using_sanitizer) {
@@ -2167,7 +2177,6 @@ group("cronet_package_ci") {
   testonly = true
   deps = [
     ":generate_build_script_test",
-    ":gn2bp_check",
     "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
     "//components/cronet/license/tests/target_a:target_a",
   ]

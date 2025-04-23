@@ -1653,8 +1653,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("google.com", "/title1.html"));
 
-  EXPECT_TRUE(NavigateToURL(web_contents, url));
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
   // Confirm that the tab is only visible for declarativeContent.

@@ -51,6 +51,31 @@ testing::AssertionResult MatchesPngFileImpl(
   return testing::AssertionSuccess();
 }
 
+SkBitmap RenderPdfToSkBitmap(base::span<const uint8_t> pdf_data,
+                             int page_index,
+                             const gfx::Size& size_in_points) {
+  const gfx::Rect page_rect(size_in_points);
+  SkBitmap page_bitmap;
+  page_bitmap.allocPixels(
+      SkImageInfo::Make(gfx::SizeToSkISize(page_rect.size()),
+                        kBGRA_8888_SkColorType, kPremul_SkAlphaType));
+
+  PDFiumEngineExports::RenderingSettings settings(
+      gfx::Size(printing::kPointsPerInch, printing::kPointsPerInch), page_rect,
+      /*fit_to_bounds=*/false,
+      /*stretch_to_bounds=*/false,
+      /*keep_aspect_ratio=*/true,
+      /*center_in_bounds=*/false,
+      /*autorotate=*/false, /*use_color=*/true, /*render_for_printing=*/false);
+
+  PDFiumEngineExports exports;
+  if (!exports.RenderPDFPageToBitmap(pdf_data, page_index, settings,
+                                     page_bitmap.getPixels())) {
+    ADD_FAILURE();
+  }
+  return page_bitmap;
+}
+
 }  // namespace
 
 base::FilePath GetTestDataFilePath(const base::FilePath& path) {
@@ -98,25 +123,19 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
                        int page_index,
                        const gfx::Size& size_in_points,
                        const base::FilePath& expected_png_file) {
-  const gfx::Rect page_rect(size_in_points);
-  SkBitmap page_bitmap;
-  page_bitmap.allocPixels(
-      SkImageInfo::Make(gfx::SizeToSkISize(page_rect.size()),
-                        kBGRA_8888_SkColorType, kPremul_SkAlphaType));
-
-  PDFiumEngineExports::RenderingSettings settings(
-      gfx::Size(printing::kPointsPerInch, printing::kPointsPerInch), page_rect,
-      /*fit_to_bounds=*/false,
-      /*stretch_to_bounds=*/false,
-      /*keep_aspect_ratio=*/true,
-      /*center_in_bounds=*/false,
-      /*autorotate=*/false, /*use_color=*/true, /*render_for_printing=*/false);
-
-  PDFiumEngineExports exports;
-  ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_index, settings,
-                                            page_bitmap.getPixels()));
-
+  SkBitmap page_bitmap =
+      RenderPdfToSkBitmap(pdf_data, page_index, size_in_points);
   EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
+}
+
+void CheckFuzzyPdfRendering(base::span<const uint8_t> pdf_data,
+                            int page_index,
+                            const gfx::Size& size_in_points,
+                            const base::FilePath& expected_png_file) {
+  SkBitmap page_bitmap =
+      RenderPdfToSkBitmap(pdf_data, page_index, size_in_points);
+  EXPECT_TRUE(
+      FuzzyMatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
 }
 
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,

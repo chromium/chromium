@@ -40,3 +40,8 @@ declare_args() {
   # Whether to enable temporal pgo or not (experimental).
   temporal_pgo_profile = false
 }
+
+# TODO(crbug.com/409738601): Remove assert once clang no
+# longer crashes with PGO enabled for a debug build.
+assert(!is_debug || chrome_pgo_phase == 0,
+       "Cannot have a debug build optimized with PGO")

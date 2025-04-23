@@ -15,7 +15,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item.h"  // nogncheck
 #endif  // BUILDFLAG(USE_BLINK)
 
 namespace enterprise_connectors {

@@ -11,11 +11,15 @@ import static org.hamcrest.Matchers.containsString;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 
@@ -25,12 +29,12 @@ import org.chromium.chrome.test.R;
  * @param <HostStationT> the Station where the Snackbar appears
  */
 public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<HostStationT> {
-    public static final ViewSpec SNACKBAR_MESSAGE = viewSpec(withId(R.id.snackbar_message));
-    public static final ViewSpec SNACKBAR_BUTTON = viewSpec(withId(R.id.snackbar_button));
     public static final String NO_BUTTON = "__NO_BUTTON__";
 
     private final String mExpectedMessageSubstring;
     private final String mExpectedButtonText;
+    public ViewElement<View> messageElement;
+    public ViewElement<View> buttonElement;
 
     public SnackbarFacility(
             @Nullable String expectedMessageSubstring, @Nullable String expectedButtonText) {
@@ -41,25 +45,23 @@ public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        messageElement = elements.declareView(viewSpec(withId(R.id.snackbar_message)));
         if (mExpectedMessageSubstring != null) {
-            ViewSpec messageSpec =
-                    viewSpec(
-                            withText(containsString(mExpectedMessageSubstring)),
-                            SNACKBAR_MESSAGE.getViewMatcher());
-            elements.declareView(messageSpec);
-        } else {
-            elements.declareView(SNACKBAR_MESSAGE);
+            elements.declareEnterCondition(
+                    new ViewElementMatchesCondition(
+                            messageElement, withText(containsString(mExpectedMessageSubstring))));
         }
 
-        if (mExpectedButtonText != null) {
-            if (mExpectedButtonText.equals(NO_BUTTON)) {
-                elements.declareNoView(SNACKBAR_BUTTON);
-            } else {
-                ViewSpec messageSpec = SNACKBAR_BUTTON.and(withText(mExpectedButtonText));
-                elements.declareView(messageSpec);
-            }
+        ViewSpec<View> buttonSpec = viewSpec(withId(R.id.snackbar_button));
+        if (NO_BUTTON.equals(mExpectedButtonText)) {
+            elements.declareNoView(buttonSpec);
         } else {
-            elements.declareView(SNACKBAR_BUTTON);
+            buttonElement = elements.declareView(buttonSpec);
+            if (mExpectedButtonText != null) {
+                elements.declareEnterCondition(
+                        new ViewElementMatchesCondition(
+                                buttonElement, withText(mExpectedButtonText)));
+            }
         }
     }
 }

@@ -12,15 +12,15 @@ export function getHtml(this: ViewerZoomToolbarElement) {
   <viewer-zoom-button id="fitButton" @fabclick="${this.fitToggle}"
       tooltips="$i18n{tooltipFitToPage},$i18n{tooltipFitToWidth}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
-      icons="${this.iconsetName_()}:fullscreen-exit cr:fullscreen">
+      icons="pdf:fullscreen-exit cr:fullscreen">
   </viewer-zoom-button>
   <viewer-zoom-button id="zoom-in-button"
-      icons="${this.iconsetName_()}:add"
+      icons="pdf:add"
       tooltips="$i18n{tooltipZoomIn}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
       @fabclick="${this.zoomIn}"></viewer-zoom-button>
   <viewer-zoom-button id="zoom-out-button"
-      icons="${this.iconsetName_()}:remove"
+      icons="pdf:remove"
       tooltips="$i18n{tooltipZoomOut}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
       @fabclick="${this.zoomOut}"></viewer-zoom-button>

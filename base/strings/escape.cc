@@ -4,6 +4,7 @@
 
 #include "base/strings/escape.h"
 
+#include <array>
 #include <ostream>
 #include <string_view>
 
@@ -28,7 +29,7 @@ struct Charmap {
     return UNSAFE_TODO((map[c >> 5] & (1 << (c & 31))) != 0);
   }
 
-  uint32_t map[8];
+  std::array<uint32_t, 8> map;
 };
 
 // Given text to escape and a Charmap defining which values to escape,
@@ -158,7 +159,7 @@ static const Charmap kExternalHandlerCharmap = {
 // not unescaped, to avoid turning a valid url according to spec into an
 // invalid one.
 // clang-format off
-const char kUrlUnescape[128] = {
+const std::array<char, 128> kUrlUnescape = {
 //   Null, control chars...
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -630,20 +631,24 @@ bool ContainsEncodedBytes(std::string_view escaped_text,
 }
 
 std::u16string UnescapeForHTML(std::u16string_view input) {
-  static const struct {
+  struct EscapeToChars {
     const char* ampersand_code;
     const char16_t replacement;
-  } kEscapeToChars[] = {
-      {"&lt;", '<'},   {"&gt;", '>'},   {"&amp;", '&'},
-      {"&quot;", '"'}, {"&#39;", '\''},
   };
+  static const auto kEscapeToChars = std::to_array<EscapeToChars>({
+      {"&lt;", '<'},
+      {"&gt;", '>'},
+      {"&amp;", '&'},
+      {"&quot;", '"'},
+      {"&#39;", '\''},
+  });
   constexpr size_t kEscapeToCharsCount = std::size(kEscapeToChars);
 
   if (input.find(u"&") == std::string::npos) {
     return std::u16string(input);
   }
 
-  std::u16string ampersand_chars[kEscapeToCharsCount];
+  std::array<std::u16string, kEscapeToCharsCount> ampersand_chars;
   std::u16string text(input);
   for (std::u16string::iterator iter = text.begin(); iter != text.end();
        ++iter) {

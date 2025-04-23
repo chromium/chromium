@@ -34,9 +34,17 @@ enum class CastDeviceCertPolicy {
 enum class CRLPolicy {
   // Revocation is checked if a CRL is provided. If CRL is not provided,
   // revocation is checked by fallback CRL.
+  //
+  // DEPRECATED.  A CRL is always required.
+  //
+  // TODO(crbug.com/411575751): Remove this policy.
   CRL_OPTIONAL_WITH_FALLBACK,
 
   // Revocation is only checked if a CRL is provided.
+  //
+  // DEPRECATED.  A CRL is always required.
+  //
+  // TODO(crbug.com/411575751): Remove this policy.
   CRL_OPTIONAL,
 
   // Revocation is always checked. If CRL is not provided, revocation is checked

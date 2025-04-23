@@ -19,7 +19,7 @@ class DeviceSharingManagerFactory : public ProfileKeyedServiceFactoryIOS {
   static DeviceSharingManagerFactory* GetInstance();
 
   // Returns the default factory used to build DeviceSharingManagers. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:

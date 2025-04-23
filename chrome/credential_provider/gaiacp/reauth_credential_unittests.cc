@@ -28,6 +28,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -372,7 +373,7 @@ TEST_P(GcpReauthCredentialGlsTest, GetUserGlsCommandLine) {
   base::CommandLine command_line = test_cred->GetTestGlsCommandline();
 
   EXPECT_TRUE(command_line.HasSwitch(kGcpwSigninSwitch));
-  EXPECT_TRUE(command_line.HasSwitch(switches::kDisableExtensions));
+  EXPECT_TRUE(command_line.HasSwitch(extensions::switches::kDisableExtensions));
 
   std::string gcpw_path =
       command_line.GetSwitchValueASCII(kGcpwEndpointPathSwitch);

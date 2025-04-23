@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 
 #include <limits>
 
+#include "base/containers/span_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "net/base/hash_value.h"
@@ -32,12 +28,12 @@ SharedDictionaryWriterInMemory::~SharedDictionaryWriterInMemory() {
   }
 }
 
-void SharedDictionaryWriterInMemory::Append(const char* buf, int num_bytes) {
+void SharedDictionaryWriterInMemory::Append(base::span<const uint8_t> data) {
   if (!finish_callback_) {
     return;
   }
   base::CheckedNumeric<size_t> checked_total_size = total_size_;
-  checked_total_size += num_bytes;
+  checked_total_size += data.size();
   if (checked_total_size.ValueOrDefault(std::numeric_limits<size_t>::max()) >
       shared_dictionary::GetDictionarySizeLimit()) {
     data_.clear();
@@ -48,8 +44,8 @@ void SharedDictionaryWriterInMemory::Append(const char* buf, int num_bytes) {
   }
   total_size_ = checked_total_size.ValueOrDie();
 
-  secure_hash_->Update(buf, num_bytes);
-  data_.emplace_back(buf, num_bytes);
+  secure_hash_->Update(data);
+  data_.emplace_back(base::as_string_view(data));
 }
 
 void SharedDictionaryWriterInMemory::Finish() {
@@ -68,10 +64,9 @@ void SharedDictionaryWriterInMemory::Finish() {
   }
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(total_size_);
-  size_t written_size = 0;
+  base::SpanWriter<uint8_t> writer(buffer->span());
   for (const auto& item : data_) {
-    memcpy(buffer->data() + written_size, item.c_str(), item.size());
-    written_size += item.size();
+    writer.Write(base::as_byte_span(item));
   }
 
   base::UmaHistogramCustomCounts(

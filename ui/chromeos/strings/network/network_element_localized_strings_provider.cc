@@ -557,6 +557,10 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       "isApnRevampAndAllowApnModificationPolicyEnabled",
       ash::features::IsApnRevampAndAllowApnModificationPolicyEnabled());
 
+  html_source->AddBoolean(
+      "isESimEmptyActivationCodeSupportEnabled",
+      ash::features::IsESimEmptyActivationCodeSupportEnabled());
+
   html_source->AddString("apnSettingsDescriptionWithLink",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,

@@ -7,7 +7,7 @@ most_relevant_tab_resumption_v2_web_component_files =
     [ "modules/v2/most_relevant_tab_resumption/module.ts" ]
 
 # List of files that don't need to be passed to html_to_wrapper().
-most_relevant_tab_resumption_v2_non_web_component_files = [
+most_relevant_tab_resumption_v2_ts_files = [
   "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.ts",
   "modules/v2/most_relevant_tab_resumption/page_favicon.ts",
 ]

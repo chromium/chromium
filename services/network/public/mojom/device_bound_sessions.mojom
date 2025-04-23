@@ -41,6 +41,16 @@ struct DeviceBoundSessionAccess {
 
 // LINT.ThenChange(//net/device_bound_sessions/session_access.h)
 
+// LINT.IfChange
+enum DeviceBoundSessionUsage {
+  kUnknown = 0,
+  kNoUsage = 1,
+  kInScopeNotDeferred = 2,
+  kDeferred = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
+
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]

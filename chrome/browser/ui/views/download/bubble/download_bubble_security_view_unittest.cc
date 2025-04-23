@@ -190,6 +190,8 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
                          views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
+    bubble_delegate->SetOwnedByWidget(
+        views::WidgetDelegate::OwnedByWidgetPassKey());
     bubble_delegate_ = bubble_delegate.get();
     bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>(
         *security_view_info_);

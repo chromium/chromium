@@ -88,8 +88,8 @@ class Task {
   // Returns if the task should be killable from the Task Manager UI.
   virtual bool IsKillable();
 
-  // Kills this task.
-  virtual void Kill();
+  // Kills this task. Returns true if the process terminates.
+  virtual bool Kill();
 
   // Will be called to let the task refresh itself between refresh cycles.
   // |update_interval| is the time since the last task manager refresh.

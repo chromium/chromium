@@ -175,6 +175,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
               const NetLogWithSource& net_log,
               NetErrorDetails* net_error_details,
               MultiplexedSessionCreationInitiator session_creation_initiator,
+              std::optional<ConnectionManagementConfig> management_config,
               CompletionOnceCallback failed_on_default_network_callback,
               CompletionOnceCallback callback);
 
@@ -376,6 +377,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       quic::ParsedQuicVersion quic_version,
       std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
       MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> management_config,
       const HttpUserAgentSettings* http_user_agent_settings,
       RequestPriority priority,
       bool use_dns_aliases,
@@ -511,9 +513,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     return params_.disable_gquic_zero_rtt;
   }
 
-  // Returns true if QuicSessionPool is configured to report incoming ECN marks.
-  bool report_ecn() const { return report_ecn_; }
-
   void set_has_quic_ever_worked_on_current_network(
       bool has_quic_ever_worked_on_current_network);
 
@@ -596,6 +595,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                      int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
+
+  // Methods to notify the ConnectionChangeObserver about connection changing
+  // events. `NotifyOnNetworkEvent` will notify all of the notifiers on network
+  // change events, since it affects all the connections. Otherwise, the events
+  // are specific to each connection.
+  void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
+  void NotifyOnSessionClosed(const QuicSessionKey& session_key) const;
+  void NotifyOnConnectionFailure(const QuicSessionKey& session_key) const;
 
   // Returns whether we have an existing session to the same server id as
   // `session_key`. This is used to determine whether we have an existing
@@ -883,6 +890,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
+  std::map<QuicSessionKey, std::unique_ptr<ConnectionChangeNotifier>>
+      connection_change_notifier_;
+
   // This needs to be below `task_runner_`, since in some tests, it often points
   // to a TickClock owned by the TestMockTimeTaskRunner that `task_runner_`
   // owners a reference to.
@@ -899,10 +909,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // respecting NAKs, as that data is fed into the crypto config map using the
   // corresponding NAK.
   const bool use_network_anonymization_key_for_crypto_configs_;
-
-  // If true, sessions created by this pool will read ECN marks from QUIC
-  // sockets and send them to the peer.
-  const bool report_ecn_;
 
   // If true, skip DNS resolution for a hostname if the ORIGIN frame received on
   // an active session encompasses that hostname.

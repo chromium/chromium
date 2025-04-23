@@ -7,7 +7,6 @@ package org.chromium.base.test.transit;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -16,6 +15,10 @@ import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Polls multiple {@link Condition}s in parallel. */
+@NullMarked
 public class ConditionWaiter {
 
     /**
@@ -56,6 +60,7 @@ public class ConditionWaiter {
          * @param origin the origin of the |condition|.
          */
         ConditionWait(Condition condition, @ConditionOrigin int origin) {
+            condition.assertIsBound();
             mCondition = condition;
             mOrigin = origin;
         }
@@ -188,8 +193,8 @@ public class ConditionWaiter {
     private static final String TAG = "Transit";
 
     protected final Transition mTransition;
-    protected List<ConditionWait> mWaits;
-    protected Map<Condition, ElementFactory> mConditionsGuardingFactories;
+    protected @MonotonicNonNull List<ConditionWait> mWaits;
+    protected @MonotonicNonNull Map<Condition, ElementFactory> mConditionsGuardingFactories;
     protected final Map<String, ConditionWait> mExitWaitsByElementId = new HashMap<>();
 
     ConditionWaiter(Transition transition) {
@@ -203,7 +208,13 @@ public class ConditionWaiter {
         }
     }
 
+    @EnsuresNonNullIf({"mWaits", "mConditionsGuardingFactories"})
+    private boolean isPreCheckDone() {
+        return mWaits != null && mConditionsGuardingFactories != null;
+    }
+
     protected void onAfterTransition() {
+        assert isPreCheckDone();
         for (ConditionWait wait : mWaits) {
             wait.getCondition().onStopMonitoring();
         }
@@ -217,6 +228,7 @@ public class ConditionWaiter {
      * <p>This also makes supplied values available for Conditions that implement Supplier before
      * {@link Condition#onStartMonitoring()} is called.
      */
+    @EnsuresNonNull({"mWaits", "mConditionsGuardingFactories"})
     void preCheck(boolean failOnAlreadyFulfilled) {
         mWaits = createWaits();
         mConditionsGuardingFactories = createFactories();
@@ -252,6 +264,8 @@ public class ConditionWaiter {
      * @throws TravelException if not all {@link Condition}s are fulfilled before timing out.
      */
     void waitFor() throws TravelException {
+        assert isPreCheckDone();
+
         TransitionOptions options = mTransition.getOptions();
         long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
         try {
@@ -296,7 +310,7 @@ public class ConditionWaiter {
         for (ConditionalState conditionalState : mTransition.getExitedStates()) {
             final Elements originElements = conditionalState.getElements();
             for (Element<?> element : originElements.getElements()) {
-                Condition exitCondition = element.getExitCondition(destinationElementIds);
+                Condition exitCondition = element.getExitConditionFiltered(destinationElementIds);
                 if (exitCondition != null) {
                     ConditionWait conditionWait =
                             new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT);
@@ -317,6 +331,7 @@ public class ConditionWaiter {
 
         // Add transition (TRSTN) conditions
         for (Condition condition : mTransition.getTransitionConditions()) {
+            condition.bindToTransition(mTransition);
             allWaits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
         }
 
@@ -341,10 +356,10 @@ public class ConditionWaiter {
      * @param elements The elements to process (i.e. create ConditionWaits for).
      * @return the created {@link ConditionWait}s.
      */
-    private List<ConditionWait> createEnterConditionWaits(Elements elements) {
+    private List<ConditionWait> createEnterConditionWaits(BaseElements elements) {
         final List<ConditionWait> newWaits = new ArrayList<>();
         for (Element<?> element : elements.getElements()) {
-            @Nullable Condition enterCondition = element.getEnterCondition();
+            Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 newWaits.add(
                         new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
@@ -360,6 +375,8 @@ public class ConditionWaiter {
     }
 
     private boolean processWaits(boolean startMonitoringNewWaits) {
+        assert isPreCheckDone();
+
         boolean anyCriteriaMissing = false;
         Set<String> newElementIds = new HashSet<>();
 
@@ -387,7 +404,7 @@ public class ConditionWaiter {
 
             mWaits.addAll(nextBatch);
 
-            Elements newElements = fabricateElements(newFactories);
+            BaseElements newElements = fabricateElements(newFactories);
             nextBatch = createEnterConditionWaits(newElements);
 
             for (ConditionWait wait : nextBatch) {
@@ -417,8 +434,8 @@ public class ConditionWaiter {
         return anyCriteriaMissing;
     }
 
-    private Elements fabricateElements(List<ElementFactory> factories) {
-        Elements newElements = new Elements();
+    private BaseElements fabricateElements(List<ElementFactory> factories) {
+        BaseElements newElements = new BaseElements();
         for (ElementFactory factory : factories) {
             newElements.addAll(factory.processDelayedDeclarations());
         }
@@ -552,6 +569,8 @@ public class ConditionWaiter {
     private class CheckConditionsOnce implements Runnable {
         @Override
         public void run() {
+            assert isPreCheckDone();
+
             boolean anyCriteriaMissing =
                     ConditionWaiter.this.processWaits(/* startMonitoringNewWaits= */ true);
 

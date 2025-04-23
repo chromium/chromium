@@ -72,11 +72,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<std::optional<TimelineOffset>>& TriggerRangeEndList() const {
     return trigger_range_end_list_;
   }
-  const Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList()
-      const {
+  const Vector<TimelineOffsetOrAuto>& TriggerExitRangeStartList() const {
     return trigger_exit_range_start_list_;
   }
-  const Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() const {
+  const Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() const {
     return trigger_exit_range_end_list_;
   }
 
@@ -117,10 +116,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<std::optional<TimelineOffset>>& TriggerRangeEndList() {
     return trigger_range_end_list_;
   }
-  Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList() {
+  Vector<TimelineOffsetOrAuto>& TriggerExitRangeStartList() {
     return trigger_exit_range_start_list_;
   }
-  Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() {
+  Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() {
     return trigger_exit_range_end_list_;
   }
 
@@ -165,11 +164,11 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static std::optional<TimelineOffset> InitialTriggerRangeEnd() {
     return std::nullopt;
   }
-  static std::optional<TimelineOffset> InitialTriggerExitRangeStart() {
-    return std::nullopt;
+  static TimelineOffsetOrAuto InitialTriggerExitRangeStart() {
+    return TimelineOffsetOrAuto();
   }
-  static std::optional<TimelineOffset> InitialTriggerExitRangeEnd() {
-    return std::nullopt;
+  static TimelineOffsetOrAuto InitialTriggerExitRangeEnd() {
+    return TimelineOffsetOrAuto();
   }
 
  private:
@@ -186,8 +185,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<StyleTimeline> trigger_timeline_list_;
   Vector<std::optional<TimelineOffset>> trigger_range_start_list_;
   Vector<std::optional<TimelineOffset>> trigger_range_end_list_;
-  Vector<std::optional<TimelineOffset>> trigger_exit_range_start_list_;
-  Vector<std::optional<TimelineOffset>> trigger_exit_range_end_list_;
+  Vector<TimelineOffsetOrAuto> trigger_exit_range_start_list_;
+  Vector<TimelineOffsetOrAuto> trigger_exit_range_end_list_;
 };
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/script_executor.h"
@@ -13,19 +14,9 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
-#include "chrome/browser/extensions/extension_browsertest.h"
-#endif
-
 namespace extensions {
 
-#if BUILDFLAG(IS_ANDROID)
-using BackgroundScriptExecutorBrowserTest = ExtensionPlatformBrowserTest;
-#else
 using BackgroundScriptExecutorBrowserTest = ExtensionBrowserTest;
-#endif
 
 // Tests the ability to run JS in an extension-registered service worker.
 IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,

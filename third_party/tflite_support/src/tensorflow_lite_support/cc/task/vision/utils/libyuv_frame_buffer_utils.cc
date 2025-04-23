@@ -27,7 +27,6 @@ limitations under the License.
 #include "libyuv/convert_argb.h"  // from @libyuv
 #include "libyuv/scale.h"  // from @libyuv
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
@@ -56,7 +55,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
       int ret = libyuv::NV12ToRAW(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -71,7 +70,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
       int ret = libyuv::NV12ToABGR(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -103,21 +102,21 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
       TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_data.y_buffer),
+                        const_cast<uint8_t*>(output_data.y_buffer),
                         output_data.y_row_stride, buffer.dimension().width,
                         buffer.dimension().height);
       TFLITE_ASSIGN_OR_RETURN(
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::SwapUVPlane(yuv_data.u_buffer, yuv_data.uv_row_stride,
-                          const_cast<uint8*>(output_data.v_buffer),
+                          const_cast<uint8_t*>(output_data.v_buffer),
                           output_data.uv_row_stride, uv_plane_dimension.width,
                           uv_plane_dimension.height);
       break;
     }
     case FrameBuffer::Format::kGRAY: {
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_buffer->plane(0).buffer),
+                        const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                         output_buffer->plane(0).stride.row_stride_bytes,
                         output_buffer->dimension().width,
                         output_buffer->dimension().height);
@@ -143,7 +142,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
       int ret = libyuv::NV21ToRAW(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.v_buffer,
           yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -158,7 +157,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
       int ret = libyuv::NV21ToABGR(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.v_buffer,
           yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -190,21 +189,21 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
       TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_data.y_buffer),
+                        const_cast<uint8_t*>(output_data.y_buffer),
                         output_data.y_row_stride, buffer.dimension().width,
                         buffer.dimension().height);
       TFLITE_ASSIGN_OR_RETURN(
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::SwapUVPlane(yuv_data.v_buffer, yuv_data.uv_row_stride,
-                          const_cast<uint8*>(output_data.u_buffer),
+                          const_cast<uint8_t*>(output_data.u_buffer),
                           output_data.uv_row_stride, uv_plane_dimension.width,
                           uv_plane_dimension.height);
       break;
     }
     case FrameBuffer::Format::kGRAY: {
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_buffer->plane(0).buffer),
+                        const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                         output_buffer->plane(0).stride.row_stride_bytes,
                         output_buffer->dimension().width,
                         output_buffer->dimension().height);
@@ -233,7 +232,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       int ret = libyuv::I420ToRAW(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride, yuv_data.v_buffer, yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -248,7 +247,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       int ret = libyuv::I420ToABGR(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride, yuv_data.v_buffer, yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -264,8 +263,8 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       int ret = libyuv::I420ToNV12(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride, yuv_data.v_buffer, yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-          const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+          const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
           output_buffer->dimension().width, output_buffer->dimension().height);
       if (ret != 0) {
         return CreateStatusWithPayload(
@@ -280,8 +279,8 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
       int ret = libyuv::I420ToNV21(
           yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
           yuv_data.uv_row_stride, yuv_data.v_buffer, yuv_data.uv_row_stride,
-          const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-          const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+          const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
           output_buffer->dimension().width, output_buffer->dimension().height);
       if (ret != 0) {
         return CreateStatusWithPayload(
@@ -292,7 +291,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
     }
     case FrameBuffer::Format::kGRAY: {
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_buffer->plane(0).buffer),
+                        const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                         output_buffer->plane(0).stride.row_stride_bytes,
                         output_buffer->dimension().width,
                         output_buffer->dimension().height);
@@ -306,15 +305,15 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
           const FrameBuffer::Dimension uv_plane_dimension,
           GetUvPlaneDimension(buffer.dimension(), buffer.format()));
       libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                        const_cast<uint8*>(output_yuv_data.y_buffer),
+                        const_cast<uint8_t*>(output_yuv_data.y_buffer),
                         output_yuv_data.y_row_stride, buffer.dimension().width,
                         buffer.dimension().height);
       libyuv::CopyPlane(yuv_data.u_buffer, yuv_data.uv_row_stride,
-                        const_cast<uint8*>(output_yuv_data.u_buffer),
+                        const_cast<uint8_t*>(output_yuv_data.u_buffer),
                         output_yuv_data.uv_row_stride, uv_plane_dimension.width,
                         uv_plane_dimension.height);
       libyuv::CopyPlane(yuv_data.v_buffer, yuv_data.uv_row_stride,
-                        const_cast<uint8*>(output_yuv_data.v_buffer),
+                        const_cast<uint8_t*>(output_yuv_data.v_buffer),
                         output_yuv_data.uv_row_stride, uv_plane_dimension.width,
                         uv_plane_dimension.height);
       break;
@@ -364,8 +363,8 @@ absl::Status ResizeNv(
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
-  const uint8* src_uv = input_data.u_buffer;
-  const uint8* dst_uv = output_data.u_buffer;
+  const uint8_t* src_uv = input_data.u_buffer;
+  const uint8_t* dst_uv = output_data.u_buffer;
   if (buffer.format() == FrameBuffer::Format::kNV21) {
     src_uv = input_data.v_buffer;
     dst_uv = output_data.v_buffer;
@@ -389,7 +388,7 @@ absl::Status ResizeNv(
 
 // Converts `buffer` to libyuv ARGB format and stores the conversion result
 // in `dest_argb`.
-absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8_t* dest_argb,
                               int dest_stride_argb) {
   TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGB) {
@@ -426,7 +425,7 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
 
 // Converts `src_argb` in libyuv ARGB format to FrameBuffer::kRGB format and
 // stores the conversion result in `output_buffer`.
-absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
+absl::Status ConvertArgbToRgb(uint8_t* src_argb, int src_stride_argb,
                               FrameBuffer* output_buffer) {
   TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
   if (output_buffer->format() != FrameBuffer::Format::kRGB) {
@@ -448,7 +447,7 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
   }
   int ret = libyuv::ARGBToRGB24(
       src_argb, src_stride_argb,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes,
       output_buffer->dimension().width, output_buffer->dimension().height);
 
@@ -462,7 +461,7 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
 
 // Converts `buffer` in FrameBuffer::kRGBA format to libyuv ARGB (BGRA in
 // memory) format and stores the conversion result in `dest_argb`.
-absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8_t* dest_argb,
                                int dest_stride_argb) {
   TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGBA) {
@@ -504,7 +503,7 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
   if (output_buffer->format() == FrameBuffer::Format::kGRAY) {
     int ret = libyuv::RAWToJ400(
         buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-        const_cast<uint8*>(output_buffer->plane(0).buffer),
+        const_cast<uint8_t*>(output_buffer->plane(0).buffer),
         output_buffer->plane(0).stride.row_stride_bytes,
         buffer.dimension().width, buffer.dimension().height);
     if (ret != 0) {
@@ -523,11 +522,11 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
     // TODO(b/153000936): use libyuv::RawToNV12 / libyuv::RawToNV21 when they
     // are ready.
     FrameBuffer::YuvData yuv_data;
-    std::unique_ptr<uint8[]> tmp_yuv_buffer;
+    std::unique_ptr<uint8_t[]> tmp_yuv_buffer;
     std::unique_ptr<FrameBuffer> yuv_frame_buffer;
     if (output_buffer->format() == FrameBuffer::Format::kNV12 ||
         output_buffer->format() == FrameBuffer::Format::kNV21) {
-      tmp_yuv_buffer = absl::make_unique<uint8[]>(
+      tmp_yuv_buffer = absl::make_unique<uint8_t[]>(
           GetFrameBufferByteSize(buffer.dimension(), output_buffer->format()));
       TFLITE_ASSIGN_OR_RETURN(
           yuv_frame_buffer,
@@ -542,9 +541,9 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
     }
     int ret = libyuv::RAWToI420(
         buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-        const_cast<uint8*>(yuv_data.y_buffer), yuv_data.y_row_stride,
-        const_cast<uint8*>(yuv_data.u_buffer), yuv_data.uv_row_stride,
-        const_cast<uint8*>(yuv_data.v_buffer), yuv_data.uv_row_stride,
+        const_cast<uint8_t*>(yuv_data.y_buffer), yuv_data.y_row_stride,
+        const_cast<uint8_t*>(yuv_data.u_buffer), yuv_data.uv_row_stride,
+        const_cast<uint8_t*>(yuv_data.v_buffer), yuv_data.uv_row_stride,
         buffer.dimension().width, buffer.dimension().height);
     if (ret != 0) {
       return CreateStatusWithPayload(
@@ -561,7 +560,7 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
     // alpha channel will not impact the RGB ordering.
     int ret = libyuv::RGB24ToARGB(
         buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-        const_cast<uint8*>(output_buffer->plane(0).buffer),
+        const_cast<uint8_t*>(output_buffer->plane(0).buffer),
         output_buffer->plane(0).stride.row_stride_bytes,
         buffer.dimension().width, buffer.dimension().height);
     if (ret != 0) {
@@ -590,7 +589,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       // Convert kRGBA to ARGB
       int argb_buffer_size = GetFrameBufferByteSize(buffer.dimension(),
                                                     FrameBuffer::Format::kRGBA);
-      auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+      auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
       const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
       TFLITE_RETURN_IF_ERROR(
           ConvertRgbaToArgb(buffer, argb_buffer.get(), argb_row_bytes));
@@ -598,7 +597,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       // Convert ARGB to kGRAY
       int ret = libyuv::ARGBToJ400(
           argb_buffer.get(), argb_row_bytes,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -613,8 +612,8 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToNV12(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-          const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-          const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+          const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
         return CreateStatusWithPayload(
@@ -628,8 +627,8 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToNV21(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-          const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-          const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+          const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
         return CreateStatusWithPayload(
@@ -644,9 +643,9 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                        FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
       int ret = libyuv::ABGRToI420(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-          const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-          const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
-          const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+          const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+          const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
         return CreateStatusWithPayload(
@@ -660,7 +659,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       // alpha channel will not impact the RGB ordering.
       int ret = libyuv::ARGBToRGB24(
           buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-          const_cast<uint8*>(output_buffer->plane(0).buffer),
+          const_cast<uint8_t*>(output_buffer->plane(0).buffer),
           output_buffer->plane(0).stride.row_stride_bytes,
           buffer.dimension().width, buffer.dimension().height);
       if (ret != 0) {
@@ -707,7 +706,7 @@ absl::Status RotateRgba(const FrameBuffer& buffer, int angle_deg,
   // libyuv::ARGBRotate assumes RGBA buffer is in the interleaved format.
   int ret = libyuv::ARGBRotate(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes, buffer.dimension().width,
       buffer.dimension().height, GetLibyuvRotationMode(angle_deg % 360));
   if (ret != 0) {
@@ -727,12 +726,12 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
   // Convert RGB to ARGB
   int argb_buffer_size =
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-  auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+  auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
   TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
   // Rotate ARGB
-  auto argb_rotated_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+  auto argb_rotated_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
   int rotated_row_bytes = output_buffer->dimension().width * kRgbaPixelBytes;
   // TODO(b/151954340): Optimize the current implementation by utilizing
   // ARGBMirror for 180 degree rotation.
@@ -762,7 +761,7 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
   }
   int ret = libyuv::RotatePlane(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes, buffer.dimension().width,
       buffer.dimension().height, GetLibyuvRotationMode(angle_deg % 360));
   if (ret != 0) {
@@ -783,9 +782,9 @@ absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
   int ret = libyuv::I420Rotate(
       input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
       input_data.uv_row_stride, input_data.v_buffer, input_data.uv_row_stride,
-      const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-      const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
-      const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+      const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
       buffer.dimension().width, buffer.dimension().height,
       GetLibyuvRotationMode(angle_deg));
   if (ret != 0) {
@@ -813,7 +812,8 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   const int rotated_buffer_size = GetFrameBufferByteSize(
       output_buffer->dimension(), FrameBuffer::Format::kYV21);
-  auto rotated_yuv_raw_buffer = absl::make_unique<uint8[]>(rotated_buffer_size);
+  auto rotated_yuv_raw_buffer =
+      absl::make_unique<uint8_t[]>(rotated_buffer_size);
   TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
                    CreateFromRawBuffer(
                        rotated_yuv_raw_buffer.get(), output_buffer->dimension(),
@@ -827,18 +827,18 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
   // in the intermediate rotated I420 frame. The output buffer is finally built
   // by merging the swapped UV planes which produces V first interleaved UV
   // buffer.
-  const uint8* chroma_buffer = buffer.format() == FrameBuffer::Format::kNV12
-                                   ? input_data.u_buffer
-                                   : input_data.v_buffer;
+  const uint8_t* chroma_buffer = buffer.format() == FrameBuffer::Format::kNV12
+                                     ? input_data.u_buffer
+                                     : input_data.v_buffer;
   // Rotate the Y plane and store into the Y plane in `output_buffer`. Rotate
   // the interleaved UV plane and store into the interleaved UV plane in
   // `rotated_yuv_buffer`.
   int ret = libyuv::NV12ToI420Rotate(
       input_data.y_buffer, input_data.y_row_stride, chroma_buffer,
-      input_data.uv_row_stride, const_cast<uint8*>(output_data.y_buffer),
-      output_data.y_row_stride, const_cast<uint8*>(rotated_yuv_data.u_buffer),
+      input_data.uv_row_stride, const_cast<uint8_t*>(output_data.y_buffer),
+      output_data.y_row_stride, const_cast<uint8_t*>(rotated_yuv_data.u_buffer),
       rotated_yuv_data.uv_row_stride,
-      const_cast<uint8*>(rotated_yuv_data.v_buffer),
+      const_cast<uint8_t*>(rotated_yuv_data.v_buffer),
       rotated_yuv_data.uv_row_stride, buffer.dimension().width,
       buffer.dimension().height, GetLibyuvRotationMode(angle_deg % 360));
   if (ret != 0) {
@@ -850,7 +850,7 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
   // the intermediate I420 frame is swapped. MergeUVPlane builds the interleaved
   // VU buffer for NV21 by putting the U plane in the I420 frame which is
   // actually the V plane from the input buffer first.
-  const uint8* output_chroma_buffer =
+  const uint8_t* output_chroma_buffer =
       buffer.format() == FrameBuffer::Format::kNV12 ? output_data.u_buffer
                                                     : output_data.v_buffer;
   // The width and height arguments of `libyuv::MergeUVPlane()` represent the
@@ -858,7 +858,7 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
   libyuv::MergeUVPlane(
       rotated_yuv_data.u_buffer, rotated_yuv_data.uv_row_stride,
       rotated_yuv_data.v_buffer, rotated_yuv_data.uv_row_stride,
-      const_cast<uint8*>(output_chroma_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_chroma_buffer), output_data.uv_row_stride,
       (output_buffer->dimension().width + 1) / 2,
       (output_buffer->dimension().height + 1) / 2);
   return absl::OkStatus();
@@ -880,7 +880,7 @@ absl::Status FlipPlaneVertically(const FrameBuffer& buffer,
   // Flip vertically is achieved by passing in negative height.
   libyuv::CopyPlane(buffer.plane(0).buffer,
                     buffer.plane(0).stride.row_stride_bytes,
-                    const_cast<uint8*>(output_buffer->plane(0).buffer),
+                    const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                     output_buffer->plane(0).stride.row_stride_bytes,
                     output_buffer->dimension().width * pixel_stride,
                     -output_buffer->dimension().height);
@@ -908,7 +908,7 @@ absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
 
   libyuv::CopyPlane(buffer.plane(0).buffer + adjusted_offset,
                     buffer.plane(0).stride.row_stride_bytes,
-                    const_cast<uint8*>(output_buffer->plane(0).buffer),
+                    const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                     output_buffer->plane(0).stride.row_stride_bytes,
                     crop_dimension.width * pixel_stride, crop_dimension.height);
 
@@ -929,7 +929,7 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
   int crop_height = y1 - y0 + 1;
   libyuv::CopyPlane(input_data.y_buffer + crop_offset_y,
                     input_data.y_row_stride,
-                    const_cast<uint8*>(output_data.y_buffer),
+                    const_cast<uint8_t*>(output_data.y_buffer),
                     output_data.y_row_stride, crop_width, crop_height);
   // Crop chroma plane by copying the buffer with the origin offset to
   // (x0 / 2, y0 / 2);
@@ -937,12 +937,12 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
   // bounding box with odd X or Y starting positions.
   int crop_offset_chroma = input_data.uv_row_stride * (y0 / 2) +
                            input_data.uv_pixel_stride * (x0 / 2);
-  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
   libyuv::CopyPlane(
       input_chroma_buffer + crop_offset_chroma, input_data.uv_row_stride,
-      const_cast<uint8*>(output_chroma_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_chroma_buffer), output_data.uv_row_stride,
       /*width=*/(crop_width + 1) / 2 * 2, /*height=*/(crop_height + 1) / 2);
   return absl::OkStatus();
 }
@@ -960,7 +960,7 @@ absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
   FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
   libyuv::CopyPlane(
       input_data.y_buffer + crop_offset_y, input_data.y_row_stride,
-      const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
+      const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
       crop_dimension.width, crop_dimension.height);
   // Crop U plane by copying the buffer with the origin offset to
   // (x0 / 2, y0 / 2).
@@ -972,13 +972,13 @@ absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                            input_data.uv_pixel_stride * (x0 / 2);
   libyuv::CopyPlane(
       input_data.u_buffer + crop_offset_chroma, input_data.uv_row_stride,
-      const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
       crop_uv_dimension.width, crop_uv_dimension.height);
   // Crop V plane by copying the buffer with the origin offset to
   // (x0 / 2, y0 / 2);
   libyuv::CopyPlane(
       input_data.v_buffer + crop_offset_chroma, input_data.uv_row_stride,
-      const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
       /*width=*/(crop_dimension.width + 1) / 2,
       /*height=*/(crop_dimension.height + 1) / 2);
   return absl::OkStatus();
@@ -1066,7 +1066,7 @@ absl::Status FlipHorizontallyRgba(const FrameBuffer& buffer,
 
   int ret = libyuv::ARGBMirror(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes,
       output_buffer->dimension().width, output_buffer->dimension().height);
 
@@ -1092,7 +1092,7 @@ absl::Status FlipHorizontallyPlane(const FrameBuffer& buffer,
   }
   libyuv::MirrorPlane(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes,
       output_buffer->dimension().width, output_buffer->dimension().height);
 
@@ -1117,7 +1117,7 @@ absl::Status ResizeRgb(
   // Convert RGB to ARGB
   int argb_buffer_size =
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-  auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+  auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
   TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
@@ -1125,7 +1125,7 @@ absl::Status ResizeRgb(
   int resized_argb_buffer_size = GetFrameBufferByteSize(
       output_buffer->dimension(), FrameBuffer::Format::kRGBA);
   auto resized_argb_buffer =
-      absl::make_unique<uint8[]>(resized_argb_buffer_size);
+      absl::make_unique<uint8_t[]>(resized_argb_buffer_size);
   int resized_argb_row_bytes =
       output_buffer->dimension().width * kRgbaPixelBytes;
   int ret = libyuv::ARGBScale(
@@ -1158,7 +1158,7 @@ absl::Status FlipHorizontallyRgb(const FrameBuffer& buffer,
 #if LIBYUV_VERSION >= 1747
   int ret = libyuv::RGB24Mirror(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes, buffer.dimension().width,
       buffer.dimension().height);
   if (ret != 0) {
@@ -1186,7 +1186,7 @@ absl::Status ResizeRgba(
   int ret = libyuv::ARGBScale(
       buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
       buffer.dimension().width, buffer.dimension().height,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
+      const_cast<uint8_t*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes,
       output_buffer->dimension().width, output_buffer->dimension().height,
       interpolation);
@@ -1205,14 +1205,14 @@ absl::Status FlipHorizontallyNv(const FrameBuffer& buffer,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
-  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
 
   int ret = libyuv::NV12Mirror(
       input_data.y_buffer, input_data.y_row_stride, input_chroma_buffer,
-      input_data.uv_row_stride, const_cast<uint8*>(output_data.y_buffer),
-      output_data.y_row_stride, const_cast<uint8*>(output_chroma_buffer),
+      input_data.uv_row_stride, const_cast<uint8_t*>(output_data.y_buffer),
+      output_data.y_row_stride, const_cast<uint8_t*>(output_chroma_buffer),
       output_data.uv_row_stride, buffer.dimension().width,
       buffer.dimension().height);
 
@@ -1235,9 +1235,9 @@ absl::Status FlipHorizontallyYv(const FrameBuffer& buffer,
   int ret = libyuv::I420Mirror(
       input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
       input_data.uv_row_stride, input_data.v_buffer, input_data.uv_row_stride,
-      const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-      const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
-      const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+      const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
       buffer.dimension().width, buffer.dimension().height);
   if (ret != 0) {
     return CreateStatusWithPayload(
@@ -1257,18 +1257,18 @@ absl::Status FlipVerticallyNv(const FrameBuffer& buffer,
                    FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
   // Flip Y plane vertically by passing a negative height.
   libyuv::CopyPlane(input_data.y_buffer, input_data.y_row_stride,
-                    const_cast<uint8*>(output_data.y_buffer),
+                    const_cast<uint8_t*>(output_data.y_buffer),
                     output_data.y_row_stride, buffer.dimension().width,
                     -output_buffer->dimension().height);
   // Flip UV plane vertically by passing a negative height.
-  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                    GetUvRawBuffer(*output_buffer));
   TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_plane_dimension,
                    GetUvPlaneDimension(buffer.dimension(), buffer.format()));
   libyuv::CopyPlane(
       input_chroma_buffer, input_data.uv_row_stride,
-      const_cast<uint8*>(output_chroma_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_chroma_buffer), output_data.uv_row_stride,
       /*width=*/uv_plane_dimension.width * 2, -uv_plane_dimension.height);
   return absl::OkStatus();
 }
@@ -1284,9 +1284,9 @@ absl::Status FlipVerticallyYv(const FrameBuffer& buffer,
   int ret = libyuv::I420Copy(
       input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
       input_data.uv_row_stride, input_data.v_buffer, input_data.uv_row_stride,
-      const_cast<uint8*>(output_data.y_buffer), output_data.y_row_stride,
-      const_cast<uint8*>(output_data.u_buffer), output_data.uv_row_stride,
-      const_cast<uint8*>(output_data.v_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+      const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+      const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
       buffer.dimension().width, -buffer.dimension().height);
   if (ret != 0) {
     return CreateStatusWithPayload(
@@ -1311,7 +1311,7 @@ absl::Status ResizeGray(
   libyuv::ScalePlane(buffer.plane(0).buffer,
                      buffer.plane(0).stride.row_stride_bytes,
                      buffer.dimension().width, buffer.dimension().height,
-                     const_cast<uint8*>(output_buffer->plane(0).buffer),
+                     const_cast<uint8_t*>(output_buffer->plane(0).buffer),
                      output_buffer->plane(0).stride.row_stride_bytes,
                      output_buffer->dimension().width,
                      output_buffer->dimension().height, interpolation);

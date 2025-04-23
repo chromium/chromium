@@ -93,10 +93,4 @@ void MockExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::Value::Dict& attributes) {}
 
-bool MockExtensionSystem::FinishDelayedInstallationIfReady(
-    const ExtensionId& extension_id,
-    bool install_immediately) {
-  NOTREACHED();
-}
-
 }  // namespace extensions

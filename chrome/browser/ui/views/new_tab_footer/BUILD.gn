@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("new_tab_footer") {
+  sources = [
+    "footer_web_view.cc",
+    "footer_web_view.h",
+  ]
+
+  deps = [
+    "//skia",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}

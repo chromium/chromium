@@ -4,39 +4,38 @@
 
 package org.chromium.chrome.browser.password_edit_dialog;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Java part of PasswordEditBridge pair providing communication between native password manager code
  * and Java password edit dialog UI components.
  */
+@NullMarked
 public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.Delegate {
     private long mNativeDialog;
     private final PasswordEditDialogCoordinator mDialogCoordinator;
 
     @CalledByNative
-    static PasswordEditDialogBridge create(
-            long nativeDialog, @NonNull WindowAndroid windowAndroid) {
+    static PasswordEditDialogBridge create(long nativeDialog, WindowAndroid windowAndroid) {
         return new PasswordEditDialogBridge(nativeDialog, windowAndroid);
     }
 
-    private PasswordEditDialogBridge(long nativeDialog, @NonNull WindowAndroid windowAndroid) {
+    private PasswordEditDialogBridge(long nativeDialog, WindowAndroid windowAndroid) {
         mNativeDialog = nativeDialog;
         mDialogCoordinator = PasswordEditDialogCoordinator.create(windowAndroid, this);
     }
 
     @CalledByNative
     void showPasswordEditDialog(
-            @NonNull String[] savedUsernames,
-            @NonNull @JniType("std::u16string") String username,
-            @NonNull @JniType("std::u16string") String password,
+            String[] savedUsernames,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password,
             @Nullable String account) {
         mDialogCoordinator.showPasswordEditDialog(savedUsernames, username, password, account);
     }

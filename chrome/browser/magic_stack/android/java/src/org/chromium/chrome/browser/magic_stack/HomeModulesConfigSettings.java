@@ -11,18 +11,22 @@ import android.os.Bundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 
 import java.util.List;
 
 /** Fragment that allows the user to configure chrome home modules related preferences. */
+@NullMarked
 public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.home_modules_configuration));
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         HomeModulesConfigManager homeModulesConfigManager = HomeModulesConfigManager.getInstance();
@@ -64,5 +68,10 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
 
     boolean isHomeModulesConfigSettingsEmptyForTesting() {
         return getPreferenceScreen().getPreferenceCount() == 0;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

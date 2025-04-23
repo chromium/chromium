@@ -18,15 +18,11 @@ PolicyCheck::~PolicyCheck() = default;
 
 void PolicyCheck::Start(ResultCallback callback) {
   Errors errors;
-// TODO(crbug.com/394876083): Enable the management policy on android
-// (currently management_policy() returns nullptr).
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!ExtensionSystem::Get(context_)->management_policy()->UserMayInstall(
           extension(), &error_)) {
     DCHECK(!error_.empty());
     errors.insert(Error::kDisallowedByPolicy);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   std::move(callback).Run(errors);
 }
 

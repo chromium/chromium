@@ -55,13 +55,19 @@ class MarkupAccumulator::NamespaceContext final {
  public:
   // https://w3c.github.io/DOM-Parsing/#dfn-add
   //
-  // This function doesn't accept empty prefix and empty namespace URI.
-  //  - The default namespace is managed separately.
-  //  - Namespace URI never be empty if the prefix is not empty.
+  // This function doesn't accept empty prefixes because the default namespace
+  // is managed separately.
+  //
+  // Empty namespace URIs represent "no namespace", and while it wouldn't be
+  // possible to bind a prefix to "no namespace" during parsing, it can be set
+  // via DOM mutation so they are accepted (and mapped to null on lookup).
+  //
+  // https://w3c.github.io/DOM-Parsing/#dfn-recording-the-namespace-information
+  // step 2.3.4.2
   void Add(const AtomicString& prefix, const AtomicString& namespace_uri) {
     DCHECK(!prefix.empty())
         << " prefix=" << prefix << " namespace_uri=" << namespace_uri;
-    DCHECK(!namespace_uri.empty())
+    DCHECK(!namespace_uri.IsNull())
         << " prefix=" << prefix << " namespace_uri=" << namespace_uri;
     prefix_ns_map_.Set(prefix, namespace_uri);
     auto result =
@@ -85,7 +91,7 @@ class MarkupAccumulator::NamespaceContext final {
         // attribute.
         local_default_namespace = attr.Value();
       } else if (attr.Prefix() == g_xmlns_atom) {
-        Add(attr.Prefix() ? attr.LocalName() : g_empty_atom, attr.Value());
+        Add(attr.LocalName(), attr.Value());
       }
     }
     // 3. Return the value of default namespace attr value.
@@ -94,7 +100,8 @@ class MarkupAccumulator::NamespaceContext final {
 
   AtomicString LookupNamespaceURI(const AtomicString& prefix) const {
     auto it = prefix_ns_map_.find(prefix ? prefix : g_empty_atom);
-    return it != prefix_ns_map_.end() ? it->value : g_null_atom;
+    return it != prefix_ns_map_.end() && !it->value.empty() ? it->value
+                                                            : g_null_atom;
   }
 
   const AtomicString& ContextNamespace() const { return context_namespace_; }

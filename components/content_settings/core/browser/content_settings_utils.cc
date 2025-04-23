@@ -125,7 +125,7 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   rules->mixed_content_rules =
       map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT);
 #else

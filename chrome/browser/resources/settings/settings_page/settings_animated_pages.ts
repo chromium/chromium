@@ -62,12 +62,15 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
        * either a query selector that identifies the desired element, an element
        * or a function to be run when a neon-animation-finish event is handled.
        */
-      focusConfig: Object,
+      focusConfig: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
-  section: string;
-  focusConfig: FocusConfig|null = null;
+  declare section: string;
+  declare focusConfig: FocusConfig|null;
   private previousRoute_: Route|null;
   private lightDomReady_: boolean = false;
   private queuedRouteChange_: {oldRoute?: Route, newRoute: Route}|null = null;

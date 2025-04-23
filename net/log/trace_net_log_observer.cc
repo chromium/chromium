@@ -46,7 +46,8 @@ class TracedValue : public base::trace_event::ConvertableToTraceFormat {
 
 }  // namespace
 
-TraceNetLogObserver::TraceNetLogObserver() = default;
+TraceNetLogObserver::TraceNetLogObserver(Options options)
+    : capture_mode_(options.capture_mode) {}
 
 TraceNetLogObserver::~TraceNetLogObserver() {
   DCHECK(!net_log_to_watch_);
@@ -114,7 +115,7 @@ void TraceNetLogObserver::OnTraceLogEnabled() {
   if (!enabled)
     return;
 
-  net_log_to_watch_->AddObserver(this, NetLogCaptureMode::kDefault);
+  net_log_to_watch_->AddObserver(this, capture_mode_);
 }
 
 void TraceNetLogObserver::OnTraceLogDisabled() {

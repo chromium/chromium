@@ -20,6 +20,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportDeliveryOnNewNavigation);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kAttributionReportingNavigationForReportDeliveryWindow;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportExpiry);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FEATURES_H_

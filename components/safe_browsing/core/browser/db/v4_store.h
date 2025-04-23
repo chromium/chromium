@@ -199,6 +199,10 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAddUnlumpedHashes);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAddUnlumpedHashesWithEmptyString);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestAddUnlumpedHashesWithTooSmallPrefixSize);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestAddUnlumpedHashesWithTooLargePrefixSize);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestGetNextSmallestUnmergedPrefixWithEmptyPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestGetNextSmallestUnmergedPrefix);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesWithSameSizesInEachMap);
@@ -245,12 +249,19 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, GetMatchingHashPrefixSize32Or21);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestAdditionsWithRiceEncodingFailsWithInvalidInput);
+  FRIEND_TEST_ALL_PREFIXES(
+      V4StoreTest,
+      TestAdditionsWithRiceEncodingFailsWithInvalidCompressionType);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesFailsChecksum);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestChecksumErrorOnStartup);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, WriteToDiskFails);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FullUpdateFailsChecksumSynchronously);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           ApplyUpdateFailsWithInvalidResponseType);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           ApplyUpdateRemovalsFailsWithInvalidCompressionType);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, VerifyChecksumMmapFile);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FailedMmapOnRead);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToMmap);
@@ -262,6 +273,17 @@ class V4Store {
 
   friend class V4StoreTest;
   friend class V4StoreFuzzer;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ApplyUpdateType)
+  enum class ApplyUpdateType {
+    kInvalid = 0,
+    kFull = 1,
+    kPartial = 2,
+    kMaxValue = kPartial,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV4UpdateType)
 
   // If |prefix_size| is within expected range, and |raw_hashes_length| is a
   // multiple of prefix_size, then it sets the string of length

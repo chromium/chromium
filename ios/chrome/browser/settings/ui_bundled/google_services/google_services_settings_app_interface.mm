@@ -31,11 +31,7 @@ class NavigationBlockerDecider
                           PolicyDecisionCallback callback) override {
     std::move(callback).Run(PolicyDecision::Cancel());
   }
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
-
-WEB_STATE_USER_DATA_KEY_IMPL(NavigationBlockerDecider)
 
 }  // namespace
 

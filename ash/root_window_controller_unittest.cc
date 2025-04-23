@@ -105,7 +105,8 @@ class RootWindowControllerTest : public AshTestBase {
   }
 
   views::WidgetDelegate* CreateModalWidgetDelegate() {
-    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
     delegate->SetModalType(ui::mojom::ModalType::kSystem);
     return delegate.release();
   }

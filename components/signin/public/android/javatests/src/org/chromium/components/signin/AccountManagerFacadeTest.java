@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -115,7 +116,7 @@ public class AccountManagerFacadeTest {
         }
 
         @Override
-        public void onGetTokenFailure(boolean isTransientError) {
+        public void onGetTokenFailure(GoogleServiceAuthError authError) {
             mToken = null;
             mTokenRetrievedCountDown.countDown();
         }

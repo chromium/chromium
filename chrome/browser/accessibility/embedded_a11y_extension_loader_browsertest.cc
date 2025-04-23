@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +15,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_system.h"
 
 class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
  public:
@@ -40,11 +38,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
 
   void WaitForExtensionLoaded(Profile* profile,
                               const std::string& extension_id) {
-    extensions::ComponentLoader* component_loader =
-        extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->component_loader();
-
+    auto* component_loader = extensions::ComponentLoader::Get(profile);
     while (!component_loader->Exists(extension_id)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
@@ -55,10 +49,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
 
   void WaitForExtensionUnloaded(Profile* profile,
                                 const std::string& extension_id) {
-    extensions::ComponentLoader* component_loader =
-        extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->component_loader();
+    auto* component_loader = extensions::ComponentLoader::Get(profile);
     while (component_loader->Exists(extension_id)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();

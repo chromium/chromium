@@ -50,7 +50,7 @@ void GoogleAPIKeysTest::SetUp() {
     cache.was_set = env_->HasVar(cache.variable_name);
     cache.value.clear();
     if (cache.was_set) {
-      env_->GetVar(cache.variable_name, &cache.value);
+      cache.value = env_->GetVar(cache.variable_name).value();
       env_->UnSetVar(cache.variable_name);
     }
   }

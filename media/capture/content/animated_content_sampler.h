@@ -26,6 +26,15 @@ class CAPTURE_EXPORT AnimatedContentSampler {
   explicit AnimatedContentSampler(base::TimeDelta min_capture_period);
   ~AnimatedContentSampler();
 
+  // Set whether the animated content sampler would have proposal.
+  void SetEnabled(bool enabled) { enabled_ = enabled; }
+
+  // Sets the minimum ratio of pixels in the majority-damaged region to all
+  // damaged region's area.
+  void SetMajorityDamagedRectMinRatio(float ratio) {
+    majority_damaged_pixel_min_ratio_ = ratio;
+  }
+
   // Sets a new minimum capture period.
   void SetMinCapturePeriod(base::TimeDelta period);
 
@@ -34,6 +43,7 @@ class CAPTURE_EXPORT AnimatedContentSampler {
   base::TimeDelta target_sampling_period() const {
     return target_sampling_period_;
   }
+
   void SetTargetSamplingPeriod(base::TimeDelta period);
 
   // Examines the given presentation event metadata, along with recent history,
@@ -152,6 +162,13 @@ class CAPTURE_EXPORT AnimatedContentSampler {
 
   // The rewritten frame timestamp for the latest event.
   base::TimeTicks frame_timestamp_;
+
+  // Whether the animated content sampler is enabled
+  bool enabled_;
+
+  // The minimum ratio of the majority damaged rect area among all damaged
+  // area's pixels
+  float majority_damaged_pixel_min_ratio_;
 };
 
 }  // namespace media

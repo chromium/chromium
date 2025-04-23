@@ -36,9 +36,9 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        assert mIncognitoTabsButton != null;
+        assert incognitoTabsButtonElement != null;
         elements.declareEnterCondition(
-                new ViewElementMatchesCondition(mIncognitoTabsButton, isSelected()));
+                new ViewElementMatchesCondition(incognitoTabsButtonElement, isSelected()));
     }
 
     /** Open a new tab using the New Tab action button. */
@@ -51,6 +51,6 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return travelToSync(page, getNewTabButtonViewSpec()::click);
+        return travelToSync(page, newTabButtonElement.clickTrigger());
     }
 }

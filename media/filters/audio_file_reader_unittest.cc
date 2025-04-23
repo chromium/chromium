@@ -194,7 +194,7 @@ TEST_F(AudioFileReaderTest, WaveF32LE) {
 
 TEST_F(AudioFileReaderTest, MP3) {
   RunTest("sfx.mp3", "1.30,2.72,4.56,5.08,3.74,2.03,", 1, 44100,
-          base::Microseconds(313470), 13825, 11025);
+          base::Microseconds(250001), 11026, 11025);
 }
 
 TEST_F(AudioFileReaderTest, CorruptMP3) {

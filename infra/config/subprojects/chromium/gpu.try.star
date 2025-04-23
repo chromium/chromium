@@ -430,6 +430,15 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-arm64-apple-m3-retina-rel",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Retina Release (Apple M3)",
+    ],
+    gn_args = "ci/GPU FYI Mac arm64 Builder",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-intel-asan",
     mirrors = [
         "ci/GPU FYI Mac Builder (asan)",

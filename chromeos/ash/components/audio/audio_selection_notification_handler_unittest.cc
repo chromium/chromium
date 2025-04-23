@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"

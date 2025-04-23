@@ -372,8 +372,8 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
       return nullptr;
     }
 
-    shared_texture_memory_ =
-        CreateDawnSharedTextureMemory(device, backbuffer_texture);
+    shared_texture_memory_ = CreateDawnSharedTextureMemory(
+        device, backbuffer_texture, /*requires_dawn_signal_fence=*/false);
     if (!shared_texture_memory_) {
       LOG(ERROR) << "Failed to create shared texture memory.";
       return nullptr;

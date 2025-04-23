@@ -17,6 +17,7 @@ export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parse
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, Settings, whenReady} from './data/model.js';
+export {Observable, WildcardChangeRecord} from './data/observable.js';
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
@@ -52,6 +53,7 @@ export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from '.
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';
+export {SelectMixinLit} from './ui/select_mixin_lit.js';
 export {SettingsMixinInterface} from './ui/settings_mixin.js';
 export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';
 export {PrintPreviewSidebarElement} from './ui/sidebar.js';

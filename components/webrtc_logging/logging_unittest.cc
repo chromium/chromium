@@ -22,17 +22,17 @@ namespace {
 
 static const int kDefaultVerbosity = 0;
 
-static const char* AsString(rtc::LoggingSeverity severity) {
+static const char* AsString(webrtc::LoggingSeverity severity) {
   switch (severity) {
-    case rtc::LS_ERROR:
+    case webrtc::LS_ERROR:
       return "LS_ERROR";
-    case rtc::LS_WARNING:
+    case webrtc::LS_WARNING:
       return "LS_WARNING";
-    case rtc::LS_INFO:
+    case webrtc::LS_INFO:
       return "LS_INFO";
-    case rtc::LS_VERBOSE:
+    case webrtc::LS_VERBOSE:
       return "LS_VERBOSE";
-    case rtc::LS_SENSITIVE:
+    case webrtc::LS_SENSITIVE:
       return "LS_SENSITIVE";
     default:
       return "";
@@ -78,27 +78,29 @@ TEST_F(WebRtcTextLogTest, DefaultConfiguration) {
   ASSERT_TRUE(Initialize(kDefaultVerbosity));
 
   // In the default configuration only warnings and errors should be logged.
-  RTC_LOG_V(rtc::LS_ERROR) << AsString(rtc::LS_ERROR);
-  RTC_LOG_V(rtc::LS_WARNING) << AsString(rtc::LS_WARNING);
-  RTC_LOG_V(rtc::LS_INFO) << AsString(rtc::LS_INFO);
-  RTC_LOG_V(rtc::LS_VERBOSE) << AsString(rtc::LS_VERBOSE);
-  RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
+  RTC_LOG_V(webrtc::LS_ERROR) << AsString(webrtc::LS_ERROR);
+  RTC_LOG_V(webrtc::LS_WARNING) << AsString(webrtc::LS_WARNING);
+  RTC_LOG_V(webrtc::LS_INFO) << AsString(webrtc::LS_INFO);
+  RTC_LOG_V(webrtc::LS_VERBOSE) << AsString(webrtc::LS_VERBOSE);
+  RTC_LOG_V(webrtc::LS_SENSITIVE) << AsString(webrtc::LS_SENSITIVE);
 
   // Read file to string.
   std::string contents_of_file;
   base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
-  EXPECT_THAT(contents_of_file, ::testing::HasSubstr(AsString(rtc::LS_ERROR)));
   EXPECT_THAT(contents_of_file,
-              ::testing::HasSubstr(AsString(rtc::LS_WARNING)));
+              ::testing::HasSubstr(AsString(webrtc::LS_ERROR)));
   EXPECT_THAT(contents_of_file,
-              ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_INFO))));
+              ::testing::HasSubstr(AsString(webrtc::LS_WARNING)));
   EXPECT_THAT(contents_of_file,
-              ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_VERBOSE))));
+              ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_INFO))));
   EXPECT_THAT(
       contents_of_file,
-      ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_SENSITIVE))));
+      ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_VERBOSE))));
+  EXPECT_THAT(
+      contents_of_file,
+      ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_SENSITIVE))));
 }
 
 TEST_F(WebRtcTextLogTest, InfoConfiguration) {
@@ -106,27 +108,29 @@ TEST_F(WebRtcTextLogTest, InfoConfiguration) {
 
   // In this configuration everything lower or equal to LS_INFO should be
   // logged.
-  RTC_LOG_V(rtc::LS_ERROR) << AsString(rtc::LS_ERROR);
-  RTC_LOG_V(rtc::LS_WARNING) << AsString(rtc::LS_WARNING);
-  RTC_LOG_V(rtc::LS_INFO) << AsString(rtc::LS_INFO);
-  RTC_LOG_V(rtc::LS_VERBOSE) << AsString(rtc::LS_VERBOSE);
-  RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
+  RTC_LOG_V(webrtc::LS_ERROR) << AsString(webrtc::LS_ERROR);
+  RTC_LOG_V(webrtc::LS_WARNING) << AsString(webrtc::LS_WARNING);
+  RTC_LOG_V(webrtc::LS_INFO) << AsString(webrtc::LS_INFO);
+  RTC_LOG_V(webrtc::LS_VERBOSE) << AsString(webrtc::LS_VERBOSE);
+  RTC_LOG_V(webrtc::LS_SENSITIVE) << AsString(webrtc::LS_SENSITIVE);
 
   // Read file to string.
   std::string contents_of_file;
   base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
-  EXPECT_THAT(contents_of_file, ::testing::HasSubstr(AsString(rtc::LS_ERROR)));
   EXPECT_THAT(contents_of_file,
-              ::testing::HasSubstr(AsString(rtc::LS_WARNING)));
+              ::testing::HasSubstr(AsString(webrtc::LS_ERROR)));
   EXPECT_THAT(contents_of_file,
-              ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_INFO))));
+              ::testing::HasSubstr(AsString(webrtc::LS_WARNING)));
   EXPECT_THAT(contents_of_file,
-              ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_VERBOSE))));
+              ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_INFO))));
   EXPECT_THAT(
       contents_of_file,
-      ::testing::Not(::testing::HasSubstr(AsString(rtc::LS_SENSITIVE))));
+      ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_VERBOSE))));
+  EXPECT_THAT(
+      contents_of_file,
+      ::testing::Not(::testing::HasSubstr(AsString(webrtc::LS_SENSITIVE))));
 
   // Also check that the log is proper.
   EXPECT_THAT(contents_of_file, ::testing::HasSubstr("logging_unittest.cc"));
@@ -140,31 +144,33 @@ TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
   ASSERT_TRUE(Initialize(2));  // verbosity at level 2 allows LS_SENSITIVE.
 
   // In this configuration everything should be logged.
-  RTC_LOG_V(rtc::LS_ERROR) << AsString(rtc::LS_ERROR);
-  RTC_LOG_V(rtc::LS_WARNING) << AsString(rtc::LS_WARNING);
-  RTC_LOG(LS_INFO) << AsString(rtc::LS_INFO);
+  RTC_LOG_V(webrtc::LS_ERROR) << AsString(webrtc::LS_ERROR);
+  RTC_LOG_V(webrtc::LS_WARNING) << AsString(webrtc::LS_WARNING);
+  RTC_LOG(LS_INFO) << AsString(webrtc::LS_INFO);
   static const int kFakeError = 1;
   RTC_LOG_E(LS_INFO, EN, kFakeError)
-      << "RTC_LOG_E(" << AsString(rtc::LS_INFO) << ")";
-  RTC_LOG_V(rtc::LS_VERBOSE) << AsString(rtc::LS_VERBOSE);
-  RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
+      << "RTC_LOG_E(" << AsString(webrtc::LS_INFO) << ")";
+  RTC_LOG_V(webrtc::LS_VERBOSE) << AsString(webrtc::LS_VERBOSE);
+  RTC_LOG_V(webrtc::LS_SENSITIVE) << AsString(webrtc::LS_SENSITIVE);
 
   // Read file to string.
   std::string contents_of_file;
   base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
-  EXPECT_THAT(contents_of_file, ::testing::HasSubstr(AsString(rtc::LS_ERROR)));
   EXPECT_THAT(contents_of_file,
-              ::testing::HasSubstr(AsString(rtc::LS_WARNING)));
+              ::testing::HasSubstr(AsString(webrtc::LS_ERROR)));
+  EXPECT_THAT(contents_of_file,
+              ::testing::HasSubstr(AsString(webrtc::LS_WARNING)));
 
-  EXPECT_THAT(contents_of_file, ::testing::HasSubstr(AsString(rtc::LS_INFO)));
+  EXPECT_THAT(contents_of_file,
+              ::testing::HasSubstr(AsString(webrtc::LS_INFO)));
   // RTC_LOG_E
   EXPECT_THAT(contents_of_file, ::testing::HasSubstr(strerror(kFakeError)));
   EXPECT_THAT(contents_of_file,
-              ::testing::HasSubstr(AsString(rtc::LS_VERBOSE)));
+              ::testing::HasSubstr(AsString(webrtc::LS_VERBOSE)));
   EXPECT_THAT(contents_of_file,
-              ::testing::HasSubstr(AsString(rtc::LS_SENSITIVE)));
+              ::testing::HasSubstr(AsString(webrtc::LS_SENSITIVE)));
 }
 
 TEST_F(WebRtcTextLogTest, LogIf) {

@@ -13,6 +13,4 @@ found in the LICENSE file.
     android:layout_height="@dimen/toolbar_height_no_shadow"
     style="@style/ModernToolbar"
     app:popupTheme="@style/ModernToolbarPopupTheme"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true" />
+    android:focusable="true" />

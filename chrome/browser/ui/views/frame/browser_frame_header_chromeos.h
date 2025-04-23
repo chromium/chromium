@@ -41,7 +41,6 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
 
   // FrameHeader:
   void UpdateFrameColors() override;
-  SkPath GetWindowMaskForFrameHeader(const gfx::Size& size) override;
 
  protected:
   // FrameHeader:

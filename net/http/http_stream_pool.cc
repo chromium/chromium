@@ -74,13 +74,13 @@ constexpr base::FeatureParam<base::TimeDelta>
         HttpStreamPool::kConnectionAttemptDelayParamName.data(),
         HttpStreamPool::kDefaultConnectionAttemptDelay};
 
-constexpr base::FeatureParam<HttpStreamPool::StreamAttemptDelayBehavior>
-    kStreamAttemptDelayBehavior{
+constexpr base::FeatureParam<HttpStreamPool::TcpBasedAttemptDelayBehavior>
+    kTcpBasedAttemptDelayBehavior{
         &features::kHappyEyeballsV3,
-        HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
-        HttpStreamPool::StreamAttemptDelayBehavior::
+        HttpStreamPool::kTcpBasedAttemptDelayBehaviorParamName.data(),
+        HttpStreamPool::TcpBasedAttemptDelayBehavior::
             kStartTimerOnFirstQuicAttempt,
-        HttpStreamPool::kStreamAttemptDelayBehaviorOptions};
+        HttpStreamPool::kTcpBasedAttemptDelayBehaviorOptions};
 
 constexpr base::FeatureParam<bool> kVerboseNetLog{
     &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
@@ -128,9 +128,9 @@ base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
 }
 
 // static
-HttpStreamPool::StreamAttemptDelayBehavior
-HttpStreamPool::GetStreamAttemptDelayBehavior() {
-  return kStreamAttemptDelayBehavior.Get();
+HttpStreamPool::TcpBasedAttemptDelayBehavior
+HttpStreamPool::GetTcpBasedAttemptDelayBehavior() {
+  return kTcpBasedAttemptDelayBehavior.Get();
 }
 
 // static
@@ -417,6 +417,7 @@ void HttpStreamPool::SetDelegateForTesting(
 
 base::Value::Dict HttpStreamPool::GetInfoAsValue() const {
   // Using "socket" instead of "stream" for compatibility with ClientSocketPool.
+  // These fields are used by some tests.
   base::Value::Dict dict;
   dict.Set("handed_out_socket_count",
            static_cast<int>(total_handed_out_stream_count_));
@@ -431,10 +432,18 @@ base::Value::Dict HttpStreamPool::GetInfoAsValue() const {
   for (const auto& [key, group] : groups_) {
     group_dicts.Set(key.ToString(), group->GetInfoAsValue());
   }
-
   if (!group_dicts.empty()) {
     dict.Set("groups", std::move(group_dicts));
   }
+
+  base::Value::List job_controller_list;
+  for (const auto& job_controller : job_controllers_) {
+    job_controller_list.Append(job_controller->GetInfoAsValue());
+  }
+  if (!job_controller_list.empty()) {
+    dict.Set("job_controllers", std::move(job_controller_list));
+  }
+
   return dict;
 }
 

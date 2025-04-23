@@ -32,14 +32,15 @@ import java.util.List;
  */
 class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
 
-    private final int mItemMaxWidth;
     private final int mItemSpacing;
     private final ObservableSupplierImpl<Boolean> mItemsOverflowSupplier;
+
+    private int mItemMaxWidth;
 
     /**
      * Constructor.
      *
-     * @param context the context in which to render items.
+     * @param context The context in which to render items.
      */
     public BookmarkBarItemsLayoutManager(@NonNull Context context) {
         final Resources resources = context.getResources();
@@ -54,7 +55,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     }
 
     /**
-     * @return the supplier for the current state of items overflow.
+     * @return The supplier for the current state of items overflow.
      */
     public @NonNull ObservableSupplier<Boolean> getItemsOverflowSupplier() {
         return mItemsOverflowSupplier;
@@ -108,6 +109,16 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         mItemsOverflowSupplier.set(itemsOverflow);
     }
 
+    /**
+     * Sets the max width constraint for bookmark bar items. Note that the new constraint will not
+     * take effect until the next layout pass.
+     *
+     * @param itemMaxWidth The max width constraint.
+     */
+    public void setItemMaxWidth(int itemMaxWidth) {
+        mItemMaxWidth = itemMaxWidth;
+    }
+
     private int getStartOffset() {
         return LocalizationUtils.isLayoutRtl() ? getWidth() : 0;
     }
@@ -127,6 +138,9 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     }
 
     private void measureChild(@NonNull View child) {
+        // NOTE: Max width constraint must be set before measure/layout.
+        assert mItemMaxWidth > 0;
+
         final var lp = child.getLayoutParams();
 
         // NOTE: Width must be constrained via both layout params and measure spec. Otherwise a

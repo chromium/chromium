@@ -12,7 +12,7 @@ build_webui("build") {
     "safe_browsing.html",
   ]
 
-  non_web_component_files = [ "safe_browsing.js" ]
+  ts_files = [ "safe_browsing.ts" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",

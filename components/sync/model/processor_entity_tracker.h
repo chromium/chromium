@@ -30,9 +30,10 @@ class ProcessorEntity;
 class ProcessorEntityTracker {
  public:
   // Creates tracker and fills entities data from batch metadata map. This
-  // constructor must be used only if initial_sync_done returns true in
-  // `data_type_state`.
+  // constructor must be used only if the `initial_sync_state` in
+  // `data_type_state` is at least partially-done.
   ProcessorEntityTracker(
+      DataType type,
       const sync_pb::DataTypeState& data_type_state,
       std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
           metadata_map);
@@ -108,8 +109,8 @@ class ProcessorEntityTracker {
   // `HasUnsyncedChanges()`, else rename it to something more accurate.
   bool HasLocalChanges() const;
 
-  // Returns true if there are any entities with unsynced changes.
-  bool HasUnsyncedChanges() const;
+  // Returns the count of entities with unsynced changes.
+  size_t GetUnsyncedDataCount() const;
 
   const sync_pb::DataTypeState& data_type_state() const {
     return data_type_state_;
@@ -137,8 +138,7 @@ class ProcessorEntityTracker {
   // Creates a new processor entity (must not be deleted outside current
   // object).
   ProcessorEntity* AddInternal(const std::string& storage_key,
-                               const EntityData& data,
-                               int64_t server_version);
+                               const EntityData& data);
 
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always

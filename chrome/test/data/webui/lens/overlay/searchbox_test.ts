@@ -54,7 +54,11 @@ suite('Searchbox', () => {
     // Simulate searchbox being focused and the autocomplete request being
     // started.
     lensOverlayElement.setSearchboxFocusForTesting(true);
-    document.dispatchEvent(new CustomEvent('query-autocomplete'));
+    document.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      cancelable: true,
+      detail: {inputValue: 'hello'},
+    }));
     await waitAfterNextRender(lensOverlayElement);
     assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
 

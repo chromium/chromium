@@ -82,6 +82,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll);
   AddCallback("OobeTestApi.getMetricsClientID",
               &OobeTestAPIHandler::HandleGetMetricsClientID);
+  AddCallback("OobeTestApi.getShouldSkipSplitModifierScreen",
+              &OobeTestAPIHandler::HandleGetShouldSkipSplitModifierScreen);
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
@@ -102,6 +104,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_shouldSkipGeminiIntro",
             GeminiIntroScreen::ShouldBeSkipped());
 
+  // TODO(bohdanty): Remove in a follow-up CL to prevent CQ from breaking.
   dict->Set("testapi_shouldSkipSplitModifierKeyboardInfo",
             SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 
@@ -290,6 +293,12 @@ void OobeTestAPIHandler::HandleGetMetricsClientID(
         metrics::prefs::kMetricsProvisionalClientID);
   }
   ResolveJavascriptCallback(base::Value(callback_id), client_id);
+}
+
+void OobeTestAPIHandler::HandleGetShouldSkipSplitModifierScreen(
+    const std::string& callback_id) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 }
 
 }  // namespace ash

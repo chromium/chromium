@@ -24,6 +24,7 @@
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -38,8 +39,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -52,29 +55,59 @@ BnplIssuerView::BnplIssuerView(
     SelectBnplIssuerDialog* issuer_dialog)
     : issuer_dialog_(issuer_dialog), controller_(controller) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
+}
+
+BnplIssuerView::~BnplIssuerView() = default;
+
+void BnplIssuerView::AddedToWidget() {
+  views::BoxLayoutView::AddedToWidget();
   auto* layout_provider = ChromeLayoutProvider::Get();
+  SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL));
   int corner_radius =
       layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
   auto issuer_contexts = controller_->GetIssuerContexts();
   for (const auto& [issuer, eligibility] : issuer_contexts) {
     bool issuer_eligible =
         eligibility == BnplIssuerEligibilityForPage::kIsEligible;
-    int image_id = IDR_AUTOFILL_AFFIRM_UNLINKED;
-    bool issuer_linked = issuer.payment_instrument().has_value();
-    if (issuer.issuer_id() == kBnplZipIssuerId) {
-      image_id =
-          issuer_linked ? IDR_AUTOFILL_ZIP_LINKED : IDR_AUTOFILL_ZIP_UNLINKED;
-    } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
-      image_id = issuer_linked ? IDR_AUTOFILL_AFFIRM_LINKED
-                               : IDR_AUTOFILL_AFFIRM_UNLINKED;
-    } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
-      image_id = issuer_linked ? IDR_AUTOFILL_AFTERPAY_LINKED
-                               : IDR_AUTOFILL_AFTERPAY_UNLINKED;
-    }
-    auto image_view =
-        std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
-            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                image_id)));
+    const bool issuer_linked = issuer.payment_instrument().has_value();
+    const auto image_ids = [&]() -> std::pair<int, int> {
+      if (issuer_linked) {
+        // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
+        // statement instead of if/else.
+        if (issuer.issuer_id() == kBnplZipIssuerId) {
+          return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
+        } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
+          return {IDR_AUTOFILL_AFFIRM_LINKED, IDR_AUTOFILL_AFFIRM_LINKED_DARK};
+        } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
+          return {IDR_AUTOFILL_AFTERPAY_LINKED,
+                  IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
+        }
+        NOTREACHED();
+      }
+      // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
+      // statement instead of if/else.
+      if (issuer.issuer_id() == kBnplZipIssuerId) {
+        return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
+      } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
+        return {IDR_AUTOFILL_AFFIRM_UNLINKED,
+                IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
+      } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
+        return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
+                IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
+      }
+      NOTREACHED();
+    }();
+
+    auto image_view = std::make_unique<views::ThemeTrackingImageView>(
+        ui::ImageModel::FromResourceId(image_ids.first),
+        ui::ImageModel::FromResourceId(image_ids.second),
+        base::BindRepeating(
+            [](views::View* view) {
+              return ui::ColorVariant(view->GetColorProvider()->GetColor(
+                  ui::kColorDialogBackground));
+            },
+            base::Unretained(this)));
     auto* image_view_ptr = image_view.get();
     auto issuer_button = std::make_unique<HoverButton>(
         views::Button::PressedCallback(base::BindRepeating(
@@ -155,12 +188,7 @@ BnplIssuerView::BnplIssuerView(
                         : kColorBnplIssuerLabelForegroundDisabled);
     AddChildView(std::move(issuer_button));
   }
-}
 
-BnplIssuerView::~BnplIssuerView() = default;
-
-void BnplIssuerView::AddedToWidget() {
-  views::BoxLayoutView::AddedToWidget();
   // TODO (crbug.com/402646513): Update color token to use a context-specific
   // token.
   SkColor background_color =

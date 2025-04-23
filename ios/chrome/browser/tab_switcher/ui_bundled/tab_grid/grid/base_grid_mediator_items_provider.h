@@ -22,8 +22,8 @@ class WebStateID;
 // if the label shouldn't be displayed.
 - (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID;
 
-// Returns the facePile view controller associated with the `itemID`.
-- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID;
+// Returns the facePile view associated with the `itemID`.
+- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID;
 
 @end
 

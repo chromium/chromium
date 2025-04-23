@@ -10,7 +10,7 @@
 #include "base/version.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_testutils.h"
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"

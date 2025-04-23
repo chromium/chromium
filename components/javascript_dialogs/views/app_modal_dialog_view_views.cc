@@ -23,7 +23,7 @@ namespace javascript_dialogs {
 AppModalDialogViewViews::AppModalDialogViewViews(
     AppModalDialogController* controller)
     : controller_(controller) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   message_box_view_ = new views::MessageBoxView(
       controller->message_text(), /* detect_directionality = */ true);
 

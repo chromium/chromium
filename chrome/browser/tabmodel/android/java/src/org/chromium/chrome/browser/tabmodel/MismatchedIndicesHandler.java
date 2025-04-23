@@ -33,4 +33,12 @@ public interface MismatchedIndicesHandler {
             Activity activityAtRequestedIndex,
             boolean isActivityInAppTasks,
             boolean isActivityInSameTask);
+
+    /**
+     * Determines whether the tab model selector index reassignment for an activity should be
+     * skipped upon mismatch with the originally requested activity window index.
+     *
+     * @return {@code true} if index reassignment should be skipped, {@code false} otherwise.
+     */
+    boolean skipIndexReassignment();
 }

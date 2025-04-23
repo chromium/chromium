@@ -107,6 +107,6 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   const bool send_socket_messages_;
 };
 
-}  // namespace media.
+}  // namespace media
 
 #endif  // MEDIA_AUDIO_AUDIO_DEVICE_THREAD_H_

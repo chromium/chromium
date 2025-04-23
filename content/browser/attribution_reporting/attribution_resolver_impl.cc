@@ -330,18 +330,18 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-    switch (storage_.SourceAllowedForDestinationPerDayRateLimit(source,
-                                                                source_time)) {
-      case RateLimitResult::kAllowed:
-        break;
-      case RateLimitResult::kNotAllowed:
-        return make_result(
-            StoreSourceResult::DestinationPerDayReportingLimitReached(
-                delegate_->GetDestinationRateLimit()
-                    .max_per_reporting_site_per_day));
-      case RateLimitResult::kError:
-        return make_result(StoreSourceResult::InternalError());
-    }
+  switch (storage_.SourceAllowedForDestinationPerDayRateLimit(source,
+                                                              source_time)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      return make_result(
+          StoreSourceResult::DestinationPerDayReportingLimitReached(
+              delegate_->GetDestinationRateLimit()
+                  .max_per_reporting_site_per_day));
+    case RateLimitResult::kError:
+      return make_result(StoreSourceResult::InternalError());
+  }
 
   base::expected<std::vector<StoredSource::Id>, RateLimitTable::Error>
       source_ids_to_deactivate =

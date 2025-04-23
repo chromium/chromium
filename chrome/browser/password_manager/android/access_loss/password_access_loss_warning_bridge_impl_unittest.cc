@@ -63,21 +63,7 @@ class PasswordAccessLossWarningBridgeImplTest : public testing::Test {
 };
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
-       ShouldNotShowWarningWhenFlagIsOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
-
-  EXPECT_FALSE(bridge()->ShouldShowAccessLossNoticeSheet(
-      pref_service(), /*called_at_startup=*/false));
-}
-
-TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldNotShowWarningWithNoWarningType) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
       getGMSVersionForTestSetUp(/*is_up_to_date=*/true));
 
@@ -87,9 +73,6 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldNotShowWarningMoreThanDaily) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   pref_service()->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
       base::Time::Now());
@@ -104,9 +87,6 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldNotShowWarningOnStartupMaxOncePerWeek) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   pref_service()->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
       base::Time::Now());
@@ -121,10 +101,6 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldShowWarningOnStartupWithAllThePreconditionsSatisfied) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
-
   // Simulate that the sheet was shown on startup more than a week ago.
   pref_service()->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
@@ -140,10 +116,6 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldShowWarningWithAllThePreconditionsSatisfied) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
-
   // Simulate that the sheet was shown on startup two days ago so it can be
   // shown again from an entry point which is not startup.
   pref_service()->SetTime(
@@ -160,12 +132,8 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldNotShowIfLoginDbDeprecationStarted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
-       password_manager::features::kLoginDbDeprecationAndroid},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kLoginDbDeprecationAndroid);
 
   // Create all the conditions necessary for the sheet to show to verify that
   // the reason it doesn't show is the login DB deprecation being enabled.

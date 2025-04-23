@@ -42,7 +42,6 @@ namespace ip_protection {
 
 namespace {
 
-// TODO(crbug.com/391358219): Add more details.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "ip_protection_service_get_probabilistic_reveal_token",
@@ -51,7 +50,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       sender: "IP Protection Service Client"
       description:
         "Request to a Google server to obtain probabilistic reveal tokens "
-        "for IP Protection proxied origins."
+        "(PRTs) for the registered domains. PRTs enable a delayed IP sampling "
+        "mechanism to defend against fraud, and analyze emerging fraudulent "
+        "behavior while still mitigating the ability to track users at scale "
+        "using IP addresses. See explainer "
+        "https://github.com/GoogleChrome/ip-protection/blob/main/prt_explainer.md "
+        "for more details."
       trigger:
         "On incognito profile startup, and periodically during incognito "
         "session."
@@ -66,7 +70,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       user_data {
         type: NONE
       }
-      last_reviewed: "2025-01-16"
+      last_reviewed: "2025-04-10"
     }
     policy {
       cookies_allowed: NO
@@ -111,6 +115,7 @@ constexpr int32_t kMinNumTokensWithSignal = 0;
 constexpr int32_t kEpochIdSize = 8;
 constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
 constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
+constexpr base::TimeDelta kFetchTimeout = base::Minutes(1);
 
 network::ResourceRequest CreateFetchRequest(version_info::Channel channel) {
   const std::string& get_prt_server_path =
@@ -205,6 +210,7 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::
              network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   url_loader->AttachStringForUpload(request_body_, kProtobufContentType);
+  url_loader->SetTimeoutDuration(kFetchTimeout);
   // Get pointer to url_loader before moving it.
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(

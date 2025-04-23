@@ -2281,6 +2281,11 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
     return;
   }
 
+  // Disable for glic.
+  if (IsGlicWindow(this, browser_context_)) {
+    return;
+  }
+
   // Only show copy link to highlight for publicly accessible web pages.
   if (!params_.page_url.SchemeIsHTTPOrHTTPS()) {
     return;
@@ -4390,7 +4395,7 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
   auto scaled_region_bounds =
       gfx::ScaleToEnclosedRect(region_bounds, 1.f / device_scale_factor);
   LensOverlayController* const controller =
-      LensOverlayController::GetController(source_web_contents_);
+      LensOverlayController::FromTabWebContents(source_web_contents_);
   CHECK(controller);
   controller->ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
@@ -4423,7 +4428,7 @@ void RenderViewContextMenu::ExecRegionSearch(
           lens::AmbientSearchEntryPoint::
               CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY);
       LensOverlayController* const controller =
-          LensOverlayController::GetController(embedder_web_contents_);
+          LensOverlayController::FromTabWebContents(embedder_web_contents_);
       CHECK(controller);
       controller->ShowUI(
           lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
@@ -4554,8 +4559,7 @@ void RenderViewContextMenu::ExecReloadPackagedApp() {
   DCHECK(platform_app);
   DCHECK(platform_app->is_platform_app());
 
-  extensions::ExtensionSystem::Get(browser_context_)
-      ->extension_service()
+  extensions::ExtensionRegistrar::Get(browser_context_)
       ->ReloadExtension(platform_app->id());
 }
 

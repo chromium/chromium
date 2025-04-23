@@ -16,7 +16,7 @@ NativeTheme* NativeTheme::GetInstanceForWeb() {
 }
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  NOTREACHED();
+  return NativeThemeAndroid::instance();
 }
 
 // static

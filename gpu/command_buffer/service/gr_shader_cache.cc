@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -172,34 +173,10 @@ void GrShaderCache::PurgeMemory(
   base::AutoLock auto_lock(lock_);
   size_t original_limit = cache_size_limit_;
 
-  switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      return;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      if (base::FeatureList::IsEnabled(
-              ::features::kAggressiveShaderCacheLimits)) {
-        // Ignore moderate memory pressure.
-      } else {
-        cache_size_limit_ = cache_size_limit_ / 4;
-      }
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      if (base::FeatureList::IsEnabled(
-              ::features::kAggressiveShaderCacheLimits)) {
-#if BUILDFLAG(IS_ANDROID)
-        // On Android, critical memory pressure notifications are very common,
-        // and not necessarily tied to actual critical memory pressure. Ignore.
-        break;
-#else
-        cache_size_limit_ /= 4;
-#endif
-      } else {
-        cache_size_limit_ = 0;
-      }
-      break;
-  }
-
+  cache_size_limit_ = gpu::UpdateShaderCacheSizeOnMemoryPressure(
+      cache_size_limit_, memory_pressure_level);
   EnforceLimits(0u);
+
   cache_size_limit_ = original_limit;
 }
 

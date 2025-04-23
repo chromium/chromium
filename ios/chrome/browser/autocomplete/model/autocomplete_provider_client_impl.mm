@@ -187,6 +187,13 @@ ProviderStateService* AutocompleteProviderClientImpl::GetProviderStateService()
   return ios::ProviderStateServiceFactory::GetForProfile(profile_);
 }
 
+base::CallbackListSubscription
+AutocompleteProviderClientImpl::GetLensSuggestInputsWhenReady(
+    LensOverlaySuggestInputsCallback callback) const {
+  NOTREACHED()
+      << "GetLensSuggestInputsWhenReady is not implemented by default.";
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages);
 }

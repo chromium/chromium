@@ -9,16 +9,15 @@
 #include "base/files/file_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -31,8 +30,8 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"
+#include "extensions/test/extension_test_notification_observer.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,7 +95,7 @@ ChromeTestExtensionLoader::ChromeTestExtensionLoader(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       extension_system_(ExtensionSystem::Get(browser_context)),
-      extension_service_(extension_system_->extension_service()),
+      extension_registrar_(ExtensionRegistrar::Get(browser_context)),
       extension_registry_(ExtensionRegistry::Get(browser_context)) {}
 
 ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
@@ -107,16 +106,6 @@ ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
     EXPECT_TRUE(temp_dir_.Delete());
 }
 
-void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
-    const base::FilePath& file_path,
-    base::OnceCallback<void(const Extension*)> callback) {
-  auto observer =
-      std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
-  UnpackedInstaller::Create(extension_service_)->Load(file_path);
-  ExtensionLoadedObserver::ObserveOnce(std::move(observer),
-                                       std::move(callback));
-}
-
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
     const base::FilePath& path) {
   scoped_refptr<const Extension> extension;
@@ -125,21 +114,24 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
     extension = LoadCrx(path);
   } else if (pack_extension_) {
     base::FilePath crx_path = PackExtension(path);
-    if (crx_path.empty())
+    if (crx_path.empty()) {
       return nullptr;
+    }
     extension = LoadCrx(crx_path);
   } else {
     is_unpacked = true;
     extension = LoadUnpacked(path);
   }
 
-  if (should_fail_ && extension)
+  if (should_fail_ && extension) {
     ADD_FAILURE() << "Expected extension load failure, but succeeded";
-  else if (!should_fail_ && !extension)
+  } else if (!should_fail_ && !extension) {
     ADD_FAILURE() << "Failed to load extension";
+  }
 
-  if (!extension)
+  if (!extension) {
     return nullptr;
+  }
 
   extension_id_ = extension->id();
 
@@ -148,39 +140,23 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
   // TODO(crbug.com/40160904): Fix CrxInstaller to enable this for
   // packed extensions.
   if (!is_unpacked) {
-    // Trying to reload a shared module (as we do when adjusting extension
-    // permissions) causes ExtensionService to crash. Only adjust permissions
-    // for non-shared modules.
-    // TODO(devlin): That's not good; we shouldn't be crashing.
-    if (!SharedModuleInfo::IsSharedModule(extension.get())) {
-      CheckPermissions(extension.get());
-      // Make |extension| null since it may have been reloaded invalidating
-      // pointers to it.
-      extension = nullptr;
-    }
-
-    if (install_param_.has_value()) {
-      DCHECK(!install_param_->empty());
-      SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
-                      *install_param_);
-      // Reload the extension so listeners of the loaded notification have
-      // access to the install param.
-      TestExtensionRegistryObserver registry_observer(extension_registry_,
-                                                      extension_id_);
-      extension_service_->ReloadExtension(extension_id_);
-      registry_observer.WaitForExtensionLoaded();
-    }
+    AdjustPackedExtension(*extension);
+    // Make `extension` null since it may have been reloaded invalidating
+    // pointers to it.
+    extension = nullptr;
   }
 
   extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
-  if (!extension)
+  if (!extension) {
     return nullptr;
+  }
   if (!VerifyPermissions(extension.get())) {
     ADD_FAILURE() << "The extension did not get the requested permissions.";
     return nullptr;
   }
-  if (!CheckInstallWarnings(*extension))
+  if (!CheckInstallWarnings(*extension)) {
     return nullptr;
+  }
 
   if (!WaitForExtensionReady(*extension)) {
     ADD_FAILURE() << "Failed to wait for extension ready";
@@ -189,54 +165,14 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
   return extension;
 }
 
-bool ChromeTestExtensionLoader::WaitForExtensionReady(
-    const Extension& extension) {
-  UserScriptManager* user_script_manager =
-      ExtensionSystem::Get(browser_context_)->user_script_manager();
-  // Note: |user_script_manager| can be null in tests.
-  if (user_script_manager &&
-      !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    ExtensionUserScriptLoader* user_script_loader =
-        user_script_manager->GetUserScriptLoaderForExtension(extension_id_);
-    if (!user_script_loader->HasLoadedScripts()) {
-      ContentScriptLoadWaiter waiter(user_script_loader);
-      waiter.Wait();
-    }
-  }
-
-  const int num_processes =
-      content::RenderProcessHost::GetCurrentRenderProcessCountForTesting();
-  // Determine whether or not to wait for extension renderers. By default, we
-  // base this on whether any renderer processes exist (which is also a proxy
-  // for whether this is a browser test, since MockRenderProcessHosts and
-  // similar don't count towards the render process host count), but we allow
-  // tests to override this behavior.
-  const bool should_wait_for_ready =
-      wait_for_renderers_.value_or(num_processes > 0);
-
-  if (!should_wait_for_ready)
-    return true;
-
-  content::BrowserContext* context_to_use =
-      IncognitoInfo::IsSplitMode(&extension)
-          ? browser_context_.get()
-          : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
-
-  // If possible, wait for the extension's background context to be loaded.
-  std::string reason_unused;
-  if (ExtensionBackgroundPageWaiter::CanWaitFor(extension, reason_unused)) {
-    ExtensionBackgroundPageWaiter(context_to_use, extension)
-        .WaitForBackgroundInitialized();
-  }
-
-  // TODO(devlin): Should this use |context_to_use|? Or should
-  // WaitForExtensionViewsToLoad check both contexts if one is OTR?
-  if (!ChromeExtensionTestNotificationObserver(browser_context_)
-           .WaitForExtensionViewsToLoad()) {
-    return false;
-  }
-
-  return true;
+void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
+    const base::FilePath& file_path,
+    base::OnceCallback<void(const Extension*)> callback) {
+  auto observer =
+      std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
+  UnpackedInstaller::Create(browser_context_)->Load(file_path);
+  ExtensionLoadedObserver::ObserveOnce(std::move(observer),
+                                       std::move(callback));
 }
 
 base::FilePath ChromeTestExtensionLoader::PackExtension(
@@ -253,14 +189,16 @@ base::FilePath ChromeTestExtensionLoader::PackExtension(
   }
   base::FilePath crx_path = temp_dir_.GetPath().AppendASCII("temp.crx");
   if (base::PathExists(crx_path)) {
-    ADD_FAILURE() << "Crx path exists: " << crx_path.value()
+    ADD_FAILURE()
+        << "Crx path exists: " << crx_path.value()
         << ", are you trying to reuse the same ChromeTestExtensionLoader?";
     return base::FilePath();
   }
   base::FilePath fallback_pem_path =
       temp_dir_.GetPath().AppendASCII("temp.pem");
   if (base::PathExists(fallback_pem_path)) {
-    ADD_FAILURE() << "PEM path exists: " << fallback_pem_path.value()
+    ADD_FAILURE()
+        << "PEM path exists: " << fallback_pem_path.value()
         << ", are you trying to reuse the same ChromeTestExtensionLoader?";
     return base::FilePath();
   }
@@ -331,19 +269,119 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
   return extension;
 }
 
-void ChromeTestExtensionLoader::CheckPermissions(const Extension* extension) {
-  std::string id = extension->id();
+scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
+    const base::FilePath& unpacked_path) {
+  scoped_refptr<const Extension> extension;
+  TestExtensionRegistryObserver registry_observer(extension_registry_);
+  scoped_refptr<UnpackedInstaller> installer =
+      UnpackedInstaller::Create(browser_context_);
+  installer->set_require_modern_manifest_version(
+      require_modern_manifest_version_);
+  if (allow_file_access_.has_value()) {
+    installer->set_allow_file_access(*allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    installer->set_allow_incognito_access(*allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    installer->set_install_param(*install_param_);
+  }
+  LoadErrorWaiter waiter;
+  installer->Load(unpacked_path);
+  if (!should_fail_) {
+    extension = registry_observer.WaitForExtensionLoaded();
+  } else {
+    EXPECT_TRUE(waiter.Wait()) << "No load error observed";
+  }
+
+  return extension;
+}
+
+bool ChromeTestExtensionLoader::WaitForExtensionReady(
+    const Extension& extension) {
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->user_script_manager();
+  // Note: |user_script_manager| can be null in tests.
+  if (user_script_manager &&
+      !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
+    ExtensionUserScriptLoader* user_script_loader =
+        user_script_manager->GetUserScriptLoaderForExtension(extension_id_);
+    if (!user_script_loader->HasLoadedScripts()) {
+      ContentScriptLoadWaiter waiter(user_script_loader);
+      waiter.Wait();
+    }
+  }
+
+  const int num_processes =
+      content::RenderProcessHost::GetCurrentRenderProcessCountForTesting();
+  // Determine whether or not to wait for extension renderers. By default, we
+  // base this on whether any renderer processes exist (which is also a proxy
+  // for whether this is a browser test, since MockRenderProcessHosts and
+  // similar don't count towards the render process host count), but we allow
+  // tests to override this behavior.
+  const bool should_wait_for_ready =
+      wait_for_renderers_.value_or(num_processes > 0);
+
+  if (!should_wait_for_ready)
+    return true;
+
+  content::BrowserContext* context_to_use =
+      IncognitoInfo::IsSplitMode(&extension)
+          ? browser_context_.get()
+          : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
+
+  // If possible, wait for the extension's background context to be loaded.
+  std::string reason_unused;
+  if (ExtensionBackgroundPageWaiter::CanWaitFor(extension, reason_unused)) {
+    ExtensionBackgroundPageWaiter(context_to_use, extension)
+        .WaitForBackgroundInitialized();
+  }
+
+  // TODO(devlin): Should this use |context_to_use|? Or should
+  // WaitForExtensionViewsToLoad check both contexts if one is OTR?
+  if (!ExtensionTestNotificationObserver(browser_context_)
+           .WaitForExtensionViewsToLoad()) {
+    return false;
+  }
+
+  return true;
+}
+
+void ChromeTestExtensionLoader::AdjustPackedExtension(
+    const Extension& extension) {
+  // Trying to reload a shared module (as we do when adjusting extension
+  // permissions) causes things to crash. Only adjust permissions for non-shared
+  // modules.
+  // TODO(devlin): That's not good; we shouldn't be crashing.
+  if (!SharedModuleInfo::IsSharedModule(&extension)) {
+    CheckPermissions(extension);
+  }
+
+  if (install_param_.has_value()) {
+    DCHECK(!install_param_->empty());
+    SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
+                    *install_param_);
+    // Reload the extension so listeners of the loaded notification have
+    // access to the install param.
+    TestExtensionRegistryObserver registry_observer(extension_registry_,
+                                                    extension_id_);
+    extension_registrar_->ReloadExtension(extension_id_);
+    registry_observer.WaitForExtensionLoaded();
+  }
+}
+
+void ChromeTestExtensionLoader::CheckPermissions(const Extension& extension) {
+  std::string id = extension.id();
 
   // If the client explicitly set |allow_file_access_|, use that value. Else
   // use the default as per the extensions manifest location.
   if (!allow_file_access_) {
     allow_file_access_ =
-        Manifest::ShouldAlwaysAllowFileAccess(extension->location());
+        Manifest::ShouldAlwaysAllowFileAccess(extension.location());
   }
 
-  // |extension| may be reloaded subsequently, invalidating the pointer. Hence
-  // make it null.
-  extension = nullptr;
+  // Note: `extension` may be invalidated below since we reload the extension
+  // (resulting in a different object being constructed).
 
   // Toggling incognito or file access will reload the extension, so wait for
   // the reload.
@@ -373,34 +411,6 @@ bool ChromeTestExtensionLoader::VerifyPermissions(const Extension* extension) {
     return false;
   }
   return true;
-}
-
-scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
-    const base::FilePath& file_path) {
-  scoped_refptr<const Extension> extension;
-  TestExtensionRegistryObserver registry_observer(extension_registry_);
-  scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(extension_service_);
-  installer->set_require_modern_manifest_version(
-      require_modern_manifest_version_);
-  if (allow_file_access_.has_value()) {
-    installer->set_allow_file_access(*allow_file_access_);
-  }
-  if (allow_incognito_access_.has_value()) {
-    installer->set_allow_incognito_access(*allow_incognito_access_);
-  }
-  if (install_param_.has_value()) {
-    installer->set_install_param(*install_param_);
-  }
-  LoadErrorWaiter waiter;
-  installer->Load(file_path);
-  if (!should_fail_) {
-    extension = registry_observer.WaitForExtensionLoaded();
-  } else {
-    EXPECT_TRUE(waiter.Wait()) << "No load error observed";
-  }
-
-  return extension;
 }
 
 bool ChromeTestExtensionLoader::CheckInstallWarnings(

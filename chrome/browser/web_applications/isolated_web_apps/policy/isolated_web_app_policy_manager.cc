@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -59,6 +60,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -79,25 +81,6 @@ constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
 constexpr int kIsolatedWebAppForceInstallMaxRetryTreshold = 2;
 constexpr base::TimeDelta kIsolatedWebAppForceInstallEmergencyDelay =
     base::Hours(5);
-
-std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
-    const base::Value::List& iwa_policy_values) {
-  std::vector<IsolatedWebAppExternalInstallOptions> iwa_install_options;
-  iwa_install_options.reserve(iwa_policy_values.size());
-  for (const auto& policy_entry : iwa_policy_values) {
-    const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
-        options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-            policy_entry);
-    if (options.has_value()) {
-      iwa_install_options.push_back(options.value());
-    } else {
-      LOG(ERROR) << "Could not interpret IWA force-install policy: "
-                 << options.error();
-    }
-  }
-
-  return iwa_install_options;
-}
 
 // Remove the install source from the already installed app, possibly
 // uninstalling it if no more sources are remaining.
@@ -212,6 +195,27 @@ void IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
                                  IwaInstaller::Result)> callback) {
   CHECK_IS_TEST();
   GetOnInstallTaskCompletedCallbackForTesting() = callback;
+}
+
+// static
+std::vector<IsolatedWebAppExternalInstallOptions>
+IsolatedWebAppPolicyManager::GetIwaInstallForceList(const Profile& profile) {
+  std::vector<IsolatedWebAppExternalInstallOptions> iwas_in_policy;
+
+  for (const auto& policy_entry :
+       profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList)) {
+    const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+        options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
+            policy_entry);
+    if (options.has_value()) {
+      iwas_in_policy.push_back(options.value());
+    } else {
+      LOG(ERROR) << "Could not interpret IWA force-install policy: "
+                 << options.error();
+    }
+  }
+
+  return iwas_in_policy;
 }
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
@@ -373,8 +377,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   CHECK(install_tasks_.empty());
 
   std::vector<IsolatedWebAppExternalInstallOptions> apps_in_policy =
-      ParseIwaPolicyValues(profile_->GetPrefs()->GetList(
-          prefs::kIsolatedWebAppInstallForceList));
+      GetIwaInstallForceList(*profile_);
   base::flat_map<web_package::SignedWebBundleId,
                  std::reference_wrapper<const WebApp>>
       installed_iwas = GetInstalledIwas(lock.registrar());
@@ -473,13 +476,15 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
       // Always asynchronously exit this method so that `lock` is released
       // before the next method is called.
       base::BindOnce(
-          [](base::WeakPtr<IsolatedWebAppPolicyManager> weak_ptr) {
+          [](base::WeakPtr<IsolatedWebAppPolicyManager> weak_ptr,
+             const std::vector<IsolatedWebAppExternalInstallOptions>&
+                 apps_in_policy) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(&IsolatedWebAppPolicyManager::OnPolicyProcessed,
-                               std::move(weak_ptr)));
+                               std::move(weak_ptr), std::move(apps_in_policy)));
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), apps_in_policy));
   auto install_task_done_callback = base::BarrierCallback<IwaInstaller::Result>(
       number_of_install_tasks,
       base::BindOnce(&IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted,
@@ -602,7 +607,8 @@ void IsolatedWebAppPolicyManager::MaybeStartNextInstallTask() {
   }
 }
 
-void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
+void IsolatedWebAppPolicyManager::OnPolicyProcessed(
+    const std::vector<IsolatedWebAppExternalInstallOptions>& apps_in_policy) {
   process_logs_.AppendCompletedStep(
       std::exchange(current_process_log_, base::Value::Dict()));
 
@@ -611,8 +617,29 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;
     ProcessPolicy();
+    return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ShouldCleanupManagedGuestSessionCache()) {
+    std::vector<web_package::SignedWebBundleId> iwas_in_policy = base::ToVector(
+        apps_in_policy, &IsolatedWebAppExternalInstallOptions::web_bundle_id);
+    provider_->scheduler().CleanupIsolatedWebAppCacheForManagedGuestSession(
+        iwas_in_policy,
+        base::BindOnce(&IsolatedWebAppPolicyManager::
+                           OnCleanIsolatedWebAppCacheForManagedGuestSession,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void IsolatedWebAppPolicyManager::
+    OnCleanIsolatedWebAppCacheForManagedGuestSession(
+        CleanupCacheForManagedGuestSessionResult result) {
+  // TODO(crbug.com/388728155): add result to log.
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
     base::OnceClosure finished_closure) {

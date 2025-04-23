@@ -362,6 +362,11 @@
                                                      completion:nil];
 }
 
+- (void)autofillControllerDidLoginWithExistingPassword:
+    (CWVAutofillController*)autofillController {
+  NSLog(@"User logged in with an existing password");
+}
+
 #pragma mark - Private Methods
 
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion

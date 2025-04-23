@@ -26,6 +26,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
+#include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/payments/core/sizes.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -475,8 +476,10 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     request->mojo_request->instrument->icon = GURL();
   }
 
-  if (!request->delegate->GetSpec() || !request->authenticator ||
-      !request->credential) {
+  if (!request->delegate->GetSpec() ||
+      ((!request->authenticator || !request->credential) &&
+       !PaymentsExperimentalFeatures::IsEnabled(
+           features::kSecurePaymentConfirmationFallback))) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -503,6 +506,29 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
       issuer_icon = std::make_unique<SkBitmap>(
           request->icon_infos[IconType::ISSUER].icon);
     }
+  }
+
+  if (!request->authenticator || !request->credential) {
+    CHECK(PaymentsExperimentalFeatures::IsEnabled(
+        features::kSecurePaymentConfirmationFallback));
+    // In the case of no authenticator or credentials, we still create the
+    // SecurePaymentConfirmationApp, which holds the information to be shown
+    // in the fallback UX.
+    request->delegate->OnPaymentAppCreated(
+        std::make_unique<SecurePaymentConfirmationApp>(
+            request->web_contents(),
+            /*effective_relying_party_identity=*/std::string(),
+            payment_instrument_label,
+            std::make_unique<SkBitmap>(payment_instrument_icon),
+            /*credential_id=*/std::vector<uint8_t>(),
+            /*passkey_browser_binder=*/nullptr,
+            url::Origin::Create(request->delegate->GetTopOrigin()),
+            request->delegate->GetSpec()->AsWeakPtr(),
+            std::move(request->mojo_request), /*authenticator=*/nullptr,
+            network_label, std::move(network_icon), issuer_label,
+            std::move(issuer_icon)));
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
   }
 
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;

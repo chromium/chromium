@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audio du <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Nous pourrions partager les commentaires soumis à l'aide de ce formulaire avec nos partenaires dans le but de résoudre les bogues et les autres problèmes signalés. Veuillez ne pas inclure d'informations confidentielles telles que des mots de passe.</translation>
+<translation id="1118596190635569417">Déplacer ce menu vers la droite</translation>
 <translation id="1119403468619527527">Trop peu de mots pour simplifier</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
@@ -91,8 +92,10 @@
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1371650399987522809">Commentaires sur les fonds d'écran propulsés par l'IA de Google</translation>
 <translation id="1374385338586507108">Définir</translation>
+<translation id="1376064675713230088">tyrannosaures</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
+<translation id="1388919980490622894">avec étalonnage des couleurs</translation>
 <translation id="1393206549145430405">château</translation>
 <translation id="1394661041439318933">Le niveau de la pile du boîtier est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
@@ -125,11 +128,11 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1512872158112631650">ombres dramatiques</translation>
 <translation id="1514446283880973949">Écrivez avec plus d'assurance, résumez du contenu, obtenez des définitions et plus</translation>
 <translation id="1515129336378114413">Page d'accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'écran de veille</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
-<translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1539864135338521185">lapis-lazuli</translation>
 <translation id="1548555207631326346">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images d'IA.<ph name="LINE_BREAK" />
 <ph name="LINE_BREAK" />
@@ -229,6 +232,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="1854156910036166007">paresseux</translation>
 <translation id="1856388568474281774">Flèche vers le bas</translation>
 <translation id="1858620243986915808">Joindre une capture d'écran</translation>
+<translation id="1860654594958086756">rendu 3D</translation>
 <translation id="1871413952174074704">Le nom de point d'accès ne peut pas contenir plus de <ph name="CHAR_LIMIT" /> caractères</translation>
 <translation id="1871569928317311284">Désactiver le thème sombre</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -242,10 +246,11 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1908394185991500139">flèche gauche</translation>
-<translation id="1911678930322867245">Déplacer dans le coin supérieur droit</translation>
 <translation id="1914144885717544695">vendredi</translation>
 <translation id="1915960750806557358">Faites-nous part de vos commentaires ou décrivez votre problème. Assurez-vous de n'inclure aucune donnée personnelle ni aucune donnée confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs de mise en évidence</translation>
+<translation id="1926611810597212636">licorne</translation>
+<translation id="1944321879609775960">Pour créer un résumé, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Enregistreur</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -315,6 +320,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2230624078793142213">En créer plus</translation>
 <translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
+<translation id="224421911978987610">longue exposition</translation>
 <translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
@@ -342,6 +348,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2380886658946992094">Légal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2407209115954268704">État de verrouillage de la carte SIM</translation>
+<translation id="240798792848608143">Pour obtenir la transcription en <ph name="LANGUAGE_NAME" />, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Rouvrir le couvercle pour tester</translation>
 <translation id="2414660853550118611">À propos du fond d'écran</translation>
 <translation id="2414886740292270097">Foncé</translation>
@@ -351,6 +358,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2438248248625638801">Création de titres d'enregistrements</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2448857983905133469">Outils de cours</translation>
 <translation id="2468124392950503650">Sélectionnez la requête pour commencer votre création ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
@@ -361,6 +369,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2493126929778606526">Vos meilleures photos, sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opale</translation>
+<translation id="2501278716633472235">Retour</translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2507491234071975894">Haut-parleur</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
@@ -381,6 +390,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
 <translation id="2586146417912237930">bleu et indigo</translation>
 <translation id="2589921777872778654">Menu Modifier et Supprimer</translation>
+<translation id="2590424100019931043">Vous avez été retiré de cette classe</translation>
 <translation id="2597774443162333062">Les fichiers seront envoyés à Google pour un débogage</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées}}</translation>
 <translation id="261322795497077164">Identification du locuteur</translation>
@@ -449,6 +459,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
 <translation id="3060579846059757016">Contours</translation>
+<translation id="3060798442805232711">Les Outils de cours utilisent votre microphone</translation>
 <translation id="3061850252076394168">Activer Sélectionner pour énoncer</translation>
 <translation id="3066772729299747758">mardi</translation>
 <translation id="3069085583900247081">Échec du test</translation>
@@ -458,6 +469,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3084958266922136097">Désactiver l'écran de veille</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3103783611481501187">surréelle</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3122614491980756867">piscines</translation>
 <translation id="3122883569442693641">Plus de détails</translation>
@@ -472,6 +484,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
 <translation id="3160172848211257835">Envoyer les <ph name="BEGIN_LINK1" />données relatives au système et aux applications<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />mesures<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Pour créer un résumé et un titre, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Placez votre document sur le numériseur</translation>
 <translation id="3174321110679064523">Fond d'écran de l'aube à l'obscurité</translation>
 <translation id="3178532070248519384">avant-garde</translation>
@@ -486,6 +499,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
+<translation id="3242622575335502454">arts numériques</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3248791727258378769">Aucune transcription ne sera créée</translation>
 <translation id="324961752321393509">Votre administrateur n'autorise pas la fermeture de cette application</translation>
@@ -522,6 +536,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3428551088151258685">extérieur</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="3434988468785284438">réflexions</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3435896845095436175">Activer</translation>
 <translation id="345256797477978759">Ancrer la fenêtre sur la plus grande partie <ph name="DIRECTION" /> de l'écran</translation>
@@ -562,6 +577,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
+<translation id="3614639364827854748">Déplacer ce menu vers la gauche</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
 <translation id="3621072146987826699">éléphants</translation>
 <translation id="3628462041319107639">Téléchargement du modèle de transcription en cours…</translation>
@@ -622,6 +638,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3889914174935857450">Date de réinitialisation</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3902271751020176019">Langue de transcription</translation>
+<translation id="390890062090528082">ciel étoilé</translation>
 <translation id="391412459402535266">Impossible de tester l'appareil. Passer en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
@@ -711,6 +728,7 @@ Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux ser
           <ph name="LINE_BREAK" />
 <ph name="LINE_BREAK" />
 L'IA générative peut se tromper, même à propos de personnes. Veuillez donc vérifier ses réponses. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">espace négatif</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4266143281602681663">fil</translation>
 <translation id="4269815121975886860">Préférences de démarrage</translation>
@@ -738,6 +756,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Pour créer des titres pour votre enregistrement, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098">Redémarrage de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="4395835743215824109">clavier personnalisé</translation>
@@ -766,6 +785,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
+<translation id="4501302804999678844">Pour créer une transcription, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4503441351962730761">art moderne</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
@@ -808,7 +828,9 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4691278870498629773">Tâche arrêtée : bac manquant</translation>
 <translation id="469379815867856270">Puissance du signal</translation>
 <translation id="4697260493945012995">Sélectionnez votre type de commande</translation>
+<translation id="4712940987669302829">effet bokeh</translation>
 <translation id="4731797938093519117">Accès parental</translation>
+<translation id="4734982181169850310">couleurs pastel</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4750394297954878236">Suggestions</translation>
@@ -816,6 +838,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
 <translation id="4771923071974529837">demain</translation>
 <translation id="4773299976671772492">Arrêté</translation>
+<translation id="4777310452073659583">Pour obtenir la transcription, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">améthyste</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -858,14 +881,17 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="493637535592633700">bioluminescent</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, s'ouvre dans un nouvel onglet</translation>
 <translation id="4946927805998996217">Génération du résumé en cours…</translation>
 <translation id="4950314376641394653">Le micrologiciel <ph name="DEVICE_NAME" /> a été mis à jour vers la version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunnel d'arbre</translation>
+<translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">La réinitialisation de sécurité a été effectuée</translation>
 <translation id="4965703485264574128">Pour obtenir un résultat approximatif, multiplier la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Diviser</translation>
 <translation id="4972592110715526173">changement de mode</translation>
+<translation id="497421865427891073">Avancer</translation>
 <translation id="4981003703840817201">bleu et rose</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4982627662315910959">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide de la touche Majuscule et d'une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
@@ -873,6 +899,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4989542687859782284">Non disponible</translation>
+<translation id="4999267570108760491">style d'art vectoriel</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -910,6 +937,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="5180108905184566358">baobabs</translation>
+<translation id="5180431943345994173">Votre enseignant a retiré du contenu des Outils de cours</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
@@ -940,6 +968,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5300172019534884676">activer l'accès à la caméra</translation>
 <translation id="5300814202279832142">Déplacer la fenêtre vers le bureau</translation>
 <translation id="5302048478445481009">Langue</translation>
+<translation id="5303459213631364445">effet halo</translation>
 <translation id="5303837385540978511">Fond d'écran exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="530883153651464140">Effectuer la mise à jour de <ph name="DEVICE_NAME" /> vers la version <ph name="VERSION" /></translation>
@@ -1003,6 +1032,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5628106863521633649">Langues prises en charge</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
+<translation id="5655084389678168978">Votre enseignant a ajouté du nouveau contenu aux Outils de cours</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
 <translation id="5655296450510165335">Inscription d'appareil</translation>
 <translation id="5655776422854483175">Aucune tâche d'impression</translation>
@@ -1026,7 +1056,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5763838252932650682">Redémarrage et mise à jour de l'application <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
-<translation id="5775340474232476653">Votre enseignant a terminé la classe</translation>
 <translation id="5779818640587041940">Garder l'écran allumé lors de l'enregistrement</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
@@ -1043,6 +1072,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5859969039821714932">Raccourci non accessible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
+<translation id="586463370326011345">foudre</translation>
 <translation id="5875913454160982848">Télécharger le modèle de transcription</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
 <translation id="5877503382465267833">Suspendre <ph name="RECORDING_NAME" /></translation>
@@ -1052,7 +1082,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5896602941605730551">Lire</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil est un ensemble clavier et souris.</translation>
-<translation id="5903822368221507416">Masquer les onglets</translation>
 <translation id="5904994456462260490">Ajouter un nouveau nom de point d'accès</translation>
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur de touche</translation>
@@ -1178,6 +1207,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6419454453018688975">Activer l'accès à la position du système</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">coucher de soleil</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
@@ -1287,6 +1317,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="6926069762081461162">Titre de l'enregistrement</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
+<translation id="6931666215260956151">galaxie</translation>
 <translation id="6939766318048400022">Café</translation>
 <translation id="6942253772720771875">Faites-nous part de vos commentaires ou décrivez votre problème</translation>
 <translation id="6943893908656559156">Identité distante (facultative)</translation>
@@ -1363,6 +1394,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="7212547870105584639">Gérez les paramètres de nom de point d'accès du réseau. Les noms de point d'accès établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
+<translation id="7221869452894271364">Actualiser cette page</translation>
 <translation id="7223952304612664117">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des renseignements relatifs aux signaux sans fil et aux capteurs pour estimer la position de l'appareil.</translation>
 <translation id="7233782086689993269">Raccourci restauré</translation>
 <translation id="723419678599947502">Créer un titre à l'aide de l'IA de Google</translation>
@@ -1421,6 +1453,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
+<translation id="7494145938791663804">magnifique</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7500205272584643581">Autoriser l'Enregistreur à détecter et à étiqueter les haut-parleurs?</translation>
 <translation id="7501957181231305652">ou</translation>
@@ -1476,6 +1509,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7760571082554155847">Paramètres de la page d'accueil</translation>
 <translation id="7762130827864645708">La modification de votre mot de passe a bien été effectuée. Veuillez utiliser le nouveau mot de passe à partir de maintenant.</translation>
 <translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
+<translation id="7764171263909999400">lumière volumétrique</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
 <translation id="7774759755755950354">Retour</translation>
 <translation id="7778717409420828014">Vos commentaires nous aident à améliorer l'expérience sur les Chromebook et seront examinés par notre équipe. En raison du grand nombre de rapports, nous ne serons pas en mesure de vous envoyer de réponse.</translation>
@@ -1529,6 +1563,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour vous connecter à un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7979468455552394856">Les Outils de cours sont connectés aux élèves</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{« <ph name="APP_NAME_1" /> » a démarré automatiquement}one{# application a démarré automatiquement}other{# applications ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
@@ -1599,7 +1634,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8319809980370328428">Création du résumé et du titre de l'enregistrement</translation>
 <translation id="8320910311642849813">forêt</translation>
-<translation id="8322464149031882595">Cliquer pour avancer</translation>
 <translation id="8329018942023753850">application calculatrice</translation>
 <translation id="8336739000755212683">Changer l'image du compte sur l'appareil</translation>
 <translation id="8339024191194156249">En savoir plus sur le lancement automatique</translation>
@@ -1647,12 +1681,13 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
 <translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
+<translation id="8506394543220680287">couvert de neige</translation>
 <translation id="8508640263392900755">Détails de l'APN</translation>
 <translation id="8522687886059337719">Vous avez maintenant accès aux nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et à l'<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />écran de veille<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>
+<translation id="8531692079895415839">brouillard</translation>
 <translation id="8538236298648811558">Propulsé par l'IA de Google</translation>
-<translation id="8543574988889671960">Actualiser l'onglet</translation>
 <translation id="8550364285433943656">Placez des commandes sur les actions du jeu pour jouer avec les touches du clavier</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">L'IA générative peut se tromper, même à propos de personnes. Veuillez donc vérifier ses réponses.</translation>
@@ -1669,11 +1704,13 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655828773034788261">Partager l'URL :</translation>
 <translation id="8660881923941176839">livres</translation>
+<translation id="8669187096858652220">Cliquer sur le bouton pour afficher les onglets</translation>
 <translation id="8670574982334489519">droit</translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Réinsérez le câble USB de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
+<translation id="8699053192961439771">Cliquer sur le bouton pour masquer automatiquement les onglets</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
@@ -1703,7 +1740,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8833620912470026819">forêt de cactus</translation>
 <translation id="8834539327799336565">Actuellement connecté</translation>
-<translation id="8842526499753992487">Déplacer dans le coin supérieur gauche</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8849799913685544685">phare</translation>
 <translation id="8851859208664803097">Arrêté - Imprimante inaccessible</translation>
@@ -1743,15 +1779,16 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8961025972867871808">manchots</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
-<translation id="8972061581514441296">Cliquer pour revenir en arrière</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>
 <translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998002498898621320">photo réaliste</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="9000871120886759611">Effectuez une réinitialisation pour vous assurer de pouvoir accéder aux informations dans votre langue préférée. Vérifiez que seules les langues préférées sont utilisées.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Fréquence</translation>
+<translation id="9017411601860840405">éclairage au néon</translation>
 <translation id="901834265349196618">courriel</translation>
 <translation id="9022897536196898720">fleurs</translation>
 <translation id="9024331582947483881">plein écran</translation>

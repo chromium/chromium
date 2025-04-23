@@ -43,10 +43,12 @@ void DelegatedIdpNetworkRequestManager::FetchClientMetadata(
 }
 
 void DelegatedIdpNetworkRequestManager::SendAccountsRequest(
+    const url::Origin& idp_origin,
     const GURL& accounts_url,
     const std::string& client_id,
     AccountsRequestCallback callback) {
-  delegate_->SendAccountsRequest(accounts_url, client_id, std::move(callback));
+  delegate_->SendAccountsRequest(idp_origin, accounts_url, client_id,
+                                 std::move(callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendTokenRequest(

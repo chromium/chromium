@@ -88,12 +88,12 @@ export class ChooserExceptionListElement extends
     };
   }
 
-  chooserExceptions: ChooserException[];
-  chooserType: ChooserType;
-  private emptyListMessage_: string;
-  private hasIncognito_: boolean;
-  private resetPermissionsMessage_: string;
-  private tooltipText_: string;
+  declare chooserExceptions: ChooserException[];
+  declare chooserType: ChooserType;
+  declare private emptyListMessage_: string;
+  declare private hasIncognito_: boolean;
+  declare private resetPermissionsMessage_: string;
+  declare private tooltipText_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -162,6 +162,14 @@ export class ChooserExceptionListElement extends
         this.emptyListMessage_ = this.i18n('noBluetoothDevicesFound');
         this.resetPermissionsMessage_ = this.i18n('resetBluetoothConfirmation');
         break;
+      // <if expr="is_chromeos">
+      case ChooserType.SMART_CARD_READERS_DEVICES:
+        this.emptyListMessage_ =
+            this.i18n('siteSettingsNoSmartCardReadersFound');
+        this.resetPermissionsMessage_ =
+            this.i18n('siteSettingsResetSmartCardConfirmation');
+        break;
+      // </if>
       default:
         this.emptyListMessage_ = '';
         this.resetPermissionsMessage_ = '';

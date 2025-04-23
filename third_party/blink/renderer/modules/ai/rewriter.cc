@@ -39,6 +39,18 @@ AIWritingAssistanceBase<Rewriter,
 
 // static
 template <>
+network::mojom::PermissionsPolicyFeature
+AIWritingAssistanceBase<Rewriter,
+                        mojom::blink::AIRewriter,
+                        mojom::blink::AIManagerCreateRewriterClient,
+                        RewriterCreateCoreOptions,
+                        RewriterCreateOptions,
+                        RewriterRewriteOptions>::GetPermissionsPolicy() {
+  return network::mojom::PermissionsPolicyFeature::kRewriter;
+}
+
+// static
+template <>
 void AIWritingAssistanceBase<Rewriter,
                              mojom::blink::AIRewriter,
                              mojom::blink::AIManagerCreateRewriterClient,

@@ -1899,8 +1899,9 @@ void AuthenticatorRequestDialogController::StartEnclave() {
 
 void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext()),
-      signin_metrics::AccessPoint::kWebauthnModalDialog);
+    Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+        ->GetOriginalProfile(),
+    signin_metrics::AccessPoint::kWebauthnModalDialog);
   CancelAuthenticatorRequest();
 }
 
@@ -1973,7 +1974,10 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
             credential.user.name.value_or("")),
         password_manager::PasskeyCredential::DisplayName(
             credential.user.display_name.value_or("")));
-    if (credential.source == AuthenticatorType::kPhone) {
+    if (credential.provider_name) {
+      passkey.SetAuthenticatorLabel(
+          base::UTF8ToUTF16(*credential.provider_name));
+    } else if (credential.source == AuthenticatorType::kPhone) {
       passkey.SetAuthenticatorLabel(l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone_name));
     }

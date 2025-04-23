@@ -49,7 +49,9 @@ BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kPdfInfoBar);
-#endif
+enum class PdfInfoBarTrigger { kPdfLoad = 0, kStartup = 1 };
+extern const base::FeatureParam<PdfInfoBarTrigger> kPdfInfoBarTrigger;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
 // This enum entry values must be in sync with
@@ -239,6 +241,9 @@ extern const base::FeatureParam<bool> kPageActionsMigrationTranslate;
 extern const base::FeatureParam<bool> kPageActionsMigrationIntentPicker;
 extern const base::FeatureParam<bool> kPageActionsMigrationZoom;
 extern const base::FeatureParam<bool> kPageActionsMigrationOfferNotification;
+extern const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess;
+extern const base::FeatureParam<bool> kPageActionsMigrationPwaInstall;
+extern const base::FeatureParam<bool> kPageActionsMigrationPriceInsights;
 
 // Controls whether browser tab loading animations are driven by the compositor
 // vs. a repeating timer.
@@ -246,6 +251,9 @@ BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
 
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
+
+// Controls whether to use the TabStrip browser api's controller.
+BASE_DECLARE_FEATURE(kTabStripBrowserApi);
 
 }  // namespace features
 

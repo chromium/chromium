@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Saytlar məkanınızı tələb edə bilər</translation>
 <translation id="3658847490588580244">Defolt brauzerin aşağıdakı vərəqi</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
+<translation id="3670480940339182416">Saytlar V8 optimallaşdırıcısından istifadə edə bilər</translation>
 <translation id="3676777756440746804">Saytların haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
 <translation id="3697164069658504920">Aktiv ediləndə saytlar USB cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar USB cihazlarından istifadə edə bilməz.</translation>
+<translation id="3703430731944883733">Lenti idarə edin</translation>
 <translation id="3707034683772193706">Daxil olduğunuz sayt bot olmadığınızı doğrulamaq üçün Chrome ilə az miqdarda məlumat yadda saxlaya bilər</translation>
 <translation id="3708684582558000260">Bağlanmış saytlara data göndərmək və ya qəbul etmək icazəsi verməyin</translation>
 <translation id="3709818294139939629">Saytın fayla girişi silindi</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
 <translation id="421742575134139848">Saytlar musiqi, video və başqa media üçün audio təmin etmək məqsədilə səs oxuda bilər</translation>
+<translation id="4217710972110098902">Serial porta qoşulub</translation>
 <translation id="4226663524361240545">Bildirişlər cihazı titrədə bilər</translation>
 <translation id="4259722352634471385">Naviqasiya bloklandı: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Saytdan çıxdıqdan sonra o, fotoların yüklənməsi, yaxud söhbət mesajı göndərmək kimi tapşırıqları tamamlamaq üçün sinxronizasiyanı saxlaya bilər</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
+<translation id="4578289292431526768">Başlayaq</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="461356340001513807">Kimlik xidməti olan hesabdan istifadə edərək veb-saytlara daxil olmağa imkan verir</translation>
 <translation id="4635969503923889910">Saytlara NFC cihazlarından istifadə etmək icazəsi verməyin</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
 <translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
+<translation id="571222594670061844">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər</translation>
 <translation id="5723967018671998714">Üçüncü tərəf kukiləri Anonim rejimdə bloklanır</translation>
 <translation id="5740126560802162366">Saytlar cihazınızda data saxlaya bilər</translation>
+<translation id="5743425052258407233">Qaldığınız yerdən asanlıqla davam edə bilmək üçün tarixçəni bütün cihazlarda əldə edin</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5876056640971328065">Videoya pauza verin</translation>
 <translation id="5877248419911025165">Bütün sorğuları yığcamlaşdırın</translation>
+<translation id="5878945009165002849">Kimlik xidmətlərindən daxil olma sorğularını bloklayın</translation>
 <translation id="5884085660368669834">Sayt tərcihi</translation>
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
 <translation id="5908617755156109052">Saytlara ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək icazəsi verməyin</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6320088164292336938">Vibrasiya</translation>
-<translation id="6344622098450209924">İzlənmədən qorunma</translation>
 <translation id="6367753977865761591">Müəyyən bir sayt üçün üçüncü tərəfin girişini bloklayın.</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="640163077447496506">Bu gün vaxtı bitir</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" köhnəlib. Tətbiqi yenidən quraşdırın.</translation>
+<translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
 <translation id="8492822722330266509">Saytlar ani bildirişlər göndərə və yönləndirmələrdən istifadə edə bilər</translation>

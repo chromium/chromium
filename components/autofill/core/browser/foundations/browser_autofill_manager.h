@@ -38,7 +38,7 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -82,6 +82,7 @@ struct SuggestionRankingContext;
 
 namespace payments {
 class AmountExtractionManager;
+class BnplManager;
 }  // namespace payments
 
 // Enum for the value patterns metric. Don't renumerate existing value. They are
@@ -121,17 +122,16 @@ class BrowserAutofillManager : public AutofillManager {
   virtual bool ShouldShowScanCreditCard(const FormData& form,
                                         const FormFieldData& field);
 
-  // Fills or previews `form` with the information in `credit_card`. `field_id`
-  // is the ID of the field that triggered the filling operation.
+  // Fills or previews `form` with the information in `filling_payload`.
+  // `field_id` is the ID of the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.
   // `action_persistence` denotes whether the operation is a filling or preview
   // operation.
-  virtual void FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const CreditCard& credit_card,
-      AutofillTriggerSource trigger_source);
+  virtual void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                 const FormData& form,
+                                 const FieldGlobalId& field_id,
+                                 const FillingPayload& filling_payload,
+                                 AutofillTriggerSource trigger_source);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
@@ -176,23 +176,6 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillExternalDelegate::UpdateSuggestionsCallback
           update_suggestions_callback);
 
-  // Fills or previews the profile form.
-  // Assumes the form and field are valid.
-  // TODO(crbug.com/40227071): Clean up the API.
-  virtual void FillOrPreviewProfileForm(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const AutofillProfile& profile,
-      AutofillTriggerSource trigger_source);
-
-  // TODO(crbug.com/40227071): Clean up the API.
-  void FillOrPreviewFormWithAutofillAiData(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const EntityInstance& entity);
-
   // Invoked when the user selected the `suggestion` in a suggestions list from
   // single field filling.
   void OnSingleFieldSuggestionSelected(const Suggestion& suggestion,
@@ -209,6 +192,11 @@ class BrowserAutofillManager : public AutofillManager {
   CreditCardAccessManager& GetCreditCardAccessManager();
   const CreditCardAccessManager& GetCreditCardAccessManager() const;
 
+  // Gets the payments BNPL manager owned by `this`. This will be used to
+  // handle BNPL flows. May return nullptr if BNPL is not supported on the
+  // current platform.
+  virtual payments::BnplManager* GetPaymentsBnplManager();
+
   // Handles post-filling logic of `form_structure`, like notifying observers
   // and logging form metrics.
   // `filled_fields` are the fields that were filled by the browser.
@@ -217,6 +205,9 @@ class BrowserAutofillManager : public AutofillManager {
   // `safe_filled_fields` is the intersection of `filled_fields` and
   // `safe_fields`. `skip_reasons` tells us for each field (mapped by their
   // IDs), whether the field was skipped for filling or not and why.
+  // TODO(crbug.com/40227071): Remove `filled_field_ids` and `safe_field_ids`.
+  // TODO(crbug.com/40232021): Consider choosing one of `FormData` or
+  // `FormStructure`, and `FormFieldData` or `AutofillField`.
   void OnDidFillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -230,7 +221,7 @@ class BrowserAutofillManager : public AutofillManager {
           skip_reasons,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
-      bool is_refill);
+      std::optional<RefillTriggerReason> refill_trigger_reason);
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
@@ -300,9 +291,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id) const;
 
-  autofill_metrics::CreditCardFormEventLogger& GetCreditCardFormEventLogger() {
-    return metrics_->credit_card_form_event_logger;
-  }
+  virtual autofill_metrics::CreditCardFormEventLogger&
+  GetCreditCardFormEventLogger();
 
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
@@ -423,6 +413,23 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
+  // Returns valuables suggestions depending on the `trigger_autofill_field`
+  // value type.
+  std::vector<Suggestion> GetValuablesSuggestions(
+      const AutofillField& trigger_autofill_field);
+
+  // Fills or previews `form` with the information in `credit_card`.
+  // `autofill_field` is the field that triggered the filling operation.
+  // `trigger_source` is the reason for triggering the filling operation.
+  // `action_persistence` denotes whether the operation is a filling or preview
+  // operation.
+  void FillOrPreviewCreditCardForm(mojom::ActionPersistence action_persistence,
+                                   const FormData& form,
+                                   const FormStructure& form_structure,
+                                   const AutofillField& autofill_field,
+                                   const CreditCard& credit_card,
+                                   AutofillTriggerSource trigger_source);
+
   // If `metrics_->initial_interaction_timestamp` is unset or is set to a later
   // time than `interaction_timestamp`, updates the cached timestamp.  The
   // latter check is needed because IPC messages can arrive out of order.
@@ -466,7 +473,7 @@ class BrowserAutofillManager : public AutofillManager {
   // regarding the ranking of suggestions and is used for metrics logging.
   // TODO(crbug.com/340494671): Move ablation study fields out of the function
   // and make the context a const ref.
-  std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
+  std::vector<Suggestion> GetAvailableSuggestions(
       const FormData& form,
       const FormStructure* form_structure,
       const FormFieldData& field,
@@ -493,13 +500,11 @@ class BrowserAutofillManager : public AutofillManager {
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source,
-      std::vector<Suggestion> autofill_ai_suggestions);
+      AutofillSuggestionTriggerSource trigger_source);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      std::vector<Suggestion> autofill_ai_suggestions,
       SuggestionsContext context,
       std::vector<std::string> plus_addresses);
 
@@ -631,6 +636,10 @@ class BrowserAutofillManager : public AutofillManager {
   // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
+  // Manages Buy Now, Pay Later related autofill flows and logic.
+  // Lazily initialized: access only through GetPaymentsBnplManager().
+  std::unique_ptr<payments::BnplManager> bnpl_manager_;
+
   // The amount extraction manager, used to trigger the final checkout
   // amount from merchant websites.
   std::unique_ptr<payments::AmountExtractionManager>
@@ -643,9 +652,9 @@ class BrowserAutofillManager : public AutofillManager {
       std::make_unique<FormFiller>(*this);
 
   // Contains a list of four digit combinations that were found in the webpage
-  // DOM. Populated after a standalone cvc field is processed on a form. Used to
-  // confirm that the virtual card last four is present in the webpage for card
-  // on file case.
+  // DOM. Populated after a standalone cvc field is processed on a form.
+  // Used to confirm that the virtual card last four is present in the webpage
+  // for card on file case.
   std::vector<std::string> four_digit_combinations_in_dom_;
 
   std::u16string last_unlocked_credit_card_cvc_;

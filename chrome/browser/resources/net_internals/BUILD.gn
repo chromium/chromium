@@ -12,7 +12,7 @@ build_webui("build") {
     "main.css",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_bridge.js",
     "dns_view.js",
     "domain_security_policy_view.js",
@@ -28,7 +28,7 @@ build_webui("build") {
   ]
 
   if (is_chromeos) {
-    non_web_component_files += [ "chromeos_view.js" ]
+    ts_files += [ "chromeos_view.js" ]
   }
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]

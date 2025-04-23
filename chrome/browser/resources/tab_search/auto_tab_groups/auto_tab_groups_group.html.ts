@@ -49,7 +49,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
       ` : ''}
       <tab-search-item class="mwb-list-item" .data="${item}"
           role="option"
-          compact
+          size="compact"
           tabindex="${this.getTabIndex_(index)}"
           data-index="${index}"
           @close="${this.onTabRemove_}"
@@ -58,7 +58,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
           close-button-icon="tab-search:remove"
           close-button-tooltip="$i18n{tabOrganizationCloseTabTooltip}"
           close-button-aria-label="${this.getCloseButtonAriaLabel_(item)}"
-          in-suggested-group>
+          hide-timestamp>
       </tab-search-item>
     `)}
   </cr-page-selector>

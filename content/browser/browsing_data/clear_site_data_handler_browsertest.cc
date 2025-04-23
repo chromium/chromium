@@ -139,7 +139,7 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       filter_builder.AddRegisterableDomain(origin.host());
       filter_builder.SetStoragePartitionConfig(storage_partition_config);
       filter_builder.SetCookiePartitionKeyCollection(
-          net::CookiePartitionKeyCollection::FromOptional(
+          net::CookiePartitionKeyCollection(
               net::CookiePartitionKey::FromStorageKeyComponents(
                   top_level_site, ancestor_chain_bit, /*nonce=*/std::nullopt)));
 
@@ -155,6 +155,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
       data_type_mask &=
           ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
+      data_type_mask &=
+          ~BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
       BrowsingDataFilterBuilderImpl filter_builder(
           BrowsingDataFilterBuilder::Mode::kDelete);

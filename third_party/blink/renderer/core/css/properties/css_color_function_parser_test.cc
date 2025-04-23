@@ -178,7 +178,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
 
   const CSSValue* alpha = color->Alpha();
   EXPECT_TRUE(alpha->IsMathFunctionValue());
-  EXPECT_EQ(alpha->CssText(), "calc(alpha / 2)");
+  EXPECT_EQ(alpha->CssText(), "calc(0.5 * alpha)");
 }
 
 TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {

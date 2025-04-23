@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them. */
+@NullMarked
 public interface EdgeToEdgeOSWrapper {
     /**
      * Wraps {@link View#setPadding(int, int, int, int)}. Sets the padding for the given View. The

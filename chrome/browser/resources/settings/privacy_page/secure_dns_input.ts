@@ -53,9 +53,9 @@ export class SecureDnsInputElement extends PolymerElement {
     };
   }
 
-  value: string;
-  private readonly showError_: string;
-  private errorText_: string;
+  declare value: string;
+  declare private readonly showError_: string;
+  declare private errorText_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
 
@@ -86,7 +86,7 @@ export class SecureDnsInputElement extends PolymerElement {
     const valueToValidate = this.value;
     const valid = await this.browserProxy_.isValidConfig(valueToValidate);
     const successfulProbe =
-        valid && await this.browserProxy_.probeConfig(valueToValidate);
+        valid && (await this.browserProxy_.probeConfig(valueToValidate));
     // If there was an invalid template or no template can successfully
     // answer a probe query, show an error as long as the input field value
     // hasn't changed and is non-empty.

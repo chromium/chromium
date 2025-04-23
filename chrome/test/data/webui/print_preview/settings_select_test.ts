@@ -5,9 +5,8 @@
 import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewModelElement, PrintPreviewSettingsSelectElement, SelectOption} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getMediaSizeCapabilityWithCustomNames, selectOption} from './print_preview_test_utils.js';
 
@@ -22,27 +21,25 @@ suite('SettingsSelectTest', function() {
     document.body.appendChild(model);
 
     settingsSelect = document.createElement('print-preview-settings-select');
-    settingsSelect.settings = model.settings;
     settingsSelect.disabled = false;
-    fakeDataBind(model, settingsSelect, 'settings');
     document.body.appendChild(settingsSelect);
   });
 
   // Test that destinations are correctly displayed in the lists.
-  test('custom media names', function() {
+  test('custom media names', async function() {
     model.set('settings.mediaSize.available', true);
 
     // Set a capability with custom paper sizes.
     settingsSelect.settingName = 'mediaSize';
     settingsSelect.capability = getMediaSizeCapabilityWithCustomNames();
+    await microtasksFinished();
+
     const customLocalizedMediaName =
         settingsSelect.capability.option[0]!.custom_display_name_localized![0]!
             .value;
     const customMediaName =
         settingsSelect.capability.option[1]!.custom_display_name;
-    flush();
-
-    const select = settingsSelect.shadowRoot!.querySelector('select')!;
+    const select = settingsSelect.shadowRoot.querySelector('select')!;
     // Verify that the selected option and names are as expected.
     assertEquals(0, select.selectedIndex);
     assertEquals(2, select.options.length);
@@ -53,16 +50,14 @@ suite('SettingsSelectTest', function() {
 
   test('set setting', async () => {
     // Fake setting.
-    model.set('settings', {
-      headerFooter: {
-        value: {},
-        unavailableValue: {},
-        valid: true,
-        available: true,
-        setByGlobalPolicy: false,
-        setFromUi: false,
-        key: 'headerFooter',
-      },
+    model.set('settings.headerFooter', {
+      value: {},
+      unavailableValue: {},
+      valid: true,
+      available: true,
+      setByGlobalPolicy: false,
+      setFromUi: false,
+      key: 'headerFooter',
     });
     settingsSelect.settingName = 'headerFooter';
     settingsSelect.capability = {
@@ -71,15 +66,15 @@ suite('SettingsSelectTest', function() {
         {name: 'orange', color: 'orange', size: 5, is_default: true},
       ],
     } as {option: Array<SelectOption & {color: string, size: number}>};
-    flush();
     const option0 = JSON.stringify(settingsSelect.capability.option[0]!);
     const option1 = JSON.stringify(settingsSelect.capability.option[1]!);
-    const select = settingsSelect.shadowRoot!.querySelector('select')!;
+    const select = settingsSelect.shadowRoot.querySelector('select')!;
 
     // Normally done for initialization by the model and parent section.
-    settingsSelect.set(
+    model.set(
         'settings.headerFooter.value', settingsSelect.capability.option[1]!);
     settingsSelect.selectValue(option1);
+    await microtasksFinished();
 
     // Verify that the selected option and names are as expected.
     assertEquals(2, select.options.length);
@@ -106,6 +101,7 @@ suite('SettingsSelectTest', function() {
     // in response to setting changes), so we don't want to call setSetting()
     // and set setFromUi = true for this case.
     settingsSelect.selectValue(option1);
+    await microtasksFinished();
     assertEquals(option1, settingsSelect.selectedValue);
     assertEquals(option1, select.value);
     assertEquals(1, select.selectedIndex);

@@ -52,7 +52,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
+import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -92,6 +94,7 @@ import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.PlaybackListener.PlaybackData;
@@ -129,7 +132,8 @@ import java.util.Locale;
 @DisableFeatures({
     ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
     ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK,
-    ChromeFeatureList.READALOUD_TAP_TO_SEEK
+    ChromeFeatureList.READALOUD_TAP_TO_SEEK,
+    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
 })
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -166,6 +170,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock Callback<PlaybackModeSelectionEnablementStatus> mPlaybackModeSelectionEnabledCallback;
     MockTabModelSelector mTabModelSelector;
 
     @Captor ArgumentCaptor<ReadAloudReadabilityHooks.ReadabilityPerModeCallback> mCallbackCaptor;
@@ -1113,6 +1118,310 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPlaybackModeSelectionEnabledUpdated() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+      reset(mPlaybackModeSelectionEnabledCallback);
+
+      onPlaybackSuccess(mPlayback);
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
+    }
+
+    @Test
+    public void testPlaybackModeSelectionEnabledUpdated_disabledThroughFlag() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+      reset(mPlaybackModeSelectionEnabledCallback);
+
+      onPlaybackSuccess(mPlayback);
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+
+        // We cannot assert that there's an update for FEATURE_DISABLED because that's the initial value of the observable
+        // and it doesn't really change.
+        // Instead, we assert that the state isn't enabled.
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPlaybackModeSelectionEnabledUpdated_disabledThroughLanguage() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("fr");
+
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+      reset(mPlaybackModeSelectionEnabledCallback);
+
+      onPlaybackSuccess(mPlayback);
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_AO_UNAVAILABLE));
+
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPlaybackModeSelectionEnabledUpdated_disabledThroughClassicUnsupported() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+      reset(mPlaybackModeSelectionEnabledCallback);
+
+      onPlaybackSuccess(mPlayback);
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE));
+
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPlayTabInOverviewMode() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+      mCallbackCaptor.getValue().onSuccess(
+        testUrl,
+        ImmutableMap.of(
+          PlaybackMode.CLASSIC,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+          PlaybackMode.OVERVIEW,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+      assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testNonEnglishTabClassicIsUsed() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("fr");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+      mCallbackCaptor.getValue().onSuccess(
+        testUrl,
+        ImmutableMap.of(
+          PlaybackMode.CLASSIC,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+          PlaybackMode.OVERVIEW,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+      assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testPreferenceUnspecifiedOverviewsDefault() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.UNSPECIFIED.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+      mCallbackCaptor.getValue().onSuccess(
+        testUrl,
+        ImmutableMap.of(
+          PlaybackMode.CLASSIC,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+          PlaybackMode.OVERVIEW,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+      assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    public void testOverviewsUnreadableFallsbackToClassic() {
+      mFakeTranslateBridge.setIsPageTranslated(false);
+      mFakeTranslateBridge.setCurrentLanguage("en");
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
+      String testUrl = "https://en.wikipedia.org/wiki/Google";
+      mTab.setGurlOverrideForTesting(new GURL(testUrl));
+
+      mController.maybeCheckReadability(mTab);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+      mCallbackCaptor.getValue().onSuccess(
+        testUrl,
+        ImmutableMap.of(
+          PlaybackMode.CLASSIC,
+          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+          PlaybackMode.OVERVIEW,
+          new ReadAloudReadabilityHooks.ReadabilityResult(false, false)));
+
+      mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+      resolvePromises();
+
+      verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+      assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+    }
+
+    @Test
     public void testVoicesMatchLanguage_pageTranslated() {
         // translated page should use chrome language
         var voiceEn = new PlaybackVoice("en", "asdf", "");
@@ -1437,7 +1746,7 @@ public class ReadAloudControllerUnitTest {
         // Playback starts again.
         verify(mPlaybackHooks, times(1))
                 .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
-        assertEquals(PlaybackMode.UNSPECIFIED, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
         onPlaybackSuccess(mPlayback);
         verify(mPlayback, times(2)).play();

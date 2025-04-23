@@ -106,7 +106,6 @@ class DlpWidgetDelegate : public views::WidgetDelegate {
  public:
   explicit DlpWidgetDelegate(DlpDataTransferNotifier* notifier)
       : notifier_(notifier) {
-    SetOwnedByWidget(false);
     SetFocusTraversesOut(true);
   }
 

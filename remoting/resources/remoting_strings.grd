@@ -62,6 +62,9 @@
     <output filename="remoting/resources/lt.pak" lang="lt" type="data_package"/>
     <output filename="remoting/resources/lv.pak" lang="lv" type="data_package"/>
     <output filename="remoting/resources/ml.pak" lang="ml" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/mn.pak" lang="mn" type="data_package"/>
+    </if>
     <output filename="remoting/resources/mr.pak" lang="mr" type="data_package"/>
     <output filename="remoting/resources/ms.pak" lang="ms" type="data_package"/>
     <!-- The translation console uses 'no' for Norwegian (Bokmål), but we use 'nb'. -->
@@ -154,10 +157,13 @@
     <output filename="remoting/resources/_locales/ko/messages.json" lang="ko" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/lt/messages.json" lang="lt" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/lv/messages.json" lang="lv" type="chrome_messages_json"/>
-    <!-- The translation console uses 'no' for Norwegian (Bokmål), but Chrome uses 'nb'. -->
     <output filename="remoting/resources/_locales/ml/messages.json" lang="ml" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/mn/messages.json" lang="mn" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/mr/messages.json" lang="mr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ms/messages.json" lang="ms" type="chrome_messages_json"/>
+    <!-- The translation console uses 'no' for Norwegian (Bokmål), but Chrome uses 'nb'. -->
     <output filename="remoting/resources/_locales/nb/messages.json" lang="no" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/nl/messages.json" lang="nl" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/pl/messages.json" lang="pl" type="chrome_messages_json"/>

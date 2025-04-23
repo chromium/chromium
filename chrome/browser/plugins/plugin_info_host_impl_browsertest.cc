@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/rtl.h"
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -45,13 +47,7 @@
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include <tuple>
-#include <variant>
-
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/pdf/common/constants.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -67,16 +63,6 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
-
-#if BUILDFLAG(ENABLE_PDF)
-struct PluginInfoHostImplBidiTestWithCr23OverridePassToString {
-  std::string operator()(
-      const ::testing::TestParamInfo<std::tuple<bool, bool>>& i) const {
-    return std::string(std::get<1>(i.param) ? "CR23_" : "") +
-           std::string(std::get<0>(i.param) ? "RTL" : "LTR");
-  }
-};
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -151,26 +137,6 @@ class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
   bool rtl() const override { return GetParam(); }
-};
-
-class PluginInfoHostImplBidiTestWithCr23Override
-    : public PluginInfoHostImplBidiTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  PluginInfoHostImplBidiTestWithCr23Override() {
-    if (cr23()) {
-      feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfCr23);
-    } else {
-      feature_list_.InitAndDisableFeature(chrome_pdf::features::kPdfCr23);
-    }
-  }
-
-  bool rtl() const override { return std::get<0>(GetParam()); }
-
-  bool cr23() const { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -328,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForPnacl) {
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTestWithCr23Override,
+IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
                        GetPluginInfoForPdfViewerExtension) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const std::u16string kPluginName = u"Chrome PDF Viewer";
@@ -367,9 +333,7 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTestWithCr23Override,
   EXPECT_EQ(0, plugin_info->plugin.pepper_permissions);
 
   // Background color hard-coded in `GetPdfBackgroundColor()`.
-  const SkColor kExpectedColor =
-      cr23() ? SkColorSetRGB(40, 40, 40) : SkColorSetRGB(82, 86, 89);
-  EXPECT_EQ(kExpectedColor, plugin_info->plugin.background_color);
+  EXPECT_EQ(SkColorSetRGB(40, 40, 40), plugin_info->plugin.background_color);
 
   // Has PDF MIME type.
   ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(1));
@@ -452,11 +416,4 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 
 INSTANTIATE_TEST_SUITE_P(All, PluginInfoHostImplBidiTest, testing::Bool());
 
-// TODO(crbug.com/360265881): Stop testing both modes after CR23 PDF viewer
-// launches.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PluginInfoHostImplBidiTestWithCr23Override,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    PluginInfoHostImplBidiTestWithCr23OverridePassToString());
 #endif  // BUILDFLAG(ENABLE_PDF)

@@ -39,7 +39,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_NOT_NOW));
   SetModalType(ui::mojom::ModalType::kWindow);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))

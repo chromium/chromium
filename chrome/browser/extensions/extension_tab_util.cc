@@ -64,6 +64,9 @@
 #include "chrome/browser/ui/ui_features.h"           // nogncheck
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"  // nogncheck
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -886,7 +889,34 @@ api::tab_groups::TabGroup ExtensionTabUtil::CreateTabGroupObject(
   tab_group_object.title = base::UTF16ToUTF8(visual_data.title());
   tab_group_object.window_id = GetWindowIdOfGroup(id);
 
+  tab_group_object.shared = GetSharedStateOfGroup(id);
   return tab_group_object;
+}
+
+// static
+bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+    return false;
+  }
+
+  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (!browser) {
+    return false;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+  if (!tab_group_service) {
+    return false;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(id);
+  if (!saved_group) {
+    return false;
+  }
+
+  return saved_group->is_shared_tab_group();
 }
 
 // static

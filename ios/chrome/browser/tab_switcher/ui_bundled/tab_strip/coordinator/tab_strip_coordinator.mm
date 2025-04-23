@@ -9,6 +9,8 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -51,6 +54,13 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
+using ResultCallback =
+    collaboration::CollaborationControllerDelegate::ResultCallback;
+using collaboration::CollaborationControllerDelegate;
+
 @interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
                                    TabStripCommands>
 
@@ -60,6 +70,9 @@
 @property(nonatomic, strong) TabStripContextMenuHelper* contextMenuHelper;
 // The view controller for the tab strip.
 @property(nonatomic, strong) TabStripViewController* tabStripViewController;
+// Callback invoked upon confirming leaving or deleting a shared group.
+@property(nonatomic, copy) void (^leaveOrDeleteCompletion)
+    (CollaborationControllerDelegate::Outcome);
 
 @end
 
@@ -137,6 +150,7 @@
 }
 
 - (void)stop {
+  [self clearLeaveOrDeleteCompletion];
   if (_tabGroupConfirmationCoordinator) {
     [_tabGroupConfirmationCoordinator stop];
     _tabGroupConfirmationCoordinator = nil;
@@ -270,6 +284,7 @@
                          browser:self.browser
                       actionType:actionType
                       sourceView:sourceView];
+
   __weak TabStripCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
@@ -287,6 +302,9 @@
         [weakSelf replaceLastTabByNewTabInGroup:tabGroupItem];
         break;
     }
+  };
+  _tabGroupConfirmationCoordinator.dismissAction = ^{
+    [weakSelf clearLeaveOrDeleteCompletion];
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
 
@@ -328,17 +346,67 @@
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabStripManage];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabStripShare];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
   id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   [tabGroupsHandler showRecentActivityForGroup:tabGroup];
+}
+
+- (void)startLeaveOrDeleteSharedGroupItem:(TabGroupItem*)tabGroupItem
+                                forAction:(TabGroupActionType)actionType
+                               sourceView:(UIView*)sourceView {
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(ResultCallback)> completionCallback =
+      base::BindOnce(^(ResultCallback resultCallback) {
+        TabStripCoordinator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          std::move(resultCallback)
+              .Run(CollaborationControllerDelegate::Outcome::kCancel);
+          return;
+        }
+        auto completionBlock = base::CallbackToBlock(std::move(resultCallback));
+        strongSelf.leaveOrDeleteCompletion =
+            ^(CollaborationControllerDelegate::Outcome outcome) {
+              completionBlock(outcome);
+            };
+
+        [strongSelf showTabGroupConfirmationForAction:actionType
+                                            groupItem:tabGroupItem
+                                           sourceView:sourceView];
+      });
+
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+
+  const TabGroup* tabGroup = tabGroupItem.tabGroup;
+  if (!tabGroup || !collaborationService) {
+    return;
+  }
+
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          FlowType::kLeaveOrDelete);
+  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
+
+  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
+      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
+  collaborationService->StartLeaveOrDeleteFlow(
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
@@ -411,10 +479,14 @@
       [_mediator deleteGroup:tabGroupItem];
       break;
     case TabGroupActionType::kLeaveSharedTabGroup:
+      [self runLeaveOrDeleteCompletion];
+      break;
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       [_mediator leaveSharedGroup:tabGroupItem];
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
+      [self runLeaveOrDeleteCompletion];
+      break;
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       [_mediator deleteSharedGroup:tabGroupItem];
       break;
@@ -437,7 +509,9 @@
 
 // Shows the "share" or "manage" screen for the `group`. The choice is
 // automatically made based on whether the group is already shared or not.
-- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group
+                       entryPoint:(CollaborationServiceShareOrManageEntryPoint)
+                                      entryPoint {
   Browser* browser = self.browser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -448,12 +522,31 @@
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController);
+  std::unique_ptr<CollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(self.profile),
+          FlowType::kShareOrManage);
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
+}
+
+// Clears `leaveOrDeleteCompletion`. If not nil, calls it with `kCancel`.
+- (void)clearLeaveOrDeleteCompletion {
+  if (self.leaveOrDeleteCompletion) {
+    self.leaveOrDeleteCompletion(
+        CollaborationControllerDelegate::Outcome::kCancel);
+  }
+  self.leaveOrDeleteCompletion = nil;
+}
+
+// Runs `leaveOrDeleteCompletion`. If not nil, calls it with `kSuccess`.
+- (void)runLeaveOrDeleteCompletion {
+  if (self.leaveOrDeleteCompletion) {
+    self.leaveOrDeleteCompletion(
+        CollaborationControllerDelegate::Outcome::kSuccess);
+  }
+  self.leaveOrDeleteCompletion = nil;
 }
 
 @end

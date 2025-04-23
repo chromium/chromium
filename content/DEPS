@@ -30,6 +30,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/input",
   "+components/memory_pressure",
+  "+components/optimization_guide/public/mojom",
   # components/performance_manager sits between chrome/ and content/, except for
   # the mojo interfaces it exposes to content/ and third_party/blink/.
   "+components/performance_manager/public/mojom",

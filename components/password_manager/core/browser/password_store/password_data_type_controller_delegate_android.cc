@@ -31,13 +31,13 @@ void PasswordDataTypeControllerDelegateAndroid::OnSyncStarting(
 void PasswordDataTypeControllerDelegateAndroid::OnSyncStopping(
     syncer::SyncStopMetadataFate metadata_fate) {}
 
-void PasswordDataTypeControllerDelegateAndroid::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void PasswordDataTypeControllerDelegateAndroid::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
   // No data is managed by PasswordDataTypeControllerDelegate - this datatype
   // doesn't use the built-in SyncEngine to communicate changes to/from the Sync
   // server; instead, Android-specific functionality is used for that. So there
   // can't be unsynced changes here.
-  std::move(callback).Run(false);
+  std::move(callback).Run(0u);
 }
 
 void PasswordDataTypeControllerDelegateAndroid::GetAllNodesForDebugging(

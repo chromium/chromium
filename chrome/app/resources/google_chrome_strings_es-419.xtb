@@ -261,6 +261,7 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para obtener la personalización y otras funciones, incluye Chrome en la Actividad web y de aplicaciones y los servicios de Google vinculados</translation>
 <translation id="4334294535648607276">Descarga completa</translation>
+<translation id="4337324600316876133">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 12 o versiones posteriores. Esta computadora usa macOS 11.</translation>
 <translation id="4343195214584226067">Se agregó <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4348548358339558429">Para obtener la personalización, incluye Chrome en la Actividad web y de aplicaciones</translation>
 <translation id="436060642166082913">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales</translation>
@@ -296,7 +297,6 @@
 <translation id="4842397268809523050">ChromeOS Flex no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="4851866215237571846">Ya accediste con <ph name="EXISTING_USER" />.  Para mantener separados los datos de navegación, accede a Chrome en tu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Para compartir tu pantalla, permite la grabación de pantalla de Chrome en Configuración del sistema.</translation>
-<translation id="4873692836499071887">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 11 o versiones posteriores. Esta computadora usa macOS 10.15.</translation>
 <translation id="4873783916118289636">Revisa los controles de seguridad y privacidad más importantes en Chrome</translation>
 <translation id="4885446229353981848">Mostrar siempre el acceso directo a Google Lens</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>

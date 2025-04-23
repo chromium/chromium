@@ -4753,8 +4753,14 @@ void HTMLMediaElement::AudioSourceProviderImpl::Wrap(
     web_audio_source_provider_->SetClient(nullptr);
 
   web_audio_source_provider_ = std::move(provider);
-  if (web_audio_source_provider_)
+  if (web_audio_source_provider_) {
     web_audio_source_provider_->SetClient(client_.Get());
+    if (connection_to_destination_ready_) {
+      // The destination is already connected, then we need to notify the
+      // provider.
+      web_audio_source_provider_->ConnectToDestinationReady();
+    }
+  }
 }
 
 void HTMLMediaElement::AudioSourceProviderImpl::SetClient(
@@ -4791,6 +4797,16 @@ void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
   web_audio_source_provider_->ProvideInput(web_audio_data, frames_to_process);
 }
 
+void HTMLMediaElement::AudioSourceProviderImpl::ConnectToDestinationReady() {
+  base::AutoLock locker(provide_input_lock);
+
+  if (web_audio_source_provider_) {
+    web_audio_source_provider_->ConnectToDestinationReady();
+  } else {
+    connection_to_destination_ready_ = true;
+  }
+}
+
 void HTMLMediaElement::AudioClientImpl::SetFormat(uint32_t number_of_channels,
                                                   float sample_rate) {
   if (client_)
@@ -4813,8 +4829,9 @@ bool HTMLMediaElement::IsAudioElement() {
   return IsHTMLAudioElement();
 }
 
-DisplayType HTMLMediaElement::GetDisplayType() const {
-  return IsFullscreen() ? DisplayType::kFullscreen : DisplayType::kInline;
+WebMediaPlayer::DisplayType HTMLMediaElement::GetDisplayType() const {
+  return IsFullscreen() ? WebMediaPlayer::DisplayType::kFullscreen
+                        : WebMediaPlayer::DisplayType::kInline;
 }
 
 gfx::ColorSpace HTMLMediaElement::TargetColorSpace() {
@@ -5066,6 +5083,15 @@ std::string HTMLMediaElement::GetActivePresentationId() {
 ExecutionContext* HTMLMediaElement::GetExecutionContextForPlayer() const {
   return opener_document_ ? opener_document_->GetExecutionContext()
                           : GetExecutionContext();
+}
+
+void HTMLMediaElement::ConnectToDestinationReady() {
+  if (!audio_source_node_ || is_audio_destination_connected_) {
+    return;
+  }
+
+  is_audio_destination_connected_ = true;
+  GetAudioSourceProvider().ConnectToDestinationReady();
 }
 
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(

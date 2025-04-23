@@ -42,6 +42,14 @@ enum class ClassifyUrlThrottleStatus : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleStatus)
 
+// LINT.IfChange(ClassifyUrlThrottleUseCase)
+enum class ClassifyUrlThrottleUseCase : int {
+  kNotAllowed = 0,
+  kFamilyLinkSupervisedUser = 1,
+  kMaxValue = kFamilyLinkSupervisedUser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleUseCase)
+
 enum class InterstitialResultCallbackActions {
   kCancelNavigation = 0,
   kCancelWithInterstitial = 1

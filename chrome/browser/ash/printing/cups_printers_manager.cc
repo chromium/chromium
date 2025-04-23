@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -743,11 +744,13 @@ class CupsPrintersManagerImpl
         printer.uri().GetPathEncodedAsString(),
         printer.uri().GetScheme() == chromeos::kIppsScheme,
         base::BindOnce(&CupsPrintersManagerImpl::OnQueryPrinterForAutoConf,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), printer.id(),
+                       std::move(callback)));
   }
 
   // Callback for QueryPrinterForAutoConf
   void OnQueryPrinterForAutoConf(
+      std::string printer_id,
       base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback,
       PrinterQueryResult result,
       const ::printing::PrinterStatus& printer_status,
@@ -757,9 +760,35 @@ class CupsPrintersManagerImpl
       const chromeos::PrinterAuthenticationInfo& auth_info,
       const chromeos::IppPrinterInfo& ipp_printer_info) {
     if (result != PrinterQueryResult::kSuccess) {
+      std::string error;
+      switch (result) {
+        case PrinterQueryResult::kUnreachable:
+          error = "device unreachable";
+          break;
+        case PrinterQueryResult::kHostnameResolution:
+          error = "hostname resolution failed";
+          break;
+        case PrinterQueryResult::kUnknownFailure:
+          error = "unknown failure trying to reach printer";
+          break;
+        case PrinterQueryResult::kSuccess:
+          NOTREACHED();
+      }
+
+      PRINTER_LOG(ERROR) << printer_id
+                         << ": Failed to query printer attributes: " << error;
+
       std::move(callback).Run(false, chromeos::IppPrinterInfo{});
       return;
     }
+
+    PRINTER_LOG(DEBUG) << printer_id << ": Printer attributes: make_and_model=["
+                       << make_and_model << "] document_formats=["
+                       << base::JoinString(document_formats, " ")
+                       << "] ipp_features=["
+                       << base::JoinString(ipp_printer_info.ipp_features, " ")
+                       << "] mopria_certified=["
+                       << ipp_printer_info.mopria_certified << "]";
 
     std::move(callback).Run(ipp_everywhere, ipp_printer_info);
   }

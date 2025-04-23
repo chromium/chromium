@@ -59,10 +59,12 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
+  // TODO(crbug.com/40946458): Relative units should not be resolved here, but
+  // that requires InterpolableDynamicRangeLimit to store calc-expressions.
   return ConvertDynamicRangeLimit(
-      StyleBuilderConverterBase::ConvertDynamicRangeLimit(value));
+      StyleBuilderConverter::ConvertDynamicRangeLimit(state, value));
 }
 
 InterpolationValue CSSDynamicRangeLimitInterpolationType::

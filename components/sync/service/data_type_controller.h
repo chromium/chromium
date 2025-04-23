@@ -131,11 +131,11 @@ class DataTypeController {
   // Returns whether this data type has any unsynced changes, i.e. any local
   // changes that are waiting to be committed.
   // May be invoked at any time; if the model isn't loaded yet or is in an error
-  // state, this should typically return "false".
+  // state, this should typically return 0.
   // Note: This must only be called if in transport-only mode, or if stopped.
   // TODO(crbug.com/401470426): Rename this to better reflect that it's only
   // called in transport-only mode.
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback);
 
   // Returns a Value::List representing all nodes for this data type through
   // `callback` on this thread. Can only be called if state() != NOT_RUNNING.

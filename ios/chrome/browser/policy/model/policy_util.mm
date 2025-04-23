@@ -22,6 +22,8 @@ bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service) {
     return NO;
   }
+  // Platform note: on iOS it is not possible to disable the incognito mode at
+  // user level (only policy/enterprise or Family Link settings are respected).
   return pref_service->IsManagedPreference(
              policy::policy_prefs::kIncognitoModeAvailability) ||
          pref_service->IsPreferenceManagedByCustodian(

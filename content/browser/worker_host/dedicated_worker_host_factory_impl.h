@@ -41,8 +41,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter);
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter);
 
   DedicatedWorkerHostFactoryImpl(const DedicatedWorkerHostFactoryImpl&) =
       delete;
@@ -82,7 +81,6 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 };
 
 }  // namespace content

@@ -728,10 +728,8 @@ Color LayoutTheme::SystemColorFromColorProvider(
   SkColor system_theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:
-    case CSSValueID::kLinktext:
-    case CSSValueID::kVisitedtext:
       system_theme_color =
-          color_provider->GetColor(ui::kColorCssSystemHotlight);
+          color_provider->GetColor(ui::kColorCssSystemActiveText);
       break;
     case CSSValueID::kButtonface:
     case CSSValueID::kButtonhighlight:
@@ -767,6 +765,14 @@ Color LayoutTheme::SystemColorFromColorProvider(
     case CSSValueID::kHighlighttext:
       system_theme_color =
           color_provider->GetColor(ui::kColorCssSystemHighlightText);
+      break;
+    case CSSValueID::kLinktext:
+      system_theme_color =
+          color_provider->GetColor(ui::kColorCssSystemLinkText);
+      break;
+    case CSSValueID::kVisitedtext:
+      system_theme_color =
+          color_provider->GetColor(ui::kColorCssSystemVisitedText);
       break;
     case CSSValueID::kCanvas:
     // Deprecated colors, see DefaultSystemColor().

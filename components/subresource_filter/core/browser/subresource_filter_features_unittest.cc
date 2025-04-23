@@ -64,8 +64,7 @@ class ScopedExperimentalStateToggle {
   ScopedExperimentalStateToggle& operator=(
       const ScopedExperimentalStateToggle&) = delete;
 
-  ~ScopedExperimentalStateToggle() {
-  }
+  ~ScopedExperimentalStateToggle() {}
 
  private:
   testing::ScopedSubresourceFilterConfigurator scoped_configurator_;

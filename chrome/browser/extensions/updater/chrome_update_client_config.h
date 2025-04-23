@@ -19,6 +19,9 @@
 #include "base/time/time.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 

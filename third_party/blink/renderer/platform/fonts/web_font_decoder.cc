@@ -28,16 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 
 #include <hb.h>
 #include <stdarg.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -79,7 +75,7 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
   int result = _vscprintf(format, args);
 #else
   char ch;
-  int result = vsnprintf(&ch, 1, format, args);
+  int result = UNSAFE_TODO(vsnprintf(&ch, 1, format, args));
 #endif
   va_end(args);
 
@@ -91,7 +87,7 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
     buffer.Grow(len + 1);
 
     va_start(args, format);
-    vsnprintf(buffer.data(), buffer.size(), format, args);
+    UNSAFE_TODO(vsnprintf(buffer.data(), buffer.size(), format, args));
     va_end(args);
     error_string_ = StringImpl::Create(base::span(buffer).first(len));
   }

@@ -160,7 +160,7 @@ TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
   const mojom::ErrorPtr& create_context_error = result->get_error();
   EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(create_context_error->message,
-            "WebNN is not compatible with device.");
+            "DirectML: WebNN is not compatible with device.");
 }
 
 #endif

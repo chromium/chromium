@@ -21,8 +21,7 @@ namespace ash::cfm {
 // The Render Frame Host Token is used to identify the peripheral's device path
 // given a hashed device id.
 // Note: This control must be initialised in the relevant browser context
-// that the Meet Client is running on e.g. Ash or LaCrOS and pass its
-// RenderFrameHostToken
+// that the Meet Client is running and pass its RenderFrameHostToken
 class MeetBrowserService : public CfmObserver,
                            public chromeos::cfm::ServiceAdaptor::Delegate,
                            public mojom::MeetBrowser {

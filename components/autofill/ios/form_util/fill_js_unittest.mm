@@ -57,7 +57,7 @@ web::JavaScriptFeature* GetDummyFeatureForContentWorld(
   }
 }
 
-// TODO(crbug.com/359538514): Make test non-parametrized once Autofill in the
+// TODO(crbug.com/359538514): Make test non-parameterized once Autofill in the
 // isolated world is launched.
 class FillJsTest : public web::WebTestWithWebState,
                    public ::testing::WithParamInterface<bool> {

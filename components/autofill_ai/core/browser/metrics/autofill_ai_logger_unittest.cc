@@ -9,10 +9,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -23,6 +25,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
@@ -40,6 +43,10 @@
 namespace autofill_ai {
 
 namespace {
+
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 constexpr char submitted_str[] = "Submitted";
 constexpr char abandoned_str[] = "Abandoned";
@@ -86,17 +93,24 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
+    autofill_client().set_entity_data_manager(
+        std::make_unique<autofill::EntityDataManager>(
+            webdata_helper_.autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*strike_database=*/nullptr));
+
     manager_ = std::make_unique<AutofillAiManager>(&client_, &strike_database_);
     ON_CALL(client_, GetAutofillClient)
-        .WillByDefault(testing::ReturnRef(autofill_client_));
+        .WillByDefault(ReturnRef(autofill_client()));
     ON_CALL(client_, GetEntityDataManager)
-        .WillByDefault(testing::Return(&entity_data_manager_));
+        .WillByDefault(Return(autofill_client().GetEntityDataManager()));
   }
 
   AutofillAiManager& manager() { return *manager_; }
 
   void AddOrUpdateEntityInstance(autofill::EntityInstance entity) {
-    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
+    client().GetEntityDataManager()->AddOrUpdateEntityInstance(
+        std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 
@@ -126,20 +140,20 @@ class BaseAutofillAiTest : public testing::Test {
     return form;
   }
 
+  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
   MockAutofillAiClient& client() { return client_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
-  testing::NiceMock<MockAutofillAiClient> client_;
+  NiceMock<MockAutofillAiClient> client_;
   std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
-  autofill::EntityDataManager entity_data_manager_{
-      webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
-      /*strike_database=*/nullptr};
 };
 
 // Test that the funnel metrics are logged correctly given different scenarios.
@@ -266,8 +280,10 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   std::unique_ptr<autofill::FormStructure> form =
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
+  autofill::EntityInstance passport =
+      autofill::test::GetPassportEntityInstance();
   if (user_has_data()) {
-    AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
+    AddOrUpdateEntityInstance(passport);
   }
   manager().OnFormSeen(*form);
 
@@ -275,7 +291,8 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
     manager().OnSuggestionsShown(*form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    manager().OnDidFillSuggestion(*form, *form->field(0), /*ukm_source_id=*/{});
+    manager().OnDidFillSuggestion(passport.guid(), *form, *form->field(0),
+                                  /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
     manager().OnEditedAutofilledField(*form, *form->field(0),
@@ -291,6 +308,7 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
 class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
  public:
   AutofillAiMqlsMetricsTest() {
+    autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     logs_uploader_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
 
@@ -443,7 +461,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
                                                        /*ukm_source_id=*/{});
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/true,
+                                                 /*submission_state=*/true,
                                                  /*opt_in_status=*/true);
   ASSERT_EQ(mqls_logs().size(), 4u);
   ExpectCorrectMqlsKeyMetricsLogging(
@@ -455,10 +473,10 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
 // Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted
 // in for Autofill AI.
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
+  autofill::SetAutofillAiOptInStatus(autofill_client(), false);
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/true,
+                                                 /*submission_state=*/true,
                                                  /*opt_in_status=*/false);
   EXPECT_TRUE(mqls_logs().empty());
 }
@@ -469,7 +487,38 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_FormAbandoned) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/false,
+                                                 /*submission_state=*/false,
+                                                 /*opt_in_status=*/true);
+  EXPECT_TRUE(mqls_logs().empty());
+}
+
+// Tests that metrics are not recorded in MQLS if the enterprise policy forbids
+// it.
+TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
+  autofill_client().GetPrefs()->SetInteger(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      base::to_underlying(optimization_guide::model_execution::prefs::
+                              ModelExecutionEnterprisePolicyValue::kDisable));
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  /*ukm_source_id=*/{});
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submitted_state=*/true,
+                                                 /*opt_in_status=*/true);
+  EXPECT_TRUE(mqls_logs().empty());
+}
+
+// Tests that metrics are not recorded in MQLS when off-the-record.
+TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsWhenOffTheRecord) {
+  autofill_client().set_is_off_the_record(true);
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  /*ukm_source_id=*/{});
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submitted_state=*/true,
                                                  /*opt_in_status=*/true);
   EXPECT_TRUE(mqls_logs().empty());
 }

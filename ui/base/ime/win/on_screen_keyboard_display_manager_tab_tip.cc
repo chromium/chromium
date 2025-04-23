@@ -188,7 +188,8 @@ gfx::Rect OnScreenKeyboardDetector::GetOccludedRect() {
 
   gfx_osk_rect.Intersect(gfx_main_window_rect);
 
-  return display::win::ScreenWin::ScreenToDIPRect(main_window_, gfx_osk_rect);
+  return display::win::GetScreenWin()->ScreenToDIPRect(main_window_,
+                                                       gfx_osk_rect);
 }
 
 void OnScreenKeyboardDetector::CheckIfKeyboardVisible() {

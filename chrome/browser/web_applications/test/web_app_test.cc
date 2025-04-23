@@ -52,6 +52,10 @@ content::BrowserContext* WebAppTest::GetBrowserContext() {
   return profile();
 }
 
+web_app::WebAppProvider& WebAppTest::provider() const {
+  return *web_app::WebAppProvider::GetForWebApps(profile());
+}
+
 web_app::FakeWebAppProvider& WebAppTest::fake_provider() const {
   return *web_app::FakeWebAppProvider::Get(profile());
 }

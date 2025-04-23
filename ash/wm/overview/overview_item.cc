@@ -755,6 +755,7 @@ void OverviewItem::StartDrag() {
 
 void OverviewItem::OnOverviewItemDragStarted() {
   GetOrCreateOverviewItemView().SetCloseButtonVisible(false);
+  transform_window_.OnDragStarted();
 }
 
 void OverviewItem::OnOverviewItemDragEnded(bool snap) {
@@ -765,6 +766,8 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
   } else {
     GetOrCreateOverviewItemView().SetCloseButtonVisible(true);
   }
+
+  transform_window_.OnDragEnded();
 }
 
 void OverviewItem::OnOverviewItemContinuousScroll(
@@ -772,7 +775,7 @@ void OverviewItem::OnOverviewItemContinuousScroll(
     float scroll_ratio) {
   auto* window = GetWindow();
 
-  // TODO(sammiequon): This should use
+  // TODO: This should use
   // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
   // windows behave like minimized windows in overview, even if continuous
   // scroll and tucked windows will not be supported together.
@@ -1299,7 +1302,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
     clip_rect = gfx::Rect(window->bounds().size());
     // We add 1 to the `top_inset`, because in some cases, the header is not
     // clipped fully due to what seems to be a rounding error.
-    // TODO(afakhry|sammiequon): Investigate a proper fix for this.
+    // TODO: Investigate a proper fix for this.
     const int top_inset = GetTopInset();
     if (top_inset > 0 && !clip_rect.IsEmpty()) {
       clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));

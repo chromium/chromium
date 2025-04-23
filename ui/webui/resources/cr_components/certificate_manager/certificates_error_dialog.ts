@@ -42,7 +42,7 @@ class CertificatesErrorDialogElement extends
     };
   }
 
-  model: CertificatesError|CertificatesImportError;
+  declare model: CertificatesError|CertificatesImportError;
 
   private onOkClick_() {
     this.$.dialog.close();

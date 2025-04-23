@@ -2286,7 +2286,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
-  shelf->shelf_widget()->GetFocusCycler()->RotateFocus(FocusCycler::FORWARD);
+  Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   ShelfAppButton* button = GetButtonByID(first_app_id);

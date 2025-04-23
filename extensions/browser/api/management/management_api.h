@@ -23,6 +23,9 @@
 #include "extensions/common/extension_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+// Note: While this code compiles on Android, its delegates in //chrome do not,
+// and therefore the API doesn't fully work yet on Android.
+
 namespace extensions {
 
 class ExtensionRegistry;

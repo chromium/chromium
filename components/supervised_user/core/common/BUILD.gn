@@ -43,6 +43,7 @@ source_set("features") {
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//extensions/buildflags",
   ]

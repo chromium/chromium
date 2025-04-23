@@ -19,6 +19,7 @@
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/ad_auction/event_record.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -377,7 +378,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
       base::BindLambdaForTesting([&owner](const blink::StorageKey& candidate) {
         return candidate == blink::StorageKey::CreateFirstParty(owner);
       }),
-      base::BindLambdaForTesting([]() {}));
+      /*user_initiated_deletion=*/true, base::BindLambdaForTesting([]() {}));
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(),
                                          ig_different_owner.owner);
@@ -1139,6 +1140,63 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
                                   base::Milliseconds(1));
   ASSERT_FALSE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
+}
+
+TEST_F(InterestGroupCachingStorageTest, LimitLifetimeForClickiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kFledgeClickiness);
+
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+
+  // Join a group. It shouldn't have any clicks yet.
+  url::Origin owner = url::Origin::Create(GURL(kBiddingURL));
+  GURL joining_url(kJoiningURL);
+  auto ig = MakeInterestGroup(owner, "name");
+  // TODO(crbug.com/394108643): The next couple lines will be unneeded when
+  // the default provider change lands.
+  ig.view_and_click_counts_providers.emplace();
+  ig.view_and_click_counts_providers->push_back(owner);
+  JoinInterestGroup(caching_storage.get(), ig, joining_url);
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_EQ(loaded_igs->get()->size(), 1u);
+  EXPECT_EQ(loaded_igs->get()
+                ->GetInterestGroups()[0]
+                ->bidding_browser_signals->view_and_click_counts->click_counts
+                ->past_hour,
+            0);
+
+  // Added a click.
+  network::AdAuctionEventRecord click;
+  click.type = network::AdAuctionEventRecord::Type::kClick;
+  click.providing_origin = owner;
+  click.eligible_origins.push_back(owner);
+  caching_storage->RecordViewClick(std::move(click));
+
+  // Try to look up the IG again, change should be hidden by cache.
+  // (Note that we're still hanging on to result of previous read to keep it
+  //  around based on that).
+  auto loaded_igs2 = GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_EQ(loaded_igs2->get()->size(), 1u);
+  EXPECT_EQ(loaded_igs2->get()
+                ->GetInterestGroups()[0]
+                ->bidding_browser_signals->view_and_click_counts->click_counts
+                ->past_hour,
+            0);
+
+  // After the timeout expires, the new read returns new values, even though
+  // old value is still held.
+  task_environment().FastForwardBy(
+      InterestGroupCachingStorage::kMaximumCacheHoldTime +
+      base::Milliseconds(1));
+  auto loaded_igs3 = GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_EQ(loaded_igs3->get()->size(), 1u);
+  EXPECT_EQ(loaded_igs3->get()
+                ->GetInterestGroups()[0]
+                ->bidding_browser_signals->view_and_click_counts->click_counts
+                ->past_hour,
+            1);
 }
 
 }  // namespace content

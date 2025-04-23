@@ -63,7 +63,6 @@ class ChooseFileTabHelper
  private:
   explicit ChooseFileTabHelper(web::WebState* web_state);
   friend class web::LazyWebStateUserData<ChooseFileTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Abort the current selection flow.
   void AbortSelection();

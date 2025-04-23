@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_check;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,11 +17,14 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /** This class is responsible for rendering the check passwords view in the settings menu. */
+@NullMarked
 public class PasswordCheckFragmentView extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage {
     // Key for the argument with which the PasswordsCheck fragment will be launched. The value for
@@ -27,7 +32,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
     // all points of entry to the password check UI.
     public static final String PASSWORD_CHECK_REFERRER = "password-check-referrer";
 
-    private PasswordCheckComponentUi mComponentDelegate;
+    private @Nullable PasswordCheckComponentUi mComponentDelegate;
     private @PasswordCheckReferrer int mPasswordCheckReferrer;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -41,7 +46,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.passwords_check_title));
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         mPasswordCheckReferrer = getReferrerFromInstanceStateOrLaunchBundle(savedInstanceState);
@@ -66,17 +71,19 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
     @Override
     public void onStart() {
         super.onStart();
+        assumeNonNull(mComponentDelegate);
         mComponentDelegate.onStartFragment();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        assumeNonNull(mComponentDelegate);
         mComponentDelegate.onResumeFragment();
     }
 
     private @PasswordCheckReferrer int getReferrerFromInstanceStateOrLaunchBundle(
-            Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(PASSWORD_CHECK_REFERRER)) {
             return savedInstanceState.getInt(PASSWORD_CHECK_REFERRER);
         }
@@ -90,6 +97,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
     @Override
     public void onDestroy() {
         super.onDestroy();
+        assumeNonNull(mComponentDelegate);
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
         // by the system.
@@ -110,6 +118,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        assumeNonNull(mComponentDelegate);
         return mComponentDelegate.handleHelp(item);
     }
 

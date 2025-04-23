@@ -138,6 +138,7 @@ class CanvasResourceDispatcherTest
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
 
+  void ResetDispatcher() { dispatcher_.reset(); }
   test::TaskEnvironment& TaskEnvironment() { return task_environment_; }
 
  private:
@@ -183,17 +184,20 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
    * the resources in order. */
   // Reclaim first frame
   viz::ResourceId reclaim_resource_id(1u);
-  Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame1));
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(frame1));
   EXPECT_EQ(2u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim second frame
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame2));
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(frame2));
   EXPECT_EQ(1u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim third frame
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame3));
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(frame3));
   EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
 }
 
@@ -219,10 +223,11 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   // Attempt to post kMaxUnreclaimedPlaceholderFrames+1 times
   auto frame1 = DispatchOneFrame();
   auto frame2 = DispatchOneFrame();
+  std::vector<scoped_refptr<CanvasResource>> other_frames;
   for (unsigned i = 0;
        i < CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames - 1;
        i++) {
-    DispatchOneFrame();
+    other_frames.push_back(DispatchOneFrame());
   }
   viz::ResourceId post_resource_id(
       CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames + 1);
@@ -234,7 +239,7 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
 
   // Attempt to post the 5th time. The latest unposted image will be replaced.
   post_resource_id = NextId(post_resource_id);
-  DispatchOneFrame();
+  other_frames.push_back(DispatchOneFrame());
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames,
             GetNumUnreclaimedFramesPosted());
   EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
@@ -248,7 +253,8 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
    * Resource reclaim happens in the same order as frame posting. */
   viz::ResourceId reclaim_resource_id(1u);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
-  Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame1));
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(frame1));
   // Reclaim 1 frame and post 1 frame, so numPostImagesUnresponded remains as 3
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames,
             GetNumUnreclaimedFramesPosted());
@@ -260,10 +266,16 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
 
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame2));
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(frame2));
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames - 1,
             GetNumUnreclaimedFramesPosted());
   Mock::VerifyAndClearExpectations(Dispatcher());
+
+  // The dispatcher requires all of its CanvasResources to be live when it is
+  // destroyed. Rather than bothering to reclaim all the resources in
+  // `other_resources`, just reset the dispatcher here.
+  ResetDispatcher();
 }
 
 TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
@@ -294,7 +306,7 @@ TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
   // Verify that the client's BeginFrame is called in response to a real OBF.
   EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(1);
   Dispatcher()->OnBeginFrame(/*begin_frame_args=*/{}, /*timing details*/ {},
-                             /*frame_ack=*/false, /*resources=*/{});
+                             /*resources=*/{});
 }
 
 TEST_F(CanvasResourceDispatcherTest,
@@ -438,6 +450,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   Dispatcher()->DispatchFrame(canvas_resource, base::TimeTicks::Now(),
                               damage_rect, !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
+  viz::ResourceId reclaim_resource_id(1u);
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(canvas_resource));
 }
 
 const TestParams kTestCases[] = {

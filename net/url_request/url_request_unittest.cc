@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/android_info.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "net/url_request/url_request.h"
 
 #include <stdint.h>
 
@@ -55,6 +54,7 @@
 #include "build/buildflag.h"
 #include "crypto/sha2.h"
 #include "net/base/chunked_upload_data_stream.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/directory_listing.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/features.h"
@@ -148,6 +148,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/storage_access_status_cache.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
@@ -8851,10 +8852,9 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
 // does not return an HttpTransaction.
 TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCreateHttpTransactionFactoryCallback(
-      base::BindOnce([](HttpNetworkSession* session) {
-        // Create a new HttpNetworkLayer that thinks it's suspended.
-        auto network_layer = std::make_unique<HttpNetworkLayer>(session);
+  context_builder->SetWrapHttpNetworkLayerCallback(
+      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
+        // Make the HttpNetworkLayer think it's suspended.
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
@@ -8879,8 +8879,9 @@ namespace {
 // HttpTransactionFactory that synchronously fails to create transactions.
 class FailingHttpTransactionFactory : public HttpTransactionFactory {
  public:
-  explicit FailingHttpTransactionFactory(HttpNetworkSession* network_session)
-      : network_session_(network_session) {}
+  explicit FailingHttpTransactionFactory(
+      std::unique_ptr<HttpTransactionFactory> network_layer)
+      : network_layer_(std::move(network_layer)) {}
 
   FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
   FailingHttpTransactionFactory& operator=(
@@ -8896,10 +8897,12 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 
   HttpCache* GetCache() override { return nullptr; }
 
-  HttpNetworkSession* GetSession() override { return network_session_; }
+  HttpNetworkSession* GetSession() override {
+    return network_layer_->GetSession();
+  }
 
  private:
-  raw_ptr<HttpNetworkSession> network_session_;
+  std::unique_ptr<HttpTransactionFactory> network_layer_;
 };
 
 }  // namespace
@@ -8913,10 +8916,11 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 // behaviors.
 TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCreateHttpTransactionFactoryCallback(
-      base::BindOnce([](HttpNetworkSession* session) {
+  context_builder->SetWrapHttpNetworkLayerCallback(
+      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
         std::unique_ptr<HttpTransactionFactory> factory =
-            std::make_unique<FailingHttpTransactionFactory>(session);
+            std::make_unique<FailingHttpTransactionFactory>(
+                std::move(network_layer));
         return factory;
       }));
   auto& network_delegate = *context_builder->set_network_delegate(
@@ -10585,8 +10589,7 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
 };
 
 static bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
 #else
   return false;
@@ -11162,6 +11165,17 @@ class HTTPSOCSPVerifyTest
       public testing::WithParamInterface<OCSPVerifyTestData> {};
 
 TEST_P(HTTPSOCSPVerifyTest, VerifyResult) {
+#if BUILDFLAG(CRONET_BUILD)
+  // Previously, OCSP stapling would never be passed to the platform verifier
+  // which meant that the only layer performing the verification was BoringSSL.
+  // However, this has changed with Android 16 where we started passing the OCSP
+  // stapling data to Conscrypt. This meant certificates with bad OCSP stapling
+  // that were previously passing the Conscrypt check are now failing the check.
+  // See crbug.com/408137065 for more information.
+  if (base::android::android_info::sdk_int() >= 36) {
+    GTEST_SKIP();
+  }
+#endif
   OCSPVerifyTestData test = GetParam();
 
   scoped_refptr<X509Certificate> root_cert =
@@ -11624,7 +11638,7 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   HashValue spki_hash_value;
   ASSERT_TRUE(x509_util::CalculateSha256SpkiHash(
       test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
-  std::string spki_hash(spki_hash_value.begin(), spki_hash_value.end());
+  std::string spki_hash(base::as_string_view(spki_hash_value.span()));
   {
     auto crl_set =
         CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});

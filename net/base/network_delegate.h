@@ -99,9 +99,8 @@ class NET_EXPORT NetworkDelegate {
       base::optional_ref<const RedirectInfo> redirect_info) const;
 
   // Returns true if the `Sec-Fetch-Storage-Access` request header flow is
-  // enabled in the given context.
-  bool IsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
-                                    const GURL& url) const;
+  // enabled.
+  bool IsStorageAccessHeaderEnabled() const;
 
   // PrivacySetting is kStateDisallowed iff the given |url| has to be
   // requested over connection that is not tracked by the server.
@@ -320,9 +319,7 @@ class NET_EXPORT NetworkDelegate {
       const URLRequest& request,
       base::optional_ref<const RedirectInfo> redirect_info) const = 0;
 
-  virtual bool OnIsStorageAccessHeaderEnabled(
-      const url::Origin* top_frame_origin,
-      const GURL& url) const = 0;
+  virtual bool OnIsStorageAccessHeaderEnabled() const = 0;
 };
 
 }  // namespace net

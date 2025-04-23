@@ -844,6 +844,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
                              ->scroll_container_relative_containing_block_rect);
 
           constraint->pixel_snap_offset = gfx::Vector2dF(pixel_snap_offset);
+          // gfx::Vector2dF rounds differently than PhysicalOffset at
+          // half-integral negative values. This hack works around that
+          // situation.
+          // See https://issues.chromium.org/issues/401693546#comment6
+          //
+          // TODO(crbug.com/404418768 ): Remove this in favor of applying the
+          // same rounding logic (round up instead of away from 0) for our
+          // floating point rounding.
+          float adjustment_left = 0.0;
+          float adjustment_top = 0.0;
+          if (pixel_snap_offset.left == LayoutUnit(-0.5)) {
+            adjustment_left = 0.001;
+          }
+          if (pixel_snap_offset.top == LayoutUnit(-0.5)) {
+            adjustment_top = 0.001;
+          }
+          constraint->pixel_snap_offset +=
+              gfx::Vector2dF(adjustment_left, adjustment_top);
 
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
@@ -1708,7 +1726,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (object_.IsBoxModelObject()) {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
           CompositorFilterOperations operations;
-          gfx::RRectF bounds;
+          SkPath bounds;
           layer->UpdateCompositorFilterOperationsForBackdropFilter(operations,
                                                                    bounds);
           if (!operations.IsEmpty()) {
@@ -2274,8 +2292,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                 : gfx::Vector2dF();
         precise_clip_path_rect_->Offset(paint_offset);
         if (std::optional<Path> path =
-                ClipPathClipper::PathBasedClip(object_)) {
-          path->Translate(paint_offset);
+                ClipPathClipper::PathBasedClip(object_, paint_offset)) {
           std::optional<FloatRoundedRect> rrect;
           // TODO(crbug.com/337191311): The optimization breaks
           // view-transition if the bounding box of clip-path is larger than
@@ -2676,8 +2693,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         DCHECK(object_.IsSVGViewportContainer());
         const auto& viewport_container =
             To<LayoutSVGViewportContainer>(object_);
+        // Clipping is performed in the viewport container's local coordinate
+        // space, so take the inverse from viewBox transform.
         const auto clip_rect =
-            viewport_container.LocalToSVGParentTransform().Inverse().MapRect(
+            viewport_container.ComputeViewboxTransform().Inverse().MapRect(
                 viewport_container.Viewport());
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?

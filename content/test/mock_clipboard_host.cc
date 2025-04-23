@@ -141,6 +141,7 @@ void MockClipboardHost::WriteText(const std::u16string& text) {
   if (needs_reset_)
     Reset();
   plain_text_ = text;
+  OnClipboardDataChanged();
 }
 
 void MockClipboardHost::WriteHtml(const std::u16string& markup,
@@ -149,6 +150,7 @@ void MockClipboardHost::WriteHtml(const std::u16string& markup,
     Reset();
   html_text_ = markup;
   url_ = url;
+  OnClipboardDataChanged();
 }
 
 void MockClipboardHost::WriteSvg(const std::u16string& markup) {
@@ -218,6 +220,18 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   std::u16string web_format =
       base::StrCat({ui::kWebClipboardFormatPrefix16, format});
   unsanitized_custom_data_map_[web_format] = std::move(data_copy);
+}
+
+void MockClipboardHost::RegisterClipboardListener(
+    mojo::PendingRemote<blink::mojom::ClipboardListener> listener) {
+  clipboard_listener_.reset();
+  clipboard_listener_.Bind(std::move(listener));
+}
+
+void MockClipboardHost::OnClipboardDataChanged() {
+  if (clipboard_listener_) {
+    clipboard_listener_->OnClipboardDataChanged();
+  }
 }
 
 #if BUILDFLAG(IS_MAC)

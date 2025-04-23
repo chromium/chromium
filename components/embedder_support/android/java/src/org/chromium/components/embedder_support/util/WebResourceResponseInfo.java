@@ -6,6 +6,7 @@ package org.chromium.components.embedder_support.util;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,28 +18,33 @@ import java.util.Map;
 @JNINamespace("embedder_support")
 @NullMarked
 public class WebResourceResponseInfo {
-    private String mMimeType;
-    private String mCharset;
-    private InputStream mData;
+    private final @Nullable String mMimeType;
+    private final @Nullable String mCharset;
+    private @Nullable InputStream mData;
     private int mStatusCode;
     private @Nullable String mReasonPhrase;
     private @Nullable Map<String, String> mResponseHeaders;
-    private String @Nullable [] mResponseHeaderNames;
-    private String @Nullable [] mResponseHeaderValues;
 
-    public WebResourceResponseInfo(String mimeType, String encoding, InputStream data) {
+    /**
+     * Helps assert that the native code only transfers the stream once. Only modified on the IO
+     * thread.
+     */
+    private boolean mStreamTransferredToNative;
+
+    public WebResourceResponseInfo(
+            @Nullable String mimeType, @Nullable String encoding, @Nullable InputStream data) {
         mMimeType = mimeType;
         mCharset = encoding;
         mData = data;
     }
 
     public WebResourceResponseInfo(
-            String mimeType,
-            String encoding,
-            InputStream data,
+            @Nullable String mimeType,
+            @Nullable String encoding,
+            @Nullable InputStream data,
             int statusCode,
-            String reasonPhrase,
-            Map<String, String> responseHeaders) {
+            @Nullable String reasonPhrase,
+            @Nullable Map<String, String> responseHeaders) {
         this(mimeType, encoding, data);
 
         mStatusCode = statusCode;
@@ -46,31 +52,42 @@ public class WebResourceResponseInfo {
         mResponseHeaders = responseHeaders;
     }
 
-    private void fillInResponseHeaderNamesAndValuesIfNeeded() {
-        if (mResponseHeaders == null || mResponseHeaderNames != null) return;
-        mResponseHeaderNames = new String[mResponseHeaders.size()];
-        mResponseHeaderValues = new String[mResponseHeaders.size()];
-        int i = 0;
-        for (Map.Entry<String, String> entry : mResponseHeaders.entrySet()) {
-            mResponseHeaderNames[i] = entry.getKey();
-            mResponseHeaderValues[i] = entry.getValue();
-            i++;
-        }
-    }
-
     @CalledByNative
+    @Nullable
+    @JniType("std::optional<std::string>")
     public String getMimeType() {
         return mMimeType;
     }
 
     @CalledByNative
+    @Nullable
+    @JniType("std::optional<std::string>")
     public String getCharset() {
         return mCharset;
     }
 
-    @CalledByNative
-    public InputStream getData() {
+    public @Nullable InputStream getData() {
         return mData;
+    }
+
+    @CalledByNative
+    private boolean hasInputStream() {
+        return mData != null;
+    }
+
+    @CalledByNative
+    @JniType("std::unique_ptr<embedder_support::InputStream>")
+    private @Nullable InputStream transferStreamToNative() {
+        // Only allow to call transferStreamToNative once per object, because this method
+        // transfers ownership of the stream and once the unique_ptr<InputStream>
+        // is deleted it also closes the original java input stream. This
+        // side-effect can result in unexpected behavior, e.g. trying to read
+        // from a closed stream.
+        assert !mStreamTransferredToNative;
+        mStreamTransferredToNative = true;
+        InputStream toTransfer = mData;
+        mData = null;
+        return toTransfer;
     }
 
     @CalledByNative
@@ -79,23 +96,14 @@ public class WebResourceResponseInfo {
     }
 
     @CalledByNative
+    @JniType("std::optional<std::string>")
     public @Nullable String getReasonPhrase() {
         return mReasonPhrase;
     }
 
+    @CalledByNative
+    @JniType("std::optional<base::flat_map<std::string, std::string>>")
     public @Nullable Map<String, String> getResponseHeaders() {
         return mResponseHeaders;
-    }
-
-    @CalledByNative
-    private String @Nullable [] getResponseHeaderNames() {
-        fillInResponseHeaderNamesAndValuesIfNeeded();
-        return mResponseHeaderNames;
-    }
-
-    @CalledByNative
-    private String @Nullable [] getResponseHeaderValues() {
-        fillInResponseHeaderNamesAndValuesIfNeeded();
-        return mResponseHeaderValues;
     }
 }

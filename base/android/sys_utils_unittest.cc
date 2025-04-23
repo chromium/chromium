@@ -15,7 +15,7 @@ TEST(SysUtils, AmountOfPhysicalMemory) {
   // Check that the RAM size reported by sysconf() matches the one
   // computed by base::SysInfo::AmountOfPhysicalMemory().
   size_t sys_ram_size =
-      static_cast<size_t>(sysconf(_SC_PHYS_PAGES) * PAGE_SIZE);
+      static_cast<size_t>(sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE));
   EXPECT_EQ(sys_ram_size,
             static_cast<size_t>(SysInfo::AmountOfPhysicalMemory()));
 }

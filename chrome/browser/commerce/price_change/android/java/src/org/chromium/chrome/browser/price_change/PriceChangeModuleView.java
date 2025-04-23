@@ -15,10 +15,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** View for the price change module. */
+@NullMarked
 public class PriceChangeModuleView extends FrameLayout {
     private TextView mModuleTitleView;
     private TextView mProductTitleView;

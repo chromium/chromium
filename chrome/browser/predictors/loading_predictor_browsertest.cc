@@ -25,6 +25,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -163,6 +164,49 @@ class LcpElementLearnWaiter : public TestObserver {
   base::RunLoop run_loop_;
 };
 
+class LcpUpdatedWaiter : public TestObserver {
+ public:
+  explicit LcpUpdatedWaiter(ResourcePrefetchPredictor* predictor,
+                            size_t wait_lcp_count)
+      : TestObserver(predictor), wait_lcp_count_(wait_lcp_count) {}
+  const std::vector<std::optional<std::string>>& Wait() {
+    run_loop_.Run();
+    return element_locators_;
+  }
+
+ private:
+  void OnLcpUpdated(
+      const std::optional<std::string>& element_locator) override {
+    element_locators_.push_back(element_locator);
+    if (++lcp_count_ >= wait_lcp_count_) {
+      run_loop_.Quit();
+    }
+  }
+  base::RunLoop run_loop_;
+  const size_t wait_lcp_count_;
+  size_t lcp_count_ = 0u;
+  std::vector<std::optional<std::string>> element_locators_;
+};
+
+class LcpTimingPredictedWaiter : public TestObserver {
+ public:
+  explicit LcpTimingPredictedWaiter(ResourcePrefetchPredictor* predictor)
+      : TestObserver(predictor) {}
+  std::optional<std::string>& Wait() {
+    run_loop_.Run();
+    return lcp_element_locator_;
+  }
+
+ private:
+  void OnLcpTimingPredicted(
+      const std::optional<std::string>& lcp_element_locator) override {
+    lcp_element_locator_ = lcp_element_locator;
+    run_loop_.Quit();
+  }
+  base::RunLoop run_loop_;
+  std::optional<std::string> lcp_element_locator_;
+};
+
 class TestPreconnectManagerObserver : public PreconnectManager::Observer {
  public:
   explicit TestPreconnectManagerObserver(
@@ -179,6 +223,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
       bool success) override {
     ResolveHostRequestInfo preconnect_info{url.host(),
                                            network_anonymization_key};
@@ -1174,6 +1219,127 @@ IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, UMA) {
       ::internal::kHistogramLCPPSubresourceCountRecall, 60, 1);
   histogram_tester.ExpectUniqueSample(
       ::internal::kHistogramLCPPSubresourceCountSameSiteRatio, 100, 1);
+}
+
+class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
+ public:
+  ~LCPPTimingPredictorTestBase() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    slow_response_manager_ =
+        std::make_unique<net::test_server::ControllableHttpResponseManager>(
+            embedded_test_server(), "/image_slow.png");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    loading_predictor_ =
+        LoadingPredictorFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(loading_predictor_);
+    loading_predictor_->EnableLCPPTesting();
+    PredictorInitializer initializer(
+        loading_predictor_->resource_prefetch_predictor());
+    initializer.EnsurePredictorInitialized();
+  }
+
+  void TearDownOnMainThread() override { loading_predictor_ = nullptr; }
+
+  void NavigateAndWaitForLcpElement(
+      const GURL& url,
+      const std::string& expected_events,
+      size_t expected_lcp_count,
+      const std::optional<size_t>& expected_lcp_index,
+      const base::Location& from_here = FROM_HERE) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    page_load_metrics::PageLoadMetricsTestWaiter onload_waiter(web_contents);
+    onload_waiter.AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+
+    LcpTimingPredictedWaiter timing_predicted_waiter(
+        loading_predictor()->resource_prefetch_predictor());
+    LcpUpdatedWaiter lcp_updated_waiter(
+        loading_predictor()->resource_prefetch_predictor(), expected_lcp_count);
+
+    content::NavigationController::LoadURLParams params(url);
+    web_contents->GetController().LoadURLWithParams(params);
+
+    const std::vector<std::optional<std::string>>& lcp_element_locators =
+        lcp_updated_waiter.Wait();
+
+    std::unique_ptr<net::test_server::ControllableHttpResponse> slow_response =
+        slow_response_manager_->WaitForRequest();
+    slow_response->Send(net::HTTP_OK, "image/png", "image_body", /*cookies=*/{},
+                        {"Cache-Control: no-store"});
+    slow_response->Done();
+
+    onload_waiter.Wait();
+
+    const std::optional<std::string>& predicted_lcp_locator =
+        timing_predicted_waiter.Wait();
+    EXPECT_EQ(predicted_lcp_locator.has_value(),
+              expected_lcp_index.has_value());
+    if (expected_lcp_index) {
+      EXPECT_EQ(*lcp_element_locators[*expected_lcp_index],
+                *predicted_lcp_locator);
+    }
+
+    EXPECT_EQ(expected_events, content::EvalJs(web_contents, R"(
+      globalThis.events.join(", ")
+        )"))
+        << content::EvalJs(web_contents, R"(
+      globalThis.timings.join(", ")
+        )");
+
+    LcpElementLearnWaiter lcp_element_waiter(
+        loading_predictor()->resource_prefetch_predictor());
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")))
+        << from_here.ToString();
+    lcp_element_waiter.Wait();
+  }
+
+  LoadingPredictor* loading_predictor() { return loading_predictor_; }
+
+ private:
+  raw_ptr<LoadingPredictor> loading_predictor_ = nullptr;
+  std::unique_ptr<net::test_server::ControllableHttpResponseManager>
+      slow_response_manager_;
+};
+
+class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
+ public:
+  LCPPTimingPredictorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kLCPTimingPredictorPrerender2},
+        /*disabled_features=*/{});
+  }
+
+  void TestPrediction(const base::Location& from_here = FROM_HERE) {
+    const GURL kUrl = embedded_test_server()->GetURL(
+        "a.test", "/predictors/lcp_occur_twice.html");
+
+    NavigateAndWaitForLcpElement(kUrl,
+                                 /*expected_events=*/"LCP@IMG, LCP@DIV, Onload",
+                                 /*expected_lcp_count=*/2u,
+                                 /*expected_lcp_index=*/std::nullopt,
+                                 from_here);
+    NavigateAndWaitForLcpElement(kUrl,
+                                 /*expected_events=*/"LCP@IMG, LCP@DIV, Onload",
+                                 /*expected_lcp_count=*/2u,
+                                 /*expected_lcp_index=*/0u,  // =IMG
+                                 from_here);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Confirm image element of the first LCP is predicted rather than div, or the
+// actual LCP(current implementation)
+IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, Base) {
+  TestPrediction();
 }
 
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest

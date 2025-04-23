@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.util.Supplier;
 
@@ -22,10 +23,11 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
@@ -181,8 +183,14 @@ class TabGroupRowMediator {
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
             if (mSharedImageTilesCoordinator == null) {
+                @ColorInt
+                int backgroundColor =
+                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                                mContext, /* isIncognito= */ false);
                 SharedImageTilesConfig config =
-                        new SharedImageTilesConfig.Builder(mContext).build();
+                        new SharedImageTilesConfig.Builder(mContext)
+                                .setBackgroundColor(backgroundColor)
+                                .build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 mContext, config, mDataSharingService, mCollaborationService);

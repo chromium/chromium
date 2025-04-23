@@ -163,7 +163,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       time_remaining_known ? time_delta.InMilliseconds()
                            : kUnknownRemainingTime,
       item->GetLastAccessTime().InMillisecondsSinceUnixEpoch(),
-      item->IsDangerous(),
+      item->GetDangerType(), item->IsDangerous(),
       static_cast<int>(
           OfflineItemUtils::ConvertDownloadInterruptReasonToFailState(
               item->GetLastReason())),

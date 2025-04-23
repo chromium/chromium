@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-ääni</translation>
 <translation id="1116694919640316211">Tietoja asetuksista</translation>
 <translation id="1118572504348554005">Saatamme jakaa tämän lomakkeen kautta lähetetyn palautteen yhteistyökumppaneillemme bugien ja muiden ilmoittamiesi virheiden korjausta varten. Älä kerro arkaluontoisia tietoja, esimerkiksi salasanaa.</translation>
+<translation id="1118596190635569417">Siirrä valikko oikealle</translation>
 <translation id="1119403468619527527">Sanoja on liian vähän yksinkertaistamista varten</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
@@ -91,8 +92,10 @@
 <translation id="1367951781824006909">Valitse tiedosto</translation>
 <translation id="1371650399987522809">Palaute taustakuvasta, joka hyödyntää Googlen tekoälyä</translation>
 <translation id="1374385338586507108">Määritä</translation>
+<translation id="1376064675713230088">t-rex</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
+<translation id="1388919980490622894">värimääritys</translation>
 <translation id="1393206549145430405">linna</translation>
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
@@ -125,11 +128,11 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
+<translation id="1512872158112631650">dramaattiset varjot</translation>
 <translation id="1514446283880973949">Kirjoita itsevarmemmin, tee yhteenveto sisällöstä, hae määritelmiä ja paljon muuta</translation>
 <translation id="1515129336378114413">selain etusivu</translation>
 <translation id="1526389707933164996">Näytönsäästäjän animaatio</translation>
 <translation id="152892567002884378">Lisää äänenvoimakkuutta</translation>
-<translation id="1531038290222364269">Näytä välilehdet</translation>
 <translation id="1539864135338521185">lapislatsuli</translation>
 <translation id="1548555207631326346">Valitse teema ja sitten alleviivatut sanat, niin voit personoida tekoälyn generoimia kuviasi.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -229,6 +232,7 @@
 <translation id="1854156910036166007">laiskiaiset</translation>
 <translation id="1856388568474281774">Alanuoli</translation>
 <translation id="1858620243986915808">Liitä kuvakaappaus</translation>
+<translation id="1860654594958086756">3D-renderöinti</translation>
 <translation id="1871413952174074704">APN:ssä saa olla enintään <ph name="CHAR_LIMIT" /> merkkiä</translation>
 <translation id="1871569928317311284">Laita tumma teema pois päältä</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -242,10 +246,11 @@
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
 <translation id="1908394185991500139">vasen nuolinäppäin</translation>
-<translation id="1911678930322867245">Siirrä oikeaan yläkulmaan</translation>
 <translation id="1914144885717544695">perjantaina</translation>
 <translation id="1915960750806557358">Jaa palautteesi tai kerro ongelmastasi. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="1923388006036088459">Korostusvärit</translation>
+<translation id="1926611810597212636">yksisarvinen</translation>
+<translation id="1944321879609775960">Jos haluat luoda yhteenvedon, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="1945403655450283000">Tallentaja</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -315,6 +320,7 @@
 <translation id="2230624078793142213">Luo lisää</translation>
 <translation id="2236746079896696523">Näppäimistön taustavalo päälle/pois</translation>
 <translation id="2240366984605217732">Asettelun valitsin</translation>
+<translation id="224421911978987610">pitkä valotus</translation>
 <translation id="2244834438220057800">vihreä</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
 <translation id="2267285889943769271">Lisää kuvakaappaus</translation>
@@ -342,6 +348,7 @@
 <translation id="2380886658946992094">Lakiasiat</translation>
 <translation id="2391082728065870591">Lähetä palauteraportti</translation>
 <translation id="2407209115954268704">SIM-lukituksen tila</translation>
+<translation id="240798792848608143">Jos haluat transkription kielellä <ph name="LANGUAGE_NAME" />, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="241419523391571119">Avaa kansi uudelleen testaamista varten</translation>
 <translation id="2414660853550118611">Tietoja taustakuvasta</translation>
 <translation id="2414886740292270097">Tumma</translation>
@@ -351,6 +358,7 @@
 <translation id="2438248248625638801">Luodaan tallenteiden nimiä</translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
+<translation id="2448857983905133469">Ryhmätyökalut</translation>
 <translation id="2468124392950503650">Valitse kehote luodaksesi tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Käytä Auta minua kirjoittamaan ‐ominaisuutta luonnoksen kirjoittamiseen tai aiemmin luodun tehtävän viimeistelyyn Googlen tekoälyn avulla</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
@@ -361,6 +369,7 @@
 <translation id="2493126929778606526">Parhaat kuvasi, valittu automaattisesti</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opaali</translation>
+<translation id="2501278716633472235">Takaisin</translation>
 <translation id="2505327257735685095">Päivitä taustakuva</translation>
 <translation id="2507491234071975894">Kaiutin</translation>
 <translation id="2512979179176933762">näytä ikkunat</translation>
@@ -381,6 +390,7 @@
 <translation id="2584559707064218956">Aloita määritys avaamalla Asetukset.</translation>
 <translation id="2586146417912237930">sininen ja indigo</translation>
 <translation id="2589921777872778654">Muokkaa ja poista ‐valikko</translation>
+<translation id="2590424100019931043">Sinut on poistettu tästä ryhmästä</translation>
 <translation id="2597774443162333062">Tiedostot lähetetään Googlelle virheenkorjausta varten.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
 <translation id="261322795497077164">Puhujan tunnistus</translation>
@@ -449,6 +459,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3060579846059757016">Osioiden yhteenvedot</translation>
+<translation id="3060798442805232711">Ryhmätyökalut käyttävät mikrofoniasi</translation>
 <translation id="3061850252076394168">ota teksti puhuttuna käyttöön</translation>
 <translation id="3066772729299747758">tiistaina</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
@@ -458,6 +469,7 @@
 <translation id="3084958266922136097">Poista näytönsäästäjä käytöstä</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
+<translation id="3103783611481501187">surrealistinen</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3122614491980756867">uima-altaat</translation>
 <translation id="3122883569442693641">Lisätietoja</translation>
@@ -472,6 +484,7 @@
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3160172848211257835">Lähetä <ph name="BEGIN_LINK1" />järjestelmä‐ ja sovellustietoja<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />mittareita<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Jos haluat luoda yhteenvedon ja nimen, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="3170673040743561620">Aseta dokumentti skanneriin</translation>
 <translation id="3174321110679064523">Aamusta iltaan ‑taustakuva</translation>
 <translation id="3178532070248519384">avantgarde</translation>
@@ -486,6 +499,7 @@
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3227186760713762082">Jaa <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
+<translation id="3242622575335502454">digitaalinen taide</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3248791727258378769">Transkriptiota ei luoda</translation>
 <translation id="324961752321393509">Järjestelmänvalvoja ei salli tämän sovelluksen sulkemista</translation>
@@ -522,6 +536,7 @@
 <translation id="3428551088151258685">ulkona</translation>
 <translation id="3428971106895559033">pastelli</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="3434988468785284438">heijastuksia</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3435896845095436175">Ota käyttöön</translation>
 <translation id="345256797477978759">Kiinnitä ikkuna näytön suurempaan osaan (<ph name="DIRECTION" />)</translation>
@@ -562,6 +577,7 @@
 <translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
+<translation id="3614639364827854748">Siirrä valikko vasemmalle</translation>
 <translation id="361575905210396100">Kiitos palautteestasi</translation>
 <translation id="3621072146987826699">norsut</translation>
 <translation id="3628462041319107639">Ladataan transkriptiomallia…</translation>
@@ -622,6 +638,7 @@
 <translation id="3889914174935857450">Nollaamispäivämäärä</translation>
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3902271751020176019">Transkriptiokieli</translation>
+<translation id="390890062090528082">tähtitaivas</translation>
 <translation id="391412459402535266">Laitetta ei voi testata. Vaihda tietokonetilaan testaamista varten.</translation>
 <translation id="3916998944874125962">ota kuvakaappaus</translation>
 <translation id="3923184630988645767">Datan käyttö</translation>
@@ -711,6 +728,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lue lisää<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">negatiivinen tila</translation>
 <translation id="4258281355379922695">HTTP-viive</translation>
 <translation id="4266143281602681663">lanka</translation>
 <translation id="4269815121975886860">Käynnistysasetukset</translation>
@@ -738,6 +756,7 @@
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Jos haluat luoda tallenteelle nimiä, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="4394049700291259645">Poista käytöstä</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> käynnistetään uudelleen</translation>
 <translation id="4395835743215824109">näppäimistön yksilöinti</translation>
@@ -766,6 +785,7 @@
 <translation id="4486524074141928967">Sinut kirjataan ulos klo <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
+<translation id="4501302804999678844">Jos haluat luoda transkription, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4503441351962730761">nykytaide</translation>
 <translation id="4507392511610824664">lisää kirkkautta</translation>
@@ -808,7 +828,9 @@
 <translation id="4691278870498629773">Pysähtynyt – Lokero puuttuu</translation>
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
 <translation id="4697260493945012995">Valitse ohjaintyyppi</translation>
+<translation id="4712940987669302829">boke-tehoste</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
+<translation id="4734982181169850310">pastellivärit</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
 <translation id="4750394297954878236">Ehdotukset</translation>
@@ -816,6 +838,7 @@
 <translation id="4771607256327216405">näppäimistön kirkastus</translation>
 <translation id="4771923071974529837">huomenna</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
+<translation id="4777310452073659583">Jos haluat transkription, käynnistä <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="4778082030331381943">ametisti</translation>
 <translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> kuva</translation>
@@ -858,14 +881,17 @@
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4930320165497208503">Määritä tai päivitä yhteys avaamalla <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
+<translation id="493637535592633700">bioluminesenssi</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, avautuu uudelle välilehdelle</translation>
 <translation id="4946927805998996217">Luodaan yhteenvetoa</translation>
 <translation id="4950314376641394653">Laiteohjelmisto (<ph name="DEVICE_NAME" />) on päivitetty versioon <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">puutunneli</translation>
+<translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">Turvallinen nollaus on valmis</translation>
 <translation id="4965703485264574128">Jos haluat likimääräisen tuloksen, kerro <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Jaa</translation>
 <translation id="4972592110715526173">tilan muutos</translation>
+<translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4981003703840817201">sininen ja pinkki</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4982627662315910959">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä vaihdon ja yhden muun muokkausnäppäimen avulla (ctrl, alt tai <ph name="META_KEY" />).</translation>
@@ -873,6 +899,7 @@
 <translation id="4987769320337599931">Palomuuri</translation>
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4989542687859782284">Ei käytettävissä</translation>
+<translation id="4999267570108760491">vektoritaidetyyli</translation>
 <translation id="4999333166442584738">Piilota raportti</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -910,6 +937,7 @@
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="517075088756846356">Irrota virtajohto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia</translation>
 <translation id="5180108905184566358">apinanleipäpuut</translation>
+<translation id="5180431943345994173">Opettaja on poistanut sisältöä ryhmätyökaluista</translation>
 <translation id="5180712487038406644">Ilmeikäs</translation>
 <translation id="5190187232518914472">Palaa rakkaisiin muistoihisi. Jos haluat lisätä tai muokata albumeja, siirry <ph name="LINK_BEGIN" />Google Kuviin<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -940,6 +968,7 @@
 <translation id="5300172019534884676">kameran pääsyoikeus päälle/pois</translation>
 <translation id="5300814202279832142">Siirrä ikkuna työpöydälle</translation>
 <translation id="5302048478445481009">Kieli</translation>
+<translation id="5303459213631364445">hohtava</translation>
 <translation id="5303837385540978511">Tuotteen <ph name="PRODUCT_NAME" /> oma taustakuva</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="530883153651464140">Päivitä <ph name="DEVICE_NAME" /> versioon <ph name="VERSION" /></translation>
@@ -1003,6 +1032,7 @@
 <translation id="5628106863521633649">Kielivaihtoehdot</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
+<translation id="5655084389678168978">Opettaja on lisännyt uutta sisältöä ryhmätyökaluihin</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
 <translation id="5655296450510165335">Laitteen rekisteröinti</translation>
 <translation id="5655776422854483175">Ei tulostustöitä</translation>
@@ -1026,7 +1056,6 @@
 <translation id="5760715441271661976">Portaalitila</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> käynnistetään uudelleen ja päivitetään</translation>
 <translation id="576835345334454681">Lisää näytön kirkkautta</translation>
-<translation id="5775340474232476653">Opettaja on päättänyt oppitunnin</translation>
 <translation id="5779818640587041940">Pidä näyttö päällä tallennuksen aikana</translation>
 <translation id="57838592816432529">Mykistä</translation>
 <translation id="5784136236926853061">Suuri HTTP-viive</translation>
@@ -1043,6 +1072,7 @@
 <translation id="5859969039821714932">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman <ph name="KEY" />-näppäintä.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
+<translation id="586463370326011345">salama</translation>
 <translation id="5875913454160982848">Lataa transkriptiomalli</translation>
 <translation id="5876385649737594562">Laita tämä päälle, jotta voit valita vaihtoehdot</translation>
 <translation id="5877503382465267833">Keskeytä toisto: <ph name="RECORDING_NAME" /></translation>
@@ -1052,7 +1082,6 @@
 <translation id="5896602941605730551">Toista</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
-<translation id="5903822368221507416">Piilota välilehdet</translation>
 <translation id="5904994456462260490">Lisää uusi APN</translation>
 <translation id="590746845088109442">kissat</translation>
 <translation id="5907649332524363701">avaimen väri</translation>
@@ -1178,6 +1207,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">Ota käyttöön järjestelmän sijainnin käyttö</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">auringonlasku</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Heikko (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Siirry tilin asetuksiin</translation>
@@ -1287,6 +1317,7 @@
 <translation id="6926069762081461162">Tallenteen nimi</translation>
 <translation id="6930242544192836755">Kesto</translation>
 <translation id="6930597342185648547">Tietoa taustakuvasta</translation>
+<translation id="6931666215260956151">galaksi</translation>
 <translation id="6939766318048400022">kahvila</translation>
 <translation id="6942253772720771875">Jaa palautteesi tai kerro ongelmastasi</translation>
 <translation id="6943893908656559156">Etäidentiteetti (valinnainen)</translation>
@@ -1363,6 +1394,7 @@
 <translation id="7212547870105584639">Muuta verkon APN-asetuksia. APN:t luovat yhteyden mobiiliverkkon ja internetin välille. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ulkoisten laitteiden ohjelmapäivitykset</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
+<translation id="7221869452894271364">Lataa tämä sivu uudelleen</translation>
 <translation id="7223952304612664117">Näin järjestelmäpalvelut voivat määrittää sijaintisi sijaintitietojen tarkkuuden avulla. Sijainnin tarkkuus arvioi laitteen sijainnin langattomista signaaleista ja antureista saatujen tietojen perusteella.</translation>
 <translation id="7233782086689993269">Pikanäppäin palautettu</translation>
 <translation id="723419678599947502">Luo nimi Googlen tekoälyn avulla</translation>
@@ -1421,6 +1453,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
+<translation id="7494145938791663804">kaunis</translation>
 <translation id="7497215489070763236">Palvelimen CA-varmenne</translation>
 <translation id="7500205272584643581">Saako Tallentaja tunnistaa havaita ja merkitä puhujia?</translation>
 <translation id="7501957181231305652">tai</translation>
@@ -1476,6 +1509,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7760571082554155847">Aloitussivun asetukset</translation>
 <translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
+<translation id="7764171263909999400">volumetrinen valaistus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7774759755755950354">Takaisin</translation>
 <translation id="7778717409420828014">Tiimimme tarkastaa palautteesi, ja se auttaa meitä parantamaan Chromebook-kokemusta. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
@@ -1529,6 +1563,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7971535376154084247">Yleiset asetukset</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
+<translation id="7979468455552394856">Ryhmätyökalut on yhdistetty oppilaisiin</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" käynnistettiin automaattisesti}other{# sovellusta käynnistettiin automaattisesti}}</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
@@ -1599,7 +1634,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8318753676953949627">Ei kuvia</translation>
 <translation id="8319809980370328428">Tallenteen yhteenvedon ja nimen luominen</translation>
 <translation id="8320910311642849813">metsä</translation>
-<translation id="8322464149031882595">Siirry eteenpäin klikkaamalla</translation>
 <translation id="8329018942023753850">laskin-sovellus</translation>
 <translation id="8336739000755212683">Vaihda laitteen tilikuva</translation>
 <translation id="8339024191194156249">Lue lisää automaattisesta käynnistyksestä</translation>
@@ -1647,12 +1681,13 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
 <translation id="8505011850330200833">Gemini-malli tarvitsee 2 Gt tallennustilaa transkriptioiden käsittelyyn ja yhteenvetojen luomiseen</translation>
+<translation id="8506394543220680287">lumen peitossa</translation>
 <translation id="8508640263392900755">APN-tiedot</translation>
 <translation id="8522687886059337719">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ja <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />näytönsäästäjiä<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuone</translation>
+<translation id="8531692079895415839">sumuinen</translation>
 <translation id="8538236298648811558">Hyödyntää Googlen tekoälyä</translation>
-<translation id="8543574988889671960">Päivitä välilehti</translation>
 <translation id="8550364285433943656">Aseta ohjaimet pelitoiminnoille, jotta voit pelata näppäimistön näppäimillä</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset.</translation>
@@ -1669,11 +1704,13 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8655828773034788261">Jaa URL-osoite:</translation>
 <translation id="8660881923941176839">paunaa</translation>
+<translation id="8669187096858652220">Näytä välilehdet klikkaamalla</translation>
 <translation id="8670574982334489519">oikea</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">pikanuudelit</translation>
 <translation id="8689520252402395106">Liitä USB-johto (<ph name="DEVICE_NAME" />) uudelleen jatkaaksesi päivitysprosessia</translation>
+<translation id="8699053192961439771">Piilota välilehdet automaattisesti klikkaamalla</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
@@ -1703,7 +1740,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8833620912470026819">kaktusmetsä</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
-<translation id="8842526499753992487">Siirrä vasempaan yläkulmaan</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8849799913685544685">majakka</translation>
 <translation id="8851859208664803097">Keskeytetty – ei yhteyttä tulostimeen</translation>
@@ -1743,15 +1779,16 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8961025972867871808">pingviinit</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
-<translation id="8972061581514441296">Siirry takaisin klikkaamalla</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skannaa}=1{Skannaa sivu {NUMBER_OF_PAGES}}other{Skannaa sivu {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">kylä</translation>
 <translation id="8997710128084572139">Laitteen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998002498898621320">realistinen kuva</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="9000871120886759611">Nollaa asetukset varmistaaksesi, että saat tiedot haluamallasi kielellä. Tarkista, että vain ensisijaisia kieliä käytetään.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Taajuus</translation>
+<translation id="9017411601860840405">neonvalot</translation>
 <translation id="901834265349196618">sähköposti</translation>
 <translation id="9022897536196898720">kukat</translation>
 <translation id="9024331582947483881">koko näyttö</translation>

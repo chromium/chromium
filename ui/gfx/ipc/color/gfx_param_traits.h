@@ -5,9 +5,7 @@
 #ifndef UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_H_
 #define UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_H_
 
-#include "ipc/ipc_message_utils.h"
-#include "ipc/param_traits_macros.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_param_traits.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/ipc/color/gfx_ipc_color_export.h"
 #include "ui/gfx/ipc/color/gfx_param_traits_macros.h"

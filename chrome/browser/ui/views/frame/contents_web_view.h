@@ -22,6 +22,10 @@ namespace ui {
 class LayerTreeOwner;
 }  // namespace ui
 
+namespace new_tab_footer {
+class NewTabFooterWebView;
+}  // namespace new_tab_footer
+
 // ContentsWebView is used to present the WebContents of the active tab.
 class ContentsWebView : public views::WebView,
                         public WebContentsCloseHandlerDelegate {
@@ -50,6 +54,7 @@ class ContentsWebView : public views::WebView,
   void OnThemeChanged() override;
   void RenderViewReady() override;
   void OnLetterboxingChanged() override;
+  void SetWebContents(content::WebContents* web_contents) override;
 
   // ui::View overrides:
   std::unique_ptr<ui::Layer> RecreateLayer() override;
@@ -61,6 +66,8 @@ class ContentsWebView : public views::WebView,
  private:
   void UpdateBackgroundColor();
   std::unique_ptr<StatusBubbleViews> status_bubble_ = nullptr;
+  std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_ =
+      nullptr;
   std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_ =
       nullptr;
 

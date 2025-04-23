@@ -78,7 +78,7 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer(
 void RTCEncodedVideoFrameDelegate::SetData(const DOMArrayBuffer* data) {
   base::AutoLock lock(lock_);
   if (webrtc_frame_ && data) {
-    webrtc_frame_->SetData(rtc::ArrayView<const uint8_t>(
+    webrtc_frame_->SetData(webrtc::ArrayView<const uint8_t>(
         static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
   }
 }

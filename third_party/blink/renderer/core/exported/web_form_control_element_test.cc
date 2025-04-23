@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -436,6 +438,42 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
   WebFormElement f = GetFormElementById(document, "f");
   WebFormControlElement t1 = GetFormControlElementById(document, "t1");
   EXPECT_EQ(t1.GetOwningFormForAutofill(), f);
+}
+
+// Tests that FormControlTypeForAutofill() == kInputPassword is sticky unless
+// the type changes to a non-text type.
+//
+// That is, once an <input> has become an <input type=password>,
+// FormControlTypeForAutofill() keeps returning kInputPassword, even if it
+// the FormControlType() changes, provided it's a text-type.
+TEST_F(WebFormControlElementTest, FormControlTypeForAutofill) {
+  using enum FormControlType;
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe("<input id=t>");
+  HTMLInputElement* input = To<HTMLInputElement>(GetElementById("t"));
+  WebFormControlElement control = input;
+  ASSERT_TRUE(input);
+  ASSERT_TRUE(control);
+
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputText);
+  input->setType(input_type_names::kPassword);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputPassword);
+  input->setType(input_type_names::kText);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputPassword);
+  input->setType(input_type_names::kNumber);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputPassword);
+  input->setType(input_type_names::kRadio);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputRadio);
+
+  // MaybeSetHasBeenPasswordField() only has an effect on IsTextType() elements.
+  input->setType(input_type_names::kUrl);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputUrl);
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputPassword);
+  input->setType(input_type_names::kRadio);
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputRadio);
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_EQ(control.FormControlTypeForAutofill(), kInputRadio);
 }
 
 }  // namespace blink

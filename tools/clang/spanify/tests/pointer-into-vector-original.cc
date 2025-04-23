@@ -14,7 +14,6 @@ void TakePointerIntoContainer(int* into_container) {
   into_container[UnsafeIndex()] = 13;
 }
 
-// TODO: no rewriting is done here. Investigate.
 // Expected rewrite:
 // void TakePointerIntoCharContainer(base::span<char> into_container) {
 void TakePointerIntoCharContainer(char* into_container) {

@@ -34,10 +34,9 @@ namespace content {
 namespace {
 
 // NOTE: This is flag is intended for local testing and debugging only.
-// TODO: crbug.com/380903149 - re-enable exclusive locking.
 BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
              "DisableExclusiveLockingOnDipsDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";
 
@@ -110,6 +109,16 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
     DCHECK(!db_path->empty())
         << "To create an in-memory BtmDatabase, explicitly pass an "
            "std::nullopt `db_path`.";
+    if (base::PathExists(db_path.value())) {
+      if (!base::PathIsReadable(db_path.value())) {
+        DLOG(ERROR) << "The BTM SQLite database is not readable.";
+        return;
+      }
+      if (!base::PathIsWritable(db_path.value())) {
+        DLOG(ERROR) << "The BTM SQLite database is not writable.";
+        return;
+      }
+    }
   }
 
   if (Init() != sql::INIT_OK) {
@@ -127,12 +136,13 @@ void BtmDatabase::DatabaseErrorCallback(int extended_error,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("Privacy.DIPS.DatabaseErrors", extended_error);
 
-  if (sql::IsErrorCatastrophic(extended_error)) {
+  if (sql::IsErrorCatastrophic(extended_error) && db_->is_open()) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
     db_->RazeAndPoison();
+    return;
   }
 
   // The default handling is to assert on debug and to ignore on release.

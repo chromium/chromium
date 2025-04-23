@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.chrome.browser.tabmodel.TabWindowManager.INVALID_WINDOW_ID;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -81,9 +82,10 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleBuilder;
@@ -93,7 +95,6 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -118,6 +119,7 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
+import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feedback.OmniboxFeedbackSource;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -129,6 +131,7 @@ import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPane;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
+import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
@@ -159,6 +162,7 @@ import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -176,6 +180,7 @@ import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSuppli
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -194,8 +199,8 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -211,6 +216,7 @@ import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionCoordinator;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionEventObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
@@ -236,7 +242,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiFlow;
@@ -250,6 +255,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -261,6 +267,9 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -268,7 +277,6 @@ import org.chromium.chrome.browser.xr.XrLayoutStateObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelper;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -282,8 +290,10 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -308,7 +318,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.DoubleConsumer;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
@@ -404,7 +413,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private final TabModelNotificationDotManager mTabModelNotificationDotManager =
-            new TabModelNotificationDotManager();
+            new TabModelNotificationDotManager(this);
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -449,7 +458,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private final OnClickListener mNewTabButtonClickListener = this::onNewTabButtonClick;
     private final MismatchedIndicesHandler mMismatchedIndicesHandler =
-            new TabbedMismatchedIndicesHandler(this::getOnCreateTimestampMs);
+            new TabbedMismatchedIndicesHandler(
+                    this::getOnCreateTimestampMs, !MultiWindowUtils.isMultiInstanceApi31Enabled());
     private final SearchActivityClient mJumpStartSearchClient =
             new SearchActivityClientImpl(this, IntentOrigin.LAUNCHER);
     private final SearchActivityClient mHubSearchClient =
@@ -567,7 +577,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     protected void onPreCreate() {
         super.onPreCreate();
         mMultiInstanceManager =
-                MultiInstanceManager.create(
+                MultiInstanceManagerFactory.create(
                         this,
                         getTabModelOrchestratorSupplier(),
                         getMultiWindowModeStateDispatcher(),
@@ -829,7 +839,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         mRootUiCoordinator.getScrimManager(),
                         rootViewSupplier::get,
                         incognitoSupplier,
-                        adaptOnToolbarAlphaChange());
+                        adaptOnOverviewColorAlphaChange());
 
         // Set up layout state osberver for transitions between HSM and FSM on an XR device.
         if (XrUtils.isXrDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -968,35 +978,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private @NonNull ObservableSupplier<Integer> initHubOverviewColorSupplier() {
-        // Prior to Hub creation we don't know what color to use. Default to the background color
-        // since this shouldn't be visible.
         ObservableSupplierImpl<Integer> overviewColorSupplier =
-                new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
+                new ObservableSupplierImpl<>(Color.TRANSPARENT);
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
                     ObservableSupplier<Integer> hubOverviewColorSupplier =
                             hubManager.getHubOverviewColorSupplier();
                     Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
-
-                    ObservableSupplier<Boolean> hubVisibilitySupplier =
-                            hubManager.getHubVisibilitySupplier();
-
-                    Callback<Boolean> hubVisibilityObserver =
-                            isVisible -> {
-                                if (isVisible) {
-                                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
-                                } else {
-                                    hubOverviewColorSupplier.removeObserver(
-                                            hubOverviewColorObserver);
-                                }
-                            };
-                    hubVisibilitySupplier.addObserver(hubVisibilityObserver);
+                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
 
                     mCleanUpHubOverviewColorObserver =
-                            () -> {
-                                hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
-                                hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
-                            };
+                            () -> hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
                 });
         return overviewColorSupplier;
     }
@@ -1029,7 +1021,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                         mNewTabButtonClickListener,
                         isIncognito,
-                        adaptOnToolbarAlphaChange(),
+                        adaptOnOverviewColorAlphaChange(),
                         mBackPressManager,
                         mEdgeToEdgeControllerSupplier,
                         mRootUiCoordinator.getDesktopWindowStateManager(),
@@ -1037,7 +1029,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getCompositorViewHolderSupplier(),
                         getShareDelegateSupplier(),
                         mTabBookmarkerSupplier,
-                        tabGroupCreationUiFlow);
+                        tabGroupCreationUiFlow,
+                        mUndoBarPopupController);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -1054,7 +1047,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 .createTabGroupsPane(
                         this,
                         getTabModelSelector(),
-                        adaptOnToolbarAlphaChange(),
+                        adaptOnOverviewColorAlphaChange(),
                         getProfileProviderSupplier(),
                         mHubProvider.getHubManagerSupplier(),
                         () ->
@@ -1066,7 +1059,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createHistoryPane() {
         return new HistoryPane(
-                adaptOnToolbarAlphaChange(),
+                adaptOnOverviewColorAlphaChange(),
                 this,
                 getSnackbarManager(),
                 getProfileProviderSupplier(),
@@ -1076,7 +1069,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createBookmarkPane() {
         return new BookmarkPane(
-                adaptOnToolbarAlphaChange(),
+                adaptOnOverviewColorAlphaChange(),
                 this,
                 getSnackbarManager(),
                 getProfileProviderSupplier());
@@ -1084,7 +1077,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createCrossDevicePane() {
         return CrossDevicePaneFactory.create(
-                this, adaptOnToolbarAlphaChange(), mEdgeToEdgeControllerSupplier);
+                this, adaptOnOverviewColorAlphaChange(), mEdgeToEdgeControllerSupplier);
     }
 
     private void setupCompositorContent() {
@@ -1147,7 +1140,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             bookmarkClickHandler,
                             /* customTabsBackClickHandler= */ null,
                             archivedTabCountSupplier,
-                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier());
+                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier(),
+                            mUndoBarPopupController);
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
@@ -1326,13 +1320,18 @@ public class ChromeTabbedActivity extends ChromeActivity {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
                         new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
-                mGroupSuggestionsPromotionCoordinator =
-                        new GroupSuggestionsPromotionCoordinator(
-                                this,
-                                mRootUiCoordinator.getBottomSheetController(),
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false));
+                if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.GROUP_SUGGESTION_SERVICE,
+                        GroupSuggestionsPromotionCoordinator.CREATE_SUGGESTIONS_PROMOTION_UI_PARAM,
+                        true)) {
+                    mGroupSuggestionsPromotionCoordinator =
+                            new GroupSuggestionsPromotionCoordinator(
+                                    this,
+                                    mRootUiCoordinator.getBottomSheetController(),
+                                    mTabModelSelector
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(false));
+                }
             }
         }
     }
@@ -1389,8 +1388,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             getProfileProviderSupplier()
                     .runSyncOrOnAvailable(
                             (profileProvider) -> {
-                                SuggestionsMetrics.recordArticlesListVisible(
-                                        profileProvider.getOriginalProfile());
+                                boolean isArticlesListVisible =
+                                        UserPrefs.get(profileProvider.getOriginalProfile())
+                                                .getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+                                FeedUma.recordArticlesListVisible(isArticlesListVisible);
                             });
         } else {
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
@@ -1828,7 +1829,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                                 .createAuxiliarySearchController(
                                                         this,
                                                         profileProvider.getOriginalProfile(),
-                                                        mTabModelSelector);
+                                                        mTabModelSelector,
+                                                        AuxiliarySearchHostType.CTA);
                                 if (mAuxiliarySearchController != null) {
                                     mAuxiliarySearchController.register(
                                             this.getLifecycleDispatcher());
@@ -2368,8 +2370,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
         if (mMultiInstanceManager == null) return false;
 
-        mMultiInstanceManager.moveTabGroupToWindow(
-                this, tabGroupMetadata, /* atIndex= */ 0, /* onFinishedRunnable= */ null);
+        mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, /* atIndex= */ 0);
         return true;
     }
 
@@ -2704,6 +2705,36 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mRootUiCoordinator.getAppMenuHandler().setMenuHighlight(R.id.quick_delete_menu_id);
                 getMenuOrKeyboardActionController()
                         .onMenuOrKeyboardAction(R.id.show_menu, /* fromMenu= */ false);
+            }
+
+            @Override
+            public void showHistorySyncOptIn() {
+                BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
+                        new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                        new AccountPickerBottomSheetStrings.Builder(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_title)
+                                                .setSubtitleStringId(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_benefits_subtitle)
+                                                .build(),
+                                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
+                                                .NO_SIGNIN,
+                                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        HistorySyncConfig.OptInMode.REQUIRED)
+                                .build();
+                @Nullable
+                Intent intent =
+                        SigninAndHistorySyncActivityLauncherImpl.get()
+                                .createBottomSheetSigninIntentOrShowError(
+                                        ChromeTabbedActivity.this,
+                                        mTabModelSelector.getCurrentModel().getProfile(),
+                                        bottomSheetConfig,
+                                        SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP);
+                if (intent != null) {
+                    ChromeTabbedActivity.this.startActivity(intent);
+                }
             }
 
             @Override
@@ -3321,8 +3352,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
             RecordUserAction.record("MobileMenuNtpCustomization");
-        } else if (id == R.id.toggle_bookmark_bar) {
-            BookmarkBarUtils.toggleSettingEnabled(this, getProfileProviderSupplier());
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
@@ -4001,9 +4030,30 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
+    @Override
+    protected void applyThemeOverlays() {
+        // Apply the theme overlay before applying dynamic colors in the super's call. The order
+        // ensures the color attributes for dynamic colors are not overridden by the overlay.
+        boolean useThemeModule = false;
+        if (ThemeModuleUtils.isEnabled()) {
+            int themeModuleOverlay = ThemeModuleUtils.getProviderInstance().getThemeOverlay();
+            if (themeModuleOverlay != 0) {
+                useThemeModule = true;
+                applySingleThemeOverlay(themeModuleOverlay);
+            }
+        }
+
+        if (!useThemeModule) {
+            applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
+        }
+
+        super.applyThemeOverlays();
+    }
+
     /**
      * Reports that a new tab launcher shortcut was selected or an action equivalent to a shortcut
      * was performed.
+     *
      * @param isIncognito Whether the shortcut or action created a new incognito tab.
      */
     @RequiresApi(Build.VERSION_CODES.N_MR1)
@@ -4038,21 +4088,21 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     /**
-     * Creates an adapter between the toolbar's observer that takes a float and the format that the
-     * hub expects which is a double.
+     * Creates an adapter between the hub's overview alpha observer that takes a float and the
+     * format that the hub expects which is a double.
      */
-    private DoubleConsumer adaptOnToolbarAlphaChange() {
+    private OverviewModeAlphaObserver adaptOnOverviewColorAlphaChange() {
         return alpha -> {
             // If the manager is still null, it doesn't matter whatever is happening. Can safely
             // ignore any signal.
-            @Nullable ToolbarManager toolbarManager = getToolbarManager();
-            if (toolbarManager == null) {
+            HubManager hubManager = mHubManagerSupplier.get();
+            if (hubManager == null) {
                 return;
             }
 
-            toolbarManager
-                    .getToolbarAlphaInOverviewObserver()
-                    .onOverviewAlphaChanged((float) alpha);
+            OverviewModeAlphaObserver overviewModeAlphaObserver =
+                    hubManager.getHubController().getHubColorMixer().getOverviewModeAlphaObserver();
+            overviewModeAlphaObserver.accept(alpha);
         };
     }
 
@@ -4122,5 +4172,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 mLayoutManager, /* animate= */ false, runnable),
                 wrappedSelector,
                 mLayoutStateProviderSupplier);
+    }
+
+    public UndoBarController getUndoBarControllerForTesting() {
+        return mUndoBarPopupController;
     }
 }

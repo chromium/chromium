@@ -482,6 +482,10 @@ class NavigationController {
   //
   // Returns the handle to the navigation for the error page, which may be null
   // if the navigation is immediately canceled.
+  //
+  // TODO(crbug.com/406729265) Restrict this function to only be usable with
+  // main frame interstitial navigations. For loading an error page in any other
+  // scenario, prefer |NavigationControllerImpl::NavigateFrameToErrorPage()|.
   virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,

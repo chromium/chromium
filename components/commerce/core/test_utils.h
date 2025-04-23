@@ -111,7 +111,7 @@ DiscountInfo CreateValidDiscountInfo(
     const std::string& discount_code,
     int64_t id,
     bool is_merchant_wide,
-    double expiry_time_sec,
+    std::optional<double> expiry_time_sec,
     DiscountClusterType cluster_type = DiscountClusterType::kOfferLevel);
 
 // Set up `account_checker` and `prefs` so that product specification data

@@ -37,10 +37,10 @@ export const ExceptionValidationMixin = dedupingMixin(
 
         private browserProxy_: PerformanceBrowserProxy =
             PerformanceBrowserProxyImpl.getInstance();
-        errorMessage: string;
-        inputInvalid: boolean;
-        rule: string;
-        submitDisabled: boolean;
+        declare errorMessage: string;
+        declare inputInvalid: boolean;
+        declare rule: string;
+        declare submitDisabled: boolean;
 
         validate() {
           const rule = this.rule.trim();

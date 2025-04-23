@@ -57,6 +57,9 @@ class SVGScriptElement final : public SVGElement,
 
   void Trace(Visitor*) const override;
 
+  void setAsync(bool);
+  bool async() const;
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -71,7 +74,6 @@ class SVGScriptElement final : public SVGElement,
   bool HaveLoadedRequiredResources() override;
 
   // ScriptElementBase overrides:
-  bool AsyncAttributeValue() const override { return false; }
   String CharsetAttributeValue() const override { return String(); }
   String CrossOriginAttributeValue() const override { return String(); }
   bool DeferAttributeValue() const override { return false; }
@@ -83,6 +85,7 @@ class SVGScriptElement final : public SVGElement,
   String FetchPriorityAttributeValue() const override { return String(); }
   String LanguageAttributeValue() const override { return String(); }
   bool NomoduleAttributeValue() const override { return false; }
+  bool AsyncAttributeValue() const override;
   String SourceAttributeValue() const override;
   String TypeAttributeValue() const override;
   String ChildTextContent() override;

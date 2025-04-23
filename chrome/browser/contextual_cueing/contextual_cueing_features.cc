@@ -46,6 +46,11 @@ const base::FeatureParam<int> kMinPageCountBetweenNudges(
     "MinPageCountBetweenNudges",
     3);
 
+const base::FeatureParam<base::TimeDelta> kMinTimeBetweenNudges(
+    &kContextualCueing,
+    "MinTimeBetweenNudges",
+    base::Minutes(10));
+
 const base::FeatureParam<int> kVisitedDomainsLimit(&kContextualCueing,
                                                    "VisitedDomainsLimit",
                                                    20);

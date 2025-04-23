@@ -309,9 +309,11 @@ void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
     PasswordManagerDriver* password_manager_driver,
-    PasswordManagerClient* password_client)
+    PasswordManagerClient* password_client,
+    autofill::AutofillClient* autofill_client)
     : password_manager_driver_(password_manager_driver),
-      password_client_{password_client} {}
+      password_client_{password_client},
+      autofill_client_{autofill_client} {}
 
 std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     base::optional_ref<const autofill::PasswordFormFillData> fill_data,
@@ -319,7 +321,8 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     const std::u16string& username_filter,
     OffersGeneration offers_generation,
     ShowPasswordSuggestions show_password_suggestions,
-    ShowWebAuthnCredentials show_webauthn_credentials) const {
+    ShowWebAuthnCredentials show_webauthn_credentials,
+    ShowIdentityCredentials show_identity_credentials) const {
   std::vector<Suggestion> suggestions;
 
   // Add WebAuthn credentials suitable for an ongoing request if available.

@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/permissions/chooser_controller.h"
+#include "components/security_state/core/security_state.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace content {
@@ -26,15 +27,35 @@ class RenderFrameHost;
 // options.
 class SerialChooserDialogAndroid : public permissions::ChooserController::View {
  public:
+  class JavaDialog {
+   public:
+    explicit JavaDialog(const base::android::JavaRef<jobject>& dialog);
+    virtual ~JavaDialog();
+
+    JavaDialog(const JavaDialog&) = delete;
+    JavaDialog& operator=(const JavaDialog&) = delete;
+
+    virtual void Close();
+    virtual void SetIdleState() const;
+    virtual void AddDevice(const std::string& item_id,
+                           const std::u16string& device_name) const;
+    virtual void RemoveDevice(const std::string& item_id) const;
+    virtual void OnAdapterEnabledChanged(bool enabled) const;
+    virtual void OnAdapterAuthorizationChanged(bool authorized) const;
+
+   private:
+    base::android::ScopedJavaGlobalRef<jobject> j_dialog_;
+  };
+
   // The callback type for creating the java dialog object.
   using CreateJavaDialogCallback =
-      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
+      base::OnceCallback<std::unique_ptr<JavaDialog>(
           JNIEnv*,
           const base::android::JavaRef<jobject>&,  // Java Type: WindowAndroid
           const std::u16string&,
-          JniIntWrapper,
+          security_state::SecurityLevel,
           const base::android::JavaRef<jobject>&,  // Java Type: Profile
-          jlong)>;
+          SerialChooserDialogAndroid*)>;
 
   // Creates and shows the dialog. Will return nullptr if the dialog was not
   // displayed. Otherwise |on_close| will be called when the dialog is
@@ -99,7 +120,7 @@ class SerialChooserDialogAndroid : public permissions::ChooserController::View {
   int next_item_id_ = 0;
   std::vector<std::string> item_id_map_;
 
-  base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
+  std::unique_ptr<JavaDialog> java_dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_SERIAL_CHOOSER_DIALOG_ANDROID_H_

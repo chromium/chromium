@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -214,10 +214,10 @@ class AutofillMetricsBaseTest {
   void FillProfileByGUID(const FormData& form,
                          const std::string& profile_guid,
                          size_t field_index = 0) {
-    autofill_manager().FillOrPreviewProfileForm(
+    autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form,
         form.fields()[field_index].global_id(),
-        *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
+        personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         AutofillTriggerSource::kPopup);
   }
 

@@ -10,9 +10,13 @@
 
 #include "base/check.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -58,6 +62,33 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
   extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
   warning_service_observation_.Observe(WarningService::Get(profile));
   permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
+  extension_management_observation_.Observe(
+      ExtensionManagementFactory::GetForBrowserContext(profile));
+  extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
+
+  pref_change_registrar_.Init(profile->GetPrefs());
+  // The unretained is safe, since the PrefChangeRegistrar unregisters the
+  // callback on destruction.
+  pref_change_registrar_.Add(
+      prefs::kExtensionsUIDeveloperMode,
+      base::BindRepeating(
+          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationWarningAcknowledgedGloballyPref.name,
+      base::BindRepeating(
+          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
+      base::BindRepeating(
+          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name,
+      base::BindRepeating(
+          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
+          base::Unretained(this)));
 }
 
 DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
@@ -203,8 +234,82 @@ void DeveloperPrivateEventRouterShared::OnExtensionPermissionsUpdated(
                             extension.id());
 }
 
+void DeveloperPrivateEventRouterShared::OnExtensionManagementSettingsChanged() {
+  base::Value::List args;
+  args.Append(CreateProfileInfo(profile_).ToValue());
+
+  auto event = std::make_unique<Event>(
+      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
+      developer::OnProfileStateChanged::kEventName, std::move(args));
+  event_router_->BroadcastEvent(std::move(event));
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionAllowlistWarningStateChanged(
+    const ExtensionId& extension_id,
+    bool show_warning) {
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {
+  base::Value::List args;
+  args.Append(CreateProfileInfo(profile_).ToValue());
+  auto event = std::make_unique<Event>(
+      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
+      developer::OnProfileStateChanged::kEventName, std::move(args));
+  event_router_->BroadcastEvent(std::move(event));
+
+  // The following properties are updated when dev mode is toggled.
+  //   - error_collection.is_enabled
+  //   - error_collection.is_active
+  //   - runtime_errors
+  //   - manifest_errors
+  //   - install_warnings
+  // An alternative approach would be to factor out the dev mode state from the
+  // above properties and allow the UI control what happens when dev mode
+  // changes. If the UI rendering performance is an issue, instead of replacing
+  // the entire extension info, a diff of the old and new extension info can be
+  // made by the UI and only perform a partial update of the extension info.
+  const ExtensionSet& extensions =
+      ExtensionRegistry::Get(profile_)->enabled_extensions();
+  for (const auto& extension : extensions) {
+    BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
+                              extension->id());
+  }
+}
+
 void DeveloperPrivateEventRouterShared::BroadcastItemStateChanged(
     developer::EventType event_type,
-    const ExtensionId& extension_id) {}
+    const ExtensionId& extension_id) {
+  auto info_generator = std::make_unique<ExtensionInfoGenerator>(profile_);
+  ExtensionInfoGenerator* info_generator_weak = info_generator.get();
+  info_generator_weak->CreateExtensionInfo(
+      extension_id,
+      base::BindOnce(
+          &DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper,
+          weak_factory_.GetWeakPtr(), event_type, extension_id,
+          std::move(info_generator)));
+}
+
+void DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper(
+    developer::EventType event_type,
+    const ExtensionId& extension_id,
+    std::unique_ptr<ExtensionInfoGenerator> info_generator,
+    ExtensionInfoGenerator::ExtensionInfoList infos) {
+  DCHECK_LE(infos.size(), 1u);
+
+  developer::EventData event_data;
+  event_data.event_type = event_type;
+  event_data.item_id = extension_id;
+  if (!infos.empty()) {
+    event_data.extension_info = std::move(infos[0]);
+  }
+
+  base::Value::List args;
+  args.Append(event_data.ToValue());
+  auto event = std::make_unique<Event>(
+      events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
+      developer::OnItemStateChanged::kEventName, std::move(args));
+  event_router_->BroadcastEvent(std::move(event));
+}
 
 }  // namespace extensions

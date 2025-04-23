@@ -321,9 +321,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         DistilledPagePrefs prefs = getDistilledPagePrefs();
         prefs.addObserver(mTestObserver);
 
-        Condition.runAndWaitFor(
-                /* trigger= */ null,
-                new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+        Condition.waitFor(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
 
         ReaderModePreferencesDialog dialog = ReaderModePreferencesDialog.open(activity);
 
@@ -334,7 +332,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         verify(mTestObserver, times(3)).onChangeTheme(anyInt());
 
         // Test setting font size
-        Condition.runAndWaitFor(/* trigger= */ null, new TabFontSizeCondition(tab, "\"14px\""));
+        Condition.waitFor(new TabFontSizeCondition(tab, "\"14px\""));
         // Max is 200% font size.
         dialog.setFontSizeSliderToMax(new TabFontSizeCondition(tab, "\"28px\""));
         // Min is 50% font size.

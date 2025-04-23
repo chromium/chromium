@@ -17,6 +17,7 @@
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/layout/table_layout.h"

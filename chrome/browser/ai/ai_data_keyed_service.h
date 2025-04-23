@@ -11,8 +11,17 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+#include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -34,7 +43,11 @@ class AiDataKeyedService : public KeyedService {
   AiDataKeyedService& operator=(const AiDataKeyedService&) = delete;
   ~AiDataKeyedService() override;
 
-  static std::vector<std::string> GetAllowlistedExtensions();
+  // Returns the list of extensions that are allowlisted for data collection.
+  static bool IsExtensionAllowlistedForData(const std::string& extension_id);
+
+  // Returns the list of extensions that are allowlisted for actions.
+  static bool IsExtensionAllowlistedForActions(const std::string& extension_id);
 
   // Fills an AiData and returns the result via the passed in callback. If the
   // AiData is empty, data collection failed. |callback| is guaranteed to be
@@ -54,9 +67,74 @@ class AiDataKeyedService : public KeyedService {
                               AiDataSpecifier specifier,
                               AiDataCallback callback);
 
+  // Starts an actor task.
+  void StartTask(
+      optimization_guide::proto::BrowserStartTask task,
+      base::OnceCallback<
+          void(optimization_guide::proto::BrowserStartTaskResult)> callback);
+
+  // Stops an actor task.
+  void StopTask(int64_t task_id, base::OnceCallback<void(bool)> callback);
+
+  // Executes an actor action. The first action in a task must be navigate.
+  void ExecuteAction(
+      optimization_guide::proto::BrowserAction action,
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback);
+
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
+  static const base::Feature&
+  GetAllowlistedActionsExtensionsFeatureForTesting();
 
  private:
+#if BUILDFLAG(ENABLE_GLIC)
+  // Called when the actor coordinator has created a new tab for the task.
+  void TaskCreated(
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback,
+      optimization_guide::proto::BrowserAction action,
+      int task_id,
+      int tab_id,
+      base::WeakPtr<tabs::TabInterface>);
+  // Converts the result of a page context fetch to a BrowserActionResult.
+  void ConvertToBrowserActionResult(
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback,
+      std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
+      int task_id,
+      int tab_id,
+      bool action_success,
+      glic::mojom::GetContextResultPtr result);
+  // Called when the actor coordinator has started a tas.
+  void OnTaskCreated(
+      base::OnceCallback<
+          void(optimization_guide::proto::BrowserStartTaskResult)> callback,
+      int task_id,
+      int tab_id,
+      base::WeakPtr<tabs::TabInterface> tab);
+  // Called when the actor coordinator has finished an action which required
+  // task creation.
+  void OnActionFinished(
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback,
+      int task_id,
+      int tab_id,
+      bool success);
+  // The actor coordinator which manages task and action routing.
+  std::unique_ptr<actor::ActorCoordinator> actor_coordinator_;
+
+  // Whether the task still needs a navigate action to be executed as the
+  // first action in the task.
+  bool task_needs_navigate_ = false;
+
+  // The tab that the task is running on.
+  base::WeakPtr<tabs::TabInterface> tab_;
+
+  // The tab id and task id of the current task.
+  int tab_id_ = 1;
+  int task_id_ = 1;
+#endif
+
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 

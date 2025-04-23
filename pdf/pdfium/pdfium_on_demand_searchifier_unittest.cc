@@ -656,6 +656,41 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadedPage) {
   EXPECT_EQ(page1.GetImageObjectIndices().size(), 1u);
 }
 
+TEST_P(PDFiumOnDemandSearchifierTest, Bug405433817) {
+  CreateEngine(FILE_PATH_LITERAL("bug_405433817.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger searchify checking.
+  page.GetPage();
+  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+
+  PDFiumPrint print(engine());
+
+  static constexpr std::array<int, 1> kPageIndices = {0};
+  const blink::WebPrintParams print_params = GetDefaultPrintParams();
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckFuzzyPdfRendering(pdf_data, 0, /*size_in_points=*/{200, 300},
+                         GetReferenceFilePathForPrint("bug_405433817.png"));
+
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+  ASSERT_TRUE(searchifier);
+  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+
+  StartSearchify(/*empty_results=*/true);
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  ASSERT_EQ(performed_ocrs(), 1);
+  EXPECT_TRUE(page.IsPageSearchified());
+
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
+  CheckFuzzyPdfRendering(pdf_data, 0, /*size_in_points=*/{200, 300},
+                         GetReferenceFilePathForPrint("bug_405433817.png"));
+}
+
 TEST_P(PDFiumOnDemandSearchifierTest, Bug406530484) {
   CreateEngine(FILE_PATH_LITERAL("bug_406530484.pdf"));
 

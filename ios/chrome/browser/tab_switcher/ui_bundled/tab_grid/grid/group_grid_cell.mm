@@ -74,8 +74,6 @@ const CGFloat kTopBarLargeInset = 20;
   UIView* _border;
 
   TabGroupSnapshotsView* _groupSnapshotsView;
-
-  UIViewController* _facePileViewController;
 }
 
 // `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
@@ -214,7 +212,7 @@ const CGFloat kTopBarLargeInset = 20;
   self.selected = NO;
   self.opacity = 1.0;
   self.hidden = NO;
-  [self setFacePileViewController:nil parentViewController:nil];
+  self.facePile = nil;
 }
 
 #pragma mark - UIAccessibility
@@ -322,29 +320,19 @@ const CGFloat kTopBarLargeInset = 20;
   super.alpha = _opacity;
 }
 
-- (void)setFacePileViewController:(UIViewController*)facePileViewController
-             parentViewController:(UIViewController*)parentViewController {
-  if (_facePileViewController == facePileViewController) {
-    return;
+- (void)setFacePile:(UIView*)facePile {
+  if (_facePile.superview == _facePileContainerView) {
+    [_facePile removeFromSuperview];
   }
 
-  [_facePileViewController willMoveToParentViewController:nil];
-  [_facePileViewController.view removeFromSuperview];
-  [_facePileViewController removeFromParentViewController];
+  _facePile = facePile;
 
-  _facePileViewController = facePileViewController;
-  _groupColorView.hidden = _facePileViewController != nil;
-
-  if (_facePileViewController) {
-    CHECK(parentViewController);
-    [parentViewController addChildViewController:_facePileViewController];
-    UIView* facePileView = _facePileViewController.view;
-    [_facePileContainerView addSubview:facePileView];
-    [_facePileViewController
-        didMoveToParentViewController:parentViewController];
-    facePileView.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(facePileView, _facePileContainerView);
+  if (_facePile) {
+    [_facePileContainerView addSubview:facePile];
+    facePile.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(facePile, _facePileContainerView);
   }
+
   [self updateTopBarConstraints];
 }
 
@@ -613,7 +601,7 @@ const CGFloat kTopBarLargeInset = 20;
   _topBarHeightConstraint.constant = [self topBarHeight];
   if (UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory)) {
-    if (_facePileViewController) {
+    if (_facePile) {
       [NSLayoutConstraint
           deactivateConstraints:
               _facePileContainerViewNonAccessibilityConstraints];
@@ -636,7 +624,7 @@ const CGFloat kTopBarLargeInset = 20;
           activateConstraints:_groupColorViewAccessibilityConstraints];
     }
   } else {
-    if (_facePileViewController) {
+    if (_facePile) {
       [NSLayoutConstraint
           deactivateConstraints:_facePileContainerViewAccessibilityConstraints];
       [NSLayoutConstraint

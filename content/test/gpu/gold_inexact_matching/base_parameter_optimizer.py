@@ -67,7 +67,7 @@ class BaseParameterOptimizer():
     self._expectations: Optional[ExpectationJson] = None
     # TODO(skbug.com/10610): Switch away from the public instance once
     # authentication is fixed for the non-public instance.
-    self._gold_url = 'https://%s-public-gold.skia.org' % args.gold_instance
+    self._gold_url = f'https://{args.gold_instance}-public-gold.skia.org'
     self._pool = multiprocessing.Pool()
     # A map of strings, denoting a resolution or trace, to a set of strings,
     # denoting images that are that dimension or belong to that trace.
@@ -222,10 +222,10 @@ class BaseParameterOptimizer():
           self._GetMostPermissiveParameters())
       if not success:
         raise RuntimeError(
-            'Most permissive parameters did not result in a comparison '
-            'success. Try loosening parameters or lowering target success '
-            'percent. Max differing pixels: %d, max delta: %s' % (num_pixels,
-                                                                  max_delta))
+            f'Most permissive parameters did not result in a comparison '
+            f'success. Try loosening parameters or lowering target success '
+            f'percent. Max differing pixels: {num_pixels}, max delta: '
+            f'{max_delta}')
 
       self._RunOptimizationImpl()
 
@@ -250,7 +250,7 @@ class BaseParameterOptimizer():
     assert self._working_dir
     logging.info('Downloading images')
     if self._args.group_images_by_resolution:
-      self._DownloadExpectations('%s/json/v2/expectations' % self._gold_url)
+      self._DownloadExpectations(f'{self._gold_url}/json/v2/expectations')
       self._DownloadImagesForResolutionGrouping()
     else:
       # A grouping ID is an MD5 hash of a JSON object containing the corpus and
@@ -266,8 +266,9 @@ class BaseParameterOptimizer():
                             separators=(',', ':'))
       md5 = hashlib.md5()
       md5.update(json_str.encode('utf-8'))
-      self._DownloadExpectations('%s/json/v1/positivedigestsbygrouping/%s' %
-                                 (self._gold_url, md5.hexdigest()))
+      self._DownloadExpectations(
+          f'{self._gold_url}/json/v1/positivedigestsbygrouping/'
+          f'{md5.hexdigest()}')
       self._DownloadImagesForTraceGrouping()
     for grouping, digests in self._images.items():
       logging.info('Found %d images for group %s', len(digests), grouping)
@@ -293,12 +294,12 @@ class BaseParameterOptimizer():
         if status == 'positive'
     ]
     if not positive_digests:
-      raise RuntimeError('Failed to find any positive digests for test %s' %
-                         self._test_name)
+      raise RuntimeError(
+          f'Failed to find any positive digests for test {self._test_name}')
     for digest in positive_digests:
       content = self._DownloadImageWithDigest(digest)
       image = Image.open(io.BytesIO(content))
-      self._images['%dx%d' % (image.size[0], image.size[1])].add(digest)
+      self._images[f'{image.size[0]}x{image.size[1]}'].add(digest)
 
   def _DownloadImagesForTraceGrouping(self) -> None:
     """Download all recent positive images for a test to disk.
@@ -332,7 +333,7 @@ class BaseParameterOptimizer():
       A copy of the image content that was written to disk as bytes.
     """
     logging.debug('Downloading image %s.png', digest)
-    r = requests.get('%s/img/images/%s.png' % (self._gold_url, digest))
+    r = requests.get(f'{self._gold_url}/img/images/{digest}.png')
     assert r.status_code == 200
     with open(self._GetImagePath(digest), 'wb') as outfile:
       outfile.write(r.content)
@@ -347,7 +348,7 @@ class BaseParameterOptimizer():
     Returns:
       A string containing a filepath to where the image should be on disk.
     """
-    return os.path.join(self._working_dir, '%s.png' % digest)
+    return os.path.join(self._working_dir, f'{digest}.png')
 
   def _GetGoldctlBinary(self) -> str:
     """Gets the filepath to the goldctl binary to use.
@@ -362,7 +363,7 @@ class BaseParameterOptimizer():
           break
       if not self._goldctl_binary:
         raise RuntimeError(
-            'Could not find goldctl binary. Checked %s' % GOLDCTL_PATHS)
+            f'Could not find goldctl binary. Checked {GOLDCTL_PATHS}')
     return self._goldctl_binary
 
   def _RunComparisonForParameters(

@@ -26,6 +26,9 @@ public class EducationalTipModuleViewBinder {
         } else if (EducationalTipModuleProperties.MODULE_CONTENT_IMAGE == propertyKey) {
             moduleView.setContentImageResource(
                     model.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+        } else if (EducationalTipModuleProperties.MODULE_BUTTON_STRING == propertyKey) {
+            moduleView.setButtonText(
+                    model.get(EducationalTipModuleProperties.MODULE_BUTTON_STRING));
         } else {
             assert false : "Unhandled property detected in EducationalTipModuleViewBinder!";
         }

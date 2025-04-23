@@ -216,7 +216,7 @@ static InterpolableValue* ConvertClipComponent(const CSSValue& length) {
 
 InterpolationValue CSSClipInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const auto* quad = DynamicTo<CSSQuadValue>(value);
   if (!quad)

@@ -77,6 +77,10 @@ StorageInterestGroups::StorageInterestGroups(
     std::vector<StorageInterestGroup>&& interest_groups)
     : storage_interest_groups_(std::move(interest_groups)) {
   expiry_ = base::Time::Max();
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeClickiness)) {
+    expiry_ =
+        base::Time::Now() + InterestGroupCachingStorage::kMaximumCacheHoldTime;
+  }
   for (const StorageInterestGroup& group : storage_interest_groups_) {
     expiry_ = std::min(expiry_, group.interest_group.expiry);
   }
@@ -380,6 +384,17 @@ void InterestGroupCachingStorage::RecordViewClick(
       .WithArgs(std::move(event_record));
 }
 
+void InterestGroupCachingStorage::CheckViewClickInfoInDbForTesting(
+    url::Origin provider_origin,
+    url::Origin eligible_origin,
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::
+                     CheckViewClickCountsForProviderAndEligibleInDbForTesting)
+      .WithArgs(std::move(provider_origin), std::move(eligible_origin))
+      .Then(std::move(callback));
+}
+
 void InterestGroupCachingStorage::UpdateKAnonymity(
     const blink::InterestGroupKey& interest_group_key,
     const std::vector<std::string>& positive_hashed_keys,
@@ -508,13 +523,14 @@ void InterestGroupCachingStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(
 
 void InterestGroupCachingStorage::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion,
     base::OnceClosure callback) {
   // Clear all owners because storage_key_matcher can match on joining_origin,
   // which we do not have stored in cached_interest_groups_.
   InvalidateAllCachedInterestGroups();
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)
-      .WithArgs(std::move(storage_key_matcher))
+      .WithArgs(std::move(storage_key_matcher), user_initiated_deletion)
       .Then(std::move(callback));
 }
 void InterestGroupCachingStorage::DeleteAllInterestGroupData(

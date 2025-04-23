@@ -572,7 +572,8 @@ class IntrusiveHeap {
  private:
   // Templated version of ToIndex that lets insert/erase/Replace work with all
   // integral types.
-  template <typename I, typename = std::enable_if_t<std::is_integral_v<I>>>
+  template <typename I>
+    requires(std::is_integral_v<I>)
   size_type ToIndex(I pos) {
     return static_cast<size_type>(pos);
   }

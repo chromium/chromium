@@ -82,6 +82,20 @@ void PinnedRequestResult(ComPtr<ITaskbarManager> taskbar_manager,
                               : PinResultMetric::kPinCurrentAppFailed);
 }
 
+// This helper splits `callback` three ways for use with `PostAsyncHandlers`,
+// which has three separate paths to outcomes: invoke a success callback, invoke
+// an error callback, or return an error.
+template <typename... Args>
+std::tuple<base::OnceCallback<void(Args...)>,
+           base::OnceCallback<void(Args...)>,
+           base::OnceCallback<void(Args...)>>
+SplitOnceCallbackIntoThree(base::OnceCallback<void(Args...)> callback) {
+  auto first_split = base::SplitOnceCallback(std::move(callback));
+  auto second_split = base::SplitOnceCallback(std::move(first_split.first));
+  return {std::move(first_split.second), std::move(second_split.first),
+          std::move(second_split.second)};
+}
+
 void OnIsCurrentAppPinnedResult(ComPtr<ITaskbarManager> taskbar_manager,
                                 bool check_only,
                                 ResultMetricCallback callback,
@@ -103,24 +117,20 @@ void OnIsCurrentAppPinnedResult(ComPtr<ITaskbarManager> taskbar_manager,
     return;
   }
 
-  auto first_split = base::SplitOnceCallback(std::move(callback));
-  auto second_split = base::SplitOnceCallback(std::move(first_split.first));
-  auto success_callback = std::move(first_split.second);
-  auto failure_callback = std::move(second_split.first);
-  auto post_async_failed_callback = std::move(second_split.second);
+  auto split_callback = SplitOnceCallbackIntoThree(std::move(callback));
 
   hr = base::win::PostAsyncHandlers(
       request_pin_operation.Get(),
       base::BindOnce(&PinnedRequestResult, std::move(taskbar_manager),
-                     std::move(success_callback)),
+                     std::move(std::get<0>(split_callback))),
       base::BindOnce(
           [](base::OnceCallback<void(PinResultMetric)> pin_callback) {
             std::move(pin_callback)
                 .Run(PinResultMetric::kPostAsyncResultsFailed);
           },
-          std::move(failure_callback)));
+          std::move(std::get<1>(split_callback))));
   if (FAILED(hr)) {
-    std::move(post_async_failed_callback)
+    std::move(std::get<2>(split_callback))
         .Run(PinResultMetric::kPostAsyncResultsFailed);
   }
 }
@@ -153,10 +163,21 @@ void PinToTaskbarIfAllowedOnUIThread(
     std::move(callback).Run(PinResultMetric::kTaskbarManagerError);
     return;
   }
-  hr = base::win::PostAsyncResults(
-      std::move(is_pinned_operation),
+  auto split_callback = SplitOnceCallbackIntoThree(std::move(callback));
+  hr = base::win::PostAsyncHandlers(
+      is_pinned_operation.Get(),
       base::BindOnce(&OnIsCurrentAppPinnedResult, std::move(taskbar_manager),
-                     check_only, std::move(callback)));
+                     check_only, std::move(std::get<0>(split_callback))),
+      base::BindOnce(
+          [](base::OnceCallback<void(PinResultMetric)> pin_callback) {
+            std::move(pin_callback)
+                .Run(PinResultMetric::kPostAsyncResultsFailed);
+          },
+          std::move(std::get<1>(split_callback))));
+  if (FAILED(hr)) {
+    std::move(std::get<2>(split_callback))
+        .Run(PinResultMetric::kPostAsyncResultsFailed);
+  }
 }
 
 // Attempts to pin a shortcut with AUMI `app_user_model_id` to the taskbar.

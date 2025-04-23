@@ -35,11 +35,11 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -400,13 +400,19 @@ public class IdentityDiscController
         String userName = profileData.getFullName();
         if (profileData.hasDisplayableEmailAddress()) {
             return mContext.getString(
-                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                    mIdentityError == SyncError.NO_ERROR
+                            ? R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email
+                            : R.string
+                                    .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
                     userName,
                     email);
         }
 
         return mContext.getString(
-                R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
+                mIdentityError == SyncError.NO_ERROR
+                        ? R.string.accessibility_toolbar_btn_identity_disc_with_name
+                        : R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
+                userName);
     }
 
     private boolean isProfileInitialized() {

@@ -15,20 +15,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the content for the no passkeys bottom sheet. */
+@NullMarked
 class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private final Delegate mDelegate;
     private final Context mContext;
     private final String mOrigin;
-    private View mContentView;
+    private @Nullable View mContentView;
 
     /** User actions delegated by this bottom sheet. */
     interface Delegate {
@@ -105,9 +106,8 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
         return false;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -152,7 +152,7 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.no_passkeys_sheet_content_description);
     }
 

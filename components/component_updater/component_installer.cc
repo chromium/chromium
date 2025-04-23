@@ -218,7 +218,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   const Result result =
       installer_policy_->OnCustomInstall(*local_manifest, local_install_path);
-  if (result.result.category_ != update_client::ErrorCategory::kNone) {
+  if (result.result.category != update_client::ErrorCategory::kNone) {
     return result;
   }
 
@@ -246,7 +246,7 @@ void ComponentInstaller::Install(
   const Result result =
       InstallHelper(unpack_path, &manifest, &version, &install_path);
   base::DeletePathRecursively(unpack_path);
-  if (result.result.category_ != update_client::ErrorCategory::kNone) {
+  if (result.result.category != update_client::ErrorCategory::kNone) {
     main_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), result));
     return;

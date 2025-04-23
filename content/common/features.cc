@@ -29,6 +29,45 @@ BASE_FEATURE(kAndroidDragDropOopif,
              "AndroidDragDropOopif",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Synchronously continuing with navigation can lead to trying to start another
+// navigation synchronously while the first navigation is still being processed
+// on the stack. This results in re-entrancy which is unsafe and triggers a
+// CHECK.
+//
+// Embedders like Android WebView cannot guarantee that re-entrancy would never
+// occur - in particular, there are existing Android WebView apps that do the
+// problematic sync navigation. Hence Android WebView entirely disables this
+// feature via
+// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync().
+//
+// The eventual goal of this feature flag is to make it possible to continue
+// navigation synchronously for some platforms
+// (See: https://crbug.com/396998476).
+//
+// There are several modes that are described in the
+// AvoidUnnecessaryBeforeUnloadCheckSyncMode enum in the header file.
+BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
+             "AvoidUnnecessaryBeforeUnloadCheckSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<AvoidUnnecessaryBeforeUnloadCheckSyncMode>::Option
+    kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption[] = {
+        {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kDumpWithoutCrashing,
+         "DumpWithoutCrashing"},
+        {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithSendBeforeUnload,
+         "WithSendBeforeUnload"},
+        {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithoutSendBeforeUnload,
+         "WithoutSendBeforeUnload"},
+};
+
+BASE_FEATURE_ENUM_PARAM(
+    AvoidUnnecessaryBeforeUnloadCheckSyncMode,
+    kAvoidUnnecessaryBeforeUnloadCheckSyncMode,
+    &kAvoidUnnecessaryBeforeUnloadCheckSync,
+    "AvoidUnnecessaryBeforeUnloadCheckSyncMode",
+    AvoidUnnecessaryBeforeUnloadCheckSyncMode::kDumpWithoutCrashing,
+    &kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption);
+
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
@@ -147,7 +186,7 @@ BASE_FEATURE(kFedCmFlexibleFields,
 // and account labels features.
 BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,
              "FedCmUseOtherAccountAndLabelsNewSyntax",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending SameSite=Lax cookies in credentialed FedCM requests
 // (accounts endpoint, ID assertion endpoint and disconnect endpoint).
@@ -239,7 +278,7 @@ BASE_FEATURE(kGroupNIKByJoiningOrigin,
 // https://crbug.com/369342694.
 BASE_FEATURE(kRemoveRendererProcessLimit,
              "RemoveRendererProcessLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
@@ -390,12 +429,7 @@ BASE_FEATURE(kRestrictOrientationLockToPhones,
 
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The set of ServiceWorker to bypass while making navigation request.
 // They are represented by a comma separated list of HEX encoded SHA256 hash of

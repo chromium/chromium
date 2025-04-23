@@ -11,6 +11,8 @@ import android.view.View;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -19,8 +21,9 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import java.util.List;
 
 /** Handles toolbar functionality for the download home. */
+@NullMarked
 public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
 
     public DownloadHomeToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);

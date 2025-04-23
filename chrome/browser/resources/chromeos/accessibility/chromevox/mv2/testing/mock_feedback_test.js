@@ -21,14 +21,14 @@ function braille(text) {
 /**
  * Test fixture.
  */
-MockFeedbackUnitTest = class extends ChromeVoxE2ETest {
+MockFeedbackMV2UnitTest = class extends ChromeVoxE2ETest {
   constructor() {
     super();
     this.expectedCalls = [];
   }
 };
 
-AX_TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'speechAndCallbacks', function() {
   let afterThirdStringCalled = false;
   let spruiousStringEndCallbackCalled = false;
   let finishCalled = false;
@@ -62,7 +62,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
   assertTrue(finishCalled);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'startAndEndCallbacks', function() {
   let onlyStartCallbackCalled = false;
   let onlyEndCallbackCalled = false;
   let bothCallbacksStartCalled = false;
@@ -103,7 +103,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
   assertTrue(bothCallbacksEndCalled);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndBraille', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'SpeechAndBraille', function() {
   let secondCallbackCalled = false;
   let finishCalled = false;
   const mock = new MockFeedback(function() {
@@ -130,7 +130,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndBraille', function() {
   assertTrue(finishCalled);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'expectWithRegex', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'expectWithRegex', function() {
   let done = false;
   const mock = new MockFeedback();
   mock.install();
@@ -145,7 +145,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'expectWithRegex', function() {
   assertTrue(done);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'expectAfterReplayThrows', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'expectAfterReplayThrows', function() {
   const mock = new MockFeedback();
   mock.replay();
   assertException('', function() {
@@ -153,7 +153,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'expectAfterReplayThrows', function() {
   }, 'AssertionError');
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'NoMatchDoesNotFinish', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'NoMatchDoesNotFinish', function() {
   let firstCallbackCalled = false;
   const mock = new MockFeedback(function() {
     throw Error('Should not be called');
@@ -172,7 +172,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'NoMatchDoesNotFinish', function() {
   assertTrue(firstCallbackCalled);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'SpeechAndEarcons', function() {
   let finishCalled = false;
   const mock = new MockFeedback(function() {
     finishCalled = true;
@@ -202,7 +202,7 @@ AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
   assertTrue(finishCalled);
 });
 
-AX_TEST_F('MockFeedbackUnitTest', 'SpeechWithLanguage', function() {
+AX_TEST_F('MockFeedbackMV2UnitTest', 'SpeechWithLanguage', function() {
   let finishCalled = false;
   const mock = new MockFeedback(function() {
     finishCalled = true;

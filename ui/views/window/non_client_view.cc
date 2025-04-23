@@ -107,7 +107,7 @@ gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
   gfx::Point point(GetMirroredXInView(GetBoundsForClientView().x()),
                    GetSystemMenuY());
   View::ConvertPointToScreen(this, &point);
-  point = display::win::ScreenWin::DIPToScreenPoint(point);
+  point = display::win::GetScreenWin()->DIPToScreenPoint(point);
   // The native system menu seems to overlap the titlebar by 1 px.  Match that.
   return point - gfx::Vector2d(0, 1);
 }

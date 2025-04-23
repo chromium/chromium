@@ -49,6 +49,7 @@ void ApplyOptionsOverridesForWebContents(
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithActionableElements)) {
     options.enable_experimental_actionable_data = true;
+    options.include_geometry = true;
   }
 }
 
@@ -233,7 +234,9 @@ void OnGotAIPageContentForFrame(
 
 }  // namespace
 
-AIPageContentResult::AIPageContentResult() = default;
+AIPageContentResult::AIPageContentResult() {
+  metadata = optimization_guide::mojom::PageMetadata::New();
+}
 AIPageContentResult::~AIPageContentResult() = default;
 AIPageContentResult::AIPageContentResult(AIPageContentResult&& other) = default;
 AIPageContentResult& AIPageContentResult::operator=(

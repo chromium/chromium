@@ -47,7 +47,8 @@ ActionResult InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
 
 ActionResult InteractionTestUtil::Simulator::SelectTab(TrackedElement*,
                                                        size_t,
-                                                       InputType) {
+                                                       InputType,
+                                                       std::optional<size_t>) {
   return ActionResult::kNotAttempted;
 }
 
@@ -113,11 +114,13 @@ ActionResult InteractionTestUtil::DoDefaultAction(TrackedElement* element,
                   input_type);
 }
 
-ActionResult InteractionTestUtil::SelectTab(TrackedElement* tab_collection,
-                                            size_t index,
-                                            InputType input_type) {
+ActionResult InteractionTestUtil::SelectTab(
+    TrackedElement* tab_collection,
+    size_t index,
+    InputType input_type,
+    std::optional<size_t> expected_index_after_selection) {
   return Simulate(simulators_, &Simulator::SelectTab, tab_collection, index,
-                  input_type);
+                  input_type, expected_index_after_selection);
 }
 
 ActionResult InteractionTestUtil::SelectDropdownItem(TrackedElement* dropdown,

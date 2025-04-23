@@ -14,6 +14,7 @@ class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
 class ShareKitService;
 class SystemIdentityManager;
+class TabGroupService;
 class TrustedVaultClientBackend;
 
 namespace base {
@@ -149,7 +150,8 @@ void DataSharingServiceHooks(
 std::unique_ptr<ShareKitService> CreateShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
     collaboration::CollaborationService* collaboration_service,
-    tab_groups::TabGroupSyncService* sync_service);
+    tab_groups::TabGroupSyncService* sync_service,
+    TabGroupService* tab_group_service);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

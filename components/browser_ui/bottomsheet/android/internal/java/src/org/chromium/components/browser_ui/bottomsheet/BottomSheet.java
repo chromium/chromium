@@ -152,7 +152,7 @@ class BottomSheet extends FrameLayout
     /** Whether the sheet is currently open. */
     private boolean mIsSheetOpen;
 
-    /** Whether {@link #destroy()} has been called. **/
+    /** Whether {@link #destroy()} has been called. */
     private boolean mIsDestroyed;
 
     /** The ratio in the range [0, 1] that the browser controls are hidden. */

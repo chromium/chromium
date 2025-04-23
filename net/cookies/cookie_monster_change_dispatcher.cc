@@ -156,8 +156,7 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      CookiePartitionKeyCollection::FromOptional(cookie_partition_key),
-      std::move(callback));
+      CookiePartitionKeyCollection(cookie_partition_key), std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -173,8 +172,7 @@ CookieMonsterChangeDispatcher::AddCallbackForUrl(
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
       std::string(kGlobalNameKey), url,
-      CookiePartitionKeyCollection::FromOptional(cookie_partition_key),
-      std::move(callback));
+      CookiePartitionKeyCollection(cookie_partition_key), std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;

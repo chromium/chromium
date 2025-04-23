@@ -24,6 +24,10 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_TRANSLATE_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE,
+    FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_WEB_FEATURE,
+    FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE,
+    FeatureConstants.PAGE_SUMMARY_WEB_MENU_FEATURE,
+    FeatureConstants.PAGE_SUMMARY_PDF_MENU_FEATURE,
     FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
@@ -52,6 +56,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.INSTANCE_SWITCHER,
     FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
@@ -71,6 +76,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
@@ -135,6 +141,12 @@ public @interface FeatureConstants {
             "IPH_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_WEB_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Web";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_PAGE_SUMMARY_PDF_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf";
+    String PAGE_SUMMARY_WEB_MENU_FEATURE = "IPH_PageSummaryWebMenu";
+    String PAGE_SUMMARY_PDF_MENU_FEATURE = "IPH_PageSummaryPdfMenu";
     String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
     String APP_SPECIFIC_HISTORY_FEATURE = "IPH_AppSpecificHistory";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
@@ -161,6 +173,8 @@ public @interface FeatureConstants {
     String DATA_SAVER_MILESTONE_PROMO_FEATURE = "IPH_DataSaverMilestonePromo";
     String EPHEMERAL_TAB_FEATURE = "IPH_EphemeralTab";
     String KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE = "IPH_KeyboardAccessoryAddressFilling";
+    String KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE =
+            "IPH_AutofillHomeWorkProfileSuggestion";
     String KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE = "IPH_KeyboardAccessoryPasswordFilling";
     String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE =
             "IPH_AutofillCardInfoRetrievalSuggestion";
@@ -237,6 +251,12 @@ public @interface FeatureConstants {
     String TAB_GROUP_SHARE_NOTICE_FEATURE = "IPH_TabGroupShareNotice";
 
     /**
+     * A simple IPH bubble and highlight on the tab switcher button the first time there's an
+     * activity dot visible. Teaches the user what the dot means.
+     */
+    String TAB_GROUP_SHARE_UPDATE_FEATURE = "IPH_TabGroupShareUpdate";
+
+    /**
      * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on
      * the group title when the group is collapsed and on updated tabs when the group is expanded.
      */
@@ -245,6 +265,12 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
+
+    /**
+     * An IPH feature to prompt users to select the 'Add to group' option in the Tab Switcher 3-Dot
+     * menu.
+     */
+    String TAB_SWITCHER_ADD_TO_GROUP = "IPH_TabSwitcherAddToGroup";
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";

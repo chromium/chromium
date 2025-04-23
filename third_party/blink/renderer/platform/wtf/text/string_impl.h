@@ -201,6 +201,10 @@ class WTF_EXPORT StringImpl {
     DCHECK(!Is8Bit());
     return CharacterBuffer<UChar>();
   }
+  ALWAYS_INLINE base::span<const uint16_t> SpanUint16() const {
+    DCHECK(!Is8Bit());
+    return CharacterBuffer<uint16_t>();
+  }
   ALWAYS_INLINE const void* Bytes() const {
     return reinterpret_cast<const void*>(this + 1);
   }

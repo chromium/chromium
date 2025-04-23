@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -110,6 +109,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
   BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
   BubbleViewControllerPresenter* _settingsInOverflowMenuBubblePresenter;
+  BubbleViewControllerPresenter*
+      _switchAccountWithNTPIdentityDiscBubblePresenter;
   BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
 
   // List of existing gestural IPH views.
@@ -502,6 +503,48 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                         anchorPoint:toolsMenuAnchor];
   if (presenter) {
     _settingsInOverflowMenuBubblePresenter = presenter;
+  }
+}
+
+- (void)presentSwitchAccountsWithNTPAccountParticleDiscBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:YES]) {
+    return;
+  }
+
+  // Only show if the user has previously used a web-triggered flow to switch
+  // accounts in Chrome.
+  // Note: This condition can't be handled by the `feature_engagement::Tracker`
+  // internally, because it's per-device while the tracker is per-profile.
+  if (!GetApplicationContext()->GetLocalState()->GetBoolean(
+          prefs::kHasSwitchedAccountsViaWebFlow)) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionUp;
+
+  // TODO(crbug.com/405076601): Add final (translatable) string once available.
+  NSString* text = @"You can now switch accounts in Chrome";
+
+  CGPoint identityDiscAnchor =
+      [self anchorPointToGuide:kNTPIdentityDiscButtonGuide
+                     direction:arrowDirection];
+
+  // The identity disc button is slightly larger than it visually appears, so
+  // move the bubble a bit closer.
+  CGFloat anchorYOffset = -8;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:
+          feature_engagement::
+              kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:CGPoint(identityDiscAnchor.x,
+                                      identityDiscAnchor.y + anchorYOffset)];
+  if (presenter) {
+    _switchAccountWithNTPIdentityDiscBubblePresenter = presenter;
   }
 }
 
@@ -932,6 +975,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   bubbleViewControllerPresenter.customBubbleVisibilityDuration =
       [self bubbleVisibilityDurationForFeature:feature];
+
+  BOOL shouldDisablePanRecognizer =
+      base::FeatureList::IsEnabled(kLensOverlayDisableIPHPanGesture);
+  BOOL isLensOverlayIPH =
+      (feature.name ==
+           feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature.name ||
+       feature.name ==
+           feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name);
+  bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
+      shouldDisablePanRecognizer && isLensOverlayIPH;
 
   return bubbleViewControllerPresenter;
 }

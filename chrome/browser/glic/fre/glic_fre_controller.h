@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
@@ -14,9 +16,6 @@
 
 class Browser;
 class Profile;
-namespace views {
-class Widget;
-}
 
 namespace content {
 class WebContents;
@@ -24,6 +23,10 @@ class WebContents;
 
 namespace version_info {
 enum class Channel;
+}
+
+namespace views {
+class Widget;
 }
 
 namespace glic {
@@ -101,6 +104,10 @@ class GlicFreController {
 
   bool IsShowingDialog() const;
 
+  gfx::Size GetFreInitialSize();
+
+  void UpdateFreWidgetSize(const gfx::Size& new_size);
+
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   base::WeakPtr<GlicFreController> GetWeakPtr() {
@@ -110,9 +117,7 @@ class GlicFreController {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
                            UpdateLauncherOnFreCompletion);
-  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
-                                   AuthController::BeforeShowResult result);
-  void TryPreloadAfterAuthCheck(AuthController::BeforeShowResult result);
+  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser);
   static void OnCheckIsDefaultBrowserFinished(
       version_info::Channel channel,
       shell_integration::DefaultWebClientState state);
@@ -125,7 +130,7 @@ class GlicFreController {
 
   void RecordMetricsIfDialogIsShowingAndReady();
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> const profile_;
   std::unique_ptr<views::Widget> fre_widget_;
   std::unique_ptr<GlicFreDialogView> fre_view_;
   // This is owned by the GlicFreDialogView but we retain a pointer to it so
@@ -135,7 +140,7 @@ class GlicFreController {
   AuthController auth_controller_;
 
   // The invocation source browser.
-  raw_ptr<Browser> source_browser_ = nullptr;
+  base::WeakPtr<Browser> source_browser_;
 
   // Tracks the tab that the FRE dialog is shown on.
   raw_ptr<tabs::TabInterface> tab_showing_modal_;

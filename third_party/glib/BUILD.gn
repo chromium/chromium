@@ -137,7 +137,6 @@ shared_library("glib") {
     "src/glib/gstringchunk.c",
     "src/glib/gstrvbuilder.c",
     "src/glib/gtestutils.c",
-    "src/glib/gthread-posix.c",
     "src/glib/gthread.c",
     "src/glib/gthreadpool.c",
     "src/glib/gtimer.c",

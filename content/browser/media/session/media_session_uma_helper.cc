@@ -58,6 +58,10 @@ void MediaSessionUmaHelper::OnServiceDestroyed() {
 
   UMA_HISTOGRAM_LONG_TIMES("Media.Session.PictureInPicture.TotalTimeForSession",
                            total_pip_time_for_session_.value());
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Media.Session.PictureInPicture.TotalTimeForSessionV2",
+      total_pip_time_for_session_.value(), base::Milliseconds(1),
+      base::Hours(10), 100);
 
   total_pip_time_for_session_ = std::nullopt;
 }

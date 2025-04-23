@@ -13,7 +13,7 @@ build_webui("build") {
   ]
 
   web_component_files = [ "app.ts" ]
-  non_web_component_files = [
+  ts_files = [
     "descriptor_panel.ts",
     "devices_page.ts",
   ]

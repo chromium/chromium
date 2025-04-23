@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.ui.fast_checkout;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * Defines Fast Checkout's UMA user actions. The resulting string returned by
- * `getAction()` needs to be documented at tools/metrics/actions/actions.xml.
+ * Defines Fast Checkout's UMA user actions. The resulting string returned by `getAction()` needs to
+ * be documented at tools/metrics/actions/actions.xml.
  */
+@NullMarked
 public enum FastCheckoutUserActions {
     INITIALIZED("Initialized"),
     ACCEPTED("Accepted"),

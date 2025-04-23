@@ -27,11 +27,7 @@
    "label": "sibling/ancestor",
    "name": "input7"
 }, {
-   "heuristic": "DefaultSelectText",
-   "label": "Select country",
-   "name": "input8"
-}, {
    "heuristic": "DivTable",
    "label": "Label",
-   "name": "input9"
+   "name": "input8"
 } ]

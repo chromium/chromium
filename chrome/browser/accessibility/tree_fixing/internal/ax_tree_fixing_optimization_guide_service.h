@@ -19,7 +19,33 @@ namespace tree_fixing {
 // service owns the object and needs to handle tear-down.
 class AXTreeFixingOptimizationGuideService final {
  public:
-  explicit AXTreeFixingOptimizationGuideService(Profile* profile);
+  // Delegate for clients that want to perform headings identification.
+  class HeadingsIdentificationDelegate {
+   protected:
+    HeadingsIdentificationDelegate() = default;
+
+   public:
+    HeadingsIdentificationDelegate(const HeadingsIdentificationDelegate&) =
+        delete;
+    HeadingsIdentificationDelegate& operator=(
+        const HeadingsIdentificationDelegate&) = delete;
+    virtual ~HeadingsIdentificationDelegate() = default;
+
+    // This method is used to communicate to the delegate (owner) of this
+    // instance, the heading nodes that were identified via the IdentifyHeadings
+    // method. When calling IdentifyHeadings, the client must provide a
+    // request_id, and this ID is passed back to the client along with the
+    // tree_id and headings. The request_id allows clients to make multiple
+    // requests in parallel and uniquely identify each response. It is the
+    // responsibility of the client to handle the logic behind a request_id,
+    // this service simply passes the id through.
+    virtual void OnHeadingsIdentified(const ui::AXTreeID& tree_id,
+                                      const std::vector<ui::AXNodeID> headings,
+                                      int request_id) = 0;
+  };
+  explicit AXTreeFixingOptimizationGuideService(
+      HeadingsIdentificationDelegate& delegate,
+      Profile* profile);
   AXTreeFixingOptimizationGuideService(
       const AXTreeFixingOptimizationGuideService&) = delete;
   AXTreeFixingOptimizationGuideService& operator=(
@@ -37,6 +63,11 @@ class AXTreeFixingOptimizationGuideService final {
  private:
   // Internal methods related to managing Optimization Guide service connection.
   void Initialize();
+
+  // Delegate provided by client to receive headings identification results.
+  // Use a raw_ref since we do not own the delegate or control its lifecycle.
+  const raw_ref<HeadingsIdentificationDelegate>
+      headings_identification_delegate_;
 
   // Profile for the KeyedService that owns us.
   const raw_ptr<Profile> profile_;

@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_android)
+
 mojom("mojom") {
   sources = [ "on_device_internals_page.mojom" ]
   public_deps = [
@@ -12,4 +14,29 @@ mojom("mojom") {
     "//services/on_device_model/public/mojom",
   ]
   webui_module_path = "/"
+}
+
+source_set("on_device_internals") {
+  public = [ "on_device_internals_ui.h" ]
+  sources = [
+    "on_device_internals_page_handler.cc",
+    "on_device_internals_page_handler.h",
+    "on_device_internals_ui.cc",
+  ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/on_device_internals:resources",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/mojo_service_manager" ]
+  }
 }

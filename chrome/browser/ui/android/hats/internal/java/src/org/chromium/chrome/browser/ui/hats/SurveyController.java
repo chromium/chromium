@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.ui.hats;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
@@ -18,6 +18,7 @@ import java.util.Map;
  * register a runnable to run when the survey is available. After downloading the survey, call
  * {@link showSurveyIfAvailable()} to display the survey.
  */
+@NullMarked
 public interface SurveyController {
     /**
      * Asynchronously downloads the survey using the provided parameters.

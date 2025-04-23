@@ -18,7 +18,9 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -43,14 +45,20 @@ bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
          base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
 }
 
+bool ShouldShowPermanentErrorDialog(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  return result == PaymentsAutofillClient::PaymentsRpcResult::
+                       kVcnRetrievalPermanentFailure;
+}
+
 }  // namespace
 
 BnplManager::OngoingFlowState::OngoingFlowState() = default;
 
 BnplManager::OngoingFlowState::~OngoingFlowState() = default;
 
-BnplManager::BnplManager(AutofillClient* autofill_client)
-    : autofill_client_(CHECK_DEREF(autofill_client)) {}
+BnplManager::BnplManager(BrowserAutofillManager* browser_autofill_manager)
+    : browser_autofill_manager_(CHECK_DEREF(browser_autofill_manager)) {}
 
 BnplManager::~BnplManager() = default;
 
@@ -68,7 +76,8 @@ void BnplManager::InitBnplFlow(
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
 
   ongoing_flow_state_->final_checkout_amount = final_checkout_amount;
-  ongoing_flow_state_->app_locale = autofill_client_->GetAppLocale();
+  ongoing_flow_state_->app_locale =
+      browser_autofill_manager_->client().GetAppLocale();
   ongoing_flow_state_->billing_customer_number =
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager());
   ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
@@ -84,6 +93,9 @@ void BnplManager::InitBnplFlow(
       base::BindOnce(&BnplManager::OnIssuerSelected,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+
+  browser_autofill_manager_->GetCreditCardFormEventLogger()
+      .OnDidAcceptBnplSuggestion();
 }
 
 void BnplManager::NotifyOfSuggestionGeneration(
@@ -126,26 +138,6 @@ void BnplManager::OnAmountExtractionReturned(
   }
 }
 
-bool BnplManager::ShouldShowBnplSettings() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  const PaymentsDataManager& payments_data_manager =
-      payments_autofill_client().GetPaymentsDataManager();
-
-  // Check `kAutofillEnableBuyNowPayLater` only if user has seen a BNPL
-  // suggestion before to avoid unnecessary feature flag checks. Ensures that
-  // only relevant sessions are included in BNPL related A/B experiments.
-  // Otherwise, users that navigate to the settings page can enroll in the
-  // experiment, with very little guarantee they will actually use the BNPL
-  // feature.
-  return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-}
-
 void BnplManager::FetchVcnDetails(GURL url) {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
@@ -161,8 +153,6 @@ void BnplManager::FetchVcnDetails(GURL url) {
       /*cancel_callback=*/base::BindOnce(
           [](base::WeakPtr<BnplManager> manager) {
             if (manager) {
-              // TODO(crbug.com/400528473): Log cancel metrics.
-
               // Note: Does not call
               // `PaymentsAutofillClient::CloseAutofillProgressDialog()` as this
               // is expected to be handled by dialog UI code.
@@ -217,9 +207,7 @@ void BnplManager::OnVcnDetailsFetched(
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::
-                kVcnRetrievalPermanentFailure));
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
   }
   Reset();
 }
@@ -244,8 +232,8 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
       ongoing_flow_state_->billing_customer_number;
   request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
 
-  autofill_client_->GetPaymentsAutofillClient()
-      ->GetPaymentsNetworkInterface()
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
       ->GetDetailsForCreateBnplPaymentInstrument(
           std::move(request_details),
           base::BindOnce(
@@ -287,8 +275,7 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
 
   payments_autofill_client().ShowAutofillErrorDialog(
       AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-          /*is_permanent_error=*/result ==
-          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+          /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
 
   Reset();
 }
@@ -317,7 +304,9 @@ void BnplManager::FetchRedirectUrl() {
   request_details.instrument_id = ongoing_flow_state_->instrument_id;
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.merchant_domain =
-      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+      browser_autofill_manager_->client()
+          .GetLastCommittedPrimaryMainFrameOrigin()
+          .GetURL();
   request_details.total_amount = ongoing_flow_state_->final_checkout_amount;
   // Only `USD` is supported for MVP.
   request_details.currency = "USD";
@@ -364,8 +353,7 @@ void BnplManager::OnRedirectUrlFetched(
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
   }
 }
@@ -462,6 +450,8 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   // suggestion list.
   std::get<1>(*suggestions_shown_response)
       .Run(update_suggestions_result.suggestions, trigger_source);
+  browser_autofill_manager_->GetCreditCardFormEventLogger()
+      .OnBnplSuggestionShown();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -514,20 +504,20 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
     ongoing_flow_state_->instrument_id = std::move(instrument_id);
     FetchRedirectUrl();
   } else {
+    payments_autofill_client().CloseBnplTos();
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
-
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
   }
 }
 
 std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
   AutofillOptimizationGuide* autofill_optimization_guide =
-      autofill_client_->GetAutofillOptimizationGuide();
-  const GURL& merchant_url =
-      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+      browser_autofill_manager_->client().GetAutofillOptimizationGuide();
+  const GURL& merchant_url = browser_autofill_manager_->client()
+                                 .GetLastCommittedPrimaryMainFrameOrigin()
+                                 .GetURL();
 
   // Check BNPL issuer eligibility for the current page and save the
   // eligibility with the corresponding issuer to the vector of

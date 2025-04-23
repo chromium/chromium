@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
 /** Resolves a non-resource drawable's button data. */
+@NullMarked
 public class DrawableButtonData implements DisplayButtonData {
     // The content description should be of type @StringRes, with the exception of use from the
     // TabSwitcherDrawable which will use a @PluralsRes type.

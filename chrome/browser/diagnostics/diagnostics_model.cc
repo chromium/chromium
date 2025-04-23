@@ -24,14 +24,14 @@ namespace diagnostics {
 // This is the count of diagnostic tests on each platform.  This should
 // only be used by testing code.
 #if BUILDFLAG(IS_WIN)
-const int DiagnosticsModel::kDiagnosticsTestCount = 18;
+const int DiagnosticsModel::kDiagnosticsTestCount = 17;
 #elif BUILDFLAG(IS_MAC)
-const int DiagnosticsModel::kDiagnosticsTestCount = 15;
+const int DiagnosticsModel::kDiagnosticsTestCount = 14;
 #elif BUILDFLAG(IS_POSIX)
 #if BUILDFLAG(IS_CHROMEOS)
-const int DiagnosticsModel::kDiagnosticsTestCount = 19;
+const int DiagnosticsModel::kDiagnosticsTestCount = 18;
 #else
-const int DiagnosticsModel::kDiagnosticsTestCount = 17;
+const int DiagnosticsModel::kDiagnosticsTestCount = 16;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -148,7 +148,6 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
   DiagnosticsModelWin(const DiagnosticsModelWin&) = delete;
@@ -173,7 +172,6 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
   DiagnosticsModelMac(const DiagnosticsModelMac&) = delete;
@@ -200,7 +198,6 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
 #if BUILDFLAG(IS_CHROMEOS)
     tests_.push_back(MakeSqliteNssCertDbTest());
     tests_.push_back(MakeSqliteNssKeyDbTest());

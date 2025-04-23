@@ -30,8 +30,11 @@ namespace webrtc_event_logging {
 
 extern const size_t kWebRtcEventLogManagerUnlimitedFileSize;
 
-extern const size_t kDefaultMaxLocalLogFileSizeBytes;
+extern const size_t kDefaultMaxLocalEventLogFileSizeBytes;
 extern const size_t kMaxNumberLocalWebRtcEventLogFiles;
+
+extern const size_t kDefaultMaxLocalDataChannelFileSizeBytes;
+extern const size_t kMaxNumberLocalWebRtcDataChannelLogFiles;
 
 extern const size_t kMaxRemoteLogFileSizeBytes;
 
@@ -270,9 +273,15 @@ struct WebRtcLogFileInfo {
 // the paths which will be used for these logs.
 class WebRtcLocalEventLogsObserver {
  public:
-  virtual void OnLocalLogStarted(WebRtcEventLogPeerConnectionKey key,
-                                 const base::FilePath& file_path) = 0;
-  virtual void OnLocalLogStopped(WebRtcEventLogPeerConnectionKey key) = 0;
+  virtual void OnLocalEventLogStarted(WebRtcEventLogPeerConnectionKey key,
+                                      const base::FilePath& file_path) = 0;
+  virtual void OnLocalEventLogStopped(WebRtcEventLogPeerConnectionKey key) = 0;
+
+  virtual void OnLocalDataChannelLogStarted(
+      WebRtcEventLogPeerConnectionKey key,
+      const base::FilePath& file_path) = 0;
+  virtual void OnLocalDataChannelLogStopped(
+      WebRtcEventLogPeerConnectionKey key) = 0;
 
  protected:
   virtual ~WebRtcLocalEventLogsObserver() = default;

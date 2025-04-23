@@ -56,7 +56,7 @@ uintptr_t FakeRTCRtpSenderImpl::Id() const {
   return 0;
 }
 
-rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
 FakeRTCRtpSenderImpl::DtlsTransport() {
   NOTIMPLEMENTED();
   return nullptr;
@@ -136,7 +136,7 @@ uintptr_t FakeRTCRtpReceiverImpl::Id() const {
   return 0;
 }
 
-rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
 FakeRTCRtpReceiverImpl::DtlsTransport() {
   NOTIMPLEMENTED();
   return nullptr;

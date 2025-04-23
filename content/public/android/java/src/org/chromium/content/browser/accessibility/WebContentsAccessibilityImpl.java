@@ -74,6 +74,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
@@ -161,6 +162,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private static final int AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT = 3;
 
     private final AccessibilityDelegate mDelegate;
+    protected AccessibilityManager mAccessibilityManager;
     protected Context mContext;
     private final @Nullable String mProductVersion;
     protected long mNativeObj;
@@ -280,6 +282,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mView = mDelegate.getContainerView();
         mContext = mView.getContext();
         mProductVersion = mDelegate.getProductVersion();
+        mAccessibilityManager =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
 
         // Need to be initialized before AXTreeUpdate initialization because updateMaxNodesInCache
         // gets called then. Also needs to be initialized before the WindowEventObserver is added,
@@ -522,6 +526,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
                 && (mAccessibilityEnabledOverride
+                        || mAccessibilityManager.isEnabled()
                         || AccessibilityState.isAnyAccessibilityServiceEnabled());
     }
 
@@ -802,7 +807,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             mNativeObj,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning(),
+                            AccessibilityState.isKnownScreenReaderEnabled(),
                             AccessibilityState.getTalkBackEnabledState().second);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
@@ -811,7 +816,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     .setAllowImageDescriptions(
                             mNativeObj,
                             mIsImageDescriptionsCandidate
-                                    && AccessibilityState.isScreenReaderEnabled());
+                                    && AccessibilityState.isKnownScreenReaderEnabled());
 
             // Update the list of events we dispatch to enabled services.
             mEventDispatcher.updateRelevantEventTypes(
@@ -1906,29 +1911,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mAccessibilityFocusId == id) {
             sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_CLICKED);
         }
-    }
 
-    @CalledByNative
-    private void handleDescriptionChangedPaneTitle(int id) {
-        // If the node is dialog, fire CONTENT_CHANGE_TYPE_PANE_TITLE event when receive
-        // DESCRIPTION_CHANGE event from Chrome. e.g. paneTitle is only relevant for dialogs
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            // Check for null AccessibilityEvent, as it might be null if accessibility services are
-            // disabled.
-            if (event == null) {
-                return;
-            }
+            if (event == null) return;
 
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_CHECKED);
             event.setSource(mView, id);
             requestSendAccessibilityEvent(event);
         }
     }
 
     @CalledByNative
-    private void handleDescriptionChangedSubtree(int id) {
+    private void handleWindowContentChange(int id, int subType) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
@@ -1937,22 +1933,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (event == null) {
                 return;
             }
-
-            event.setSource(mView, id);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
-    private void handleStateDescriptionChanged(int id) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) {
-                return;
+            if (subType != AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED)
+            {
+                event.setContentChangeTypes(subType);
             }
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
             event.setSource(mView, id);
             requestSendAccessibilityEvent(event);
         }
@@ -1979,16 +1963,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleTextContentChanged(int id) {
-        AccessibilityEvent event =
-                buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        if (event != null) {
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
     private void handleEditableTextChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
     }
@@ -2008,21 +1982,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleContentChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-    }
-
-    @CalledByNative
-    private void handleImageAnnotationChanged(int id) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) {
-                return;
-            }
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT);
-            event.setSource(mView, id);
-            requestSendAccessibilityEvent(event);
-        }
     }
 
     @CalledByNative
@@ -2093,19 +2052,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleExpandedStateChanged(int virtualViewId) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) return;
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_EXPANDED);
-            event.setSource(mView, virtualViewId);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
     private void announceLiveRegionText(String text) {
         assert !ContentFeatureMap.isEnabled(
                         ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
@@ -2153,7 +2099,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
             } catch (IllegalStateException ignored) {
                 // During boot-up of some content shell tests, events will erroneously be sent even
-                // though accessibility services are not enabled, resulting in a crash.
+                // though the AccessibilityManager is not enabled, resulting in a crash.
                 // TODO(mschillaci): Address flakiness to remove this try/catch, crbug.com/1186376.
             }
         }

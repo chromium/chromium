@@ -52,52 +52,6 @@ bool SdpMessage::AddCodecParameter(const std::string& codec,
   return true;
 }
 
-bool SdpMessage::PreferVideoCodec(const std::string& codec) {
-  if (!has_video_) {
-    return false;
-  }
-  std::vector<std::pair<int, std::string>> payload_types = FindCodec(codec);
-  if (payload_types.empty()) {
-    return false;
-  }
-
-  for (auto& sdp_line : sdp_lines_) {
-    if (!base::StartsWith(sdp_line, "m=video", base::CompareCase::SENSITIVE)) {
-      continue;
-    }
-
-    // A valid SDP contains only one "m=video" line. So instead of continue, if
-    // this line is invalid, we should return false immediately.
-    std::vector<std::string_view> fields = base::SplitStringPiece(
-        sdp_line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    // The first three fields are "m=video", port and proto.
-    static constexpr int kSkipFields = 3;
-    if (fields.size() <= kSkipFields) {
-      return false;
-    }
-
-    const auto first_codec_pos = fields.begin() + kSkipFields;
-
-    for (const auto& payload : payload_types) {
-      auto pos = std::find(first_codec_pos, fields.end(),
-                           std::string_view(payload.second));
-      // The codec has not been found in codec list.
-      if (pos == fields.end()) {
-        continue;
-      }
-
-      std::rotate(first_codec_pos, pos, pos + 1);
-    }
-
-    sdp_line = base::JoinString(fields, " ");
-    return true;
-  }
-
-  // If has_video_ is true (tested at the very beginning of the function), we
-  // should always return within the for-loop above.
-  NOTREACHED();
-}
-
 std::vector<std::pair<int, std::string>> SdpMessage::FindCodec(
     const std::string& codec) const {
   const std::string kRtpMapPrefix = "a=rtpmap:";

@@ -103,7 +103,8 @@ TEST_F(CSSPrimitiveValueTest, IsTimeCalc) {
 TEST_F(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
   UnitValue a = {4926, UnitType::kMilliseconds};
   UnitValue b = {5, UnitType::kSeconds};
-  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds());
+  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
@@ -353,7 +354,7 @@ TEST_F(CSSPrimitiveValueTest, ComputeMethodsWithLengthResolver) {
     length_resolver.SetFontSizes(
         CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
     EXPECT_EQ(10.0, value->ComputeDegrees(length_resolver));
-    EXPECT_EQ("calc(sign(-1em + 12px) * 10deg)", value->CustomCSSText());
+    EXPECT_EQ("calc(10deg * sign(-1em + 12px))", value->CustomCSSText());
   }
 }
 
@@ -391,17 +392,17 @@ TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
   EXPECT_EQ(function->Multiply(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Add(10, CSSPrimitiveValue::UnitType::kPixels)
                 ->CustomCSSText(),
-            "calc(10px + sign(-20em + 10px) * 1px)");
+            "calc(10px + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->MultiplyBy(10, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
             "calc(10 * sign(-20em + 10px))");
   EXPECT_EQ(function->MultiplyBy(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Subtract(*numeric_percentage)
                 ->CustomCSSText(),
-            "calc(-10% + 1px * sign(-20em + 10px))");
+            "calc(-10% + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->Divide(20, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
-            "calc(sign(-20em + 10px) / 20)");
+            "calc(0.05 * sign(-20em + 10px))");
   EXPECT_EQ(function->Subtract(*function)->CustomCSSText(),
             "calc(sign(-20em + 10px) - sign(-20em + 10px))");
   EXPECT_EQ(

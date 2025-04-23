@@ -13,7 +13,7 @@ namespace blink {
 
 IceTransportAdapterImpl::IceTransportAdapterImpl(
     Delegate* delegate,
-    rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport)
+    webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport)
     : delegate_(delegate), ice_transport_channel_(ice_transport) {
   // The native webrtc peer connection might have been closed in the meantime,
   // clearing the ice transport channel; don't do anything in that case. |this|
@@ -31,9 +31,9 @@ IceTransportAdapterImpl::~IceTransportAdapterImpl() {
 }
 
 void IceTransportAdapterImpl::StartGathering(
-    const cricket::IceParameters& local_parameters,
-    const cricket::ServerAddresses& stun_servers,
-    const std::vector<cricket::RelayServerConfig>& turn_servers,
+    const webrtc::IceParameters& local_parameters,
+    const webrtc::ServerAddresses& stun_servers,
+    const std::vector<webrtc::RelayServerConfig>& turn_servers,
     IceTransportPolicy policy) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "StartGathering called, but ICE transport released";
@@ -42,13 +42,13 @@ void IceTransportAdapterImpl::StartGathering(
   ice_transport_channel()->SetIceParameters(local_parameters);
   ice_transport_channel()->MaybeStartGathering();
   DCHECK_EQ(ice_transport_channel()->gathering_state(),
-            cricket::kIceGatheringGathering);
+            webrtc::kIceGatheringGathering);
 }
 
 void IceTransportAdapterImpl::Start(
-    const cricket::IceParameters& remote_parameters,
-    cricket::IceRole role,
-    const Vector<cricket::Candidate>& initial_remote_candidates) {
+    const webrtc::IceParameters& remote_parameters,
+    webrtc::IceRole role,
+    const Vector<webrtc::Candidate>& initial_remote_candidates) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "Start called, but ICE transport released";
     return;
@@ -61,7 +61,7 @@ void IceTransportAdapterImpl::Start(
 }
 
 void IceTransportAdapterImpl::HandleRemoteRestart(
-    const cricket::IceParameters& new_remote_parameters) {
+    const webrtc::IceParameters& new_remote_parameters) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "HandleRemoteRestart called, but ICE transport released";
     return;
@@ -71,7 +71,7 @@ void IceTransportAdapterImpl::HandleRemoteRestart(
 }
 
 void IceTransportAdapterImpl::AddRemoteCandidate(
-    const cricket::Candidate& candidate) {
+    const webrtc::Candidate& candidate) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "AddRemoteCandidate called, but ICE transport released";
     return;
@@ -84,8 +84,8 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
     LOG(ERROR) << "SetupIceTransportChannel called, but ICE transport released";
     return;
   }
-  ice_transport_channel()->AddGatheringStateCallback(this,
-      [this](cricket::IceTransportInternal* transport) {
+  ice_transport_channel()->AddGatheringStateCallback(
+      this, [this](webrtc::IceTransportInternal* transport) {
         OnGatheringStateChanged(transport);
       });
   ice_transport_channel()->SignalCandidateGathered.connect(
@@ -99,32 +99,32 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
 }
 
 void IceTransportAdapterImpl::OnGatheringStateChanged(
-    cricket::IceTransportInternal* transport) {
+    webrtc::IceTransportInternal* transport) {
   DCHECK_EQ(transport, ice_transport_channel());
   delegate_->OnGatheringStateChanged(
       ice_transport_channel()->gathering_state());
 }
 
 void IceTransportAdapterImpl::OnCandidateGathered(
-    cricket::IceTransportInternal* transport,
-    const cricket::Candidate& candidate) {
+    webrtc::IceTransportInternal* transport,
+    const webrtc::Candidate& candidate) {
   DCHECK_EQ(transport, ice_transport_channel());
   delegate_->OnCandidateGathered(candidate);
 }
 
 void IceTransportAdapterImpl::OnStateChanged(
-    cricket::IceTransportInternal* transport) {
+    webrtc::IceTransportInternal* transport) {
   DCHECK_EQ(transport, ice_transport_channel());
   delegate_->OnStateChanged(ice_transport_channel()->GetIceTransportState());
 }
 
 void IceTransportAdapterImpl::OnNetworkRouteChanged(
-    std::optional<rtc::NetworkRoute> new_network_route) {
+    std::optional<webrtc::NetworkRoute> new_network_route) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "OnNetworkRouteChanged called, but ICE transport released";
     return;
   }
-  const std::optional<const cricket::CandidatePair> selected_pair =
+  const std::optional<const webrtc::CandidatePair> selected_pair =
       ice_transport_channel()->GetSelectedCandidatePair();
   if (!selected_pair) {
     // The selected connection will only be null if the ICE connection has
@@ -138,33 +138,33 @@ void IceTransportAdapterImpl::OnNetworkRouteChanged(
       selected_pair->local_candidate(), selected_pair->remote_candidate()));
 }
 
-static const char* IceRoleToString(cricket::IceRole role) {
+static const char* IceRoleToString(webrtc::IceRole role) {
   switch (role) {
-    case cricket::ICEROLE_CONTROLLING:
+    case webrtc::ICEROLE_CONTROLLING:
       return "controlling";
-    case cricket::ICEROLE_CONTROLLED:
+    case webrtc::ICEROLE_CONTROLLED:
       return "controlled";
     default:
       return "unknown";
   }
 }
 
-static cricket::IceRole IceRoleReversed(cricket::IceRole role) {
+static webrtc::IceRole IceRoleReversed(webrtc::IceRole role) {
   switch (role) {
-    case cricket::ICEROLE_CONTROLLING:
-      return cricket::ICEROLE_CONTROLLED;
-    case cricket::ICEROLE_CONTROLLED:
-      return cricket::ICEROLE_CONTROLLING;
+    case webrtc::ICEROLE_CONTROLLING:
+      return webrtc::ICEROLE_CONTROLLED;
+    case webrtc::ICEROLE_CONTROLLED:
+      return webrtc::ICEROLE_CONTROLLING;
     default:
-      return cricket::ICEROLE_UNKNOWN;
+      return webrtc::ICEROLE_UNKNOWN;
   }
 }
 
 void IceTransportAdapterImpl::OnRoleConflict(
-    cricket::IceTransportInternal* transport) {
+    webrtc::IceTransportInternal* transport) {
   DCHECK_EQ(transport, ice_transport_channel());
   // This logic is copied from JsepTransportController.
-  cricket::IceRole reversed_role =
+  webrtc::IceRole reversed_role =
       IceRoleReversed(ice_transport_channel()->GetIceRole());
   LOG(INFO) << "Got role conflict; switching to "
             << IceRoleToString(reversed_role) << " role.";

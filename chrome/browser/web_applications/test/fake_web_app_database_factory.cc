@@ -16,6 +16,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
@@ -61,6 +62,7 @@ proto::DatabaseMetadata FakeWebAppDatabaseFactory::ReadMetadata() {
             }
             loaded_metadata.SetValue(std::move(proto));
           }));
+  EXPECT_TRUE(loaded_metadata.Wait(base::RunLoop::Type::kNestableTasksAllowed));
   return loaded_metadata.Take();
 }
 

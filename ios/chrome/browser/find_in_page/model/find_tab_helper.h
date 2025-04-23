@@ -65,8 +65,6 @@ class FindTabHelper final : public AbstractFindTabHelper,
   // Manage the registration of this instance as a WebStateObserver.
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
       this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_TAB_HELPER_H_

@@ -26,18 +26,20 @@ import org.chromium.ui.util.AttrUtils;
 import java.io.IOException;
 
 /**
- * A subclass of GradientDrawable that allows us to both control shape with an attribute, as well
- * as the surface color based on elevation. If no elevation is specified a default of 0 will be
- * used. This will result in the same color as Surface-0. If this is desired, .it is likely easier
- * to use ?attr/colorSurface.
+ * A subclass of GradientDrawable that allows us to both control shape with an attribute, as well as
+ * the surface color based on elevation. If no elevation is specified a default of 0 will be used.
+ * This will result in the same color as Surface-0. If this is desired, .it is likely easier to use
+ * ?attr/colorSurface.
  *
- * Example
- * <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
- *     xmlns:android="http://schemas.android.com/apk/res/android"
- *     xmlns:app="http://schemas.android.com/apk/res-auto"
- *     android:shape="oval"
- *     app:surfaceElevation="@dimen/default_elevation_1"/>
+ * <p>Example <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+ * xmlns:android="http://schemas.android.com/apk/res/android"
+ * xmlns:app="http://schemas.android.com/apk/res-auto" android:shape="oval"
+ * app:surfaceElevation="@dimen/default_elevation_1"/>
+ *
+ * @deprecated Elevation based surface color is deprecated. Use tonal color roles instead. See
+ *     crbug.com/348667900.
  */
+@Deprecated
 @NullMarked
 public class SurfaceColorDrawable extends GradientDrawable {
     private @Px float mElevation;

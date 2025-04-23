@@ -67,6 +67,7 @@ struct CookieStoreIOSTestTraits {
   static const int creation_time_granularity_in_ms = 1000;
   static const bool supports_cookie_access_semantics = false;
   static const bool supports_partitioned_cookies = false;
+  static const bool dispatches_events_on_no_change_overwrite = false;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

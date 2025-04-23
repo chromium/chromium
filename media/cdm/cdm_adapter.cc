@@ -201,7 +201,13 @@ void ReportDecoderBypassBlockCountUMA(uint64_t bypass_count,
   base::UmaHistogramCounts10000(kDecoderBypassBlockCountUMAName, report_result);
 }
 
+std::string_view GetDebuggerStatusMessage(bool is_debugger_attached) {
+  return is_debugger_attached ? "debugger attached" : "debugger not attached";
+}
+
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
+
+crash_reporter::CrashKeyString<32> g_debugger_attached("debugger-attached");
 
 }  // namespace
 
@@ -215,7 +221,7 @@ void CdmAdapter::Create(
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb,
-    const bool is_debugger_attached) {
+    bool is_debugger_attached) {
   CHECK(!cdm_config.key_system.empty(), base::NotFatalUntil::M140);
   CHECK(session_message_cb, base::NotFatalUntil::M140);
   CHECK(session_closed_cb, base::NotFatalUntil::M140);
@@ -242,7 +248,7 @@ CdmAdapter::CdmAdapter(
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
-    const bool is_debugger_attached)
+    bool is_debugger_attached)
     : cdm_config_(cdm_config),
       create_cdm_func_(create_cdm_func),
       helper_(std::move(helper)),
@@ -252,6 +258,9 @@ CdmAdapter::CdmAdapter(
       session_expiration_update_cb_(session_expiration_update_cb),
       cdm_origin_(helper_->GetCdmOrigin()),
       scoped_crash_key_(&g_origin_crash_key, cdm_origin_.Serialize()),
+      debugger_attached_crash_key_(
+          &g_debugger_attached,
+          GetDebuggerStatusMessage(is_debugger_attached)),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DVLOG(1) << __func__;
@@ -263,11 +272,6 @@ CdmAdapter::CdmAdapter(
   CHECK(session_closed_cb_, base::NotFatalUntil::M140);
   CHECK(session_keys_change_cb_, base::NotFatalUntil::M140);
   CHECK(session_expiration_update_cb_, base::NotFatalUntil::M140);
-
-  if (is_debugger_attached) {
-    SCOPED_CRASH_KEY_BOOL("CDMUtilityProcess", "Debugger_attached",
-                          is_debugger_attached);
-  }
 
   cdm_metrics_data_.cdm_origin = cdm_origin_;
 
@@ -714,6 +718,82 @@ void CdmAdapter::DeinitializeDecoder(StreamType stream_type) {
   }
 }
 
+void CdmAdapter::OnResolveKeyStatusPromise(uint32_t promise_id,
+                                           cdm::KeyStatus_2 key_status) {
+  DVLOG(2) << __func__ << ": promise_id = " << promise_id
+           << ", key_status = " << static_cast<uint32_t>(key_status);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  cdm_promise_adapter_.ResolvePromise(promise_id, ToMediaKeyStatus(key_status));
+}
+
+void CdmAdapter::OnSessionKeysChange(const char* session_id,
+                                     uint32_t session_id_size,
+                                     bool has_additional_usable_key,
+                                     const cdm::KeyInformation_2* keys_info,
+                                     uint32_t keys_info_count) {
+  std::string session_id_str(session_id, session_id_size);
+  DVLOG(2) << __func__ << ": session_id = " << session_id_str;
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+
+  TRACE_EVENT2("media", "CdmAdapter::OnSessionKeysChange", "session_id",
+               session_id_str, "has_additional_usable_key",
+               has_additional_usable_key);
+
+  CdmKeysInfo keys;
+  keys.reserve(keys_info_count);
+  for (uint32_t i = 0; i < keys_info_count; ++i) {
+    const auto& info = keys_info[i];
+    keys.push_back(std::make_unique<CdmKeyInformation>(
+        info.key_id, info.key_id_size, ToMediaKeyStatus(info.status),
+        info.system_code));
+  }
+
+  if (has_additional_usable_key) {
+    event_callbacks_.Notify(Event::kHasAdditionalUsableKey);
+  }
+
+  session_keys_change_cb_.Run(session_id_str, has_additional_usable_key,
+                              std::move(keys));
+}
+
+void CdmAdapter::OnResolveKeyStatusPromise(uint32_t promise_id,
+                                           cdm::KeyStatus key_status) {
+  DVLOG(2) << __func__ << ": promise_id = " << promise_id
+           << ", key_status = " << key_status;
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  cdm_promise_adapter_.ResolvePromise(promise_id, ToMediaKeyStatus(key_status));
+}
+
+void CdmAdapter::OnSessionKeysChange(const char* session_id,
+                                     uint32_t session_id_size,
+                                     bool has_additional_usable_key,
+                                     const cdm::KeyInformation* keys_info,
+                                     uint32_t keys_info_count) {
+  std::string session_id_str(session_id, session_id_size);
+  DVLOG(2) << __func__ << ": session_id = " << session_id_str;
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+
+  TRACE_EVENT2("media", "CdmAdapter::OnSessionKeysChange", "session_id",
+               session_id_str, "has_additional_usable_key",
+               has_additional_usable_key);
+
+  CdmKeysInfo keys;
+  keys.reserve(keys_info_count);
+  for (uint32_t i = 0; i < keys_info_count; ++i) {
+    const auto& info = keys_info[i];
+    keys.push_back(std::make_unique<CdmKeyInformation>(
+        info.key_id, info.key_id_size, ToMediaKeyStatus(info.status),
+        info.system_code));
+  }
+
+  if (has_additional_usable_key) {
+    event_callbacks_.Notify(Event::kHasAdditionalUsableKey);
+  }
+
+  session_keys_change_cb_.Run(session_id_str, has_additional_usable_key,
+                              std::move(keys));
+}
+
 cdm::Buffer* CdmAdapter::Allocate(uint32_t capacity) {
   DVLOG(3) << __func__ << ": capacity = " << capacity;
   CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
@@ -764,14 +844,6 @@ void CdmAdapter::OnInitialized(bool success) {
   }
 
   init_promise_id_ = CdmPromiseAdapter::kInvalidPromiseId;
-}
-
-void CdmAdapter::OnResolveKeyStatusPromise(uint32_t promise_id,
-                                           cdm::KeyStatus key_status) {
-  DVLOG(2) << __func__ << ": promise_id = " << promise_id
-           << ", key_status = " << key_status;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  cdm_promise_adapter_.ResolvePromise(promise_id, ToMediaKeyStatus(key_status));
 }
 
 void CdmAdapter::OnResolvePromise(uint32_t promise_id) {
@@ -835,35 +907,6 @@ void CdmAdapter::OnSessionMessage(const char* session_id,
   session_message_cb_.Run(
       session_id_str, ToMediaMessageType(message_type),
       std::vector<uint8_t>(message_ptr, message_ptr + message_size));
-}
-
-void CdmAdapter::OnSessionKeysChange(const char* session_id,
-                                     uint32_t session_id_size,
-                                     bool has_additional_usable_key,
-                                     const cdm::KeyInformation* keys_info,
-                                     uint32_t keys_info_count) {
-  std::string session_id_str(session_id, session_id_size);
-  DVLOG(2) << __func__ << ": session_id = " << session_id_str;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-
-  TRACE_EVENT2("media", "CdmAdapter::OnSessionKeysChange", "session_id",
-               session_id_str, "has_additional_usable_key",
-               has_additional_usable_key);
-
-  CdmKeysInfo keys;
-  keys.reserve(keys_info_count);
-  for (uint32_t i = 0; i < keys_info_count; ++i) {
-    const auto& info = keys_info[i];
-    keys.push_back(std::make_unique<CdmKeyInformation>(
-        info.key_id, info.key_id_size, ToMediaKeyStatus(info.status),
-        info.system_code));
-  }
-
-  if (has_additional_usable_key)
-    event_callbacks_.Notify(Event::kHasAdditionalUsableKey);
-
-  session_keys_change_cb_.Run(session_id_str, has_additional_usable_key,
-                              std::move(keys));
 }
 
 void CdmAdapter::OnExpirationChange(const char* session_id,

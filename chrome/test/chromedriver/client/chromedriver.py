@@ -841,6 +841,11 @@ class ChromeDriver(object):
     params = {'type': type}
     return self.ExecuteCommand(Command.REMOVE_VIRTUAL_PRESSURE_SOURCE, params)
 
+  def SetProtectedAudienceKAnonymity(self, owner, name, hashes):
+    params = {'owner': owner, 'name': name, 'hashes': hashes}
+    return self.ExecuteCommand(Command.SET_PROTECTED_AUDIENCE_KANONYMITY,
+                               params)
+
   def __enter__(self):
     return self
 

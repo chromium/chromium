@@ -20,7 +20,6 @@
 #include "cc/slim/constants.h"
 #include "cc/slim/delayed_scheduler.h"
 #include "cc/slim/frame_sink_impl_client.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -270,14 +269,9 @@ void FrameSinkImpl::ReclaimResources(
 void FrameSinkImpl::OnBeginFrame(
     const viz::BeginFrameArgs& begin_frame_args,
     const viz::FrameTimingDetailsMap& timing_details,
-    bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
-  if (features::IsOnBeginFrameAcksEnabled()) {
-    if (frame_ack) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    } else if (!resources.empty()) {
-      ReclaimResources(std::move(resources));
-    }
+  if (!resources.empty()) {
+    ReclaimResources(std::move(resources));
   }
 
   // Note order here is expected to be in order w.r.t viz::FrameTokenGT. This

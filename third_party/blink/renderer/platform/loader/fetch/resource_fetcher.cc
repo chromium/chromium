@@ -361,9 +361,12 @@ int CompareResourcePriorities(const ResourcePriority& a,
   if (a.visibility != b.visibility) {
     return a.visibility == ResourcePriority::kVisible ? 1 : -1;
   }
-  if (a.is_lcp_resource != b.is_lcp_resource) {
-    return a.is_lcp_resource ? 1 : -1;
-  }
+  // TODO(https://crbug.com/378623805): We may be able to use `is_lcp_resource`
+  // as a signal here, but there is an active experiment modifying how this
+  // works, so we are not checking it here to avoid experiment crosstalk.
+  // if (a.is_lcp_resource != b.is_lcp_resource) {
+  //   return a.is_lcp_resource ? 1 : -1;
+  // }
   return a.intra_priority_value - b.intra_priority_value;
 }
 
@@ -1370,33 +1373,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   const ResourceType resource_type = factory.GetType();
-  auto preloads_list_iterator = preloads_.end();
-  bool is_stale_revalidation = params.IsStaleRevalidation();
-
-  if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
-    Context().ModifyRequestForMixedContentUpgrade(resource_request);
-    if (!resource_request.Url().IsValid()) {
-      auto* resource = ResourceForBlockedRequest(
-          params, factory, ResourceRequestBlockedReason::kOther, client);
-      StorePerformanceTimingInitiatorInformation(
-          resource, params.GetRenderBlockingBehavior());
-      auto info = resource_timing_info_map_.Take(resource);
-      if (!info.is_null()) {
-        PopulateAndAddResourceTimingInfo(
-            resource, info,
-            /*response_end=*/base::TimeTicks::Now());
-      }
-      return resource;
-    }
-
-    resource_request.SetCanChangeUrl(false);
-    if (!is_stale_revalidation && !archive_) {
-      preloads_list_iterator =
-          preloads_.find(PreloadKey(params.Url(), resource_type));
-      params.SetIsPreloadedResponseCandidatePresent(preloads_list_iterator !=
-                                                    preloads_.end());
-    }
-  }
 
   WebScopedVirtualTimePauser pauser;
 
@@ -1416,6 +1392,20 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     return resource;
   }
 
+  auto preloads_list_iterator = preloads_.end();
+  bool is_preloaded_response_candidate_present = false;
+  bool is_stale_revalidation = params.IsStaleRevalidation();
+
+  if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    resource_request.SetCanChangeUrl(false);
+    if (!is_stale_revalidation && !archive_) {
+      preloads_list_iterator =
+          preloads_.find(PreloadKey(params.Url(), resource_type));
+      is_preloaded_response_candidate_present =
+          preloads_list_iterator != preloads_.end();
+    }
+  }
+
   Resource* resource = nullptr;
   RevalidationPolicy policy = RevalidationPolicy::kLoad;
 
@@ -1428,7 +1418,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    if (!(is_data_url && params.IsPreloadedResponseCandidatePresent())) {
+    if (!(is_data_url && is_preloaded_response_candidate_present)) {
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
       resource = CreateResourceForStaticData(params, factory);
       if (resource) {
@@ -1450,7 +1440,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation && !resource) {
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
-        (params.IsPreloadedResponseCandidatePresent() ||
+        (is_preloaded_response_candidate_present ||
          (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
           preloads_.find(PreloadKey(params.Url(), resource_type)) !=
               preloads_.end()))) {
@@ -2264,10 +2254,22 @@ void ResourceFetcher::ReloadImagesIfNotDeferred() {
 void ResourceFetcher::PopulateResourceRequestPermissionsPolicy(
     network::ResourceRequest* request) {
   // TODO(crbug.com/382291442): Remove feature guarding once launched.
-  if (base::FeatureList::IsEnabled(
-          network::features::kPopulatePermissionsPolicyOnRequest) &&
-      Context().GetPermissionsPolicy()) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest)) {
+    return;
+  }
+
+  if (Context().GetPermissionsPolicy()) {
     request->permissions_policy = *Context().GetPermissionsPolicy();
+  } else {
+    // If the context has no permissions policy (e.g. because it's a worker that
+    // doesn't support permissions policies), set a conservative, all-blocking
+    // permissions policy on the request.
+    // TODO(https://crbug.com/406525486): Once workers support permissions
+    // policies, this might be removed.
+    request->permissions_policy =
+        *network::PermissionsPolicy::CreateFromParsedPolicy(
+            {}, {}, url::Origin::Create(request->url));
   }
 }
 
@@ -3007,8 +3009,7 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   Context().CanRequest(resource->GetType(), last_resource_request,
                        last_resource_request.Url(), params.Options(),
                        ReportingDisposition::kReport,
-                       last_resource_request.GetRedirectInfo(),
-                       params.IsPreloadedResponseCandidatePresent());
+                       last_resource_request.GetRedirectInfo());
   if (resource->GetStatus() == ResourceStatus::kNotStarted ||
       resource->GetStatus() == ResourceStatus::kPending) {
     // If the loading has not started, then we return here because loading
@@ -3543,8 +3544,12 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       metrics.matched_network_router_source_count++;
       break;
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
       metrics.matched_race_network_and_fetch_router_source_count++;
+      break;
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      // TODO(crbug.com/370844790): implement race network and cache
       break;
   }
 }
@@ -3571,11 +3576,8 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
     return fetcher_.UpdateRequestForTransparentPlaceholderImage(params_);
   }
   ResourceRequest& resource_request = params_.MutableResourceRequest();
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
-      !params_.IsPreloadedResponseCandidatePresent()) {
-    bundle_url_for_uuid_resources_ =
-        fetcher_.PrepareRequestForWebBundle(resource_request);
-  }
+  bundle_url_for_uuid_resources_ =
+      fetcher_.PrepareRequestForWebBundle(resource_request);
 
   ResourceType resource_type = factory_.GetType();
   const ResourceLoaderOptions& options = params_.Options();

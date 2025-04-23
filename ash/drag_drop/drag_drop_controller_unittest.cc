@@ -1312,16 +1312,16 @@ TEST_F(DragDropControllerTest, EventTarget) {
   generator.PressLeftButton();
   // For drag enter
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
-                                base::Unretained(&generator), 0, 1));
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { generator.MoveMouseBy(0, 1); }));
   // For drag update
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
-                                base::Unretained(&generator), 0, 1));
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { generator.MoveMouseBy(0, 1); }));
   // For perform drop
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
-                                base::Unretained(&generator)));
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
   drag_drop_controller_->set_should_block_during_drag_drop(true);
   auto data = CreateDragData(/*with_image=*/false);
@@ -1352,12 +1352,12 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
   generator.PressLeftButton();
   // For drag enter.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
-                                base::Unretained(&generator), 0, 1));
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { generator.MoveMouseBy(0, 1); }));
   // For perform drop.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
-                                base::Unretained(&generator)));
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
   drag_drop_controller_->set_should_block_during_drag_drop(true);
   DragOperation operation = drag_drop_controller_->StartDragAndDrop(

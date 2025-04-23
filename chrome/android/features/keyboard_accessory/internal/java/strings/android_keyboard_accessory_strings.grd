@@ -208,6 +208,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_WITH_CHROME" desc="Text in In-Product-Help bubble suggesting to use an autofill suggestion provided by Chrome.">
         Use Chrome autofill suggestion
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION" desc="Text in the In-Product-Help bubble for a home or work Autofill profile suggestion.">
+        Your home and work addresses are now available in Chrome
+      </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_SWIPE_FOR_MORE" desc="Text in In-Product-Help bubble suggesting to scroll the accessory to reveal more suggestions.">
         Swipe to see more suggestions
       </message>
@@ -220,11 +223,20 @@
       <message name="IDS_PASSWORD_ACCESSORY_PASSKEY_LABEL" desc="Label for a chip that fills a Passkey on selection.">
         Passkey
       </message>
+      <message name="IDS_PASSWORD_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual password container.">
+        Password
+      </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TITLE" desc="Text used as title for the address accessory sheet.">
         Addresses
       </message>
+      <message name="IDS_ADDRESS_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual address container.">
+        Address
+      </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the address accessory sheet.">
         Show saved addresses
+      </message>
+      <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual payment method container.">
+        Payment method
       </message>
       <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the payment method accessory sheet, where users' saved payment methods (e.g., credit cards) are shown for use when filling web forms.">
         Show saved payment methods

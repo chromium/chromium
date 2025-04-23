@@ -218,7 +218,7 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
     const auto inner_iterator = inner_map.find(third_party);
     if (inner_iterator != inner_map.end()) {
       // The pair already has a randomized token.
-      return SerializeAndEncodePrt(inner_iterator->second);
+      return SerializePrt(inner_iterator->second);
     }
 
     // Seeing this third party for the first time in this top level.
@@ -230,7 +230,7 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
       return std::nullopt;
     }
     inner_map[third_party] = std::move(maybe_randomized_token.value());
-    return SerializeAndEncodePrt(inner_map[third_party]);
+    return SerializePrt(inner_map[third_party]);
   }
   // Seeing first party for the first time.
   std::size_t token_selected = base::RandGenerator(crypter_->NumTokens());
@@ -242,7 +242,7 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
   }
   token_map_[top_level] = {token_selected,
                            {{third_party, maybe_randomized_token.value()}}};
-  return SerializeAndEncodePrt(std::move(maybe_randomized_token).value());
+  return SerializePrt(std::move(maybe_randomized_token).value());
 }
 
 void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
@@ -257,10 +257,10 @@ void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
 }
 
 /*
-Serialize and base64 encode the following struct given in TLS presentation
-language (rfc8446 section-3). Size of u and e depends on the version and only
-possible version value is 1 for now. Only possible size for u and e is 33.
-Returns null in case of failure.
+Serialize the following struct given in TLS presentation language (rfc8446
+section-3). Size of u and e depends on the version and only possible version
+value is 1 for now. Only possible size for u and e is 33. Returns null in case
+of failure.
 
 struct {
   uint8 version;
@@ -269,7 +269,7 @@ struct {
   opaque epoch_id[8];
 } tlsPRT;
 
-Once serialized (before base64 encoding), output bytes will be as follows.
+Once serialized, output bytes will be as follows.
 
 [1 byte for version |
  2 bytes for u size | 33 bytes for u |
@@ -277,17 +277,18 @@ Once serialized (before base64 encoding), output bytes will be as follows.
  8 bytes for epoch_id]
 */
 std::optional<std::string>
-IpProtectionProbabilisticRevealTokenManager::SerializeAndEncodePrt(
+IpProtectionProbabilisticRevealTokenManager::SerializePrt(
     ProbabilisticRevealToken token) {
   if (token.version != 1 || token.u.size() != token.e.size() ||
       token.u.size() != kPRTPointSize || epoch_id_.size() != kEpochIdSize) {
     return std::nullopt;
   }
   bssl::ScopedCBB cbb;
-  std::array<uint8_t, kPRTSize> prt;
+  std::string prt(kPRTSize, 0);
   size_t cbb_size = 0;
   // CBB doc says CBB_init_fixed will not fail.
-  CHECK(CBB_init_fixed(cbb.get(), prt.data(), kPRTSize));
+  CHECK(CBB_init_fixed(cbb.get(), reinterpret_cast<uint8_t*>(prt.data()),
+                       kPRTSize));
   if (!CBB_add_u8(cbb.get(), token.version) ||
       !CBB_add_u16(cbb.get(), token.u.size()) ||
       !CBB_add_bytes(cbb.get(),
@@ -304,7 +305,7 @@ IpProtectionProbabilisticRevealTokenManager::SerializeAndEncodePrt(
     return std::nullopt;
   }
   CHECK_EQ(cbb_size, kPRTSize);
-  return base::Base64Encode(prt);
+  return prt;
 }
 
 }  // namespace ip_protection

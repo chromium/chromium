@@ -120,6 +120,14 @@ class IOSChromePasswordManagerClient
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
   bool IsPasswordChangeOngoing() override;
+  void MaybeReportEnterpriseLoginEvent(
+      const GURL& url,
+      bool is_federated,
+      const url::SchemeHostPort& federated_origin,
+      const std::u16string& login_user_name) const override;
+  void MaybeReportEnterprisePasswordBreachEvent(
+      const std::vector<std::pair<GURL, std::u16string>>& identities)
+      const override;
   void NotifyStorePasswordCalled() override;
   void NotifyUserCredentialsWereLeaked(
       password_manager::LeakedPasswordDetails details) override;

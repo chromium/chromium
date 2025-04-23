@@ -179,8 +179,15 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
 
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =
           Navigate(&params)) {
-    if (flow_type_ == FlowType::kVcn3ds) {
-      vcn_3ds_popup_shown_timestamp_ = base::TimeTicks::Now();
+    switch (flow_type_) {
+      case FlowType::kVcn3ds:
+        vcn_3ds_popup_shown_timestamp_ = base::TimeTicks::Now();
+        break;
+      case FlowType::kBnpl:
+        bnpl_popup_shown_timestamp_ = base::TimeTicks::Now();
+        break;
+      default:
+        NOTREACHED();
     }
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
   } else {
@@ -192,9 +199,10 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
       client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/false));
-    } else {
-      // TODO(crbug.com/356443046): Add handling for BNPL pop-up window not
-      // being shown.
+    } else if (bnpl_context_.has_value()) {
+      client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
     }
   }
 }
@@ -288,6 +296,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
 }
 
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
+  CHECK(bnpl_popup_shown_timestamp_.has_value());
   BnplPopupStatus status =
       ParseUrlForBnpl(most_recent_url_navigation_, bnpl_context_.value());
   BnplFlowResult result;
@@ -305,6 +314,11 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
   std::move(bnpl_context_->completion_callback)
       .Run(result, std::move(most_recent_url_navigation_));
   autofill_metrics::LogBnplPopupWindowResult(bnpl_context_->issuer_id, result);
+  autofill_metrics::LogBnplPopupWindowLatency(
+      /*duration_between_display_to_close=*/base::TimeTicks::Now() -
+          bnpl_popup_shown_timestamp_.value(),
+      /*bnpl_issuer_id=*/bnpl_context_->issuer_id,
+      /*pop_up_window_result=*/result);
   Reset();
 }
 
@@ -408,6 +422,7 @@ void DesktopPaymentsWindowManager::Reset() {
   flow_type_ = FlowType::kNoFlow;
   vcn_3ds_popup_shown_timestamp_.reset();
   bnpl_context_.reset();
+  bnpl_popup_shown_timestamp_.reset();
   most_recent_url_navigation_ = GURL();
 }
 

@@ -380,7 +380,7 @@ NSString* CreationText(base::Time creation_date) {
                                                    cell.item.savedTabGroupID);
 }
 
-- (UIViewController*)facePileViewControllerForItem:(TabGroupsPanelItem*)item {
+- (UIView*)facePileViewForItem:(TabGroupsPanelItem*)item {
   if (!_shareKitService || !_shareKitService->IsSupported() ||
       !_collaborationService || !_tabGroupSyncService) {
     return nil;
@@ -401,7 +401,7 @@ NSString* CreationText(base::Time creation_date) {
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
-  return _shareKitService->FacePile(config);
+  return _shareKitService->FacePileView(config);
 }
 
 #pragma mark TabGroupsPanelMutator
@@ -425,11 +425,14 @@ NSString* CreationText(base::Time creation_date) {
   if (!group) {
     return;
   }
+
   [self.delegate tabGroupsPanelMediator:self
-      showLeaveSharedGroupConfirmationWithSyncID:item.savedTabGroupID
-                                      groupTitle:base::SysUTF16ToNSString(
-                                                     group->title())
-                                      sourceView:sourceView];
+      startLeaveOrDeleteSharedGroupWithSyncID:item.savedTabGroupID
+                                   groupTitle:base::SysUTF16ToNSString(
+                                                  group->title())
+                                    forAction:TabGroupActionType::
+                                                  kLeaveSharedTabGroup
+                                   sourceView:sourceView];
 }
 
 - (void)deleteSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
@@ -439,11 +442,14 @@ NSString* CreationText(base::Time creation_date) {
   if (!group) {
     return;
   }
+
   [self.delegate tabGroupsPanelMediator:self
-      showDeleteSharedGroupConfirmationWithSyncID:item.savedTabGroupID
-                                       groupTitle:base::SysUTF16ToNSString(
-                                                      group->title())
-                                       sourceView:sourceView];
+      startLeaveOrDeleteSharedGroupWithSyncID:item.savedTabGroupID
+                                   groupTitle:base::SysUTF16ToNSString(
+                                                  group->title())
+                                    forAction:TabGroupActionType::
+                                                  kDeleteSharedTabGroup
+                                   sourceView:sourceView];
 }
 
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item {

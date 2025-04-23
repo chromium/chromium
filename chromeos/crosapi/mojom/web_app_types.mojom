@@ -41,6 +41,8 @@ enum WebAppInstallResultCode {
   [MinVersion=4] kIconDownloadingFailed,
   [MinVersion=5] kCancelledDueToMainFrameNavigation,
   [MinVersion=6] kNoValidIconsInManifest,
+  [MinVersion=7] kNoCustomManifestId,
+  [MinVersion=8] kManifestIdMismatch,
 };
 
 // See |webapps::UninstallResultCode|.

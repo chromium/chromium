@@ -27,13 +27,6 @@ MATCHER_P(HasTabGuid, guid, "") {
   return arg.saved_tab_guid() == guid;
 }
 
-base::Uuid MakeUniqueGUID() {
-  static uint64_t unique_value = 0;
-  unique_value++;
-  uint64_t kBytes[] = {0, unique_value};
-  return base::Uuid::FormatRandomDataAsV4ForTesting(base::as_byte_span(kBytes));
-}
-
 LocalTabID MakeUniqueTabID() {
   static uint32_t unique_value = 0;
   return unique_value++;
@@ -60,8 +53,8 @@ void AddTabToEndOfGroup(SavedTabGroup& group,
 }  // namespace
 
 TEST(SavedTabGroupTest, GetTabByGUID) {
-  base::Uuid tab_1_saved_guid = MakeUniqueGUID();
-  base::Uuid tab_2_saved_guid = MakeUniqueGUID();
+  base::Uuid tab_1_saved_guid = base::Uuid::GenerateRandomV4();
+  base::Uuid tab_2_saved_guid = base::Uuid::GenerateRandomV4();
 
   // create a group with a couple tabs
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
@@ -338,7 +331,7 @@ TEST(SavedTabGroupTest, UpdateCreatorCacheGuid) {
 }
 
 TEST(SavedTabGroupTest, GetOriginatingTabGroupGuid) {
-  const base::Uuid kOriginatingTabGroupGuid = MakeUniqueGUID();
+  const base::Uuid kOriginatingTabGroupGuid = base::Uuid::GenerateRandomV4();
 
   SavedTabGroup saved_group = CreateDefaultEmptySavedTabGroup();
   saved_group.SetOriginatingTabGroupGuid(

@@ -1049,6 +1049,12 @@ BASE_FEATURE(kForceInOrderScript,
              "ForceInOrderScript",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Text autosizing uses heuristics to inflate text sizes on devices with
+// small screens. This feature is for disabling these heuristics.
+BASE_FEATURE(kForceOffTextAutosizing,
+             "ForceOffTextAutosizing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Automatically convert light-themed pages to use a Blink-generated dark theme
 BASE_FEATURE(kForceWebContentsDarkMode,
              "WebContentsForceDark",
@@ -1396,6 +1402,18 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kLCPTimingPredictorPrerender2,
              "LCPTimingPredictorPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPTimingPredictorSlidingWindowSize,
+                   &kLCPTimingPredictorPrerender2,
+                   "lcp_timing_predictor_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPTimingPredictorMaxHistogramBuckets,
+                   &kLCPTimingPredictorPrerender2,
+                   "lcp_timing_predictor_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
              "LCPPAutoPreconnectLcpOrigin",
@@ -2203,14 +2221,6 @@ BASE_FEATURE_PARAM(bool,
                    "enabled_in_fledge",
                    /*default_value=*/true);
 
-// Selectively allows the Protected Audience-specific extensions to be disabled.
-// The name has not been updated (from "fledge") for consistency across versions
-BASE_FEATURE_PARAM(bool,
-                   kPrivateAggregationApiProtectedAudienceExtensionsEnabled,
-                   &kPrivateAggregationApi,
-                   "fledge_extensions_enabled",
-                   /*default_value=*/true);
-
 // Selectively allows the debug mode to be disabled while leaving the rest of
 // the API in place. If disabled, any `enableDebugMode()` calls will essentially
 // have no effect.
@@ -2222,7 +2232,7 @@ BASE_FEATURE_PARAM(bool,
 
 // Adds some additional functionality (new reserved event types, base values)
 // to things enabled by
-// kPrivateAggregationApiProtectedAudienceExtensionsEnabled.
+// kPrivateAggregationApiEnabledInProtectedAudience.
 BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
              "PrivateAggregationApiProtectedAudienceAdditionalExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2444,7 +2454,7 @@ BASE_FEATURE_PARAM(int,
                    kSpeculativeServiceWorkerWarmUpMaxCount,
                    &kSpeculativeServiceWorkerWarmUp,
                    "sw_warm_up_max_count",
-                   10);
+                   2);
 
 // Duration to keep worker warmed-up.
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -2695,6 +2705,14 @@ BASE_FEATURE(kWebAppBorderless,
 // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
 BASE_FEATURE(kWebAppEnableScopeExtensions,
              "WebAppEnableScopeExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls scope extensions feature in web apps. Enables parsing of "site"
+// entries in "scope_extensions" field in web app manifests. See explainer for
+// more information:
+// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+BASE_FEATURE(kWebAppEnableScopeExtensionsBySite,
+             "WebAppEnableScopeExtensionsBySite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls parsing of the "lock_screen" dictionary field and its "start_url"

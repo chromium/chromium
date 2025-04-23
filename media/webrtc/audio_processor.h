@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       LogCallback log_callback,
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
-      rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
+      webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
       bool needs_playout_reference);
 
   ~AudioProcessor();
@@ -198,7 +198,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
 
   // The WebRTC audio processing module (APM). Performs the bulk of the audio
   // processing and resampling algorithms.
-  const rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing_;
+  const webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing_;
 
   // If true, `OnPlayoutData()` should be called.
   const bool needs_playout_reference_;

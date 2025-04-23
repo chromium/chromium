@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -46,12 +47,12 @@ class AddStudentsRequest : public google_apis::UrlFetchRequestBase {
   const GaiaId& gaia_id() { return gaia_id_; }
   const std::string& session_id() { return session_id_; }
   const std::string& student_group_id() { return student_group_id_; }
-  const std::vector<std::string>& student_ids() { return student_ids_; }
+  const std::vector<::boca::UserIdentity>& students() { return students_; }
   void set_student_group_id(std::string student_group_id) {
     student_group_id_ = std::move(student_group_id);
   }
-  void set_student_ids(std::vector<std::string> student_ids) {
-    student_ids_ = std::move(student_ids);
+  void set_students(std::vector<::boca::UserIdentity> students) {
+    students_ = std::move(students);
   }
 
  protected:
@@ -76,7 +77,7 @@ class AddStudentsRequest : public google_apis::UrlFetchRequestBase {
   GaiaId gaia_id_;
   std::string session_id_;
   std::string student_group_id_;
-  std::vector<std::string> student_ids_;
+  std::vector<::boca::UserIdentity> students_;
   std::string url_base_;
 
   AddStudentsCallback callback_;

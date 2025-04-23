@@ -278,7 +278,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetIsEffectivelyFullscreen(
       WebFullscreenVideoStatus fullscreen_video_status) override;
   void OnHasNativeControlsChanged(bool) override;
-  void OnDisplayTypeChanged(DisplayType display_type) override;
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType display_type) override;
 
   // WebMediaPlayerDelegate::Observer implementation.
   void OnPageHidden() override;
@@ -442,7 +442,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
                                 const std::vector<uint8_t>& init_data) override;
   void MakeDemuxerThreadDumper(media::Demuxer* demuxer) override;
   bool CouldPlayIfEnoughData() override;
-  bool IsMediaPlayerRendererClient() override;
   void StopForDemuxerReset() override;
   void RestartForHls() override;
   bool IsSecurityOriginCryptographic() const override;
@@ -969,18 +968,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // started; prevents us from spuriously logging errors that are transient or
   // unimportant.
   bool suppress_destruction_errors_ = false;
-
-  // NOTE: |using_media_player_renderer_| is set based on the usage of a
-  // MediaResource::Type::URL in StartPipeline(). This works because
-  // MediaPlayerRendererClientFactory is the only factory that uses
-  // MediaResource::Type::URL for now.
-  bool using_media_player_renderer_ = false;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Set during the initial DoLoad() call. Used to determine whether to allow
-  // credentials or not for MediaPlayerRenderer.
-  bool allow_media_player_renderer_credentials_ = false;
-#endif
 
   // Stores the current position state of the media.
   media_session::MediaPosition media_position_state_;

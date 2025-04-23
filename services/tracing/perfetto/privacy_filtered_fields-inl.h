@@ -463,7 +463,7 @@ constexpr MessageInfo kWebContentInteraction = {kWebContentInteractionIndices,
                                                 nullptr};
 
 // Proto Message: EventForwarder
-constexpr int kEventForwarderIndices[] = {1, 2, 5, 6, 7, -1};
+constexpr int kEventForwarderIndices[] = {1, 2, 5, 6, 7, 8, 9, -1};
 constexpr MessageInfo kEventForwarder = {kEventForwarderIndices, nullptr};
 
 // Proto Message: TouchDispositionGestureFilter

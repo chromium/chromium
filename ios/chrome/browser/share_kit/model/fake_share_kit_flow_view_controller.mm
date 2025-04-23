@@ -61,18 +61,25 @@
 }
 
 - (void)accept {
-  if (_sharedGroupCompletionBlock) {
-    _sharedGroupCompletionBlock([[NSUUID UUID] UUIDString]);
+  ProceduralBlock completion = nil;
+  __weak __typeof(self) weakSelf = self;
+  if (self.flowCompleteBlock) {
+    auto localCompletionBlock = self.flowCompleteBlock;
+    completion = ^{
+      localCompletionBlock(ShareKitFlowOutcome::kSuccess);
+      [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    };
   }
-  if (_completionBlock) {
-    _completionBlock(ShareKitFlowOutcome::kSuccess);
+  if (self.actionAcceptedBlock) {
+    self.actionAcceptedBlock([[NSUUID UUID] UUIDString], completion);
+  } else if (completion) {
+    completion();
   }
-  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)cancel {
-  if (_completionBlock) {
-    _completionBlock(ShareKitFlowOutcome::kCancel);
+  if (self.flowCompleteBlock) {
+    self.flowCompleteBlock(ShareKitFlowOutcome::kCancel);
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }

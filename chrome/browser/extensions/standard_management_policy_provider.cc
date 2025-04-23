@@ -10,13 +10,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#endif
 
 namespace extensions {
 
@@ -155,6 +158,7 @@ bool StandardManagementPolicyProvider::UserMayInstall(
     return ReturnLoadError(extension, error);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Check if the extension would be force-disabled once it's installed. If it
   // would, block the new installation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile_);
@@ -164,6 +168,7 @@ bool StandardManagementPolicyProvider::UserMayInstall(
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION);
     return false;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return UserMayLoad(extension, error);
 }
@@ -219,6 +224,7 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     return true;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Note: `mv2_experiment_manager` may be null for certain types of profiles
   // (such as the sign-in profile). We can ignore this check in this case, since
   // users can't install extensions in these profiles.
@@ -231,6 +237,7 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
 
     return true;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return false;
 }

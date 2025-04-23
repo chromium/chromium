@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/date_components.h"
 
 #include <limits.h>
@@ -55,8 +50,8 @@ static const int kMaximumMonthInMaximumYear = 8;
 static const int kMaximumDayInMaximumMonth = 13;
 static const int kMaximumWeekInMaximumYear = 37;  // The week of 275760-09-13
 
-static const int kDaysInMonth[12] = {31, 28, 31, 30, 31, 30,
-                                     31, 31, 30, 31, 30, 31};
+static const std::array<int, 12> kDaysInMonth = {31, 28, 31, 30, 31, 30,
+                                                 31, 31, 30, 31, 30, 31};
 
 // 'month' is 0-based.
 static int MaxDayOfMonth(int year, int month) {

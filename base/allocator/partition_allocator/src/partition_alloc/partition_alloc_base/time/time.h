@@ -322,6 +322,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) TimeDelta {
     return delta_ >= other.delta_;
   }
 
+  friend std::ostream& operator<<(std::ostream& os, const TimeDelta& td) {
+    return os << td.InSecondsF() << " s";
+  }
+
   // Returns this delta, ceiled/floored/rounded-away-from-zero to the nearest
   // multiple of |interval|.
   TimeDelta CeilToMultiple(TimeDelta interval) const;

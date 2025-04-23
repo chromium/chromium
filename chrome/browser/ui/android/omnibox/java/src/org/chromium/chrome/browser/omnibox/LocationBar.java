@@ -105,6 +105,15 @@ public interface LocationBar {
     @NonNull
     Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState();
 
+    /**
+     * Toggle showing only the origin portion of the URL (as opposed to the default behavior of
+     * showing the max amount of the url, prioritizing the origin)
+     */
+    default void setShowOriginOnly(boolean showOriginOnly) {}
+
+    /** Toggle the url bar's text size to be small or normal sized. */
+    default void setUrlBarUsesSmallText(boolean useSmallText) {}
+
     /** Destroys the LocationBar. */
     void destroy();
 }

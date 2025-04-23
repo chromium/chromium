@@ -53,11 +53,17 @@ struct SearchWidgetEntryView: View {
   var entry: ConfigureWidgetEntry
 
   var body: some View {
-    SearchWidgetEntryViewTemplate(
-      destinationURL: destinationURL(url: WidgetConstants.SearchWidget.url, gaia: entry.gaiaID),
-      imageName: "widget_chrome_logo",
-      title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
-      accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    // The account to display was deleted (entry.deleted can only be true if
+    // IOS_ENABLE_WIDGETS_FOR_MIM is enabled).
+    if entry.deleted && !entry.isPreview {
+      SmallWidgetDeletedAccountView()
+    } else {
+      SearchWidgetEntryViewTemplate(
+        destinationURL: destinationURL(url: WidgetConstants.SearchWidget.url, gaia: entry.gaiaID),
+        imageName: "widget_chrome_logo",
+        title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
+        accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    }
   }
 }
 

@@ -13,11 +13,43 @@
     display: flex;
     gap: 8px;
   }
-</style>
 
-<cr-expand-button expanded="{{expanded_}}" class="cr-row">
-  [[dict.name]]
-</cr-expand-button>
+  .bottom-border {
+    border-bottom: 1px solid var(--cros-separator-color);
+  }
+
+  cr-expand-button {
+    flex-grow: 1;
+    padding-inline-end: 8px;
+  }
+
+  .separator {
+    border-inline-start: var(--cr-separator-line);
+    flex-shrink: 0;
+    height: 32px;
+    margin: 0 16px;
+  }
+
+  .indented {
+    margin: 0 var(--cr-section-padding);
+  }
+
+  iron-collapse {
+    padding-block: 22px;
+  }
+
+</style>
+<div class="cr-row bottom-border">
+  <cr-expand-button expanded="{{expanded_}}">
+    [[dict.name]]
+  </cr-expand-button>
+  <div class="separator"></div>
+  <cr-icon-button class="icon-clear"
+    on-click="deleteDictionary_"
+    title="DeleteDictionary"
+  >
+  </cr-icon-button>
+</div>
 <iron-collapse class="" opened="[[expanded_]]">
   <div class="cr-row continuation dict-info-row">
     <cr-input value="[[dict.name]]"
@@ -25,10 +57,6 @@
     type="text"
     on-change="saveName_"></cr-input>
     <div class="button-container">
-      <cr-icon-button class="delete-icon"
-        iron-icon="cr:delete"
-        on-click="deleteDictionary_"
-        title="DeleteDictionary"></cr-icon-button>
       <cr-button on-click="importDictionary_">
         <span>
           $i18n{japaneseDictionaryImport}
@@ -51,7 +79,7 @@
     </os-japanese-dictionary-entry-row>
   </template>
   <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-button on-click="addEntry_">
+    <cr-button class="indented" on-click="addEntry_">
       <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
         $i18n{japaneseDictionaryNewEntry}
     </cr-button>

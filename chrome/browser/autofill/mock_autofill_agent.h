@@ -54,6 +54,7 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               FieldTypePredictionsAvailable,
               (const std::vector<FormDataPredictions>& forms),
               (override));
+  MOCK_METHOD(void, ExposeDomNodeIDs, (), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
               TriggerSuggestions,

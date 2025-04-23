@@ -10,12 +10,16 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/time/clock.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_event_tracker_impl.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
 #include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+
+class PrefService;
+class PrefRegistrySimple;
 
 namespace visited_url_ranking {
 
@@ -24,18 +28,22 @@ class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
  public:
   GroupSuggestionsServiceImpl(
       VisitedURLRankingService* visited_url_ranking_service,
-      TabEventsVisitTransformer* tab_events_transformer);
+      TabEventsVisitTransformer* tab_events_transformer,
+      PrefService* pref_service);
   ~GroupSuggestionsServiceImpl() override;
 
   GroupSuggestionsServiceImpl(const GroupSuggestionsServiceImpl&) = delete;
   GroupSuggestionsServiceImpl& operator=(const GroupSuggestionsServiceImpl&) =
       delete;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // GroupSuggestionsService impl:
   TabEventTracker* GetTabEventTracker() override;
   void RegisterDelegate(GroupSuggestionsDelegate* delegate,
                         const Scope& scope) override;
   void UnregisterDelegate(GroupSuggestionsDelegate* delegate) override;
+  void SetConfigForTesting(base::TimeDelta computation_delay) override;
 
   GroupSuggestionsManager* group_suggestions_manager_for_testing() {
     return group_suggestions_manager_.get();

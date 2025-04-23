@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/vpx_video_decoder.h"
 
 #include <stddef.h>
@@ -330,7 +325,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   }
 
   // Gets pointer to decoded data.
-  vpx_codec_iter_t iter = NULL;
+  vpx_codec_iter_t iter = nullptr;
   const vpx_image_t* vpx_image = vpx_codec_get_frame(vpx_codec_.get(), &iter);
   if (!vpx_image) {
     *video_frame = nullptr;
@@ -456,7 +451,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     }
   }
 
-  vpx_codec_iter_t iter_alpha = NULL;
+  vpx_codec_iter_t iter_alpha = nullptr;
   *vpx_image_alpha = vpx_codec_get_frame(vpx_codec_alpha_.get(), &iter_alpha);
   if (!(*vpx_image_alpha)) {
     return kNoAlphaPlaneData;
@@ -554,6 +549,21 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
   const gfx::Size natural_size =
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size));
 
+  size_t luma_rows = coded_size.height();
+  size_t chroma_rows = VideoFrame::PlaneSizeInSamples(
+                           codec_format, VideoFrame::Plane::kU, coded_size)
+                           .height();
+  // SAFETY: libvpx only exposes buffer pointers for each plane, we have to
+  // calculate size from our knowledge of strides and chrome subsampling shift.
+  auto y_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_Y],
+                          vpx_image->stride[VPX_PLANE_Y] * luma_rows));
+  auto u_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_U],
+                          vpx_image->stride[VPX_PLANE_U] * chroma_rows));
+  auto v_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_V],
+                          vpx_image->stride[VPX_PLANE_V] * chroma_rows));
   if (memory_pool_) {
     DCHECK_EQ(VideoCodec::kVP9, config_.codec());
     if (vpx_image_alpha) {
@@ -575,14 +585,12 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
           codec_format, coded_size, gfx::Rect(visible_size), natural_size,
           vpx_image->stride[VPX_PLANE_Y], vpx_image->stride[VPX_PLANE_U],
           vpx_image->stride[VPX_PLANE_V], vpx_image_alpha->stride[VPX_PLANE_Y],
-          vpx_image->planes[VPX_PLANE_Y], vpx_image->planes[VPX_PLANE_U],
-          vpx_image->planes[VPX_PLANE_V], alpha_plane.data(), kNoTimestamp);
+          y_plane, u_plane, v_plane, alpha_plane, kNoTimestamp);
     } else {
       *video_frame = VideoFrame::WrapExternalYuvData(
           codec_format, coded_size, gfx::Rect(visible_size), natural_size,
           vpx_image->stride[VPX_PLANE_Y], vpx_image->stride[VPX_PLANE_U],
-          vpx_image->stride[VPX_PLANE_V], vpx_image->planes[VPX_PLANE_Y],
-          vpx_image->planes[VPX_PLANE_U], vpx_image->planes[VPX_PLANE_V],
+          vpx_image->stride[VPX_PLANE_V], y_plane, u_plane, v_plane,
           kNoTimestamp);
     }
     if (!(*video_frame))
@@ -606,8 +614,10 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     return false;
   }
 
+  auto planes = base::span(vpx_image->planes);
+  auto strides = base::span(vpx_image->stride);
   for (int plane = 0; plane < 3; plane++) {
-    libyuv::CopyPlane(vpx_image->planes[plane], vpx_image->stride[plane],
+    libyuv::CopyPlane(planes[plane], strides[plane],
                       (*video_frame)->GetWritableVisibleData(plane),
                       (*video_frame)->stride(plane),
                       (*video_frame)->row_bytes(plane),

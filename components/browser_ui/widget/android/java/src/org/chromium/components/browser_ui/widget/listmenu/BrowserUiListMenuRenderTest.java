@@ -14,18 +14,18 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.MethodParamAnnotationRule;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -37,9 +37,11 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /** Render tests for {@link BasicListMenu}. */
@@ -47,15 +49,21 @@ import java.util.List;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 public class BrowserUiListMenuRenderTest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            new NightModeTestUtils.NightModeParams().getParameters();
+    /** Used to run a test only with night mode. */
+    public static class NightModeOnlyParameterProvider implements ParameterProvider {
 
-    @ClassRule
-    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+        private static List<ParameterSet> sNightModeOnly =
+                Collections.singletonList(new ParameterSet().value(true).name("NightModeEnabled"));
+
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            return sNightModeOnly;
+        }
+    }
+
+    @Rule
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -63,23 +71,16 @@ public class BrowserUiListMenuRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
                     .build();
 
+    @Rule public MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
+
     private View mView;
 
-    public BrowserUiListMenuRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
-        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-    }
-
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
-    @Before
-    public void setUp() throws Exception {
+    private void setup(boolean nightMode, boolean incognito) {
+        Activity activity = mActivityTestRule.launchActivity(null);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightMode);
+        mRenderTestRule.setNightModeEnabled(nightMode);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = sActivity;
                     ModelList data = new ModelList();
                     data.add(
                             BrowserUiListMenuUtils.buildMenuListItem(
@@ -108,7 +109,7 @@ public class BrowserUiListMenuRenderTest {
                     data.add(
                             BrowserUiListMenuUtils.buildMenuListItem(
                                     R.string.test_primary_1, 0, 0, false));
-                    data.add(BasicListMenu.buildMenuDivider());
+                    data.add(BasicListMenu.buildMenuDivider(incognito));
 
                     ListMenu.Delegate delegate = item -> {};
                     BasicListMenu listMenu =
@@ -130,7 +131,18 @@ public class BrowserUiListMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testRender_BasicListMenu() throws IOException {
+    @UseMethodParameter(NightModeParams.class)
+    public void testRender_BasicListMenu(boolean nightMode) throws IOException {
+        setup(nightMode, /* incognito= */ false);
         mRenderTestRule.render(mView, "basic_list_menu");
+    }
+
+    @Test
+    @MediumTest
+    @UseMethodParameter(NightModeOnlyParameterProvider.class)
+    @Feature({"RenderTest"})
+    public void testRender_BasicListMenu_Incognito(boolean nightMode) throws IOException {
+        setup(nightMode, /* incognito= */ true);
+        mRenderTestRule.render(mView, "basic_list_menu_incognito");
     }
 }

@@ -8,7 +8,7 @@ GEN_INCLUDE(['panel_test_base.js']);
 /**
  * Test fixture for Panel.
  */
-ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
+ChromeVoxMV2PanelTest = class extends ChromeVoxMV2PanelTestBase {
   /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
@@ -107,7 +107,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 };
 
-AX_TEST_F('ChromeVoxPanelTest', 'ActivateMenu', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'ActivateMenu', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
@@ -119,7 +119,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActivateMenu', async function() {
 });
 
 // TODO(https://crbug.com/1299765): Re-enable once flaky timeouts are fixed.
-AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'DISABLED_LinkMenu', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   CommandHandlerInterface.instance.onCommand('showLinksList');
   await this.waitForMenu('role_link');
@@ -131,7 +131,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', async function() {
   this.assertActiveMenuItem('role_link', 'banana Internal link');
 });
 
-AX_TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'FormControlsMenu', async function() {
   await this.runWithLoadedTree(`<button>Cancel</button><button>OK</button>`);
   CommandHandlerInterface.instance.onCommand('showFormsList');
   await this.waitForMenu('panel_menu_form_controls');
@@ -142,7 +142,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
 });
 
 
-AX_TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'SearchMenu', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksDoc);
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
@@ -173,7 +173,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
 });
 
 // TODO(crbug.com/1088438): flaky crashes.
-AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'DISABLED_Gestures', async function() {
   const doGestureAsync = async gesture => {
     doGesture(gesture)();
   };
@@ -198,7 +198,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxPanelTest', 'InternationalFormControlsMenu', async function() {
+    'ChromeVoxMV2PanelTest', 'InternationalFormControlsMenu', async function() {
       await this.runWithLoadedTree(this.internationalButtonDoc);
       // Turn on language switching and set available voice list.
       SettingsManager.set('languageSwitching', true);
@@ -213,7 +213,7 @@ AX_TEST_F(
       this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
     });
 
-AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'ActionsMenu', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   CommandHandlerInterface.instance.onCommand('showActionsMenu');
   await this.waitForMenu('panel_menu_actions');
@@ -223,7 +223,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
   this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
 });
 
-AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'ActionsMenuLongClick', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   // Get the node that will be checked for actions.
   const activeNode = ChromeVoxRange.current.start.node;
@@ -242,7 +242,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxPanelTest', 'ShortcutsAreInternationalized', async function() {
+    'ChromeVoxMV2PanelTest', 'ShortcutsAreInternationalized', async function() {
       await this.runWithLoadedTree(this.linksDoc);
       new PanelCommand(PanelCommandType.OPEN_MENUS).send();
       await this.waitForMenu('panel_search_menu');
@@ -262,7 +262,7 @@ AX_TEST_F(
 
 // Ensure 'Touch Gestures' is not in the panel menus by default.
 AX_TEST_F(
-    'ChromeVoxPanelTest', 'TouchGesturesMenuNotAvailableWhenNotInTouchMode',
+    'ChromeVoxMV2PanelTest', 'TouchGesturesMenuNotAvailableWhenNotInTouchMode',
     async function() {
       await this.runWithLoadedTree(this.linksDoc);
       new PanelCommand(PanelCommandType.OPEN_MENUS).send();
@@ -275,7 +275,7 @@ AX_TEST_F(
 
 // Ensure 'Touch Gesture' is in the panel menus when touch mode is enabled.
 AX_TEST_F(
-    'ChromeVoxPanelTest', 'TouchGesturesMenuAvailableWhenInTouchMode',
+    'ChromeVoxMV2PanelTest', 'TouchGesturesMenuAvailableWhenInTouchMode',
     async function() {
       await this.runWithLoadedTree(this.linksDoc);
       this.enableTouchMode();
@@ -293,7 +293,7 @@ AX_TEST_F(
     });
 
 // Ensure 'Perform default action' in the actions tab invokes a click event.
-AX_TEST_F('ChromeVoxPanelTest', 'PerformDoDefaultAction', async function() {
+AX_TEST_F('ChromeVoxMV2PanelTest', 'PerformDoDefaultAction', async function() {
   const rootNode = await this.runWithLoadedTree(`<button>OK</button>`);
   const button = rootNode.find({role: RoleType.BUTTON});
   await this.waitForEvent(button, chrome.automation.EventType.FOCUS);
@@ -308,31 +308,32 @@ AX_TEST_F('ChromeVoxPanelTest', 'PerformDoDefaultAction', async function() {
   await this.waitForEvent(button, chrome.automation.EventType.CLICKED);
 });
 
-AX_TEST_F('ChromeVoxPanelTest', 'PanVirtualBrailleDisplay', async function() {
-  await this.runWithLoadedTree(this.linksDoc);
+AX_TEST_F(
+    'ChromeVoxMV2PanelTest', 'PanVirtualBrailleDisplay', async function() {
+      await this.runWithLoadedTree(this.linksDoc);
 
-  this.prepareForPanelCommand();
-  CommandHandlerInterface.instance.onCommand('toggleBrailleCaptions');
-  this.waitForPanelCommand();
+      this.prepareForPanelCommand();
+      CommandHandlerInterface.instance.onCommand('toggleBrailleCaptions');
+      this.waitForPanelCommand();
 
-  // Locate the buttons to pan left and pan right in the display.
-  const panelDocument = this.getPanelWindow().document;
-  const panLeftButton = panelDocument.getElementById('braille-pan-left');
-  assertNotNullNorUndefined(panLeftButton);
-  const panRightButton = panelDocument.getElementById('braille-pan-right');
-  assertNotNullNorUndefined(panRightButton);
+      // Locate the buttons to pan left and pan right in the display.
+      const panelDocument = this.getPanelWindow().document;
+      const panLeftButton = panelDocument.getElementById('braille-pan-left');
+      assertNotNullNorUndefined(panLeftButton);
+      const panRightButton = panelDocument.getElementById('braille-pan-right');
+      assertNotNullNorUndefined(panRightButton);
 
-  // Mock out ChromeVox.braille to confirm that the commands are routed from the
-  // panel context to the background context.
-  let panLeft;
-  let panRight;
-  const panLeftDone = new Promise(resolve => panLeft = resolve);
-  const panRightDone = new Promise(resolve => panRight = resolve);
-  ChromeVox.braille = {panLeft, panRight};
+      // Mock out ChromeVox.braille to confirm that the commands are routed from
+      // the panel context to the background context.
+      let panLeft;
+      let panRight;
+      const panLeftDone = new Promise(resolve => panLeft = resolve);
+      const panRightDone = new Promise(resolve => panRight = resolve);
+      ChromeVox.braille = {panLeft, panRight};
 
-  panLeftButton.click();
-  await panLeftDone;
+      panLeftButton.click();
+      await panLeftDone;
 
-  panRightButton.click();
-  await panRightDone;
-});
+      panRightButton.click();
+      await panRightDone;
+    });

@@ -63,12 +63,7 @@ constexpr mach_msg_id_t kChannelMacOOLMsgId = 'MOJ+';
 
 class ChannelMac : public Channel,
                    public base::CurrentThread::DestructionObserver,
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
-                   public base::MessagePumpIOSForIOLibdispatch::MachPortWatcher
-#else
-                   public base::MessagePumpKqueue::MachPortWatcher
-#endif
-{
+                   public base::MessagePumpKqueue::MachPortWatcher {
  public:
   ChannelMac(Delegate* delegate,
              ConnectionParams connection_params,

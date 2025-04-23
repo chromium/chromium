@@ -8,6 +8,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/group_data.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -46,6 +49,10 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 
 namespace {
 constexpr CGFloat kTabGroupPresentationDuration = 0.3;
@@ -268,7 +275,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
-  BOOL incognito = self.profile->IsOffTheRecord();
+  BOOL incognito = self.isOffTheRecord;
   if ([_mediator isItemWithIDSelected:itemID]) {
     if (incognito) {
       base::RecordAction(base::UserMetricsAction(
@@ -409,12 +416,19 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController);
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(self.profile),
+          FlowType::kShareOrManage);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
+  CollaborationServiceShareOrManageEntryPoint entryPoint =
+      tab_groups::utils::IsTabGroupShared(_tabGroup, tabGroupSyncService)
+          ? CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage
+          : CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewShare;
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), _tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), _tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
@@ -488,10 +502,10 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
 
   // Initialize the `_viewController`.
-  _viewController = [[TabGroupViewController alloc]
-      initWithHandler:handler
-            incognito:self.profile->IsOffTheRecord()
-             tabGroup:_tabGroup];
+  _viewController =
+      [[TabGroupViewController alloc] initWithHandler:handler
+                                            incognito:self.isOffTheRecord
+                                             tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
   _viewController.applicationHandler = HandlerForProtocol(

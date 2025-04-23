@@ -122,7 +122,7 @@ gfx::Size BocaSystemAppDelegate::GetMinimumWindowSize() const {
   if (!IsConsumerProfile(profile())) {
     return {400, 400};
   }
-  return SystemWebAppDelegate::GetMinimumWindowSize();
+  return {500, 500};
 }
 
 std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(

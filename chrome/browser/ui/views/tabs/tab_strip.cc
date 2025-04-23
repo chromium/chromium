@@ -11,6 +11,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -79,6 +80,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -895,19 +897,30 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       return false;
     }
 
+    Tab* const left_tab = GetTabAt(candidate_index - 1);
+    Tab* const right_tab = tab_strip_->IsValidModelIndex(candidate_index)
+                               ? GetTabAt(candidate_index)
+                               : nullptr;
+
     // This might be in the middle of a group, which may or may not be fine.
-    std::optional<tab_groups::TabGroupId> left_group =
-        GetTabAt(candidate_index - 1)->group();
+    std::optional<tab_groups::TabGroupId> left_group = left_tab->group();
     std::optional<tab_groups::TabGroupId> right_group =
-        tab_strip_->IsValidModelIndex(candidate_index)
-            ? GetTabAt(candidate_index)->group()
-            : std::nullopt;
+        right_tab ? right_tab->group() : std::nullopt;
     if (left_group.has_value() && left_group == right_group) {
       if (!can_insert_into_groups) {
         return false;
       }
       // Can't drag a tab into a collapsed group.
       if (tab_strip_->IsGroupCollapsed(left_group.value())) {
+        return false;
+      }
+    }
+
+    // Prevent a tab from being inserted in between two tabs that are within the
+    // same split view.
+    if (right_tab) {
+      std::optional<split_tabs::SplitTabId> left_split_id = left_tab->split();
+      if (left_split_id.has_value() && (left_split_id == right_tab->split())) {
         return false;
       }
     }
@@ -1299,11 +1312,17 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupClosed(group);
 }
 
-void TabStrip::SetSplit(int split_index,
+void TabStrip::SetSplit(std::vector<int> split_indices,
                         std::optional<split_tabs::SplitTabId> split_id) {
-  tab_at(split_index)->SetSplit(split_id);
-  InvalidateLayout();
-  SchedulePaint();
+  for (const int split_index : split_indices) {
+    tab_at(split_index)->SetSplit(split_id);
+  }
+
+  if (split_id.has_value()) {
+    tab_container_->OnSplitCreated(split_indices);
+  } else {
+    tab_container_->OnSplitRemoved(split_indices);
+  }
 }
 
 bool TabStrip::ShouldDrawStrokes() const {

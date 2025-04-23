@@ -1474,23 +1474,47 @@ TEST_P(SSLClientSocketVersionTest, ConnectMismatched) {
 }
 
 // Tests that certificates parsable by SSLClientSocket's internal SSL
-// implementation, but not X509Certificate are treated as fatal connection
-// errors. This is a regression test for https://crbug.com/91341.
-TEST_P(SSLClientSocketVersionTest, ConnectBadValidity) {
-  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_BAD_VALIDITY,
-                                      GetServerConfig()));
-  cert_verifier_->set_default_result(ERR_CERT_DATE_INVALID);
+// implementation, but not parsable by X509Certificate are treated as fatal
+// connection errors. This is a regression test for https://crbug.com/91341.
+TEST_P(SSLClientSocketVersionTest, ConnectInvalidCert) {
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  // Set the leaf certificate subject field to an invalid Name. The subject
+  // field isn't parsed by the SSL implementation, so this only fails when
+  // trying to construct an X509Certificate for the leaf.
+  // SEQUENCE { NULL }
+  cert_config.subject_tlv = {0x30, 0x01, 0x05};
+
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, GetServerConfig()));
 
   SSLConfig ssl_config;
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_CERT_DATE_INVALID));
+  EXPECT_THAT(rv, IsError(ERR_SSL_SERVER_CERT_BAD_FORMAT));
 }
 
-// Ignoring the certificate error from an invalid certificate should
+// If the certificate could not be parsed as an X509Certificate, overriding the
+// error is not possible.
+TEST_P(SSLClientSocketVersionTest, ConnectInvalidCertCannotIgnoreCertErrors) {
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  // Set the leaf certificate subject field to an invalid Name. The subject
+  // field isn't parsed by the SSL implementation, so this only fails when
+  // trying to construct an X509Certificate for the leaf.
+  // SEQUENCE { NULL }
+  cert_config.subject_tlv = {0x30, 0x01, 0x05};
+
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, GetServerConfig()));
+
+  SSLConfig ssl_config;
+  ssl_config.ignore_certificate_errors = true;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_SERVER_CERT_BAD_FORMAT));
+}
+
+// Ignoring the certificate error from an untrusted certificate should
 // allow a complete connection.
-TEST_P(SSLClientSocketVersionTest, ConnectBadValidityIgnoreCertErrors) {
-  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_BAD_VALIDITY,
+TEST_P(SSLClientSocketVersionTest, ConnectUntrustedCertIgnoreCertErrors) {
+  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_EXPIRED,
                                       GetServerConfig()));
   cert_verifier_->set_default_result(ERR_CERT_DATE_INVALID);
 
@@ -4390,7 +4414,7 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;
   HashValue hash(HASH_VALUE_SHA256);
-  std::ranges::fill(hash.begin(), hash.end(), value);
+  std::ranges::fill(hash.span(), value);
   out.push_back(hash);
   return out;
 }

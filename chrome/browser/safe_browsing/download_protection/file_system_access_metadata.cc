@@ -11,7 +11,9 @@ namespace safe_browsing {
 
 FileSystemAccessMetadata::FileSystemAccessMetadata(
     std::unique_ptr<content::FileSystemAccessWriteItem> item)
-    : item_(std::move(item)) {
+    : item_(std::move(item)),
+      tab_url_(item_->web_contents ? item_->web_contents->GetLastCommittedURL()
+                                   : GURL()) {
   CHECK(item_);
 }
 
@@ -70,7 +72,7 @@ const GURL& FileSystemAccessMetadata::GetURL() const {
 }
 
 const GURL& FileSystemAccessMetadata::GetTabUrl() const {
-  return item_->web_contents->GetLastCommittedURL();
+  return tab_url_;
 }
 
 bool FileSystemAccessMetadata::HasUserGesture() const {

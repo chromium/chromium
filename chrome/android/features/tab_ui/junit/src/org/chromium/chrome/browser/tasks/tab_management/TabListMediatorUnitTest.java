@@ -43,6 +43,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageService.Me
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
@@ -126,6 +127,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -4700,6 +4702,19 @@ public class TabListMediatorUnitTest {
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
                 mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
         XrUtils.resetXrDeviceForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testAddSpecialItemToModelList_tabGroup() {
+        mMediator.resetWithListOfTabs(null, false);
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(TAB_GROUP);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.TAB_GROUP, model);
+
+        assertTrue(mModelList.size() > 0);
+        assertEquals(TabProperties.UiType.TAB_GROUP, mModelList.get(0).type);
     }
 
     private void setUpTabGroupCardDescriptionString() {

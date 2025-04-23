@@ -26,7 +26,7 @@ class BrowserPrintingContextFactoryForTest
 
   std::unique_ptr<PrintingContext> CreatePrintingContext(
       PrintingContext::Delegate* delegate,
-      PrintingContext::ProcessBehavior process_behavior) override;
+      PrintingContext::OutOfProcessBehavior out_of_process_behavior) override;
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
 #if BUILDFLAG(IS_WIN)
@@ -58,7 +58,7 @@ class BrowserPrintingContextFactoryForTest
  private:
   std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
       PrintingContext::Delegate* delegate,
-      PrintingContext::ProcessBehavior process_behavior,
+      PrintingContext::OutOfProcessBehavior out_of_process_behavior,
       const std::string& printer_name);
 
   std::string printer_name_;

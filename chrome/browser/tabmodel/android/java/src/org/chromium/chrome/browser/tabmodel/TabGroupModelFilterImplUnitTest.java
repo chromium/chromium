@@ -1880,10 +1880,12 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab3, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab3, POSITION1);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab3);
+        assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(TAB2_TAB_GROUP_ID));
         mTabGroupModelFilter.undoGroupedTab(mTab2, POSITION2, TAB2_ROOT_ID, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab2, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab2, POSITION1);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab2);
+        assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(TAB2_TAB_GROUP_ID));
         mTabGroupModelFilter.undoGroupedTab(mTab1, POSITION1, TAB1_ROOT_ID, null);
         verify(mTabGroupModelFilterObserver)
                 .willMoveTabOutOfGroup(mTab1, /* destinationTabGroupId= */ null);
@@ -1977,11 +1979,13 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab5, POSITION2);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab5);
         mTabGroupModelFilter.undoGroupedTab(mTab3, POSITION3, TAB2_ROOT_ID, TAB2_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab3, TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver, never())
+                .willMoveTabOutOfGroup(mTab3, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver, never()).didMoveTabOutOfGroup(eq(mTab3), anyInt());
         verify(mTabGroupModelFilterObserver, never()).didMergeTabToGroup(eq(mTab3));
         mTabGroupModelFilter.undoGroupedTab(mTab2, POSITION2, TAB2_ROOT_ID, TAB2_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab2, TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver, never())
+                .willMoveTabOutOfGroup(mTab2, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver, never()).didMoveTabOutOfGroup(eq(mTab2), anyInt());
         verify(mTabGroupModelFilterObserver, never()).didMergeTabToGroup(eq(mTab2));
 

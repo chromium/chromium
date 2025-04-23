@@ -58,7 +58,7 @@ class SavedTabGroupTab {
   const base::Time& update_time_windows_epoch_micros() const {
     return update_time_windows_epoch_micros_;
   }
-  const base::Time& last_seen_time_windows_epoch_micros() const {
+  const std::optional<base::Time>& last_seen_time_windows_epoch_micros() const {
     return last_seen_time_windows_epoch_micros_;
   }
   const std::optional<std::string>& creator_cache_guid() const {
@@ -200,7 +200,7 @@ class SavedTabGroupTab {
   // status for shared tab updates. As such, it is not saved to disk
   // alongside saved/shared tab group data. The account data sync bridge
   // manages syncing and saving this to disk.
-  base::Time last_seen_time_windows_epoch_micros_;
+  std::optional<base::Time> last_seen_time_windows_epoch_micros_;
 
   // The following fields aren't synced across devices.
 
@@ -233,7 +233,6 @@ class SavedTabGroupTabBuilder {
   SavedTabGroupTabBuilder& SetPosition(size_t position);
   SavedTabGroupTabBuilder& SetRedirectURLChain(
       const std::vector<GURL>& redirect_url_chain);
-  SavedTabGroupTabBuilder& SetLastSeenTimestamp(base::Time last_seen_time);
 
   SavedTabGroupTab Build(const SavedTabGroupTab& tab) const;
 
@@ -243,7 +242,6 @@ class SavedTabGroupTabBuilder {
  private:
   size_t position_ = 0;
   std::vector<GURL> redirect_url_chain_;
-  base::Time last_seen_time_;
 
   // Flags to indicate which properties have been set.
   bool has_position_ = false;

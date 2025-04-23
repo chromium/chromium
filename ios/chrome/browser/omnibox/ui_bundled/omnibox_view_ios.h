@@ -48,10 +48,6 @@ class OmniboxViewIOS : public OmniboxView {
     omnibox_text_controller_ = controller;
   }
 
-  // Hide keyboard and call OnDidEndEditing.  This dismisses the keyboard and
-  // also finalizes the editing state of the omnibox.
-  void EndEditing();
-
   // OmniboxView implementation.
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,
@@ -102,33 +98,19 @@ class OmniboxViewIOS : public OmniboxView {
   // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   void OnDidChange(bool processing_user_input);
-  // Called when the Omnibox text field should copy.
-  void OnCopy();
-  // Clear the Omnibox text.
-  void ClearText();
-  // Called when the Omnibox text field should paste.
-  void WillPaste();
   // Called when the backspace button is pressed in the Omnibox text field.
   void OnDeleteBackward();
   // Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
-  // Called when accepting current input / default suggestion.
-  void OnAccept();
 
   // OmniboxAutocompleteController interactions.
-  void OnPopupDidScroll();
   void OnSelectedMatchForAppending(const std::u16string& str);
 
   void OnCallActionTap();
 
-  // Updates this edit view to show the proper text, highlight and images.
-  void UpdateAppearance();
-
   // Updates the appearance of popup to have proper text alignment.
   void UpdatePopupAppearance();
-
-  void OnClear();
 
   // Hide keyboard only.  Used when omnibox popups grab focus but editing isn't
   // complete.
@@ -168,8 +150,6 @@ class OmniboxViewIOS : public OmniboxView {
   // the popup, and then remove this hack.
   BOOL ignore_popup_updates_;
 
-  // Whether the popup was scrolled during this omnibox interaction.
-  bool suggestions_list_scrolled_ = false;
   // Whether it's the lens overlay omnibox.
   bool is_lens_overlay_;
 

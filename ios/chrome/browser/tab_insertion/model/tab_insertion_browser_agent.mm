@@ -24,8 +24,6 @@ Params::Params() = default;
 Params::~Params() = default;
 }  // namespace TabInsertion
 
-BROWSER_USER_DATA_KEY_IMPL(TabInsertionBrowserAgent)
-
 namespace {
 
 // Returns whether `index` is valid for insertion in `browser`.

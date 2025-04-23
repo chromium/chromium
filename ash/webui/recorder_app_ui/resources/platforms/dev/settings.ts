@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  ModelExecutionError,
+  ModelLoadError,
+} from '../../core/on_device_model/types.js';
 import {bindSignal} from '../../core/reactive/local_storage.js';
 import {effect, signal} from '../../core/reactive/signal.js';
 import * as localStorage from '../../core/utils/local_storage.js';
@@ -18,14 +22,18 @@ export const devSettingsSchema = z.object({
   // language option.
   forceLanguageSelection: z.boolean(),
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
-  // Simulate GenAI model download error.
-  // TODO(hsuanling): Use enum to mock need-reboot error.
-  forceGenAiModelDownloadError: z.withDefault(z.boolean(), false),
+  // Simulate GenAi model execution error.
+  forceGenAiModelExecutionError:
+    z.withDefault(z.nullable(z.nativeEnum(ModelExecutionError)), null),
+  // Simulate GenAi model load error.
+  forceGenAiModelLoadError:
+    z.withDefault(z.nullable(z.nativeEnum(ModelLoadError)), null),
+  // Simulate first time GenAi model installation cross session.
+  genAiInstalled: z.withDefault(z.boolean(), false),
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
   canUseSpeakerLabel: z.boolean(),
   canCaptureSystemAudioWithLoopback: z.boolean(),
-  // TODO(pihsun): Persist summary model installation progress.
 });
 
 type DevSettings = Infer<typeof devSettingsSchema>;
@@ -33,7 +41,9 @@ type DevSettings = Infer<typeof devSettingsSchema>;
 const defaultSettings: DevSettings = {
   forceLanguageSelection: false,
   forceTheme: ColorTheme.LIGHT,
-  forceGenAiModelDownloadError: false,
+  forceGenAiModelExecutionError: null,
+  forceGenAiModelLoadError: null,
+  genAiInstalled: false,
   sodaInstalled: false,
   canUseSpeakerLabel: true,
   canCaptureSystemAudioWithLoopback: true,

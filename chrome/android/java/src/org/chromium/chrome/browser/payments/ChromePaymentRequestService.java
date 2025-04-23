@@ -334,18 +334,14 @@ public class ChromePaymentRequestService
         assert mSpec != null;
         assert !mSpec.isDestroyed();
         assert mSpec.isSecurePaymentConfirmationRequested();
-        assert !hasAvailableApps();
+        // Either there are no apps, XOR the new fallback flow is enabled where there must be an SPC
+        // app.
+        assert !hasAvailableApps()
+                ^ PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK);
 
         mJourneyLogger.setNoMatchingCredentialsShown();
-        mNoMatchingController =
-                SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
-        Runnable continueCallback =
-                () -> {
-                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                    disconnectFromClientWithDebugMessage(
-                            ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                            PaymentErrorReason.NOT_ALLOWED_ERROR);
-                };
+
         Runnable optOutCallback =
                 () -> {
                     mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
@@ -355,13 +351,56 @@ public class ChromePaymentRequestService
         PaymentMethodData spcMethodData =
                 mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
         assert spcMethodData != null;
-        mNoMatchingController.show(
-                continueCallback,
-                optOutCallback,
-                spcMethodData.securePaymentConfirmation.showOptOut,
-                spcMethodData.securePaymentConfirmation.rpId);
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+            assert mSpcAuthnUiController == null;
+            mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
 
-        return true;
+            Callback<Boolean> responseCallback =
+                    (response) -> {
+                        // TODO(crbug.com/408026839): Return AbortError and differentiate the
+                        // JourneyLogger based on the response.
+                        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                        disconnectFromClientWithDebugMessage(
+                                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                PaymentErrorReason.NOT_ALLOWED_ERROR);
+                        mSpcAuthnUiController = null;
+                    };
+
+            boolean success =
+                    mSpcAuthnUiController.show(
+                            getSelectedPaymentApp().getDrawableIcon(),
+                            getSelectedPaymentApp().getLabel(),
+                            mSpec.getRawTotal(),
+                            responseCallback,
+                            optOutCallback,
+                            spcMethodData.securePaymentConfirmation.payeeName,
+                            getPayeeOrigin(spcMethodData),
+                            spcMethodData.securePaymentConfirmation.showOptOut,
+                            spcMethodData.securePaymentConfirmation.rpId,
+                            getIssuerIcon(),
+                            getNetworkIcon(),
+                            /* informOnly= */ true);
+
+            return success;
+        } else {
+            mNoMatchingController =
+                    SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
+            Runnable continueCallback =
+                    () -> {
+                        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                        disconnectFromClientWithDebugMessage(
+                                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                PaymentErrorReason.NOT_ALLOWED_ERROR);
+                    };
+            mNoMatchingController.show(
+                    continueCallback,
+                    optOutCallback,
+                    spcMethodData.securePaymentConfirmation.showOptOut,
+                    spcMethodData.securePaymentConfirmation.rpId);
+
+            return true;
+        }
     }
 
     // Implements BrowserPaymentRequest:
@@ -377,10 +416,6 @@ public class ChromePaymentRequestService
             PaymentMethodData spcMethodData =
                     mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
             assert spcMethodData != null;
-            Origin payeeOrigin =
-                    spcMethodData.securePaymentConfirmation.payeeOrigin != null
-                            ? new Origin(spcMethodData.securePaymentConfirmation.payeeOrigin)
-                            : null;
             Callback<Boolean> responseCallback =
                     (response) -> {
                         if (response) {
@@ -401,24 +436,6 @@ public class ChromePaymentRequestService
                         mSpcAuthnUiController = null;
                     };
 
-            BitmapDrawable issuerIcon = null;
-            BitmapDrawable networkIcon = null;
-            Context context = mDelegate.getContext(mRenderFrameHost);
-            if (context != null) {
-                if (getSelectedPaymentApp().getIssuerIcon() != null) {
-                    issuerIcon =
-                            new BitmapDrawable(
-                                    context.getResources(),
-                                    getSelectedPaymentApp().getIssuerIcon());
-                }
-                if (getSelectedPaymentApp().getNetworkIcon() != null) {
-                    networkIcon =
-                            new BitmapDrawable(
-                                    context.getResources(),
-                                    getSelectedPaymentApp().getNetworkIcon());
-                }
-            }
-
             boolean success =
                     mSpcAuthnUiController.show(
                             getSelectedPaymentApp().getDrawableIcon(),
@@ -427,11 +444,12 @@ public class ChromePaymentRequestService
                             responseCallback,
                             optOutCallback,
                             spcMethodData.securePaymentConfirmation.payeeName,
-                            payeeOrigin,
+                            getPayeeOrigin(spcMethodData),
                             spcMethodData.securePaymentConfirmation.showOptOut,
                             spcMethodData.securePaymentConfirmation.rpId,
-                            issuerIcon,
-                            networkIcon);
+                            getIssuerIcon(),
+                            getNetworkIcon(),
+                            /* informOnly= */ false);
 
             if (success) {
                 mJourneyLogger.setShown();
@@ -487,6 +505,34 @@ public class ChromePaymentRequestService
         assert mPaymentRequestService != null;
         mPaymentRequestService.invokePaymentApp(
                 app, new PaymentResponseHelper(app, mSpec.getPaymentOptions()));
+    }
+
+    private @Nullable BitmapDrawable getIssuerIcon() {
+        Context context = mDelegate.getContext(mRenderFrameHost);
+        if (context != null) {
+            if (getSelectedPaymentApp().getIssuerIcon() != null) {
+                return new BitmapDrawable(
+                        context.getResources(), getSelectedPaymentApp().getIssuerIcon());
+            }
+        }
+        return null;
+    }
+
+    private @Nullable BitmapDrawable getNetworkIcon() {
+        Context context = mDelegate.getContext(mRenderFrameHost);
+        if (context != null) {
+            if (getSelectedPaymentApp().getNetworkIcon() != null) {
+                return new BitmapDrawable(
+                        context.getResources(), getSelectedPaymentApp().getNetworkIcon());
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Origin getPayeeOrigin(PaymentMethodData spcMethodData) {
+        return spcMethodData.securePaymentConfirmation.payeeOrigin != null
+                ? new Origin(spcMethodData.securePaymentConfirmation.payeeOrigin)
+                : null;
     }
 
     // Implements BrowserPaymentRequest:

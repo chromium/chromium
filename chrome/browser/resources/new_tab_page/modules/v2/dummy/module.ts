@@ -5,13 +5,14 @@
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '/strings.m.js';
-import '../../module_header.js';
+import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {FooDataItem} from '../../../foo.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
+import type {MenuItem} from '../module_header.js';
 
 import {FooProxy} from './foo_proxy.js';
 import {getCss} from './module.css.js';
@@ -49,8 +50,21 @@ export class ModuleElement extends ModuleElementBase {
     };
   }
 
-  tiles: FooDataItem[];
-  override title: string;
+  accessor tiles: FooDataItem[];
+  override accessor title: string;
+
+  protected getMenuItemGroups_(): MenuItem[][] {
+    return [
+      [
+        {
+          action: 'disable',
+          icon: 'modules:block',
+          text: this.i18nRecursive(
+              '', 'modulesDisableButtonText', 'modulesDummyLower'),
+        },
+      ],
+    ];
+  }
 
   protected onDisableButtonClick_() {
     this.fire('disable-module', {

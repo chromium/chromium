@@ -192,11 +192,40 @@ bool IsSubjectToParentalControls(const PrefService& pref_service) {
 bool IsGoogleSafeSearchEnforced(const PrefService& pref_service) {
   return pref_service.GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch);
 }
-
 void SetGoogleSafeSearch(PrefService& pref_service,
                          GoogleSafeSearchStateStatus status) {
   pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
                           static_cast<bool>(status));
+}
+
+namespace {
+void CheckEligibilityForContentFilters(PrefService& pref_service) {
+  CHECK(!IsSubjectToParentalControls(pref_service))
+      << "Users who are subject to Family Link parental controls cannot "
+         "disable browser content filters";
+}
+}  // namespace
+
+void EnableBrowserContentFilters(PrefService& pref_service) {
+  CheckEligibilityForContentFilters(pref_service);
+  pref_service.SetInteger(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  // TODO(http://crbug.com/405419755): Enable safe sites to classify navigation.
+}
+void DisableBrowserContentFilters(PrefService& pref_service) {
+  CheckEligibilityForContentFilters(pref_service);
+  // Reset the setting to default.
+  pref_service.ClearPref(policy::policy_prefs::kIncognitoModeAvailability);
+}
+void EnableSearchContentFilters(PrefService& pref_service) {
+  CheckEligibilityForContentFilters(pref_service);
+  pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
+}
+void DisableSearchContentFilters(PrefService& pref_service) {
+  CheckEligibilityForContentFilters(pref_service);
+  // Reset the setting to default.
+  pref_service.ClearPref(policy::policy_prefs::kForceGoogleSafeSearch);
 }
 
 }  // namespace supervised_user

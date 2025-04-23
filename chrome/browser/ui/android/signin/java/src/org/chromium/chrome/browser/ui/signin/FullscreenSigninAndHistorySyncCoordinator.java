@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -39,6 +40,7 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -89,6 +91,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         int HISTORY_SYNC = 1;
     }
 
+    private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
@@ -98,6 +101,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     private final Delegate mDelegate;
     private final boolean mDidShowSignin;
     private final long mActivityStartTime;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private @ChildView int mCurrentView;
     private FullscreenSigninView mFullscreenSigninView;
     private View mHistorySyncView;
@@ -106,6 +110,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     private HistorySyncCoordinator mHistorySyncCoordinator;
 
     public FullscreenSigninAndHistorySyncCoordinator(
+            WindowAndroid windowAndroid,
             Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileSupplier,
@@ -113,7 +118,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint,
             Delegate delegate,
-            long activityStartTime) {
+            long activityStartTime,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+        mWindowAndroid = windowAndroid;
         mActivity = activity;
         mCurrentView = ChildView.SIGNIN;
         mViewHolder = new FrameLayout(activity);
@@ -125,6 +132,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         mSigninAccessPoint = signinAccessPoint;
         mDelegate = delegate;
         mActivityStartTime = activityStartTime;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         inflateViewBundle();
         if (isSignedIn()) {
             advanceToNextPage();
@@ -245,7 +253,18 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
-        // TODO(b/41496906): Maybe implement this method.
+        String accountName = selectedAccount == null ? null : selectedAccount.name;
+        mDeviceLockActivityLauncher.launchDeviceLockActivity(
+                mActivity,
+                accountName,
+                /* requireDeviceLockReauthentication= */ true,
+                mWindowAndroid,
+                (resultCode, data) -> {
+                    if (resultCode == Activity.RESULT_OK && mSigninCoordinator != null) {
+                        mSigninCoordinator.continueSignIn();
+                    }
+                },
+                DeviceLockActivityLauncher.Source.FULLSCREEN_SIGNIN);
     }
 
     @Override

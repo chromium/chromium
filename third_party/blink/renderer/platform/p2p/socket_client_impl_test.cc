@@ -64,7 +64,7 @@ class MockDelegate : public P2PSocketClientDelegate {
               (const net::IPEndPoint&,
                base::span<const uint8_t>,
                const base::TimeTicks&,
-               rtc::EcnMarking),
+               webrtc::EcnMarking),
               (override));
 };
 
@@ -112,7 +112,7 @@ TEST_P(SocketClientImplParametrizedTest, OnDataReceivedCalled) {
   auto first = base::TimeTicks() + base::Microseconds(1);
   auto second = base::TimeTicks() + base::Microseconds(2);
   auto data = WTF::Vector<uint8_t>(1);
-  auto ecn = rtc::EcnMarking::kNotEct;
+  auto ecn = webrtc::EcnMarking::kNotEct;
   packets.push_back(
       P2PReceivedPacket::New(data, net::IPEndPoint(), first, ecn));
   packets.push_back(
@@ -148,9 +148,9 @@ TEST_P(SocketClientImplParametrizedTest, SendsWithIncreasingPacketId) {
         EXPECT_EQ(info.packet_id, first_info.packet_id + 1);
       }));
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1),
-               rtc::PacketOptions());
+               webrtc::AsyncSocketPacketOptions());
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1),
-               rtc::PacketOptions());
+               webrtc::AsyncSocketPacketOptions());
   task_environment_.RunUntilIdle();
 }
 
@@ -195,7 +195,7 @@ class SocketClientImplBatchingTest : public SocketClientImplTestBase,
 TEST_F(SocketClientImplBatchingTest, OnePacketBatchUsesSend) {
   Open();
   EXPECT_CALL(socket_, Send);
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   options.batchable = true;
   options.last_packet_in_batch = true;
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), options);
@@ -205,7 +205,7 @@ TEST_F(SocketClientImplBatchingTest, OnePacketBatchUsesSend) {
 TEST_F(SocketClientImplBatchingTest, TwoPacketBatchUsesSendBatch) {
   Open();
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   options.batchable = true;
   options.packet_id = 1;
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), options);
@@ -213,12 +213,15 @@ TEST_F(SocketClientImplBatchingTest, TwoPacketBatchUsesSendBatch) {
   EXPECT_CALL(
       socket_,
       SendBatch(ElementsAre(
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 1)))),
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 2)))))));
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(&network::P2PPacketInfo::packet_options,
+                    Field(&webrtc::AsyncSocketPacketOptions::packet_id, 1)))),
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(
+                  &network::P2PPacketInfo::packet_options,
+                  Field(&webrtc::AsyncSocketPacketOptions::packet_id, 2)))))));
 
   options.last_packet_in_batch = true;
   options.packet_id = 2;
@@ -230,11 +233,11 @@ TEST_F(SocketClientImplBatchingTest,
        TwoPacketBatchWithNonbatchableInterleavedUsesSendBatch) {
   Open();
 
-  rtc::PacketOptions batchable_options;
+  webrtc::AsyncSocketPacketOptions batchable_options;
   batchable_options.batchable = true;
   batchable_options.packet_id = 1;
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
-  rtc::PacketOptions interleaved_options;  // Not batchable.
+  webrtc::AsyncSocketPacketOptions interleaved_options;  // Not batchable.
   interleaved_options.packet_id = 2;
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), interleaved_options);
 
@@ -243,15 +246,19 @@ TEST_F(SocketClientImplBatchingTest,
   EXPECT_CALL(
       socket_,
       SendBatch(ElementsAre(
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 1)))),
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 2)))),
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 3)))))));
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(&network::P2PPacketInfo::packet_options,
+                    Field(&webrtc::AsyncSocketPacketOptions::packet_id, 1)))),
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(&network::P2PPacketInfo::packet_options,
+                    Field(&webrtc::AsyncSocketPacketOptions::packet_id, 2)))),
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(
+                  &network::P2PPacketInfo::packet_options,
+                  Field(&webrtc::AsyncSocketPacketOptions::packet_id, 3)))))));
 
   batchable_options.last_packet_in_batch = true;
   batchable_options.packet_id = 3;
@@ -262,7 +269,7 @@ TEST_F(SocketClientImplBatchingTest,
 TEST_F(SocketClientImplBatchingTest, PacketBatchCompletedWithFlush) {
   Open();
 
-  rtc::PacketOptions batchable_options;
+  webrtc::AsyncSocketPacketOptions batchable_options;
   batchable_options.batchable = true;
   batchable_options.packet_id = 1;
   client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
@@ -273,12 +280,15 @@ TEST_F(SocketClientImplBatchingTest, PacketBatchCompletedWithFlush) {
   EXPECT_CALL(
       socket_,
       SendBatch(ElementsAre(
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 1)))),
-          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
-                        Field(&network::P2PPacketInfo::packet_options,
-                              Field(&rtc::PacketOptions::packet_id, 2)))))));
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(&network::P2PPacketInfo::packet_options,
+                    Field(&webrtc::AsyncSocketPacketOptions::packet_id, 1)))),
+          Pointee(Field(
+              &network::mojom::blink::P2PSendPacket::packet_info,
+              Field(
+                  &network::P2PPacketInfo::packet_options,
+                  Field(&webrtc::AsyncSocketPacketOptions::packet_id, 2)))))));
   client_.FlushBatch();
   task_environment_.RunUntilIdle();
 }

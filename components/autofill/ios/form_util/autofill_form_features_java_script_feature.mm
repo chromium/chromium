@@ -43,6 +43,15 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframes(
       base::Value::List().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::SetAutofillDisallowSlashDotLabels(
+    web::WebFrame* frame,
+    bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillDisallowSlashDotLabels",
+      base::Value::List().Append(enabled));
+}
+
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframesThrottling(
     web::WebFrame* frame,
     bool enabled) {
@@ -76,6 +85,15 @@ void AutofillFormFeaturesJavaScriptFeature::
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillCorrectUserEditedBitInParsedField",
+      base::Value::List().Append(enabled));
+}
+
+void AutofillFormFeaturesJavaScriptFeature::
+    SetAutofillAllowDefaultPreventedFormSubmission(web::WebFrame* frame,
+                                                   bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillAllowDefaultPreventedSubmission",
       base::Value::List().Append(enabled));
 }
 

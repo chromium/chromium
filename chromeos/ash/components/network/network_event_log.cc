@@ -38,12 +38,12 @@ std::string NetworkId(const NetworkState* network) {
   }
 
   // Test networks may not follow the Shill pattern, just use the path.
-  if (!base::StartsWith(network->path(), kServicePrefix,
-                        base::CompareCase::SENSITIVE)) {
+  auto remainder = base::RemovePrefix(network->path(), kServicePrefix);
+  if (!remainder) {
     return network->path();
   }
 
-  std::string id = network->path().substr(strlen(kServicePrefix));
+  std::string id(*remainder);
   if (type.empty())
     return "service_" + id;
 
@@ -68,12 +68,11 @@ std::string NetworkPathId(const std::string& service_path) {
     if (network)
       return NetworkId(network);
   }
-  if (!base::StartsWith(service_path, kServicePrefix,
-                        base::CompareCase::SENSITIVE)) {
+  auto remainder = base::RemovePrefix(service_path, kServicePrefix);
+  if (!remainder) {
     return service_path;
   }
-  std::string id = service_path.substr(strlen(kServicePrefix));
-  return "service_" + id;
+  return "service_" + std::string(*remainder);
 }
 
 // Calls NetworkId() if a NetworkState exists for |guid|, otherwise

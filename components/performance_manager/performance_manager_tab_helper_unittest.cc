@@ -23,6 +23,7 @@
 #include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
@@ -268,12 +269,16 @@ TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
   {
     content::RenderFrameHost* rfh_arg = nullptr;
     content::RenderFrameHost* rfh_arg_2 = nullptr;
-    EXPECT_CALL(*permission_controller,
-                GetPermissionStatusForCurrentDocument(
-                    blink::PermissionType::NOTIFICATIONS, testing::_))
-        .WillOnce(testing::DoAll(
-            testing::SaveArg<1>(&rfh_arg),
-            testing::Return(blink::mojom::PermissionStatus::ASK)));
+    blink::mojom::PermissionDescriptorPtr descriptor;
+
+    EXPECT_CALL(*permission_controller, GetPermissionStatusForCurrentDocument)
+        .WillOnce([&](const blink::mojom::PermissionDescriptorPtr&
+                          permission_descriptor,
+                      content::RenderFrameHost* render_frame_host) {
+          descriptor = permission_descriptor->Clone();
+          rfh_arg = render_frame_host;
+          return blink::mojom::PermissionStatus::ASK;
+        });
     EXPECT_CALL(*permission_controller,
                 SubscribeToPermissionStatusChange(
                     blink::PermissionType::NOTIFICATIONS, testing::_,
@@ -283,6 +288,8 @@ TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kParentUrl));
     testing::Mock::VerifyAndClear(permission_controller);
+    EXPECT_EQ(blink::PermissionDescriptorToPermissionType(descriptor),
+              blink::PermissionType::NOTIFICATIONS);
     EXPECT_EQ(rfh_arg, web_contents()->GetPrimaryMainFrame());
     EXPECT_EQ(rfh_arg_2, web_contents()->GetPrimaryMainFrame());
     ExpectNotificationPermissionStatus(blink::mojom::PermissionStatus::ASK);
@@ -294,12 +301,16 @@ TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
   {
     content::RenderFrameHost* rfh_arg = nullptr;
     content::RenderProcessHost* rph_arg = nullptr;
-    EXPECT_CALL(*permission_controller,
-                GetPermissionStatusForCurrentDocument(
-                    blink::PermissionType::NOTIFICATIONS, testing::_))
-        .WillOnce(testing::DoAll(
-            testing::SaveArg<1>(&rfh_arg),
-            testing::Return(blink::mojom::PermissionStatus::GRANTED)));
+    blink::mojom::PermissionDescriptorPtr descriptor;
+
+    EXPECT_CALL(*permission_controller, GetPermissionStatusForCurrentDocument)
+        .WillOnce([&](const blink::mojom::PermissionDescriptorPtr&
+                          permission_descriptor,
+                      content::RenderFrameHost* render_frame_host) {
+          descriptor = permission_descriptor->Clone();
+          rfh_arg = render_frame_host;
+          return blink::mojom::PermissionStatus::GRANTED;
+        });
     EXPECT_CALL(*permission_controller,
                 UnsubscribeFromPermissionStatusChange(kFirstSubscriptionId));
     EXPECT_CALL(*permission_controller,
@@ -312,6 +323,8 @@ TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kCousinFreddyUrl));
     testing::Mock::VerifyAndClear(permission_controller);
+    EXPECT_EQ(blink::PermissionDescriptorToPermissionType(descriptor),
+              blink::PermissionType::NOTIFICATIONS);
     EXPECT_EQ(rfh_arg, web_contents()->GetPrimaryMainFrame());
     ExpectNotificationPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
   }

@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 namespace {
@@ -46,7 +45,7 @@ const CGFloat kFaviconIconSize = 16;
 }
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
-  NSString* URL = base::SysUTF8ToNSString(imageURL.spec());
+  NSString* URL = [NSString cr_fromString:imageURL.spec()];
   UIImage* cachedImage = [_cachedImages objectForKey:URL];
   if (cachedImage) {
     completion(cachedImage);

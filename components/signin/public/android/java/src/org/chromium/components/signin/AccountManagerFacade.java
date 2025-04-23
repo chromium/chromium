@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.List;
 
@@ -38,10 +39,9 @@ public interface AccountManagerFacade {
         /**
          * Invoked on the UI thread if no token is available.
          *
-         * @param isTransientError Indicates if the error is transient (network timeout or
-         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         * @param authError The {@link GoogleServiceAuthError} encountered during token fetch.
          */
-        void onGetTokenFailure(boolean isTransientError);
+        void onGetTokenFailure(GoogleServiceAuthError authError);
     }
 
     // TODO(crbug.com/40201126): consider refactoring this interface to use Promises.

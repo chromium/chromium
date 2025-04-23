@@ -10,11 +10,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #endif
@@ -134,7 +134,7 @@ const Extension* InstalledLoaderUnitTest::AddExtension(
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   return extension.get();
 }

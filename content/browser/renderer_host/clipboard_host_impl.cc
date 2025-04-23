@@ -150,6 +150,10 @@ void ClipboardHostImpl::Create(
 
 ClipboardHostImpl::~ClipboardHostImpl() {
   clipboard_writer_->Reset();
+  if (listening_to_clipboard_) {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+    listening_to_clipboard_ = false;
+  }
 }
 
 void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
@@ -802,6 +806,41 @@ void ClipboardHostImpl::AddSourceDataToClipboardWriter() {
   clipboard_writer_->WritePickledData(
       render_frame_host().GetGlobalFrameToken().ToPickle(),
       SourceRFHTokenType());
+}
+
+void ClipboardHostImpl::OnClipboardDataChanged() {
+  if (!listening_to_clipboard_) {
+    return;
+  }
+  if (clipboard_listener_) {
+    clipboard_listener_->OnClipboardDataChanged();
+  }
+}
+
+void ClipboardHostImpl::RegisterClipboardListener(
+    mojo::PendingRemote<blink::mojom::ClipboardListener> listener) {
+  // Replace the current listener with the new one
+  clipboard_listener_.reset();
+  clipboard_listener_.Bind(std::move(listener));
+
+  // Set up connection error handler to stop observing when connection is closed
+  clipboard_listener_.set_disconnect_handler(
+      base::BindOnce(&ClipboardHostImpl::StopObservingClipboard,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Start listening for clipboard changes if not already doing so
+  if (!listening_to_clipboard_) {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+    listening_to_clipboard_ = true;
+  }
+}
+
+void ClipboardHostImpl::StopObservingClipboard() {
+  if (listening_to_clipboard_) {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+    listening_to_clipboard_ = false;
+  }
+  clipboard_listener_.reset();
 }
 
 }  // namespace content

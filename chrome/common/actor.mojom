@@ -4,13 +4,20 @@
 
 module actor.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // This interface is meant to largely mirror the
 // BrowserAction::ActionInformation proto.
 
 // Tool-specific target.
-struct ToolTarget {
+union ToolTarget {
   // DOMNodeId for the node this invocation should be applied to.
   int32 dom_node_id;
+
+  // An x,y pair representing a location relative to the origin at the top-left
+  // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
+  // physical pixels.
+  gfx.mojom.Point coordinate;
 };
 
 // Information specific to a click action.
@@ -36,10 +43,81 @@ struct MouseMoveAction {
   ToolTarget target;
 };
 
+// Information specific to the type (keyboard input) action.  Note: TypeAction
+// may be implemented in multiple steps (e.g.  individual key events). In some
+// situations, part of the action may complete while another part fails.
+// TypeAction currently returns failure if any part of the action fails.
+// TODO(crbug.com/409333494): Consider how to handle partial success cases like
+// this.
+struct TypeAction {
+  // How the text should be inserted into the target.
+  enum Mode {
+    kDeleteExisting = 0,
+    kPrepend = 1,
+    kAppend = 2,
+  };
+
+  Mode mode;
+  ToolTarget target;
+  // text should be ASCII only for now.
+  string text;
+  bool follow_by_enter;
+};
+
+// Scroll action performs a scroll on the page's viewport or on a specified
+// target element.
+// It currently returns true even for a partial scroll to the given distance
+// and direction.
+// It will provide more precise information about how much it scrolls.
+struct ScrollAction {
+  // Corresponds to ScrollAction.ScrollDirection.
+  // This must be kept in sync with ScrollAction.ScrollDirection enum in
+  // components/optimization_guide/proto/features/actions_data.proto.
+  enum ScrollDirection {
+    // Scroll left.
+    kLeft = 1,
+    // Scroll right.
+    kRight = 2,
+    // Scroll up.
+    kUp = 3,
+    // Scroll down.
+    kDown = 4,
+  };
+
+  // This target is the element to scroll. A null target implies scrolling the
+  // page's viewport. If the scroll action returns failure, it means the target
+  // isn't scrollable.
+  ToolTarget? target;
+  ScrollDirection direction;
+  // Scroll distance in physical pixels, and it should always be positive.
+  float distance;
+};
+
+// Action for selecting an option from a <select> element.
+struct SelectAction {
+  ToolTarget target;
+
+  // The value of the option to set as the currently selected option. The action
+  // fails if the given value doesn't match the value of one of the element's
+  // <option> children. Case-sensitive.
+  string value;
+};
+
+// Performs a left mouse button down on the from_target, then moves to and
+// releases on the to_target.
+struct DragAndReleaseAction {
+  ToolTarget from_target;
+  ToolTarget to_target;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
+  DragAndReleaseAction drag_and_release;
   MouseMoveAction mouse_move;
+  ScrollAction scroll;
+  SelectAction select;
+  TypeAction type;
 };
 
 // All information required to invoke a tool in the renderer.

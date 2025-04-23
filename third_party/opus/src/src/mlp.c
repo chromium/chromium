@@ -33,35 +33,23 @@
 #include "opus_types.h"
 #include "opus_defines.h"
 #include "arch.h"
-#include "tansig_table.h"
 #include "mlp.h"
 
+#define fmadd(a, b, c) ((a)*(b)+(c))
 static OPUS_INLINE float tansig_approx(float x)
 {
-    int i;
-    float y, dy;
-    float sign=1;
-    /* Tests are reversed to catch NaNs */
-    if (!(x<8))
-        return 1;
-    if (!(x>-8))
-        return -1;
-#ifndef FIXED_POINT
-    /* Another check in case of -ffast-math */
-    if (celt_isnan(x))
-       return 0;
-#endif
-    if (x<0)
-    {
-       x=-x;
-       sign=-1;
-    }
-    i = (int)floor(.5f+25*x);
-    x -= .04f*i;
-    y = tansig_table[i];
-    dy = 1-y*y;
-    y = y + x*dy*(1 - y*x);
-    return sign*y;
+    const float N0 = 952.52801514f;
+    const float N1 = 96.39235687f;
+    const float N2 = 0.60863042f;
+    const float D0 = 952.72399902f;
+    const float D1 = 413.36801147f;
+    const float D2 = 11.88600922f;
+    float X2, num, den;
+    X2 = x*x;
+    num = fmadd(fmadd(N2, X2, N1), X2, N0);
+    den = fmadd(fmadd(D2, X2, D1), X2, D0);
+    num = num*x/den;
+    return MAX32(-1.f, MIN32(1.f, num));
 }
 
 static OPUS_INLINE float sigmoid_approx(float x)
@@ -79,7 +67,7 @@ static void gemm_accum(float *out, const opus_int8 *weights, int rows, int cols,
    }
 }
 
-void compute_dense(const DenseLayer *layer, float *output, const float *input)
+void analysis_compute_dense(const AnalysisDenseLayer *layer, float *output, const float *input)
 {
    int i;
    int N, M;
@@ -101,7 +89,7 @@ void compute_dense(const DenseLayer *layer, float *output, const float *input)
    }
 }
 
-void compute_gru(const GRULayer *gru, float *state, const float *input)
+void analysis_compute_gru(const AnalysisGRULayer *gru, float *state, const float *input)
 {
    int i;
    int N, M;

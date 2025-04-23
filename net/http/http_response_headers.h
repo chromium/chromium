@@ -137,7 +137,7 @@ class NET_EXPORT HttpResponseHeaders
   //
   // HttpResponseHeaders does not perform any encoding changes on the input.
   //
-  explicit HttpResponseHeaders(const std::string& raw_headers);
+  explicit HttpResponseHeaders(std::string_view raw_headers);
 
   // Initializes from the representation stored in the given pickle.  The data
   // for this object is found relative to the given pickle_iter, which should
@@ -473,15 +473,14 @@ class NET_EXPORT HttpResponseHeaders
   ~HttpResponseHeaders();
 
   // Initializes from the given raw headers.
-  void Parse(const std::string& raw_input);
+  void Parse(std::string_view raw_input);
 
   // Helper function for ParseStatusLine.
   // Tries to extract the "HTTP/X.Y" from a status line formatted like:
   //    HTTP/1.1 200 OK
   // with line_begin and end pointing at the begin and end of this line.  If the
   // status line is malformed, returns HttpVersion(0,0).
-  static HttpVersion ParseVersion(std::string::const_iterator line_begin,
-                                  std::string::const_iterator line_end);
+  static HttpVersion ParseVersion(std::string_view line);
 
   // Tries to extract the status line from a header block, given the first
   // line of said header block.  If the status line is malformed, we'll
@@ -489,9 +488,7 @@ class NET_EXPORT HttpResponseHeaders
   //    HTTP/1.1 200 OK
   // with line_begin and end pointing at the begin and end of this line.
   // Output will be a normalized version of this.
-  void ParseStatusLine(std::string::const_iterator line_begin,
-                       std::string::const_iterator line_end,
-                       bool has_headers);
+  void ParseStatusLine(std::string_view line, bool has_headers);
 
   // Find the header in our list (case-insensitive) starting with |parsed_| at
   // index |from|.  Returns string::npos if not found.
@@ -507,18 +504,19 @@ class NET_EXPORT HttpResponseHeaders
   // Add header->value pair(s) to our list. The value will be split into
   // multiple values if it contains unquoted commas. If `contains_commas` is
   // ContainsCommas::kNo then the value will not be parsed as a performance
-  // optimization.
-  void AddHeader(std::string::const_iterator name_begin,
-                 std::string::const_iterator name_end,
-                 std::string::const_iterator value_begin,
-                 std::string::const_iterator value_end,
+  // optimization. Values are all offsets within `raw_headers_`.
+  void AddHeader(size_t name_begin,
+                 size_t name_end,
+                 size_t value_begin,
+                 size_t value_end,
                  ContainsCommas contains_commas);
 
-  // Add to parsed_ given the fields of a ParsedHeader object.
-  void AddToParsed(std::string::const_iterator name_begin,
-                   std::string::const_iterator name_end,
-                   std::string::const_iterator value_begin,
-                   std::string::const_iterator value_end);
+  // Add to parsed_ given the fields of a ParsedHeader object. Values are all
+  // offsets within `raw_headers_`.
+  void AddToParsed(size_t name_begin,
+                   size_t name_end,
+                   size_t value_begin,
+                   size_t value_end);
 
   // Replaces the current headers with the merged version of `raw_headers` and
   // the current headers without the headers in `headers_to_remove`. Note that
@@ -552,6 +550,13 @@ class NET_EXPORT HttpResponseHeaders
   // directive name including the equals sign. parameter value The complete
   // directive string (e.g., "max-age=600"). or not a valid sequence of digits.
   std::optional<base::TimeDelta> ParseSeconds(std::string_view value) const;
+
+  // Shorthand for `std::string_view(raw_headers_).substr(begin, end - begin)`.
+  std::string_view subrange(size_t begin, size_t end) const;
+
+  // Returns the name/value using `raw_headers_` and indices from `parsed`.
+  std::string_view header_name(const ParsedHeader& parsed) const;
+  std::string_view header_value(const ParsedHeader& parsed) const;
 
   // Adds the set of header names that contain cookie values.
   static void AddSensitiveHeaders(HeaderSet* header_names);

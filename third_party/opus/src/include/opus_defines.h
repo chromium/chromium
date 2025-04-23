@@ -169,15 +169,32 @@ extern "C" {
 #define OPUS_SET_PHASE_INVERSION_DISABLED_REQUEST 4046
 #define OPUS_GET_PHASE_INVERSION_DISABLED_REQUEST 4047
 #define OPUS_GET_IN_DTX_REQUEST              4049
+#define OPUS_SET_DRED_DURATION_REQUEST 4050
+#define OPUS_GET_DRED_DURATION_REQUEST 4051
+#define OPUS_SET_DNN_BLOB_REQUEST 4052
+/*#define OPUS_GET_DNN_BLOB_REQUEST 4053 */
 
 /** Defines for the presence of extended APIs. */
 #define OPUS_HAVE_OPUS_PROJECTION_H
 
 /* Macros to trigger compilation errors when the wrong types are provided to a CTL */
 #define __opus_check_int(x) (((void)((x) == (opus_int32)0)), (opus_int32)(x))
+
+#ifdef DISABLE_PTR_CHECK
+/* Disable checks to prevent ubsan from complaining about NULL checks
+   in test_opus_api. */
+#define __opus_check_int_ptr(ptr) (ptr)
+#define __opus_check_uint_ptr(ptr) (ptr)
+#define __opus_check_uint8_ptr(ptr) (ptr)
+#define __opus_check_val16_ptr(ptr) (ptr)
+#define __opus_check_void_ptr(ptr) (ptr)
+#else
 #define __opus_check_int_ptr(ptr) ((ptr) + ((ptr) - (opus_int32*)(ptr)))
 #define __opus_check_uint_ptr(ptr) ((ptr) + ((ptr) - (opus_uint32*)(ptr)))
+#define __opus_check_uint8_ptr(ptr) ((ptr) + ((ptr) - (opus_uint8*)(ptr)))
 #define __opus_check_val16_ptr(ptr) ((ptr) + ((ptr) - (opus_val16*)(ptr)))
+#define __opus_check_void_ptr(x) ((void)((void *)0 == (x)), (x))
+#endif
 /** @endcond */
 
 /** @defgroup opus_ctlvalues Pre-defined values for CTL interface
@@ -619,6 +636,18 @@ extern "C" {
   * </dl>
   * @hideinitializer */
 #define OPUS_GET_PREDICTION_DISABLED(x) OPUS_GET_PREDICTION_DISABLED_REQUEST, __opus_check_int_ptr(x)
+
+/** If non-zero, enables Deep Redundancy (DRED) and use the specified maximum number of 10-ms redundant frames
+  * @hideinitializer */
+#define OPUS_SET_DRED_DURATION(x) OPUS_SET_DRED_DURATION_REQUEST, __opus_check_int(x)
+/** Gets the encoder's configured Deep Redundancy (DRED) maximum number of frames.
+  * @hideinitializer */
+#define OPUS_GET_DRED_DURATION(x) OPUS_GET_DRED_DURATION_REQUEST, __opus_check_int_ptr(x)
+
+/** Provide external DNN weights from binary object (only when explicitly built without the weights)
+  * @hideinitializer */
+#define OPUS_SET_DNN_BLOB(data, len) OPUS_SET_DNN_BLOB_REQUEST, __opus_check_void_ptr(data), __opus_check_int(len)
+
 
 /**@}*/
 

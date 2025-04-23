@@ -96,6 +96,7 @@ void ProductSpecificationsIconView::UpdateImpl() {
     SetVisualState(IsInProductSpecificationsSet());
     MaybeShowPageActionLabel();
   } else {
+    scoped_window_call_to_action_ptr_.reset();
     HidePageActionLabel();
   }
   SetVisible(should_show);
@@ -156,6 +157,17 @@ void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
                          PageActionIconType::kProductSpecifications)) {
     return;
   }
+  if (!tabs::TabInterface::GetFromContents(GetWebContents())
+           ->GetBrowserWindowInterface()
+           ->CanShowCallToAction()) {
+    return;
+  }
+
+  scoped_window_call_to_action_ptr_ =
+      tabs::TabInterface::GetFromContents(GetWebContents())
+          ->GetBrowserWindowInterface()
+          ->ShowCallToAction();
+
   should_extend_label_shown_duration_ = true;
   AnimateIn(std::nullopt);
 }

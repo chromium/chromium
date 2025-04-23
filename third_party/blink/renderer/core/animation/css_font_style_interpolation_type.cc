@@ -59,18 +59,16 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kItalic) {
     return nullptr;
   }
   // TODO(40946458): Don't resolve angle here, use unresolved version instead.
   return CreateFontStyleValue(StyleBuilderConverterBase::ConvertFontStyle(
-      state ? state->CssToLengthConversionData()
-            : CSSToLengthConversionData(/*element=*/nullptr),
-      value));
+      state.CssToLengthConversionData(), value));
 }
 
 InterpolationValue

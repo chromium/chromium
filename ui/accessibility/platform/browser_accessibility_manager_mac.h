@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       const std::string& type) override;
 
-  bool OnAccessibilityEvents(const AXUpdatesAndEvents& details) override;
+  bool OnAccessibilityEvents(AXUpdatesAndEvents& details) override;
 
   void FireSentinelEventForTesting() override;
 

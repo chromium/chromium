@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Bookmark bar view"/>
   <int value="1" label="Bookmark manager API"/>
   <int value="2" label="Bookmark Menu"/>
+  <int value="3" label="Bookmark side panel"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/bookmarks/bookmark_drag_drop.h:BookmarkReorderDropTarget) -->

@@ -1179,23 +1179,10 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  switch (demuxer_->GetType()) {
-    case MediaResource::Type::kStream:
-      if (demuxer_->GetAllStreams().empty()) {
-        DVLOG(1) << "Error: demuxer does not have an audio or a video stream.";
-        std::move(done_cb).Run(PIPELINE_ERROR_COULD_NOT_RENDER);
-        return;
-      }
-      break;
-
-    case MediaResource::Type::KUrl:
-      // NOTE: Empty GURL are not valid.
-      if (!demuxer_->GetMediaUrlParams().media_url.is_valid()) {
-        DVLOG(1) << "Error: demuxer does not have a valid URL.";
-        std::move(done_cb).Run(PIPELINE_ERROR_COULD_NOT_RENDER);
-        return;
-      }
-      break;
+  if (demuxer_->GetAllStreams().empty()) {
+    DVLOG(1) << "Error: demuxer does not have an audio or a video stream.";
+    std::move(done_cb).Run(PIPELINE_ERROR_COULD_NOT_RENDER);
+    return;
   }
 
   if (cdm_context_)
@@ -1245,32 +1232,21 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
   PipelineMetadata metadata;
   std::vector<DemuxerStream*> streams;
 
-  switch (demuxer_->GetType()) {
-    case MediaResource::Type::kStream:
-      metadata.timeline_offset = demuxer_->GetTimelineOffset();
-      // TODO(servolk): What should we do about metadata for multiple streams?
-      streams = demuxer_->GetAllStreams();
-      for (media::DemuxerStream* stream : streams) {
-        if (stream->type() == DemuxerStream::VIDEO && !metadata.has_video) {
-          metadata.has_video = true;
-          metadata.natural_size = GetRotatedVideoSize(
-              stream->video_decoder_config().video_transformation().rotation,
-              stream->video_decoder_config().natural_size());
-          metadata.video_decoder_config = stream->video_decoder_config();
-        }
-        if (stream->type() == DemuxerStream::AUDIO && !metadata.has_audio) {
-          metadata.has_audio = true;
-          metadata.audio_decoder_config = stream->audio_decoder_config();
-        }
-      }
-      break;
-
-    case MediaResource::Type::KUrl:
-      // We don't know if the MediaPlayerRender has Audio/Video until we start
-      // playing. Conservatively assume that they do.
+  metadata.timeline_offset = demuxer_->GetTimelineOffset();
+  // TODO(servolk): What should we do about metadata for multiple streams?
+  streams = demuxer_->GetAllStreams();
+  for (media::DemuxerStream* stream : streams) {
+    if (stream->type() == DemuxerStream::VIDEO && !metadata.has_video) {
       metadata.has_video = true;
+      metadata.natural_size = GetRotatedVideoSize(
+          stream->video_decoder_config().video_transformation().rotation,
+          stream->video_decoder_config().natural_size());
+      metadata.video_decoder_config = stream->video_decoder_config();
+    }
+    if (stream->type() == DemuxerStream::AUDIO && !metadata.has_audio) {
       metadata.has_audio = true;
-      break;
+      metadata.audio_decoder_config = stream->audio_decoder_config();
+    }
   }
 
   main_task_runner_->PostTask(
@@ -1297,10 +1273,6 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
 }
 
 bool PipelineImpl::RendererWrapper::HasEncryptedStream() {
-  // Encrypted streams are only handled explicitly for STREAM type.
-  if (demuxer_->GetType() != MediaResource::Type::kStream)
-    return false;
-
   auto streams = demuxer_->GetAllStreams();
 
   for (media::DemuxerStream* stream : streams) {

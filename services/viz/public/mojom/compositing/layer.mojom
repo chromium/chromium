@@ -5,13 +5,16 @@
 module viz.mojom;
 
 import "cc/mojom/element_id.mojom";
+import "cc/mojom/hit_test_opaqueness.mojom";
 import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+import "skia/public/mojom/skpath.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/mask_filter_info.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
-import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
@@ -90,6 +93,9 @@ struct Layer {
   // Indicates whether the layer produces any visual output for the compositor.
   bool is_drawable;
 
+  // Describes the opaqueness for hit testing in a layered content e.g. a layer.
+  cc.mojom.HitTestOpaqueness hit_test_opaqueness;
+
   // The background color (and safe opaque background color) used by this Layer.
   // See comments for equivalent fields on cc::Layer.
   skia.mojom.SkColor4f background_color;
@@ -120,6 +126,8 @@ struct Layer {
   int32 clip_tree_index;
   int32 effect_tree_index;
   int32 scroll_tree_index;
+
+  bool should_check_backface_visibility;
 
   // Extra properties that are specific to a layerImpl type.
   LayerExtra? layer_extra;
@@ -305,12 +313,17 @@ struct EffectNode {
 
   FilterOperations filters;
   FilterOperations backdrop_filters;
-  gfx.mojom.RRectF? backdrop_filter_bounds;
+  skia.mojom.SkPath? backdrop_filter_bounds;
   float backdrop_filter_quality;
 
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
   cc.mojom.ElementId? backdrop_mask_element_id;
+
+  // The mask filter information applied to this effect node. The coordinates of
+  // in the mask info is in the space of the transform node associated with this
+  // effect node.
+  gfx.mojom.MaskFilterInfo mask_filter_info;
 
   bool cache_render_surface;
   // Whether the contents should continue to be visible when rotated such that

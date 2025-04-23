@@ -156,8 +156,6 @@ class CORE_EXPORT DedicatedWorker final
       network::mojom::ReferrerPolicy,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           response_content_security_policies,
-      const String& source_code,
-      RejectCoepUnsafeNone reject_coep_unsafe_none,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
           back_forward_cache_controller_host,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -171,8 +169,6 @@ class CORE_EXPORT DedicatedWorker final
       network::mojom::ReferrerPolicy,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           response_content_security_policies,
-      const String& source_code,
-      RejectCoepUnsafeNone reject_coep_unsafe_none,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
           back_forward_cache_controller_host,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -194,6 +190,8 @@ class CORE_EXPORT DedicatedWorker final
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();
 
   // Callbacks for |classic_script_loader_|.
+  // TODO(crbug.com/400455021): Investigate whether these can be removed now
+  // that PlzDedicatedWorker has shipped.
   void OnResponse();
   void OnFinished(
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>

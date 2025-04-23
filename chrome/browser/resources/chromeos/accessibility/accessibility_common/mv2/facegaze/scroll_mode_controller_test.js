@@ -5,7 +5,7 @@
 GEN_INCLUDE(['facegaze_test_base.js']);
 
 /** FazeGaze ScrollModeController tests. */
-FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
+FaceGazeMV2ScrollModeControllerTest = class extends FaceGazeTestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
@@ -52,7 +52,7 @@ FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
+AX_TEST_F('FaceGazeMV2ScrollModeControllerTest', 'Active', function() {
   const controller = this.getScrollModeController();
   assertNotNullNorUndefined(controller);
   assertNullOrUndefined(controller.scrollLocation_);
@@ -70,7 +70,7 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
   assertNullOrUndefined(controller.screenBounds_);
 });
 
-AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', function() {
+AX_TEST_F('FaceGazeMV2ScrollModeControllerTest', 'ScreenBounds', function() {
   const controller = this.getScrollModeController();
   this.toggleScrollMode();
   const bounds = this.mockAccessibilityPrivate.displayBounds_[0];
@@ -82,7 +82,7 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', function() {
 });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'CallsApiOnValidPoint', function() {
+    'FaceGazeMV2ScrollModeControllerTest', 'CallsApiOnValidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
 
@@ -135,7 +135,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'SkipsApiOnInvalidPoint', function() {
+    'FaceGazeMV2ScrollModeControllerTest', 'SkipsApiOnInvalidPoint',
+    function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
       controller.scroll({x: 600, y: 400});
@@ -147,7 +148,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'RespectsPhysicalMouseEvents',
+    'FaceGazeMV2ScrollModeControllerTest', 'RespectsPhysicalMouseEvents',
     function() {
       const controller = this.getScrollModeController();
       const mockApi = this.mockAccessibilityPrivate;
@@ -175,7 +176,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOff',
+    'FaceGazeMV2ScrollModeControllerTest', 'CursorControlOriginallyOff',
     async function() {
       // Force cursor control off.
       await this.setPref(PrefNames.CURSOR_CONTROL_ENABLED, false);
@@ -191,7 +192,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOn',
+    'FaceGazeMV2ScrollModeControllerTest', 'CursorControlOriginallyOn',
     async function() {
       await this.waitForCursorControlPref(true);
 
@@ -205,7 +206,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest',
+    'FaceGazeMV2ScrollModeControllerTest',
     'AutoTogglesCursorControlIfCursorControlModifiedDuringScrollMode',
     async function() {
       await this.waitForCursorControlPref(true);

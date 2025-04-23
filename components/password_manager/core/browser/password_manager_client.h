@@ -537,6 +537,11 @@ class PasswordManagerClient {
   // Shows the bubble with the details of the `form`.
   virtual void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) = 0;
+
+  // Possibly shows a promo priming the user to engage with password saving,
+  // based on the current URL.
+  virtual void MaybeShowSavePasswordPrimingPromo(const GURL& current_url) = 0;
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

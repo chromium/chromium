@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -82,6 +83,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
+@EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
 @DisableFeatures({
     ChromeFeatureList.ANDROID_TAB_DECLUTTER,
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,

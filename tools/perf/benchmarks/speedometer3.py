@@ -153,6 +153,7 @@ class Speedometer30(_Speedometer3):
   """Speedometer3.0 benchmark.
   Explicitly named version."""
 
+  SCHEDULED = False
   _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.0')
 
   @classmethod
@@ -161,7 +162,7 @@ class Speedometer30(_Speedometer3):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3.0'
+    return 'speedometer3.0'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
@@ -171,6 +172,7 @@ class Speedometer31(_Speedometer3):
   """Speedometer3.1 benchmark.
   Explicitly named version."""
 
+  SCHEDULED = False
   _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.1')
 
   @classmethod
@@ -179,7 +181,7 @@ class Speedometer31(_Speedometer3):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3.1'
+    return 'speedometer3.1'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
@@ -187,6 +189,8 @@ class Speedometer31(_Speedometer3):
                 documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer3(Speedometer31):
   """The latest version of the Speedometer3 benchmark."""
+  SCHEDULED = True
+
   @classmethod
   def GetStoryClass(cls):
     return speedometer3_pages.Speedometer3Story

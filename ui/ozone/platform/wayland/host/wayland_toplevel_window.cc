@@ -21,8 +21,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
-#include "ui/ozone/platform/wayland/host/gtk_shell1.h"
-#include "ui/ozone/platform/wayland/host/gtk_surface1.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -155,13 +154,23 @@ void WaylandToplevelWindow::Hide() {
   for (auto bubble : child_bubbles()) {
     bubble->Hide();
   }
-  WaylandWindow::Hide();
 
-  if (gtk_surface1_)
-    gtk_surface1_.reset();
-
-  toplevel_session_.reset();
+  // Note that the xdg_toplevel object should be destroyed before we touch
+  // anything else in order to provide the compositor a good reference point
+  // when the window contents can be frozen in case a window closing animation
+  // needs to be played. Ideally, the xdg_toplevel object should also be
+  // destroyed before any subsurface is destroyed, otherwise the window may have
+  // missing contents when the compositor animates it.
+  //
+  // The xdg-shell spec provides another way to hide a window: attach a nil
+  // buffer to the root surface. However, compositors often get it wrong, and it
+  // makes sense only if the xdg_toplevel object is going to be reused, which is
+  // not the case here.
   xdg_toplevel_.reset();
+  toplevel_session_.reset();
+  appmenu_.reset();
+
+  WaylandWindow::Hide();
   ClearInFlightRequestsSerial();
 
   connection()->Flush();
@@ -284,23 +293,21 @@ void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
-  // xdg-activation implementation doesn't seem to interact well with dnd in
-  // some compositors. Eg: Mutter crashes were observed in tab drag sessions.
-  // See https://gitlab.gnome.org/GNOME/mutter/-/issues/3822.
-  //
-  // TODO(crbug.com/40866970): Remove once the compositor bug gets fixed.
-  if (connection()->IsDragInProgress()) {
-    return;
+  bool can_activate = IsSurfaceConfigured();
+
+  // Stacking the dragged xdg toplevel as the topmost one (and tied to the
+  // pointer cursor) is reponsibility of the Wayland compositor, so bail out
+  // if `this` is currently being dragged.
+  if (auto* drag_controller = connection()->window_drag_controller()) {
+    can_activate &= !drag_controller->IsDraggingWindow(this);
   }
-  connection()->xdg_activation()->Activate(root_surface()->surface(), token);
+
+  if (can_activate) {
+    connection()->xdg_activation()->Activate(root_surface()->surface(), token);
+  }
 }
 
 void WaylandToplevelWindow::Activate() {
-  // Activation is supported through optional protocol extensions and hence may
-  // or may not work depending on the compositor.  The details depend on the
-  // compositor as well; for example, Mutter doesn't bring the window to the top
-  // when it requests focus, but instead shows a system popup notification to
-  // user.
   if (connection()->xdg_activation()) {
     if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
@@ -309,14 +316,8 @@ void WaylandToplevelWindow::Activate() {
           base::BindOnce(&WaylandToplevelWindow::ActivateWithToken,
                          weak_ptr_factory_.GetWeakPtr()));
     }
-  } else if (gtk_surface1_) {
-    gtk_surface1_->RequestFocus();
+    connection()->Flush();
   }
-
-  // This is required as the high level activation might not get a flush for
-  // a while.
-  connection()->Flush();
-
   WaylandWindow::Activate();
 }
 
@@ -398,12 +399,6 @@ void WaylandToplevelWindow::SetInputRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {
   input_region_px_ = region_px;
   root_surface()->set_input_region(region_px);
-}
-
-void WaylandToplevelWindow::NotifyStartupComplete(
-    const std::string& startup_id) {
-  if (auto* gtk_shell = connection()->gtk_shell1())
-    gtk_shell->SetStartupId(startup_id);
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
@@ -567,7 +562,11 @@ void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
 bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties,
     PlatformWindowDelegate::State* state) {
-  state->window_state = PlatformWindowState::kNormal;
+  // State is kept as "unknown" until the first configure sequence arrives, when
+  // it's possible to which state it should transition to. That's also when
+  // xdg_surface.set_window_geometry must be sent for the first time in. See
+  // WaylandWindow::LatchStateRequest for more details.
+  CHECK_EQ(state->window_state, PlatformWindowState::kUnknown);
 
   app_id_ = properties.wayland_app_id;
   SetWaylandToplevelExtension(this, this);
@@ -708,6 +707,22 @@ void WaylandToplevelWindow::LockPointer(bool enabled) {
     pointer_constraints->LockPointer(root_surface());
   else
     pointer_constraints->UnlockPointer();
+}
+
+void WaylandToplevelWindow::SetAppmenu(const std::string& service_name,
+                                       const std::string& object_path) {
+  appmenu_service_name_ = service_name;
+  appmenu_object_path_ = object_path;
+
+  if (xdg_toplevel_) {
+    TryAnnounceAppmenu();
+  }
+}
+
+void WaylandToplevelWindow::UnsetAppmenu() {
+  appmenu_.reset();
+  appmenu_service_name_.clear();
+  appmenu_object_path_.clear();
 }
 
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
@@ -872,12 +887,7 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(xdg_toplevel_);
-  // We must not request a new GtkSurface if we already have one, else we get a
-  // "gtk_shell::get_gtk_surface already requested" error. (crbug.com/1380419)
-  if (connection()->gtk_shell1() && !gtk_surface1_) {
-    gtk_surface1_ =
-        connection()->gtk_shell1()->GetGtkSurface1(root_surface()->surface());
-  }
+  TryAnnounceAppmenu();
 }
 
 void WaylandToplevelWindow::OnDecorationModeChanged() {
@@ -917,9 +927,32 @@ void WaylandToplevelWindow::UpdateSessionStateIfNeeded() {
       CHECK(session_data.restore_id.has_value());
       toplevel_session_->Remove();
     }
-    toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
-                                                XdgSession::Action::kAdd);
+    if (session_data.window_id) {
+      toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
+                                                  XdgSession::Action::kAdd);
+    } else {
+      // Window was just removed from `session_` and no new session window id
+      // was provided. Notifying about it can result in `this` being destroyed
+      // when the Wayland compositor supports only experimental version of the
+      // session management protocol. See comments in XdgSession for details.
+      // TODO(crbug.com/409099413): Remove when support for the experimental
+      // session management protocol support gets dropped.
+      auto alive = weak_ptr_factory_.GetWeakPtr();
+      connection()->window_manager()->NotifyWindowRemovedFromSession(this);
+      if (!alive) {
+        return;
+      }
+    }
     connection()->Flush();
+  }
+}
+
+void WaylandToplevelWindow::TryAnnounceAppmenu() {
+  if (auto* appmenu_manager = connection()->org_kde_kwin_appmenu_manager()) {
+    if (!appmenu_service_name_.empty() && !appmenu_object_path_.empty()) {
+      appmenu_ = appmenu_manager->Create(root_surface()->surface());
+      appmenu_->SetAddress(appmenu_service_name_, appmenu_object_path_);
+    }
   }
 }
 

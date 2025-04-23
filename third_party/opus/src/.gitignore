@@ -49,6 +49,7 @@ tests/*test
 tests/test_opus_api
 tests/test_opus_decode
 tests/test_opus_encode
+tests/test_opus_extensions
 tests/test_opus_padding
 tests/test_opus_projection
 celt/arm/armopts.s

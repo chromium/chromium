@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.creator;
 
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -50,6 +51,7 @@ public class CreatorActivity extends SnackbarActivity {
 
     private static class TabShareDelegateImpl extends ShareDelegateImpl {
         public TabShareDelegateImpl(
+                Context context,
                 BottomSheetController controller,
                 ActivityLifecycleDispatcherImpl lifecycleDispatcher,
                 ActivityTabProvider tabProvider,
@@ -58,6 +60,7 @@ public class CreatorActivity extends SnackbarActivity {
                 ShareSheetDelegate delegate,
                 boolean isCustomTab) {
             super(
+                    context,
                     controller,
                     lifecycleDispatcher,
                     tabProvider,
@@ -111,6 +114,7 @@ public class CreatorActivity extends SnackbarActivity {
 
         TabShareDelegateImpl tabshareDelegate =
                 new TabShareDelegateImpl(
+                        this,
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,
@@ -139,6 +143,7 @@ public class CreatorActivity extends SnackbarActivity {
 
         ShareDelegate shareDelegate =
                 new ShareDelegateImpl(
+                        this,
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,

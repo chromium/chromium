@@ -178,12 +178,7 @@ void RecordPreClassificationCheckResultWithAndWithoutSuffix(
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
 }
 
-bool ShouldShowWarning(bool is_phishing,
-                       std::optional<IntelligentScanVerdict> verdict) {
-  if (is_phishing) {
-    return true;
-  }
-
+bool ShouldShowScamWarning(std::optional<IntelligentScanVerdict> verdict) {
   if (!verdict.has_value() ||
       *verdict ==
           IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
@@ -203,6 +198,22 @@ bool ShouldShowWarning(bool is_phishing,
                kClientSideDetectionShowLlamaScamVerdictWarning)) &&
           *verdict ==
               IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
+safe_browsing::ThreatSubtype GetThreatSubtype(
+    IntelligentScanVerdict intelligent_scan_verdict) {
+  switch (intelligent_scan_verdict) {
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
+      return safe_browsing::ThreatSubtype::
+          SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
+    default:
+      NOTREACHED();
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -706,7 +717,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   // Cancel any ongoing on device sessions.
-  csd_service_->ResetOnDeviceSession();
+  csd_service_->ResetOnDeviceSession(/*inquiry_complete=*/false);
 
   // If we navigate away and there currently is a pending phishing report
   // request we have to cancel it to make sure we don't display an interstitial
@@ -731,6 +742,11 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
       probability_for_accepting_hc_allowlist_trigger_,
       weak_factory_.GetWeakPtr());
   classification_request_->Start();
+}
+
+void ClientSideDetectionHost::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  current_navigation_id_ = navigation_handle->GetNavigationId();
 }
 
 void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
@@ -1044,7 +1060,9 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       "SBClientPhishing.LocalModelDetectsPhishing." + request_type_name,
       verdict->is_phishing());
 
-  bool force_request_from_rt_url_lookup = false;
+  bool force_request_from_rt_url_lookup =
+      verdict->client_side_detection_type() ==
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST;
 
   if (verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
@@ -1193,7 +1211,6 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       verdict->llama_forced_trigger_info().intelligent_scan();
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-      csd_service_->IsOnDeviceModelAvailable() &&
       (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
     if (is_keyboard_lock_requested &&
         did_match_high_confidence_allowlist.has_value() &&
@@ -1201,6 +1218,27 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       IntelligentScanInfo intelligent_scan_info;
       intelligent_scan_info.set_no_info_reason(
           IntelligentScanInfo::ALLOWLISTED);
+      *verdict->mutable_intelligent_scan_info() =
+          std::move(intelligent_scan_info);
+      MaybeGetAccessToken(std::move(verdict),
+                          did_match_high_confidence_allowlist);
+      return;
+    }
+
+    bool on_device_model_available = csd_service_->IsOnDeviceModelAvailable();
+
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+        on_device_model_available);
+
+    if (!on_device_model_available) {
+      // When the model is not available at the time of inquiry, we want to log
+      // the current status of the model fetch.
+      csd_service_->LogOnDeviceModelEligibilityReason();
+
+      IntelligentScanInfo intelligent_scan_info;
+      intelligent_scan_info.set_no_info_reason(
+          IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
       *verdict->mutable_intelligent_scan_info() =
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
@@ -1305,8 +1343,10 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
         ->set_network_result(response_code.value());
   }
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionBrandAndIntentForScamDetection) &&
+  if ((base::FeatureList::IsEnabled(
+           kClientSideDetectionBrandAndIntentForScamDetection) ||
+       base::FeatureList::IsEnabled(
+           kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       intelligent_scan_verdict.has_value()) {
     base::UmaHistogramExactLinear("SBClientPhishing.IntelligentScanVerdict",
@@ -1314,11 +1354,14 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
                                   IntelligentScanVerdict_MAX + 1);
   }
 
+  bool should_show_scam_warning =
+      ShouldShowScamWarning(intelligent_scan_verdict);
+
   // We will only show the warning if |is_phishing| is true, or while the
   // feature is enabled, the intelligent scan verdict matches the corresponding
   // feature. When a feature is cleaned up, remove the feature enabled check
   // alongside the corresponding IntelligentScanVerdict.
-  if (ShouldShowWarning(is_phishing, intelligent_scan_verdict)) {
+  if (is_phishing || should_show_scam_warning) {
     if (!is_from_cache && did_match_high_confidence_allowlist.has_value()) {
       base::UmaHistogramBoolean(
           "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
@@ -1342,6 +1385,12 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
+      resource.navigation_id = current_navigation_id_;
+      // When we present a scam warning, we want to add separate interstitial
+      // metrics to track specifics.
+      if (should_show_scam_warning) {
+        resource.threat_subtype = GetThreatSubtype(*intelligent_scan_verdict);
+      }
       resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
           CreateForRenderFrameToken(
               primary_main_frame_id.child_id,
@@ -1364,15 +1413,49 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
 bool ClientSideDetectionHost::HasForceRequestFromRtUrlLookup() {
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
 
-  if (!cache_manager || !current_url_.is_valid()) {
+  if (!cache_manager || !current_url_.is_valid() ||
+      !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return false;
   }
 
-  safe_browsing::ClientSideDetectionType cached_csd_type =
-      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(current_url_);
-  return cached_csd_type ==
-             safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
-         IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
+  if (cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          current_url_) ==
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionRedirectChainKillswitch)) {
+    return false;
+  }
+
+  std::vector<GURL> redirect_chain = web_contents()
+                                         ->GetController()
+                                         .GetLastCommittedEntry()
+                                         ->GetRedirectChain();
+
+  // We pop the last element because if the redirect chain is not empty, the
+  // last element will be the current URL.
+  if (!redirect_chain.empty()) {
+    redirect_chain.pop_back();
+  }
+
+  bool redirect_chain_contains_force_request = false;
+  for (GURL url : redirect_chain) {
+    if (cache_manager->GetCachedRealTimeUrlClientSideDetectionType(url) ==
+        safe_browsing::ClientSideDetectionType::FORCE_REQUEST) {
+      redirect_chain_contains_force_request = true;
+      break;
+    }
+  }
+
+  if (!redirect_chain.empty()) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.RedirectChainContainsForceRequest",
+        redirect_chain_contains_force_request);
+  }
+
+  return redirect_chain_contains_force_request;
 }
 
 void ClientSideDetectionHost::set_client_side_detection_service(

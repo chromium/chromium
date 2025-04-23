@@ -92,8 +92,9 @@ class DevToolsFileHelper {
       base::OnceCallback<void(SelectedCallback selected_callback,
                               CanceledCallback canceled_callback,
                               const base::FilePath& default_path)>;
-  using ShowInfoBarCallback =
-      base::RepeatingCallback<void(const std::u16string&,
+  using HandlePermissionsCallback =
+      base::RepeatingCallback<void(const std::string&,
+                                   const std::u16string&,
                                    base::OnceCallback<void(bool)>)>;
 
   // Saves |content| to the file and associates its path with given |url|.
@@ -129,7 +130,7 @@ class DevToolsFileHelper {
   // must not be a valid UUID).
   void AddFileSystem(const std::string& type,
                      SelectFileCallback select_file_callback,
-                     const ShowInfoBarCallback& show_info_bar_callback);
+                     const HandlePermissionsCallback& show_info_bar_callback);
 
   // Upgrades dragged file system permissions to a read-write access.
   // Shows infobar by means of |show_info_bar_callback| to let the user decide
@@ -141,7 +142,7 @@ class DevToolsFileHelper {
   // |callback|.
   void UpgradeDraggedFileSystemPermissions(
       const std::string& file_system_url,
-      const ShowInfoBarCallback& show_info_bar_callback);
+      const HandlePermissionsCallback& show_info_bar_callback);
 
   // Attempts to automatically connect to the |file_system_path| (identified
   // by path and |file_system_uuid|). If this is the first time that the
@@ -153,7 +154,7 @@ class DevToolsFileHelper {
       const std::string& file_system_path,
       const base::Uuid& file_system_uuid,
       bool add_if_missing,
-      const ShowInfoBarCallback& show_info_bar_callback,
+      const HandlePermissionsCallback& show_info_bar_callback,
       ConnectCallback connect_callback);
 
   // Disconnects the automatically connected |file_system_path|.
@@ -182,9 +183,10 @@ class DevToolsFileHelper {
                           bool is_base64,
                           SaveCallback callback,
                           const base::FilePath& path);
-  void InnerAddFileSystem(const ShowInfoBarCallback& show_info_bar_callback,
-                          const std::string& type,
-                          const base::FilePath& path);
+  void InnerAddFileSystem(
+      const HandlePermissionsCallback& show_info_bar_callback,
+      const std::string& type,
+      const base::FilePath& path);
   void AddUserConfirmedFileSystem(const std::string& type,
                                   const base::FilePath& path,
                                   bool allowed);

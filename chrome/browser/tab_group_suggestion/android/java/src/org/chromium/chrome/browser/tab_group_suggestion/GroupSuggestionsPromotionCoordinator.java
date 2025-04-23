@@ -21,6 +21,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator for a GroupSuggestions promotion UI. */
 @NullMarked
 public class GroupSuggestionsPromotionCoordinator {
+    public static final String CREATE_SUGGESTIONS_PROMOTION_UI_PARAM =
+            "create_suggestions_promotion_ui";
+
     private final @NonNull PropertyModelChangeProcessor mModelChangeProcessor;
     private final @NonNull GroupSuggestionsPromotionMediator mMediator;
 

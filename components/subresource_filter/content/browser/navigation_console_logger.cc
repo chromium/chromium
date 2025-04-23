@@ -48,8 +48,9 @@ NavigationConsoleLogger::NavigationConsoleLogger(
 
 void NavigationConsoleLogger::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  if (handle != handle_)
+  if (handle != handle_) {
     return;
+  }
 
   // The root frame navigation has finished.
   if (handle->HasCommitted() && !handle->IsErrorPage()) {

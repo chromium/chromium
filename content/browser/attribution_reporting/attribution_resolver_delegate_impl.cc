@@ -54,8 +54,8 @@ AttributionResolverDelegateImpl::AttributionResolverDelegateImpl(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode)
     : AttributionResolverDelegateImpl(noise_mode,
-                                     delay_mode,
-                                     AttributionConfig()) {}
+                                      delay_mode,
+                                      AttributionConfig()) {}
 
 AttributionResolverDelegateImpl::AttributionResolverDelegateImpl(
     AttributionNoiseMode noise_mode,

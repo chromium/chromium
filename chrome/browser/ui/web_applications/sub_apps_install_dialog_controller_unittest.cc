@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -68,7 +67,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName2));
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
-  views::Widget* widget = CreateSubAppsInstallDialogWidget(
+  views::Widget* widget = SubAppsInstallDialogController::CreateWidget(
       base::ASCIIToUTF16(std::string(kParentAppName)), sub_apps,
       base::DoNothing(), GetContext());
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();

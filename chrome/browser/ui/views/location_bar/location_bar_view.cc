@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
@@ -374,7 +375,8 @@ void LocationBarView::Init() {
       .hide_icon_on_space_constraint = false};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(
-          page_action_items, page_action_params));
+          page_action_items, page_actions::PageActionPropertiesProvider(),
+          page_action_params));
 
   PageActionIconParams params;
   // |browser_| may be null when LocationBarView is used for non-Browser windows
@@ -397,6 +399,7 @@ void LocationBarView::Init() {
     }
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
+    params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
     params.types_enabled.push_back(PageActionIconType::kChangePassword);
     if (!apps::features::ShouldShowLinkCapturingUX()) {
@@ -418,10 +421,6 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kFilledCardInformation);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
-
-  // TODO(crbug.com/40164487): Place this in the proper order upon having final
-  // mocks.
-  params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
 
   if (browser_ && lens::features::IsOmniboxEntryPointEnabled()) {
     // The persistent compact entrypoint should be positioned directly before
@@ -799,7 +798,7 @@ void LocationBarView::Layout(PassKey) {
                  template_url->policy_origin() ==
                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
         const SkBitmap* bitmap =
-            omnibox_view_->model()->GetPopupRichSuggestionBitmap(keyword);
+            omnibox_view_->model()->GetIconBitmap(template_url->favicon_url());
         if (bitmap) {
           image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
         }
@@ -1718,7 +1717,7 @@ ui::ImageModel LocationBarView::GetLocationIcon(
     auto* color_provider = location_icon_view_->GetColorProvider();
     if (background && color_provider) {
       dark_mode = color_utils::IsDark(
-          background->color().ConvertToSkColor(color_provider));
+          background->color().ResolveToSkColor(color_provider));
     }
   }
 

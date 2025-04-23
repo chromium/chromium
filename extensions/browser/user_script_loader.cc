@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/user_script_loader.h"
 
 #include <stddef.h>
@@ -402,7 +397,7 @@ base::ReadOnlySharedMemoryRegion UserScriptLoader::Serialize(
   }
 
   // Copy the pickle to shared memory.
-  memcpy(shared_memory.mapping.memory(), pickle.data(), pickle.size());
+  shared_memory.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(pickle);
   return std::move(shared_memory.region);
 }
 

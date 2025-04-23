@@ -132,9 +132,9 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                           base::ASCIIToUTF16(std::string_view(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager.FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, form,
-                                      triggered_field.global_id(), card,
-                                      AutofillTriggerSource::kPopup);
+  manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                            triggered_field.global_id(), &card,
+                            AutofillTriggerSource::kPopup);
 }
 
 // Returns the values of all fields in the  frames of `web_contents`.

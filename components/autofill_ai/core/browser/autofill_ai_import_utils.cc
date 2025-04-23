@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -146,7 +148,8 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
               attributes,
               &std::pair<const AttributeType, AttributeInstance>::second),
           base::Uuid::GenerateRandomV4(),
-          /*nickname=*/std::string(""), base::Time::Now());
+          /*nickname=*/std::string(""), base::Time::Now(), /*use_count=*/0,
+          /*use_date=*/base::Time::Now());
       if (!EntitySatisfiesImportConstraints(entity)) {
         continue;
       }
@@ -155,6 +158,31 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   }
 
   return entities_found_in_form;
+}
+
+std::optional<std::u16string> MaybeGetLocalizedDate(
+    const autofill::AttributeInstance& attribute) {
+  autofill::FieldType field_type = attribute.type().field_type();
+  if (!IsDateFieldType(field_type)) {
+    return std::nullopt;
+  }
+  auto get_part = [&](std::u16string format) {
+    int part = 0;
+    // The app_locale is irrelevant for dates.
+    bool success = base::StringToInt(
+        attribute.GetInfo(field_type, /*app_locale=*/"", format), &part);
+    return success ? part : 0;
+  };
+  base::Time time;
+  bool success = base::Time::FromLocalExploded(
+      base::Time::Exploded{.year = get_part(u"YYYY"),
+                           .month = get_part(u"M"),
+                           .day_of_month = get_part(u"D")},
+      &time);
+  if (!success) {
+    return std::nullopt;
+  }
+  return base::LocalizedTimeFormatWithPattern(time, "yMMMd");
 }
 
 }  // namespace autofill_ai

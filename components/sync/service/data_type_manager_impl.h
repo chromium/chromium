@@ -57,7 +57,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
-      base::OnceCallback<void(DataTypeSet)> callback) const override;
+      base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+      const override;
   void GetLocalDataDescriptions(
       DataTypeSet types,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>

@@ -16,13 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -46,6 +47,7 @@ import org.chromium.url.GURL;
 /**
  * Represents ephemeral tab content and the toolbar, which can be included inside the bottom sheet.
  */
+@NullMarked
 public class EphemeralTabSheetContent implements BottomSheetContent {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
@@ -69,11 +71,11 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
 
-    private WebContents mWebContents;
-    private ContentView mWebContentView;
+    private @Nullable WebContents mWebContents;
+    private @Nullable ContentView mWebContentView;
     private ThinWebView mThinWebView;
     private FadingShadowView mShadow;
-    private Drawable mCurrentFavicon;
+    private @Nullable Drawable mCurrentFavicon;
     private ImageView mFaviconView;
 
     /**
@@ -133,6 +135,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      * Create a ThinWebView, add it to the view hierarchy, which represents the contents of the
      * bottom sheet.
      */
+    @EnsuresNonNull({"mThinWebView", "mSheetContentView"})
     private void createThinWebView(int maxSheetHeight, IntentRequestTracker intentRequestTracker) {
         mThinWebView =
                 ThinWebViewFactory.create(
@@ -234,10 +237,15 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     /** Sets the ephemeral tab URL. */
-    public void updateURL(GURL url) {
+    public void updateURL(@Nullable GURL url) {
         TextView originView = mToolbarView.findViewById(R.id.origin);
-        originView.setText(
-                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
+        if (url == null) {
+            originView.setText("");
+        } else {
+            originView.setText(
+                    UrlFormatter.formatUrlForSecurityDisplay(
+                            url, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
+        }
     }
 
     /** Sets the security icon. */
@@ -279,7 +287,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public Integer getBackgroundColor() {
+    public @Nullable Integer getBackgroundColor() {
         return null;
     }
 
@@ -344,7 +352,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.ephemeral_tab_sheet_description);
     }
 

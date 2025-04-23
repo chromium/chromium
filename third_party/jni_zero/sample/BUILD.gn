@@ -7,12 +7,12 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 testonly = true
 
-generate_jni("sample_header") {
+generate_jni("sample_jni") {
   sources = [ "java/src/org/jni_zero/sample/Sample.java" ]
 }
 
 android_library("sample_java") {
-  srcjar_deps = [ ":sample_header" ]
+  srcjar_deps = [ ":sample_jni" ]
   sources = [
     "java/src/org/jni_zero/sample/Sample.java",
     "java/src/org/jni_zero/sample/SampleActivity.java",
@@ -22,7 +22,7 @@ android_library("sample_java") {
 }
 
 source_set("sample_native_side") {
-  deps = [ ":sample_header" ]
+  deps = [ ":sample_jni" ]
   sources = [ "sample.cc" ]
 }
 

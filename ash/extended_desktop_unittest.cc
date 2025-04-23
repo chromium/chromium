@@ -232,7 +232,8 @@ TEST_F(ExtendedDesktopTest, SystemModal) {
   EXPECT_EQ(root_windows[0], Shell::GetRootWindowForNewWindows());
 
   // Open system modal. Make sure it's on 2nd root window and active.
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
+  auto delegate = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   views::Widget* modal_widget = views::Widget::CreateWindowWithContext(
       delegate.release(), GetContext(), gfx::Rect(1200, 100, 100, 100));

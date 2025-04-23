@@ -10,8 +10,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(PageloadForegroundDurationTabHelper)
-
 PageloadForegroundDurationTabHelper::PageloadForegroundDurationTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {

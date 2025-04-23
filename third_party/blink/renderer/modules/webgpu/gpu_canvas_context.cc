@@ -173,9 +173,9 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 
   // If there is a current texture, create a snapshot from it.
   if (texture_ && !texture_->IsDestroyed()) {
-    return SnapshotInternal(texture_->GetHandle(), swap_buffers_->Size());
+    return SnapshotInternal(texture_->GetHandle());
   } else if (swap_texture_) {
-    return SnapshotInternal(swap_texture_->GetHandle(), swap_buffers_->Size());
+    return SnapshotInternal(swap_texture_->GetHandle());
   }
 
   // If there is no current texture, return a snapshot of the front buffer if
@@ -185,10 +185,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
     return nullptr;
   }
 
-  return SnapshotInternal(
-      front_buffer_texture->GetTexture(),
-      gfx::Size(front_buffer_texture->GetTexture().GetWidth(),
-                front_buffer_texture->GetTexture().GetHeight()));
+  return SnapshotInternal(front_buffer_texture->GetTexture());
 }
 
 bool GPUCanvasContext::PaintRenderingResultsToCanvas(
@@ -203,7 +200,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
   }
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      Host()->GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
     return false;
   }
@@ -244,9 +241,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
   }
 
-  return CopyTextureToResourceProvider(
-      texture, gfx::Size(texture.GetWidth(), texture.GetHeight()),
-      resource_provider);
+  return CopyTextureToResourceProvider(texture, resource_provider);
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
@@ -627,6 +622,11 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   }
   DCHECK(device_);
 
+  // Validate the texture descriptor as required by the spec for
+  // GPUCanvasContext.getCurrentTexture(). This is required on each call,
+  // so it must appear before the cached texture early-out below.
+  device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
+
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrentTexture is called multiple
   // time, the same texture should be returned. |texture_| is set to
@@ -825,9 +825,10 @@ void GPUCanvasContext::CopyToSwapTexture() {
 
 bool GPUCanvasContext::CopyTextureToResourceProvider(
     const wgpu::Texture& texture,
-    const gfx::Size& size,
     CanvasResourceProvider* resource_provider) const {
   DCHECK(resource_provider);
+
+  gfx::Size size(texture.GetWidth(), texture.GetHeight());
   DCHECK_EQ(resource_provider->Size(), size);
 
   // This method will copy the contents of `texture` to `resource_provider`'s
@@ -842,13 +843,13 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
+  gpu::SyncToken sync_token;
   auto dst_client_si =
-      resource_provider->GetBackingClientSharedImageForOverwrite();
+      resource_provider->GetBackingClientSharedImageForExternalWrite(
+          &sync_token, gpu::SharedImageUsageSet());
   if (!dst_client_si) {
     return false;
   }
-
-  auto* ri = shared_context_wrapper->ContextProvider().RasterInterface();
 
   if (!GetContextProviderWeakPtr()) {
     return false;
@@ -862,8 +863,6 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   DCHECK(reservation.texture);
   wgpu::Texture reserved_texture = wgpu::Texture::Acquire(reservation.texture);
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   wgpu::TextureUsage usage =
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
@@ -946,14 +945,15 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 
   webgpu->DissociateMailbox(reservation.id, reservation.generation);
   webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  resource_provider->EndExternalWrite(sync_token);
 
   return true;
 }
 
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
-    const wgpu::Texture& texture,
-    const gfx::Size& size) const {
+    const wgpu::Texture& texture) const {
+  gfx::Size size(texture.GetWidth(), texture.GetHeight());
+
   // We tag the SharedImage inside the WebGPUImageProvider with display usages
   // since there are uncommon paths which may use this snapshot for compositing.
   // These paths are usually related to either printing or either video and
@@ -965,8 +965,9 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   if (!resource_provider)
     return nullptr;
 
-  if (!CopyTextureToResourceProvider(texture, size, resource_provider.get()))
+  if (!CopyTextureToResourceProvider(texture, resource_provider.get())) {
     return nullptr;
+  }
 
   return resource_provider->Snapshot(FlushReason::kNone);
 }

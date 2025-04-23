@@ -467,10 +467,18 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   leaf->SetBasicConstraints(/*is_ca=*/cert_config_.leaf_is_ca, /*path_len=*/-1);
   leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
+  if (!cert_config_.subject_tlv.empty()) {
+    leaf->SetSubjectTLV(cert_config_.subject_tlv);
+  }
+
   if (!cert_config_.policy_oids.empty()) {
     leaf->SetCertificatePolicies(cert_config_.policy_oids);
     if (intermediate)
       intermediate->SetCertificatePolicies(cert_config_.policy_oids);
+  }
+
+  if (!cert_config_.qwac_qc_types.empty()) {
+    leaf->SetQwacQcStatements(cert_config_.qwac_qc_types);
   }
 
   if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
@@ -546,13 +554,14 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA ||
-      cert_config_.intermediate == IntermediateType::kMissing) {
-    // Server certificate chain does not include the intermediate.
-    x509_cert_ = leaf->GetX509Certificate();
-  } else {
-    // Server certificate chain will include the intermediate, if there is one.
+  cert_chain_.push_back(leaf->DupCertBuffer());
+  if (cert_config_.intermediate == IntermediateType::kInHandshake) {
+    // Server certificate chain will include the intermediate.
     x509_cert_ = leaf->GetX509CertificateChain();
+    cert_chain_.push_back(intermediate->DupCertBuffer());
+  } else {
+    // Server certificate chain does not include the intermediate (if any).
+    x509_cert_ = leaf->GetX509Certificate();
   }
 
   if (intermediate) {
@@ -644,8 +653,13 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
     }
   }
 
-  context_ =
-      CreateSSLServerContext(x509_cert_.get(), private_key_.get(), ssl_config_);
+  if (!cert_chain_.empty()) {
+    context_ =
+        CreateSSLServerContext(cert_chain_, private_key_.get(), ssl_config_);
+  } else {
+    context_ = CreateSSLServerContext(x509_cert_.get(), private_key_.get(),
+                                      ssl_config_);
+  }
   return true;
 }
 
@@ -885,8 +899,6 @@ std::string EmbeddedTestServer::GetCertificateName() const {
       return "sha1_leaf.pem";
     case CERT_OK_BY_INTERMEDIATE:
       return "ok_cert_by_intermediate.pem";
-    case CERT_BAD_VALIDITY:
-      return "bad_validity.pem";
     case CERT_TEST_NAMES:
       return "test_names.pem";
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:

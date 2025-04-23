@@ -63,7 +63,7 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
       std::move(dialog_model), ui::mojom::ModalType::kSystem,
       /*autosize=*/false);
   dialog_delegate_ = bubble.get();
-  bubble->SetOwnedByWidget(true);
+  bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   constrained_window::CreateBrowserModalDialogViews(std::move(bubble),
                                                     native_view)
       ->Show();

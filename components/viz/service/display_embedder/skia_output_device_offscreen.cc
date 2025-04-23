@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -33,7 +34,7 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
-                       context_state->graphite_context(),
+                       context_state->graphite_shared_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_state_(context_state),
@@ -146,7 +147,7 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
       backbuffer_estimated_size_ = estimated_size;
     }
   } else {
-    CHECK(context_state_->graphite_context());
+    CHECK(context_state_->graphite_shared_context());
     if (!has_alpha_) {
       is_emulated_rgbx_ = true;
     }
@@ -181,10 +182,10 @@ void SkiaOutputDeviceOffscreen::DiscardBackbuffer() {
     memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
     backbuffer_estimated_size_ = 0u;
   } else if (graphite_texture_.isValid()) {
-    auto* graphite_context = context_state_->graphite_context();
-    CHECK(graphite_context);
+    auto* graphite_shared_context = context_state_->graphite_shared_context();
+    CHECK(graphite_shared_context);
     sk_surface_.reset();
-    graphite_context->deleteBackendTexture(graphite_texture_);
+    graphite_shared_context->deleteBackendTexture(graphite_texture_);
     graphite_texture_ = skgpu::graphite::BackendTexture();
     memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
     backbuffer_estimated_size_ = 0u;
@@ -204,7 +205,7 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
               : kBottomLeft_GrSurfaceOrigin,
           sample_count_, sk_color_type_, sk_color_space_, &surface_props);
     } else {
-      CHECK(context_state_->graphite_context());
+      CHECK(context_state_->graphite_shared_context());
       sk_surface_ = SkSurfaces::WrapBackendTexture(
           context_state_->gpu_main_graphite_recorder(), graphite_texture_,
           sk_color_type_, sk_color_space_, &surface_props);
@@ -233,8 +234,9 @@ void SkiaOutputDeviceOffscreen::ReadbackForTesting(
   };
 
   ReadPixelsContext context;
-  if (auto* graphite_context = context_state_->graphite_context()) {
-    graphite_context->asyncRescaleAndReadPixels(
+  if (auto* graphite_shared_context =
+          context_state_->graphite_shared_context()) {
+    graphite_shared_context->asyncRescaleAndReadPixels(
         sk_surface_.get(), sk_surface_->imageInfo(),
         SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,

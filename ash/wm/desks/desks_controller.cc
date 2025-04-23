@@ -800,9 +800,10 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
 
   UMA_HISTOGRAM_ENUMERATION(kDeskSwitchHistogramName, source);
 
-  const int target_desk_index = GetDeskIndex(desk);
-  if (source != DesksSwitchSource::kDeskRemoved &&
-      source != DesksSwitchSource::kDeskButtonDeskRemoved) {
+  const bool is_removal = source == DesksSwitchSource::kDeskRemoved ||
+                          source == DesksSwitchSource::kDeskButtonDeskRemoved;
+
+  if (!is_removal) {
     // Desk removal has its own a11y alert.
     Shell::Get()
         ->accessibility_controller()
@@ -810,8 +811,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
             IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_ACTIVATED, desk->name()));
   }
 
-  if (source == DesksSwitchSource::kDeskRemoved ||
-      source == DesksSwitchSource::kDeskButtonDeskRemoved ||
+  if (is_removal ||
       (source == DesksSwitchSource::kRemovalUndone && in_overview) ||
       is_user_switch) {
     // Desk switches due to desks removal, undoing the removal of an active desk
@@ -829,6 +829,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     return;
   }
 
+  // Desk activation will be done during the animation.
+
+  const int starting_desk_index = GetDeskIndex(active_desk());
+  const int target_desk_index = GetDeskIndex(desk);
+
   // When switching desks we want to update window activation when leaving
   // overview or if nothing was active prior to switching desks. This will
   // ensure that after switching desks, we will try to focus a candidate window.
@@ -844,7 +849,6 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
       IsParentSwitchableContainer(active_window) ||
       IsApplistActiveInTabletMode(active_window);
 
-  const int starting_desk_index = GetDeskIndex(active_desk());
   animation_ = std::make_unique<DeskActivationAnimation>(
       this, starting_desk_index, target_desk_index, source,
       update_window_activation);
@@ -1342,8 +1346,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   auto& app_restore_data = *launch_list.begin()->second;
 
   // No need to shift a window that is visible on all desks.
-  // TODO(sammiequon): Remove this property if the window on the new desk should
-  // not be visible on all desks.
   if (!desks_util::IsWindowVisibleOnAllWorkspaces(
           existing_app_instance_window)) {
     // The uuid of the target desk is found in `app_restore_data`. If it isn't
@@ -1457,9 +1459,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   }
 
   WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
-
-  // TODO(sammiequon): Read something for chromevox, either here or when the
-  // whole template launches.
   return false;
 }
 
@@ -1570,6 +1569,14 @@ void DesksController::OnWindowActivating(ActivationReason reason,
   if (!window_desk || window_desk == active_desk_)
     return;
 
+  // If the identified desk is not in the set of current desks (that is, those
+  // that are visible in the mini view), then we ignore the activation. This can
+  // happen in cases when close all is used and the window is on a desk that is
+  // about to go away.
+  if (!HasDesk(window_desk)) {
+    return;
+  }
+
   ActivateDesk(window_desk, DesksSwitchSource::kWindowActivated);
 }
 
@@ -1613,27 +1620,6 @@ void DesksController::OnFirstSessionStarted() {
   current_account_id_ =
       Shell::Get()->session_controller()->GetActiveAccountId();
   desks_restore_util::RestorePrimaryUserDesks();
-
-  // The DeskProfilesDelegate will be available if lacros and desk profiles are
-  // both enabled.
-  desk_profiles_observer_.Reset();
-  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
-    desk_profiles_observer_.Observe(delegate);
-  }
-}
-
-void DesksController::OnProfileRemoved(uint64_t profile_id) {
-  auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-  CHECK(delegate);
-
-  uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
-  for (auto& desk : desks_) {
-    // If this desk's profile has been removed, revert it to the primary user's
-    // profile (which cannot be deleted).
-    if (desk->lacros_profile_id() == profile_id) {
-      desk->SetLacrosProfileId(primary_profile_id);
-    }
-  }
 }
 
 void DesksController::FireMetricsTimerForTesting() {

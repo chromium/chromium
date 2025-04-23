@@ -105,6 +105,19 @@ using std::string;
 
 namespace net::test {
 
+void TestConnectionChangeObserver::OnSessionClosed() {
+  session_closed_++;
+}
+
+void TestConnectionChangeObserver::OnConnectionFailed() {
+  connection_failed_++;
+}
+
+void TestConnectionChangeObserver::OnNetworkEvent(NetworkChangeEvent event) {
+  network_event_++;
+  last_network_event_ = event;
+}
+
 QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
     QuicSessionPoolTestBase* test,
     QuicSessionPool* pool)
@@ -127,6 +140,7 @@ int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
       secure_dns_policy, require_dns_https_alpn, cert_verify_flags, url,
       net_log, &net_error_details,
       MultiplexedSessionCreationInitiator::kUnknown,
+      connection_management_config,
       std::move(failed_on_default_network_callback), std::move(callback));
 }
 QuicSessionPoolTestBase::QuicSessionPoolTestBase(

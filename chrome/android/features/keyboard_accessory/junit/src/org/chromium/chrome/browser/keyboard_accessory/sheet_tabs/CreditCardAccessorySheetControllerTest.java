@@ -35,8 +35,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -60,7 +60,7 @@ public class CreditCardAccessorySheetControllerTest {
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mMockProfile;
-    @Mock private PersonalDataManager mMockPersonalDataManager;
+    @Mock private AutofillImageFetcher mMockImageFetcher;
 
     private CreditCardAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -68,7 +68,7 @@ public class CreditCardAccessorySheetControllerTest {
     @Before
     public void setUp() {
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
-        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         mCoordinator =
                 new CreditCardAccessorySheetCoordinator(
                         RuntimeEnvironment.application, mMockProfile, null);
@@ -180,16 +180,14 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
                 .get(0)
-                .setPromoCode(
-                        new UserInfoField.Builder()
+                .initialize(
+                        /* promoCode= */ new UserInfoField.Builder()
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
-                                .build());
-        testData.getPromoCodeInfoList()
-                .get(0)
-                .setDetailsText("Get $50 off when you use this code at checkout.");
+                                .build(),
+                        /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);
@@ -234,16 +232,14 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
                 .get(0)
-                .setPromoCode(
-                        new UserInfoField.Builder()
+                .initialize(
+                        /* promoCode= */ new UserInfoField.Builder()
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
-                                .build());
-        testData.getPromoCodeInfoList()
-                .get(0)
-                .setDetailsText("Get $50 off when you use this code at checkout.");
+                                .build(),
+                        /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);

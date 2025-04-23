@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] reduceLogSumExp float32 0D constant tensor default options
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual 0.79736328125 should be close enough to expected 0.7974132895469666 by the acceptable 20 ULP distance, but they have 839 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 0D constant tensor empty axes
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual 0.79736328125 should be close enough to expected 0.7974132895469666 by the acceptable 20 ULP distance, but they have 839 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 1D constant tensor empty axes
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual 0.79736328125 should be close enough to expected 0.7974132895469666 by the acceptable 20 ULP distance, but they have 839 ULP distance expected true got false
-Harness: the test ran to completion.
-

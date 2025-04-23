@@ -209,10 +209,7 @@ void av1_dr_prediction_z3_sse4_1(uint8_t *dst, ptrdiff_t stride, int bw, int bh,
 void av1_dr_prediction_z3_avx2(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 RTCD_EXTERN void (*av1_dr_prediction_z3)(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 
-void av1_fdwt8x8_uint8_input_c(const uint8_t* input,
-                               tran_low_t* output,
-                               int stride,
-                               int hbd);
+void av1_fdwt8x8_uint8_input_c(const uint8_t *input, tran_low_t *output, int stride, int hbd);
 #define av1_fdwt8x8_uint8_input av1_fdwt8x8_uint8_input_c
 
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
@@ -418,59 +415,15 @@ void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CO
 void av1_resize_and_extend_frame_ssse3(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 RTCD_EXTERN void (*av1_resize_and_extend_frame)(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 
-void av1_resize_horz_dir_c(const uint8_t* const input,
-                           int in_stride,
-                           uint8_t* intbuf,
-                           int height,
-                           int filtered_length,
-                           int width2);
-void av1_resize_horz_dir_sse2(const uint8_t* const input,
-                              int in_stride,
-                              uint8_t* intbuf,
-                              int height,
-                              int filtered_length,
-                              int width2);
-void av1_resize_horz_dir_avx2(const uint8_t* const input,
-                              int in_stride,
-                              uint8_t* intbuf,
-                              int height,
-                              int filtered_length,
-                              int width2);
-RTCD_EXTERN void (*av1_resize_horz_dir)(const uint8_t* const input,
-                                        int in_stride,
-                                        uint8_t* intbuf,
-                                        int height,
-                                        int filtered_length,
-                                        int width2);
+void av1_resize_horz_dir_c(const uint8_t *const input, int in_stride, uint8_t *intbuf, int height, int filtered_length, int width2);
+void av1_resize_horz_dir_sse2(const uint8_t *const input, int in_stride, uint8_t *intbuf, int height, int filtered_length, int width2);
+void av1_resize_horz_dir_avx2(const uint8_t *const input, int in_stride, uint8_t *intbuf, int height, int filtered_length, int width2);
+RTCD_EXTERN void (*av1_resize_horz_dir)(const uint8_t *const input, int in_stride, uint8_t *intbuf, int height, int filtered_length, int width2);
 
-bool av1_resize_vert_dir_c(uint8_t* intbuf,
-                           uint8_t* output,
-                           int out_stride,
-                           int height,
-                           int height2,
-                           int width2,
-                           int start_col);
-bool av1_resize_vert_dir_sse2(uint8_t* intbuf,
-                              uint8_t* output,
-                              int out_stride,
-                              int height,
-                              int height2,
-                              int width2,
-                              int start_col);
-bool av1_resize_vert_dir_avx2(uint8_t* intbuf,
-                              uint8_t* output,
-                              int out_stride,
-                              int height,
-                              int height2,
-                              int width2,
-                              int start_col);
-RTCD_EXTERN bool (*av1_resize_vert_dir)(uint8_t* intbuf,
-                                        uint8_t* output,
-                                        int out_stride,
-                                        int height,
-                                        int height2,
-                                        int width2,
-                                        int start_col);
+bool av1_resize_vert_dir_c(uint8_t *intbuf, uint8_t *output, int out_stride, int height, int height2, int width2, int start_col);
+bool av1_resize_vert_dir_sse2(uint8_t *intbuf, uint8_t *output, int out_stride, int height, int height2, int width2, int start_col);
+bool av1_resize_vert_dir_avx2(uint8_t *intbuf, uint8_t *output, int out_stride, int height, int height2, int width2, int start_col);
+RTCD_EXTERN bool (*av1_resize_vert_dir)(uint8_t *intbuf, uint8_t *output, int out_stride, int height, int height2, int width2, int start_col);
 
 void av1_round_shift_array_c(int32_t *arr, int size, int bit);
 void av1_round_shift_array_sse4_1(int32_t *arr, int size, int bit);
@@ -691,13 +644,9 @@ static void setup_rtcd_internal(void)
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;
     if (flags & HAS_SSSE3) av1_resize_and_extend_frame = av1_resize_and_extend_frame_ssse3;
     av1_resize_horz_dir = av1_resize_horz_dir_sse2;
-    if (flags & HAS_AVX2) {
-      av1_resize_horz_dir = av1_resize_horz_dir_avx2;
-    }
+    if (flags & HAS_AVX2) av1_resize_horz_dir = av1_resize_horz_dir_avx2;
     av1_resize_vert_dir = av1_resize_vert_dir_sse2;
-    if (flags & HAS_AVX2) {
-      av1_resize_vert_dir = av1_resize_vert_dir_avx2;
-    }
+    if (flags & HAS_AVX2) av1_resize_vert_dir = av1_resize_vert_dir_avx2;
     av1_round_shift_array = av1_round_shift_array_c;
     if (flags & HAS_SSE4_1) av1_round_shift_array = av1_round_shift_array_sse4_1;
     av1_txb_init_levels = av1_txb_init_levels_c;

@@ -5,20 +5,16 @@
 #ifndef MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
 #define MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
 
-#include "build/build_config.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_config.h"
-#include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/channel_layout.h"
 #include "media/base/container_names.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/decoder.h"
-#include "media/base/decoder_status.h"
-#include "media/base/decrypt_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/eme_constants.h"
@@ -31,7 +27,6 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/sample_format.h"
 #include "media/base/subsample_entry.h"
-#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_transformation.h"
@@ -40,12 +35,15 @@
 #include "media/base/watch_time_keys.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
-#include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 #include "media/base/media_drm_key_type.h"
 #endif  // BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
+
+// Note that this file historically used the same value as
+// ipc/ipc_message_macros.h, and not `COMPONENT_EXPORT(MEDIA)`.
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 // Enum traits.
 

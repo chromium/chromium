@@ -105,6 +105,9 @@ int test_decoder_code0(int no_fuzz)
       for(fec=0;fec<2;fec++)
       {
          opus_int32 dur;
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+         opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
          /*Test PLC on a fresh decoder*/
          out_samples = opus_decode(dec[t], 0, 0, outbuf, 120/factor, fec);
          if(out_samples!=120/factor)test_failed();
@@ -185,6 +188,9 @@ int test_decoder_code0(int no_fuzz)
          packet[1]=j;
          for(t=0;t<5*2;t++)
          {
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+            opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
             out_samples = opus_decode(dec[t], packet, 3, outbuf, MAX_FRAME_SAMP, 0);
             if(out_samples!=expected[t])test_failed();
             if(opus_decoder_ctl(dec[t], OPUS_GET_LAST_PACKET_DURATION(&dur))!=OPUS_OK)test_failed();
@@ -200,6 +206,9 @@ int test_decoder_code0(int no_fuzz)
          /* The PLC is run for 6 frames in order to get better PLC coverage. */
          for(j=0;j<6;j++)
          {
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+            opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
             out_samples = opus_decode(dec[t], 0, 0, outbuf, expected[t], 0);
             if(out_samples!=expected[t])test_failed();
             if(opus_decoder_ctl(dec[t], OPUS_GET_LAST_PACKET_DURATION(&dur))!=OPUS_OK)test_failed();
@@ -295,6 +304,9 @@ int test_decoder_code0(int no_fuzz)
          for(jj=0;jj<j;jj++)packet[jj+1]=fast_rand()&255;
          for(t=0;t<5*2;t++)
          {
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+            opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
             out_samples = opus_decode(dec[t], packet, j+1, outbuf, MAX_FRAME_SAMP, 0);
             if(out_samples!=expected[t])test_failed();
             opus_decoder_ctl(dec[t], OPUS_GET_FINAL_RANGE(&dec_final_range1));
@@ -322,6 +334,9 @@ int test_decoder_code0(int no_fuzz)
       for(t=0;t<5*2;t++)
       {
          opus_int32 dur;
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+         opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
          out_samples = opus_decode(dec[t], packet, plen+1, outbuf, MAX_FRAME_SAMP, 0);
          if(out_samples!=expected[t])test_failed();
          if(t==0)dec_final_range2=dec_final_range1;
@@ -341,6 +356,9 @@ int test_decoder_code0(int no_fuzz)
       expected=opus_decoder_get_nb_samples(dec[t],packet,plen);
       for(count=0;count<10;count++)
       {
+#if defined(ENABLE_OSCE) || defined(ENABLE_DEEP_PLC)
+         opus_decoder_ctl(dec[t], OPUS_SET_COMPLEXITY(fast_rand()%11));
+#endif
          for(j=0;j<plen;j++)packet[j+1]=(fast_rand()|fast_rand())&255;
          out_samples = opus_decode(dec[t], packet, plen+1, outbuf, MAX_FRAME_SAMP, 0);
          if(out_samples!=expected)test_failed();

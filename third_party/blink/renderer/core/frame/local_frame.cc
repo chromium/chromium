@@ -284,6 +284,11 @@ inline float ParentTextZoomFactor(LocalFrame* frame) {
   return parent_local_frame ? parent_local_frame->TextZoomFactor() : 1;
 }
 
+inline float ParentCssZoomFactor(LocalFrame* frame) {
+  auto* parent_local_frame = DynamicTo<LocalFrame>(frame->Tree().Parent());
+  return parent_local_frame ? parent_local_frame->CssZoomFactor() : 1;
+}
+
 // Convert a data url to a message pipe handle that corresponds to a remote
 // blob, so that it can be passed across processes.
 mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
@@ -1595,17 +1600,23 @@ void LocalFrame::RestoreScrollOffsets() {
 }
 
 void LocalFrame::SetLayoutZoomFactor(float factor) {
-  SetLayoutAndTextZoomFactors(factor, text_zoom_factor_);
+  SetZoomFactors(factor, text_zoom_factor_, css_zoom_factor_);
 }
 
 void LocalFrame::SetTextZoomFactor(float factor) {
-  SetLayoutAndTextZoomFactors(layout_zoom_factor_, factor);
+  SetZoomFactors(layout_zoom_factor_, factor, css_zoom_factor_);
 }
 
-void LocalFrame::SetLayoutAndTextZoomFactors(float layout_zoom_factor,
-                                             float text_zoom_factor) {
+void LocalFrame::SetCssZoomFactor(float factor) {
+  SetZoomFactors(layout_zoom_factor_, text_zoom_factor_, factor);
+}
+
+void LocalFrame::SetZoomFactors(float layout_zoom_factor,
+                                float text_zoom_factor,
+                                float css_zoom_factor) {
   if (layout_zoom_factor_ == layout_zoom_factor &&
-      text_zoom_factor_ == text_zoom_factor) {
+      text_zoom_factor_ == text_zoom_factor &&
+      css_zoom_factor_ == css_zoom_factor) {
     return;
   }
 
@@ -1629,6 +1640,7 @@ void LocalFrame::SetLayoutAndTextZoomFactors(float layout_zoom_factor,
 
   layout_zoom_factor_ = layout_zoom_factor;
   text_zoom_factor_ = text_zoom_factor;
+  css_zoom_factor_ = css_zoom_factor;
 
   if (!GetDocument()->StandardizedBrowserZoomEnabled()) {
     // Zoom factor will not be propagated via style resolution, it must be
@@ -1636,8 +1648,8 @@ void LocalFrame::SetLayoutAndTextZoomFactors(float layout_zoom_factor,
     for (Frame* child = Tree().FirstChild(); child;
          child = child->Tree().NextSibling()) {
       if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
-        child_local_frame->SetLayoutAndTextZoomFactors(layout_zoom_factor_,
-                                                       text_zoom_factor_);
+        child_local_frame->SetZoomFactors(layout_zoom_factor_,
+                                          text_zoom_factor_, css_zoom_factor_);
       } else {
         DynamicTo<RemoteFrame>(child)->ZoomFactorChanged(layout_zoom_factor);
       }
@@ -1886,6 +1898,7 @@ LocalFrame::LocalFrame(
       hidden_(false),
       layout_zoom_factor_(ParentLayoutZoomFactor(this)),
       text_zoom_factor_(ParentTextZoomFactor(this)),
+      css_zoom_factor_(ParentCssZoomFactor(this)),
       inspector_task_runner_(InspectorTaskRunner::Create(
           GetTaskRunner(TaskType::kInternalInspector))),
       interface_registry_(interface_registry
@@ -1957,11 +1970,15 @@ LocalFrame::LocalFrame(
 
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
+  std::vector<AdScriptIdentifier> ad_script_ancestry;
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(
-          AdTracker::StackType::kBottomAndTop,
-          /*out_ad_script=*/&ad_script_from_frame_creation_stack_);
+      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
+                                     &ad_script_ancestry);
+  if (!ad_script_ancestry.empty()) {
+    DCHECK(is_frame_created_by_ad_script_);
+    ad_script_from_frame_creation_stack_ = ad_script_ancestry[0];
+  }
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
@@ -3136,8 +3153,6 @@ void LocalFrame::RequestExecuteScript(
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
-  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled(
-      GetDocument()->GetExecutionContext()));
   evict_cached_session_storage_on_freeze_or_unload_ = true;
 }
 

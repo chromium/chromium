@@ -34,7 +34,7 @@ namespace affiliations {
 namespace {
 
 // The current version number of the affiliation database schema.
-const int kVersion = 6;
+const int kVersion = 7;
 
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
@@ -119,6 +119,10 @@ void InitializeTableBuilders(SQLTableBuilders builders) {
   builders.eq_class_groups->AddIndex("index_on_eq_groups_set_id_index",
                                      {"set_id"});
   SealVersion(builders, /*expected_version=*/6u);
+
+  builders.eq_class_members->AddColumn("change_password_url", "VARCHAR");
+  builders.eq_class_groups->AddColumn("change_password_url", "VARCHAR");
+  SealVersion(builders, /*expected_version=*/7u);
 }
 
 // Migrates from a given version or creates table depending if table exists or
@@ -207,7 +211,8 @@ bool AffiliationDatabase::GetAffiliationsAndBrandingForFacetURI(
 
   sql::Statement statement(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT m2.facet_uri, m2.facet_display_name, m2.facet_icon_url,"
+      "SELECT m2.facet_uri, m2.facet_display_name, m2.facet_icon_url, "
+      "m2.change_password_url,"
       "    c.last_update_time "
       "FROM eq_class_members m1, eq_class_members m2, eq_classes c "
       "WHERE m1.facet_uri = ? AND m1.set_id = m2.set_id AND m1.set_id = c.id"));
@@ -219,8 +224,9 @@ bool AffiliationDatabase::GetAffiliationsAndBrandingForFacetURI(
         FacetBrandingInfo{
             statement.ColumnString(1),
             GURL(statement.ColumnStringView(2)),
-        });
-    result->last_update_time = statement.ColumnTime(3);
+        },
+        GURL(statement.ColumnString(3)));
+    result->last_update_time = statement.ColumnTime(4);
   }
 
   return !result->facets.empty();
@@ -233,7 +239,8 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
 
   sql::Statement statement(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT m.facet_uri, m.facet_display_name, m.facet_icon_url,"
+      "SELECT m.facet_uri, m.facet_display_name, m.facet_icon_url, "
+      "m.change_password_url,"
       "    c.last_update_time, c.id "
       "FROM eq_class_members m, eq_classes c "
       "WHERE m.set_id = c.id "
@@ -241,7 +248,7 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
 
   int64_t last_eq_class_id = 0;
   while (statement.Step()) {
-    int64_t eq_class_id = statement.ColumnInt64(4);
+    int64_t eq_class_id = statement.ColumnInt64(5);
     if (results->empty() || eq_class_id != last_eq_class_id) {
       results->push_back(AffiliatedFacetsWithUpdateTime());
       last_eq_class_id = eq_class_id;
@@ -251,9 +258,10 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
         FacetBrandingInfo{
             statement.ColumnString(1),
             GURL(statement.ColumnStringView(2)),
-        });
+        },
+        GURL(statement.ColumnString(3)));
     results->back().last_update_time =
-        base::Time::FromInternalValue(statement.ColumnInt64(3));
+        base::Time::FromInternalValue(statement.ColumnInt64(4));
   }
 }
 
@@ -262,7 +270,8 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
 
   sql::Statement statement(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT g.facet_uri, g.main_domain, c.id, c.group_display_name, "
+      "SELECT g.facet_uri, g.main_domain, g.change_password_url, c.id, "
+      "c.group_display_name, "
       "c.group_icon_url "
       "FROM eq_class_groups g, eq_classes c "
       "WHERE g.set_id = c.id "
@@ -270,19 +279,19 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
 
   int64_t last_eq_class_id = 0;
   while (statement.Step()) {
-    int64_t eq_class_id = statement.ColumnInt64(2);
+    int64_t eq_class_id = statement.ColumnInt64(3);
     if (results.empty() || eq_class_id != last_eq_class_id) {
       GroupedFacets group;
       group.branding_info = FacetBrandingInfo{
-          statement.ColumnString(3),
-          GURL(statement.ColumnStringView(4)),
+          statement.ColumnString(4),
+          GURL(statement.ColumnStringView(5)),
       };
       results.push_back(std::move(group));
       last_eq_class_id = eq_class_id;
     }
     results.back().facets.emplace_back(
         FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
-        FacetBrandingInfo(), /*change_password_url=*/GURL(),
+        FacetBrandingInfo(), GURL(statement.ColumnString(2)),
         statement.ColumnString(1));
   }
   return results;
@@ -291,7 +300,8 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
 GroupedFacets AffiliationDatabase::GetGroup(const FacetURI& facet_uri) const {
   sql::Statement statement(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT m2.facet_uri, m2.main_domain, c.group_display_name, "
+      "SELECT m2.facet_uri, m2.main_domain, m2.change_password_url, "
+      "c.group_display_name, "
       "c.group_icon_url, c.id "
       "FROM eq_class_groups m1, eq_class_groups m2, eq_classes c "
       "WHERE m1.facet_uri = ? AND m1.set_id = m2.set_id AND m1.set_id = c.id "
@@ -305,26 +315,26 @@ GroupedFacets AffiliationDatabase::GetGroup(const FacetURI& facet_uri) const {
     return result;
   }
 
-  int64_t group_id = statement.ColumnInt64(4);
+  int64_t group_id = statement.ColumnInt64(5);
 
   // Add branding info for a group as it's the same for all steps.
-  result.branding_info.name = statement.ColumnString(2);
-  result.branding_info.icon_url = GURL(statement.ColumnStringView(3));
+  result.branding_info.name = statement.ColumnString(3);
+  result.branding_info.icon_url = GURL(statement.ColumnStringView(4));
 
   result.facets.emplace_back(
       FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
-      FacetBrandingInfo(), /*change_password_url=*/GURL(),
+      FacetBrandingInfo(), GURL(statement.ColumnString(2)),
       statement.ColumnString(1));
 
   while (statement.Step()) {
     // Return only the first group from the response, as other groups are exact
     // duplicates.
-    if (group_id != statement.ColumnInt64(4)) {
+    if (group_id != statement.ColumnInt64(5)) {
       break;
     }
     result.facets.emplace_back(
         FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
-        FacetBrandingInfo(), /*change_password_url=*/GURL(),
+        FacetBrandingInfo(), GURL(statement.ColumnString(2)),
         statement.ColumnString(1));
   }
 
@@ -383,13 +393,15 @@ AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
   sql::Statement statement_child(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO "
-      "eq_class_members(facet_uri, facet_display_name, facet_icon_url, set_id) "
-      "VALUES (?, ?, ?, ?)"));
+      "eq_class_members(facet_uri, facet_display_name, facet_icon_url, "
+      "change_password_url, set_id) "
+      "VALUES (?, ?, ?, ?, ?)"));
 
   sql::Statement statement_groups(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT INTO eq_class_groups(facet_uri, main_domain, set_id) "
-      "VALUES (?, ?, ?)"));
+      "INSERT INTO eq_class_groups(facet_uri, main_domain, "
+      "change_password_url, set_id) "
+      "VALUES (?, ?, ?, ?)"));
 
   sql::Transaction transaction(sql_connection_.get());
   if (!transaction.Begin()) {
@@ -411,7 +423,9 @@ AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
     statement_child.BindString(1, facet.branding_info.name);
     statement_child.BindString(
         2, facet.branding_info.icon_url.possibly_invalid_spec());
-    statement_child.BindInt64(3, eq_class_id);
+    statement_child.BindString(
+        3, facet.change_password_url.possibly_invalid_spec());
+    statement_child.BindInt64(4, eq_class_id);
     if (!statement_child.Run()) {
       return StoreAffiliationResult::kFailedToAddAffiliation;
     }
@@ -420,7 +434,9 @@ AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
     statement_groups.Reset(true);
     statement_groups.BindString(0, facet.uri.canonical_spec());
     statement_groups.BindString(1, facet.main_domain);
-    statement_groups.BindInt64(2, eq_class_id);
+    statement_groups.BindString(
+        2, facet.change_password_url.possibly_invalid_spec());
+    statement_groups.BindInt64(3, eq_class_id);
     if (!statement_groups.Run()) {
       return StoreAffiliationResult::kFailedToAddGroup;
     }

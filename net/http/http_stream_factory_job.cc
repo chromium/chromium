@@ -105,6 +105,7 @@ HttpStreamFactory::Job::Job(
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
     bool enable_ip_based_pooling,
+    std::optional<ConnectionManagementConfig> management_config,
     NetLog* net_log)
     : request_info_(request_info),
       priority_(priority),
@@ -140,7 +141,8 @@ HttpStreamFactory::Job::Job(
                             ? SpdySessionKey()
                             : GetSpdySessionKey(proxy_info_.proxy_chain(),
                                                 origin_url_,
-                                                request_info_)) {
+                                                request_info_)),
+      management_config_(management_config) {
   // Websocket `destination` schemes should be converted to HTTP(S).
   DCHECK(base::EqualsCaseInsensitiveASCII(destination_.scheme(),
                                           url::kHttpScheme) ||
@@ -861,7 +863,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
       server_cert_verifier_flags, origin_url_, net_log_, &net_error_details_,
-      initiator,
+      initiator, management_config_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -1260,12 +1262,13 @@ HttpStreamFactory::JobFactory::CreateJob(
     bool enable_ip_based_pooling,
     NetLog* net_log,
     NextProto alternative_protocol,
-    quic::ParsedQuicVersion quic_version) {
+    quic::ParsedQuicVersion quic_version,
+    std::optional<ConnectionManagementConfig> management_config) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
       allowed_bad_certs, std::move(destination), origin_url,
       alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
-      net_log);
+      management_config, net_log);
 }
 
 bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {

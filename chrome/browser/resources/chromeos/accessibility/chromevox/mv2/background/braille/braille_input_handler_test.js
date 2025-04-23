@@ -426,7 +426,7 @@ function cellsToArray(cells) {
 /**
  * Test fixture.
  */
-ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BrailleInputHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -525,14 +525,14 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'ConnectFromUnknownExtension',
+    'ChromeVoxMV2BrailleInputHandlerTest', 'ConnectFromUnknownExtension',
     function() {
       this.port.sender.id = 'your unknown friend';
       chrome.runtime.onConnectExternal.getListener()(this.port);
       this.port.onMessage.assertNoListener();
     });
 
-AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'NoTranslator', function() {
+AX_TEST_F('ChromeVoxMV2BrailleInputHandlerTest', 'NoTranslator', function() {
   const editor = this.createEditor();
   editor.setContent('blah', 0);
   editor.setActive(true);
@@ -543,34 +543,35 @@ AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'NoTranslator', function() {
   editor.assertContentIs('blah', 0);
 });
 
-AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'InputUncontracted', function() {
-  BrailleTranslatorManager.instance.setTranslators(
-      this.uncontractedTranslator, null);
-  const editor = this.createEditor();
-  editor.setActive(true);
+AX_TEST_F(
+    'ChromeVoxMV2BrailleInputHandlerTest', 'InputUncontracted', function() {
+      BrailleTranslatorManager.instance.setTranslators(
+          this.uncontractedTranslator, null);
+      const editor = this.createEditor();
+      editor.setActive(true);
 
-  // Focus and type in a text field.
-  editor.focus('text');
-  assertTrue(this.sendCells('125 15 123 123 135'));  // hello
-  editor.assertContentIs('hello', 'hello'.length);
-  this.assertExpandingNone();
+      // Focus and type in a text field.
+      editor.focus('text');
+      assertTrue(this.sendCells('125 15 123 123 135'));  // hello
+      editor.assertContentIs('hello', 'hello'.length);
+      this.assertExpandingNone();
 
-  // Move the cursor and type in the middle.
-  editor.select(2);
-  assertTrue(this.sendCells('0 2345 125 15 1235 15 0'));  // ' there '
-  editor.assertContentIs('he there llo', 'he there '.length);
+      // Move the cursor and type in the middle.
+      editor.select(2);
+      assertTrue(this.sendCells('0 2345 125 15 1235 15 0'));  // ' there '
+      editor.assertContentIs('he there llo', 'he there '.length);
 
-  // Field changes by some other means.
-  editor.insert('you!');
-  // Then type on the braille keyboard again.
-  assertTrue(this.sendCells('0 125 15'));  // ' he'
-  editor.assertContentIs('he there you! hello', 'he there you! he'.length);
+      // Field changes by some other means.
+      editor.insert('you!');
+      // Then type on the braille keyboard again.
+      assertTrue(this.sendCells('0 125 15'));  // ' he'
+      editor.assertContentIs('he there you! hello', 'he there you! he'.length);
 
-  editor.blur();
-  editor.setActive(false);
-});
+      editor.blur();
+      editor.setActive(false);
+    });
 
-AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'InputContracted', function() {
+AX_TEST_F('ChromeVoxMV2BrailleInputHandlerTest', 'InputContracted', function() {
   const editor = this.createEditor();
   BrailleTranslatorManager.instance.setTranslators(
       this.contractedTranslator, this.uncontractedTranslator);
@@ -630,7 +631,8 @@ AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'InputContracted', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'TypingUrlWithContracted', function() {
+    'ChromeVoxMV2BrailleInputHandlerTest', 'TypingUrlWithContracted',
+    function() {
       const editor = this.createEditor();
       BrailleTranslatorManager.instance.setTranslators(
           this.contractedTranslator, this.uncontractedTranslator);
@@ -652,7 +654,7 @@ AX_TEST_F(
       this.assertExpandingAll();
     });
 
-AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'Backspace', function() {
+AX_TEST_F('ChromeVoxMV2BrailleInputHandlerTest', 'Backspace', function() {
   const editor = this.createEditor();
   BrailleTranslatorManager.instance.setTranslators(
       this.contractedTranslator, this.uncontractedTranslator);
@@ -680,10 +682,11 @@ AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'Backspace', function() {
   assertEqualsJSON([{keyCode: KeyCode.BACK}], this.keyEvents);
 });
 
-AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'KeysImeNotActive', function() {
-  const editor = this.createEditor();
-  this.sendKeyEvent('Enter');
-  this.sendKeyEvent('ArrowUp');
-  assertEqualsJSON(
-      [{keyCode: KeyCode.RETURN}, {keyCode: KeyCode.UP}], this.keyEvents);
-});
+AX_TEST_F(
+    'ChromeVoxMV2BrailleInputHandlerTest', 'KeysImeNotActive', function() {
+      const editor = this.createEditor();
+      this.sendKeyEvent('Enter');
+      this.sendKeyEvent('ArrowUp');
+      assertEqualsJSON(
+          [{keyCode: KeyCode.RETURN}, {keyCode: KeyCode.UP}], this.keyEvents);
+    });

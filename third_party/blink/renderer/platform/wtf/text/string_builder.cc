@@ -24,17 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <algorithm>
 #include <optional>
 
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -306,14 +301,14 @@ void StringBuilder::AppendFormat(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = base::vsnprintf(buffer.data(), kDefaultSize, format, args);
+  int length = base::VSpanPrintf(buffer, format, args);
   va_end(args);
   DCHECK_GE(length, 0);
 
   if (length >= static_cast<int>(kDefaultSize)) {
     buffer.Grow(length + 1);
     va_start(args, format);
-    length = base::vsnprintf(buffer.data(), buffer.size(), format, args);
+    length = base::VSpanPrintf(buffer, format, args);
     va_end(args);
   }
 

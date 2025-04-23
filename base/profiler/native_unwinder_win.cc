@@ -54,6 +54,10 @@ UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
       return UnwindResult::kUnrecognizedFrame;
     }
 
+#if defined(ARCH_CPU_ARM64)
+    uintptr_t prev_instruction_pointer =
+        RegisterContextInstructionPointer(thread_context);
+#endif
     uintptr_t prev_stack_pointer = RegisterContextStackPointer(thread_context);
     if (!frame_unwinder.TryUnwind(stack->size() == 1u, thread_context,
                                   stack->back().module)) {
@@ -71,18 +75,39 @@ UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
     } expected_stack_pointer_range = {prev_stack_pointer, stack_top};
 
     // Abort if the unwind produced an invalid stack pointer.
-#if defined(ARCH_CPU_ARM64)
-    // Leaf frames on Arm can re-use the stack pointer, so they can validly have
-    // the same stack pointer as the previous frame.
-    if (stack->size() == 1u) {
-      expected_stack_pointer_range.start--;
-    }
-#endif
-    if (RegisterContextStackPointer(thread_context) <=
+    if (RegisterContextStackPointer(thread_context) <
             expected_stack_pointer_range.start ||
         RegisterContextStackPointer(thread_context) >=
             expected_stack_pointer_range.end) {
       return UnwindResult::kAborted;
+    }
+
+    if (RegisterContextStackPointer(thread_context) ==
+        expected_stack_pointer_range.start) {
+#if defined(ARCH_CPU_ARM64)
+      // Frames on ARM64 can reuse the stack pointer, so they can validly have
+      // the same stack pointer as the previous frame. This can happen even in
+      // the middle of the stack trace, e.g. as a result of a syscall:
+      //
+      // 0:000> k
+      // ...
+      // 2c 0000007c`1792ed30 00007ff8`e0108014
+      //     ntdll!KiUserCallbackDispatcherReturn
+      // 2d 0000007c`1792eda0 00007ff8`e2c6bd48
+      //     win32u!NtUserPeekMessage+0x4
+      // 2e 0000007c`1792eda0 00007ff8`e2c64410
+      //     user32!_PeekMessage+0x30
+      // 2f 0000007c`1792ee10 00007ff8`e2c648c0
+      //     user32!DialogBox2+0x1c8
+      // ...
+      if (RegisterContextInstructionPointer(thread_context) ==
+          prev_instruction_pointer) {
+        // The instruction pointer has not changed, so we are likely in a loop.
+        return UnwindResult::kAborted;
+      }
+#else
+      return UnwindResult::kAborted;
+#endif
     }
 
     // Record the frame to which we just unwound.

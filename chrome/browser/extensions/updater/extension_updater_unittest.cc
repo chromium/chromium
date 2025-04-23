@@ -42,11 +42,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -63,10 +61,12 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -209,19 +209,21 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
       scoped_refptr<const Extension> extension) override {}
   void PostUninstallExtension(scoped_refptr<const Extension> extension,
                               base::OnceClosure done_callback) override {}
-  void PostNotifyUninstallExtension(
-      scoped_refptr<const Extension> extension) override {}
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override {}
-  void FinishDelayedInstallationsIfAny() override {}
-  void LoadExtensionForReload(
+  void LoadExtensionForReload(const ExtensionId& extension_id,
+                              const base::FilePath& path) override {}
+  void LoadExtensionForReloadWithQuietFailure(
       const ExtensionId& extension_id,
-      const base::FilePath& path,
-      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {}
+      const base::FilePath& path) override {}
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
   void GrantActivePermissions(const Extension* extension) override {}
   void UpdateExternalExtensionAlert() override {}
+  void OnExtensionInstalled(const Extension* extension,
+                            const syncer::StringOrdinal& page_ordinal,
+                            int install_flags,
+                            base::Value::Dict ruleset_install_prefs) override {}
 };
 
 class MockUpdateService : public UpdateService {
@@ -486,7 +488,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // The registrar needs a delegate in order to call certain methods on it.
     ExtensionRegistrar::Get(prefs_->profile())
         ->Init(&stub_extension_registrar_delegate_,
-               /*extensions_enabled=*/true, base::FilePath(), base::FilePath());
+               /*extensions_enabled=*/true,
+               base::CommandLine::ForCurrentProcess(), base::FilePath(),
+               base::FilePath());
   }
 
   void TearDown() override {
@@ -497,7 +501,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // Reset the ExtensionRegistrar delegate.
     ExtensionRegistrar::Get(prefs_->profile())
         ->Init(/*delegate=*/nullptr, /*extensions_enabled=*/true,
-               base::FilePath(), base::FilePath());
+               base::CommandLine::ForCurrentProcess(), base::FilePath(),
+               base::FilePath());
     prefs_.reset();
   }
 

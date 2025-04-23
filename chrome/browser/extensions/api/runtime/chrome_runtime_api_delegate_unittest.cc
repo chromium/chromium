@@ -19,16 +19,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/extensions/update_install_gate.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/update_install_gate.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
 #include "extensions/common/extension.h"
@@ -328,7 +328,7 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Reload the extension, causing the delayed update to v2 to happen, then do
   // another update check - we should get a no_update instead of throttled.
-  service()->ReloadExtension(id);
+  registrar()->ReloadExtension(id);
   const Extension* current =
       ExtensionRegistry::Get(browser_context())->GetInstalledExtension(id);
   ASSERT_NE(nullptr, current);

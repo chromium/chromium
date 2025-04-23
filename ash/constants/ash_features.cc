@@ -225,6 +225,11 @@ BASE_FEATURE(kBocaOnTaskMuteArcAudio,
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod, "BocaOnTaskPod", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables unmute browser tabs when unlock Boca.
+BASE_FEATURE(kBocaOnTaskUnmuteBrowserTabsOnUnlock,
+             "BocaOnTaskUnmuteBrowserTabsOnUnlock",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Boca OnTask enter locked mode countdown duration on
 // ChromeOS.
 BASE_FEATURE(kBocaLockedModeCustomCountdownDuration,
@@ -265,6 +270,12 @@ BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBocaNetworkRestriction,
              "BocaNetworkRestriction",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables using a specific app name for speech recognition for Boca
+// on ChromeOS.
+BASE_FEATURE(kBocaClientTypeForSpeechRecognition,
+             "BocaClientTypeForSpeechRecognition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -565,6 +576,12 @@ BASE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise,
              "CryptohomeRecoveryByDefaultForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether should set demo app window's parent to
+// `kShellWindowId_AlwaysOnTopWallpaperContainer` when attract loop is playing.
+BASE_FEATURE(kDemoModeAppResetWindowContainer,
+             "DemoModeAppResetWindowContainer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether use a demo account (consumer account) to login Demo mode
 // session.
 BASE_FEATURE(kDemoModeSignIn,
@@ -824,6 +841,11 @@ const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam{
 
 BASE_FEATURE(kEolIncentiveSettings,
              "EolIncentiveSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Control whether the eSIM activation dialog supports submitting an empty code.
+BASE_FEATURE(kESimEmptyActivationCodeSupported,
+             "ESimEmptyActivationCodeSupported",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable support for touchpad with haptic feedback.
@@ -2724,6 +2746,18 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
              "ShimlessRMA3pDiagnosticsAllowPermissionPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the skip option of hardware validation on Shimless RMA
+// landing page.
+BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
+             "ShimlessRMAHardwareValidationSkip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the option of grey out specific input fields on Shimless
+// RMA device information page.
+BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
+             "ShimlessRMADynamicDeviceInfoInputs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
 BASE_FEATURE(kShortcutStateMachines,
@@ -3172,10 +3206,6 @@ BASE_FEATURE(kWifiConcurrency,
              "WifiConcurrency",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Control whether the WiFi Direct is enabled. When enabled, it will allow
-// the nearby share feature to utilize WiFi P2P for sharing data.
-BASE_FEATURE(kWifiDirect, "WiFiDirect", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable the syncing of deletes of Wi-Fi configurations.
 // This only controls sending delete events to the Chrome Sync server.
 BASE_FEATURE(kWifiSyncAllowDeletes,
@@ -3439,6 +3469,10 @@ bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
 }
 
+bool IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskUnmuteBrowserTabsOnUnlock);
+}
+
 bool IsBocaLockedModeCustomCountdownDurationEnabled() {
   return base::FeatureList::IsEnabled(kBocaLockedModeCustomCountdownDuration);
 }
@@ -3457,6 +3491,10 @@ bool IsBocaSpotlightEnabled() {
 
 bool IsBocaNetworkRestrictionEnabled() {
   return base::FeatureList::IsEnabled(kBocaNetworkRestriction);
+}
+
+bool IsBocaClientTypeForSpeechRecognitionEnabled() {
+  return base::FeatureList::IsEnabled(kBocaClientTypeForSpeechRecognition);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
@@ -3529,6 +3567,10 @@ bool IsCrossDeviceFeatureSuiteAllowed() {
 
 bool IsCrosSwitcherEnabled() {
   return base::FeatureList::IsEnabled(kCrosSwitcher);
+}
+
+bool IsDemoModeAppResetWindowContainerEnable() {
+  return base::FeatureList::IsEnabled(kDemoModeAppResetWindowContainer);
 }
 
 bool IsDemoModeSignInEnabled() {
@@ -3607,6 +3649,10 @@ bool IsEcheSWAMeasureLatencyEnabled() {
 
 bool IsEOLIncentiveEnabled() {
   return base::FeatureList::IsEnabled(kEolIncentive);
+}
+
+bool IsESimEmptyActivationCodeSupportEnabled() {
+  return base::FeatureList::IsEnabled(kESimEmptyActivationCodeSupported);
 }
 
 bool IsExperimentalRgbKeyboardPatternsEnabled() {
@@ -4490,6 +4536,14 @@ bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
       kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 }
 
+bool IsShimlessRMAHardwareValidationSkipEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAHardwareValidationSkip);
+}
+
+bool IsShimlessRMADynamicDeviceInfoInputsEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMADynamicDeviceInfoInputs);
+}
+
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {
   return IsLauncherContinueSectionWithRecentsEnabled() &&
          base::FeatureList::IsEnabled(
@@ -4695,10 +4749,6 @@ bool IsWelcomeTourV3Enabled() {
 
 bool IsWifiConcurrencyEnabled() {
   return base::FeatureList::IsEnabled(kWifiConcurrency);
-}
-
-bool IsWifiDirectEnabled() {
-  return base::FeatureList::IsEnabled(kWifiDirect);
 }
 
 bool IsWifiSyncAndroidEnabled() {

@@ -59,6 +59,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsActiveTabChanged,
     kOnIsPinnedTabChanged,
     kOnIsDevToolsOpenChanged,
+    kOnUpdatedTitleOrFaviconInBackgroundChanged,
   };
 
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {
@@ -118,6 +119,12 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     latest_function_called_ = ObserverFunction::kOnIsDevToolsOpenChanged;
     page_node_passed_ = page_node;
   }
+  void OnUpdatedTitleOrFaviconInBackgroundChanged(
+      const PageNode* page_node) override {
+    latest_function_called_ =
+        ObserverFunction::kOnUpdatedTitleOrFaviconInBackgroundChanged;
+    page_node_passed_ = page_node;
+  }
 
   ObserverFunction latest_function_called() const {
     return latest_function_called_;
@@ -132,7 +139,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
       scoped_observation_{this};
 };
 
-class MockPageLiveStateObserver : public PageLiveStateObserverDefaultImpl {
+class MockPageLiveStateObserver : public PageLiveStateObserver {
  public:
   MOCK_METHOD(void,
               OnIsConnectedToUSBDeviceChanged,
@@ -417,6 +424,24 @@ TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PageLiveStateDecoratorTest, OnUpdatedTitleOrFaviconInBackgroundChanged) {
+  EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+        PerformanceManager::GetPrimaryPageNodeForWebContents(contents).get())
+        ->SetUpdatedTitleOrFaviconInBackgroundForTesting(value);
+    EXPECT_EQ(
+        PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(contents),
+        value);
+  };
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::UpdatedTitleOrFaviconInBackground, setter);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnUpdatedTitleOrFaviconInBackgroundChanged);
+}
 
 TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
   base::WeakPtr<PageNode> node =

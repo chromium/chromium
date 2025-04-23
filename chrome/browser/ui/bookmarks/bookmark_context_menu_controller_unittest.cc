@@ -61,7 +61,8 @@ class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
     feature_list_.InitWithFeatures(
-        {switches::kSyncEnableBookmarksInTransportMode}, {});
+        {switches::kSyncEnableBookmarksInTransportMode, features::kSideBySide},
+        {});
   }
 
   void SetUp() override {
@@ -156,9 +157,25 @@ TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
+  EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_REMOVE));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+}
+
+// With the side by side feature flag disabled, tests the enabled state of the
+// split view command when supplied a vector with a single url.
+TEST_F(BookmarkContextMenuControllerTest, SingleURLNoSplitView) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {switches::kSyncEnableBookmarksInTransportMode}, {features::kSideBySide});
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+      model_->bookmark_bar_node()->children().front().get(),
+  };
+  BookmarkContextMenuController controller(
+      gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+      BookmarkLaunchLocation::kNone, nodes);
+  EXPECT_FALSE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
 }
 
 // Tests the enabled state of the menus when supplied a vector with multiple
@@ -195,6 +212,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleFolder) {
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
+  EXPECT_FALSE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_REMOVE));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));

@@ -12,6 +12,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
           "--jobs=1",
+          "--compatibility-mode=dont-require-rooted-device",
           "--initial-find-device-attempts=3"
         ],
         "experiment_percentage": 100,
@@ -27,7 +28,7 @@
           "dimensions": {
             "device_os": "UP1A.231005.007",
             "device_os_type": "user",
-            "device_type": "e2s",
+            "device_type": "s5e9945",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },

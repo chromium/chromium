@@ -76,11 +76,11 @@ public final class AutoTranslateSnackbarControllerJavaTest {
                 currentSnackbar.getController() instanceof AutoTranslateSnackbarController);
         Assert.assertTrue(
                 "Incorrect ActionData type",
-                currentSnackbar.getActionDataForTesting()
+                currentSnackbar.getActionData()
                         instanceof AutoTranslateSnackbarController.TargetLanguageData);
         AutoTranslateSnackbarController.TargetLanguageData data =
                 (AutoTranslateSnackbarController.TargetLanguageData)
-                        currentSnackbar.getActionDataForTesting();
+                        currentSnackbar.getActionData();
         Assert.assertEquals("en", data.getTargetLanguage());
     }
 
@@ -102,7 +102,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         Assert.assertEquals("Page translated to Filipino", getSnackbarMessageText());
         AutoTranslateSnackbarController.TargetLanguageData data =
                 (AutoTranslateSnackbarController.TargetLanguageData)
-                        currentSnackbar.getActionDataForTesting();
+                        currentSnackbar.getActionData();
         Assert.assertEquals("tl", data.getTargetLanguage());
     }
 

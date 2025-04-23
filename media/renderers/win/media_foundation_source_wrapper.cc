@@ -40,12 +40,6 @@ HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
     MediaLog* media_log,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG_FUNC(1);
-
-  if (media_resource->GetType() != MediaResource::Type::kStream) {
-    DLOG(ERROR) << "MediaResource is not of Type STREAM";
-    return E_INVALIDARG;
-  }
-
   task_runner_ = task_runner;
 
   auto demuxer_streams = media_resource->GetAllStreams();

@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 

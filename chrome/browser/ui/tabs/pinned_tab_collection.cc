@@ -4,12 +4,6 @@
 
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 
-#include <memory>
-#include <optional>
-
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-
 namespace tabs {
 
 PinnedTabCollection::PinnedTabCollection()

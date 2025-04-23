@@ -223,10 +223,8 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
       }
     }
 
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gpu_memory_buffer_handle.set_dxgi_handle(
-        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle{
+        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
 
     // TODO(crbug.com/40918787): This size is the size of the texture
     // from the OpenXr runtime, which is fine but does not work properly if the
@@ -391,7 +389,8 @@ bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
   }
 
   return texture_helper_->SetOverlayTexture(
-      texture.dxgi_handle().TakeBufferHandle(), sync_token, left, right);
+      std::move(texture).dxgi_handle().TakeBufferHandle(), sync_token, left,
+      right);
 }
 
 }  // namespace device

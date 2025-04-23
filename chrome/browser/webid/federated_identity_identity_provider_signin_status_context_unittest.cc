@@ -114,8 +114,7 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   options.accounts.push_back(kAccountA);
 
   context()->SetSigninStatus(kIdpOriginA, true, options);
-  std::vector<scoped_refptr<content::IdentityRequestAccount>>
-      returned_accounts = context()->GetAccounts(kIdpOriginA);
+  base::Value::List returned_accounts = context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(1U, returned_accounts.size());
 }
 
@@ -147,17 +146,18 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
 
   // The accounts should be expired for IdpA, but the login status should've
   // been preserved.
-  std::vector<scoped_refptr<content::IdentityRequestAccount>>
-      returned_accounts_idp_a = context()->GetAccounts(kIdpOriginA);
+  base::Value::List returned_accounts_idp_a =
+      context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(0U, returned_accounts_idp_a.size());
   EXPECT_TRUE(context()->GetSigninStatus(kIdpOriginA).value_or(false));
 
   // The accounts should still be valid for IdpB, and the login status should be
   // preserved.
-  std::vector<scoped_refptr<content::IdentityRequestAccount>>
-      returned_accounts_idp_b = context()->GetAccounts(kIdpOriginB);
+  base::Value::List returned_accounts_idp_b =
+      context()->GetAccounts(kIdpOriginB);
   EXPECT_EQ(1U, returned_accounts_idp_b.size());
-  EXPECT_EQ(kAccountB.name, returned_accounts_idp_b[0]->name);
+  EXPECT_EQ(*returned_accounts_idp_b[0].GetDict().FindString("name"),
+            kAccountB.name);
   EXPECT_TRUE(context()->GetSigninStatus(kIdpOriginB).value_or(false));
 }
 
@@ -204,8 +204,7 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   options.accounts.push_back(kAccountA);
 
   context()->SetSigninStatus(kIdpOriginA, true, options);
-  std::vector<scoped_refptr<content::IdentityRequestAccount>>
-      returned_accounts = context()->GetAccounts(kIdpOriginA);
+  base::Value::List returned_accounts = context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(1U, returned_accounts.size());
 
   context()->SetSigninStatus(kIdpOriginA, true, /*options=*/std::nullopt);

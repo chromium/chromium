@@ -98,19 +98,11 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   }
 
   bool IsContextMenuRunningForTesting() const;
-  ExtensionsMenuButton* primary_action_button_for_testing() {
-    return primary_action_button_;
-  }
-  views::ToggleButton* site_access_toggle_for_testing() {
-    return site_access_toggle_;
-  }
-  HoverButton* context_menu_button_for_testing() {
-    return context_menu_button_;
-  }
-  HoverButton* pin_button_for_testing() { return pin_button_; }
-  HoverButton* site_permissions_button_for_testing() {
-    return site_permissions_button_;
-  }
+  ExtensionsMenuButton* primary_action_button_for_testing();
+  views::ToggleButton* site_access_toggle_for_testing();
+  HoverButton* context_menu_button_for_testing();
+  HoverButton* pin_button_for_testing();
+  HoverButton* site_permissions_button_for_testing();
 
  private:
   // Sets ups the context menu button controllers. Must be called by the

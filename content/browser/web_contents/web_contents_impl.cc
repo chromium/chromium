@@ -155,6 +155,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_details.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -181,6 +182,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -229,11 +231,13 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/check.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/public/browser/android/child_process_importance.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/event_forwarder.h"
@@ -522,8 +526,10 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
   CHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             blink::PermissionType::WINDOW_MANAGEMENT, host) ==
-         blink::mojom::PermissionStatus::GRANTED;
+             content::PermissionDescriptorUtil::
+                 CreatePermissionDescriptorForPermissionType(
+                     blink::PermissionType::WINDOW_MANAGEMENT),
+             host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 // Returns true if `host` has the Automatic Fullscreen permission granted.
@@ -533,8 +539,10 @@ bool IsAutomaticFullscreenGranted(RenderFrameHost* host) {
   CHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             blink::PermissionType::AUTOMATIC_FULLSCREEN, host) ==
-         blink::mojom::PermissionStatus::GRANTED;
+             content::PermissionDescriptorUtil::
+                 CreatePermissionDescriptorForPermissionType(
+                     blink::PermissionType::AUTOMATIC_FULLSCREEN),
+             host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 // Adjust the requested `rect` for opening or placing a window and return the id
@@ -2175,12 +2183,6 @@ void WebContentsImpl::ResetAccessibility() {
       });
 }
 
-void WebContentsImpl::AddAccessibilityModeForTesting(ui::AXMode mode) {
-  ui::AXMode new_mode(accessibility_mode_);
-  new_mode |= mode;
-  SetAccessibilityMode(new_mode);
-}
-
 // Helper class used by WebContentsImpl::RequestAXTreeSnapshot.
 // Handles the callbacks from parallel snapshot requests to each frame,
 // and feeds the results to an AXTreeCombiner, which converts them into a
@@ -2347,6 +2349,11 @@ void WebContentsImpl::OnManifestUrlChanged(PageImpl& page) {
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
+  // There is no frame host if the navigation fails.
+  if (!primary_frame_tree_.root()->current_frame_host()) {
+    return nullptr;
+  }
+
   return primary_frame_tree_.root()->current_frame_host()->web_ui();
 }
 
@@ -3059,10 +3066,20 @@ WebContentsImpl::GetPictureInPictureOptions() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+ChildProcessImportance
+WebContentsImpl::GetPrimaryMainFrameImportanceForTesting() {
+  return GetPrimaryMainFrame()->GetRenderWidgetHost()->importance();
+}
+
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetMainFrameImportance",
                         "importance", static_cast<int>(importance));
+  CHECK(IsPerceptibleImportanceSupported() ||
+        importance != ChildProcessImportance::PERCEPTIBLE)
+      << "Setter of ChildProcessImportance::PERCEPTIBLE should be aware of the "
+         "support and avoid using PERCEPTIBLE if "
+         "IsPerceptibleImportanceSupported() is false";
   GetPrimaryMainFrame()->GetRenderWidgetHost()->SetImportance(importance);
 }
 #endif
@@ -3623,6 +3640,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
 
 #if BUILDFLAG(IS_ANDROID)
   prefs.device_scale_adjustment = GetDeviceScaleAdjustment(min_width_in_dp);
+
+  if (base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing)) {
+    prefs.text_autosizing_enabled = false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // GuestViews in the same StoragePartition need to find each other's frames.
@@ -3941,7 +3962,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   screen_orientation_provider_ =
       std::make_unique<ScreenOrientationProvider>(this);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
   DateTimeChooser::CreateDateTimeChooser(this);
 #endif
 
@@ -7254,9 +7275,16 @@ gfx::NativeWindow WebContentsImpl::GetOwnerNativeWindow() {
   return GetTopLevelNativeWindow();
 }
 
-media::PictureInPictureEventsInfo::AutoPipReason
-WebContentsImpl::GetAutoPipReason() const {
-  return GetContentClient()->browser()->GetAutoPipReason(*this);
+media::PictureInPictureEventsInfo::AutoPipInfo WebContentsImpl::GetAutoPipInfo()
+    const {
+  return GetContentClient()->browser()->GetAutoPipInfo(*this);
+}
+
+void WebContentsImpl::OnKeepAliveRequestCreated(
+    const network::ResourceRequest& resource_request,
+    RenderFrameHostImpl* initiator_rfh) {
+  observers_.NotifyObservers(&WebContentsObserver::OnKeepAliveRequestCreated,
+                             resource_request, initiator_rfh);
 }
 
 void WebContentsImpl::NotifyChangedNavigationState(
@@ -11861,6 +11889,7 @@ float WebContentsImpl::GetCurrentTouchSequenceYOffset() {
 std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,
     bool use_prefetch_proxy,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -11881,9 +11910,10 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
   PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
                              use_prefetch_proxy);
   auto container = std::make_unique<PrefetchContainer>(
-      *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      std::move(no_vary_search_hint), std::move(preload_pipeline_info),
-      std::move(attempt), holdback_status_override);
+      *this, prefetch_url, prefetch_type, embedder_histogram_suffix, referrer,
+      referring_origin, std::move(no_vary_search_hint),
+      std::move(preload_pipeline_info), std::move(attempt),
+      holdback_status_override);
 
   return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }

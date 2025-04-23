@@ -319,7 +319,7 @@ ArcNotificationContentView::ArcNotificationContentView(
   UpdateAccessibleChildTreeId();
   // Creates the control_buttons_view_, which collects all control buttons into
   // a horizontal box.
-  control_buttons_view_.set_owned_by_client();
+  control_buttons_view_.set_owned_by_client(OwnedByClientPassKey());
   Update(notification);
 
   // Create a layer as an anchor to insert surface copy during a slide.

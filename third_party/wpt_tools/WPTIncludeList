@@ -306,6 +306,7 @@
 ./tools/webdriver/webdriver/bidi/modules/bluetooth.py
 ./tools/webdriver/webdriver/bidi/modules/browser.py
 ./tools/webdriver/webdriver/bidi/modules/browsing_context.py
+./tools/webdriver/webdriver/bidi/modules/emulation.py
 ./tools/webdriver/webdriver/bidi/modules/input.py
 ./tools/webdriver/webdriver/bidi/modules/network.py
 ./tools/webdriver/webdriver/bidi/modules/permissions.py

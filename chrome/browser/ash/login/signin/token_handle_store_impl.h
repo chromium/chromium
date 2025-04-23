@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/token_handle_store.h"
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/signin/token_handle_checker.h"
 #include "components/account_id/account_id.h"
@@ -21,8 +22,18 @@ namespace ash {
 // TODO(387248794): Rename to `TokenHandleStore` as part of cleanup.
 class TokenHandleStoreImpl : public TokenHandleStore {
  public:
-  explicit TokenHandleStoreImpl(
-      std::unique_ptr<user_manager::KnownUser> known_user);
+  // Takes an account id, and a callback.
+  // Responds on the callback with -
+  // `true` if the given account id uses Gaia password for authentication.
+  // `false` if the given account id does not use Gaia password for
+  // authentication. `nullopt` if the given account id uses an unknown
+  // authentication scheme.
+  using DoesUserHaveGaiaPasswordCallback = base::RepeatingCallback<
+      void(const AccountId&, base::OnceCallback<void(std::optional<bool>)>)>;
+
+  TokenHandleStoreImpl(
+      std::unique_ptr<user_manager::KnownUser> known_user,
+      DoesUserHaveGaiaPasswordCallback does_user_have_gaia_password);
   ~TokenHandleStoreImpl() override;
 
   TokenHandleStoreImpl(const TokenHandleStoreImpl&) = delete;
@@ -45,10 +56,43 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   void MaybeFetchTokenHandle(const AccountId& account_id);
 
  private:
+  void OnCheckToken(const AccountId& account_id,
+                    const std::string& token,
+                    const TokenHandleChecker::Status& status);
+
+  // Replies to all pending token handle checks for `account_id`.
+  // `user_has_gaia_password` is used to determine whether reauth is required in
+  // the case where the token handle has expired. If the user does have a gaia
+  // password, an expired token will lead to a reauth.
+  void ReplyToTokenHandleCheck(const std::string& token,
+                               const AccountId& account_id,
+                               const TokenHandleChecker::Status& status,
+                               std::optional<bool> user_has_gaia_password);
+
+  // We schedule the delete for `account_id`'s checker to give a chance for
+  // the stack to unwind. Otherwise we might return to invalid memory, causing
+  // a use-after-free.
+  void ScheduleCheckerDelete(const AccountId& account_id);
+
   // Checks if token handle is explicitly marked as valid for `account_id`.
   bool HasTokenStatusInvalid(const AccountId& account_id) const;
 
+  // Associates an `AccountId` with a pending token handle check.
+  base::flat_map<AccountId, std::unique_ptr<TokenHandleChecker>>
+      pending_checks_;
+
+  // Stores a collection of callbacks to clients that initiated a token handle
+  // check request that is currently pending. The callbacks are grouped by
+  // `AccountId` as concurrent requests are pooled and replied to when the most
+  // recent request for a token handle check for `AccountId` returns.
+  base::flat_map<AccountId, std::vector<TokenValidationCallback>>
+      pending_callbacks_;
+
   std::unique_ptr<user_manager::KnownUser> known_user_;
+
+  DoesUserHaveGaiaPasswordCallback does_user_have_gaia_password_;
+
+  base::WeakPtrFactory<TokenHandleStoreImpl> weak_factory_{this};
 };
 
 }  // namespace ash

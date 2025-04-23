@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <utility>
 

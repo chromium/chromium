@@ -15,10 +15,18 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sessions/core/mock_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -32,11 +40,16 @@ class ExternalFileRemoverImplTest : public PlatformTest {
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
     profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+
+    BrowserListFactory::GetForProfile(profile_.get())
+        ->AddBrowser(browser_.get());
+
     external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
         profile_.get(), tab_restore_service());
   }
 
-  ExternalFileRemover* external_file_remover() {
+  ExternalFileRemoverImpl* external_file_remover() {
     return external_file_remover_.get();
   }
 
@@ -79,6 +92,7 @@ class ExternalFileRemoverImplTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
+  std::unique_ptr<Browser> browser_;
 
   std::unique_ptr<ExternalFileRemoverImpl> external_file_remover_;
 };
@@ -95,6 +109,63 @@ TEST_F(ExternalFileRemoverImplTest, MAYBE_RemoveDownloadedPDF) {
   const std::string& filename = "filename.pdf";
   CreateExternalFile(filename);
   VerifyExternalFileExists(filename);
+
+  base::RunLoop run_loop;
+  external_file_remover()->RemoveAfterDelay(base::Seconds(0),
+                                            run_loop.QuitClosure());
+  run_loop.Run();
+
+  VerifyExternalFileAbsent(filename);
+}
+
+// Tests that an external PDF that is still referenced in a browser tab is not
+// removed in a background task.
+// TODO(crbug.com/408168811): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DoNotRemoveReferencedPDF DoNotRemoveReferencedPDF
+#else
+#define MAYBE_DoNotRemoveReferencedPDF DISABLED_DoNotRemoveReferencedPDF
+#endif
+TEST_F(ExternalFileRemoverImplTest, MAYBE_DoNotRemoveReferencedPDF) {
+  const std::string& filename = "filename.pdf";
+  CreateExternalFile(filename);
+  VerifyExternalFileExists(filename);
+
+  const GURL kExternalFileUrl("chrome://external-file/filename.pdf");
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
+  web_state->SetCurrentURL(kExternalFileUrl);
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  base::RunLoop run_loop;
+  external_file_remover()->RemoveAfterDelay(base::Seconds(0),
+                                            run_loop.QuitClosure());
+  run_loop.Run();
+
+  VerifyExternalFileExists(filename);
+}
+
+// Tests that deallocating the tab restore service while external file deletion
+// is in progress does not crash the app.
+// Regression test for crbug.com/406568566.
+// TODO(crbug.com/408168811): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TabRestoreServiceNotLoaded TabRestoreServiceNotLoaded
+#else
+#define MAYBE_TabRestoreServiceNotLoaded DISABLED_TabRestoreServiceNotLoaded
+#endif
+TEST_F(ExternalFileRemoverImplTest, MAYBE_TabRestoreServiceNotLoaded) {
+  const std::string& filename = "filename.pdf";
+  CreateExternalFile(filename);
+  VerifyExternalFileExists(filename);
+
+  MockTabRestoreService service;
+  ON_CALL(service, IsLoaded()).WillByDefault(testing::Return(false));
+  external_file_remover()->TabRestoreServiceChanged(&service);
 
   base::RunLoop run_loop;
   external_file_remover()->RemoveAfterDelay(base::Seconds(0),

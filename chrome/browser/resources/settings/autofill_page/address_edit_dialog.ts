@@ -74,7 +74,11 @@ export class SettingsAddressEditDialogElement extends
         observer: 'onCountryCodeChanged_',
       },
 
-      components_: Array,
+      components_: {
+        type: Array,
+        value: () => [],
+      },
+
       canSave_: Boolean,
 
       isAccountAddress_: {
@@ -90,26 +94,26 @@ export class SettingsAddressEditDialogElement extends
     };
   }
 
-  address: AddressEntry;
-  accountInfo?: AccountInfo;
+  declare address: AddressEntry;
+  declare accountInfo?: AccountInfo;
 
   /**
    * Original address is a snapshot of the address made at initialization,
    * it is a referce for soft (or "dont make it worse") validation, which
    * basically means skipping validation for fields that are already invalid.
    */
-  private title_: string;
-  private validationError_?: string;
-  private countries_: CountryEntry[];
+  declare private title_: string;
+  declare private validationError_?: string;
+  declare private countries_: CountryEntry[];
   private addressFields_:
       Map<chrome.autofillPrivate.FieldType, string|undefined> = new Map();
   private originalAddressFields_?:
       Map<chrome.autofillPrivate.FieldType, string|undefined>;
-  private countryCode_: string|undefined;
-  private components_: uiComponents.AddressComponentUi[][] = [];
-  private canSave_: boolean;
-  private isAccountAddress_: boolean;
-  private accountAddressRecordTypeNotice_: string;
+  declare private countryCode_: string|undefined;
+  declare private components_: uiComponents.AddressComponentUi[][];
+  declare private canSave_: boolean;
+  declare private isAccountAddress_: boolean;
+  declare private accountAddressRecordTypeNotice_: string;
   private countryDetailManager_: CountryDetailManagerProxy =
       CountryDetailManagerProxyImpl.getInstance();
 

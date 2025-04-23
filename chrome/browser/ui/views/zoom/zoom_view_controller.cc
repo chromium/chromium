@@ -104,13 +104,14 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
       ZoomBubbleView::CloseCurrentBubble();
     }
   }
+}
 
-  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+bool ZoomViewController::IsBubbleVisible() const {
+  auto* action_item = actions::ActionManager::Get().FindAction(
       kActionZoomNormal, tab_interface_->GetBrowserWindowInterface()
                              ->GetActions()
                              ->root_action_item());
-  CHECK(action_item);
-  action_item->SetIsShowingBubble(/*showing_bubble=*/can_bubble_be_visible);
+  return action_item->GetIsShowingBubble();
 }
 
 bool ZoomViewController::CanBubbleBeVisible(bool prefer_to_show_bubble,
@@ -124,15 +125,6 @@ bool ZoomViewController::CanBubbleBeVisible(bool prefer_to_show_bubble,
   // active.
   return (prefer_to_show_bubble || IsBubbleVisible()) ? true
                                                       : !is_zoom_at_default;
-}
-
-bool ZoomViewController::IsBubbleVisible() const {
-  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      kActionZoomNormal, tab_interface_->GetBrowserWindowInterface()
-                             ->GetActions()
-                             ->root_action_item());
-  CHECK(action_item);
-  return action_item->GetIsShowingBubble();
 }
 
 content::WebContents* ZoomViewController::GetWebContents() const {

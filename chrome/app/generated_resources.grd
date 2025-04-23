@@ -1736,8 +1736,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
         </message>
-        <message name="IDS_EXPLORE_EXTENSIONS" desc="The explore extensions menu item in the app menu">
-          Explore &amp;Extensions
+        <message name="IDS_FIND_EXTENSIONS" desc="The find extensions menu item in the app menu">
+          Find &amp;Extensions
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
@@ -1795,8 +1795,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
         </message>
-        <message name="IDS_EXPLORE_EXTENSIONS" desc="In Title Case: The explore extensions menu item in the app menu">
-          Explore &amp;Extensions
+        <message name="IDS_FIND_EXTENSIONS" desc="In Title Case: The find extensions menu item in the app menu">
+          Find &amp;Extensions
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
@@ -4711,6 +4711,9 @@ are declared in tools/grit/grit_args.gni.
       <!-- DevTools file system access -->
       <message name="IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE" desc="Message displayed in DevTools infobar when user attempts to add file system to DevTools.">
         DevTools requests full access to <ph name="FOLDER_PATH">$1<ex>C:\Projects\foo\</ex></ph>. Make sure you do not expose any sensitive information.
+      </message>
+      <message name="IDS_DEV_TOOLS_EDIT_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to (files in) a directory using DevTools">
+        Let DevTools edit files?
       </message>
 
       <!-- DevTools confirm infobar button labels -->
@@ -8720,9 +8723,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_DISMISS_BUTTON" desc="A label for the dismiss button in the dropdown.">
         No longer interested
       </message>
-      <message name="IDS_NTP_TAB_RESUMPTION_TITLE" desc="Name of the tab resumption module in sentence case shown in various UIs.">
-        Tabs from other devices
-      </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_INFO" desc="Text shown in the body of the info dialog of the tab resumption module.">
         You’re seeing tabs from other devices to help you easily get back to your most recent activity.
         <ph name="BREAK">&lt;br&gt;</ph>
@@ -8916,7 +8916,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Side panel strings -->
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
-        Side Panel Resize Handle
+        Side Panel Resize Handle (draggable)
       </message>
       <message name="IDS_ACCNAME_SIDE_PANEL_CLOSE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel close button is focused.">
         Close side panel
@@ -9015,10 +9015,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Save to a folder in your Google Account?
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
-        This bookmark is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this bookmark will also be saved in your account.
+        This bookmark is saved only to this device. If you save it to “<ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>”, this bookmark will also be saved in your account.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their device to their signed-in account.">
-        This folder is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this folder will also be saved in your account.
+        This folder is saved only to this device. If you save it to “<ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>”, this folder will also be saved in your account.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
         Save in account
@@ -9027,10 +9027,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Save to a folder only on this device?
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
-        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this bookmark to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+        “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>” is saved only to this device. If you move this bookmark to “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>”, you’ll no longer get it on your other devices.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their signed-in account to their device.">
-        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this folder to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+        “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>” is saved only to this device. If you move this folder to “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>”, you’ll no longer get it on your other devices.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
         Save to device
@@ -9807,6 +9807,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TAB_ORGANIZATION_SELECTOR_ARIA_LABEL" desc="The screen reader text describing the tab organization selector button" is_accessibility_with_no_ui="true">
         <ph name="HEADING">$1<ex>Group tabs with AI</ex></ph>. <ph name="SUBHEADING">$2<ex>Get your tabs sorted</ex></ph>
+      </message>
+
+      <!-- Strings for split view -->
+      <message name="IDS_SPLIT_VIEW_NTP_EMPTY_TITLE" desc="The title of the split view new tab page in its empty state.">
+        Complete your split view
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_EMPTY_BODY" desc="The body text of the split view new tab page in its empty state.">
+        Visit a site or start a search in the address bar
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_TITLE" desc="The title of the split view new tab page.">
+        Choose a tab to add to split view
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_MEDIA_HEADING" desc="The header for the media tab list in the split view new tab page.">
+        Audio and Video
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_OPEN_HEADING" desc="The header for the open tab list in the split view new tab page.">
+        Open Tabs
       </message>
 
       <!-- Strings for experimental AI promo -->
@@ -10692,6 +10709,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT" desc="Body of the in Product Help shown when the 'Save to account` is selected">
           You can save this password in your Google Account or only on this device
         </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY" desc="Body of IPH prompting users to consider saving passwords">
+          To save your password with Google Password Manager, sign in to Chrome
+        </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for IPH prompting users to consider saving passwords">
+          You can save passwords with Google Password Manager when you sign in to Chrome
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_MANAGEMENT_BUBBLE_AFTER_SAVE" desc="Body of the in Product Help shown after saving a password informing the user about the password management bubble">
           To view your password or add a note about it, click the key icon
         </message>
@@ -11291,10 +11314,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add tabs to new group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Show side-by-side
+          Add tab to split view
         </message>
         <message name="IDS_TAB_CXMENU_REMOVE_SPLIT" desc="The label of the tab context menu submenu for exiting split view." translateable="false">
-          Exit side-by-side
+          Exit split view
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New group
@@ -11398,10 +11421,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add Tabs to New Group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Show Side-By-Side
+          Add Tab to Split View
         </message>
         <message name="IDS_TAB_CXMENU_REMOVE_SPLIT" desc="The label of the tab context menu submenu for exiting split view." translateable="false">
-          Exit Side-By-Side
+          Exit Split View
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="In Title Case: The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New Group
@@ -11466,6 +11489,46 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_ACCNAME_SPLIT_TABS_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side by side resize handle is focused.">
         Side By Side Resize Handle
       </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="Pins the split tabs button to the toolbar when toggled on.">
+          Open in split view
+        </message>
+        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" translateable="false" desc="The label for a menu item that swaps the inactive split tab to the other side when clicked.">
+          Reverse views
+        </message>
+        <message name="IDS_SPLIT_TAB_HORIZONTAL_LAYOUT" translateable="false" desc="The label for a menu item that switches the split tab layout from vertical to horizontal when clicked.">
+          Switch to horizontal layout
+        </message>
+        <message name="IDS_SPLIT_TAB_VERTICAL_LAYOUT" translateable="false" desc="The label for a menu item that switches the split tab layout from horizontal to vertical when clicked.">
+          Switch to vertical layout
+        </message>
+        <message name="IDS_SPLIT_TAB_CLOSE" translateable="false" desc="The label for a menu item that closes the inactive split tab when clicked.">
+          Close this view
+        </message>
+        <message name="IDS_SPLIT_TAB_SEPERATE_VIEWS" translateable="false" desc="The label for a menu item that unsplits the split tab when clicked.">
+          Seperate views
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="In title case: pins the split tabs button to the toolbar when toggled on.">
+          Open In Split View
+        </message>
+        <message name="IDS_SPLIT_TAB_REVERSE_VIEWS" translateable="false" desc="In title case: the label for a menu item that swaps the inactive split tab to the other side when clicked.">
+          Reverse Views
+        </message>
+        <message name="IDS_SPLIT_TAB_HORIZONTAL_LAYOUT" translateable="false" desc="In title case: the label for a menu item that switches the split tab layout from vertical to horizontal when clicked.">
+          Switch to Horizontal Layout
+        </message>
+        <message name="IDS_SPLIT_TAB_VERTICAL_LAYOUT" translateable="false" desc="In title case: the label for a menu item that switches the split tab layout from horizontal to vertical when clicked.">
+          Switch to Vertical Layout
+        </message>
+        <message name="IDS_SPLIT_TAB_CLOSE" translateable="false" desc="In title case: the label for a menu item that closes the inactive split tab when clicked.">
+          Close This View
+        </message>
+        <message name="IDS_SPLIT_TAB_SEPERATE_VIEWS" translateable="false" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
+          Seperate Views
+        </message>
+      </if>
 
       <!-- Tab Search -->
       <message name="IDS_TAB_SEARCH_PROMO" desc="Promo UI shown next to the tab search button to encourage it's use.">
@@ -11886,12 +11949,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Tab-group title
       </message>
       <if expr="not use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP" desc="The label of the tab group header context menu item for saving the current group.">
-          Save group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNSAVE_GROUP" desc="The label of the tab group header context menu item for unsaving the current group.">
-          Unsave group
-        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="The label of the tab group header context menu item for adding a new tab into the current group.">
           New tab in group
         </message>
@@ -11937,12 +11994,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <if expr="use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP" desc="In Title Case: The label of the tab group header context menu item for saving the current group.">
-          Save Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNSAVE_GROUP" desc="The label of the tab group header context menu item for unsaving the current group.">
-          Unsave Group
-        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="In Title Case: The label of the tab group header context menu item for adding a new tab into the current group.">
           New Tab in Group
         </message>
@@ -12004,7 +12055,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               Stop Sharing
             </message>
             <message name ="IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
-              Activity Log
+              Shared Tab Group Activity
             </message>
           <!-- !Data Sharing Owner Manage Flow -->
 
@@ -12150,7 +12201,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               Stop sharing
             </message>
             <message name ="IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
-              Activity log
+              Shared tab group activity
             </message>
           <!-- !Data Sharing Owner Manage Flow -->
 
@@ -12843,15 +12894,21 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Learn more about access requests.
         </message>
 
-        <!-- Extension upload to account dialog -->
-        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title of the dialog triggers the upload of a local extension to the signed in user's account.">
-          Save this extension in your Google Account?
+        <!-- Upload to account dialog -->
+        <message name="IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that offers the user to move a piece of data from their device to their signed-in account.">
+          Save in your Google Account?
         </message>
         <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle of the dialog triggers the upload of a local extension to the signed in user's account.">
           "<ph name="NAME">$1<ex>Google Cast</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
         </message>
+        <message name="IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle for the upload dialog that offers the user to move a bookmark from their device to their signed-in account.">
+          "<ph name="LOCAL_BOOKMARK">$1<ex>Local Bookmark</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
+        </message>
         <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="Text of the button that triggers the upload of a local extension to the signed in user's account in the extension upload dialog.">
           Save in account
+        </message>
+        <message name="IDS_BOOKMARK_MOVE_TO_ACCOUNT_ICON_TOOLTIP" desc="Button shown against a bookmark or bookmark folder that’s saved only to the user’s device. The user can click the button to save this item in their signed-in Google Account.">
+          Save in your Google Account
         </message>
 
         <!-- Reset Profile Settings strings -->
@@ -14416,9 +14473,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where sync needs to verify the user.">
         Sync needs to verify it's you
-      </message>
-      <message name="IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE" desc="This is the text of a card that means the user needs to sign back in to Chrome in order to continue saving and using data (like passwords or payment methods) in their Google Account. This is an error message that appears when the user's sign-in credential has expired; to fix the issue, the user needs to sign back in. The tone should be straightforward and motivating.">
-        To keep using the passwords and more in your Google Account, verify it's you
       </message>
       <if expr="use_titlecase">
         <message name="IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON" desc="Button in the header of desktop user menu that prompts the user to sign in again to fix the out-of-date signin info error.">
@@ -16075,16 +16129,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Expanded
       </message>
       <message name="IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has not been named by the user gets focused in the bookmarks bar. Example: 'Unnamed group - Opened'">
-        Unnamed group - <ph name="OPENED_STATE">$1</ph>
+        <ph name="SHARED_STATE">$1</ph> unnamed group - <ph name="OPENED_STATE">$2</ph>
       </message>
       <message name="IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the bookmarks bar. Example: 'MyGroupName group - Closed'">
-        <ph name="GROUP_NAME">$1</ph> group - <ph name="OPENED_STATE">$2</ph>
+        <ph name="SHARED_STATE">$1</ph> <ph name="GROUP_NAME">$2</ph> group - <ph name="OPENED_STATE">$3</ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_GROUP_MENU_ITEM_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the menu. Example: 'Shared MyGroupName group'">
+        <ph name="SHARED_STATE">$1</ph> <ph name="GROUP_NAME">$2</ph> group - <ph name="OPENED_STATE">$3</ph>
       </message>
       <message name="IDS_SAVED_GROUP_AX_LABEL_OPENED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is opened in the tabstrip.">
         Opened
       </message>
       <message name="IDS_SAVED_GROUP_AX_LABEL_CLOSED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is closed in the tabstrip.">
         Closed
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_SHARED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is shared">
+        Shared
       </message>
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the right">
         Tab moved right

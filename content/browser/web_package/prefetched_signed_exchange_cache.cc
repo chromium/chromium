@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
 #include <optional>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
@@ -340,7 +336,7 @@ bool ExtractSHA256HashValueFromString(std::string_view value,
       decoded.size() != out->size()) {
     return false;
   }
-  memcpy(out->data(), decoded.data(), out->size());
+  UNSAFE_TODO(memcpy(out->data(), decoded.data(), out->size()));
   return true;
 }
 
@@ -356,10 +352,10 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     return result;
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
-    std::string link_url;
     std::unordered_map<std::string, std::optional<std::string>> link_params;
-    if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
-                                                &link_url, &link_params)) {
+    std::optional<std::string> link_url =
+        link_header_util::ParseLinkHeaderValue(value, link_params);
+    if (!link_url) {
       continue;
     }
 
@@ -373,7 +369,7 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
             &header_integrity_value)) {
       continue;
     }
-    result[main_exchange.inner_url().Resolve(link_url)] =
+    result[main_exchange.inner_url().Resolve(*link_url)] =
         header_integrity_value;
   }
   return result;

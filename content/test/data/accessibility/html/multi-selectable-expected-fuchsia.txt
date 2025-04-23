@@ -1,0 +1,59 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Option1'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Option1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option3' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Option1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable selected label='Option2' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option3' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Option1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable selected label='Option2' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option3' actions='{DEFAULT}'
+++++++UNKNOWN
+++++++++UNKNOWN selected label='Red'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Red'
+++++++++++++UNKNOWN label='Red'
+++++++++UNKNOWN selected label='Orange'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Orange'
+++++++++++++UNKNOWN label='Orange'
+++++++++UNKNOWN label='Yellow'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Yellow'
+++++++++++++UNKNOWN label='Yellow'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Available upgrades:'
+++++++++++UNKNOWN label='Available upgrades:'
+++++++UNKNOWN focusable label='Available upgrades:'
+++++++++UNKNOWN label='" Leather seats "'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='" Leather seats "'
+++++++++++++UNKNOWN label='" Leather seats "'
+++++++++UNKNOWN label='" Front seat warmers "'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='" Front seat warmers "'
+++++++++++++UNKNOWN label='" Front seat warmers "'
+++++++++UNKNOWN selected label=' " Rear bucket seats "'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label=' " Rear bucket seats "'
+++++++++++++UNKNOWN label=' " Rear bucket seats "'

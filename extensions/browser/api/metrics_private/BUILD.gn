@@ -23,6 +23,7 @@ source_set("metrics_private") {
 
   deps = [
     "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
   ]
 }

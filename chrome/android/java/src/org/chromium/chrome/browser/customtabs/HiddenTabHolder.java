@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -260,8 +262,7 @@ public class HiddenTabHolder {
         if (mSpeculation != null) return false;
 
         // CCT Multi-network isn't supported here.
-        if (IntentUtils.safeGetParcelableExtra(intent, CustomTabIntentDataProvider.EXTRA_NETWORK)
-                != null) {
+        if (IntentUtils.safeGetParcelableExtra(intent, EXTRA_NETWORK) != null) {
             return false;
         }
 

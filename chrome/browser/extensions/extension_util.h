@@ -9,7 +9,10 @@
 #include <string>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -54,18 +57,9 @@ void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow);
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-// Returns true if |extension_id| is idle and it is safe to perform actions such
-// as updating.
-bool IsExtensionIdle(const std::string& extension_id,
-                     content::BrowserContext* context);
-
 // Sets the name, id, and icon resource path of the given extension into the
 // returned dictionary.
 base::Value::Dict GetExtensionInfo(const Extension* extension);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns a PermissionSet configured with the permissions that should be
 // displayed in an extension installation prompt for the specified |extension|.
@@ -73,6 +67,8 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
     Profile* profile);
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
 #if !BUILDFLAG(IS_ANDROID)
 // Returns all profiles affected by permissions of an extension running in
 // "spanning" (rather than "split) mode.

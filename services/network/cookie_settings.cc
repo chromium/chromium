@@ -389,22 +389,29 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
 bool CookieSettings::ShouldBlockThirdPartyCookies(
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
+  if (std::optional<bool> modifier_decision =
+          MaybeBlockThirdPartyCookiesPerModifiers(top_frame_origin,
+                                                  overrides)) {
+    return modifier_decision.value();
+  }
   return block_third_party_cookies_ ||
-         Are3pcsForceDisabledByOverride(overrides) ||
-         IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides);
+         net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+         tracking_protection_enabled_for_3pcd_;
 }
 
 bool CookieSettings::IsThirdPartyPhaseoutEnabled(
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
-  return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-         tracking_protection_enabled_for_3pcd_ ||
-         (top_frame_origin &&
-          IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) ||
-         overrides.HasAll(
-             {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-              net::CookieSettingOverride::
-                  kForceEnableThirdPartyCookieMitigations});
+  switch (GetModifierMode(top_frame_origin, overrides)) {
+    case ModifierMode::kUndefined:
+      return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+             tracking_protection_enabled_for_3pcd_;
+    case ModifierMode::kPhaseout:
+      return true;
+    case ModifierMode::kAllow:
+    case ModifierMode::kBlock:
+      return false;
+  }
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
@@ -430,18 +437,11 @@ void CookieSettings::AugmentInclusionStatus(
         setting_with_metadata.third_party_cookie_allow_mechanism());
     const bool has_exemption =
         allow_mechanism != ThirdPartyCookieAllowMechanism::kNone;
-    if (!could_be_affected_by_tpc_phaseout) {
-      // Recall: (A => B) == (!A || B)
-      // If there's no exemption, then this must not be a third-party request.
-      CHECK(has_exemption || !setting_with_metadata.is_third_party_request());
-      out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
-      return;
-    }
-
-    if (ShouldBlockThirdPartyCookies(top_frame_origin, overrides)) {
+    if (ShouldBlockThirdPartyCookies(top_frame_origin, overrides) &&
+        setting_with_metadata.is_third_party_request()) {
       CHECK(has_exemption);
       out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
-    } else {
+    } else if (could_be_affected_by_tpc_phaseout) {
       out_status.AddWarningReason(
           net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
     }
@@ -475,9 +475,8 @@ void CookieSettings::AugmentInclusionStatus(
 
 // TODO(crbug.com/366284840): Deprecate this function when moving storage access
 // status out of //net.
-bool CookieSettings::IsStorageAccessHeadersEnabled(
-    const GURL& url,
-    base::optional_ref<const url::Origin> top_frame_origin) const {
+// static
+bool CookieSettings::IsStorageAccessHeadersEnabled() {
   return base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders);
 }
 

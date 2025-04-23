@@ -26,15 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 
 #include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -100,8 +97,8 @@ class PLATFORM_EXPORT AudioChannel final {
     if (mem_buffer_.get()) {
       mem_buffer_->Zero();
     } else {
-      memset(raw_pointer_, 0,
-             base::CheckMul(sizeof(float), length_).ValueOrDie());
+      UNSAFE_TODO(memset(raw_pointer_, 0,
+                         base::CheckMul(sizeof(float), length_).ValueOrDie()));
     }
   }
 

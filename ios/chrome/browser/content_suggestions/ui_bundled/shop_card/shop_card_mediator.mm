@@ -7,7 +7,10 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_constants.h"
@@ -21,19 +24,46 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_observer_bridge.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
-@interface ShopCardMediator () <PrefObserverDelegate,
+namespace {
+
+bool IsShopCardImpressionLimitsEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+}
+
+int GetImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      commerce::kShopCard, commerce::kShopCardMaxImpressions,
+      kShopCardMaxImpressions);
+}
+
+}  // namespace
+
+@interface ShopCardMediator () <ImpressionLimitServiceObserverBridgeDelegate,
+                                MagicStackModuleDelegate,
+                                PrefObserverDelegate,
                                 ShopCardFaviconConsumerSource>
 @end
 
@@ -51,6 +81,9 @@
   raw_ptr<FaviconLoader> _faviconLoader;
   bool _faviconCallbackCalledOnce;
   id<ShopCardFaviconConsumer> _faviconConsumer;
+  raw_ptr<ImpressionLimitService> _impressionLimitService;
+  std::unique_ptr<ImpressionLimitServiceObserverBridge>
+      _impressionLimitServiceObserverBridge;
 }
 
 - (instancetype)
@@ -59,7 +92,8 @@
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
-              faviconLoader:(FaviconLoader*)faviconLoader {
+              faviconLoader:(FaviconLoader*)faviconLoader
+     impressionLimitService:(ImpressionLimitService*)impressionLimitService {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
@@ -75,6 +109,10 @@
         prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled,
         &_prefChangeRegistrar);
     _faviconLoader = faviconLoader;
+    _impressionLimitService = impressionLimitService;
+    _impressionLimitServiceObserverBridge =
+        std::make_unique<ImpressionLimitServiceObserverBridge>(
+            self, _impressionLimitService);
   }
   return self;
 }
@@ -84,6 +122,8 @@
   _bookmarkModel = nil;
   _imageFetcher = nil;
   _faviconLoader = nil;
+  _impressionLimitService = nil;
+  _impressionLimitServiceObserverBridge.reset();
 }
 
 - (void)reset {
@@ -113,8 +153,6 @@
           prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled)) {
     return;
   }
-  // Populate the item if it is not already initialized.
-  _shopCardItem = [[ShopCardItem alloc] init];
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
     _shoppingDataForShopCardFound = false;
@@ -141,6 +179,10 @@
   // Iterate through all subscriptions, find the first recent one with a drop
   // populate item.
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    if ([self hasReachedImpressionLimit:bookmark->url()] ||
+        [self hasBeenOpened:bookmark->url()]) {
+      continue;
+    }
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
     if (!meta || !meta->has_shopping_specifics()) {
@@ -178,6 +220,7 @@
 - (void)populateShopCardItem:(const power_bookmarks::ShoppingSpecifics)specifics
                     bookmark:(const bookmarks::BookmarkNode*)bookmark {
   _shopCardItem = [[ShopCardItem alloc] init];
+  _shopCardItem.delegate = self;
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
   _shopCardItem.commandHandler = self;
   _shopCardItem.shopCardFaviconConsumerSource = self;
@@ -206,6 +249,20 @@
   _shopCardItem.shopCardData.productURL = bookmark->url();
   _shopCardItem.shopCardData.productTitle =
       [NSString stringWithUTF8String:specifics.title().c_str()];
+
+  _shopCardItem.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(
+          _shopCardItem.shopCardData.priceDrop->previous_price),
+      base::SysNSStringToUTF16(
+          _shopCardItem.shopCardData.priceDrop->current_price),
+      base::SysNSStringToUTF16(_shopCardItem.shopCardData.productTitle),
+      GetHostnameFromGURL(bookmark->url()));
+}
+
+std::u16string GetHostnameFromGURL(const GURL& url) {
+  return url_formatter::
+      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
 }
 
 - (NSString*)GetFormattedPrice:(payments::CurrencyFormatter*)formatter
@@ -221,6 +278,7 @@
                          productUrl:(const GURL&)productUrl {
   if (!_shopCardItem) {
     _shopCardItem = [[ShopCardItem alloc] init];
+    _shopCardItem.delegate = self;
   }
   _shopCardItem.shopCardFaviconConsumerSource = self;
 
@@ -268,11 +326,41 @@
     _prefService->SetBoolean(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
   }
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kShopCard);
 }
 
 - (void)openShopCardItem:(ShopCardItem*)item {
+  [self.NTPActionsDelegate shopCardOpened];
+  [self.contentSuggestionsMetricsRecorder
+      recordShopCardOpened:item.shopCardData];
   [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
   [self.delegate removeShopCard];
+  [self logEngagementForItem:item];
+  [self reset];
+  [self fetchLatestShopCardItem];
+}
+
+#pragma mark - MagicStackModuleDelegate
+
+- (void)magicStackModule:(MagicStackModule*)magicStackModule
+     wasDisplayedAtIndex:(NSUInteger)index {
+  if (index == 0) {
+    DCHECK(magicStackModule);
+    [self logImpressionForItem:static_cast<ShopCardItem*>(magicStackModule)];
+  }
+  [self.contentSuggestionsMetricsRecorder
+      recordShopCardImpression:static_cast<ShopCardItem*>(magicStackModule)
+                                   .shopCardData
+                       atIndex:index];
+}
+
+#pragma mark - ImpressionLimitServiceObserverBridgeDelegate
+- (void)onUrlUntracked:(GURL)url {
+  if (_shopCardItem && _shopCardItem.shopCardData &&
+      url == _shopCardItem.shopCardData.productURL) {
+    [self.delegate removeShopCard];
+  }
 }
 
 #pragma mark - ShopCardMediatorDelegate
@@ -307,6 +395,41 @@
   }
 }
 
+- (void)logImpressionForItem:(ShopCardItem*)item {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return;
+  }
+  _impressionLimitService->LogImpressionForURL(
+      item.shopCardData.productURL,
+      shop_card_prefs::kShopCardPriceDropUrlImpressions);
+}
+
+- (void)logEngagementForItem:(ShopCardItem*)item {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return;
+  }
+  _impressionLimitService->LogCardEngagement(
+      item.shopCardData.productURL,
+      shop_card_prefs::kShopCardPriceDropUrlImpressions);
+}
+
+- (BOOL)hasReachedImpressionLimit:(const GURL&)url {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return NO;
+  }
+  std::optional<int> count = _impressionLimitService->GetImpressionCount(
+      url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
+  return count.has_value() && count.value() >= GetImpressionLimit();
+}
+
+- (BOOL)hasBeenOpened:(const GURL&)url {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return NO;
+  }
+  return _impressionLimitService->HasBeenEngagedWith(
+      url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
+}
+
 #pragma mark - Testing category methods
 - (commerce::ShoppingService*)shoppingServiceForTesting {
   return self->_shoppingService;
@@ -316,8 +439,27 @@
   self->_shopCardItem = item;
 }
 
+- (void)logImpressionForItemForTesting:(ShopCardItem*)item {
+  [self logImpressionForItem:item];
+}
+
+- (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url {
+  return [self hasReachedImpressionLimit:url];
+}
+
+- (void)logEngagementForItemForTesting:(ShopCardItem*)item {
+  [self logEngagementForItem:item];
+}
+
+- (BOOL)hasBeenOpenedForTesting:(const GURL&)url {
+  return [self hasBeenOpened:url];
+}
+
 - (ShopCardItem*)shopCardItemForTesting {
   return self->_shopCardItem;
+}
+- (void)onUrlUntrackedForTesting:(GURL)url {
+  [self onUrlUntracked:url];
 }
 
 @end

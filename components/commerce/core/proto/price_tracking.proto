@@ -79,6 +79,9 @@ message BuyableProduct {
 
   // The price display recommendation.
   optional PriceDisplayRecommendation price_display_recommendation = 11;
+
+  // Aggregate reviews for the product.
+  optional ProductReviews product_reviews = 12;
 }
 
 message PriceSummary {
@@ -121,6 +124,14 @@ message ProductPrice {
 
   // Price in micros.
   optional int64 amount_micros = 2;
+}
+
+message ProductReviews {
+  // The number of reviews for the product.
+  optional int32 review_count = 1;
+
+  // The average rating of the product.
+  optional float average_rating = 2;
 }
 
 // TODO(crbug.com/40251440) Remove PriceDropNotificationPayload

@@ -665,6 +665,23 @@ TEST_F(IconLabelBubbleViewTest, MinimumSize) {
   EXPECT_EQ(view()->GetPreferredSize(new_bounds), min_size);
 }
 
+TEST_F(IconLabelBubbleViewTest, PreferredHeight) {
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+
+  // The mininimum and preferred heights should be equal.
+  const int preferred_height = view()->GetPreferredSize().height();
+  const int min_height = view()->GetPreferredSize({0, 0}).height();
+  EXPECT_EQ(preferred_height, min_height);
+
+  // Setting a larger height bound should make the view's height snap to that
+  // bound.
+  const int larger_height_bound = preferred_height + 5;
+  const int new_height =
+      view()->GetPreferredSize({0, larger_height_bound}).height();
+  EXPECT_EQ(larger_height_bound, new_height);
+}
+
 // Tests that the client-provided additional padding for labels is correctly
 // applied when the label is expanded.
 TEST_F(IconLabelBubbleViewTest, AdditionalPaddingForLabelAppliedWhenExpanded) {
@@ -734,6 +751,37 @@ TEST_F(IconLabelBubbleViewTest, AdditionalPaddingRespectsLabelVisibility) {
 
   // Show the label. The additional padding should be applied.
   view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+  ASSERT_TRUE(view()->IsLabelVisible());
+  EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,
+            view()->GetImageContainerView()->x());
+}
+
+// Tests that the client-provided additional padding for labels is not
+// applied when the label has not text.
+TEST_F(IconLabelBubbleViewTest, AdditionalPaddingNotShownOnEmptyText) {
+  view()->SetUpAnimation();
+  view()->SetLabel(u"");
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+
+  const int initial_width = view()->width();
+  const int initial_image_x = view()->GetImageContainerView()->x();
+
+  // Set the additional insets for labels. These shouldn't be applied until
+  // the label's text is non-empty.
+  constexpr int kExpandedLabelLeftPadding = 1;
+  constexpr int kExpandedLabelRightPadding = 2;
+  view()->SetExpandedLabelAdditionalInsets(
+      views::Inset1D(kExpandedLabelLeftPadding, kExpandedLabelRightPadding));
+  view()->SizeToPreferredSize();
+
+  // Nothing should have changed.
+  EXPECT_EQ(initial_image_x, view()->GetImageContainerView()->x());
+  EXPECT_EQ(initial_width, view()->width());
+
+  // Update the label's text. The additional padding should be applied.
+  view()->SetLabel(u"Foo");
   view()->SizeToPreferredSize();
   ASSERT_TRUE(view()->IsLabelVisible());
   EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,

@@ -274,6 +274,7 @@ extern NSString* const kRectangleGroupBubble;
 extern NSString* const kHomeSymbol;
 extern NSString* const kWorkSymbol;
 extern NSString* const kShieldedEnvelope;
+extern NSString* const kReaderModeSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

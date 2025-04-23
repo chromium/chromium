@@ -87,17 +87,22 @@ void AddNewNodes(const std::unordered_set<int64_t>& existing_nodes,
 
 PermanentFolderOrderingTracker::PermanentFolderOrderingTracker(
     BookmarkModel* model,
-    BookmarkNode::Type tracked_type)
-    : model_(model), tracked_type_(tracked_type) {
+    BookmarkNode::Type tracked_type,
+    Delegate* delegate)
+    : model_(model), tracked_type_(tracked_type), delegate_(delegate) {
   CHECK(model);
   CHECK(IsValidTrackedType(tracked_type))
       << "Invalid tracked type : " << tracked_type;
+  CHECK(delegate);
 }
 
 PermanentFolderOrderingTracker::~PermanentFolderOrderingTracker() = default;
 
 void PermanentFolderOrderingTracker::Init(
     std::vector<int64_t> in_order_node_ids) {
+  CHECK(!initialized_);
+  initialized_ = true;
+
   loaded_node_ids_during_model_load_ = std::move(in_order_node_ids);
 
   model_observation_.Observe(model_);
@@ -227,6 +232,7 @@ std::optional<size_t> PermanentFolderOrderingTracker::MoveToIndex(
   ordering_.insert(ordering_.cbegin() + index, node);
 
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+  NotifyTrackedOrderingChanged();
   return index;
 }
 
@@ -266,6 +272,7 @@ void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(
   ordering_.insert(ordering_.cbegin() + index, new_nodes.cbegin(),
                    new_nodes.cend());
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+  NotifyTrackedOrderingChanged();
 }
 
 size_t PermanentFolderOrderingTracker::GetIndexAcrossStorage(
@@ -285,6 +292,11 @@ size_t PermanentFolderOrderingTracker::GetIndexAcrossStorage(
 bool PermanentFolderOrderingTracker::IsNonDefaultOrderingTracked() const {
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
   return ordering_ != GetDefaultOrderIfTracked();
+}
+
+void PermanentFolderOrderingTracker::NotifyTrackedOrderingChanged() {
+  CHECK(initialized_);
+  delegate_->TrackedOrderingChanged();
 }
 
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
@@ -319,6 +331,7 @@ bool PermanentFolderOrderingTracker::IsTrackedPermanentNode(
 void PermanentFolderOrderingTracker::ResetOrderingToDefault() {
   ordering_ = GetDefaultOrderIfTracked();
   CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
+  NotifyTrackedOrderingChanged();
 }
 
 void PermanentFolderOrderingTracker::BookmarkModelLoaded(bool ids_reassigned) {
@@ -396,6 +409,7 @@ void PermanentFolderOrderingTracker::ReconcileLoadedNodeIds() {
       break;
     }
   }
+  NotifyTrackedOrderingChanged();
 }
 
 void PermanentFolderOrderingTracker::BookmarkNodeMoved(
@@ -430,7 +444,16 @@ void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
 void PermanentFolderOrderingTracker::OnWillRemoveAllUserBookmarks(
     const base::Location& location) {
   all_user_bookmarks_remove_in_progress_ = true;
-  ordering_.clear();
+  if (!ordering_.empty()) {
+    // Even though at this point the bookmarks are not removed yet, the
+    // `ordering_` is cleared in order to ensure that subsequent notifications
+    // through `BookmarkAllUserNodesRemoved()` are all aligned between the
+    // bookmark count and the ordering - which should be empty.
+    ordering_.clear();
+    // Also notify that the ordering has changed here since we won't have this
+    // information anymore in `BookmarkAllUserNodesRemoved()`.
+    NotifyTrackedOrderingChanged();
+  }
 }
 
 void PermanentFolderOrderingTracker::BookmarkAllUserNodesRemoved(
@@ -513,6 +536,7 @@ void PermanentFolderOrderingTracker::BookmarkNodeChildrenReordered(
 
   ordering_ = std::move(new_ordering);
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+  NotifyTrackedOrderingChanged();
 }
 
 bool PermanentFolderOrderingTracker::ShouldTrackOrdering() const {
@@ -561,7 +585,10 @@ void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(
   }
 
   if (!ShouldTrackOrdering()) {
-    ordering_.clear();
+    if (!ordering_.empty()) {
+      ordering_.clear();
+      NotifyTrackedOrderingChanged();
+    }
     return;
   }
 
@@ -571,7 +598,10 @@ void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(
   }
 
   // std::erase is a no-op unless present.
-  std::erase(ordering_, node);
+  size_t erase_count = std::erase(ordering_, node);
+  if (erase_count) {
+    NotifyTrackedOrderingChanged();
+  }
 }
 
 void PermanentFolderOrderingTracker::AddBookmarkNodeIfTracked(
@@ -615,6 +645,7 @@ void PermanentFolderOrderingTracker::AddBookmarkNodeIfTracked(
         GetIndexOf(parent->children()[index - 1].get());
     ordering_.insert(ordering_.cbegin() + previous_node_index + 1, new_node);
   }
+  NotifyTrackedOrderingChanged();
 }
 
 size_t PermanentFolderOrderingTracker::GetInStorageBookmarkCountBeforeIndex(

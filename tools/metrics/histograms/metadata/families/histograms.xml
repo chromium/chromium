@@ -344,7 +344,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState"
     enum="FamilyLinkUserReauthenticationInterstitialState"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -658,7 +658,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2025-08-10">
+    enum="FamilyLinkWebFilterType" expires_after="2025-10-12">
   <owner>fernandex@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -879,6 +879,18 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
     Cancel is a definitive termination of the navigation without classification,
     due to eg. unsupported type of request.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.UseCase"
+    enum="ClassifyUrlThrottleUseCase" expires_after="2026-04-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the use case of the navigation throttle: the reason why it was
+    enabled.
+
+    It is explaining what user configuration caused the throttle to be enabled.
   </summary>
 </histogram>
 
@@ -1138,7 +1150,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <token key="RequestType" variants="ProtoFetcherRequestType"/>
 </histogram>
 
-<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-08-10">
+<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-10-12">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -1152,7 +1164,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.Status" enum="SupervisedUserProtoFetcherStatus"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch in calls to {RequestType}.</summary>

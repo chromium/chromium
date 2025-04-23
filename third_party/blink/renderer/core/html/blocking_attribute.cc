@@ -14,8 +14,7 @@
 
 namespace blink {
 
-// static
-HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
+HashSet<AtomicString>& BlockingAttribute::SupportedTokens() const {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
                           keywords::kRender,
@@ -27,7 +26,7 @@ HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
                           keywords::kFullFrameRate,
                       }));
 
-  if (RuntimeEnabledFeatures::RenderBlockingFullFrameRateEnabled()) {
+  if (RenderBlockingFullFrameRateEnabled()) {
     return tokens_with_frame_rate;
   }
   return tokens;
@@ -60,8 +59,7 @@ RenderBlockingLevel BlockingAttribute::GetBlockingLevel() const {
   if (HasRenderToken()) {
     return RenderBlockingLevel::kBlock;
   }
-  if (HasFullFrameRateToken() &&
-      RuntimeEnabledFeatures::RenderBlockingFullFrameRateEnabled()) {
+  if (HasFullFrameRateToken() && RenderBlockingFullFrameRateEnabled()) {
     return RenderBlockingLevel::kLimitFrameRate;
   }
   return RenderBlockingLevel::kNone;
@@ -75,10 +73,15 @@ void BlockingAttribute::OnAttributeValueChanged(const AtomicString& old_value,
     GetElement().GetDocument().CountUse(
         WebFeature::kBlockingAttributeRenderToken);
   } else if (contains(keywords::kFullFrameRate) &&
-             RuntimeEnabledFeatures::RenderBlockingFullFrameRateEnabled()) {
+             RenderBlockingFullFrameRateEnabled()) {
     GetElement().GetDocument().CountUse(
         WebFeature::kBlockingAttributeFullFrameRateToken);
   }
+}
+
+bool BlockingAttribute::RenderBlockingFullFrameRateEnabled() const {
+  return RuntimeEnabledFeatures::RenderBlockingFullFrameRateEnabled(
+      GetElement().GetExecutionContext());
 }
 
 }  // namespace blink

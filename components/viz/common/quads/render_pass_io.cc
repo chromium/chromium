@@ -354,6 +354,16 @@ bool RRectFFromDict(const base::Value::Dict& dict, gfx::RRectF* out) {
   return true;
 }
 
+base::Value::BlobStorage SkPathToBlob(const SkPath& path) {
+  base::Value::BlobStorage blob(path.writeToMemory(nullptr));
+  CHECK(path.writeToMemory(blob.data()));
+  return blob;
+}
+
+bool SkPathFromBlob(const base::Value::BlobStorage& blob, SkPath* out) {
+  return out->readFromMemory(blob.data(), blob.size());
+}
+
 base::Value::Dict LinearGradientToDict(
     const gfx::LinearGradient& gradient_mask) {
   base::Value::List steps;
@@ -1493,8 +1503,7 @@ bool TileDrawQuadFromDict(const base::Value::Dict& dict,
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
       common.needs_blending, resource_id, content_common->tex_coord_rect,
-      content_common->texture_size, content_common->is_premultiplied,
-      content_common->nearest_neighbor,
+      content_common->texture_size, content_common->nearest_neighbor,
       content_common->force_anti_aliasing_off);
   return true;
 }
@@ -1821,7 +1830,7 @@ base::Value::Dict CompositorRenderPassToDict(
   if (ProcessRenderPassField(kRenderPassBackdropFilterBounds) &&
       render_pass.backdrop_filter_bounds) {
     dict.Set("backdrop_filter_bounds",
-             RRectFToDict(render_pass.backdrop_filter_bounds.value()));
+             SkPathToBlob(render_pass.backdrop_filter_bounds.value()));
   }
   if (ProcessRenderPassField(kRenderPassColorSpace)) {
     // CompositorRenderPasses used to have a color space field, but this was
@@ -1921,12 +1930,13 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassBackdropFilterBounds)) {
-    const base::Value::Dict* backdrop_filter_bounds =
-        dict.FindDict("backdrop_filter_bounds");
+    const base::Value::BlobStorage* backdrop_filter_bounds =
+        dict.FindBlob("backdrop_filter_bounds");
     if (backdrop_filter_bounds) {
-      gfx::RRectF bounds;
-      if (!RRectFFromDict(*backdrop_filter_bounds, &bounds))
+      SkPath bounds;
+      if (!SkPathFromBlob(*backdrop_filter_bounds, &bounds)) {
         return nullptr;
+      }
       pass->backdrop_filter_bounds = bounds;
     }
   }

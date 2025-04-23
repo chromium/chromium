@@ -93,7 +93,12 @@ class ChangeFormSubmissionVerifier {
 
   void ChangePasswordFormFilled(
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      const autofill::FormData& submitted_form);
+      autofill::FieldRendererId field_id,
+      const std::optional<autofill::FormData>& submitted_form);
+
+  void OnFormSubmitted(
+      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+      bool success);
 
   void RequestAXTree();
 
@@ -113,7 +118,7 @@ class ChangeFormSubmissionVerifier {
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   bool submission_detected_ = false;
-  bool password_filled_ = false;
+  bool password_form_submitted_ = false;
 
   base::WeakPtrFactory<ChangeFormSubmissionVerifier> weak_ptr_factory_{this};
 };

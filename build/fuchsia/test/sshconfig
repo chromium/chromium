@@ -36,4 +36,3 @@ ControlPath=~/.ssh/fx-%C
 User fuchsia
 IdentitiesOnly yes
 IdentityFile ~/.ssh/fuchsia_ed25519
-GSSAPIDelegateCredentials no

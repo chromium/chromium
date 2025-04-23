@@ -64,6 +64,46 @@ public class PlaybackArgs {
         }
     }
 
+    // The status of the playback mode selection feature.
+    public enum PlaybackModeSelectionEnablementStatus {
+        // Feature is completely disabled. In this case, we never offer audio overviews or consider
+        // it in any way.
+        FEATURE_DISABLED(0),
+        // Feature is enabled and mode selection should be offered to the user. Happens when both
+        // playback modes are available.
+        MODE_SELECTION_ENABLED(1),
+        // Feature is enabled in general but disabled for the specific playback because AO is unavailable.
+        MODE_SELECTION_DISABLED_AO_UNAVAILABLE(2),
+        // Feature is enabled in general but disabled for the specific playback because classic ReadAloud is unavailable.
+        MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE(3),
+        // Feature is enabled in general but disabled for unknown reason (e.g. readability info couldn't be checked for some reason).
+        MODE_SELECTION_DISABLED_UNKNOWN_REASON(4);
+
+        private final int mValue;
+
+        PlaybackModeSelectionEnablementStatus(int value) {
+            mValue = value;
+        }
+
+        public int getValue() {
+            return mValue;
+        }
+
+        public static PlaybackModeSelectionEnablementStatus fromValue(int value) {
+            for (PlaybackModeSelectionEnablementStatus status : values()) {
+                if (status.getValue() == value) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Unknown value: " + value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(Locale.US, "%s (%d)", this.name(), this.getValue());
+        }
+    }
+
     /**
      * Encapsulates info about a TTS voice that can be used for playback. Tone is only relevant for
      * the UI, language and voiceId are required for the server request.

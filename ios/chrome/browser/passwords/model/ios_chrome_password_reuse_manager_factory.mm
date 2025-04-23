@@ -10,7 +10,6 @@
 #import "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #import "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -44,8 +43,6 @@ IOSChromePasswordReuseManagerFactory::~IOSChromePasswordReuseManagerFactory() =
 std::unique_ptr<KeyedService>
 IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordReuseDetectionEnabled));
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();

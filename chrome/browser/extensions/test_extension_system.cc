@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/chrome_app_sorting.h"
@@ -93,13 +94,19 @@ std::unique_ptr<KeyedService> BuildFakeCWSService(
 
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
-      store_factory_(new value_store::TestValueStoreFactory()),
-      state_store_(new StateStore(profile_,
-                                  store_factory_,
-                                  StateStore::BackendType::RULES,
-                                  false)),
-      quota_service_(new QuotaService()),
-      app_sorting_(new ChromeAppSorting(profile_)) {}
+      store_factory_(
+          base::MakeRefCounted<value_store::TestValueStoreFactory>()),
+      state_store_(std::make_unique<StateStore>(profile_,
+                                                store_factory_,
+                                                StateStore::BackendType::RULES,
+                                                false)),
+      management_policy_(std::make_unique<ManagementPolicy>()),
+      quota_service_(std::make_unique<QuotaService>()),
+      app_sorting_(std::make_unique<ChromeAppSorting>(profile_)) {
+  management_policy_->RegisterProviders(
+      ExtensionManagementFactory::GetForBrowserContext(profile_)
+          ->GetProviders());
+}
 
 TestExtensionSystem::~TestExtensionSystem() = default;
 
@@ -139,10 +146,6 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&BuildFakeCWSService));
   }
-  management_policy_ = std::make_unique<ManagementPolicy>();
-  management_policy_->RegisterProviders(
-      ExtensionManagementFactory::GetForBrowserContext(profile_)
-          ->GetProviders());
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, command_line, install_directory, unpacked_install_directory,
       ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
@@ -221,8 +224,7 @@ ContentVerifier* TestExtensionSystem::content_verifier() {
 
 std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return extension_service()->shared_module_service()->GetDependentExtensions(
-      extension);
+  return SharedModuleService::Get(profile_)->GetDependentExtensions(extension);
 }
 
 void TestExtensionSystem::InstallUpdate(
@@ -237,12 +239,6 @@ void TestExtensionSystem::InstallUpdate(
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {}
-
-bool TestExtensionSystem::FinishDelayedInstallationIfReady(
-    const std::string& extension_id,
-    bool install_immediately) {
-  NOTREACHED();
-}
 
 value_store::TestingValueStore* TestExtensionSystem::value_store() {
   // These tests use TestingValueStore in a way that ensures it only ever mints

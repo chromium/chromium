@@ -109,11 +109,11 @@ typedef int (*ChromeMainPtr)(int, char**);
 // suppresses the warning, but does not prevent the compiler or linker from
 // removing it.
 //
-// The introduction of this fixed 76kB of padding causes the unsigned linker
-// output to grow by 76kB precisely, but the signed output will grow by slightly
-// more. This is because the code signature's code directory contains SHA-1 and
-// SHA-256 hashes of each 4kB code signing page (note, not machine pages or
-// linker pages) in the image, adding 20 and 32 bytes each (macOS 12.0.1
+// For example, 76kB of padding causes the unsigned linker output to grow by
+// 76kB precisely, but the signed output will grow by slightly more. This is
+// because the code signature's code directory contains SHA-1 and SHA-256
+// hashes of each 4kB code signing page (note, not machine pages or linker
+// pages) in the image, adding 20 and 32 bytes each (macOS 12.0.1
 // https://github.com/apple-oss-distributions/Security/blob/main/OSX/libsecurity_codesigning/lib/signer.cpp#L298
 // Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 76kB
 // addition, the code signature grows by (76 / 4) * (20 + 32) = 998 bytes, thus
@@ -134,7 +134,7 @@ typedef int (*ChromeMainPtr)(int, char**);
 // revised. Hopefully a more elegant solution will become apparent before that's
 // required.
 #if !defined(DCHECK_ALWAYS_ON)
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[76 * 1024] = {};
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
 #else
 // DCHECK builds are larger and therefore require less padding. See
 // https://crbug.com/1394196 for the calculations, and

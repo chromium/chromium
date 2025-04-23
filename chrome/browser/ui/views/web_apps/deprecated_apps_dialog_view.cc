@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_icon_image.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_set.h"
@@ -254,8 +256,7 @@ void DeprecatedAppsDialogView::OnIconsLoadedForTable() {
 
 void DeprecatedAppsDialogView::OnAccept() {
   for (extensions::ExtensionId id : deprecated_app_ids_) {
-    extensions::ExtensionSystem::Get(web_contents_->GetBrowserContext())
-        ->extension_service()
+    extensions::ExtensionRegistrar::Get(web_contents_->GetBrowserContext())
         ->UninstallExtension(id, extensions::UNINSTALL_REASON_USER_INITIATED,
                              /*error=*/nullptr);
   }

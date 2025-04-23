@@ -168,12 +168,10 @@ struct Suggestion {
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
-  using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = std::variant<Guid,
                                InstrumentId,
                                AutofillProfilePayload,
                                GURL,
-                               ValueToFill,
                                PasswordSuggestionDetails,
                                PlusAddressPayload,
                                AutofillAiPayload,
@@ -396,12 +394,10 @@ struct Suggestion {
       case SuggestionType::kSeePromoCodeDetails:
         return std::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
-        return std::holds_alternative<ValueToFill>(payload) ||
-               std::holds_alternative<Guid>(payload) ||
+        return std::holds_alternative<Guid>(payload) ||
                std::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillAutofillAi:
-        return std::holds_alternative<ValueToFill>(payload) ||
-               std::holds_alternative<AutofillAiPayload>(payload);
+        return std::holds_alternative<AutofillAiPayload>(payload);
       case SuggestionType::kCreditCardEntry:
       case SuggestionType::kVirtualCreditCardEntry:
         // TODO(crbug.com/367434234): Use `PaymentsPayload` for all credit card

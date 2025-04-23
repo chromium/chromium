@@ -56,8 +56,6 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
 
 #pragma mark - JavaScriptPromptDialogRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptPromptDialogRequest);
-
 JavaScriptPromptDialogRequest::JavaScriptPromptDialogRequest(
     web::WebState* web_state,
     const GURL& url,
@@ -105,8 +103,6 @@ void JavaScriptPromptDialogRequest::CreateAuxiliaryData(
 }
 
 #pragma mark - JavaScriptPromptDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptPromptDialogResponse);
 
 JavaScriptPromptDialogResponse::JavaScriptPromptDialogResponse(
     Action action,

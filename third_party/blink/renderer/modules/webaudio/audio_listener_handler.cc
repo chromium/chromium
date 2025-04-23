@@ -243,23 +243,23 @@ void AudioListenerHandler::UpdateValuesIfNeeded(uint32_t frames_to_process) {
     DCHECK_LE(frames_to_process, up_z_values_.size());
 
     position_x_handler_->CalculateSampleAccurateValues(
-        position_x_values_.Data(), frames_to_process);
+        position_x_values_.as_span().first(frames_to_process));
     position_y_handler_->CalculateSampleAccurateValues(
-        position_y_values_.Data(), frames_to_process);
+        position_y_values_.as_span().first(frames_to_process));
     position_z_handler_->CalculateSampleAccurateValues(
-        position_z_values_.Data(), frames_to_process);
+        position_z_values_.as_span().first(frames_to_process));
     forward_x_handler_->CalculateSampleAccurateValues(
-        forward_x_values_.Data(), frames_to_process);
+        forward_x_values_.as_span().first(frames_to_process));
     forward_y_handler_->CalculateSampleAccurateValues(
-        forward_y_values_.Data(), frames_to_process);
+        forward_y_values_.as_span().first(frames_to_process));
     forward_z_handler_->CalculateSampleAccurateValues(
-        forward_z_values_.Data(), frames_to_process);
+        forward_z_values_.as_span().first(frames_to_process));
     up_x_handler_->CalculateSampleAccurateValues(
-        up_x_values_.Data(), frames_to_process);
+        up_x_values_.as_span().first(frames_to_process));
     up_y_handler_->CalculateSampleAccurateValues(
-        up_y_values_.Data(), frames_to_process);
+        up_y_values_.as_span().first(frames_to_process));
     up_z_handler_->CalculateSampleAccurateValues(
-        up_z_values_.Data(), frames_to_process);
+        up_z_values_.as_span().first(frames_to_process));
   }
 }
 

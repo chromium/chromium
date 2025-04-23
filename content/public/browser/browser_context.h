@@ -201,12 +201,14 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   StoragePartition* GetDefaultStoragePartition();
 
   // Starts a prefetch network request for the given `url`.
-  // `ttl` (Time-To-Live) specifies how long prefetched data remains valid in
-  // the cache. After this period, the data is reset.
-  // Returns `PrefetchHandle` to control prefetch resources. This can be
+  // `embedder_histogram_suffix` is used for generating internal histogram names
+  // recorded per trigger. `ttl` (Time-To-Live) specifies how long
+  // prefetched data remains valid in the cache. After this period, the data is
+  // reset. Returns `PrefetchHandle` to control prefetch resources. This can be
   // null when it can't add `PrefetchContainer` to `PrefetchService`.
   std::unique_ptr<content::PrefetchHandle> StartBrowserPrefetchRequest(
       const GURL& url,
+      const std::string& embedder_histogram_suffix,
       bool javascript_enabled,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const net::HttpRequestHeaders& additional_headers,

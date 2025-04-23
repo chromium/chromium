@@ -16,7 +16,7 @@ class FakeOverlayUserData : public OverlayUserData<FakeOverlayUserData> {
   void* value() const { return value_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(FakeOverlayUserData);
+  friend class OverlayUserData<FakeOverlayUserData>;
   FakeOverlayUserData(void* value = nullptr);
 
   raw_ptr<void> value_ = nullptr;

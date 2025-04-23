@@ -8,13 +8,11 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace blink {
-class WebNode;
 class WebMouseEvent;
 }  // namespace blink
 
@@ -31,8 +29,7 @@ namespace actor {
 // A tool that can be invoked to perform a click on a target.
 class ClickTool : public ToolBase {
  public:
-  ClickTool(mojom::ClickActionPtr action,
-            base::raw_ref<content::RenderFrame> frame);
+  ClickTool(mojom::ClickActionPtr action, content::RenderFrame& frame);
   ~ClickTool() override;
 
   // Performs a click on the specified node. Invoke callback with true if
@@ -40,8 +37,9 @@ class ClickTool : public ToolBase {
   void Execute(ToolFinishedCallback callback) override;
 
  private:
+  std::optional<gfx::PointF> ValidateAndGetClickPoint() const;
+
   blink::WebMouseEvent CreateClickMouseEvent(
-      const blink::WebNode& node,
       const mojom::ClickAction::Type type,
       const mojom::ClickAction::Count count,
       blink::WebInputEvent::Type event_type,
@@ -54,8 +52,6 @@ class ClickTool : public ToolBase {
   // RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
   mojom::ClickActionPtr action_;
-
-  base::WeakPtrFactory<ClickTool> weak_factory_{this};
 };
 
 }  // namespace actor

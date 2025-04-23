@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager_factory.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "components/version_info/version_info.h"
@@ -23,7 +24,6 @@
 #include "extensions/common/manifest_url_handlers.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_error_desktop.h"
 
 using ExternalInstallErrorType = extensions::ExternalInstallErrorDesktop;
@@ -116,18 +116,12 @@ void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
       shown_ids_.count(extension->id()) > 0)
     return;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/394876083): Enable the following code for desktop android
-  // when ExtensionManagement is ported on desktop android.
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   ExternalInstallError::AlertType alert_type =
       (extension_management->UpdatesFromWebstore(*extension) && !is_new_profile)
           ? ExternalInstallError::BUBBLE_ALERT
           : ExternalInstallError::MENU_ALERT;
-#else
-  ExternalInstallError::AlertType alert_type = ExternalInstallError::MENU_ALERT;
-#endif
   std::unique_ptr<ExternalInstallError> error(CreateExternalInstallError(
       browser_context_, extension->id(), alert_type, this));
   shown_ids_.insert(extension->id());
@@ -249,16 +243,10 @@ void ExternalInstallManager::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/394876083): Enable the following code for desktop android
-  // when ExtensionManagement is ported on desktop android.
   ExtensionManagement* settings =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   bool is_recommended_by_policy = settings->GetInstallationMode(extension) ==
                                   ManagedInstallationMode::kRecommended;
-#else
-  bool is_recommended_by_policy = false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Certain extension locations are specific enough that we can
   // auto-acknowledge any extension that came from one of them.

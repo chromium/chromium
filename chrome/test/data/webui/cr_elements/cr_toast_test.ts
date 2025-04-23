@@ -126,4 +126,37 @@ suite('cr-toast', function() {
     await toast.hide();
     assertFalse(isVisible(slottedElement));
   });
+
+  test(
+      'stop and restart auto-hide depending when toast focus changes',
+      async function() {
+        const duration = 100;
+        toast.duration = duration;
+
+        const button1 = document.createElement('button');
+        const button2 = document.createElement('button');
+        button1.textContent = 'Test 1';
+        button2.textContent = 'Test 2';
+        toast.appendChild(button1);
+        toast.appendChild(button2);
+
+        await toast.show();
+        button1.focus();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertTrue(toast.open);
+
+        button2.focus();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertTrue(toast.open);
+
+        button2.blur();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertFalse(toast.open);
+      });
 });

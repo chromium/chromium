@@ -19,6 +19,8 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace ash {
 
 class UserEducationDelegate;
@@ -72,8 +74,8 @@ class TestShellDelegate : public ShellDelegate {
 
   // Overridden from ShellDelegate:
   bool CanShowWindowForUser(const aura::Window* window) const override;
-  std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
-      const override;
+  std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate(
+      PrefService* local_state) const override;
   std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
   std::unique_ptr<CoralDelegate> CreateCoralDelegate() const override;
@@ -106,7 +108,6 @@ class TestShellDelegate : public ShellDelegate {
       ShouldExitFullscreenCallback callback) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
-  DeskProfilesDelegate* GetDeskProfilesDelegate() override;
   void OpenMultitaskingSettings() override;
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
@@ -164,8 +165,6 @@ class TestShellDelegate : public ShellDelegate {
 
   // True if window browser sessions are restoring.
   bool session_restore_in_progress_ = false;
-
-  std::unique_ptr<DeskProfilesDelegate> test_desk_profiles_delegate_;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;

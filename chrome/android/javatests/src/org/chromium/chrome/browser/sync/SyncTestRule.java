@@ -267,7 +267,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void signOut() {
         mSigninTestRule.signOut();
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 

@@ -125,8 +125,9 @@ enum class SBThreatType {
   // The download URL is malware.
   SB_THREAT_TYPE_URL_BINARY_MALWARE = 5,
 
-  // Url detected by the client-side phishing model.  Note that unlike the
-  // above values, this does not correspond to a downloaded list.
+  // Url detected by the client-side phishing model or the on-device model. Note
+  // that unlike the above values, this does not correspond to a downloaded
+  // list.
   SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING = 6,
 
   // The Chrome extension or app (given by its ID) is malware.

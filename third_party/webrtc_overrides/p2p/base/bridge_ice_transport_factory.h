@@ -26,7 +26,7 @@ class RTC_EXPORT BridgeIceTransportFactory final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~BridgeIceTransportFactory() override = default;
 
-  rtc::scoped_refptr<webrtc::IceTransportInterface> CreateIceTransport(
+  webrtc::scoped_refptr<webrtc::IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       int component,
       webrtc::IceTransportInit init) override;

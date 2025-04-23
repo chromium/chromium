@@ -14,8 +14,11 @@
 namespace views::test {
 
 PropertyWaiter::PropertyWaiter(base::RepeatingCallback<bool(void)> callback,
-                               bool expected_value)
-    : callback_(std::move(callback)), expected_value_(expected_value) {}
+                               bool expected_value,
+                               base::TimeDelta timeout)
+    : timeout_(timeout),
+      callback_(std::move(callback)),
+      expected_value_(expected_value) {}
 PropertyWaiter::~PropertyWaiter() = default;
 
 bool PropertyWaiter::Wait() {
@@ -32,7 +35,7 @@ bool PropertyWaiter::Wait() {
 void PropertyWaiter::Check() {
   DCHECK(!success_);
   success_ = callback_.Run() == expected_value_;
-  if (success_ || base::TimeTicks::Now() - start_time_ > kTimeout) {
+  if (success_ || base::TimeTicks::Now() - start_time_ > timeout_) {
     timer_.Stop();
     run_loop_.Quit();
   }

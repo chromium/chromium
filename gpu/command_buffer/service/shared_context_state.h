@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -56,7 +57,7 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace skgpu::graphite {
-class Context;
+class PrecompileContext;
 class Recorder;
 }  // namespace skgpu::graphite
 
@@ -66,6 +67,7 @@ class ExternalSemaphorePool;
 class GpuDriverBugWorkarounds;
 class GpuProcessShmCount;
 class ServiceTransferCache;
+class GraphiteSharedContext;
 
 namespace gles2 {
 class FeatureInfo;
@@ -188,8 +190,8 @@ class GPU_GLES2_EXPORT SharedContextState
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
   // Ganesh/Graphite contexts may only be used on the GPU main thread.
   GrDirectContext* gr_context() const { return gr_context_; }
-  skgpu::graphite::Context* graphite_context() const {
-    return graphite_context_;
+  gpu::GraphiteSharedContext* graphite_shared_context() const {
+    return graphite_shared_context_;
   }
   // Graphite recorder for GPU main thread, used by RasterDecoder,
   // SkiaOutputSurfaceImplOnGpu, etc.
@@ -406,10 +408,14 @@ class GPU_GLES2_EXPORT SharedContextState
   bool created_on_compositor_gpu_thread_ = false;
   bool is_drdc_enabled_ = false;
   raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
-  raw_ptr<skgpu::graphite::Context, DanglingUntriaged> graphite_context_ =
-      nullptr;
+  raw_ptr<gpu::GraphiteSharedContext, DanglingUntriaged>
+      graphite_shared_context_;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
+
+  // These two are only used if Precompilation is enabled
+  std::unique_ptr<skgpu::graphite::PrecompileContext> precompile_context_;
+  base::RepeatingTimer pipeline_cache_stats_timer_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;

@@ -28,7 +28,8 @@ import sys
 import tempfile
 
 
-SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
+SUPPORTED_TARGETS = ('appletvos', 'appletvsimulator', 'iphoneos',
+                     'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official')
 
 # Pattern matching lines from ~/.lldbinit that must not be copied to the
@@ -92,15 +93,27 @@ class GnGenerator(object):
   FAT_BUILD_DEFAULT_ARCH = '64-bit'
 
   TARGET_CPU_VALUES = {
+    'appletvos': '"arm64"',
+    'appletvsimulator': HostCpuArch(),
     'iphoneos': '"arm64"',
     'iphonesimulator': HostCpuArch(),
     'maccatalyst': HostCpuArch(),
   }
 
   TARGET_ENVIRONMENT_VALUES = {
+    'appletvos': '"device"',
+    'appletvsimulator': '"simulator"',
     'iphoneos': '"device"',
     'iphonesimulator': '"simulator"',
     'maccatalyst': '"catalyst"'
+  }
+
+  TARGET_PLATFORM_VALUES = {
+    'appletvos': '"tvos"',
+    'appletvsimulator': '"tvos"',
+    'iphoneos': '"iphoneos"',
+    'iphonesimulator': '"iphoneos"',
+    'maccatalyst': '"iphoneos"'
   }
 
   def __init__(self, settings, config, target):
@@ -130,9 +143,9 @@ class GnGenerator(object):
       args.append(('use_system_xcode', False))
 
     args.append(('target_cpu', self.TARGET_CPU_VALUES[self._target]))
-    args.append((
-        'target_environment',
-        self.TARGET_ENVIRONMENT_VALUES[self._target]))
+    args.append(
+        ('target_environment', self.TARGET_ENVIRONMENT_VALUES[self._target]))
+    args.append(('target_platform', self.TARGET_PLATFORM_VALUES[self._target]))
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.

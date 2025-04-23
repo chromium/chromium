@@ -25,6 +25,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -149,14 +150,22 @@ bool ShouldCurrentRequestUseExclusiveAccessUI(
              });
 }
 
+bool CanCurrentRequestUseModalUI(content::WebContents* web_contents) {
+  return tabs::TabInterface::GetFromContents(web_contents)->CanShowModalUI();
+}
+
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   if (permissions::PermissionUtil::
           ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
-    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
-                                                      delegate);
+    // Run this check inside the if statement to avoid creating another prompt
+    // type for embedded permission prompts.
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<EmbeddedPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
   } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
     return std::make_unique<PermissionPromptQuietIcon>(browser, web_contents,
                                                        delegate);
@@ -178,8 +187,12 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
   } else if (permissions::PermissionUtil::
                  ShouldCurrentRequestUsePermissionElementSecondaryUI(
                      delegate)) {
-    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
-                                                      delegate);
+    // Run this check inside the if statement to avoid creating another prompt
+    // type for embedded permission prompts.
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<EmbeddedPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
   } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {
     return std::make_unique<PermissionPromptChip>(browser, web_contents,
                                                   delegate);

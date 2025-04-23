@@ -160,13 +160,16 @@ suite('SearchSettingsTest', function() {
          `;
       }
 
-      get properties() {
+      static get properties() {
         return {
-          noSearch: Boolean,
+          noSearch: {
+            type: Boolean,
+            value: true,
+          },
         };
       }
 
-      noSearch: boolean = true;
+      declare noSearch: boolean;
     }
 
     customElements.define('dummy-test-element', DummyTestElement);

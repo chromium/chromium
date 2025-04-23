@@ -57,7 +57,7 @@ std::unique_ptr<views::ScrollView> FileSystemAccessScrollPanel::Create(
   // accessibility.
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->SetBackgroundThemeColorId(ui::kColorSubtleEmphasisBackground);
+  scroll_view->SetBackgroundColor(ui::kColorSubtleEmphasisBackground);
   int line_container_height =
       file_list_container->children().empty()
           ? 0

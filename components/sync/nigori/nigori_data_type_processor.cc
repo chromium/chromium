@@ -257,9 +257,10 @@ void NigoriDataTypeProcessor::OnSyncStopping(
   }
 }
 
-void NigoriDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(entity_ && entity_->RequiresCommitRequest());
+void NigoriDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/static_cast<size_t>(
+      entity_ && entity_->RequiresCommitRequest()));
 }
 
 void NigoriDataTypeProcessor::GetAllNodesForDebugging(
@@ -341,7 +342,8 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
     metadata.set_client_tag_hash(kRawNigoriClientTagHash);
     entity_ = ProcessorEntity::CreateFromMetadata(kNigoriStorageKey,
                                                   std::move(metadata));
-  } else {
+  }
+  if (!entity_) {
     // First time syncing or persisted data are corrupted; initialize metadata.
     data_type_state_.mutable_progress_marker()->set_data_type_id(
         sync_pb::EntitySpecifics::kNigoriFieldNumber);
@@ -460,8 +462,8 @@ void NigoriDataTypeProcessor::ConnectIfReady() {
   data_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
-  data_type_state_.set_authenticated_account_id(
-      activation_request_.authenticated_account_id.ToString());
+  data_type_state_.set_authenticated_obfuscated_gaia_id(
+      activation_request_.authenticated_gaia_id.ToString());
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   activation_response->data_type_state = data_type_state_;

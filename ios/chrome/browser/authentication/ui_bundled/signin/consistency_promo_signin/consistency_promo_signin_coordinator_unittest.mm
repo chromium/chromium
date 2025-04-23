@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/core/browser/account_reconcilor.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
@@ -28,7 +29,10 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     coordinator_ = [[ConsistencyPromoSigninCoordinator alloc]
         initWithBaseViewController:base_view_controller_mock_
                            browser:browser_.get()
-                       accessPoint:access_point_];
+                      contextStyle:SigninContextStyle::kDefault
+                       accessPoint:access_point_
+              prepareChangeProfile:nil
+              continuationProvider:NotReachedContinuationProvider()];
     mediator_mock_ = OCMStrictClassMock([ConsistencyPromoSigninMediator class]);
     consistency_default_account_coordinator_mock_ =
         OCMStrictClassMock([ConsistencyDefaultAccountCoordinator class]);
@@ -73,6 +77,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                   initWithBaseViewController:
                       consistency_sheet_navigation_controller_mock_
                                      browser:browser_.get()
+                                contextStyle:SigninContextStyle::kDefault
                                  accessPoint:access_point_])
         .andReturn(consistency_default_account_coordinator_mock_);
     OCMExpect([consistency_default_account_coordinator_mock_
@@ -100,6 +105,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                           userPrefService:reinterpret_cast<PrefService*>(
                                               [OCMArg anyPointer])
                               accessPoint:access_point_])
+        .ignoringNonObjectArgs()
         .andReturn(mediator_mock_);
     OCMExpect([base_view_controller_mock_ presentViewController:[OCMArg any]
                                                        animated:YES
@@ -154,15 +160,8 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
       };
   StartCoordinator();
   // Simulate cancel from the user.
-  // Expect the view to be dismissed.
-  __block ProceduralBlock dissmiss_completion = nil;
-  OCMExpect([base_view_controller_mock_
-      dismissViewControllerAnimated:YES
-                         completion:[OCMArg checkWithBlock:^(
-                                                ProceduralBlock completion) {
-                           dissmiss_completion = completion;
-                           return YES;
-                         }]]);
+  OCMExpect([base_view_controller_mock_ dismissViewControllerAnimated:YES
+                                                           completion:nil]);
   // Expect the navigation controller delegates to be reset.
   OCMExpect([consistency_sheet_navigation_controller_mock_ setDelegate:nil]);
   OCMExpect([consistency_sheet_navigation_controller_mock_
@@ -180,9 +179,6 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   [GetConsistencyDefaultAccountCoordinatorDelegate()
       consistencyDefaultAccountCoordinatorSkip:
           consistency_default_account_coordinator_mock_];
-  // Call the view controller dismiss completion block.
-  EXPECT_NE(nil, dissmiss_completion);
-  dissmiss_completion();
   // Expect the sign-in completion block called.
   EXPECT_TRUE(signin_completion_called);
   EXPECT_EQ(SigninCoordinatorResultCanceledByUser, coordinator_result);

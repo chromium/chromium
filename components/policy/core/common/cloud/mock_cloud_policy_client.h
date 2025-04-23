@@ -134,7 +134,8 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MOCK_METHOD(
       void,
       UploadChromeProfileReport,
-      (std::unique_ptr<enterprise_management::ChromeProfileReportRequest>,
+      (bool,
+       std::unique_ptr<enterprise_management::ChromeProfileReportRequest>,
        ResultCallback),
       (override));
   MOCK_METHOD(void,

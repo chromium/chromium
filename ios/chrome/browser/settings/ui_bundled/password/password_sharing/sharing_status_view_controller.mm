@@ -369,8 +369,6 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   FaviconContainerView* faviconContainerView =
       [[FaviconContainerView alloc] init];
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [faviconContainerView
-      setFaviconBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   faviconContainerView.hidden = YES;
   self.faviconContainerView = faviconContainerView;
   return faviconContainerView;

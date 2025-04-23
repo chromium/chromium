@@ -90,6 +90,15 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     // about virtual address space OOM situation, private memory footprint,
     // swap size, vm size and the estimation of blink memory usage.
     blink::OomInterventionMetrics blink_oom_metrics;
+
+    // Applies to renderer process only. Whether the killed process is a
+    // spare renderer.
+    bool is_spare_renderer = false;
+
+    // Applies to renderer process only. Whether there is any spare renderer
+    // in the browser when the process is killed. Always true if the killed
+    // process is a spare renderer.
+    bool has_spare_renderer = false;
   };
 
   // ChildExitObserver client interface.

@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CompactionType">
+  <variant name="RunningCompact" summary="Running-compaction"/>
+  <variant name="SelfCompact2" summary="Self-compaction"/>
+</variants>
+
 <variants name="DiffDirection">
   <variant name="Decrease" summary="The latter metric is lower."/>
   <variant name="Increase" summary="The latter metric is higher."/>
@@ -819,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
-    enum="BooleanEnabled" expires_after="2025-08-17">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -896,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
-    units="samples" expires_after="2025-08-17">
+    units="samples" expires_after="2025-10-19">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -1012,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1052,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Startup" units="MB"
-    expires_after="2025-08-14">
+    expires_after="2025-10-19">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1342,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Extension2.Small{ProcessMemoryAllocatorSmall2}"
-    units="KB" expires_after="2025-08-10">
+    units="KB" expires_after="2025-10-12">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1941,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Gpu.SharedMemoryFootprint" units="MB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -2255,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.Latency"
-    units="microseconds" expires_after="2025-08-03">
+    units="microseconds" expires_after="2025-10-05">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -2267,7 +2272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.SizeKb" units="KB"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -2276,7 +2281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.Latency"
-    units="microseconds" expires_after="2025-08-10">
+    units="microseconds" expires_after="2025-10-12">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -2340,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2391,7 +2396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.PartitionRoot.ExtrasSize" units="bytes"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>keishi@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <summary>
@@ -2429,7 +2434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PreFreeze2{Process}.PrivateMemoryFootprint.{Timing}"
-    units="MiB" expires_after="2025-08-10">
+    units="MiB" expires_after="2025-10-19">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -2473,10 +2478,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Memory.PressureWindowDuration" units="ms"
+<histogram name="Memory.PressureWindowDuration.{Type}" units="ms"
     expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="Memory.Pressure.TransitionType" -->
-
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2484,6 +2487,12 @@ chromium-metrics-reviews@google.com.
     transitioning from a memory pressure state to the other and when exiting
     memory pressure.
   </summary>
+  <token key="Type">
+    <variant name="CriticalToModerate"/>
+    <variant name="CriticalToNone"/>
+    <variant name="ModerateToCritical"/>
+    <variant name="ModerateToNone"/>
+  </token>
 </histogram>
 
 <histogram name="Memory.ProcessCount2" units="processes"
@@ -2641,7 +2650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.All" units="processes"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2661,7 +2670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.InitializedAndNotDead"
-    units="processes" expires_after="2025-08-10">
+    units="processes" expires_after="2025-10-12">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2706,7 +2715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.SandboxedIframeOverhead"
-    units="processes" expires_after="2025-03-30">
+    units="processes" expires_after="2025-09-30">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -2742,88 +2751,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.SelfCompact2.Renderer.AreAllPagesFrozen"
-    enum="BooleanAreAllPagesFrozen" expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    Whether all pages in the renderer are frozen. Recorded right before we begin
-    self-compaction.
-  </summary>
-</histogram>
-
-<histogram name="Memory.SelfCompact2.Renderer.CancellationReason2"
+<histogram name="Memory.RunningOrSelfCompact.Renderer.CancellationReason"
     enum="SelfCompactionCancellationReason" expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
-    The reason that self-compaction was cancelled. Recorded once each time self
-    compaction is cancelled while running.
+    The reason that self-compaction or running-compaction was cancelled.
+    Recorded once each time compaction is cancelled while running. This metric
+    is used for both self-compaction and running-compaction.
   </summary>
-</histogram>
-
-<histogram name="Memory.SelfCompact2.Renderer.ReadProcMaps"
-    enum="PreFreezeReadProcMapsType" expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    Whether we were able to read /proc/self/maps successfully. If
-    self-compaction is not enabled, this will always record as success. Recorded
-    right before we begin self-compaction.
-  </summary>
-</histogram>
-
-<histogram name="Memory.SelfCompact2.Renderer.SelfCompactionTime" units="ms"
-    expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    How long self-compaction took. Recorded after self-compaction has finished.
-  </summary>
-</histogram>
-
-<histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="ms"
-    expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    Time since the last time we cancelled self-compaction. Recorded after we
-    finish self compaction.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.SelfCompact2.Renderer.{Metric}.Diff.{Timing}.{Direction}"
-    units="MiB" expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    The difference in the chosen metric, taken from /proc/self/smaps_rollup at
-    the two specified times. &quot;Increase&quot; metrics are recorded when the
-    latter snapshot is higher, &quot;Decrease&quot; metrics when the latter
-    snapshot is lower. Either a metric is recorded for all variants, or no
-    metric is recorded.
-  </summary>
-  <token key="Metric" variants="SmapsMetric"/>
-  <token key="Timing" variants="RecordedDelayDiff"/>
-  <token key="Direction" variants="DiffDirection"/>
-</histogram>
-
-<histogram name="Memory.SelfCompact2.Renderer.{Metric}.{Timing}" units="MiB"
-    expires_after="2025-10-06">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    The amount of memory used, taken from /proc/self/smaps_rollup. Recorded
-    directly before self-compaction, directly after, and after the specified
-    delays. Either a metric is recorded for all variants, or no metric is.
-  </summary>
-  <token key="Metric" variants="SmapsMetric"/>
-  <token key="Timing" variants="RecordedDelay"/>
 </histogram>
 
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -3082,7 +3022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.SharedMemoryFootprint" units="MB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -3348,6 +3288,81 @@ chromium-metrics-reviews@google.com.
     is spent with vmm-swap enabled and how well the policies works.
   </summary>
   <token key="VmName" variants="VmmSwapVmName"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.AreAllPagesFrozen"
+    enum="BooleanAreAllPagesFrozen" expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Whether all pages in the renderer are frozen. Recorded right before we begin
+    self-compaction.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.ReadProcMaps"
+    enum="PreFreezeReadProcMapsType" expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Whether we were able to read /proc/self/maps successfully. If
+    self-compaction is not enabled, this will always record as success. Recorded
+    right before we begin self-compaction.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.SelfCompactionTime" units="ms"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    How long self-compaction took. Recorded after self-compaction has finished.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.TimeSinceLastCancel" units="ms"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Time since the last time we cancelled self-compaction. Recorded after we
+    finish self compaction.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.{Metric}.Diff.{Timing}.{Direction}"
+    units="MiB" expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The difference in the chosen metric, taken from /proc/self/smaps_rollup at
+    the two specified times. &quot;Increase&quot; metrics are recorded when the
+    latter snapshot is higher, &quot;Decrease&quot; metrics when the latter
+    snapshot is lower. Either a metric is recorded for all variants, or no
+    metric is recorded.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+  <token key="Metric" variants="SmapsMetric"/>
+  <token key="Timing" variants="RecordedDelayDiff"/>
+  <token key="Direction" variants="DiffDirection"/>
+</histogram>
+
+<histogram name="Memory.{Type}.Renderer.{Metric}.{Timing}" units="MiB"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The amount of memory used, taken from /proc/self/smaps_rollup. Recorded
+    directly before self-compaction, directly after, and after the specified
+    delays. Either a metric is recorded for all variants, or no metric is.
+  </summary>
+  <token key="Type" variants="CompactionType"/>
+  <token key="Metric" variants="SmapsMetric"/>
+  <token key="Timing" variants="RecordedDelay"/>
 </histogram>
 
 <histogram name="Memory.{UtilityProcessType}.PrivateMemoryFootprint" units="MB"

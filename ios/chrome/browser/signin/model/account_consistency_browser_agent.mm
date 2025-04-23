@@ -8,6 +8,7 @@
 
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -21,8 +22,6 @@
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
-
-BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
 
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
@@ -161,9 +160,8 @@ void AccountConsistencyBrowserAgent::ShowAccountMenu() {
   // TODO(crbug.com/375605412): Adjust the account menu shown here so that it
   // has "Manage accounts on this device" as a top-level button, and no overflow
   // menu.
-  // TODO(crbug.com/375605412): If the user actually switches accounts/profiles
-  // in this menu, show an IPH on the next NTP.
-  [application_handler_ showAccountMenuWithAnchorView:nil
-                                 skipIfUINotAvailable:YES
-                                           completion:nil];
+  // TODO(crbug.com/411614444): Open the account menu here instead of going
+  // through the handler.
+  [application_handler_
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb];
 }

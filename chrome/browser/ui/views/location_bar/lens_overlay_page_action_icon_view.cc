@@ -211,7 +211,7 @@ void LensOverlayPageActionIconView::OnExecuting(
   }
 
   LensOverlayController* const controller =
-      LensOverlayController::GetController(GetWebContents());
+      LensOverlayController::FromTabWebContents(GetWebContents());
   CHECK(controller);
 
   lens::RecordAmbientSearchQuery(

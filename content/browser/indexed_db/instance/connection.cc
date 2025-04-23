@@ -5,15 +5,28 @@
 #include "content/browser/indexed_db/instance/connection.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/unguessable_token.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -21,8 +34,14 @@
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/lock_request_data.h"
 #include "content/browser/indexed_db/instance/transaction.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -87,7 +106,8 @@ Connection::~Connection() {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
+                            "The connection is destroyed.");
 }
 
 bool Connection::IsConnected() const {
@@ -98,7 +118,7 @@ bool Connection::IsConnected() const {
 Transaction* Connection::CreateVersionChangeTransaction(
     int64_t id,
     const std::set<int64_t>& scope,
-    std::unique_ptr<Transaction::Delegate> backing_store_transaction) {
+    std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
   return (transactions_[id] = std::make_unique<Transaction>(
@@ -175,13 +195,14 @@ void Connection::AbortTransactionAndTearDownOnError(
   }
 }
 
-void Connection::CloseAndReportForceClose() {
+void Connection::CloseAndReportForceClose(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError)
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
+                            message)
       ->OnForcedClose();
 }
 
@@ -807,7 +828,8 @@ Transaction* Connection::GetTransaction(int64_t id) const {
 }
 
 std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
-    CloseErrorHandling error_handling) {
+    CloseErrorHandling error_handling,
+    const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return {};
@@ -817,7 +839,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
 
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                      "Connection is closing.");
+                      "Connection is closing because of: " + message);
   Status status;
   switch (error_handling) {
     case CloseErrorHandling::kReturnOnFirstError:

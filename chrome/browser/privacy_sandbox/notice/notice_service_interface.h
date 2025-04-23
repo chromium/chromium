@@ -5,17 +5,22 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_INTERFACE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_INTERFACE_H_
 
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom-forward.h"
+#include <vector>
 
-enum class SurfaceType;
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace privacy_sandbox {
 
-// This framework communicates to the view manager via this interface.
-class PrivacySandboxNoticeServiceInterface {
- public:
-  virtual ~PrivacySandboxNoticeServiceInterface() = default;
+class DesktopViewManager;
 
+enum class SurfaceType;
+
+// This framework communicates to the view manager via this interface.
+class PrivacySandboxNoticeServiceInterface : public KeyedService {
+ public:
   // Returns a required list of notices to show.
   virtual std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
       SurfaceType surface) = 0;
@@ -24,6 +29,10 @@ class PrivacySandboxNoticeServiceInterface {
   virtual void EventOccurred(
       std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
       notice::mojom::PrivacySandboxNoticeEvent event) = 0;
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual DesktopViewManager* GetDesktopViewManager() = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace privacy_sandbox

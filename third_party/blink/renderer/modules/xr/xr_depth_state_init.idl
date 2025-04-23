@@ -13,7 +13,13 @@ enum XRDepthDataFormat {
   "unsigned-short",
 };
 
+enum XRDepthType {
+  "raw",
+  "smooth"
+};
+
 dictionary XRDepthStateInit {
   required sequence<XRDepthUsage> usagePreference;
   required sequence<XRDepthDataFormat> dataFormatPreference;
+  sequence<XRDepthType> depthTypeRequest;
 };

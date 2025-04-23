@@ -46,11 +46,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                   kDefaultReportFrequency);
   registry->RegisterBooleanPref(kUserSecuritySignalsReporting, false);
   registry->RegisterBooleanPref(kUserSecurityAuthenticatedReporting, false);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
   registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   registry->RegisterListPref(kCloudLegacyTechReportAllowlist);
 }

@@ -149,8 +149,7 @@ base::android::BinderStatusOr<void> WriteMessagePayload(
   if (!mapping.IsValid()) {
     return base::unexpected(STATUS_NO_MEMORY);
   }
-
-  memcpy(mapping.memory(), bytes.data(), bytes.size());
+  mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(bytes);
 
   RETURN_IF_ERROR(
       out.WriteInt32(static_cast<int32_t>(WirePayloadType::kSharedMemory)));

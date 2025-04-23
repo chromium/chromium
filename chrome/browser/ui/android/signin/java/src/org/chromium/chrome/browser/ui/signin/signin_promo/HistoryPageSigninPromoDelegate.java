@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -114,6 +115,14 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    AccountPickerBottomSheetStrings getBottomSheetStrings() {
+        return new AccountPickerBottomSheetStrings.Builder(
+                        R.string.signin_account_picker_bottom_sheet_title)
+                .setSubtitleStringId(R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                .build();
+    }
+
+    @Override
     boolean shouldHideSecondaryButton() {
         return true;
     }
@@ -125,7 +134,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_PROMO_CTA_STRING_VARIATION)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_PAGE_PROMO_CTA_STRING_VARIATION)) {
             return mContext.getString(R.string.signin_continue);
         } else {
             return mContext.getString(R.string.signin_promo_turn_on);

@@ -23,8 +23,9 @@ enum class NudgeDecision {
   // navigated to since the last nudge shown to the user.
   kNotEnoughPageLoadsSinceLastNudge = 5,
   // The page was eligible for the nudge, but not enough time has elapsed since
-  // the last nudge shown to the user.
-  kNotEnoughTimeHasElapsedSinceLastNudge = 6,
+  // the last nudge was dismissed. This is only relevant when a nudge has been
+  // dismissed in the past.
+  kNotEnoughTimeSinceLastNudgeDismissed = 6,
   // The page was eligible for the nudge, but too many nudges have been shown to
   // the user recently.
   kTooManyNudgesShownToTheUser = 7,
@@ -39,8 +40,13 @@ enum class NudgeDecision {
   kNudgeNotShownWindowShowing = 10,
   // User closes the tab/window as a nudge decision is being computed.
   kNudgeDecisionInterrupted = 11,
+  // The page was eligible for the nudge, but not enough time has elapsed since
+  // the last nudge was shown to the user.
+  kNotEnoughTimeSinceLastNudgeShown = 12,
+  // User closes the tab/window as a nudge decision is being computed.
+  kNudgeNotShownWindowCallToActionUI = 13,
   // New values above this line.
-  kMaxValue = kNudgeDecisionInterrupted,
+  kMaxValue = kNudgeNotShownWindowCallToActionUI,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 
@@ -59,8 +65,11 @@ enum class NudgeInteraction {
   kIgnoredTabChange = 5,
   //  The nudge was dismissed by the navigation changing.
   kIgnoredNavigation = 6,
+  // The server sent data, but another call to action was present in the
+  // browser.
+  kNudgeNotShownWindowCallToActionUI = 7,
   // New values above this line.
-  kMaxValue = kIgnoredNavigation,
+  kMaxValue = kNudgeNotShownWindowCallToActionUI,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeInteraction)
 

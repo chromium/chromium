@@ -24,6 +24,6 @@ class OptimizerSet():
   def RunOptimization(self) -> None:
     test_names = set(self._args.test_names)
     for name in test_names:
-      print('Running optimization for test %s' % name)
+      print(f'Running optimization for test {name}')
       optimizer = self._optimizer_class(self._args, name)
       optimizer.RunOptimization()

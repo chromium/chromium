@@ -27,9 +27,9 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
     case FormControlType::kInputCheckbox:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
     case FormControlType::kInputEmail:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
-    case FormControlType::kInputDate:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
+    case FormControlType::kInputDate:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
     case FormControlType::kInputMonth:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;
     case FormControlType::kInputNumber:
@@ -95,7 +95,6 @@ optimization_guide::proto::FormData ToFormDataProto(
     // Unconditionally assign html meta data to the field.
     field_proto->set_field_name(base::UTF16ToUTF8(field.name()));
     field_proto->set_field_label(base::UTF16ToUTF8(field.label()));
-    field_proto->set_is_visible(field.is_visible());
     field_proto->set_is_focusable(field.is_focusable());
     field_proto->set_placeholder(base::UTF16ToUTF8(field.placeholder()));
     field_proto->set_form_control_type(

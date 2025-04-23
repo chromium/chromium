@@ -194,6 +194,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
       }));
     }
 
+    [coordinator_ stop];
+
     PlatformTest::TearDown();
   }
 

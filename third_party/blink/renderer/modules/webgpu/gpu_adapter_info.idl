@@ -21,4 +21,5 @@
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute FrozenArray<GPUMemoryHeapInfo> memoryHeaps;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long? d3dShaderModel;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long? vkDriverVersion;
+  [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString powerPreference;
 };

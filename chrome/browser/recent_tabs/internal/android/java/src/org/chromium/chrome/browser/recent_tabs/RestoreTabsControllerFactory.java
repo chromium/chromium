@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** A factory interface for building a RestoreTabsController instance. */
+@NullMarked
 public class RestoreTabsControllerFactory {
     /**
      * @return An instance of RestoreTabsController.

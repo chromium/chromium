@@ -59,8 +59,6 @@ class SourceUrlRecorderWebStateObserver
 
   // All the navigation_ids that are already reported to the UKM recorder.
   std::set<int64_t> navigation_ids_seen_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace internal

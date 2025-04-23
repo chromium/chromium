@@ -571,6 +571,11 @@ bool InteractionSequence::IsCurrentStepInAnyContextForTesting() const {
   return current_step_->in_any_context;
 }
 
+bool InteractionSequence::IsCurrentStepImmediateForTesting() const {
+  CHECK(current_step_);
+  return current_step_->step_start_mode == StepStartMode::kImmediate;
+}
+
 void InteractionSequence::FailForTesting() {
   Abort(AbortedReason::kFailedForTesting);
 }

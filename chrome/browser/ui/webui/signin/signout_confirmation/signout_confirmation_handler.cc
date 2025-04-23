@@ -115,6 +115,10 @@ ConstructSignoutConfirmationData(
   signout_confirmation_mojo->cancel_button_label =
       l10n_util::GetStringUTF8(ComputeCancelButtonLabelId(variant));
 
+  signout_confirmation_mojo->has_unsynced_data =
+      variant == ChromeSignoutConfirmationPromptVariant::kUnsyncedData ||
+      variant ==
+          ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton;
   signout_confirmation_mojo->account_extensions =
       std::move(extension_infos_mojo);
   return signout_confirmation_mojo;

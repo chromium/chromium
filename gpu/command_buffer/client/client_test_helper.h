@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -50,7 +51,8 @@ class FakeCommandBufferServiceBase : public CommandBufferServiceBase {
   void DestroyTransferBufferHelper(int32_t id);
 
  private:
-  scoped_refptr<Buffer> transfer_buffer_buffers_[kMaxTransferBuffers];
+  std::array<scoped_refptr<Buffer>, kMaxTransferBuffers>
+      transfer_buffer_buffers_;
   CommandBuffer::State state_;
 };
 

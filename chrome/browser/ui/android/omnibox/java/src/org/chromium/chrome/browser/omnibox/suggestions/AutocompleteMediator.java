@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -130,6 +130,8 @@ class AutocompleteMediator
     // When set, specifies the time when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
     private @Nullable Long mFirstSuggestionListModelCreatedTime;
+
+    private @Nullable Boolean mOmniboxInZeroPrefixState;
 
     private @RefineActionUsage int mRefineActionUsage = RefineActionUsage.NOT_USED;
 
@@ -437,6 +439,7 @@ class AutocompleteMediator
             mNumPrefetchesStartedInOmniboxSession = 0;
             mLastPrefetchStartedSuggestion = Optional.empty();
 
+            mOmniboxInZeroPrefixState = null;
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
             // a consequence the omnibox is unfocused).
@@ -840,14 +843,24 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
 
         mAutocompleteInput.setUserText(textWithoutAutocomplete);
+        boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
-        mAutocomplete.ifPresent(a -> a.resetSession());
-        mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
+        // The user recently focused the Omnibox, began typing, or cleared the Omnibox.
+        if (mOmniboxInZeroPrefixState == null
+                || mOmniboxInZeroPrefixState != isInZeroPrefixContext) {
+            mOmniboxInZeroPrefixState = isInZeroPrefixContext;
+            if (!isInZeroPrefixContext) {
+                // User started typing.
+                mAutocomplete.ifPresent(a -> a.resetSession());
+                mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
+            }
+        }
+
         stopAutocomplete(false);
 
-        if (mAutocompleteInput.isInZeroPrefixContext() || isOnFocusContext) {
+        if (isInZeroPrefixContext || isOnFocusContext) {
             clearSuggestions();
             startCachedZeroSuggest();
         } else {

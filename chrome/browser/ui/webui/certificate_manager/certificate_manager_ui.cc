@@ -128,6 +128,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS)
+      {"certificateProvisioningProcessId",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_PROCESS_ID},
       {"certificateProvisioningListHeader",
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER},
       {"certificateProvisioningRefresh",

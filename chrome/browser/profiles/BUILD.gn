@@ -221,6 +221,7 @@ source_set("profiles_extra_parts_impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:font_pref",
+    "//chrome/browser/affiliations",
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
     "//chrome/browser/background:background",

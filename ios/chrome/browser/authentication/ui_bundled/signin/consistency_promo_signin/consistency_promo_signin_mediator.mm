@@ -19,6 +19,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -34,6 +36,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 }  // namespace
 
 @interface ConsistencyPromoSigninMediator () <
+    AuthenticationFlowRequestHelper,
     IdentityManagerObserverBridgeDelegate> {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -84,6 +87,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
                       accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super init];
   if (self) {
+    CHECK(identityManager);
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
@@ -201,18 +205,19 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     // Reset dismissal count if the user wants to sign-in.
     _prefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
-  __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow
-      startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        [weakSelf authenticationFlowCompletedWithResult:result];
-      }];
+  _authenticationFlow.requestHelper = self;
+  [_authenticationFlow startSignIn];
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
 }
 
-#pragma mark - Private
+#pragma mark - AuthenticationFlowRequestHelper
 
-- (void)authenticationFlowCompletedWithResult:(SigninCoordinatorResult)result {
-  DCHECK(_authenticationFlow);
+- (void)authenticationFlowDidSignInInSameProfileWithResult:
+    (SigninCoordinatorResult)result {
+  if (!_identityManager) {
+    // The mediator was already disconnected, nothing to do.
+    return;
+  }
   _authenticationFlow = nil;
   if (result != SigninCoordinatorResultSuccess) {
     RecordConsistencyPromoUserAction(
@@ -261,6 +266,14 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, _cookieTimeoutClosure.callback(), kSigninTimeout);
 }
+
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow.requestHelper = nil;
+  _authenticationFlow = nil;
+  return [self.delegate changeProfileContinuation];
+}
+
+#pragma mark - Private
 
 // Called by _webSigninTracker when the result of the web sign-in flow is known.
 - (void)webSigninFinishedWithResult:(signin::WebSigninTracker::Result)result {

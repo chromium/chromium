@@ -42,11 +42,13 @@ chrome.test.runTests([
 
     // Start with CENTER button since LEFT button is checked by default.
     await testButton(
-        buttons[1]!, TextAlignment.CENTER, 'pdf:text-align-center');
+        buttons[1]!, TextAlignment.CENTER, 'pdf-ink:text-align-center');
     await testButton(
-        buttons[2]!, TextAlignment.JUSTIFY, 'pdf:text-align-justify');
-    await testButton(buttons[3]!, TextAlignment.RIGHT, 'pdf:text-align-right');
-    await testButton(buttons[0]!, TextAlignment.LEFT, 'pdf:text-align-left');
+        buttons[2]!, TextAlignment.JUSTIFY, 'pdf-ink:text-align-justify');
+    await testButton(
+        buttons[3]!, TextAlignment.RIGHT, 'pdf-ink:text-align-right');
+    await testButton(
+        buttons[0]!, TextAlignment.LEFT, 'pdf-ink:text-align-left');
 
     chrome.test.succeed();
   },

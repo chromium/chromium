@@ -202,7 +202,7 @@ void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState>& state) {
   net::SchemefulSite site(url);
   cookie_manager->GetCookieList(
       url, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection::FromOptional(
+      net::CookiePartitionKeyCollection(
           net::CookiePartitionKey::FromNetworkIsolationKey(
               net::NetworkIsolationKey(site, site), net::SiteForCookies(site),
               site, /*main_frame_navigation=*/true)),

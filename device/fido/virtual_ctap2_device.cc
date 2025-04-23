@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -2714,7 +2715,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
                            pin::kPinUvAuthTokenSafetyPadding.end());
       pinauth_bytes.insert(pinauth_bytes.end(), kLargeBlobPinPrefix.begin(),
                            kLargeBlobPinPrefix.end());
-      auto offset_vec = fido_parsing_utils::Uint32LittleEndian(offset);
+      auto offset_vec = base::U32ToLittleEndian(offset);
       pinauth_bytes.insert(pinauth_bytes.end(), offset_vec.begin(),
                            offset_vec.end());
       std::array<uint8_t, crypto::kSHA256Length> set_hash =

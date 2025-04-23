@@ -26,6 +26,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registrar.h"
@@ -215,6 +216,9 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
 
 TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   TestingProfile* profile = CreateProfile("myprofile@gmail.com");
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   CreateClient();
 
   GURL origin("https://example.com/");
@@ -236,7 +240,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (2) Disable the permission when the default is to ask (expected to clear).
@@ -245,7 +249,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::ASK,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // Change the default content setting vaule for notifications to ALLOW.
@@ -259,7 +263,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::DENIED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (4) Enable the permission when the default is allowed (expected to clear).
@@ -269,7 +273,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // Now change the default content setting value to BLOCK.
@@ -283,7 +287,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (6) Disable the permission when the default is blocked (expected to clear).
@@ -292,7 +296,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::DENIED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 }
 

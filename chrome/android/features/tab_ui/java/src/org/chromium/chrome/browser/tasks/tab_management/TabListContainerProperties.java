@@ -69,6 +69,9 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final ReadableObjectPropertyKey<Callback<TabKeyEventData>> PAGE_KEY_LISTENER =
+            new ReadableObjectPropertyKey<>();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -83,5 +86,6 @@ class TabListContainerProperties {
                 GET_VISIBLE_RANGE_CALLBACK,
                 IS_SCROLLING_SUPPLIER_CALLBACK,
                 IS_CONTENT_SENSITIVE,
+                PAGE_KEY_LISTENER,
             };
 }

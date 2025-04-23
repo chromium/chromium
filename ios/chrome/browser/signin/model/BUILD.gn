@@ -22,8 +22,6 @@ source_set("model") {
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
-    "account_widget_updater.h",
-    "account_widget_updater.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
@@ -54,6 +52,8 @@ source_set("model") {
     "signin_profile_info_updater.mm",
     "signin_profile_info_updater_factory.h",
     "signin_profile_info_updater_factory.mm",
+    "system_account_updater.h",
+    "system_account_updater.mm",
   ]
   deps = [
     ":capabilities_types",
@@ -77,6 +77,7 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
@@ -481,6 +482,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/policy/model:policy_util",

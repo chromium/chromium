@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.R;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.InputProtector;
@@ -176,6 +177,7 @@ public class SecurePaymentConfirmationAuthnController {
      * @param rpId The relying party ID for the SPC credential.
      * @param issuerIcon The icon of the issuer.
      * @param networkIcon The icon of the network.
+     * @param informOnly Whether to show the inform-only UX.
      */
     public boolean show(
             Drawable paymentIcon,
@@ -188,7 +190,12 @@ public class SecurePaymentConfirmationAuthnController {
             boolean showOptOut,
             String rpId,
             @Nullable Drawable issuerIcon,
-            @Nullable Drawable networkIcon) {
+            @Nullable Drawable networkIcon,
+            boolean informOnly) {
+        assert !informOnly
+                || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK);
+
         if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -254,6 +261,20 @@ public class SecurePaymentConfirmationAuthnController {
                                 showsIssuerNetworkIcons)
                         .with(SecurePaymentConfirmationAuthnProperties.ISSUER_ICON, issuerIcon)
                         .with(SecurePaymentConfirmationAuthnProperties.NETWORK_ICON, networkIcon)
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.TITLE,
+                                informOnly
+                                        ? context.getString(
+                                                R.string
+                                                        .secure_payment_confirmation_inform_only_title)
+                                        : context.getString(
+                                                R.string
+                                                        .secure_payment_confirmation_verify_purchase))
+                        .with(
+                                SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_LABEL,
+                                informOnly
+                                        ? context.getString(R.string.payments_confirm_button)
+                                        : context.getString(R.string.payments_continue_button))
                         .build();
 
         bottomSheet.addObserver(mBottomSheetObserver);

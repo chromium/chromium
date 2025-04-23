@@ -69,8 +69,11 @@ void TabInfoCollector::GetWindowTabInfoForAllBrowserWindows(
     if (full_restore::GetAppId(window) != app_constants::kChromeAppId) {
       continue;
     }
-    // TODO(b/355508827):Set user selected window name.
-    windows.push_back(delegate->GetTabsListForWindow(window));
+    auto window_tabs = delegate->GetTabsListForWindow(window);
+    if (window_tabs.size()) {
+      // TODO-crbug.com/355508827:Set user selected window name.
+      windows.push_back(window_tabs);
+    }
   }
   SortWindowList(windows);
   std::move(callback).Run(AshToPageWindows(windows));

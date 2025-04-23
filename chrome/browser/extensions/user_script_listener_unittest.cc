@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/common/chrome_paths.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -115,7 +115,7 @@ class UserScriptListenerTest : public testing::Test {
     ASSERT_TRUE(profile_);
     TestExtensionSystem* test_extension_system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_));
-    service_ = test_extension_system->CreateExtensionService(
+    test_extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 
     auto instance = content::SiteInstance::Create(profile_);
@@ -145,7 +145,7 @@ class UserScriptListenerTest : public testing::Test {
                                         .AppendASCII("1.0.0.0");
     TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile_),
                                            kTestExtensionId);
-    UnpackedInstaller::Create(service_)->Load(extension_path);
+    UnpackedInstaller::Create(profile_)->Load(extension_path);
     observer.WaitForExtensionLoaded();
   }
 
@@ -153,8 +153,8 @@ class UserScriptListenerTest : public testing::Test {
     const ExtensionSet& extensions =
         ExtensionRegistry::Get(profile_)->enabled_extensions();
     ASSERT_FALSE(extensions.empty());
-    service_->UnloadExtension((*extensions.begin())->id(),
-                              UnloadedExtensionReason::DISABLE);
+    ExtensionRegistrar::Get(profile_)->RemoveExtension(
+        (*extensions.begin())->id(), UnloadedExtensionReason::DISABLE);
   }
 
   std::unique_ptr<NavigationThrottle> CreateListenerNavigationThrottle(
@@ -181,7 +181,6 @@ class UserScriptListenerTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<UserScriptListener> listener_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<ExtensionService> service_ = nullptr;
   bool was_navigation_resumed_ = false;
   std::unique_ptr<content::WebContents> web_contents_;
 #if BUILDFLAG(IS_CHROMEOS)

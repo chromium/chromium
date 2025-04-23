@@ -152,6 +152,4 @@ void WebFaviconDriver::SetFaviconStatus(
                                 icon_url_changed, favicon_status.image);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(WebFaviconDriver)
-
 }  // namespace favicon

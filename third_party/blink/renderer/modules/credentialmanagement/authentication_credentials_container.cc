@@ -1217,7 +1217,7 @@ DOMException* AuthenticatorStatusToDOMException(
           "to the credential manager.");
     case AuthenticatorStatus::IMMEDIATE_NOT_FOUND:
       return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError,
+          DOMExceptionCode::kNotAllowedError,
           "No immediate discoverable credentials are found.");
   }
   return nullptr;
@@ -2239,7 +2239,7 @@ void AuthenticationCredentialsContainer::GetForIdentity(
 
   CredentialMediationRequirement mediation_requirement;
   if (options.mediation() == "conditional") {
-    if (RuntimeEnabledFeatures::FedCmDelegationEnabled()) {
+    if (RuntimeEnabledFeatures::FedCmAutofillEnabled()) {
       mediation_requirement = CredentialMediationRequirement::kConditional;
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(

@@ -55,7 +55,7 @@ executable("ozone_demo") {
 
   deps = [
     ":ozone_demo_lib",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//gpu/vulkan:buildflags",
     "//mojo/core/embedder",
     "//ui/events/ozone/layout",
@@ -88,7 +88,7 @@ executable("skia_demo") {
 
   deps = [
     ":ozone_demo_lib",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//mojo/core/embedder",
     "//skia",
     "//ui/events/ozone/layout",

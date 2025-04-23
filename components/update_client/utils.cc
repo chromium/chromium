@@ -15,11 +15,15 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -96,22 +100,25 @@ bool VerifyFileHash256(const base::FilePath& filepath,
   std::unique_ptr<crypto::SecureHash> hasher(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
 
-  std::optional<int64_t> file_size = base::GetFileSize(filepath);
-  if (!file_size.has_value()) {
+  base::File file(filepath, base::File::FLAG_OPEN |
+                                base::File::FLAG_WIN_SEQUENTIAL_SCAN |
+                                base::File::FLAG_READ);
+  if (!file.IsValid()) {
     return false;
   }
-  if (file_size.value() > 0) {
-    base::MemoryMappedFile mmfile;
-    if (!mmfile.Initialize(filepath)) {
-      return false;
-    }
-    hasher->Update(mmfile.data(), mmfile.length());
+  auto buffer = base::HeapArray<uint8_t>::Uninit(4096);
+  std::optional<size_t> bytes_read = file.ReadAtCurrentPos(buffer);
+  while (bytes_read.value_or(0) > 0) {
+    hasher->Update(buffer.first(*bytes_read));
+    bytes_read = file.ReadAtCurrentPos(buffer);
   }
+  if (!bytes_read) {
+    return false;
+  }
+  std::array<uint8_t, crypto::kSHA256Length> sha256_hash;
+  hasher->Finish(sha256_hash);
 
-  uint8_t actual_hash[crypto::kSHA256Length] = {};
-  hasher->Finish(actual_hash, sizeof(actual_hash));
-
-  return memcmp(actual_hash, &expected_hash[0], sizeof(actual_hash)) == 0;
+  return base::span(sha256_hash) == base::span(expected_hash);
 }
 
 bool IsValidBrand(const std::string& brand) {

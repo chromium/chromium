@@ -20,7 +20,7 @@ package tflite.task.text;
 import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
 
 // Options for setting up a BertNLClassifier.
-// Next Id: 3
+// Next Id: 4
 message BertNLClassifierOptions {
   // Base options for configuring BertNLClassifier, such as specifying the
   // TfLite model file with metadata, accelerator options, etc.
@@ -31,4 +31,9 @@ message BertNLClassifierOptions {
   // Deprecated: max_seq_len is now read from the model (i.e. input tensor size)
   // automatically.
   optional int32 max_seq_len = 2 [default = 128];
+
+  // The name of the output tensor.
+  //
+  // If not provided, defaults to "probability".
+  optional string output_tensor_name = 3;
 }

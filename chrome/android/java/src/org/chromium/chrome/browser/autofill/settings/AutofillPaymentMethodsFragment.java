@@ -29,6 +29,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -276,7 +277,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             card_pref.setIcon(
                     AutofillUiUtils.getCardIcon(
                             getStyledContext(),
-                            personalDataManager,
+                            AutofillImageFetcherFactory.getForProfile(getProfile()),
                             card.getCardArtUrl(),
                             card.getIssuerIconDrawableId(),
                             ImageSize.LARGE,

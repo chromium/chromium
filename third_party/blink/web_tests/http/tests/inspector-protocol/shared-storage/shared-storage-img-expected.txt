@@ -15,23 +15,23 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : clear
+        method : batchUpdate
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            batchSize : 5
+            batchUpdateId : <string>
         }
         scope : header
     }
     [1] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : set
+        method : clear
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            ignoreIfPresent : true
-            key : a
-            value : b
+            batchUpdateId : <string>
         }
         scope : header
     }
@@ -42,31 +42,48 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            ignoreIfPresent : false
-            key : hello
-            value : world
+            batchUpdateId : <string>
+            ignoreIfPresent : true
+            key : a
+            value : b
         }
         scope : header
     }
     [3] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : append
+        method : set
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            batchUpdateId : <string>
+            ignoreIfPresent : false
             key : hello
-            value : friend
+            value : world
         }
         scope : header
     }
     [4] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : append
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            batchUpdateId : <string>
+            key : hello
+            value : friend
+        }
+        scope : header
+    }
+    [5] : {
+        accessTime : <number>
+        mainFrameId : <string>
         method : delete
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            batchUpdateId : <string>
             key : a
         }
         scope : header

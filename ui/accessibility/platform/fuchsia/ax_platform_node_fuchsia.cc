@@ -8,11 +8,9 @@ namespace ui {
 
 AXPlatformNodeFuchsia::AXPlatformNodeFuchsia() = default;
 
-AXPlatformNodeFuchsia::~AXPlatformNodeFuchsia() = default;
-
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeFuchsia* node = new AXPlatformNodeFuchsia();
   node->Init(delegate);
   return Pointer(node);
@@ -23,7 +21,7 @@ gfx::NativeViewAccessible AXPlatformNodeFuchsia::GetNativeViewAccessible() {
 }
 
 void AXPlatformNodeFuchsia::PerformAction(const AXActionData& data) {
-  delegate_->AccessibilityPerformAction(data);
+  GetDelegate()->AccessibilityPerformAction(data);
 }
 
 }  // namespace ui

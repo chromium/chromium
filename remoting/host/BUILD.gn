@@ -82,6 +82,8 @@ source_set("host_main_headers") {
     ":*",
     "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
+    "//remoting/host/mac:agent_process_broker_main_headers",
+    "//remoting/host/mac:host_service_main_headers",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
     "//remoting/host/remote_open_url:remote_open_url_main_headers",
@@ -97,15 +99,6 @@ source_set("host_main_headers") {
   sources = [
     "host_export.h",
     "host_main.h",
-  ]
-}
-
-source_set("capturer_interfaces") {
-  visibility = [ ":*" ]
-  sources = [ "desktop_and_cursor_composer.h" ]
-  deps = [
-    "//base:base",
-    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -129,12 +122,13 @@ source_set("common_headers") {
     sources += [ "me2me_desktop_environment.h" ]
   }
   deps = [
-    ":capturer_interfaces",
     ":platform_interfaces",
+    "//base:base",
     "//ipc",
     "//remoting/base",
     "//remoting/host/base",
     "//remoting/protocol",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -167,6 +161,21 @@ source_set("chromoting_host_services_client") {
   if (is_win) {
     deps += [ "//remoting/host/win:acl_util" ]
   }
+}
+
+source_set("chromoting_host_services_server") {
+  sources = [
+    "chromoting_host_services_server.cc",
+    "chromoting_host_services_server.h",
+  ]
+  deps = [
+    ":ipc_constants",
+    ":mojo_caller_security_checker",
+    "//base",
+    "//components/named_mojo_ipc_server",
+    "//mojo/public/cpp/platform",
+    "//remoting/host/mojom",
+  ]
 }
 
 # Split up from common to avoid circular dependency.
@@ -286,16 +295,14 @@ source_set("mojo_caller_security_checker") {
     "mojo_caller_security_checker.h",
   ]
   deps = [
-    ":remoting_version",
     "//base",
     "//components/named_mojo_ipc_server",
     "//remoting/host/base",
   ]
   if (is_mac) {
-    deps += [ "//remoting/host/mac:constants" ]
-    frameworks = [
-      "Security.framework",
-      "Carbon.framework",
+    deps += [
+      "//remoting/host/mac:constants",
+      "//remoting/host/mac:trust_util",
     ]
   }
   if (is_win) {
@@ -347,7 +354,6 @@ static_library("common") {
     "create_desktop_interaction_strategy_factory.cc",
     "daemon_process.cc",
     "daemon_process.h",
-    "desktop_and_cursor_composer.h",
     "desktop_and_cursor_composer_notifier.cc",
     "desktop_and_cursor_composer_notifier.h",
     "desktop_and_cursor_conditional_composer.cc",
@@ -468,14 +474,6 @@ static_library("common") {
     "zombie_host_detector.h",
   ]
 
-  # ChromotingHostServices currently only works on Linux and Windows.
-  if (is_linux || is_win) {
-    sources += [
-      "chromoting_host_services_server.cc",
-      "chromoting_host_services_server.h",
-    ]
-  }
-
   libs = []
 
   configs += [
@@ -486,6 +484,7 @@ static_library("common") {
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
   deps = [
+    ":chromoting_host_services_server",
     ":client_session_control",
     ":clipboard",
     ":display_layout",
@@ -606,6 +605,8 @@ static_library("common") {
   }
 
   if (is_linux) {
+    assert(use_glib)
+    deps += [ "//ui/base/glib" ]
     sources += [
       "continue_window_linux.cc",
       "disconnect_window_linux.cc",
@@ -836,7 +837,6 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    ":chromoting_host_services_client",
     ":client_session_control",
     ":common",
     ":display_layout",
@@ -882,14 +882,18 @@ source_set("unit_tests") {
     "//ui/events",
   ]
 
-  # ChromotingHostServices currently only works on Linux and Windows.
-  if (is_linux || is_win) {
+  # These tests do not work on ChromeOS.
+  if (!is_chromeos) {
     sources += [
       "chromoting_host_services_client_unittest.cc",
       "chromoting_host_services_server_unittest.cc",
     ]
 
-    deps += [ "//remoting/host:ipc_constants" ]
+    deps += [
+      ":chromoting_host_services_client",
+      ":chromoting_host_services_server",
+      "//remoting/host:ipc_constants",
+    ]
   }
 
   # start_host is only supported on Linux and Windows.
@@ -971,17 +975,14 @@ if (enable_remoting_host) {
   }
 }
 
-if (enable_remoting_host) {
+if (enable_me2me_host) {
   executable("remoting_start_host") {
     sources = [ "setup/start_host_entry_point.cc" ]
 
-    deps = [ "//remoting/host/setup:start_host_main_headers" ]
-
-    if (is_win || is_linux) {
-      deps += [ ":remoting_core" ]
-    } else {
-      deps += [ "//remoting/host/setup:start_host_main" ]
-    }
+    deps = [
+      ":remoting_core",
+      "//remoting/host/setup:start_host_main_headers",
+    ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -1002,7 +1003,7 @@ if (enable_remoting_host) {
     if (is_mac) {
       me2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/MacOS/native_messaging_host"
       it2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_assistance_host"
-      remote_webauthn_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_webauthn"
+      remote_webauthn_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/remote_webauthn"
     } else if (is_win) {
       me2me_host_path = "remoting_native_messaging_host.exe"
       it2me_host_path = "remote_assistance_host.exe"
@@ -1094,6 +1095,7 @@ if (enable_me2me_host) {
     ]
 
     deps = [
+      ":chromoting_host_services_server",
       ":platform_interfaces",
       ":settings",
       "//base",
@@ -1180,47 +1182,62 @@ if (enable_me2me_host) {
   }
 
   # Windows defines its own entry point function.
-  # TODO(yuweih): Enable shared library on Mac.
   if (!is_win) {
     source_set("entry_point") {
       sources = [ "entry_point.cc" ]
-      deps = [ ":host_main_headers" ]
-      if (is_mac) {
-        deps += [ ":main" ]
-      } else {
-        deps += [ ":remoting_core" ]
-      }
+      deps = [
+        ":host_main_headers",
+        ":remoting_core",
+      ]
     }
   }
 
-  if (is_win || is_linux) {
-    group("implementation") {
-      deps = [
-        ":main",
-        "//remoting/host/crash:crash_uploader_main",
-        "//remoting/host/it2me:main",
-        "//remoting/host/remote_open_url:main",
-        "//remoting/host/setup:native_messaging_host_main",
-        "//remoting/host/setup:start_host_main",
-        "//remoting/host/webauthn:main",
+  group("implementation") {
+    # Dependencies here will be compiled into the remoting_core shared lib.
+    deps = [
+      ":main",
+      "//remoting/host/it2me:main",
+      "//remoting/host/setup:native_messaging_host_main",
+      "//remoting/host/setup:start_host_main",
+      "//remoting/host/webauthn:main",
+    ]
+    if (is_mac) {
+      deps += [
+        "//remoting/host/mac:agent_process_broker_main",
+        "//remoting/host/mac:host_service_main",
       ]
-      if (is_win) {
-        deps += [ "//remoting/host/security_key:main" ]
-      }
+    } else {
+      deps += [
+        "//remoting/host/crash:crash_uploader_main",
+        "//remoting/host/remote_open_url:main",
+      ]
     }
     if (is_win) {
-      group("remoting_core") {
-        deps = [ "//remoting/host/win:remoting_core" ]
-      }
-    } else {
-      shared_library("remoting_core") {
-        deps = [ ":implementation" ]
+      deps += [ "//remoting/host/security_key:main" ]
+    }
+  }
 
-        if (!is_component_build) {
-          # Set rpath on dependent executables so that they can find the shared
-          # lib in the same directory, in a non-component build.
+  if (is_win) {
+    group("remoting_core") {
+      deps = [ "//remoting/host/win:remoting_core" ]
+    }
+  } else {
+    shared_library("remoting_core") {
+      deps = [ ":implementation" ]
+
+      if (!is_component_build) {
+        if (is_linux) {
+          # Set rpath on dependent executables so that they can find the
+          # shared lib in the same directory, in a non-component build.
           all_dependent_configs =
               [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+        }
+        if (is_mac) {
+          # Non-component build sets install_name to
+          # `./libremoting_core.dylib` by default. It needs to be overwritten
+          # to support rpath resolution.
+          ldflags = [ "-Wl,-install_name,@rpath/libremoting_core.dylib" ]
+          all_dependent_configs = [ "//remoting/build/config:mac_host_rpath" ]
         }
       }
     }
@@ -1233,28 +1250,22 @@ if (enable_me2me_host) {
     group("remoting_native_messaging_host") {
       deps = [ "//remoting/host/win:remoting_native_messaging_host" ]
     }
-  } else {
-    if (is_mac) {
-      group("remoting_me2me_host") {
-        deps = [ "//remoting/host/mac:remoting_me2me_host" ]
-      }
-    } else {
-      executable("remoting_me2me_host") {
-        deps = [ ":entry_point" ]
-
-        # https://crbug.com/1198747
-        assert_no_deps = [ "//ui/gtk" ]
-      }
+  } else if (is_mac) {
+    group("remoting_me2me_host") {
+      deps = [ "//remoting/host/mac:remoting_me2me_host" ]
     }
+    group("remoting_native_messaging_host") {
+      deps = [ "//remoting/host/mac:remoting_native_messaging_host" ]
+    }
+  } else {
+    executable("remoting_me2me_host") {
+      deps = [ ":entry_point" ]
 
-    if (is_mac) {
-      group("remoting_native_messaging_host") {
-        deps = [ "//remoting/host/mac:remoting_native_messaging_host" ]
-      }
-    } else {
-      group("remoting_native_messaging_host") {
-        public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
-      }
+      # https://crbug.com/1198747
+      assert_no_deps = [ "//ui/gtk" ]
+    }
+    group("remoting_native_messaging_host") {
+      public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
     }
   }
   if (is_chrome_branded && enable_me2me_host && is_linux) {

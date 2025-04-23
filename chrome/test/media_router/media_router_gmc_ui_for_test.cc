@@ -5,6 +5,7 @@
 #include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"

@@ -96,15 +96,17 @@ tast_disabled_tests_from_chrome_all = [
   # b/408102591
   "network.ARCEAPWifiProvisioning.eap_wifi_tls",
 
-  # b/404605466, Failing on reven-vmtest, blocking uprev.
-  "flex.HWIS",
+  # b/409064294
+  "apps.SystemWebAppsInstallGuest",
+  "peripherals.LaunchAppFromGuestSession.diagnostics",
+  "health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors",
 
-  # b/404564227, Failing on jacuzzi, blocking uprev.
-  "oobe.SmokeEndToEnd",
+  # b/408523771
+  "diagnostics.CheckCPURoutine@jacuzzi",
+  "diagnostics.CheckCPURoutine@octopus",
 
-  # b/405201316, Culprit found, but fix is tricky so disabling temporarily.
-  "terminal.SSH",
-  "arc.Print.vm_t",
+  # b/409349162
+  "inputs.PhysicalKeyboardKoreanTyping@jacuzzi",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

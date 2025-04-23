@@ -13,15 +13,15 @@
 # limitations under the License.
 # ==============================================================================
 
-from typing import Any
+from _typeshed import Incomplete
 
 class AndroidJavaGenerator:
     def __init__(self, arg0: str) -> None: ...
-    def generate(self, *args, **kwargs) -> Any: ...
+    def generate(self, *args, **kwargs): ...
     def get_error_message(self) -> str: ...
 
 class GenerationResult:
-    files: Any
+    files: Incomplete
     def __init__(self) -> None: ...
 
 class GenerationResultFile:

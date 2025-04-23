@@ -8,6 +8,8 @@
 #import "base/memory/ptr_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -20,6 +22,7 @@
 #import "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -47,6 +50,7 @@ std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
   return std::make_unique<IOSBlockingPageMetricsHelper>(
       resource.weak_web_state.get(), resource.url, reporting_info);
 }
+
 // Returns the default safe browsing error display options.
 BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
     const UnsafeResource& resource) {
@@ -74,6 +78,27 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
       /*is_enhanced_protection_message_enabled=*/true,
       /*is_safe_browsing_managed=*/false, "cpn_safe_browsing");
 }
+
+// Trigger event reporting for unsafe site visits when user chooses to proceed
+// after the warning window.
+void ReportOnSecurityInterstitialProceeded(
+    ProfileIOS* profile,
+    GURL url,
+    safe_browsing::SBThreatType threat_type) {
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+    enterprise_connectors::ReportingEventRouter* router =
+        enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+            profile);
+    if (!router) {
+      return;
+    }
+    router->OnSecurityInterstitialProceeded(
+        url, safe_browsing::GetThreatTypeStringForInterstitial(threat_type),
+        /*net_error_code=*/0);
+  }
+}
+
 }  // namespace
 
 #pragma mark - SafeBrowsingBlockingPage
@@ -199,6 +224,7 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::Proceed() {
     if (metrics_collector) {
       metrics_collector->AddBypassEventToPref(threat_source_);
     }
+    ReportOnSecurityInterstitialProceeded(profile, url_, threat_type_);
   }
   Reload();
 }

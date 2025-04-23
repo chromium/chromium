@@ -11,13 +11,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.IntentCompat;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
@@ -70,10 +70,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
             "SigninAndHistorySyncActivity.IsFullscreenSignin";
-    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG =
-            "SigninAndHistoryOptInActivity.FullscreenSigninAndHistorySyncConfig";
-    private static final String ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG =
-            "SigninAndHistoryOptInActivity.BottomSheetSigninAndHistorySyncConfig";
+    private static final String ARGUMENT_CONFIG = "SigninAndHistorySyncActivity.Config";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -104,12 +101,6 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         super.triggerLayoutInflation();
 
         Intent intent = getIntent();
-        // Workaround for https://crbug.com/172602571. (See https://crbug.com/394559360)
-        //
-        // This sets a classloader to use for parsing parcelable intents, to avoid
-        // ClassCastException caused by mismatching ClassLoader.
-        intent.setExtrasClassLoader(BottomSheetSigninAndHistorySyncConfig.class.getClassLoader());
-
         int signinAccessPoint =
                 intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX_VALUE);
         assert signinAccessPoint <= SigninAccessPoint.MAX_VALUE : "Cannot find SigninAccessPoint!";
@@ -117,20 +108,9 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
 
-            // Workaround for https://crbug.com/172602571. (See https://crbug.com/394559360)
-            //
-            // This sets a classloader to use for parsing parcelable intents, to avoid
-            // ClassCastException caused by mismatching ClassLoader.
-            intent.setExtrasClassLoader(
-                    FullscreenSigninAndHistorySyncConfig.class.getClassLoader());
             FullscreenSigninAndHistorySyncConfig config =
-                    IntentCompat.getParcelableExtra(
-                            intent,
-                            ARGUMENT_FULLSCREEN_SIGNIN_CONFIG,
-                            FullscreenSigninAndHistorySyncConfig.class);
-            if (config == null) {
-                throw new IllegalArgumentException("Config object shouldn't be null.");
-            }
+                    SigninAndHistorySyncBundleHelper.getFullscreenConfig(
+                            intent.getBundleExtra(ARGUMENT_CONFIG));
             mIsFullscreenPromo = true;
 
             RecordHistogram.recordTimesHistogram(
@@ -139,6 +119,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
             mCoordinator =
                     new FullscreenSigninAndHistorySyncCoordinator(
+                            getWindowAndroid(),
                             this,
                             getModalDialogManager(),
                             getProfileProviderSupplier(),
@@ -146,7 +127,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                             config,
                             signinAccessPoint,
                             this,
-                            getStartTime());
+                            getStartTime(),
+                            DeviceLockActivityLauncherImpl.get());
 
             setInitialContentView(mCoordinator.getView());
             onInitialLayoutInflationComplete();
@@ -160,13 +142,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         setStatusBarColor(Color.TRANSPARENT);
 
         BottomSheetSigninAndHistorySyncConfig config =
-                IntentCompat.getParcelableExtra(
-                        intent,
-                        ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG,
-                        BottomSheetSigninAndHistorySyncConfig.class);
-        if (config == null) {
-            throw new IllegalStateException("Config object shouldn't be null.");
-        }
+                SigninAndHistorySyncBundleHelper.getBottomSheetConfig(
+                        intent.getBundleExtra(ARGUMENT_CONFIG));
         mCoordinator =
                 new BottomSheetSigninAndHistorySyncCoordinator(
                         getWindowAndroid(),
@@ -319,7 +296,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
             @NonNull BottomSheetSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
-        intent.putExtra(ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG, config);
+        Bundle bundle = SigninAndHistorySyncBundleHelper.getBundle(config);
+        intent.putExtra(ARGUMENT_CONFIG, bundle);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
     }
@@ -330,7 +308,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
         intent.putExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, true);
-        intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG, config);
+        Bundle bundle = SigninAndHistorySyncBundleHelper.getBundle(config);
+        intent.putExtra(ARGUMENT_CONFIG, bundle);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
     }

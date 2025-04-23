@@ -579,6 +579,7 @@ class WebApp {
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
+  // This can be empty.
   GURL manifest_url_;
   webapps::ManifestId manifest_id_;
   // The state of the user's approval of the app's use of the File Handler API.

@@ -31,6 +31,16 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : clear
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+        }
+        scope : window
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
         method : set
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
@@ -41,7 +51,7 @@ Events: [
         }
         scope : window
     }
-    [1] : {
+    [2] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set
@@ -54,7 +64,7 @@ Events: [
         }
         scope : window
     }
-    [2] : {
+    [3] : {
         accessTime : <number>
         mainFrameId : <string>
         method : append
@@ -66,7 +76,7 @@ Events: [
         }
         scope : window
     }
-    [3] : {
+    [4] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set
@@ -79,7 +89,7 @@ Events: [
         }
         scope : window
     }
-    [4] : {
+    [5] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set
@@ -92,7 +102,7 @@ Events: [
         }
         scope : window
     }
-    [5] : {
+    [6] : {
         accessTime : <number>
         mainFrameId : <string>
         method : delete
@@ -103,7 +113,7 @@ Events: [
         }
         scope : window
     }
-    [6] : {
+    [7] : {
         accessTime : <number>
         mainFrameId : <string>
         method : addModule
@@ -111,33 +121,26 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
-        }
-        scope : window
-    }
-    [7] : {
-        accessTime : <number>
-        mainFrameId : <string>
-        method : run
-        ownerOrigin : http://127.0.0.1:8000
-        ownerSite : http://127.0.0.1
-        params : {
-            operationName : test-operation
-            serializedData : 
+            workletId : <string>
         }
         scope : window
     }
     [8] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : set
+        method : run
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            ignoreIfPresent : false
-            key : key0-set-from-worklet
-            value : value0
+            keepAlive : true
+            operationName : test-operation
+            privateAggregationConfig : {
+                filteringIdMaxBytes : 1
+            }
+            serializedData : <string>
+            workletId : <string>
         }
-        scope : sharedStorageWorklet
+        scope : window
     }
     [9] : {
         accessTime : <number>
@@ -147,8 +150,9 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
-            key : key1-set-from-worklet
-            value : value1
+            key : key0-set-from-worklet
+            value : value0
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -159,13 +163,28 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            ignoreIfPresent : true
-            key : key2-set-from-worklet
-            value : value2
+            ignoreIfPresent : false
+            key : key1-set-from-worklet
+            value : value1
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [11] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : set
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            ignoreIfPresent : true
+            key : key2-set-from-worklet
+            value : value2
+            workletId : <string>
+        }
+        scope : sharedStorageWorklet
+    }
+    [12] : {
         accessTime : <number>
         mainFrameId : <string>
         method : append
@@ -174,10 +193,11 @@ Events: [
         params : {
             key : key1-set-from-worklet
             value : value1
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
-    [12] : {
+    [13] : {
         accessTime : <number>
         mainFrameId : <string>
         method : delete
@@ -185,58 +205,67 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             key : key2-set-from-worklet
-        }
-        scope : sharedStorageWorklet
-    }
-    [13] : {
-        accessTime : <number>
-        mainFrameId : <string>
-        method : length
-        ownerOrigin : http://127.0.0.1:8000
-        ownerSite : http://127.0.0.1
-        params : {
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [14] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : remainingBudget
+        method : length
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [15] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : keys
+        method : remainingBudget
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [16] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : entries
+        method : keys
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [17] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : entries
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            workletId : <string>
+        }
+        scope : sharedStorageWorklet
+    }
+    [18] : {
+        accessTime : <number>
+        mainFrameId : <string>
         method : selectURL
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            keepAlive : true
             operationName : test-url-selection-operation
-            serializedData : 
+            privateAggregationConfig : {
+                filteringIdMaxBytes : 1
+            }
+            serializedData : <string>
             urlsWithMetadata : [
                 [0] : {
                     reportingMetadata : [
@@ -249,19 +278,10 @@ Events: [
                     url : https://chromium.org/
                 }
             ]
+            urnUuid : <string>
+            workletId : <string>
         }
         scope : window
-    }
-    [18] : {
-        accessTime : <number>
-        mainFrameId : <string>
-        method : get
-        ownerOrigin : http://127.0.0.1:8000
-        ownerSite : http://127.0.0.1
-        params : {
-            key : key0-set-from-worklet
-        }
-        scope : sharedStorageWorklet
     }
     [19] : {
         accessTime : <number>
@@ -270,33 +290,52 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            key : key0-set-from-document
+            key : key0-set-from-worklet
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
     [20] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : get
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            key : key0-set-from-document
+            workletId : <string>
+        }
+        scope : sharedStorageWorklet
+    }
+    [21] : {
+        accessTime : <number>
+        mainFrameId : <string>
         method : run
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            keepAlive : false
             operationName : clear-operation
-            serializedData : 
+            privateAggregationConfig : {
+                filteringIdMaxBytes : 1
+            }
+            serializedData : <string>
+            workletId : <string>
         }
         scope : window
     }
-    [21] : {
+    [22] : {
         accessTime : <number>
         mainFrameId : <string>
         method : clear
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
+            workletId : <string>
         }
         scope : sharedStorageWorklet
     }
-    [22] : {
+    [23] : {
         accessTime : <number>
         mainFrameId : <string>
         method : clear

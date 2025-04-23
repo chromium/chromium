@@ -21,6 +21,7 @@
 #include "components/live_caption/translation_util.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "media/mojo/mojom/speech_recognition.mojom-shared.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -107,6 +108,9 @@ class SystemLiveCaptionService
   void OnNonChromeOutputStarted() override;
 
   void OnNonChromeOutputStopped() override;
+
+ protected:
+  virtual media::mojom::RecognizerClientType GetRecognizerClientType();
 
  private:
   void OnTranslationCallback(const std::string& cached_translation,

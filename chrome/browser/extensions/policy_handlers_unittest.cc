@@ -378,6 +378,9 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   EXPECT_EQ(expected, handler.GetPolicyDict(policy_map));
 }
 
+// TODO(crbug.com/394876083): Support the ExtensionInstallSources policy to
+// enable this test.
+#if !BUILDFLAG(IS_ANDROID)
 TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {
   base::Value::List list;
   policy::PolicyMap policy_map;
@@ -453,6 +456,7 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
   ASSERT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(list, *value);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
   auto policy_result = base::JSONReader::ReadAndReturnValueWithError(

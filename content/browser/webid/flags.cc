@@ -95,4 +95,12 @@ bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmUseOtherAccountAndLabelsNewSyntax);
 }
+
+bool IsFedCmAutofillEnabled() {
+  // FedCmAutofill is a new flag extracted from FedCmDelegation. To avoid
+  // breaking existing developer testing, we consider the new flag being enabled
+  // if the old one is enabled.
+  return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
+         IsFedCmDelegationEnabled();
+}
 }  // namespace content

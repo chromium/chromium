@@ -25,6 +25,7 @@
         "telemetry_perf_unittests_android_webview",
         "telemetry_unittests",
         "test_env_py_unittests",
+        "webui_resources_tools_python_unittests",
         "xr_browser_tests",
         "xvfb_py_unittests"
     ],

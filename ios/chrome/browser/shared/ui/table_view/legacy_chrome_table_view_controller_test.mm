@@ -39,6 +39,11 @@ void LegacyChromeTableViewControllerTest::CreateController() {
   EXPECT_TRUE([controller_ view]);
 }
 
+void LegacyChromeTableViewControllerTest::CreateControllerWithoutView() {
+  DCHECK(!controller_);
+  controller_ = InstantiateController();
+}
+
 LegacyChromeTableViewController*
 LegacyChromeTableViewControllerTest::controller() {
   if (!controller_) {

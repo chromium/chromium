@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "indexmap"
-version = "2.8.0"
+version = "2.9.0"
 build = false
 autolib = false
 autobins = false

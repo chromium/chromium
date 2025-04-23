@@ -500,8 +500,10 @@ void MLInstallabilityPromoter::DidUpdateFaviconURL(
   }
 }
 
-void MLInstallabilityPromoter::OnRegistrationStored(int64_t registration_id,
-                                                    const GURL& scope) {
+void MLInstallabilityPromoter::OnRegistrationStored(
+    int64_t registration_id,
+    const GURL& scope,
+    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
   if (!content::ServiceWorkerContext::ScopeMatches(scope, site_url_)) {
     return;
   }

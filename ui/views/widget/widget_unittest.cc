@@ -165,9 +165,7 @@ class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
  public:
   explicit WidgetTestBubbleDialogDelegateView(View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
-    SetOwnedByWidget(false);
-  }
+      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {}
   ~WidgetTestBubbleDialogDelegateView() override = default;
 
   bool ShouldShowCloseButton() const override {
@@ -1133,7 +1131,7 @@ TEST_F(WidgetOwnsNativeWidgetTest, WidgetDelegateView) {
                                 Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.native_widget = CreatePlatformNativeWidgetImpl(
       widget.get(), kStubCapture, &state()->native_widget_deleted);
-  params.delegate = new WidgetDelegateView();
+  params.delegate = new WidgetDelegateView(WidgetDelegateView::CreatePassKey());
   widget->Init(std::move(params));
 
   // Allow the Widget to go out of scope. There should be no crash or

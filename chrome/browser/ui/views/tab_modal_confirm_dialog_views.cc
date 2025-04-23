@@ -47,7 +47,7 @@ TabModalConfirmDialogViews::TabModalConfirmDialogViews(
   SetCloseCallback(base::BindOnce(&TabModalConfirmDialogDelegate::Close,
                                   base::Unretained(delegate_.get())));
   SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   std::optional<int> default_button = delegate_->GetDefaultDialogButton();
   if (bool(default_button)) {

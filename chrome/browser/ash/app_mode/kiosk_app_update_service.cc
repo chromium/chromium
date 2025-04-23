@@ -11,11 +11,11 @@
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
@@ -43,11 +43,7 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
   DCHECK(app_id_.empty());
   app_id_ = app_id;
 
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (service) {
-    service->AddUpdateObserver(this);
-  }
+  update_observation_.Observe(extensions::ExtensionUpdater::Get(profile_));
 
   if (automatic_reboot_manager_) {
     automatic_reboot_manager_->AddObserver(this);
@@ -81,11 +77,8 @@ void KioskAppUpdateService::ForceAppUpdateRestart() {
 }
 
 void KioskAppUpdateService::Shutdown() {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (service) {
-    service->RemoveUpdateObserver(this);
-  }
+  update_observation_.Reset();
+
   if (KioskChromeAppManager::IsInitialized()) {
     KioskChromeAppManager::Get()->RemoveObserver(this);
   }
@@ -95,8 +88,8 @@ void KioskAppUpdateService::Shutdown() {
 }
 
 void KioskAppUpdateService::OnAppUpdateAvailable(
-    const extensions::Extension* extension) {
-  if (extension->id() != app_id_) {
+    const extensions::Extension& extension) {
+  if (extension.id() != app_id_) {
     return;
   }
 
@@ -104,7 +97,7 @@ void KioskAppUpdateService::OnAppUpdateAvailable(
   // does not finish in this run.
   KioskChromeAppManager::Get()->ClearAppData(app_id_);
   KioskChromeAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
-                                                         extension);
+                                                         &extension);
 
   extensions::RuntimeEventRouter::DispatchOnRestartRequiredEvent(
       profile_, app_id_,
@@ -162,8 +155,7 @@ KioskAppUpdateServiceFactory::KioskAppUpdateServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(
-      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  DependsOn(extensions::ExtensionUpdaterFactory::GetInstance());
 }
 
 KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() = default;

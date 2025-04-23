@@ -56,6 +56,10 @@ enum class AddToCalendarIntegrationProvider;
 // uniquely identify the event.
 @property(nonatomic, copy) NSString* surroundingText;
 
+// The URL of the WebState where the user initiated the Enhanced Calendar
+// feature.
+@property(nonatomic, assign) std::string URL;
+
 // The completion callback passed to the "add to calendar" UI.
 @property(nonatomic, copy) void (^addToCalendarCompletion)(BOOL);
 

@@ -51,7 +51,7 @@ import java.util.function.DoubleConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
-    SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS
+    SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO
 })
 public class HistoryPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

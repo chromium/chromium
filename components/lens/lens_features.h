@@ -403,6 +403,10 @@ extern bool UseApcAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool SendPageUrlForContextualization();
 
+// Returns whether to include the page title in the page content upload request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendPageTitleForContextualization();
+
 // The timeout set for page content upload requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayPageContentRequestTimeoutMs();
@@ -744,6 +748,10 @@ extern bool PageContentUploadRequestIdFixEnabled();
 // Whether to update the viewport on each contextual query.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UpdateViewportEachQueryEnabled();
+
+// Whether to send the current page for PDFs.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendPdfCurrentPageEnabled();
 
 // Whether to show zero prefix suggestions in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)

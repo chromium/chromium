@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import android.util.Pair;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.util.Pair;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -35,6 +38,7 @@ import java.util.Set;
  * Helper class to create a {@link SavedTabGroup} based on a local tab group. It's a wrapper around
  * {@link TabGroupSyncService} to help with invoking mutation methods.
  */
+@NullMarked
 public class RemoteTabGroupMutationHelper {
     private static final String TAG = "TG.RemoteMutation";
 
@@ -170,11 +174,18 @@ public class RemoteTabGroupMutationHelper {
      */
     public void updateVisualData(LocalTabGroupId groupId) {
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
-        String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
-        if (title == null) title = new String();
-
-        int color = mTabGroupModelFilter.getTabGroupColor(rootId);
-        if (color == TabGroupColorUtils.INVALID_COLOR_ID) color = TabGroupColorId.GREY;
+        String title = new String();
+        @TabGroupColorId int color = TabGroupColorId.GREY;
+        if (rootId != Tab.INVALID_TAB_ID) {
+            String tmpTitle = mTabGroupModelFilter.getTabGroupTitle(rootId);
+            if (tmpTitle != null) {
+                title = tmpTitle;
+            }
+            @TabGroupColorId int tmpColor = mTabGroupModelFilter.getTabGroupColor(rootId);
+            if (tmpColor != TabGroupColorUtils.INVALID_COLOR_ID) {
+                color = tmpColor;
+            }
+        }
 
         mTabGroupSyncService.updateVisualData(groupId, title, color);
     }
@@ -244,7 +255,7 @@ public class RemoteTabGroupMutationHelper {
         for (int i = 0; i < group.savedTabs.size() && i < tabs.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
             mTabGroupSyncService.updateLocalTabId(
-                    localGroupId, savedTab.syncId, tabs.get(i).getId());
+                    localGroupId, assertNonNull(savedTab.syncId), tabs.get(i).getId());
         }
     }
 
@@ -266,7 +277,7 @@ public class RemoteTabGroupMutationHelper {
             LogUtils.log(TAG, "handleWillCloseTabGroup: deleted group");
 
             mTabGroupSyncService.removeLocalTabGroupMapping(groupId, ClosingSource.DELETED_BY_USER);
-            mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
+            mTabGroupSyncService.removeGroup(assertNonNull(savedTabGroup.syncId));
             RecordUserAction.record("TabGroups.Sync.LocalDeleted");
         }
     }
@@ -281,25 +292,23 @@ public class RemoteTabGroupMutationHelper {
                 mTabGroupModelFilter.getLazyAllTabGroupIds(
                         tabs, /* includePendingClosures= */ false);
         for (Tab tab : tabs) {
-            Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) {
-                continue;
-            }
+            LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+            if (localTabGroupId == null) continue;
 
             // If a tab group is being completely hidden we don't want to remove its tabs from sync.
             // This handles that case since isTabGroupHiding will be true. However, to prevent cases
             // where isTabGroupHiding might be set incorrectly we also check that the tab model does
             // not still contain any tabs for the tab group as that would indicate only a subset of
             // the group is being closed.
-            if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
-                    && !tabGroupIds.get().contains(tabGroupId)) {
+            if (mTabGroupModelFilter.isTabGroupHiding(localTabGroupId.tabGroupId)
+                    && !assumeNonNull(tabGroupIds.get()).contains(localTabGroupId.tabGroupId)) {
                 continue;
             }
 
             // Remaining tabs will be in a tab group, but the closure event is either:
             // 1. Only a subset of tabs in the group.
             // 2. The group is to be deleted from sync so removing the tabs from sync is ok.
-            mTabGroupSyncService.removeTab(TabGroupSyncUtils.getLocalTabGroupId(tab), tab.getId());
+            mTabGroupSyncService.removeTab(localTabGroupId, tab.getId());
         }
     }
 
@@ -326,8 +335,8 @@ public class RemoteTabGroupMutationHelper {
      * @param tab The tab that was restored.
      */
     public void handleTabClosureUndone(Tab tab) {
-        @Nullable Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId == null) return;
+        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+        if (localTabGroupId == null) return;
 
         if (!tryUpdatePendingGroupClosure(tab, /* isUndone= */ true)) {
             // Case: subset of tabs in group closed, action undone.
@@ -335,8 +344,7 @@ public class RemoteTabGroupMutationHelper {
             // to its synced group.
 
             LogUtils.log(TAG, "handleTabClosureUndone: addBackToGroup");
-            LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
-            List<Tab> groupTabs = mTabGroupModelFilter.getTabsInGroup(tab.getTabGroupId());
+            List<Tab> groupTabs = mTabGroupModelFilter.getTabsInGroup(localTabGroupId.tabGroupId);
             int position = groupTabs.indexOf(tab);
             addTab(localTabGroupId, tab, position);
         }
@@ -352,9 +360,9 @@ public class RemoteTabGroupMutationHelper {
     }
 
     private boolean tryUpdatePendingGroupClosure(Tab tab, boolean isUndone) {
-        if (tab.getTabGroupId() == null) return false;
-
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+        if (localTabGroupId == null) return false;
+
         @Nullable
         PendingTabGroupClosure pendingClosure = mPendingTabGroupClosures.get(localTabGroupId);
 

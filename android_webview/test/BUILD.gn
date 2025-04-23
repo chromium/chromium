@@ -553,6 +553,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/devui/util/UploadedCrashesInfoLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/util/WebViewCrashInfoCollectorTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/util/WebViewCrashLogParserTest.java",
+    "../javatests/src/org/chromium/android_webview/test/payments/AwPaymentRequestDefaultSettingsTest.java",
     "../javatests/src/org/chromium/android_webview/test/payments/AwPaymentRequestServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/payments/AwPaymentRequestSettingsTest.java",
     "../javatests/src/org/chromium/android_webview/test/sensitive_content/AwSensitiveContentTest.java",

@@ -77,6 +77,7 @@
 <translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
 <translation id="2020032459870799438">Ca să verifici dacă celelalte parole sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Alege dacă se include istoricul Chromium pentru experiențe mai personalizate în serviciile Google</translation>
+<translation id="2054039611381840095">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 12 sau o versiune ulterioară. Acest computer folosește macOS 11.</translation>
 <translation id="2086476982681781442">Chromium a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
 <translation id="2088953378266246249">Informații despre modul în care Chromium gestionează certificatele rădăcină</translation>
 <translation id="2099452623287920103">Parolele și alte date Chromium pe care le-ai salvat în Contul Google se vor elimina de pe acest dispozitiv. Pentru a le folosi din nou în Chromium, conectează-te din nou.</translation>
@@ -286,7 +287,6 @@
 <translation id="4888717733111232871">Regula de intrare pentru Chromium pentru a permite traficul mDNS.</translation>
 <translation id="4893347770495441059">Relansează pentru a actualiza &amp;Chromium</translation>
 <translation id="4918844574251943176">Imaginea a fost copiată</translation>
-<translation id="4942295735032723435">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 11 sau o versiune ulterioară. Acest computer folosește macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium este în modul fundal.</translation>
 <translation id="494490797786467921">Dă clic pentru a închide dialogul de conectare la Chromium</translation>
 <translation id="4950660488495335294">Cu ajutorul profilurilor Chromium, poți separa toate informațiile din Chromium. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>

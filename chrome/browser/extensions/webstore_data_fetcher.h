@@ -11,10 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace network::mojom {
 class URLLoaderFactory;
@@ -46,6 +49,7 @@ class WebstoreDataFetcher {
   static void SetMockItemSnippetReponseForTesting(
       FetchItemSnippetResponse* mock_response);
 
+  // Starts the request to fetch web store data using the item snippets API.
   void Start(network::mojom::URLLoaderFactory* url_loader_factory);
 
   void set_max_auto_retries(int max_retries) {
@@ -53,9 +57,6 @@ class WebstoreDataFetcher {
   }
 
  private:
-  // Fetch web store data using the item snippets API.
-  void FetchItemSnippet(network::mojom::URLLoaderFactory* url_loader_factory);
-
   // Initializes `simple_url_loader_` for the given `request` and `annotation`.
   void InitializeSimpleLoaderForRequest(
       std::unique_ptr<network::ResourceRequest> request,

@@ -32,7 +32,8 @@ class OnDeviceModelAccessController {
   void OnResponseCompleted();
 
   // Called when a connection from the remote happens prematurely.
-  void OnDisconnectedFromRemote();
+  // Returns the next time the model can be loaded.
+  base::Time OnDisconnectedFromRemote();
 
   // Called if using the gpu is blocked.
   void OnGpuBlocked();

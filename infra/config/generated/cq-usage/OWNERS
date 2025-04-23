@@ -9,3 +9,8 @@ file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
 per-file full.cfg=file://infra/config/groups/cq-usage/CQ_USAGE_SECONDARY_OWNERS
 
 per-file mega_cq_bots.txt=*
+
+# CBRI Branch Day Automation go/automate-branch-day
+# The chrome-branch-day service account needs to modify files in this directory
+# as part of branch day automation despite the file having set noparent.
+chrome-branch-day@chops-service-accounts.iam.gserviceaccount.com

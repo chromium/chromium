@@ -1,0 +1,16 @@
+Name: Paging-Common Kotlin Extensions
+Short Name: paging-common-ktx
+URL: https://developer.android.com/jetpack/androidx/releases/paging#3.4.0-SNAPSHOT
+Version: 3.4.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Kotlin extensions for 'paging-common' artifact
+
+Local Modifications:
+No modifications.

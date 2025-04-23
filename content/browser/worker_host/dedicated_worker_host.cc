@@ -41,6 +41,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -80,8 +81,8 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
-    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host)
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
+    net::StorageAccessApiStatus storage_access_api_status)
     : service_(service),
       token_(token),
       worker_process_host_(worker_process_host),
@@ -98,10 +99,10 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_client_security_state_(std::move(creator_client_security_state)),
       host_receiver_(this, std::move(host)),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
-      ancestor_coep_reporter_(std::move(ancestor_coep_reporter)),
       code_cache_host_receivers_(GetProcessHost()
                                      ->GetStoragePartition()
-                                     ->GetGeneratedCodeCacheContext()) {
+                                     ->GetGeneratedCodeCacheContext()),
+      storage_access_api_status_(storage_access_api_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
@@ -757,8 +758,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetDeprecatedID(), /*creator=*/token_,
           ancestor_render_frame_host_id_, GetStorageKey(), isolation_info_,
-          worker_client_security_state_->Clone(), creator_coep_reporter,
-          ancestor_coep_reporter_),
+          worker_client_security_state_->Clone(), creator_coep_reporter),
       std::move(receiver));
 }
 
@@ -791,6 +791,15 @@ void DedicatedWorkerHost::CreateBroadcastChannelProvider(
       std::move(receiver));
 }
 
+bool DedicatedWorkerHost::WasStorageAccessGranted() {
+  switch (storage_access_api_status_) {
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      return true;
+    case net::StorageAccessApiStatus::kNone:
+      return false;
+  }
+}
+
 void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -800,6 +809,14 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
       std::move(receiver),
+      base::BindRepeating(
+          [](base::WeakPtr<DedicatedWorkerHost> host) -> bool {
+            if (!host) {
+              return false;
+            }
+            return host->WasStorageAccessGranted();
+          },
+          weak_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::
@@ -1022,8 +1039,10 @@ blink::mojom::PermissionStatus DedicatedWorkerHost::GetPermissionStatus(
   return GetProcessHost()
       ->GetBrowserContext()
       ->GetPermissionController()
-      ->GetPermissionStatusForWorker(permission_type, GetProcessHost(),
-                                     GetStorageKey().origin());
+      ->GetPermissionStatusForWorker(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          GetProcessHost(), GetStorageKey().origin());
 }
 
 void DedicatedWorkerHost::BindCacheStorageForBucket(

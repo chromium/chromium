@@ -3199,57 +3199,6 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   return kExpandedUndefined;
 }
 
-bool AXNodeObject::ComputeIsOffScreen() const {
-  // TODO(accessibility): Implement IsWithinVerticalSerializationThreshold() to
-  // determine visibility based on a vertical threshold (top beneath viewport
-  // bottom + 2 screenfuls).
-  if (IsRoot()) {
-    return false;
-  }
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    return ParentObjectIncludedInTree()->ComputeIsOffScreen();
-  }
-  const LayoutObject* object = GetLayoutObject();
-  if (object) {
-    const LocalFrameView* view = GetLayoutObject()->GetFrame()->View();
-    if (!view) {
-      return false;
-    }
-    const LayoutView* layout_view = view->GetLayoutView();
-    if (!layout_view) {
-      return false;
-    }
-    gfx::PointF offset =
-        object->LocalToAncestorPoint(gfx::PointF(), layout_view);
-    auto compute_size = [object]() -> gfx::SizeF {
-      if (auto* layout_box = DynamicTo<LayoutBox>(object)) {
-        return gfx::SizeF(layout_box->Size());
-      }
-
-      if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
-        return layout_inline->LocalBoundingBoxRectF().size();
-      }
-      if (object->IsText()) {
-        return object->LocalBoundingBoxRectForAccessibility().size();
-      }
-      return {0, 0};
-    };
-    gfx::SizeF size = compute_size();
-    gfx::RectF content_rect(offset, size);
-    gfx::Size view_size = view->Size();
-    gfx::SizeF view_size_f(view_size.width(), view_size.height());
-    gfx::RectF view_rect(gfx::PointF(), view_size_f);
-    view_rect.Intersect(content_rect);
-    return view_rect.IsEmpty();
-  }
-
-  // Without a layout object, there is no bounding box.
-  // However, we know that if it is display-locked that is an indicator that it
-  // is currently offscreen, and will likely be onscreen once scrolled to.
-  return GetNode() &&
-         DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode());
-}
-
 bool AXNodeObject::IsRequired() const {
   auto* form_control = DynamicTo<HTMLFormControlElement>(GetNode());
   if (form_control && form_control->IsRequired())

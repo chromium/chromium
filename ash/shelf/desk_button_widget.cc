@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -83,11 +84,10 @@ class DeskButtonWindowTargeter : public aura::WindowTargeter {
   const raw_ptr<DeskButtonWidget> desk_button_widget_;
 };
 
-DeskButtonWidget::DelegateView::DelegateView() = default;
-DeskButtonWidget::DelegateView::~DelegateView() = default;
+DeskButtonWidgetDelegateView::DeskButtonWidgetDelegateView() = default;
+DeskButtonWidgetDelegateView::~DeskButtonWidgetDelegateView() = default;
 
-void DeskButtonWidget::DelegateView::Init(
-    DeskButtonWidget* desk_button_widget) {
+void DeskButtonWidgetDelegateView::Init(DeskButtonWidget* desk_button_widget) {
   CHECK(desk_button_widget);
   desk_button_widget_ = desk_button_widget;
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -98,13 +98,7 @@ void DeskButtonWidget::DelegateView::Init(
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
-bool DeskButtonWidget::DelegateView::CanActivate() const {
-  // We don't want mouse clicks to activate us, but we need to allow
-  // activation when the user is using the keyboard (FocusCycler).
-  return Shell::Get()->focus_cycler()->widget_activating() == GetWidget();
-}
-
-void DeskButtonWidget::DelegateView::Layout(PassKey) {
+void DeskButtonWidgetDelegateView::Layout(PassKey) {
   if (!desk_button_widget_ || !desk_button_container_) {
     return;
   }
@@ -134,7 +128,7 @@ void DeskButtonWidget::DelegateView::Layout(PassKey) {
   desk_button_container_->SetBoundsRect({container_origin, container_size});
 }
 
-bool DeskButtonWidget::DelegateView::AcceleratorPressed(
+bool DeskButtonWidgetDelegateView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
   GetWidget()->Deactivate();
@@ -280,7 +274,7 @@ void DeskButtonWidget::HandleLocaleChange() {
 
 void DeskButtonWidget::Initialize(aura::Window* container) {
   CHECK(container);
-  delegate_view_ = new DelegateView();
+  delegate_view_ = new AccessibilityFocusable<DeskButtonWidgetDelegateView>();
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);

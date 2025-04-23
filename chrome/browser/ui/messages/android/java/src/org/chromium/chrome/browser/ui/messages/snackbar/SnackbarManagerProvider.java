@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A class responsible for binding and unbinding a {@link SnackbarManager} to a
- * {@link WindowAndroid}.
+ * A class responsible for binding and unbinding a {@link SnackbarManager} to a {@link
+ * WindowAndroid}.
  */
+@NullMarked
 public class SnackbarManagerProvider {
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<SnackbarManager> KEY =
@@ -18,10 +21,11 @@ public class SnackbarManagerProvider {
 
     /**
      * Get the activity's main {@link SnackbarManager} from the provided {@link WindowAndroid}.
+     *
      * @param window The window to get the manager from.
-     * @return The activity's main {@link SnackbarManager}.
+     * @return The activity's main {@link SnackbarManager} or null prior to attachment.
      */
-    public static SnackbarManager from(WindowAndroid window) {
+    public static @Nullable SnackbarManager from(WindowAndroid window) {
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
 

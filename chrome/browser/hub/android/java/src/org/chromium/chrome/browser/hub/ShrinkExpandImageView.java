@@ -15,9 +15,9 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
@@ -25,6 +25,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 /** {@link ImageView} for the Shrink, Expand, and New Tab animations. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+@NullMarked
 public class ShrinkExpandImageView extends RoundedCornerImageView implements RunOnNextLayout {
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
@@ -102,7 +103,7 @@ public class ShrinkExpandImageView extends RoundedCornerImageView implements Run
     }
 
     @Override
-    public void setImageBitmap(Bitmap bitmap) {
+    public void setImageBitmap(@Nullable Bitmap bitmap) {
         if (BuildInfo.getInstance().isAutomotive && bitmap != null) {
             bitmap.setDensity(
                     DisplayUtil.getUiDensityForAutomotive(getContext(), bitmap.getDensity()));

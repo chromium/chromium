@@ -12,6 +12,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_CONTEXT_STATE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_CONTEXT_STATE_H_
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -175,7 +176,7 @@ class GPU_GLES2_EXPORT Vec4 {
     GLuint uint_value;
   };
 
-  ValueUnion v_[4];
+  std::array<ValueUnion, 4> v_;
   ShaderVariableBaseType type_;
 };
 

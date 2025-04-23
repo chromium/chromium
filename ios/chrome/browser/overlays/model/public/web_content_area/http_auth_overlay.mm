@@ -45,8 +45,6 @@ std::unique_ptr<OverlayResponse> CreateHttpAuthResponse(
 
 #pragma mark - HTTPAuthOverlayRequestConfig
 
-OVERLAY_USER_DATA_SETUP_IMPL(HTTPAuthOverlayRequestConfig);
-
 HTTPAuthOverlayRequestConfig::HTTPAuthOverlayRequestConfig(
     const GURL& url,
     const std::string& message,
@@ -92,8 +90,6 @@ void HTTPAuthOverlayRequestConfig::CreateAuxiliaryData(
 }
 
 #pragma mark - HTTPAuthOverlayResponseInfo
-
-OVERLAY_USER_DATA_SETUP_IMPL(HTTPAuthOverlayResponseInfo);
 
 HTTPAuthOverlayResponseInfo::HTTPAuthOverlayResponseInfo(
     const std::string& username,

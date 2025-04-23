@@ -49,8 +49,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 /** Tests for {@link PasswordAccessLossDialogHelper} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class PasswordAccessLossDialogHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

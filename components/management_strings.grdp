@@ -231,13 +231,31 @@
     <message name="IDS_MANAGEMENT_REPORT_FILE_EVENTS" desc="Message stating that administrators may see file information">
       Recent file access and modifications, including file names, digital fingerprints of the file content, download source, and metadata
     </message>
-
     <!-- ChromeOS update required end-of-life reached section -->
     <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE" desc="Message indicating that the device needs to be returned back before the deadline because the device has reached end-of-life and an update is required as per policy.">
       <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
     </message>
     <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE_TITLE" desc="Message indicating return instructions from the device administrator because the device cannot be updated as it has reached its end of life.">
       Instructions from your device administrator:
+    </message>
+    <!-- Strings related to Desk sync section -->
+    <message name="IDS_MANAGEMENT_DESK_SYNC_TITLE" desc="Title of the Desk sync section on chrome management page.">
+      Desk sync
+    </message>
+    <message name="IDS_MANAGEMENT_DESK_SYNC_DESCRIPTION" desc="Message explaining that the Desk sync feature is enabled and it will result in synchronization of some data between user's ChromeOS devices. Data will be listed in a list below.">
+      Your administrator enables the following to be synced between your previous and current sessions on any ChromeOS device:
+    </message>
+    <message name="IDS_MANAGEMENT_DESK_SYNC_WINDOWS_NOTICE" desc="This string is used to mention windows (i.e. browser and application windows) in the list of data which is synced by the Desk sync feature.">
+      Windows (arrangement and organization of windows and tabs)
+    </message>
+    <message name="IDS_MANAGEMENT_DESK_SYNC_COOKIES_NOTICE" desc="This string is used to mention browser cookies in the list of data which is synced by the Desk sync feature. It also clarifies that cookies are responsible for the signed-in state on websites.">
+      Cookies (signed-in state on your recently visited websites)
+    </message>
+    <message name="IDS_MANAGEMENT_DESK_SYNC_OPT_OUT" desc="Message explaining that the user can opt out from the effects of the Desk sync feature in Chrome Sync settings.">
+      You can opt out of this policy in <ph name="BEGIN_LINK">&lt;a href='chrome://settings/syncSetup'&gt;</ph>Chrome Sync settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE" desc="Learn more link for the section about the Desk sync feature to provide additional informaiton">
+      <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a?p=office_cookies_sync" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
   </if>
 
@@ -370,12 +388,6 @@
     <message name="IDS_MANAGEMENT_FILE_TRANSFER_EVENT" desc="Event for the file transfer scanning feature.">
       File is copied or moved
     </message>
-    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature" formatter_data="android_java">
-      Security event occurs
-    </message>
-    <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature." formatter_data="android_java">
-      Page is visited
-    </message>
     <message name="IDS_MANAGEMENT_SCREEN_CAPTURE_EVENT" desc="Event for the multi screen capture feature.">
       Screen capture has started
     </message>
@@ -399,12 +411,6 @@
     </message>
     <message name="IDS_MANAGEMENT_SCREEN_CAPTURE_DATA" desc="Description of the visible data for the multi screen capture feature.">
       Applications authorized by your administrator can capture all screens attached to your device. This information can be processed locally or uploaded to your organization’s servers.
-    </message>
-    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature" formatter_data="android_java">
-      When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, URLs of pages you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web based applications, your device and Chrome.
-    </message>
-    <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature." formatter_data="android_java">
-      URLs of pages you visit are sent to Google Cloud or third parties for analysis, and may be visible to your administrator. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.
     </message>
     <message name="IDS_MANAGEMENT_EXTENSION_TELEMETRY_VISIBLE_DATA" desc="Description of the visible data for the extension telemetry feature.">
       When extensions are added to Chrome, relevant data about these extensions is sent to third parties for analysis and may be visible to your administrator. The data includes information about the extensions such as name, install time, source of install as well as activity associated with these extensions (like changing tabs, contacting websites, or accessing cookies). This data is collected for extensions installed from the Chrome Web Store as well as off-store extensions.
@@ -448,6 +454,18 @@
   </message>
   <message name="IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA" desc="Title of a column of the Connectors table showing the data visible to a Connector" formatter_data="android_java">
     Visible data
+  </message>
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature" formatter_data="android_java">
+    Security event occurs
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature." formatter_data="android_java">
+    Page is visited
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature." formatter_data="android_java">
+    URLs of pages you visit are sent to Google Cloud or third parties for analysis, and may be visible to your administrator. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.
+  </message>
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature" formatter_data="android_java">
+    When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, URLs of pages you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web based applications, your device and Chrome.
   </message>
 
   <!-- Management toolbar button dialog view -->

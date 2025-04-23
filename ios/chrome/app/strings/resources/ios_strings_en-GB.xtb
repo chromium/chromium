@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Copy image</translation>
 <translation id="1612754831519568745">Your Safe Browsing is currently off. Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="1620510694547887537">Camera</translation>
-<translation id="1622195983844804153">Existing browsing data won't be moved to your work account. You can still access it by signing out or adding a personal account.</translation>
 <translation id="1622717322707146952">Select “Add to Google Calendar“ or “Add to Apple Calendar.“</translation>
 <translation id="1629162218487290695">Verify that it's you…</translation>
 <translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">Reload</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
+<translation id="202070562065520783">Explain this to me</translation>
 <translation id="2021670401941426298">See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="20485545164632846">new item</translation>
@@ -480,6 +480,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
+<translation id="297667759942911166">Collaborate in tab groups</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2989805286512600854">Open in New Tab</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
@@ -525,6 +526,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
+<translation id="3177338796769255211">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
@@ -1125,6 +1127,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="573974402615125334">To share, join and collaborate in tab groups, sync your history and tabs</translation>
 <translation id="5740123193752401435">Search tabs…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> notifications turned on</translation>
+<translation id="5745598824054949526">No text found</translation>
 <translation id="574762237186762643">Events</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5753021559215751319">Save password</translation>
@@ -1288,6 +1291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="6416807286621280684">Your tracked parcels and delivery updates.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6421038304268477484">Translated text</translation>
 <translation id="6429213933892582367">Open password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
 <translation id="6435307030888827407">Stay signed out</translation>
@@ -1310,7 +1314,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
 <translation id="647867789226964031">Change your passwords</translation>
 <translation id="6494931198667773526">Ends</translation>
-<translation id="6495521251906266731">Choose what to do with the existing browsing data on this device, like passwords, history and more.</translation>
 <translation id="6503077044568424649">Most visited</translation>
 <translation id="6503763061813913607">Safety Check notifications</translation>
 <translation id="6505334220040167806">Collapse tab group.</translation>
@@ -1855,6 +1858,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8697136149718343437">Move address bar to bottom</translation>
 <translation id="8703372953981978786">This link doesn't work</translation>
 <translation id="8706253136355675497">Temperature</translation>
+<translation id="8706806585855470492">You'll get to share, join and collaborate in tab groups</translation>
 <translation id="8709409604518538305">Tabs were closed</translation>
 <translation id="8712534545803964353">Find in page…</translation>
 <translation id="8712637175834984815">Got it</translation>
@@ -1966,6 +1970,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9097506547406246598">Can't unfollow. Something went wrong.</translation>
 <translation id="9098541895599151034">Delete <ph name="NUMBER_OF_ACCOUNTS" /> passwords?</translation>
 <translation id="9099233023029360602">Ask which account to use every time</translation>
+<translation id="9099821309562615674">Make sure that the text that you're translating is clear and in frame.</translation>
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="91023216973987714">Payment methods</translation>
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>

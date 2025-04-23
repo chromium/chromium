@@ -100,7 +100,7 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
 /**
  * Test fixture for output.js.
  */
-ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2OutputE2ETest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -112,7 +112,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
 };
 
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Links', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Links', async function() {
   const root = await this.runWithLoadedTree('<a href="#">Click here</a>');
   const el = root.firstChild.firstChild;
   const range = CursorRange.fromNode(el);
@@ -136,7 +136,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Links', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Checkbox', async function() {
   const root = await this.runWithLoadedTree('<input type="checkbox">');
   const el = root.firstChild.firstChild;
   const range = CursorRange.fromNode(el);
@@ -154,7 +154,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored',
+    'ChromeVoxMV2OutputE2ETest', 'InLineTextBoxValueGetsIgnored',
     async function() {
       const root = await this.runWithLoadedTree('<p>OK');
       let el = root.firstChild.firstChild.firstChild;
@@ -190,7 +190,7 @@ AX_TEST_F(
           'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
     });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Headings', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Headings', async function() {
   const root = await this.runWithLoadedTree(`
       <h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>
       <h1><a href="a.com">b</a></h1> `);
@@ -237,7 +237,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Headings', async function() {
 });
 
 // TODO(crbug.com/41424286): test is flaky.
-AX_TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'DISABLED_Audio', async function() {
   const root =
       await this.runWithLoadedTree('<audio src="foo.mp3" controls></audio>');
   let el = root.find({role: RoleType.BUTTON});
@@ -283,7 +283,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', async function() {
       [{value: new OutputNodeSpan(el), start: 0, end: 41}], o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Input', async function() {
   const root = await this.runWithLoadedTree(
       '<input type="text"></input>' +
       '<input type="email"></input>' +
@@ -402,7 +402,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
   });
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'List', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'List', async function() {
   const root = await this.runWithLoadedTree(
       '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>');
   const el = root.firstChild.firstChild;
@@ -427,7 +427,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'List', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ListWithoutSetSize', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ListWithoutSetSize', async function() {
   const root = await this.runWithLoadedTree(
       '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>');
   const el = root.firstChild.firstChild;
@@ -453,7 +453,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ListWithoutSetSize', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Tree', async function() {
   const root = await this.runWithLoadedTree(`
     <ul role="tree" style="list-style-type:none">
       <li aria-expanded="true" role="treeitem">a
@@ -521,7 +521,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Menu', async function() {
   const site = `
     <div role="menu">
       <div role="menuitem">a</div>
@@ -571,7 +571,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ListBox', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ListBox', async function() {
   const root = await this.runWithLoadedTree(`
     <select multiple>
       <option>1</option>
@@ -598,89 +598,90 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ListBox', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
-  const kNoBrailleMessageRequired = new Set([
-    'comment',
-    'contentDeletion',
-    'contentInsertion',
-    'docAbstract',
-    'docAcknowledgments',
-    'docAfterword',
-    'docAppendix',
-    'docBackLink',
-    'docBiblioEntry',
-    'docBibliography',
-    'docBiblioRef',
-    'docChapter',
-    'docColophon',
-    'docConclusion',
-    'docCover',
-    'docCredit',
-    'docCredits',
-    'docDedication',
-    'docEndnote',
-    'docEndnotes',
-    'docEpigraph',
-    'docEpilogue',
-    'docErrata',
-    'docExample',
-    'docFootnote',
-    'docForeword',
-    'docGlossary',
-    'docGlossRef',
-    'docIndex',
-    'docIntroduction',
-    'docNoteRef',
-    'docNotice',
-    'docPageBreak',
-    'docPageFooter',
-    'docPageHeader',
-    'docPageList',
-    'docPart',
-    'docPreface',
-    'docPrologue',
-    'docPullquote',
-    'docQna',
-    'docSubtitle',
-    'docTip',
-    'docToc',
-    'graphicsDocument',
-    'graphicsObject',
-    'graphicsSymbol',
-    'suggestion',
-  ]);
-  for (const key in OutputRoleInfo) {
-    const value = OutputRoleInfo[key];
-    if (value.msgId) {
-      Msgs.getMsg(value.msgId);
-      if (!kNoBrailleMessageRequired.has(key)) {
-        Msgs.getMsg(value.msgId + '_brl');
+AX_TEST_F(
+    'ChromeVoxMV2OutputE2ETest', 'MessageIdAndEarconValidity', function() {
+      const kNoBrailleMessageRequired = new Set([
+        'comment',
+        'contentDeletion',
+        'contentInsertion',
+        'docAbstract',
+        'docAcknowledgments',
+        'docAfterword',
+        'docAppendix',
+        'docBackLink',
+        'docBiblioEntry',
+        'docBibliography',
+        'docBiblioRef',
+        'docChapter',
+        'docColophon',
+        'docConclusion',
+        'docCover',
+        'docCredit',
+        'docCredits',
+        'docDedication',
+        'docEndnote',
+        'docEndnotes',
+        'docEpigraph',
+        'docEpilogue',
+        'docErrata',
+        'docExample',
+        'docFootnote',
+        'docForeword',
+        'docGlossary',
+        'docGlossRef',
+        'docIndex',
+        'docIntroduction',
+        'docNoteRef',
+        'docNotice',
+        'docPageBreak',
+        'docPageFooter',
+        'docPageHeader',
+        'docPageList',
+        'docPart',
+        'docPreface',
+        'docPrologue',
+        'docPullquote',
+        'docQna',
+        'docSubtitle',
+        'docTip',
+        'docToc',
+        'graphicsDocument',
+        'graphicsObject',
+        'graphicsSymbol',
+        'suggestion',
+      ]);
+      for (const key in OutputRoleInfo) {
+        const value = OutputRoleInfo[key];
+        if (value.msgId) {
+          Msgs.getMsg(value.msgId);
+          if (!kNoBrailleMessageRequired.has(key)) {
+            Msgs.getMsg(value.msgId + '_brl');
+          }
+          assertFalse(/[A-Z]+/.test(value.msgId));
+        }
       }
-      assertFalse(/[A-Z]+/.test(value.msgId));
-    }
-  }
-  for (const key in Output.STATE_INFO_) {
-    const value = Output.STATE_INFO_[key];
-    for (innerKey in value) {
-      const innerValue = value[innerKey];
-      if (typeof (innerValue) === 'boolean') {
-        assertEquals('isRoleSpecific', innerKey);
-        continue;
+      for (const key in Output.STATE_INFO_) {
+        const value = Output.STATE_INFO_[key];
+        for (innerKey in value) {
+          const innerValue = value[innerKey];
+          if (typeof (innerValue) === 'boolean') {
+            assertEquals('isRoleSpecific', innerKey);
+            continue;
+          }
+          Msgs.getMsg(innerValue.msgId);
+          Msgs.getMsg(innerValue.msgId + '_brl');
+          assertFalse(/[A-Z]+/.test(innerValue.msgId));
+        }
       }
-      Msgs.getMsg(innerValue.msgId);
-      Msgs.getMsg(innerValue.msgId + '_brl');
-      assertFalse(/[A-Z]+/.test(innerValue.msgId));
-    }
-  }
-  for (const key in Output.INPUT_TYPE_MESSAGE_IDS_) {
-    const msgId = Output.INPUT_TYPE_MESSAGE_IDS_[key];
-    assertFalse(/[A-Z]+/.test(msgId));
-    Msgs.getMsg(msgId);
-    Msgs.getMsg(msgId + '_brl');
-  }
-});
+      for (const key in Output.INPUT_TYPE_MESSAGE_IDS_) {
+        const msgId = Output.INPUT_TYPE_MESSAGE_IDS_[key];
+        assertFalse(/[A-Z]+/.test(msgId));
+        Msgs.getMsg(msgId);
+        Msgs.getMsg(msgId + '_brl');
+      }
+    });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'DivOmitsRole', async function() {
   const root = await this.runWithLoadedTree(`
     <div>that has content</div>
     <div></div>
@@ -696,7 +697,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'LessVerboseAncestry', async function() {
   const root = await this.runWithLoadedTree(`
     <div role="banner"><p>inside</p></div>
     <div role="banner"><p>inside</p></div>
@@ -723,7 +724,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', async function() {
   assertEquals('inside|Navigation', oWithPrevExit.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'Brief', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'Brief', async function() {
   const root = await this.runWithLoadedTree(`
     <div role="article"><p>inside</p></div>
   `);
@@ -735,7 +736,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Brief', async function() {
   assertEquals('inside', oWithoutPrev.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'AuralStyledHeadings', async function() {
   function toFixed(num) {
     return parseFloat(Number(num).toFixed(1));
   }
@@ -765,7 +766,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', async function() {
   }
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ToggleButton', async function() {
   const root = await this.runWithLoadedTree(`
       <div role="button" aria-pressed="true">Subscribe</div>`);
   const el = root.firstChild;
@@ -785,7 +786,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', async function() {
   assertEquals('Subscribe tgl btn =', o.braille.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'JoinDescendants', async function() {
   const root = await this.runWithLoadedTree(`
       <p>This</p>
       <p>fragment</p>
@@ -803,7 +804,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', async function() {
       joined.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ComplexDiv', async function() {
   const root = await this.runWithLoadedTree(`
       <div><button>ok</button></div>
     `);
@@ -812,7 +813,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', async function() {
   assertEquals('ok', o.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ContainerFocus', async function() {
   const root = await this.runWithLoadedTree(`
       <div role="grid">
         <div role="row" tabindex=0 aria-label="start"></div>
@@ -825,7 +826,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', async function() {
       'start|Row', new Output().withSpeech(r1, r2).speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'BraileWhitespace', async function() {
   const root = await this.runWithLoadedTree(`
     <p>this is a <em>test</em>of emphasized text</p>
   `);
@@ -847,7 +848,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'BrailleAncestry', async function() {
   const root = await this.runWithLoadedTree(`
     <ul><li><a href="#">test</a></li></ul>
   `);
@@ -883,7 +884,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'RangeOutput', async function() {
   const root = await this.runWithLoadedTree(`
     <div role="slider" aria-valuemin="1" aria-valuemax="10" aria-valuenow="2"
                        aria-label="volume"></div>
@@ -941,7 +942,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'RoleDescription', async function() {
   const root = await this.runWithLoadedTree(`
     <div aria-label="hi" role="button" aria-roledescription="foo"></div>
   `);
@@ -957,7 +958,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ValidateCommonProperties', function() {
   // If you fail this test, you likely need to insert a $state, $restriction or
   // $description into the output rules for the printed roles. Typically,
   // $description goes towards the end of the output rule, though this depends
@@ -1065,7 +1066,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
           missingDescription.join(' '));
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ValidateRoles', function() {
   // If you fail this test, you likely need to insert a $role or
   // $roledescription into the output rules for the printed roles. Typically,
   // roles can be omitted (intentionally), but role descriptions cannot by W3C
@@ -1116,7 +1117,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
           missingRole.join(' '));
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'InlineBraille', async function() {
   const root = await this.runWithLoadedTree(`
     <table border=1>
       <tr><td>Name</td><td id="active">Age</td><td>Address</td></tr>
@@ -1130,7 +1131,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'TextFieldObeysRoleDescription',
+    'ChromeVoxMV2OutputE2ETest', 'TextFieldObeysRoleDescription',
     async function() {
       const root = await this.runWithLoadedTree(`
     <div role="textbox" aria-roledescription="square"></div>
@@ -1151,7 +1152,7 @@ AX_TEST_F(
       assertEquals('circle', o.braille.string_);
     });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'NestedList', async function() {
   const root = await this.runWithLoadedTree(`
     <ul role="tree">schedule
       <li role="treeitem">wake up
@@ -1219,8 +1220,9 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
       o.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
-  const root = await this.runWithLoadedTree(`
+AX_TEST_F(
+    'ChromeVoxMV2OutputE2ETest', 'NoTooltipWithNameTitle', async function() {
+      const root = await this.runWithLoadedTree(`
     <div role="group" title="title"></div>
     <div role="group" aria-label="label" title="title"></div>
     <div role="group" aria-describedby="desc" title="title"></div>
@@ -1229,74 +1231,76 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
     <div role="group" aria-label=""></div>
     <p id="desc">describedby</p>
   `);
-  const title = root.children[0];
-  let o =
-      new Output().withSpeech(CursorRange.fromNode(title), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'title',
-        spans_: [
-          {value: 'nameOrDescendants', start: 0, end: 5},
-        ],
-      },
-      o.speechOutputForTest);
+      const title = root.children[0];
+      let o = new Output().withSpeech(
+          CursorRange.fromNode(title), null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'title',
+            spans_: [
+              {value: 'nameOrDescendants', start: 0, end: 5},
+            ],
+          },
+          o.speechOutputForTest);
 
-  const labelTitle = root.children[1];
-  o = new Output().withSpeech(
-      CursorRange.fromNode(labelTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'label|title',
-        spans_: [
-          {value: 'nameOrDescendants', start: 0, end: 5},
-          {value: 'description', start: 6, end: 11},
-        ],
-      },
-      o.speechOutputForTest);
+      const labelTitle = root.children[1];
+      o = new Output().withSpeech(
+          CursorRange.fromNode(labelTitle), null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'label|title',
+            spans_: [
+              {value: 'nameOrDescendants', start: 0, end: 5},
+              {value: 'description', start: 6, end: 11},
+            ],
+          },
+          o.speechOutputForTest);
 
-  const describedByTitle = root.children[2];
-  o = new Output().withSpeech(
-      CursorRange.fromNode(describedByTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'title|describedby',
-        spans_: [
-          {value: 'nameOrDescendants', start: 0, end: 5},
-          {value: 'description', start: 6, end: 17},
-        ],
-      },
-      o.speechOutputForTest);
+      const describedByTitle = root.children[2];
+      o = new Output().withSpeech(
+          CursorRange.fromNode(describedByTitle), null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'title|describedby',
+            spans_: [
+              {value: 'nameOrDescendants', start: 0, end: 5},
+              {value: 'description', start: 6, end: 17},
+            ],
+          },
+          o.speechOutputForTest);
 
-  const labelDescribedByTitle = root.children[3];
-  o = new Output().withSpeech(
-      CursorRange.fromNode(labelDescribedByTitle), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'label|describedby',
-        spans_: [
-          {value: 'nameOrDescendants', start: 0, end: 5},
-          {value: 'description', start: 6, end: 17},
-        ],
-      },
-      o.speechOutputForTest);
+      const labelDescribedByTitle = root.children[3];
+      o = new Output().withSpeech(
+          CursorRange.fromNode(labelDescribedByTitle), null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'label|describedby',
+            spans_: [
+              {value: 'nameOrDescendants', start: 0, end: 5},
+              {value: 'description', start: 6, end: 17},
+            ],
+          },
+          o.speechOutputForTest);
 
-  // Hijack the 4th node to force tooltip to return a value. This can only
-  // occur on ARC++ where tooltip gets set even if name and description
-  // are both empty.
-  const tooltip = root.children[4];
-  Object.defineProperty(root.children[4], 'tooltip', {get: () => 'tooltip'});
+      // Hijack the 4th node to force tooltip to return a value. This can only
+      // occur on ARC++ where tooltip gets set even if name and description
+      // are both empty.
+      const tooltip = root.children[4];
+      Object.defineProperty(
+          root.children[4], 'tooltip', {get: () => 'tooltip'});
 
-  o = new Output().withSpeech(CursorRange.fromNode(tooltip), null, 'navigate');
-  assertEqualsJSON(
-      {
-        string_: 'tooltip',
-        spans_: [{value: {'delay': true}, start: 0, end: 7}],
-      },
-      o.speechOutputForTest);
-});
+      o = new Output().withSpeech(
+          CursorRange.fromNode(tooltip), null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'tooltip',
+            spans_: [{value: {'delay': true}, start: 0, end: 7}],
+          },
+          o.speechOutputForTest);
+    });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'InitialSpeechProperties', async function() {
+    'ChromeVoxMV2OutputE2ETest', 'InitialSpeechProperties', async function() {
       const root = await this.runWithLoadedTree(`
     <p>test</p>  `);
       // Capture speech properties sent to tts.
@@ -1321,7 +1325,7 @@ AX_TEST_F(
           this.currentProperties);
     });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'NameOrTextContent', async function() {
   const root = await this.runWithLoadedTree(`
         <div tabindex=0>
           <div aria-label="hello there world">
@@ -1339,7 +1343,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
   assertEquals('hello there world', o.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'AriaCurrentHint', async function() {
   const site = `
       <div aria-current="page">Home</div>
       <div aria-current="false">About</div>
@@ -1353,7 +1357,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', async function() {
   assertEquals('Home|Current page', o.speechOutputForTest.string_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'DelayHintVariants', async function() {
   const root = await this.runWithLoadedTree(`
     <div aria-errormessage="error" aria-invalid="true">OK</div>
     <div id="error" aria-label="error"></div>
@@ -1395,7 +1399,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', async function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'DelayHintWithActionLabel', async function() {
+    'ChromeVoxMV2OutputE2ETest', 'DelayHintWithActionLabel', async function() {
       const site = `<button>OK</button>`;
       const root = await this.runWithLoadedTree(site);
       const button = root.children[0];
@@ -1418,7 +1422,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'DelayHintVariantsWithTouch', async function() {
+    'ChromeVoxMV2OutputE2ETest', 'DelayHintVariantsWithTouch',
+    async function() {
       const site = `<button>OK</button>`;
       const root = await this.runWithLoadedTree(site);
       const button = root.children[0];
@@ -1450,7 +1455,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'DelayHintWithLongClickLabel', async function() {
+    'ChromeVoxMV2OutputE2ETest', 'DelayHintWithLongClickLabel',
+    async function() {
       const site = `<button>OK</button>`;
       const root = await this.runWithLoadedTree(site);
       const button = root.children[0];
@@ -1473,7 +1479,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxOutputE2ETest', 'DelayHintLongClickFollowsClick',
+    'ChromeVoxMV2OutputE2ETest', 'DelayHintLongClickFollowsClick',
     async function() {
       const site = `<button>OK</button>`;
       const root = await this.runWithLoadedTree(site);
@@ -1499,7 +1505,7 @@ AX_TEST_F(
           o.speechOutputForTest);
     });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'WithoutFocusRing', async function() {
   const site = `<button></button>`;
   const root = await this.runWithLoadedTree(site);
   let called = false;
@@ -1519,7 +1525,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
   assertFalse(called);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ARCCheckbox', async function() {
   const root = await this.runWithLoadedTree('<input type="checkbox">');
   const checkbox = root.firstChild.firstChild;
 
@@ -1539,7 +1545,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ARCCustomAction', async function() {
   const root = await this.runWithLoadedTree('<p>test</p>');
   const actionable = root.firstChild.firstChild;
   Object.defineProperty(actionable, 'customActions', {
@@ -1556,7 +1562,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', async function() {
       o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ContextOrder', async function() {
   this.resetContextualOutput();
   const root =
       await this.runWithLoadedTree('<p>test</p><div role="menu">a</div>');
@@ -1578,7 +1584,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', async function() {
   assertEquals('first', o.contextOrder_);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'TreeGridLevel', async function() {
   const site = `
     <table id="treegrid" role="treegrid" aria-label="Inbox">
       <tbody>
@@ -1620,7 +1626,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
       [{value: 'name', start: 0, end: 30}], o);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'FocusFollowText', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'FocusFollowText', async function() {
   const site = `<p>Hello World</p>
                 <button>Button</button>
                 <div>New Div</div>`;
@@ -1660,6 +1666,6 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'FocusFollowText', async function() {
   assertEquals(div.location.height, actualBounds.height);
 });
 
-AX_TEST_F('ChromeVoxOutputE2ETest', 'ToStringEmptyOutput', async function() {
+AX_TEST_F('ChromeVoxMV2OutputE2ETest', 'ToStringEmptyOutput', async function() {
   assertEquals('', new Output().toString());
 });

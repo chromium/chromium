@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/ozone/platform/wayland/emulate/wayland_input_emulate.h"
 
 #include <ui-controls-unstable-v1-client-protocol.h>
@@ -15,6 +10,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
@@ -347,7 +343,8 @@ void WaylandInputEmulate::OnGlobal(void* data,
                                    const char* interface,
                                    uint32_t version) {
   auto* self = static_cast<WaylandInputEmulate*>(data);
-  if (strcmp(interface, "zcr_ui_controls_v1") == 0 && version >= kMinVersion) {
+  if (UNSAFE_TODO(strcmp(interface, "zcr_ui_controls_v1")) == 0 &&
+      version >= kMinVersion) {
     const wl_interface* wayland_interface =
         static_cast<const wl_interface*>(&zcr_ui_controls_v1_interface);
     self->ui_controls_ = static_cast<zcr_ui_controls_v1*>(

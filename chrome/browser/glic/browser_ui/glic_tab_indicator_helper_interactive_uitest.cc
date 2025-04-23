@@ -190,6 +190,17 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
+                       NavigatingToAllowlistedUrlShouldAlert) {
+  RunTestSequence(LoadStartingPage(),
+                  ObserveState(kTab1AlertState, browser(), 0),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  ClickMockGlicElement(kMockGlicContextAccessButton),
+                  WaitForState(kTab1AlertState, IsAccessing()),
+                  NavigateWebContents(kFirstTabId, GURL("chrome://newtab/")),
+                  WaitForState(kTab1AlertState, IsAccessing()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        NavigatingToInvalidSchemeAndBackShouldAlert) {
   RunTestSequence(LoadStartingPage(),
                   ObserveState(kTab1AlertState, browser(), 0),

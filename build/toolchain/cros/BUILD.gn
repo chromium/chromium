@@ -32,6 +32,12 @@ template("cros_toolchain") {
         extra_cppflags += "--rewrapper-path $reclient_cros_cc_wrapper --rewrapper-cfg ${reclient_cc_cfg_file}"
       }
 
+      # crbug.com/397463803: Add these so the compiler wrapper doesn't error
+      # out. Should be removable around Q4 2025.
+      extra_asmflags = "-D_CROSTC_IS_AWARE_OF_THIS_USECASE"
+      extra_cppflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
+      extra_ldflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
+
       # Relativize path if compiler is specified such that not to lookup from
       # $PATH and cc/cxx does not contain additional flags.
       if (cc != get_path_info(cc, "file") &&

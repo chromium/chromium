@@ -6,6 +6,7 @@ package org.chromium.chrome.test.transit.tabmodel;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -23,12 +24,13 @@ public class TabThumbnailsCapturedCarryOn extends CarryOn {
     public void declareElements(Elements.Builder elements) {
         Supplier<ChromeTabbedActivity> activitySupplier =
                 elements.declareActivity(ChromeTabbedActivity.class);
-        TabModelSelectorCondition tabModelSelectorCondition =
-                elements.declareEnterCondition(new TabModelSelectorCondition(activitySupplier));
+        Element<TabModelSelector> tabModelSelectorElement =
+                elements.declareEnterConditionAsElement(
+                        new TabModelSelectorCondition(activitySupplier));
         elements.declareElementFactory(
-                tabModelSelectorCondition,
+                tabModelSelectorElement,
                 delayedElements -> {
-                    TabModelSelector tabModelSelector = tabModelSelectorCondition.get();
+                    TabModelSelector tabModelSelector = tabModelSelectorElement.get();
                     TabModel tabModel = tabModelSelector.getModel(mIsIncognito);
                     int tabCount = tabModel.getCount();
                     for (int i = 0; i < tabCount; i++) {

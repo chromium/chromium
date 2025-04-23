@@ -24,6 +24,8 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -1525,7 +1527,6 @@ void StorageHandler::NotifySharedStorageAccessed(
       scope_enum = Storage::SharedStorageAccessScopeEnum::SharedStorageWorklet;
       break;
     case AccessScope::kProtectedAudienceWorklet:
-      // TODO(crbug.com/401011862): Implement callsites for this path.
       scope_enum =
           Storage::SharedStorageAccessScopeEnum::ProtectedAudienceWorklet;
       break;
@@ -1549,7 +1550,6 @@ void StorageHandler::NotifySharedStorageAccessed(
       method_enum = Storage::SharedStorageAccessMethodEnum::Run;
       break;
     case AccessMethod::kBatchUpdate:
-      // TODO(crbug.com/401011862): Implement callsite for this path.
       method_enum = Storage::SharedStorageAccessMethodEnum::BatchUpdate;
       break;
     case AccessMethod::kSet:
@@ -1590,11 +1590,20 @@ void StorageHandler::NotifySharedStorageAccessed(
   if (params.script_source_url) {
     protocol_params->SetScriptSourceUrl(*params.script_source_url);
   }
+  if (params.data_origin) {
+    protocol_params->SetDataOrigin(*params.data_origin);
+  }
   if (params.operation_name) {
     protocol_params->SetOperationName(*params.operation_name);
   }
+  if (params.keep_alive) {
+    protocol_params->SetKeepAlive(*params.keep_alive);
+  }
   if (params.serialized_data) {
     protocol_params->SetSerializedData(*params.serialized_data);
+  }
+  if (params.urn_uuid) {
+    protocol_params->SetUrnUuid(*params.urn_uuid);
   }
   if (params.key) {
     protocol_params->SetKey(*params.key);
@@ -1604,6 +1613,44 @@ void StorageHandler::NotifySharedStorageAccessed(
   }
   if (params.ignore_if_present) {
     protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
+  }
+  if (params.worklet_id) {
+    protocol_params->SetWorkletId(base::NumberToString(*params.worklet_id));
+  }
+  if (params.with_lock) {
+    protocol_params->SetWithLock(*params.with_lock);
+  }
+  if (params.batch_update_id) {
+    protocol_params->SetBatchUpdateId(
+        base::NumberToString(*params.batch_update_id));
+  }
+  if (params.batch_size) {
+    protocol_params->SetBatchSize(*params.batch_size);
+  }
+
+  if (params.private_aggregation_config) {
+    auto protocol_private_aggregation_config =
+        protocol::Storage::SharedStoragePrivateAggregationConfig::Create()
+            .SetFilteringIdMaxBytes(params.private_aggregation_config->config
+                                        ->filtering_id_max_bytes)
+            .Build();
+    if (params.private_aggregation_config->config
+            ->aggregation_coordinator_origin) {
+      protocol_private_aggregation_config->SetAggregationCoordinatorOrigin(
+          params.private_aggregation_config->config
+              ->aggregation_coordinator_origin->Serialize());
+    }
+    if (params.private_aggregation_config->config->context_id) {
+      protocol_private_aggregation_config->SetContextId(
+          params.private_aggregation_config->config->context_id.value());
+    }
+    if (params.private_aggregation_config->config->max_contributions) {
+      protocol_private_aggregation_config->SetMaxContributions(
+          params.private_aggregation_config->config->max_contributions.value());
+    }
+
+    protocol_params->SetPrivateAggregationConfig(
+        std::move(protocol_private_aggregation_config));
   }
 
   if (params.urls_with_metadata) {
@@ -2195,6 +2242,39 @@ ToAggregatableDebugReportingConfig(
   return out_config;
 }
 
+std::unique_ptr<Array<Storage::AttributionReportingNamedBudgetDef>>
+ToNamedBudgetDefs(
+    const attribution_reporting::AggregatableNamedBudgetDefs& budgets) {
+  auto out =
+      std::make_unique<Array<Storage::AttributionReportingNamedBudgetDef>>();
+  for (const auto& [name, budget] : budgets.budgets()) {
+    out->emplace_back(Storage::AttributionReportingNamedBudgetDef::Create()
+                          .SetName(name)
+                          .SetBudget(budget)
+                          .Build());
+  }
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingNamedBudgetCandidate>>
+ToNamedBudgetCandidates(
+    const std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>&
+        candidates) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingNamedBudgetCandidate>>();
+  for (const auto& candidate : candidates) {
+    auto& out_candidate = out->emplace_back(
+        Storage::AttributionReportingNamedBudgetCandidate::Create()
+            .SetFilters(ToFilterPair(candidate.filters()))
+            .Build());
+
+    if (const std::optional<std::string>& name = candidate.name()) {
+      out_candidate->SetName(*name);
+    }
+  }
+  return out;
+}
+
 }  // namespace
 
 void StorageHandler::OnSourceHandled(
@@ -2241,6 +2321,10 @@ void StorageHandler::OnSourceHandled(
                   aggregatable_debug_reporting_config.config()))
           .SetMaxEventLevelReports(
               registration.trigger_specs.max_event_level_reports())
+          .SetNamedBudgets(
+              ToNamedBudgetDefs(registration.aggregatable_named_budget_defs))
+          .SetDebugReporting(registration.debug_reporting)
+          .SetEventLevelEpsilon(registration.event_level_epsilon)
           .Build();
 
   if (registration.debug_key.has_value()) {
@@ -2298,6 +2382,8 @@ void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
           .SetScopes(std::make_unique<Array<String>>(
               registration.attribution_scopes.scopes().begin(),
               registration.attribution_scopes.scopes().end()))
+          .SetNamedBudgets(ToNamedBudgetCandidates(
+              registration.aggregatable_named_budget_candidates))
           .Build();
 
   if (registration.debug_key.has_value()) {
@@ -2389,6 +2475,36 @@ void StorageHandler::NotifyInterestGroupAuctionNetworkRequestCreated(
   frontend_->InterestGroupAuctionNetworkRequestCreated(
       type_enum, request_id,
       std::make_unique<std::vector<std::string>>(devtools_auction_ids));
+}
+
+Response StorageHandler::SetProtectedAudienceKAnonymity(
+    const std::string& in_owner_origin,
+    const std::string& in_group_name,
+    std::unique_ptr<std::vector<Binary>> in_hashes) {
+  url::Origin owner_origin = url::Origin::Create(GURL(in_owner_origin));
+
+  // Ensure we are in "test" mode.
+  // For now we just make sure the interest group owner is a .test domain.
+  if (!base::EndsWith(owner_origin.host(), ".test")) {
+    return Response::ServerError("owner origin must be on a .test domain");
+  }
+
+  std::vector<std::string> hashes;
+  for (const auto& in_hash : *in_hashes) {
+    hashes.emplace_back(base::as_string_view(in_hash));
+  }
+
+  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
+      storage_partition_->GetInterestGroupManager());
+  if (!manager) {
+    return Response::ServerError("Protected Audience not enabled");
+  }
+  manager->UpdateKAnonymity(
+      blink::InterestGroupKey(std::move(owner_origin), in_group_name),
+      /*positive_hashed_keys=*/std::move(hashes),
+      /*update_time=*/base::Time::Now(),
+      /*replace_existing_values=*/true);
+  return Response::Success();
 }
 
 }  // namespace protocol

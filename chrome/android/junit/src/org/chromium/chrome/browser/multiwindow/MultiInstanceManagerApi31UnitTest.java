@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -51,6 +50,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -60,7 +60,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -82,8 +82,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -154,7 +155,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
     @Mock ProfileProvider mProfileProvider;
-
+    @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock TabModelSelectorBase mTabModelSelector;
     @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
@@ -188,9 +189,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-
-    private final MismatchedIndicesHandler mMismatchedIndicesHandler =
-            (activityAtRequestedIndex, isActivityInAppTasks, isActivityInSameTask) -> false;
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
@@ -355,13 +353,26 @@ public class MultiInstanceManagerApi31UnitTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
                     @Override
-                    public TabModelSelector buildSelector(
+                    public TabModelSelector buildTabbedSelector(
                             Context context,
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId, Profile profile) {
+                        return Pair.create(
+                                new MockTabModelSelector(
+                                        mProfile,
+                                        mIncognitoProfile,
+                                        /* tabCount= */ 0,
+                                        /* incognitoTabCount= */ 0,
+                                        /* delegate= */ null),
+                                () -> {});
                     }
                 });
         mMultiInstanceManager =
@@ -460,7 +471,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
+    @EnableFeatures(ChromeFeatureList.MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
     public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
 
@@ -490,7 +501,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
+    @DisableFeatures(ChromeFeatureList.MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
     public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy_fixDisabled() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
 
@@ -1147,18 +1158,15 @@ public class MultiInstanceManagerApi31UnitTest {
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
 
         // Action
         mMultiInstanceManager.moveTabGroupToWindow(
-                mTabbedActivityTask63,
-                tabGroupMetadata,
-                tabAtIndex,
-                /* onFinishedRunnable= */ null);
+                mTabbedActivityTask63, tabGroupMetadata, tabAtIndex);
 
         // Verify moveTabGroupAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -1417,13 +1425,13 @@ public class MultiInstanceManagerApi31UnitTest {
             // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the
             // existing task by bringing it to the foreground.
             verify(mActivityManager).moveTaskToFront(taskId63, 0);
-            verify(mTabbedActivityTask62, never()).startActivity(any(), any());
+            verify(mTabbedActivityTask62, never()).startActivity(any());
             verify(appTask63, never()).finishAndRemoveTask();
         } else {
             // If |mTabbedActivityTask63| is not alive, verify that |mTabbedActivityTask62| starts a
             // new activity and finishes and removes the old task, and does not attempt to bring the
             // old task to the foreground.
-            verify(mTabbedActivityTask62).startActivity(any(), any());
+            verify(mTabbedActivityTask62).startActivity(any());
             verify(appTask63).finishAndRemoveTask();
             verify(mActivityManager, never()).moveTaskToFront(taskId63, 0);
         }
@@ -1447,12 +1455,9 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* isIncognito= */ false);
         allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
 
-        // Create onFinishedRunnable when the group is not shared.
-        Runnable onFinishedRunnable = isGroupShared ? null : mock(Runnable.class);
-
         // Trigger a group reparent.
         mMultiInstanceManager.reparentTabGroupToRunningActivity(
-                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0, onFinishedRunnable);
+                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0);
 
         // Verify we pause the TabGroupSyncService to stop observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
@@ -1468,12 +1473,5 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
-
-        // Verify the onFinishedRunnable is executed for unshared group.
-        if (isGroupShared) {
-            assertNull(onFinishedRunnable);
-        } else {
-            verify(onFinishedRunnable).run();
-        }
     }
 }

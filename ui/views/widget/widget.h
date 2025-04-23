@@ -1006,7 +1006,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool is_secondary_widget() const { return is_secondary_widget_; }
 
   // Returns whether the Widget is visible to the user.
-  virtual bool IsVisible() const;
+  bool IsVisible() const;
 
   // Returns the ThemeProvider that provides theme resources for this Widget.
   virtual const ui::ThemeProvider* GetThemeProvider() const;

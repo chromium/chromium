@@ -23,6 +23,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 class QuickAnswersControllerImpl;
 
@@ -47,7 +48,9 @@ class QuickAnswersUiController {
       base::RepeatingCallback<void(const std::string&)>;
   using FakeOpenWebUrlCallback = base::RepeatingCallback<void(const GURL&)>;
 
-  explicit QuickAnswersUiController(QuickAnswersControllerImpl* controller);
+  // `application_locale_storage` must not be null and must outlive `this`.
+  QuickAnswersUiController(ApplicationLocaleStorage* application_locale_storage,
+                           QuickAnswersControllerImpl* controller);
   ~QuickAnswersUiController();
 
   QuickAnswersUiController(const QuickAnswersUiController&) = delete;
@@ -166,6 +169,8 @@ class QuickAnswersUiController {
 
   // Constructs/resets the Quick Answers rich card view.
   void CreateRichAnswersView();
+
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   raw_ptr<QuickAnswersControllerImpl> controller_ = nullptr;
 

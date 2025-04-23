@@ -30,7 +30,7 @@ namespace {
 const int kExtensionsManifestMaxURLSize = 2000;
 
 // Strings to report the manifest location in Omaha update pings. Please use
-// strings with no capitalization, spaces or underscorse.
+// strings with no capitalization, spaces or underscores.
 const char kInternalLocation[] = "internal";
 const char kExternalLocation[] = "external";
 const char kPolicyLocation[] = "policy";
@@ -53,7 +53,7 @@ void AddEnabledStateToPing(std::string* ping_value,
 
 }  // namespace
 
-ManifestFetchData::ExtensionData::ExtensionData() : version(base::Version()) {}
+ManifestFetchData::ExtensionData::ExtensionData() = default;
 
 ManifestFetchData::ExtensionData::ExtensionData(const ExtensionData& other) =
     default;

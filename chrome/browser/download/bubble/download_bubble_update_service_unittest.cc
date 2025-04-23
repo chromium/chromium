@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/bubble/download_bubble_display_info.h"

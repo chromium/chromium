@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -48,7 +49,7 @@ public interface Player {
         ObservableSupplier<String> getVoiceIdSupplier();
 
         /** Whether the mode selection is enabled. */
-        ObservableSupplier<Boolean> getPlaybackModeSelectionEnabled();
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> getPlaybackModeSelectionEnabled();
 
         /**
          * Called when the user selects a voice in the voice settings menu. Saves the new choice for

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
@@ -48,6 +49,8 @@ std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
   switch (reason) {
     case RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore:
       return "UpdateRecoveryKeyStore";
+    case RecoveryKeyStoreURLFetchReasonForUMA::kListRecoveryKeyStores:
+      return "ListRecoveryKeyStores";
   }
 
   NOTREACHED();
@@ -87,26 +90,33 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 }
 
 void RecordTrustedVaultDeviceRegistrationState(
-  TrustedVaultDeviceRegistrationStateForUMA registration_state) {
+    TrustedVaultDeviceRegistrationStateForUMA registration_state) {
   RecordTrustedVaultDeviceRegistrationState(
-      SecurityDomainId::kChromeSync, registration_state);
+      LocalRecoveryFactorType::kPhysicalDevice, SecurityDomainId::kChromeSync,
+      registration_state);
 }
 
 void RecordTrustedVaultDeviceRegistrationState(
+    LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
   base::UmaHistogramEnumeration(
-      "TrustedVault.DeviceRegistrationState." +
-          GetSecurityDomainNameForUma(security_domain_id),
+      base::StrCat(
+          {"TrustedVault.DeviceRegistrationState.",
+           GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
+           GetSecurityDomainNameForUma(security_domain_id)}),
       registration_state);
 }
 
 void RecordTrustedVaultDeviceRegistrationOutcome(
+    LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
   base::UmaHistogramEnumeration(
-      "TrustedVault.DeviceRegistrationOutcome." +
-          GetSecurityDomainNameForUma(security_domain_id),
+      base::StrCat(
+          {"TrustedVault.DeviceRegistrationOutcome.",
+           GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
+           GetSecurityDomainNameForUma(security_domain_id)}),
       registration_outcome);
 }
 
@@ -214,6 +224,19 @@ void RecordTrustedVaultListSecurityDomainMembersPinStatus(
       "TrustedVault.ListSecurityDomainMembersPinStatus." +
           GetSecurityDomainNameForUma(security_domain_id),
       status);
+}
+
+std::string GetLocalRecoveryFactorNameForUma(
+    LocalRecoveryFactorType local_recovery_factor_type) {
+  // These strings get embedded in histogram names and so should not be
+  // changed.
+  switch (local_recovery_factor_type) {
+    case LocalRecoveryFactorType::kPhysicalDevice:
+      return "PhysicalDevice";
+      // If adding a new value, also update the variants for
+      // LocalRecoveryFactorType in
+      // tools/metrics/histograms/metadata/trusted_vault/histograms.xml.
+  }
 }
 
 std::string GetSecurityDomainNameForUma(SecurityDomainId domain) {

@@ -89,10 +89,6 @@ std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
   return hashed_data;
 }
 
-std::string_view ConvertToStringView(base::span<const uint8_t> data) {
-  return {reinterpret_cast<const char*>(data.data()), data.size()};
-}
-
 std::string ConvertBytesToUuid(base::span<const uint8_t, 16> bytes) {
   uint64_t most_significant_bytes = 0;
   for (size_t i = 0; i < sizeof(uint64_t); i++) {

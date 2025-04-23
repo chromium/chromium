@@ -92,6 +92,7 @@ cargo_crate("lib") {
   ]
   features = [
     "clone-impls",
+    "default",
     "derive",
     "extra-traits",
     "fold",

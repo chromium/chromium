@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -46,6 +45,8 @@
 // refactored.
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
+using collaboration::messaging::PersistentNotificationType;
+
 namespace {
 
 using ScopedTabGroupSyncObservation =
@@ -66,8 +67,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   // The share kit service.
   raw_ptr<ShareKitService> _shareKitService;
-  // The collaboration service.
-  raw_ptr<collaboration::CollaborationService> _collaborationService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
@@ -90,15 +89,11 @@ constexpr CGFloat kFacePileAvatarSize = 16;
       initWithModeHolder:(TabGridModeHolder*)modeHolder
      tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
          shareKitService:(ShareKitService*)shareKitService
-    collaborationService:
-        (collaboration::CollaborationService*)collaborationService
         messagingService:(collaboration::messaging::MessagingBackendService*)
                              messagingService {
   if ((self = [super initWithModeHolder:modeHolder])) {
-    CHECK(collaborationService);
     _tabGroupSyncService = tabGroupSyncService;
     _shareKitService = shareKitService;
-    _collaborationService = collaborationService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
 
@@ -250,7 +245,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
-  _collaborationService = nullptr;
   _shareKitService = nullptr;
   [super disconnect];
 }
@@ -397,26 +391,54 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 // Gets messages to indicate that the shared tab group has changed and the user
 // has not seen it yet and keeps the necessary information from the messages.
 - (void)fetchMessagesForGroup {
-  if (!_messagingService || !_messagingService->IsInitialized()) {
+  if (!_messagingService || !_messagingService->IsInitialized() ||
+      !self.webStateList) {
     return;
   }
 
-  std::vector<collaboration::messaging::PersistentMessage> messages =
-      _messagingService->GetMessages(
-          collaboration::messaging::PersistentNotificationType::
-              DIRTY_TAB_GROUP);
-
-  for (auto& message : messages) {
-    if (!message.attribution.tab_group_metadata.has_value()) {
-      continue;
+  for (const TabGroup* tabGroup : self.webStateList->GetGroups()) {
+    tab_groups::LocalTabGroupID groupID = tabGroup->tab_group_id();
+    if ([self hasNotificationsForGroup:groupID]) {
+      _dirtyGroups.insert(groupID);
     }
-    collaboration::messaging::TabGroupMessageMetadata group_data =
-        message.attribution.tab_group_metadata.value();
-    if (!group_data.local_tab_group_id.has_value()) {
-      continue;
-    }
-    _dirtyGroups.insert(group_data.local_tab_group_id.value());
   }
+}
+
+// Returns whether there are notifications to be displayed for `groupID`.
+- (BOOL)hasNotificationsForGroup:(tab_groups::LocalTabGroupID)groupID {
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessagesForGroup(
+          groupID,
+          collaboration::messaging::PersistentNotificationType::DIRTY_TAB);
+
+  for (auto const& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+
+    if (message.collaboration_event ==
+            collaboration::messaging::CollaborationEvent::TAB_ADDED ||
+        message.collaboration_event ==
+            collaboration::messaging::CollaborationEvent::TAB_UPDATED) {
+      return YES;
+    }
+  }
+
+  messages = _messagingService->GetMessagesForGroup(
+      groupID,
+      collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+
+  for (auto const& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+
+    if (message.collaboration_event ==
+        collaboration::messaging::CollaborationEvent::TAB_REMOVED) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Reconfigures a group cell specified by `localTabGroupID`.
@@ -444,15 +466,22 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   }
 }
 
+- (void)setWebStateList:(WebStateList*)webStateList {
+  [super setWebStateList:webStateList];
+  if (webStateList) {
+    [self fetchMessagesForGroup];
+  }
+}
+
 #pragma mark - BaseGridMediatorItemProvider
 
-- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
+- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kGroup);
 
   const TabGroup* tabGroup = itemID.tabGroupItem.tabGroup;
 
   if (!_shareKitService || !_shareKitService->IsSupported() ||
-      !_collaborationService || !_tabGroupSyncService || !tabGroup) {
+      !_tabGroupSyncService || !tabGroup) {
     return nil;
   }
 
@@ -471,7 +500,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
-  return _shareKitService->FacePile(config);
+  return _shareKitService->FacePileView(config);
 }
 
 #pragma mark - MessagingBackendServiceObserving
@@ -485,8 +514,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   CHECK(_messagingService);
   CHECK(_messagingService->IsInitialized());
 
-  if (message.type !=
-      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP) {
+  if (message.type != PersistentNotificationType::DIRTY_TAB_GROUP) {
     return;
   }
   if (!message.attribution.tab_group_metadata.has_value()) {
@@ -519,7 +547,11 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   }
   tab_groups::LocalTabGroupID localTabGroupID =
       group_data.local_tab_group_id.value();
-  _dirtyGroups.erase(localTabGroupID);
+  if ([self hasNotificationsForGroup:localTabGroupID]) {
+    _dirtyGroups.insert(localTabGroupID);
+  } else {
+    _dirtyGroups.erase(localTabGroupID);
+  }
 
   [self reconfigureGroup:localTabGroupID];
 }

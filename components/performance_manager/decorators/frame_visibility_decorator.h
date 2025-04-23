@@ -44,21 +44,6 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   // PageLiveStateObserver:
   void OnIsBeingMirroredChanged(const PageNode* page_node) override;
 
-  // Unused from PageLiveStateObserver:
-  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
-  void OnIsConnectedToBluetoothDeviceChanged(
-      const PageNode* page_node) override {}
-  void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) override {}
-  void OnIsConnectedToSerialPortChanged(const PageNode* page_node) override {}
-  void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
-  void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
-  void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
-  void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
-  void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnIsActiveTabChanged(const PageNode* page_node) override {}
-  void OnIsPinnedTabChanged(const PageNode* page_node) override {}
-  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
-
   // FrameNodeObserver:
   void OnBeforeFrameNodeAdded(
       const FrameNode* frame_node,

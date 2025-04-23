@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +18,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +32,16 @@ import java.util.Optional;
 @JNINamespace("hats")
 @NullMarked
 public class SurveyConfig {
+
+    // LINT.IfChange(RequestedBrowserType)
+    @IntDef({RequestedBrowserType.REGULAR, RequestedBrowserType.INCOGNITO})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RequestedBrowserType {
+        int REGULAR = 0;
+        int INCOGNITO = 1;
+    }
+
+    // LINT.ThenChange(//chrome/browser/ui/hats/survey_config.h:RequestedBrowserType)
 
     private static boolean sForceUsingTestingConfig;
     private static @Nullable SurveyConfig sConfigForTesting;
@@ -66,6 +79,9 @@ public class SurveyConfig {
      */
     final Optional<Integer> mCooldownPeriodOverride;
 
+    /** Requested browser type decides where the survey can be shown. */
+    final @RequestedBrowserType int mRequestedBrowserType;
+
     /** Not generated from java. */
     @VisibleForTesting
     SurveyConfig(
@@ -75,7 +91,8 @@ public class SurveyConfig {
             boolean userPrompted,
             String[] psdBitDataFields,
             String[] psdStringDataFields,
-            Optional<Integer> cooldownPeriodOverride) {
+            Optional<Integer> cooldownPeriodOverride,
+            @RequestedBrowserType int requestedBrowserType) {
         mTrigger = trigger;
         mTriggerId = triggerId;
         mProbability = probability;
@@ -83,6 +100,7 @@ public class SurveyConfig {
         mPsdBitDataFields = psdBitDataFields;
         mPsdStringDataFields = psdStringDataFields;
         mCooldownPeriodOverride = cooldownPeriodOverride;
+        mRequestedBrowserType = requestedBrowserType;
     }
 
     /**
@@ -170,7 +188,8 @@ public class SurveyConfig {
                     config.mUserPrompted,
                     config.mPsdBitDataFields,
                     config.mPsdStringDataFields,
-                    config.mCooldownPeriodOverride);
+                    config.mCooldownPeriodOverride,
+                    config.mRequestedBrowserType);
         }
         return config;
     }
@@ -184,7 +203,8 @@ public class SurveyConfig {
             boolean userPrompted,
             String[] psdBitDataFields,
             String[] psdStringDataFields,
-            int cooldownPeriodOverride) {
+            int cooldownPeriodOverride,
+            @RequestedBrowserType int requestedBrowserType) {
         holder.mTriggers.put(
                 trigger,
                 new SurveyConfig(
@@ -196,7 +216,8 @@ public class SurveyConfig {
                         psdStringDataFields,
                         cooldownPeriodOverride == 0
                                 ? Optional.empty()
-                                : Optional.of(cooldownPeriodOverride)));
+                                : Optional.of(cooldownPeriodOverride),
+                        requestedBrowserType));
     }
 
     /** Holder that stores all the active surveys for Android. */

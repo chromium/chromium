@@ -723,20 +723,6 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrants,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSmartCardReaderGrants",
-      base::BindRepeating(&SiteSettingsHandler::HandleGetSmartCardReaderGrants,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "revokeAllSmartCardReadersGrants",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "revokeSmartCardReaderGrant",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleRevokeSmartCardReaderGrant,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
@@ -1574,73 +1560,6 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrants(
   permission_context->RevokeGrants(origin);
 }
 
-void SiteSettingsHandler::HandleGetSmartCardReaderGrants(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK_EQ(1U, args.size());
-  AllowJavascript();
-
-  const base::Value& callback_id = args[0];
-  base::Value::List reader_names;
-#if BUILDFLAG(IS_CHROMEOS)
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-
-  reader_names = base::ToValueList(
-      permission_context.GetPersistentReaderGrants(),
-      [this](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
-        return base::Value::Dict()
-            .Set(site_settings::kReaderName, reader_grant.reader_name)
-            .Set(site_settings::kOrigins,
-                 base::ToValueList(
-                     reader_grant.origins, [this](const url::Origin& origin) {
-                       return base::Value::Dict()
-                           .Set(site_settings::kOrigin, origin.Serialize())
-                           .Set(site_settings::kDisplayName,
-                                site_settings::GetUrlIdentityForGURL(
-                                    profile_, origin.GetURL(),
-                                    /*hostname_only=*/false)
-                                    .name);
-                     }));
-      });
-#endif
-  ResolveJavascriptCallback(callback_id, reader_names);
-}
-
-void SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK(args.empty());
-  AllowJavascript();
-#if BUILDFLAG(IS_CHROMEOS)
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-
-  permission_context.RevokeAllPermissions();
-#endif
-}
-
-void SiteSettingsHandler::HandleRevokeSmartCardReaderGrant(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK_EQ(2U, args.size());
-  AllowJavascript();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  auto reader_name = args[0].GetString();
-  auto url = GURL(args[1].GetString());
-  DCHECK(url.is_valid());
-  const url::Origin& origin = url::Origin::Create(url);
-
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-  permission_context.RevokePersistentPermission(reader_name, origin);
-#endif
-}
-
 void SiteSettingsHandler::HandleSetOriginPermissions(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
@@ -1865,17 +1784,6 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (content_type == ContentSettingsType::COOKIES &&
       primary_pattern.MatchesAllHosts() &&
       !secondary_pattern.MatchesAllHosts()) {
-    // Remove TP exceptions along with 3PC exceptions if we are not showing
-    // them explicitly in settings but are supporting adding/removing via UB.
-    // TODO(https://b/333527273): Remove post-3PCD launch.
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
-        !base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingInSettings)) {
-      map->SetContentSettingCustomScope(
-          ContentSettingsPattern::Wildcard(), secondary_pattern,
-          ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
-    }
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Removed"));
   }

@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -17,8 +18,6 @@
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-static NSString* kDetailIconCellIdentifier = @"DetailIconCell";
 
 namespace {
 

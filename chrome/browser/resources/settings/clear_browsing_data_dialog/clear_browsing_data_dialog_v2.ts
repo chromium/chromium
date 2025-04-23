@@ -52,7 +52,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     };
   }
 
-  private dataTypesExpanded_: boolean;
+  declare private dataTypesExpanded_: boolean;
 
   private onCancelClick_() {
     this.$.deleteBrowsingDataDialog.close();

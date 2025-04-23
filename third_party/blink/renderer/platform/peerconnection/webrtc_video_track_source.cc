@@ -147,7 +147,7 @@ void WebRtcVideoTrackSource::SetCustomFrameAdaptationParamsForTesting(
 }
 
 void WebRtcVideoTrackSource::SetSinkWantsForTesting(
-    const rtc::VideoSinkWants& sink_wants) {
+    const webrtc::VideoSinkWants& sink_wants) {
   video_adapter()->OnSinkWants(sink_wants);
 }
 
@@ -206,7 +206,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     return;
   }
   pending_frames_.push_back(PendingFrame{.frame = std::move(frame),
-                                         .time_posted_us = rtc::TimeMicros(),
+                                         .time_posted_us = webrtc::TimeMicros(),
                                          .id = next_frame_id_++,
                                          .can_be_delivered = false});
   auto& current_frame = pending_frames_.back().frame;
@@ -249,7 +249,7 @@ void WebRtcVideoTrackSource::ComputeMetadataAndDeliverFrame(
     int64_t time_posted_us) {
   // Compute what rectangular region has changed since the last frame
   // that we successfully delivered to the base class method
-  // rtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
+  // webrtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
   std::optional<int> capture_counter = frame->metadata().capture_counter;
@@ -482,7 +482,7 @@ void WebRtcVideoTrackSource::DeliverFrame(
     update_rect = std::nullopt;
   }
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, adapter_resources_));
 

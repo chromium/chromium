@@ -34,12 +34,15 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -109,14 +112,20 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   void CreateCredentialProviderService(bool with_account_store = false) {
     // Make sure to shut down the previous instance before creating a new one.
     if (credential_provider_service_) {
       credential_provider_service_->Shutdown();
     }
 
+    const std::string profile_name = "profile_name";
+    local_state()->SetString(prefs::kLastUsedProfile, profile_name);
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
-        &testing_pref_service_, password_store_,
+        profile_name, &testing_pref_service_, local_state(), password_store_,
         with_account_store ? account_password_store_ : nullptr,
         test_passkey_model_.get(), credential_store_,
         identity_test_environment_.identity_manager(), &sync_service_,
@@ -136,6 +145,7 @@ class CredentialProviderServiceTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_local_state_;
   TestingPrefServiceSimple testing_pref_service_;
   scoped_refptr<password_manager::TestPasswordStore> password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
@@ -168,7 +178,7 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
   task_environment_.FastForwardBy(base::Seconds(30));
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
   EXPECT_NSEQ(credential_store_.credentials[0].serviceName, @"g.com");
   EXPECT_NSEQ(credential_store_.credentials[0].username, @"user");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"qwerty123");

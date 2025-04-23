@@ -149,12 +149,12 @@ MediaStreamComponent* WebRtcMediaStreamTrackAdapter::track() {
   return component_.Get();
 }
 
-rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
+webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
 WebRtcMediaStreamTrackAdapter::webrtc_track() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(webrtc_track_);
   EnsureTrackIsInitialized();
-  return rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(
+  return webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(
       webrtc_track_.get());
 }
 

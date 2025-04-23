@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.translate;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Java-side copy of translate::ContentTranslateDriver::TranslationObserver. */
+@NullMarked
 public interface TranslationObserver {
 
     @CalledByNative

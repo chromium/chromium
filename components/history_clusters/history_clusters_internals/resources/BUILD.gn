@@ -9,7 +9,7 @@ build_webui("build") {
 
   static_files = [ "history_clusters_internals.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "history_clusters_internals.ts",
     "history_clusters_internals_browser_proxy.ts",
   ]

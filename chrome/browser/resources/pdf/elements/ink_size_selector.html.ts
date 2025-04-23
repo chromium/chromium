@@ -16,7 +16,7 @@ export function getHtml(this: InkSizeSelectorElement) {
         .selected="${this.currentSizeString_()}" aria-label="$i18n{ink2Size}"
         @selected-changed="${this.onSelectedChanged_}">
       ${this.getCurrentBrushSizes_().map(item => html`
-        <selectable-icon-button icon="pdf:${item.icon}"
+        <selectable-icon-button icon="pdf-ink:${item.icon}"
             name="${item.size}" label="${this.i18n(item.label)}">
         </selectable-icon-button>
       `)}

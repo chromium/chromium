@@ -106,10 +106,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @Override
     public abstract boolean isActiveModel();
 
+    /** Returns whether the model is done initializing itself and should be used. */
+    public abstract boolean isInitializationComplete();
+
     /** Broadcast a native-side notification that all tabs are now loaded from storage. */
-    @CallSuper
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
+        assert isInitializationComplete();
         TabModelJniBridgeJni.get()
                 .broadcastSessionRestoreComplete(mNativeTabModelJniBridge, TabModelJniBridge.this);
     }
@@ -184,28 +187,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     protected abstract Tab createNewTabForDevTools(GURL url, boolean newWindow);
-
-    /**
-     * Returns whether supplied {@link Tab} instance is in a tab group.
-     *
-     * <p>This is a legacy static implementation which will be replaced in the future by a
-     * non-static implementation once TabModel understands tab groups.
-     *
-     * @deprecated Use non-static version.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    @Deprecated
-    static boolean isTabInTabGroupLegacy(@NonNull Tab tab) {
-        final TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(tab);
-        if (filter == null) return false;
-
-        return filter.isTabInTabGroup(tab);
-    }
-
-    /** Returns whether supplied {@link Tab} instance is in a tab group. */
-    @CalledByNative
-    public abstract boolean isTabInTabGroup(@NonNull Tab tab);
 
     /**
      * Returns the count of non-custom tabs that have a {@link

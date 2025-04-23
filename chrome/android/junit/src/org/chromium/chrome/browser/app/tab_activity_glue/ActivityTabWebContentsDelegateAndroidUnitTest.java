@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -57,7 +59,10 @@ import java.util.Map;
         manifest = Config.NONE,
         shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
-@DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
+@DisableFeatures({
+    ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
+    ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN
+})
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Implements(WebContentsDarkModeController.class)
     static class ShadowWebContentsDarkModeController {
@@ -232,7 +237,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         Tab parentTab = mock(Tab.class);
         Tab newTab = mock(Tab.class);
         doReturn(Token.createRandom()).when(parentTab).getTabGroupId();
-        doReturn(true).when(mTabCreator).createTabWithWebContents(any(), any(), anyInt(), any());
+        doReturn(newTab)
+                .when(mTabCreator)
+                .createTabWithWebContents(any(), any(), anyInt(), any(), anyBoolean());
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(any());
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
@@ -248,6 +255,31 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 false);
         verify(mTabGroupModelFilter)
                 .mergeListOfTabsToGroup(Arrays.asList(newTab), parentTab, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testAddNewContentsAddToTabModelWhenPopupsNotEnabled() {
+        PopupCreator.setArePopupsEnabledForTesting(false);
+        WebContents newWebContents = mock(WebContents.class);
+        Tab newTab = mock(Tab.class);
+        doReturn(newTab)
+                .when(mTabCreator)
+                .createTabWithWebContents(any(), any(), anyInt(), any(), anyBoolean());
+
+        mTabWebContentsDelegateAndroid.webContentsCreated(
+                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
+        mTabWebContentsDelegateAndroid.addNewContents(
+                mWebContents,
+                newWebContents,
+                WindowOpenDisposition.NEW_POPUP,
+                new WindowFeatures(),
+                true);
+
+        verify(mTabCreator, times(1))
+                .createTabWithWebContents(any(), any(), anyInt(), any(), eq(true));
+        verify(mTabCreator, never())
+                .createTabWithWebContents(any(), any(), anyInt(), any(), eq(false));
     }
 
     @Test

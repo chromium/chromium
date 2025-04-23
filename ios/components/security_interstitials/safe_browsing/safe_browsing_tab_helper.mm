@@ -139,8 +139,6 @@ SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state,
 
 SafeBrowsingTabHelper::~SafeBrowsingTabHelper() = default;
 
-WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingTabHelper)
-
 void SafeBrowsingTabHelper::SetDelegate(
     id<SafeBrowsingTabHelperDelegate> delegate) {
   delegate_ = delegate;

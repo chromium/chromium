@@ -5,12 +5,14 @@
 #import <UIKit/UIKit.h>
 
 #import "base/allocator/partition_alloc_support.h"
+#import "base/apple/bundle_locations.h"
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/blink_buildflags.h"
 #import "components/component_updater/component_updater_paths.h"
 #import "components/crash/core/app/crashpad.h"
+#import "ios/chrome/app/ios_force_build_chrome_framework_buildflags.h"
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -26,9 +28,9 @@ extern "C" {
 #if BUILDFLAG(USE_BLINK)
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-NO_STACK_PROTECTOR __attribute__((visibility("default")))
+NO_STACK_PROTECTOR
 #endif
-int ChromeMain(int argc, char* argv[]);
+__attribute__((visibility("default"))) int ChromeMain(int argc, char* argv[]);
 }
 
 namespace {
@@ -126,6 +128,18 @@ int ChromeMain(int argc, char* argv[]) {
   // ContentMainRunnerImpl::Initialize calls this when USE_BLINK is true.
   base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish("");
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(USE_BLINK)
+
+#if BUILDFLAG(IOS_FORCE_BUILD_CHROME_FRAMEWORK)
+  // Overrides the framework bundle when building as a
+  // framework. This allows code to load resources from the correct
+  // location, rather than from the main bundle.
+  //
+  // This call would be correct when building without the framework,
+  // but since it is a no-op in that case, it is omitted to avoid
+  // increasing startup latency.
+  base::apple::SetOverrideFrameworkBundle(
+      [NSBundle bundleForClass:NSClassFromString(@"MainController")]);
+#endif
 
   return RunUIApplicationMain(argc, argv);
 }

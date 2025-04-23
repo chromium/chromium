@@ -12,7 +12,7 @@ build_webui("build") {
     "index.html",
   ]
 
-  non_web_component_files = [ "index.ts" ]
+  ts_files = [ "index.ts" ]
 
   mojo_files = [
     "$root_gen_dir/ui/webui/examples/browser/ui/web/browser.mojom-webui.ts",

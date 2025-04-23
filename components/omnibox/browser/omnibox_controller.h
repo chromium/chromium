@@ -93,8 +93,12 @@ class OmniboxController : public AutocompleteController::Observer {
                                 bool hidden) const;
 
  private:
-  // Stores the bitmap in the OmniboxPopupModel.
-  void SetRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
+  // Stores the bitmap, using `icon_url` as the key in
+  // `edit_model_->icon_bitmaps_` if provided, or `result_index` in
+  // `edit_model_->rich_suggestion_bitmaps_` otherwise.
+  void SetRichSuggestionBitmap(int result_index,
+                               const GURL& icon_url,
+                               const SkBitmap& bitmap);
 
   // Called when the prefs for the visibility of groups changes.
   void OnSuggestionGroupVisibilityPrefChanged();

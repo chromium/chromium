@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 'calc(media-progress(width, 0px, 100px) / 20)' as a specified value should serialize as 'calc(0.05 * media-progress(width, 0px, 100px))'.
-  assert_equals: 'calc(media-progress(width, 0px, 100px) / 20)' and 'calc(0.05 * media-progress(width, 0px, 100px))' should serialize the same in specified values. expected "calc(0.05 * media-progress(width, 0px, 100px))" but got "calc(media-progress(width, 0px, 100px) / 20)"
-[FAIL] 'scale(calc(media-progress(width, 0px, 100px) / 20))' as a specified value should serialize as 'scale(calc(0.05 * media-progress(width, 0px, 100px)))'.
-  assert_equals: 'scale(calc(media-progress(width, 0px, 100px) / 20))' and 'scale(calc(0.05 * media-progress(width, 0px, 100px)))' should serialize the same in specified values. expected "scale(calc(0.05 * media-progress(width, 0px, 100px)))" but got "scale(calc(media-progress(width, 0px, 100px) / 20))"
-Harness: the test ran to completion.
-

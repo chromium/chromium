@@ -12,8 +12,6 @@
 
 @class SceneState;
 
-using ProfileDeletedCallback = base::OnceCallback<void(bool)>;
-
 // App-level commands related to switching profiles.
 @protocol ChangeProfileCommands
 
@@ -35,12 +33,11 @@ using ProfileDeletedCallback = base::OnceCallback<void(bool)>;
              forScene:(SceneState*)sceneState
          continuation:(ChangeProfileContinuation)continuation;
 
-// Deletes the profile named `profileName` and invoke `completion` when the
-// profile is marked for deletion and unloaded (or as soon as the operation
-// fails in case of failure). Each scenes that are currently displaying
-// `profileName` will switch to the personal profile.
-- (void)deleteProfile:(std::string_view)profileName
-           completion:(ProfileDeletedCallback)completion;
+// Deletes the profile named `profileName` (the data may be deleted at
+// a later time and the profile itself will be unloaded asynchronously).
+// All the scenes currently connected to this profile will switch to the
+// personal profile (with an animation).
+- (void)deleteProfile:(std::string_view)profileName;
 
 @end
 

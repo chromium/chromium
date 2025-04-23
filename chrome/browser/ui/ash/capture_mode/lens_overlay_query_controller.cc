@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/base64url.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -15,13 +17,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "chrome/common/channel_info.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
@@ -205,6 +207,7 @@ LenOverlayEntryPointFromInvocationSource(
 }  // namespace
 
 LensOverlayQueryController::LensOverlayQueryController(
+    ApplicationLocaleStorage* application_locale_storage,
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
     LensOverlaySuggestInputsCallback suggest_inputs_callback,
@@ -217,6 +220,7 @@ LensOverlayQueryController::LensOverlayQueryController(
     : full_image_callback_(std::move(full_image_callback)),
       suggest_inputs_callback_(std::move(suggest_inputs_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       request_id_generator_(std::make_unique<LensOverlayRequestIdGenerator>()),
       url_callback_(std::move(url_callback)),
       variations_client_(variations_client),
@@ -224,6 +228,7 @@ LensOverlayQueryController::LensOverlayQueryController(
       profile_(profile),
       invocation_source_(invocation_source),
       use_dark_mode_(use_dark_mode) {
+  CHECK(profile_);
   encoding_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -312,9 +317,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
   }
 
   return std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/profile_
-          ? profile_->GetURLLoaderFactory().get()
-          : g_browser_process->shared_url_loader_factory(),
+      /*url_loader_factory=*/profile_->GetURLLoaderFactory().get(),
       /*url=*/fetch_url,
       /*content_type=*/kContentType,
       /*timeout=*/timeout,
@@ -1060,11 +1063,10 @@ LensOverlayQueryController::CreateClientContext() {
       lens::RENDERING_ENV_LENS_OVERLAY);
   context.mutable_client_filters()->add_filter()->set_filter_type(
       lens::AUTO_FILTER);
-  context.mutable_locale_context()->set_language(
-      g_browser_process->GetApplicationLocale());
-  context.mutable_locale_context()->set_region(
-      icu::Locale(g_browser_process->GetApplicationLocale().c_str())
-          .getCountry());
+  const std::string& app_locale = application_locale_storage_->Get();
+  const std::string& country = icu::Locale(app_locale.c_str()).getCountry();
+  context.mutable_locale_context()->set_language(app_locale);
+  context.mutable_locale_context()->set_region(country);
 
   // Add the appropriate context filters. If source and target languages have
   // been set, this should add translate.

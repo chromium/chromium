@@ -61,6 +61,7 @@ suite('A11yPage', () => {
 
   setup(function() {
     loadTimeData.overrideValues({
+      axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
       enableToastRefinements: true,
     });
@@ -96,6 +97,26 @@ suite('A11yPage', () => {
       languageHelper = a11yPage.languageHelper;
       return languageHelper.whenReady();
     });
+  });
+
+  test('test ax tree fixing toggle and pref', async () => {
+    assertTrue(loadTimeData.getBoolean('axTreeFixingEnabled'));
+
+    const toggle =
+        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#axTreeFixing');
+    assertTrue(!!toggle);
+    await flushTasks();
+
+    // The AX Tree Fixing pref is off by default, so the button should be
+    // toggled off.
+    assertFalse(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    assertTrue(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertTrue(toggle.checked);
   });
 
   // <if expr="is_win or is_linux or is_macosx">

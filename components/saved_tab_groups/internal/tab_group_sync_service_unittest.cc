@@ -1320,13 +1320,31 @@ TEST_F(TabGroupSyncServiceTest, MoveTab) {
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
   base::HistogramTester histogram_tester;
+  base::Time test_start_time = base::Time::Now();
+
+  // Advance the clock, so when a tab is selected, it will get a more
+  // recent time than `test_start_time`.
+  task_environment_.AdvanceClock(base::Seconds(5));
+
   // Add a new tab.
   auto local_tab_id_2 = test::GenerateRandomTabID();
   std::u16string tab_title_2 = u"random tab title";
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
                                   tab_title_2, GURL("www.google.com"),
                                   std::nullopt);
+
+  {
+    std::optional<SavedTabGroup> group =
+        tab_group_sync_service_->GetGroup(local_group_id_1_);
+    CHECK(group);
+
+    // Local Tab 2 should start with no last_seen time.
+    EXPECT_FALSE(group->GetTab(local_tab_id_2)
+                     ->last_seen_time_windows_epoch_micros()
+                     .has_value());
+  }
 
   EXPECT_CALL(*observer_,
               OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_2}))));
@@ -1336,6 +1354,17 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
       .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_2})));
   tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2,
                                          tab_title_2);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  CHECK(group);
+
+  // Local Tab 2 should get a last_seen time.
+  const SavedTabGroupTab* tab = group->GetTab(local_tab_id_2);
+  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
+  EXPECT_GT(tab->last_seen_time_windows_epoch_micros().value(),
+            test_start_time);
+
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
 }
@@ -1370,6 +1399,31 @@ TEST_F(TabGroupSyncServiceTest, RecordTabGroupEvent) {
   tab_group_sync_service_->RecordTabGroupEvent(event_details);
   histogram_tester.ExpectTotalCount("TabGroups.Sync.TabGroup.Opened.Reason",
                                     1u);
+}
+
+TEST_F(TabGroupSyncServiceTest, UpdateArchivalStatus) {
+  auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify the archive status is defaulted to off.
+  EXPECT_FALSE(group->archival_time().has_value());
+
+  // Expect the observers to be called each time the status is updated.
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(2);
+
+  // Set the archival status and verify.
+  tab_group_sync_service_->UpdateArchivalStatus(group_1_.saved_guid(), true);
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  WaitForPostedTasks();
+  EXPECT_TRUE(group->archival_time().has_value());
+
+  // Reset the archival status and verify.
+  tab_group_sync_service_->UpdateArchivalStatus(group_1_.saved_guid(), false);
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  WaitForPostedTasks();
+  EXPECT_FALSE(group->archival_time().has_value());
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
@@ -2034,6 +2088,39 @@ TEST_F(TabGroupSyncServiceTest, ShouldRunCallbackOnMakeTabGroupShared) {
   WaitForPostedTasks();
 }
 
+TEST_F(TabGroupSyncServiceTest,
+       MakeTabGroupShared_ShouldWaitForInitialMergeCompletion) {
+  ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
+
+  base::MockCallback<TabGroupSyncService::TabGroupSharingCallback>
+      mock_callback;
+
+  // Mimic the state where we receive a MakeTabGroupShared call while user
+  // hasn't completed sign-in.
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillRepeatedly(Return(""));
+  tab_group_sync_service_->MakeTabGroupShared(
+      local_group_id_1_, "collaboration", mock_callback.Get());
+  WaitForPostedTasks();
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
+
+  // Mimic initial merge completion.
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillRepeatedly(Return("some_gaia"));
+  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
+  WaitForPostedTasks();
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
+
+  // Simulate the group to be committed to the server, which will invoke the
+  // client callback.
+  EXPECT_CALL(mock_callback,
+              Run(TabGroupSyncService::TabGroupSharingResult::kSuccess));
+  model_->MarkTransitionedToShared(
+      model_->GetSharedTabGroupsOnly().front()->saved_guid());
+  WaitForPostedTasks();
+}
+
 TEST_F(TabGroupSyncServiceTest, ShouldIgnoreUpdatesWhileTransitioningToShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
@@ -2096,21 +2183,6 @@ TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
   ASSERT_TRUE(tab_group_sync_service_->GetGroup(local_group_id_1_).has_value());
   EXPECT_EQ(group_1_.saved_guid(),
             tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_guid());
-}
-
-TEST_F(TabGroupSyncServiceTest, ShouldNotWaitForCommittingWithoutCallback) {
-  ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
-  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
-
-  tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration",
-      TabGroupSyncService::TabGroupSharingCallback());
-  WaitForPostedTasks();
-  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
-
-  const SavedTabGroup* shared_group = model_->GetSharedTabGroupsOnly().front();
-  EXPECT_FALSE(shared_group->is_transitioning_to_shared());
-  EXPECT_TRUE(shared_group->local_group_id().has_value());
 }
 
 TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {

@@ -13,9 +13,11 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -42,6 +44,10 @@ const std::vector<content::IdentityRequestDialogDisclosureField>
 
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
+constexpr float kPerPageLoadClickthroughRate = 0.1;
+constexpr float kPerClientClickthroughRate = 0.2;
+constexpr float kPerImpressionClickthroughRate = 0.3;
+constexpr float kLikelyToSignin = 0.4;
 
 // Mock version of AccountSelectionView for injection during tests.
 class MockAccountSelectionView : public AccountSelectionView {
@@ -186,23 +192,83 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         /*accounts_displayed_callback=*/base::DoNothing());
   }
 
-  void InitMockSegmentationPlatformService(const std::string& result_label,
-                                           base::RunLoop& run_loop) {
+  segmentation_platform::MockSegmentationPlatformService*
+  CreateMockSegmentationPlatformService(const std::string& result_label,
+                                        base::RunLoop& run_loop) {
     segmentation_platform_service_ = std::make_unique<
         segmentation_platform::MockSegmentationPlatformService>();
     ON_CALL(*segmentation_platform_service_,
             GetClassificationResult(_, _, _, _))
-        .WillByDefault(testing::WithArg<3>(testing::Invoke(
-            [&run_loop, result_label](
+        .WillByDefault(testing::Invoke(
+            [&run_loop, result_label, this](
+                auto, auto,
+                scoped_refptr<segmentation_platform::InputContext>
+                    input_context,
                 segmentation_platform::ClassificationResultCallback callback) {
               segmentation_platform::ClassificationResult result(
                   segmentation_platform::PredictionStatus::kSucceeded);
               result.request_id = segmentation_platform::TrainingRequestId(1);
               result.ordered_labels = {result_label};
+              if (this->optimization_guide_decider_) {
+                ASSERT_EQ(
+                    segmentation_platform::processing::ProcessedValue(
+                        kPerPageLoadClickthroughRate),
+                    input_context->GetMetadataArgument(
+                        segmentation_platform::kPerPageLoadClickthroughRate));
+                ASSERT_EQ(
+                    segmentation_platform::processing::ProcessedValue(
+                        kPerClientClickthroughRate),
+                    input_context->GetMetadataArgument(
+                        segmentation_platform::kPerClientClickthroughRate));
+                ASSERT_EQ(
+                    segmentation_platform::processing::ProcessedValue(
+                        kPerImpressionClickthroughRate),
+                    input_context->GetMetadataArgument(
+                        segmentation_platform::kPerImpressionClickthroughRate));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              kLikelyToSignin),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::kLikelyToSignin));
+              }
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), result)
                                  .Then(run_loop.QuitClosure()));
-            })));
+            }));
+    return segmentation_platform_service_.get();
+  }
+
+  optimization_guide::MockOptimizationGuideDecider*
+  CreateMockOptimizationGuideDecider() {
+    optimization_guide_decider_ =
+        std::make_unique<optimization_guide::MockOptimizationGuideDecider>();
+    EXPECT_CALL(*optimization_guide_decider_,
+                RegisterOptimizationTypes(testing::ElementsAre(
+                    optimization_guide::proto::FEDCM_CLICKTHROUGH_RATE)))
+        .Times(1);
+    ON_CALL(*optimization_guide_decider_,
+            CanApplyOptimization(
+                _,
+                optimization_guide::proto::OptimizationType::
+                    FEDCM_CLICKTHROUGH_RATE,
+                testing::An<optimization_guide::OptimizationMetadata*>()))
+        .WillByDefault(
+            [](const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationMetadata* metadata)
+                -> optimization_guide::OptimizationGuideDecision {
+              *metadata = {};
+              webid::FedCmClickthroughRateMetadata fedcm_metadata;
+              fedcm_metadata.set_per_page_load_clickthrough_rate(
+                  kPerPageLoadClickthroughRate);
+              fedcm_metadata.set_per_client_clickthrough_rate(
+                  kPerClientClickthroughRate);
+              fedcm_metadata.set_per_impression_clickthrough_rate(
+                  kPerImpressionClickthroughRate);
+              fedcm_metadata.set_likely_to_signin(kLikelyToSignin);
+              metadata->SetAnyMetadataForTesting(fedcm_metadata);
+              return optimization_guide::OptimizationGuideDecision::kTrue;
+            });
+    return optimization_guide_decider_.get();
   }
 
  protected:
@@ -210,6 +276,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<segmentation_platform::MockSegmentationPlatformService>
       segmentation_platform_service_;
+  std::unique_ptr<optimization_guide::MockOptimizationGuideDecider>
+      optimization_guide_decider_;
 };
 
 TEST_F(IdentityDialogControllerTest, Accept) {
@@ -342,14 +410,13 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(
       segmentation_platform::features::kSegmentationPlatformFedCmUser);
-  IdentityDialogController controller(web_contents());
-
   // Mock the segmentation platform service to return "FedCmUserLoud" as the UI
   // volume recommendation.
   base::RunLoop run_loop;
-  InitMockSegmentationPlatformService("FedCmUserLoud", run_loop);
-  controller.SetSegmentationPlatformServiceForTesting(
-      segmentation_platform_service_.get());
+  IdentityDialogController controller(
+      web_contents(),
+      CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+      CreateMockOptimizationGuideDecider());
 
   // Show should be called.
   std::unique_ptr<MockAccountSelectionView> account_selection_view =
@@ -366,14 +433,13 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(
       segmentation_platform::features::kSegmentationPlatformFedCmUser);
-  IdentityDialogController controller(web_contents());
-
   // Mock the segmentation platform service to return "FedCmUserQuiet" as the UI
   // volume recommendation.
   base::RunLoop run_loop;
-  InitMockSegmentationPlatformService("FedCmUserQuiet", run_loop);
-  controller.SetSegmentationPlatformServiceForTesting(
-      segmentation_platform_service_.get());
+  IdentityDialogController controller(
+      web_contents(),
+      CreateMockSegmentationPlatformService("FedCmUserQuiet", run_loop),
+      CreateMockOptimizationGuideDecider());
 
   // Show should not be called.
   std::unique_ptr<MockAccountSelectionView> account_selection_view =
@@ -397,10 +463,6 @@ TEST_F(IdentityDialogControllerTest,
   list.InitAndEnableFeature(
       segmentation_platform::features::kSegmentationPlatformFedCmUser);
 
-  IdentityDialogController controller(web_contents());
-  controller.SetAccountSelectionViewForTesting(
-      std::make_unique<MockAccountSelectionView>());
-
   auto CheckForSampleAndReset([&](IdentityDialogController::UserAction action) {
     histogram_tester_->ExpectUniqueSample(
         "Blink.FedCm.SegmentationPlatform.UserAction", static_cast<int>(action),
@@ -411,12 +473,15 @@ TEST_F(IdentityDialogControllerTest,
   {
     // User proceeds with an account.
     base::RunLoop run_loop;
-    InitMockSegmentationPlatformService("FedCmUserLoud", run_loop);
+    IdentityDialogController controller(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+    controller.SetAccountSelectionViewForTesting(
+        std::make_unique<MockAccountSelectionView>());
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
-    controller.SetSegmentationPlatformServiceForTesting(
-        segmentation_platform_service_.get());
 
     ShowAccountsDialog(controller, blink::mojom::RpMode::kPassive);
     run_loop.Run();
@@ -430,12 +495,15 @@ TEST_F(IdentityDialogControllerTest,
   {
     // User clicks on close button.
     base::RunLoop run_loop;
-    InitMockSegmentationPlatformService("FedCmUserLoud", run_loop);
+    IdentityDialogController controller(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+    controller.SetAccountSelectionViewForTesting(
+        std::make_unique<MockAccountSelectionView>());
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
-    controller.SetSegmentationPlatformServiceForTesting(
-        segmentation_platform_service_.get());
 
     ShowAccountsDialog(controller, blink::mojom::RpMode::kPassive);
     run_loop.Run();
@@ -448,12 +516,15 @@ TEST_F(IdentityDialogControllerTest,
   {
     // User ignores the UI.
     base::RunLoop run_loop;
-    InitMockSegmentationPlatformService("FedCmUserLoud", run_loop);
+    IdentityDialogController controller(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+    controller.SetAccountSelectionViewForTesting(
+        std::make_unique<MockAccountSelectionView>());
     EXPECT_CALL(*segmentation_platform_service_,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
-    controller.SetSegmentationPlatformServiceForTesting(
-        segmentation_platform_service_.get());
 
     ShowAccountsDialog(controller, blink::mojom::RpMode::kPassive);
     run_loop.Run();

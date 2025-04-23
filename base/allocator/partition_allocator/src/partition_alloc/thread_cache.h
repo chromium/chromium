@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
-#include <optional>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
@@ -17,6 +16,7 @@
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/optional.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -29,7 +29,7 @@
 #include "partition_alloc/partition_tls.h"
 
 #if PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#include <algorithm>
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #endif
 
 namespace partition_alloc {
@@ -387,9 +387,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     ClearBucket(bucket, limit);
   }
 
-  internal::LightweightQuarantineBranch& GetSchedulerLoopQuarantineBranch() {
-    PA_DCHECK(scheduler_loop_quarantine_branch_.has_value());
-    return *scheduler_loop_quarantine_branch_;
+  internal::SchedulerLoopQuarantineBranch& GetSchedulerLoopQuarantineBranch() {
+    return scheduler_loop_quarantine_branch_;
   }
 
   // Returns true if the given address is in the thread cache's freelist.
@@ -468,8 +467,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
   ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
 
-  std::optional<internal::LightweightQuarantineBranch>
-      scheduler_loop_quarantine_branch_;
+  // Thread-Local version of `PartitionRoot::scheduler_loop_quarantine_branch_`.
+  internal::SchedulerLoopQuarantineBranch scheduler_loop_quarantine_branch_;
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;

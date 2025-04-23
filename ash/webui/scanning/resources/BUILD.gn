@@ -46,7 +46,7 @@ build_webui("build") {
     "source_select.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "mojo_interface_provider.ts",
     "scanning_app_types.ts",
     "scanning_app_util.ts",

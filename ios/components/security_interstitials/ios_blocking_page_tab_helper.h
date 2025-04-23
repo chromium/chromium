@@ -52,7 +52,6 @@ class IOSBlockingPageTabHelper
   void UpdateForBlockingPageDismissed();
 
  private:
-  WEB_STATE_USER_DATA_KEY_DECL();
   explicit IOSBlockingPageTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<IOSBlockingPageTabHelper>;
 

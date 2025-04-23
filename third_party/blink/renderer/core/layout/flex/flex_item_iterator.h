@@ -6,14 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_ITEM_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class BlockBreakToken;
-struct FlexItemData;
-struct FlexLine;
 
 // A utility class for flexbox layout which given a list of flex lines and a
 // break token will iterate through unfinished flex items.
@@ -31,7 +30,7 @@ class CORE_EXPORT FlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
+  FlexItemIterator(const FlexLineVector& flex_lines,
                    const BlockBreakToken* break_token,
                    bool is_column);
 
@@ -53,7 +52,7 @@ class CORE_EXPORT FlexItemIterator {
   void AdjustItemIndexForNewLine();
 
   FlexItemData* next_unstarted_item_ = nullptr;
-  const HeapVector<FlexLine>& flex_lines_;
+  const FlexLineVector& flex_lines_;
   const BlockBreakToken* break_token_;
   bool is_column_ = false;
 

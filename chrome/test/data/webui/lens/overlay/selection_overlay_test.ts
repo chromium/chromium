@@ -314,7 +314,6 @@ suite('SelectionOverlay', function() {
       assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
-
     test('verify that resizing renders image with padding', async () => {
       // Resize to be the same size as screenshot.
       selectionOverlayElement.style.display = 'block';
@@ -402,6 +401,145 @@ suite('SelectionOverlay', function() {
       await testBrowserProxy.handler.whenCalled('closePreselectionBubble');
       assertEquals(
           1, testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
+    });
+
+    test('context menu is left-aligned if it fits', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 100}, {x: 30, y: 2000});
+      await waitAfterNextRender(selectionOverlayElement);
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      selectionOverlayElement.style.width = '500px';
+      selectionOverlayElement.style.height = '500px';
+      await waitForScreenshotResize();
+
+      assertStringContains(
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('left'),
+          '%');
+      assertEquals(
+          '',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('right'));
+    });
+
+    test('context menu is right-aligned if needed', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 100}, {x: 30, y: 2000});
+      await waitAfterNextRender(selectionOverlayElement);
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      selectionOverlayElement.style.width = '150px';
+      selectionOverlayElement.style.height = '200px';
+      await waitForScreenshotResize();
+
+      assertEquals(
+          '',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('left'));
+      assertEquals(
+          '0px',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('right'));
+    });
+
+    test(
+        'context menu is constrained on left and right if needed', async () => {
+          await addEmptyText();
+
+          await simulateDrag(
+              selectionOverlayElement, {x: 50, y: 100}, {x: 30, y: 2000});
+          await waitAfterNextRender(selectionOverlayElement);
+          assertTrue(selectionOverlayElement
+                         .getShowSelectedRegionContextMenuForTesting());
+
+          selectionOverlayElement.style.width = '50px';
+          selectionOverlayElement.style.height = '50px';
+          await waitForScreenshotResize();
+
+          assertEquals(
+              '',
+              selectionOverlayElement.$.selectedRegionContextMenu.style
+                  .getPropertyValue('left'));
+          assertEquals(
+              '',
+              selectionOverlayElement.$.selectedRegionContextMenu.style
+                  .getPropertyValue('right'));
+        });
+
+    test('context menu is below region if it fits', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 100}, {x: 30, y: 300});
+      await waitAfterNextRender(selectionOverlayElement);
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      selectionOverlayElement.style.width = '500px';
+      selectionOverlayElement.style.height = '500px';
+      await waitForScreenshotResize();
+
+      assertStringContains(
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('top'),
+          '+');
+      assertEquals(
+          '',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('bottom'));
+    });
+
+    test('context menu is above region if needed', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 500}, {x: 30, y: 2000});
+      await waitAfterNextRender(selectionOverlayElement);
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      selectionOverlayElement.style.width = '500px';
+      selectionOverlayElement.style.height = '1250px';
+      await waitForScreenshotResize();
+
+      assertEquals(
+          '',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('top'));
+      assertStringContains(
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('bottom'),
+          '+');
+    });
+
+    test('context menu overlaps region if needed', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 10}, {x: 30, y: 2000});
+      await waitAfterNextRender(selectionOverlayElement);
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      selectionOverlayElement.style.width = '500px';
+      selectionOverlayElement.style.height = '1250px';
+      await waitForScreenshotResize();
+
+      assertEquals(
+          '',
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('top'));
+      assertStringContains(
+          selectionOverlayElement.$.selectedRegionContextMenu.style
+              .getPropertyValue('bottom'),
+          '-');
     });
   });
 

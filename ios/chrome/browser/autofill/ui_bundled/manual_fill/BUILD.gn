@@ -184,6 +184,7 @@ source_set("manual_fill_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",

@@ -30,12 +30,10 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
-#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <optional>
 #include <utility>
 
 #include "partition_alloc/address_pool_manager_types.h"
@@ -52,6 +50,8 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/optional.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -173,10 +173,15 @@ struct PartitionOptions {
   // TODO(https://crbug.com/371135823): Remove after the investigation.
   size_t backup_ref_ptr_extra_extras_size = 0;
 
-  EnableToggle scheduler_loop_quarantine = kDisabled;
-  size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
+  // Configuration for the global quarantine branch. Used when a thread local
+  // instance is not available.
+  internal::SchedulerLoopQuarantineConfig
+      scheduler_loop_quarantine_global_config;
+  // Configuration for the thread-local quarantine branch. Associated with
+  // each `ThreadCache` instance.
+  internal::SchedulerLoopQuarantineConfig
+      scheduler_loop_quarantine_thread_local_config;
 
-  EnableToggle zapping_by_free_flags = kDisabled;
   // As the name implies, this is not a security measure, as there is no
   // guarantee that memorys has been zeroed out when handed back to the
   // application, or when free() returns. This is intended to improve the
@@ -263,13 +268,9 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     size_t in_slot_metadata_size = 0;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
-    // Despite its name, `FreeFlags` for zapping is deleted and does not exist.
-    // This value is used for SchedulerLoopQuarantine.
-    // TODO(https://crbug.com/351974425): group this setting and quarantine
-    // setting in one place.
-    bool zapping_by_free_flags = false;
     bool eventually_zero_freed_memory = false;
-    bool scheduler_loop_quarantine = false;
+    internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_thread_local_config;
     bool fewer_memory_regions = false;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
@@ -389,11 +390,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
-  // NoDestructor because we don't need to dequarantine objects as the root
-  // associated with it is dying anyway.
-  std::optional<
-      internal::base::NoDestructor<internal::LightweightQuarantineBranch>>
-      scheduler_loop_quarantine;
+  internal::SchedulerLoopQuarantineBranch scheduler_loop_quarantine;
 
   static constexpr internal::base::TimeDelta kMaxPurgeDuration =
       internal::base::Milliseconds(2);
@@ -899,17 +896,17 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return straighten_larger_slot_span_free_lists_;
   }
 
-  internal::LightweightQuarantineBranch&
+  internal::SchedulerLoopQuarantineBranch&
   GetSchedulerLoopQuarantineBranchForTesting() {
     return GetSchedulerLoopQuarantineBranch();
   }
 
-  void SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
-      size_t capacity_in_bytes) {
+  void ReconfigureSchedulerLoopQuarantineForCurrentThread(
+      const internal::SchedulerLoopQuarantineConfig& config) {
     ThreadCache* thread_cache = this->EnsureThreadCache();
     PA_CHECK(ThreadCache::IsValid(thread_cache));
-    thread_cache->GetSchedulerLoopQuarantineBranch().SetCapacityInBytes(
-        capacity_in_bytes);
+    thread_cache->GetSchedulerLoopQuarantineBranch().Configure(
+        scheduler_loop_quarantine_root, config);
   }
 
   const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
@@ -1064,7 +1061,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Must NOT be used inside (de)allocation code path.
   PA_ALWAYS_INLINE ThreadCache* EnsureThreadCache();
 
-  PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
+  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
   PA_ALWAYS_INLINE internal::LightweightQuarantineRoot&
   GetSchedulerLoopQuarantineRoot();
@@ -1096,6 +1093,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   friend class internal::InSlotMetadata;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  friend class internal::SchedulerLoopQuarantineBranch;
 };
 
 namespace internal {
@@ -1265,6 +1263,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
 
   // Iterating over the entire slot can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#if !PA_BUILDFLAG(IS_IOS)
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
   // If we have a hook the object segment is not necessarily filled
   // with |kQuarantinedByte|.
@@ -1275,6 +1274,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
       PA_DCHECK(object[i] == kQuarantinedByte);
     }
   }
+#endif  //  !PA_BUILDFLAG(IS_IOS)
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize());
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
@@ -1538,35 +1538,19 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // cacheline ping-pong.
   PA_PREFETCH(slot_span);
 
-  // TODO(crbug.com/40287058): Collecting objects for
-  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
-  // refcount, cookie, etc.)
-  // For better debuggability, we should do these checks before quarantining.
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-    // No need to zap direct mapped allocations, as they are unmapped right
-    // away. This also ensures that we don't needlessly memset() very large
-    // allocations.
-    if (settings.zapping_by_free_flags &&
-        !IsDirectMappedBucket(slot_span->bucket)) {
-      internal::SecureMemset(object, internal::kFreedByte,
-                             GetSlotUsableSize(slot_span));
-    }
-
-    if (settings.scheduler_loop_quarantine) {
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      // TODO(keishi): Add `[[likely]]` when brp is fully enabled as
-      // `brp_enabled` will be false only for the aligned partition.
-      if (brp_enabled()) {
-        auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-            slot_start.untagged_slot_start_, slot_span->bucket->slot_size);
-        ref_count->PreReleaseFromAllocator();
-      }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      GetSchedulerLoopQuarantineBranch().Quarantine(
+    ThreadCache* thread_cache = GetThreadCache();
+    if (ThreadCache::IsValid(thread_cache)) [[likely]] {
+      thread_cache->GetSchedulerLoopQuarantineBranch()
+          .QuarantineWithoutAcquiringLock(object, slot_span,
+                                          slot_start.untagged_slot_start_,
+                                          GetSlotUsableSize(slot_span));
+    } else {
+      scheduler_loop_quarantine.QuarantineWithAcquiringLock(
           object, slot_span, slot_start.untagged_slot_start_,
           GetSlotUsableSize(slot_span));
-      return;
     }
+    return;
   }
 
   FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start_);
@@ -2632,13 +2616,13 @@ ThreadCache* PartitionRoot::EnsureThreadCache() {
 }
 
 // private.
-internal::LightweightQuarantineBranch&
+internal::SchedulerLoopQuarantineBranch&
 PartitionRoot::GetSchedulerLoopQuarantineBranch() {
   ThreadCache* thread_cache = GetThreadCache();
   if (ThreadCache::IsValid(thread_cache)) [[likely]] {
     return thread_cache->GetSchedulerLoopQuarantineBranch();
   } else {
-    return **scheduler_loop_quarantine;
+    return scheduler_loop_quarantine;
   }
 }
 

@@ -608,6 +608,20 @@ need to be translated for each locale.-->
         Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in descending order.
       </message>
 
+      <!-- TableView header sort state accessible strings -->
+      <message name="IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME" desc="The text to be announced when specified column becomes unsorted.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> unsorted
+      </message>
+      <message name="IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME_MAC" desc="The text to be announced when specified column becomes unsorted.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph>
+      </message>
+      <message name="IDS_APP_TABLE_HEADER_SORTED_ASC_ACCNAME" desc="The text to be announced when specified column is sorted in ascending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in ascending order
+      </message>
+      <message name="IDS_APP_TABLE_HEADER_SORTED_DESC_ACCNAME" desc="The text to be announced when specified column is sorted in descending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in descending order
+      </message>
+
       <!-- Textfield context menu item labels. -->
       <message name="IDS_APP_UNDO" desc="The text label of the Undo menu item">
         &amp;Undo
@@ -668,6 +682,9 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_APP_CONTINUE" desc="A generic term for Continue on buttons.">
         Continue
+      </message>
+      <message name="IDS_APP_TURN_ON" desc="A generic term for Turn on buttons.">
+        Turn on
       </message>
 
       <!-- Key names -->

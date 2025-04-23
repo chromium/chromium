@@ -12,6 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -87,16 +89,17 @@ TEST(BitReaderTest, VariableSkipBitsTest) {
   // number of bits to skip. The number of bits to read was arbitrarily chosen
   // while the number of bits to skip was chosen so as to cover from small skips
   // to large skips.
-  const size_t pattern_read_skip[][2] = {
-    {  5,  17 },
-    {  4,  34 },
-    {  0,  44 },
-    {  3,   4 },   // Note: aligned read.
-    {  7,   7 },   // Note: both read&skip cross byte boundary.
-    { 17,  68 },
-    {  7, 102 },
-    {  9, 204 },
-    {  3, 408 } };
+  const auto pattern_read_skip = std::to_array<std::array<const size_t, 2>>({
+      {5, 17},
+      {4, 34},
+      {0, 44},
+      {3, 4},  // Note: aligned read.
+      {7, 7},  // Note: both read&skip cross byte boundary.
+      {17, 68},
+      {7, 102},
+      {9, 204},
+      {3, 408},
+  });
 
   // Set bits to one only for the first and last bit of each read
   // in the pattern.

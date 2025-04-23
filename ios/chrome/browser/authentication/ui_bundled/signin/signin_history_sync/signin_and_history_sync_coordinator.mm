@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
@@ -53,7 +55,7 @@ enum class SignInHistorySyncStep {
 
 @implementation SignInAndHistorySyncCoordinator {
   // Sign-in or history sync coordinator, according to `_currentStep`.
-  ChromeCoordinator<InterruptibleChromeCoordinator>* _childCoordinator;
+  ChromeCoordinator* _childCoordinator;
   // The current step.
   SignInHistorySyncStep _currentStep;
   // Promo button used to trigger the sign-in.
@@ -64,19 +66,26 @@ enum class SignInHistorySyncStep {
   BOOL _optionalHistorySync;
   // Whether the promo should be displayed in a fullscreen modal.
   BOOL _fullscreenPromo;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
-               fullscreenPromo:(BOOL)fullscreenPromo {
+               fullscreenPromo:(BOOL)fullscreenPromo
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     _optionalHistorySync = optionalHistorySync;
     _fullscreenPromo = fullscreenPromo;
     _promoAction = promoAction;
@@ -89,6 +98,8 @@ enum class SignInHistorySyncStep {
   DCHECK(!_childCoordinator) << base::SysNSStringToUTF8([self description]);
 }
 
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [super start];
   _authenticationService =
@@ -97,25 +108,32 @@ enum class SignInHistorySyncStep {
   [self presentNextStepWithPreviousResult:SigninCoordinatorResultSuccess];
 }
 
-- (void)stop {
-  if (_currentStep != SignInHistorySyncStep::kCompleted) {
-    [self interruptAnimated:NO];
-  }
+#pragma mark - StopAnimatedChromeCoordinator
 
+- (void)stopAnimated:(BOOL)animated {
+  if ([_childCoordinator
+          conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
+    ChromeCoordinator<InterruptibleChromeCoordinator>* interruptibleChild =
+        base::apple::ObjCCastStrict<
+            ChromeCoordinator<InterruptibleChromeCoordinator>>(
+            _childCoordinator);
+    // Interrupt `_childCoordinator` which will trigger the end of this
+    // coordinator. Its callback will triggered.
+    [interruptibleChild interruptAnimated:animated];
+  } else {
+    CHECK(!_childCoordinator ||
+              [_childCoordinator
+                  conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)],
+          base::NotFatalUntil::M145);
+    ChromeCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedChild =
+        base::apple::ObjCCast<ChromeCoordinator<StopAnimatedChromeCoordinator>>(
+            _childCoordinator);
+    [stopAnimatedChild stopAnimated:animated];
+    _childCoordinator = nil;
+  }
   _syncService = nullptr;
   _authenticationService = nullptr;
-  [super stop];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  // TODO(crbug.com/40929259): Turn into CHECK.
-  DUMP_WILL_BE_CHECK(_childCoordinator)
-      << base::SysNSStringToUTF8([self description]);
-  // Interrupt `_childCoordinator` which will trigger the end of this
-  // coordinator. Its callback will triggered.
-  [_childCoordinator interruptAnimated:animated];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate
@@ -181,15 +199,19 @@ enum class SignInHistorySyncStep {
 }
 
 // Creates the current step coordinator according to `_currentStep`.
-- (ChromeCoordinator<InterruptibleChromeCoordinator>*)
-    createPresentStepChildCoordinator {
+- (ChromeCoordinator*)createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
-      SigninCoordinator* coordinator = [[FullscreenSigninCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                      screenProvider:[[SigninScreenProvider alloc] init]
-                         accessPoint:self.accessPoint];
+      // TODO(crbug.com/375605572) Sends an actual continuation.
+      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
+          [[FullscreenSigninCoordinator alloc]
+                     initWithBaseViewController:self.baseViewController
+                                        browser:self.browser
+                                 screenProvider:[[SigninScreenProvider alloc]
+                                                    init]
+                                   contextStyle:self.contextStyle
+                                    accessPoint:self.accessPoint
+              changeProfileContinuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -198,11 +220,14 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kBottomSheetSignin: {
-      SigninCoordinator* coordinator =
+      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
           [[ConsistencyPromoSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
-                             accessPoint:self.accessPoint];
+                            contextStyle:self.contextStyle
+                             accessPoint:self.accessPoint
+                    prepareChangeProfile:nil
+                    continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -211,12 +236,16 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kInstantSignin: {
-      SigninCoordinator* coordinator = [[InstantSigninCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                            identity:nil
-                         accessPoint:self.accessPoint
-                         promoAction:_promoAction];
+      // TODO(crbug.com/375605572) Sends an actual continuation.
+      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
+          [[InstantSigninCoordinator alloc]
+              initWithBaseViewController:self.baseViewController
+                                 browser:self.browser
+                                identity:nil
+                            contextStyle:self.contextStyle
+                             accessPoint:self.accessPoint
+                             promoAction:_promoAction
+                    continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -240,6 +269,7 @@ enum class SignInHistorySyncStep {
                              showUserEmail:NO
                          signOutIfDeclined:NO
                                 isOptional:_optionalHistorySync
+                              contextStyle:self.contextStyle
                                accessPoint:self.accessPoint];
         coordinator.delegate = self;
         return coordinator;

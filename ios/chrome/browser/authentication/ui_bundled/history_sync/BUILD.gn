@@ -33,6 +33,7 @@ source_set("history_sync") {
     "//ios/chrome/browser/authentication/ui_bundled/history_sync/resources",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:stop_animated_chrome_coordinator",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

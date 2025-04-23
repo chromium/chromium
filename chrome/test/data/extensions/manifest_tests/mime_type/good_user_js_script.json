@@ -1,0 +1,11 @@
+{
+  "name": "user.js content script",
+  "manifest_version": 3,
+  "version": "1",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["files/good.user.js"]
+    }
+  ]
+}

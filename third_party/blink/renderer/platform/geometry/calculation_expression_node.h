@@ -28,6 +28,9 @@ enum class CalculationOperator {
   kRoundToZero,
   kMod,
   kRem,
+  kLog,
+  kExp,
+  kSqrt,
   kHypot,
   kAbs,
   kSign,
@@ -36,6 +39,13 @@ enum class CalculationOperator {
   kCalcSize,
   kMediaProgress,
   kPow,
+  kSin,
+  kCos,
+  kTan,
+  kAsin,
+  kAcos,
+  kAtan,
+  kAtan2,
   kInvalid
 };
 

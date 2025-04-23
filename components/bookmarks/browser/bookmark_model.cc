@@ -181,8 +181,8 @@ BookmarkModel::~BookmarkModel() {
   // be reset before the observer list.
   client_.reset();
 
-  // Set raw_ptr values to null to avoid danling pointer detection when UrlIndex
-  // is destroyed.
+  // Set raw_ptr values to null to avoid dangling pointer detection when
+  // UrlIndex is destroyed.
   account_bookmark_bar_node_ = nullptr;
   account_other_node_ = nullptr;
   account_mobile_node_ = nullptr;
@@ -224,21 +224,21 @@ scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
   return model_loader_;
 }
 
-const BookmarkNode* BookmarkModel::account_bookmark_bar_node() const {
+const BookmarkPermanentNode* BookmarkModel::account_bookmark_bar_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
   CHECK(!account_bookmark_bar_node_ || AreFoldersForAccountStorageAllowed());
   return account_bookmark_bar_node_;
 }
 
-const BookmarkNode* BookmarkModel::account_other_node() const {
+const BookmarkPermanentNode* BookmarkModel::account_other_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
   CHECK(!account_other_node_ || AreFoldersForAccountStorageAllowed());
   return account_other_node_;
 }
 
-const BookmarkNode* BookmarkModel::account_mobile_node() const {
+const BookmarkPermanentNode* BookmarkModel::account_mobile_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
   CHECK(!account_mobile_node_ || AreFoldersForAccountStorageAllowed());

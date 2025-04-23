@@ -20,10 +20,11 @@ import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_l
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
+import {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
-import type {PowerBookmarksService} from './power_bookmarks_service.js';
+import {PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
 export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
@@ -66,41 +67,50 @@ export class PowerBookmarkRowElement extends CrLitElement {
       rowAriaDescription: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
-      bookmarksService: {type: Object},
-      keyArrowNavigationService: {type: Object},
       toggleExpand: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
     };
   }
 
-  bookmark: chrome.bookmarks.BookmarkTreeNode = {id: '', title: ''};
-  compact: boolean = false;
-  contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
-  bookmarksTreeViewEnabled: boolean =
+  accessor bookmark: BookmarksTreeNode = {
+    id: '',
+    parentId: '',
+    index: 0,
+    title: '',
+    url: null,
+    dateAdded: null,
+    dateLastUsed: null,
+    unmodifiable: false,
+    children: null,
+  };
+  accessor compact: boolean = false;
+  accessor contextMenuBookmark: BookmarksTreeNode|undefined;
+  accessor bookmarksTreeViewEnabled: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
-  depth: number = 0;
-  hasCheckbox: boolean = false;
-  selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[];
-  renamingId: string = '';
-  searchQuery: string|undefined;
-  shoppingCollectionFolderId: string = '';
-  rowAriaDescription: string = '';
-  trailingIconTooltip: string = '';
-  toggleExpand: boolean = false;
-  imageUrls: {[key: string]: string} = {};
-  updatedElementIds: string[] = [];
-  isPriceTracked: boolean = false;
-  canDrag: boolean = true;
+  accessor depth: number = 0;
+  accessor hasCheckbox: boolean = false;
+  accessor selectedBookmarks: BookmarksTreeNode[] = [];
+  accessor renamingId: string = '';
+  accessor searchQuery: string|undefined;
+  accessor shoppingCollectionFolderId: string = '';
+  accessor rowAriaDescription: string = '';
+  accessor trailingIconTooltip: string = '';
+  accessor toggleExpand: boolean = false;
+  accessor imageUrls: {[key: string]: string} = {};
+  accessor updatedElementIds: string[] = [];
+  accessor isPriceTracked: boolean = false;
+  accessor canDrag: boolean = true;
 
-  listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+  accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
-  // TODO(crbug.com/385159984) Update services to not be passed in as parameters
-  bookmarksService: PowerBookmarksService;
+  private bookmarksService_: PowerBookmarksService =
+      PowerBookmarksService.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
-  keyArrowNavigationService: KeyArrowNavigationService;
+  private keyArrowNavigationService_: KeyArrowNavigationService =
+      KeyArrowNavigationService.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,6 +135,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
   override disconnectedCallback() {
     this.shoppingListenerIds_.forEach(
         id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  protected getUrl_(): string|undefined {
+    return this.bookmark.url || undefined;
   }
 
   private handleBookmarkSubscriptionChange_(
@@ -209,7 +223,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  getBookmarkDescriptionForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+  getBookmarkDescriptionForTests(bookmark: BookmarksTreeNode) {
     return this.getBookmarkDescription_(bookmark);
   }
 
@@ -262,7 +276,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // child elements need to be visible and present in the dom in order to be
     // seen by the parent list element and therefore remove them.
     if (!this.toggleExpand) {
-      this.keyArrowNavigationService.removeElementsWithin(this);
+      this.keyArrowNavigationService_.removeElementsWithin(this);
     }
 
     this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
@@ -297,7 +311,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // the folder.
     if (this.shouldExpand_() && !this.hasCheckbox) {
       // If clicking on a row that's a folder in compact view, move focus to it.
-      this.keyArrowNavigationService.setCurrentFocusIndex(this);
+      this.keyArrowNavigationService_.setCurrentFocusIndex(this);
       return;
     }
     event.preventDefault();
@@ -413,7 +427,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   private isPriceTracked_(): boolean {
-    return !!this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+    return !!this.bookmarksService_.getPriceTrackedInfo(this.bookmark);
   }
 
   /**
@@ -421,17 +435,16 @@ export class PowerBookmarkRowElement extends CrLitElement {
    */
   protected showDiscountedPrice_(): boolean {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(this.bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.previousPrice.length > 0;
     }
     return false;
   }
 
-  protected getCurrentPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  protected getCurrentPrice_(bookmark: BookmarksTreeNode): string {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.currentPrice;
     } else {
@@ -439,10 +452,9 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  protected getPreviousPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  protected getPreviousPrice_(bookmark: BookmarksTreeNode): string {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.previousPrice;
     } else {
@@ -454,7 +466,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return this.bookmark === this.contextMenuBookmark;
   }
 
-  protected shouldExpand_(): boolean|undefined {
+  protected shouldExpand_(): boolean|null {
     return this.bookmark?.children && this.bookmarksTreeViewEnabled &&
         this.compact;
   }
@@ -469,8 +481,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return this.bookmark?.id === this.shoppingCollectionFolderId;
   }
 
-  protected getBookmarkDescription_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode): string|undefined {
+  protected getBookmarkDescription_(bookmark: BookmarksTreeNode): string
+      |undefined {
     if (this.compact) {
       if (bookmark?.url) {
         return undefined;
@@ -489,7 +501,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       }
       if (urlString && this.searchQuery && bookmark?.parentId) {
         const parentFolder =
-            this.bookmarksService.findBookmarkWithId(bookmark?.parentId);
+            this.bookmarksService_.findBookmarkWithId(bookmark?.parentId);
         const folderLabel = getFolderLabel(parentFolder);
         return loadTimeData.getStringF(
             'urlFolderDescription', urlString, folderLabel);
@@ -550,7 +562,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected getBookmarkA11yDescription_(): string {
     const bookmark = this.bookmark;
     let description = '';
-    if (this.bookmarksService?.getPriceTrackedInfo(bookmark)) {
+    if (this.bookmarksService_.getPriceTrackedInfo(bookmark)) {
       description += loadTimeData.getStringF(
           'a11yDescriptionPriceTracking', this.getCurrentPrice_(bookmark));
       const previousPrice = this.getPreviousPrice_(bookmark);
@@ -568,7 +580,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // tracked, return the current price which will be added to the description
     // meta section.
     const productInfo =
-        this.bookmarksService?.getAvailableProductInfo(this.bookmark);
+        this.bookmarksService_.getAvailableProductInfo(this.bookmark);
     if (productInfo && productInfo.info.currentPrice &&
         !this.isPriceTracked_()) {
       return productInfo.info.currentPrice;

@@ -35,10 +35,18 @@ class ExtensionTestNotificationObserver {
   ExtensionTestNotificationObserver& operator=(
       const ExtensionTestNotificationObserver&) = delete;
 
-  ~ExtensionTestNotificationObserver();
+  virtual ~ExtensionTestNotificationObserver();
 
   // Waits for all extension views to load.
   bool WaitForExtensionViewsToLoad();
+
+  // Waits for the extension associated with the given `extension_id` to be
+  // idle.
+  bool WaitForExtensionIdle(const ExtensionId& extension_id);
+
+  // Waits for the extension associated with the given `extension_id` to not
+  // be considered idle.
+  bool WaitForExtensionNotIdle(const ExtensionId& extension_id);
 
  protected:
   class NotificationSet : public extensions::ProcessManagerObserver {

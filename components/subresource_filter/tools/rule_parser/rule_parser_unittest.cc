@@ -60,7 +60,9 @@ TEST(RuleParserTest, ParseComment) {
   RuleParser parser;
 
   static const char* kLines[] = {
-      "! this is a comment", "   ! this is a comment too", "[ and this",
+      "! this is a comment",
+      "   ! this is a comment too",
+      "[ and this",
       "    [ as well as this",
   };
 
@@ -85,7 +87,8 @@ TEST(RuleParserTest, UrlRuleMatchCase) {
     const char* line;
     bool expected_match_case;
   } kTestCases[] = {
-      {"example.com$image", false}, {"example.com$image,match-case", true},
+      {"example.com$image", false},
+      {"example.com$image,match-case", true},
   };
   RuleParser parser;
   for (const auto& test_case : kTestCases) {
@@ -160,7 +163,8 @@ TEST(RuleParserTest, ParseMultipleTypeOptions) {
 
 TEST(RuleParserTest, ParseContradictingTypeOptions) {
   static const char* kLines[2] = {
-      "?param=$image,~image", "?param=$popup,image,~image",
+      "?param=$image,~image",
+      "?param=$popup,image,~image",
   };
 
   for (size_t i = 0; i < 2; ++i) {
@@ -212,8 +216,10 @@ TEST(RuleParserTest, ParseUrlRuleAnchors) {
     expected_rule.anchor_left = left_anchor.type;
 
     for (const auto& right_anchor : kAnchors) {
-      if (right_anchor.type == url_pattern_index::proto::ANCHOR_TYPE_SUBDOMAIN)
+      if (right_anchor.type ==
+          url_pattern_index::proto::ANCHOR_TYPE_SUBDOMAIN) {
         continue;
+      }
       expected_rule.anchor_right = right_anchor.type;
       std::string line = left_anchor.literal + kLine + right_anchor.literal;
       if (left_anchor.type != url_pattern_index::proto::ANCHOR_TYPE_NONE ||

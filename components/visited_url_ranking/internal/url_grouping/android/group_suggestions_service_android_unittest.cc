@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
@@ -70,11 +71,14 @@ class GroupSuggestionsServiceAndroidTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    auto* registry = pref_service_.registry();
+    GroupSuggestionsServiceImpl::RegisterProfilePrefs(registry);
     tab_events_visit_transformer_ =
         std::make_unique<TabEventsVisitTransformer>();
     mock_ranking_service_ = std::make_unique<MockVisitedURLRankingService>();
     group_suggestions_service_ = std::make_unique<GroupSuggestionsServiceImpl>(
-        mock_ranking_service_.get(), tab_events_visit_transformer_.get());
+        mock_ranking_service_.get(), tab_events_visit_transformer_.get(),
+        &pref_service_);
     group_suggestions_service_android_ =
         std::make_unique<GroupSuggestionsServiceAndroid>(
             group_suggestions_service_.get());
@@ -88,7 +92,9 @@ class GroupSuggestionsServiceAndroidTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TabEventsVisitTransformer> tab_events_visit_transformer_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;
   std::unique_ptr<GroupSuggestionsServiceImpl> group_suggestions_service_;

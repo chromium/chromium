@@ -1121,6 +1121,10 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
   NOTREACHED();
 }
 
+std::ostream& operator<<(std::ostream& out, DataType data_type) {
+  return out << DataTypeToDebugString(data_type);
+}
+
 std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set) {
   return out << DataTypeSetToDebugString(data_type_set);
 }

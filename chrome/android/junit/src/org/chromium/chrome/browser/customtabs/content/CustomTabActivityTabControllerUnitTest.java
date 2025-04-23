@@ -56,7 +56,7 @@ import org.chromium.net.NetId;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-@Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
+@Features.EnableFeatures({ChromeFeatureList.CCT_PREWARM_TAB, ChromeFeatureList.CCT_EARLY_NAV})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -342,5 +342,21 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
         verify(handler).setTabObserverRegistrar(env.tabObserverRegistrar);
+    }
+
+    @Test
+    public void usesTabFromIntent_IfAvailable() {
+        Tab tab = env.prepareTransferredTab();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(tab, env.tabProvider.getTab());
+    }
+
+    @Test
+    public void doesNotUseTabFromIntent_IfNotInAsyncParamsManager() {
+        Tab tab = env.prepareTransferredTab();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(tab, env.tabProvider.getTab());
     }
 }

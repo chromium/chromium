@@ -1,4 +1,6 @@
 include_rules = [
+  "+ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h",
   "+ios/chrome/browser/crash_report/model/crash_helper.h",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
@@ -22,6 +24,7 @@ include_rules = [
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h",
   "+ios/chrome/browser/screen/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled/elements",
+  "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
 ]
 
 specific_include_rules = {
@@ -35,4 +38,7 @@ specific_include_rules = {
   "default_browser_screen_coordinator\.mm": [
     "+ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
   ],
+  "first_run_coordinator\.mm":[
+    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
+  ]
 }

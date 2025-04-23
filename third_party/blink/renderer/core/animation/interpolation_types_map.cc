@@ -273,7 +273,11 @@ const InterpolationTypes& InterpolationTypesMap::Get(
             std::make_unique<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
             std::make_unique<CSSRayInterpolationType>(property));
-        [[fallthrough]];
+        applicable_types->push_back(
+            std::make_unique<CSSPathInterpolationType>(property));
+        applicable_types->push_back(
+            std::make_unique<CSSShapeInterpolationType>(property));
+        break;
       case CSSPropertyID::kD:
         applicable_types->push_back(
             std::make_unique<CSSPathInterpolationType>(property));

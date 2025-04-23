@@ -115,12 +115,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   GUID decoder_guid =
       GetD3D11DecoderGUID(config.profile(), bit_depth, chroma_sampling, device);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
-  // it is defined by Intel or DXVA spec(as part of Windows SDK).
-  if (decoder_guid == DXVA_ModeHEVC_VLD_Main422_10_Intel ||
-      decoder_guid == DXVA_ModeHEVC_VLD_Main10_422) {
-    decoder_dxgi_format = DXGI_FORMAT_Y210;
-  } else if (decoder_guid == DXVA_ModeHEVC_VLD_Main12) {
+  if (decoder_guid == DXVA_ModeHEVC_VLD_Main12) {
     constexpr UINT kNVIDIADeviceId = 0x10DE;
     ComDXGIDevice dxgi_device;
     if (SUCCEEDED(device.As(&dxgi_device)) &&

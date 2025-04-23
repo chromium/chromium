@@ -627,7 +627,7 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
   return CreateErrorResponseValue(std::move(error));
 }
 
-ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
+ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArgumentsDoNotUse(
     base::Value::List args,
     const std::string& error) {
   return CreateErrorWithArgumentsResponse(std::move(args), error);

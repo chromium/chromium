@@ -5,16 +5,20 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import android.content.Context;
+import android.util.Pair;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Default {@link TabModelSelectorFactory} for Chrome. */
@@ -22,7 +26,7 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     // Do not inline since this uses some APIs only available on Android N versions, which cause
     // verification errors.
     @Override
-    public TabModelSelector buildSelector(
+    public TabModelSelector buildTabbedSelector(
             Context context,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
@@ -40,5 +44,13 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
                 true,
                 ActivityType.TABBED,
                 false);
+    }
+
+    @Override
+    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+            @WindowId int windowId, Profile profile) {
+        HeadlessTabModelOrchestrator orchestrator =
+                new HeadlessTabModelOrchestrator(windowId, profile);
+        return Pair.create(orchestrator.getTabModelSelector(), orchestrator);
     }
 }

@@ -634,33 +634,39 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
 }
 
 void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
-    const BookmarkNode* bb_node,
-    BookmarkEditorView::EditorNode* b_node,
-    BookmarkEditorView::EditorNode* parent_b_node,
-    const BookmarkNode** parent_bb_node) {
-  if (parent_b_node == b_node) {
-    *parent_bb_node = bb_node;
+    const BookmarkNode* target_node,
+    BookmarkEditorView::EditorNode* source_node,
+    BookmarkEditorView::EditorNode* parent_source_node,
+    const BookmarkNode** parent_target_node) {
+  if (parent_source_node == source_node) {
+    *parent_target_node = target_node;
   }
-  for (const auto& child_b_node : b_node->children()) {
-    const BookmarkNode* child_bb_node = nullptr;
-    if (child_b_node->value.type == EditorNodeData::Type::kFolder) {
-      if (child_b_node->value.bookmark_node_id == 0) {
+  for (const auto& child_source_node : source_node->children()) {
+    const BookmarkNode* child_target_node = nullptr;
+    if (child_source_node->value.type == EditorNodeData::Type::kFolder) {
+      if (child_source_node->value.bookmark_node_id == 0) {
         // New folder.
-        child_bb_node = bb_model_->AddFolder(
-            bb_node, bb_node->children().size(), child_b_node->GetTitle());
-        child_b_node->value.bookmark_node_id = child_bb_node->id();
+        child_target_node =
+            bb_model_->AddFolder(target_node, target_node->children().size(),
+                                 child_source_node->GetTitle());
+        child_source_node->value.bookmark_node_id = child_target_node->id();
       } else {
         // Existing node, reset the title (BookmarkModel ignores changes if the
         // title is the same).
-        child_bb_node = bookmarks::GetBookmarkNodeByID(
-            bb_model_, child_b_node->value.bookmark_node_id);
-        CHECK(child_bb_node);
-        bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle(),
+        auto i = std::ranges::find_if(
+            target_node->children(), [&child_source_node](const auto& node) {
+              return node->is_folder() &&
+                     node->id() == child_source_node->value.bookmark_node_id;
+            });
+        CHECK(i != target_node->children().cend());
+        child_target_node = i->get();
+        bb_model_->SetTitle(child_target_node, child_source_node->GetTitle(),
                             bookmarks::metrics::BookmarkEditSource::kUser);
       }
     }
-    ApplyNameChangesAndCreateNewFolders(child_bb_node, child_b_node.get(),
-                                        parent_b_node, parent_bb_node);
+    ApplyNameChangesAndCreateNewFolders(child_target_node,
+                                        child_source_node.get(),
+                                        parent_source_node, parent_target_node);
   }
 }
 

@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
+#include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -53,16 +54,7 @@
 
 namespace {
 
-using tracing::BackgroundTracingSetupMode;
 using tracing::BackgroundTracingStateManager;
-
-bool IsBackgroundTracingCommandLine() {
-  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
-    return true;
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -112,14 +104,15 @@ bool ChromeTracingDelegate::IsRecordingAllowed(
     bool requires_anonymized_data) const {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine()) {
+  if (tracing::IsBackgroundTracingEnabledFromCommandLine()) {
     return true;
   }
 
   if (requires_anonymized_data &&
       (incognito_launched_ || IsOffTheRecordSessionActive())) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::kIncognitoLaunched);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Tracing.Background.FinalizationDisallowedReason",
+        TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
 

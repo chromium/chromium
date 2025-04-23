@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -483,7 +484,8 @@ void NavigationEarlyHintsManager::MaybePreconnect(
                         : network::mojom::CredentialsMode::kOmit,
       isolation_info_.network_anonymization_key(),
       net::MutableNetworkTrafficAnnotationTag(
-          kEarlyHintsPreloadTrafficAnnotation));
+          kEarlyHintsPreloadTrafficAnnotation),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
   preconnect_entries_.insert(std::move(entry));
 }
 

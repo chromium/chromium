@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MUTATOR_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MUTATOR_H_
 
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 // Mutator protocol for the UI layer to communicate to the
@@ -23,6 +24,11 @@
 
 // Dismisses the top page of the menu stack.
 - (void)dismissMenuPage;
+
+// Applies the given background configuration to the NTP.
+// This method updates the background based on the provided configuration.
+- (void)applyBackgroundForConfiguration:
+    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
 
 @end
 

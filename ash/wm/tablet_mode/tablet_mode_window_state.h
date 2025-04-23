@@ -50,7 +50,6 @@ class TabletModeWindowState : public WindowState::State {
   // method is not supposed to be called for client-controlled windows (e.g.
   // ARC++) as the bounds change with `SetBoundsDirect` is not ack'ed by the
   // client. (b/264962634)
-  // TODO(sammiequon): Consolidate with `UpdateBounds`.
   static void UpdateWindowPosition(
       WindowState* window_state,
       WindowState::BoundsChangeAnimationType animation_type);

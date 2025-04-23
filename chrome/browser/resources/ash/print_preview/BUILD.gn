@@ -56,7 +56,7 @@ build_webui("build") {
     "ui/sidebar.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "dark_mode_mixin.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",

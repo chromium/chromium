@@ -341,8 +341,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   // Install an extension.
   scoped_refptr<const Extension> extn_with_switch_off =
       MakeExtension("extension_test_1");
-  service()->OnExtensionInstalled(extn_with_switch_off.get(),
-                                  /*page_ordinal=*/syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extn_with_switch_off.get(),
+                                    /*page_ordinal=*/syncer::StringOrdinal());
 
   extensions::disable_reason::DisableReason reason;
   EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
@@ -384,8 +384,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   // Install an extension.
   scoped_refptr<const Extension> extn_with_switch_on =
       MakeExtension("extension_test_2");
-  service()->OnExtensionInstalled(extn_with_switch_on.get(),
-                                  /*page_ordinal=*/syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extn_with_switch_on.get(),
+                                    /*page_ordinal=*/syncer::StringOrdinal());
 
   bool is_extension_approved =
       GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions;
@@ -460,8 +460,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   // Install an extension.
   scoped_refptr<const Extension> extn_with_switch_off =
       MakeExtension("extension_test_1");
-  service()->OnExtensionInstalled(extn_with_switch_off.get(),
-                                  /*page_ordinal=*/syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extn_with_switch_off.get(),
+                                    /*page_ordinal=*/syncer::StringOrdinal());
 
   extensions::disable_reason::DisableReason reason;
   EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
@@ -520,7 +520,7 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
       registry()->enabled_extensions().Contains(locally_approved_extn1->id()));
 
   // Uninstalling the extension also removes the local approval.
-  ASSERT_TRUE(service()->UninstallExtension(
+  ASSERT_TRUE(registrar()->UninstallExtension(
       locally_approved_extn1->id(), extensions::UNINSTALL_REASON_FOR_TESTING,
       nullptr));
   EXPECT_FALSE(

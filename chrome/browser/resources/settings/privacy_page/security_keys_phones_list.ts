@@ -32,8 +32,8 @@ class SecurityKeysPhonesListElement extends PolymerElement {
     };
   }
 
-  immutable: boolean;
-  phones: SecurityKeysPhone[];
+  declare immutable: boolean;
+  declare phones: SecurityKeysPhone[];
   // Contains the public key of the phone that the action menu was opened for.
   private publicKeyForActionMenu_: string|null;
 

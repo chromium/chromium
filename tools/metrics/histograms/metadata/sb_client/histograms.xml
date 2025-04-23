@@ -74,37 +74,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.AndroidAppVerificationPromptResult2"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of prompting the user to enable app verification. This is
-    logged for each prompt shown, which is once per APK download on Android by a
-    user with app verification disabled.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.AndroidAppVerificationResult"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of checking whether app verification is enabled. This is
-    logged on every APK download on Android.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.AndroidTelemetry.AppVerificationResult"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-08-17">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of checking whether app verification is enabled. This is
-    logged for each APK download by a used opted in to Enhanced Safe Browsing.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.AutoOpen{State}FileType"
     enum="SBClientDownloadExtensions" expires_after="2025-11-03">
   <owner>drubery@chromium.org</owner>
@@ -233,8 +202,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2025-04-27">
-  <owner>drubery@chromium.org</owner>
+    expires_after="2026-04-27">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to check the
@@ -299,7 +268,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsImmediateDeepScan2"
-    enum="BooleanRequested" expires_after="2025-08-18">
+    enum="BooleanRequested" expires_after="2025-10-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -345,7 +314,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2025-08-10">
+    enum="BooleanHasUserGesture" expires_after="2025-10-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -382,7 +351,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.Warning.FileType.{DangerType}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2025-08-10">
+    enum="SBClientDownloadExtensions" expires_after="2025-10-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -415,7 +384,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2025-08-17">
+    enum="SBDeepScanEvent" expires_after="2025-10-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -465,7 +434,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.AddPhishingReportSuccessful"
-    enum="BooleanSuccess" expires_after="2025-05-17">
+    enum="BooleanSuccess" expires_after="2026-05-17">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -475,7 +444,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -519,7 +488,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.ReadyAfterRetryTimeout"
-    units="bool" expires_after="2025-05-25">
+    units="bool" expires_after="2026-05-25">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -553,7 +522,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ClientSideDetectionTypeRequest"
-    enum="ClientSideDetectionType" expires_after="2025-08-10">
+    enum="ClientSideDetectionType" expires_after="2025-10-12">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -606,7 +575,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.HighConfidenceAllowlistCheckDuration"
-    units="ms" expires_after="2025-08-17">
+    units="ms" expires_after="2025-10-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -706,7 +675,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.MatchHighConfidenceAllowlist{RequestType}"
-    enum="ClientSideAllowlistMatchResult" expires_after="2025-08-17">
+    enum="ClientSideAllowlistMatchResult" expires_after="2025-10-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -853,6 +822,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest"
+    enum="BooleanExists" expires_after="2026-04-14">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether or not the on-device model session was alive when a new
+    request happens. This is logged when a new request happens through a new
+    preclassification check or a new on device model inquiry and the current
+    existing session will be destroyed.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
     enum="BooleanSuccess" expires_after="2025-12-11">
   <owner>andysjlim@chromium.org</owner>
@@ -919,7 +900,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-08-17">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-10-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -945,6 +926,18 @@ useful for Chirp alerts (go/crca-alerts). -->
     the CLASSIFY bucket.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
+<histogram name="SBClientPhishing.RedirectChainContainsForceRequest"
+    enum="BooleanExists" expires_after="2026-04-14">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the redirect chain from the classification URL contains URLs
+    that has a force request from RTLookupResponse. This is only logged when the
+    URL that the user is on does not have a force request and the URL contains a
+    redirect chain other than itself. This is only for ESB users.
+  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.RTLookupForceRequest"
@@ -990,7 +983,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

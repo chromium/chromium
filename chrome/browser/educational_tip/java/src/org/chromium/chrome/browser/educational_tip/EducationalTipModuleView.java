@@ -92,6 +92,10 @@ public class EducationalTipModuleView extends LinearLayout {
         mContentDescriptionView.setText(description);
     }
 
+    void setButtonText(String buttonText) {
+        mModuleButtonView.setText(buttonText);
+    }
+
     void setContentImageResource(int imageResource) {
         mContentImageView.setImageResource(imageResource);
     }

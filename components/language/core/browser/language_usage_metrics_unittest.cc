@@ -136,8 +136,11 @@ TEST(LanguageUsageMetricsTest, RecordAcceptLanguages) {
   // Initialize recorders
   MetricsRecorder recorder("LanguageUsage.AcceptLanguage");
   MetricsRecorder recorder_count("LanguageUsage.AcceptLanguage.Count");
+  MetricsRecorder recorder_first_language(
+      "LanguageUsage.AcceptLanguage.FirstAcceptLanguage");
   recorder.CheckTotalCount(0);
   recorder_count.CheckTotalCount(0);
+  recorder_first_language.CheckTotalCount(0);
 
   LanguageUsageMetrics::RecordAcceptLanguages("en");
   LanguageUsageMetrics::RecordAcceptLanguages("en");
@@ -145,6 +148,8 @@ TEST(LanguageUsageMetricsTest, RecordAcceptLanguages) {
   recorder.CheckValueCount(EN.hash, 2);
   recorder_count.CheckTotalCount(2);
   recorder_count.CheckValueCount(1, 2);
+  recorder_first_language.CheckTotalCount(2);
+  recorder_first_language.CheckValueCount(EN.hash, 2);
 
   LanguageUsageMetrics::RecordAcceptLanguages("en,es");
   recorder.CheckTotalCount(4);
@@ -153,6 +158,8 @@ TEST(LanguageUsageMetricsTest, RecordAcceptLanguages) {
   recorder_count.CheckTotalCount(3);
   recorder_count.CheckValueCount(1, 2);
   recorder_count.CheckValueCount(2, 1);
+  recorder_first_language.CheckTotalCount(3);
+  recorder_first_language.CheckValueCount(EN.hash, 3);
 
   LanguageUsageMetrics::RecordAcceptLanguages("en,es,ja-JP");
   recorder.CheckTotalCount(7);
@@ -164,79 +171,81 @@ TEST(LanguageUsageMetricsTest, RecordAcceptLanguages) {
   recorder_count.CheckValueCount(1, 2);
   recorder_count.CheckValueCount(2, 1);
   recorder_count.CheckValueCount(3, 1);
+  recorder_first_language.CheckTotalCount(4);
+  recorder_first_language.CheckValueCount(EN.hash, 4);
 }
 
 TEST(LanguageUsageMetricsTest, ParseAcceptLanguages) {
-  std::set<int> language_set;
-  std::set<int>::const_iterator it;
+  std::vector<int> languages;
+  std::vector<int>::const_iterator it;
 
   const int ENGLISH = 25966;
   const int SPANISH = 25971;
   const int JAPANESE = 27233;
 
   // Basic single language case.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("ja");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // Empty language.
-  LanguageUsageMetrics::ParseAcceptLanguages(std::string(), &language_set);
-  EXPECT_EQ(0U, language_set.size());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages(std::string());
+  EXPECT_EQ(0U, languages.size());
 
   // Country code is ignored.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja-JP", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("ja-JP");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // Case is ignored.
-  LanguageUsageMetrics::ParseAcceptLanguages("Ja-jP", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("Ja-jP");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // Underscore as the separator.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja_JP", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("ja_JP");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // The result contains a same language code only once.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja-JP,ja", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("ja-JP,ja");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // Basic two languages case.
-  LanguageUsageMetrics::ParseAcceptLanguages("en,ja", &language_set);
-  EXPECT_EQ(2U, language_set.size());
-  it = language_set.begin();
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("en,ja");
+  EXPECT_EQ(2U, languages.size());
+  it = languages.begin();
   EXPECT_EQ(ENGLISH, *it);
   EXPECT_EQ(JAPANESE, *++it);
 
   // Multiple languages.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja-JP,en,es,ja,en-US",
-                                             &language_set);
-  EXPECT_EQ(3U, language_set.size());
-  it = language_set.begin();
-  EXPECT_EQ(ENGLISH, *it);
+  languages =
+      LanguageUsageMetrics::ParseAcceptLanguages("ja-JP,en,es,ja,en-US");
+  EXPECT_EQ(3U, languages.size());
+  it = languages.begin();
+  EXPECT_EQ(JAPANESE, *it);
+  EXPECT_EQ(ENGLISH, *++it);
   EXPECT_EQ(SPANISH, *++it);
-  EXPECT_EQ(JAPANESE, *++it);
 
   // Two empty languages.
-  LanguageUsageMetrics::ParseAcceptLanguages(",", &language_set);
-  EXPECT_EQ(0U, language_set.size());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages(",");
+  EXPECT_EQ(0U, languages.size());
 
   // Trailing comma.
-  LanguageUsageMetrics::ParseAcceptLanguages("ja,", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(JAPANESE, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("ja,");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(JAPANESE, *languages.begin());
 
   // Leading comma.
-  LanguageUsageMetrics::ParseAcceptLanguages(",es", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  EXPECT_EQ(SPANISH, *language_set.begin());
+  languages = LanguageUsageMetrics::ParseAcceptLanguages(",es");
+  EXPECT_EQ(1U, languages.size());
+  EXPECT_EQ(SPANISH, *languages.begin());
 
   // Combination of invalid and valid.
-  LanguageUsageMetrics::ParseAcceptLanguages("1234,en", &language_set);
-  EXPECT_EQ(1U, language_set.size());
-  it = language_set.begin();
+  languages = LanguageUsageMetrics::ParseAcceptLanguages("1234,en");
+  EXPECT_EQ(1U, languages.size());
+  it = languages.begin();
   EXPECT_EQ(ENGLISH, *it);
 }
 

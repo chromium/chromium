@@ -1,5 +1,6 @@
 include_rules = [
   "+base",
+  "+components/download",
   "+components/keyed_service",
   "+components/offline_pages",
   "+testing",

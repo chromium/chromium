@@ -1,8 +1,8 @@
 UNKNOWN_TYPE | idioma | Idioma: | es | -default
 UNKNOWN_TYPE | noConsecutivoInterno | Consecutivo: |  | -default
 UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | -default
-UNKNOWN_TYPE | nombres | Nombre(s): |  | -default
-UNKNOWN_TYPE | apellidos | Apellido(s): |  | -default
+NAME_FIRST | nombres | Nombre(s): |  | -default
+NAME_LAST | apellidos | Apellido(s): |  | -default
 UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | -default
 UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | -default
 UNKNOWN_TYPE | sexo_pago | Sexo: |  | -default

@@ -66,6 +66,8 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddString(
       "glicFreURL",
       GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
+  source->AddInteger("freInitialWidth", features::kGlicFreInitialWidth.Get());
+  source->AddInteger("freInitialHeight", features::kGlicFreInitialHeight.Get());
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);

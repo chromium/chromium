@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SAFETY_CONFIG_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SAFETY_CONFIG_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 
@@ -18,7 +19,7 @@ namespace optimization_guide {
 class SafetyConfig final {
  public:
   SafetyConfig();
-  explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
+  explicit SafetyConfig(proto::FeatureTextSafetyConfiguration);
   SafetyConfig(const SafetyConfig&);
   SafetyConfig(SafetyConfig&&);
   SafetyConfig& operator=(SafetyConfig&&);
@@ -93,6 +94,8 @@ class SafetyConfig final {
   // canceling.
   bool OnlyCancelUnsafeResponseOnComplete() const;
 
+  const proto::FeatureTextSafetyConfiguration& proto() const { return proto_; }
+
  private:
   // Whether the text is in a language not supported by the safety classifier,
   // or the language could not be detected despite the classifier requiring one
@@ -101,7 +104,7 @@ class SafetyConfig final {
       const on_device_model::mojom::SafetyInfoPtr& safety_info,
       double threshold) const;
 
-  std::optional<proto::FeatureTextSafetyConfiguration> proto_;
+  proto::FeatureTextSafetyConfiguration proto_;
 };
 
 }  // namespace optimization_guide

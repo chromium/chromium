@@ -133,6 +133,8 @@ extern const char kClassifyUrlThrottleStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.Status";
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
+extern const char kClassifyUrlThrottleUseCaseHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.UseCase";
 
 const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";

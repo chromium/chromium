@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_H_
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_H_
 
+#include <array>
 #include <set>
 
 #include "base/compiler_specific.h"
@@ -100,7 +101,7 @@ class POLICY_EXPORT SchemaRegistry {
  private:
   base::ObserverList<Observer, true>::Unchecked observers_;
   base::ObserverList<InternalObserver, true>::Unchecked internal_observers_;
-  bool domains_ready_[POLICY_DOMAIN_SIZE];
+  std::array<bool, POLICY_DOMAIN_SIZE> domains_ready_;
 };
 
 // A registry that combines the maps of other registries.

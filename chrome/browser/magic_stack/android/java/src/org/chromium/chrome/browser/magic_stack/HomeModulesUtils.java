@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
@@ -16,11 +18,11 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import android.content.res.Resources;
 import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /** Utility class for the magic stack. */
+@NullMarked
 public class HomeModulesUtils {
     static final long INVALID_TIMESTAMP = -1;
     static final int INVALID_FRESHNESS_SCORE = -1;
@@ -53,7 +56,8 @@ public class HomeModulesUtils {
                             DEFAULT_BROWSER_PROMO,
                             TAB_GROUP_PROMO,
                             TAB_GROUP_SYNC_PROMO,
-                            QUICK_DELETE_PROMO));
+                            QUICK_DELETE_PROMO,
+                            HISTORY_SYNC_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -80,7 +84,7 @@ public class HomeModulesUtils {
                 return AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT;
             default:
                 assert false : "Module type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -89,9 +93,7 @@ public class HomeModulesUtils {
      * @param resources The {@link Resources} instance to load Android resources from.
      * @return The string of switch title for the module type.
      */
-    @NonNull
-    public static String getTitleForModuleType(
-            @ModuleType int moduleType, @NonNull Resources resources) {
+    public static String getTitleForModuleType(@ModuleType int moduleType, Resources resources) {
         switch (moduleType) {
             case SINGLE_TAB:
                 return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
@@ -103,13 +105,14 @@ public class HomeModulesUtils {
             case TAB_GROUP_PROMO:
             case TAB_GROUP_SYNC_PROMO:
             case QUICK_DELETE_PROMO:
+            case HISTORY_SYNC_PROMO:
                 // All tips use the same name.
                 return resources.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
                 return resources.getString(R.string.auxiliary_search_module_name);
             default:
                 assert false : "Module type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 

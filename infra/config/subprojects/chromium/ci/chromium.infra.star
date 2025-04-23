@@ -380,13 +380,12 @@ packager_builder(
 ci.builder(
     name = "android-device-flasher",
     executable = "recipe:android/device_flasher",
-    # TODO(crbug.com/40201767): Find the sweet spot for the frequency.
-    schedule = "0 9 * * 1",  # at 9am UTC every Monday.
+    schedule = "0 9 * * 1,3",  # at 9am UTC every Monday and Wednesday.
     triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         short_name = "flash",
     ),
-    notifies = ["chromium-infra"],
+    notifies = ["chromium-android-device-flasher"],
     properties = {
         "flash_criteria": [
             # Used by ci/Android Release (Nexus 5X)

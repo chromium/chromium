@@ -15,18 +15,7 @@
 @class LayoutGuideCenter;
 @protocol OmniboxMutator;
 @protocol OmniboxKeyboardDelegate;
-@class OmniboxViewController;
 @protocol TextFieldViewContaining;
-
-// Delegate for text input changes in OmniboxViewController.
-@protocol OmniboxViewControllerTextInputDelegate
-
-// Called after the text input mode changes in the OmniboxViewController. This
-// means that the active keyboard has changed.
-- (void)omniboxViewControllerTextInputModeDidChange:
-    (OmniboxViewController*)omniboxViewController;
-
-@end
 
 // Delegate for paste actions in OmniboxViewController.
 @protocol OmniboxViewControllerPasteDelegate
@@ -52,7 +41,7 @@
 @property(nonatomic, weak) id<OmniboxMutator> mutator;
 
 /// Whether the UI is configured for search-only mode.
-@property(nonatomic, assign) BOOL isSearchOnlyUI;
+@property(nonatomic, assign) BOOL searchOnlyUI;
 
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
@@ -73,9 +62,6 @@
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
 
-// The delegate for this object.
-@property(nonatomic, weak) id<OmniboxViewControllerTextInputDelegate>
-    textInputDelegate;
 /// Delegate for paste actions.
 @property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
 /// Delegate for keyboard actions.

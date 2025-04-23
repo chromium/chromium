@@ -152,6 +152,14 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
 
 ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
                                                      int style) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/400615941): Remove ash-spcecific handling from //chrome.
+  if (std::optional<ui::ColorId> color_id = ash::GetColorId(style);
+      color_id.has_value()) {
+    return color_id.value();
+  }
+#endif
+
   // Body text styles are the same as for labels.
   if (context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
       context == CONTEXT_DIALOG_BODY_TEXT_SMALL) {

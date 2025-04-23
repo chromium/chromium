@@ -4,6 +4,7 @@
 
 #include "services/video_effects/webgpu_device.h"
 
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -24,6 +25,14 @@
 #if MEDIAPIPE_USE_WEBGPU
 #include "third_party/mediapipe/src/mediapipe/gpu/webgpu/webgpu_device_registration.h"
 #endif
+
+namespace {
+
+std::string ToString(wgpu::StringView string_view) {
+  return std::string(std::string_view(string_view));
+}
+
+}  // namespace
 
 namespace video_effects {
 
@@ -68,7 +77,7 @@ void WebGpuDevice::Initialize(DeviceCallback device_cb,
          ErrorCallback error_cb, wgpu::RequestAdapterStatus status,
          wgpu::Adapter adapter, wgpu::StringView message) {
         if (self) {
-          self->OnRequestAdapter(status, std::move(adapter), message,
+          self->OnRequestAdapter(status, std::move(adapter), ToString(message),
                                  std::move(device_cb), std::move(error_cb));
         }
       },
@@ -83,13 +92,13 @@ void WebGpuDevice::Initialize(DeviceCallback device_cb,
 
 void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
                                     wgpu::Adapter adapter,
-                                    std::string_view message,
+                                    std::string message,
                                     DeviceCallback device_cb,
                                     ErrorCallback error_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != wgpu::RequestAdapterStatus::Success || !adapter) {
-    std::move(error_cb).Run(Error::kFailedToObtainAdapter, message);
+    std::move(error_cb).Run(Error::kFailedToObtainAdapter, std::move(message));
     return;
   }
 
@@ -101,7 +110,7 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
       [](base::WeakPtr<WebGpuDevice> self, const wgpu::Device& device,
          wgpu::DeviceLostReason reason, wgpu::StringView message) {
         if (self) {
-          self->OnDeviceLost(device, reason, message);
+          self->OnDeviceLost(device, reason, ToString(message));
         }
       },
       weak_ptr_factory_.GetWeakPtr());
@@ -123,7 +132,8 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
         // We're treating uncaptured WebGPU error like a device loss. It likely
         // signifies programmer error, meaning that we can't really trust the
         // contents of the textures that we're producing.
-        self->OnDeviceLost(device, wgpu::DeviceLostReason::Unknown, message);
+        self->OnDeviceLost(device, wgpu::DeviceLostReason::Unknown,
+                           ToString(message));
       },
       weak_ptr_factory_.GetWeakPtr());
 
@@ -136,7 +146,7 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
          ErrorCallback error_cb, wgpu::RequestDeviceStatus status,
          wgpu::Device device, wgpu::StringView message) {
         if (self) {
-          self->OnRequestDevice(status, std::move(device), message,
+          self->OnRequestDevice(status, std::move(device), ToString(message),
                                 std::move(device_cb), std::move(error_cb));
         }
       },
@@ -150,12 +160,12 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
 
 void WebGpuDevice::OnRequestDevice(wgpu::RequestDeviceStatus status,
                                    wgpu::Device device,
-                                   std::string_view message,
+                                   std::string message,
                                    DeviceCallback device_cb,
                                    ErrorCallback error_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status != wgpu::RequestDeviceStatus::Success || !device) {
-    std::move(error_cb).Run(Error::kFailedToObtainDevice, message);
+    std::move(error_cb).Run(Error::kFailedToObtainDevice, std::move(message));
     return;
   }
 
@@ -171,14 +181,14 @@ void WebGpuDevice::OnRequestDevice(wgpu::RequestDeviceStatus status,
 
 void WebGpuDevice::OnDeviceLost(const wgpu::Device& device,
                                 wgpu::DeviceLostReason reason,
-                                std::string_view message) {
+                                std::string message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if MEDIAPIPE_USE_WEBGPU
   mediapipe::WebGpuDeviceRegistration::GetInstance().UnRegisterWebGpuDevice();
 #endif
   if (device_lost_cb_) {
-    std::move(device_lost_cb_).Run(reason, message);
+    std::move(device_lost_cb_).Run(reason, std::move(message));
   }
 }
 

@@ -19,7 +19,6 @@ class Schema;
 
 namespace extensions {
 
-#if !BUILDFLAG(IS_ANDROID)
 // Implements additional checks for policies that are lists of extension IDs.
 class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
  public:
@@ -103,6 +102,7 @@ class ExtensionInstallBlockListPolicyHandler
   ExtensionListPolicyHandler list_handler_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Implements additional checks for policies that are lists of extension
 // URLPatterns.
 class ExtensionURLPatternListPolicyHandler

@@ -508,7 +508,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
     /**
      * @return A supplier which notifies of changes of text bubbles count.
-     * */
+     */
     public static ObservableSupplier<Integer> getCountSupplier() {
         return sCountSupplier;
     }

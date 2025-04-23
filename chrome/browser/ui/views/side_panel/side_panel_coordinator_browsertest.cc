@@ -20,7 +20,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -56,6 +55,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
@@ -241,7 +241,8 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
     extensions::PermissionsUpdater(browser()->profile())
         .GrantActivePermissions(extension.get());
-    extension_service()->AddExtension(extension.get());
+    extensions::ExtensionRegistrar::Get(browser()->profile())
+        ->AddExtension(extension.get());
 
     return extension;
   }
@@ -256,11 +257,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                   /*path=*/"panel.html",
                   /*enabled=*/true);
     return extension;
-  }
-
-  extensions::ExtensionService* extension_service() {
-    return extensions::ExtensionSystem::Get(browser()->profile())
-        ->extension_service();
   }
 
   SidePanelCoordinator* coordinator() {

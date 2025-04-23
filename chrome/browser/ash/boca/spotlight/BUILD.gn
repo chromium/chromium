@@ -22,17 +22,22 @@ static_library("spotlight") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("browser_tests") {
   testonly = true
 
-  sources = [ "spotlight_crd_manager_impl_unittest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "spotlight_crd_manager_impl_browsertest.cc" ]
 
   deps = [
     ":spotlight",
+    "//ash",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

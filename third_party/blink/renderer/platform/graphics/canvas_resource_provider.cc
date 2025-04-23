@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 
+#include <inttypes.h>
+
 #include <string>
 
 #include "base/feature_list.h"
@@ -260,6 +262,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
   ~CanvasResourceProviderSharedImage() override {
+    UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                               max_inflight_resources_, 20);
     if (is_software_) {
       if (shared_image_interface_provider_) {
         shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
@@ -310,6 +314,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
     return !canvas_resources_.empty();
   }
+  bool unused_resources_reclaim_timer_is_running_for_testing() const override {
+    return unused_resources_reclaim_timer_.IsRunning();
+  }
+  int NumInflightResourcesForTesting() const override {
+    return num_inflight_resources_;
+  }
+
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
@@ -377,10 +388,17 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     // current behavior) or call resource()->GetClientSharedImage() rather than
     // the latter (if the current behavior is a bug).
     WillDrawInternal(true);
-    RasterInterface()->WritePixels(
-        GetBackingClientSharedImageForOverwrite()->mailbox(), x, y,
-        resource()->GetClientSharedImage()->GetTextureTarget(),
-        SkPixmap(orig_info, pixels, row_bytes));
+
+    // End the internal write access before calling WillDrawInternal(), which
+    // has a precondition that there should be no current write access on the
+    // resource.
+    EndWriteAccess();
+    WillDrawInternal(false);
+
+    auto client_si = resource()->GetClientSharedImage();
+    RasterInterface()->WritePixels(client_si->mailbox(), x, y,
+                                   client_si->GetTextureTarget(),
+                                   SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
@@ -772,6 +790,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
+  void OnDestroyResource() override { --num_inflight_resources_; }
+
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource() override { EnsureWriteAccess(); }
   void OnDestroyRecyclableCanvasResource(
@@ -950,6 +970,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
   // will only hold one resource at most.
   WTF::Vector<UnusedResource> canvas_resources_;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
+  base::OneShotTimer unused_resources_reclaim_timer_;
   bool resource_recycling_enabled_ = true;
 
   // `raster_context_provider_` holds a reference on the shared
@@ -1631,8 +1654,6 @@ CanvasResourceProvider::CanvasResourceProvider(
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
   if (context_provider_wrapper_)
     context_provider_wrapper_->RemoveObserver(this);
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
@@ -2026,10 +2047,6 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
         kRGBA_F16_SkColorType);
   }
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-}
-
-void CanvasResourceProvider::OnDestroyResource() {
-  --num_inflight_resources_;
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

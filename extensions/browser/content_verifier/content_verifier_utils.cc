@@ -46,12 +46,14 @@ CanonicalRelativePath CanonicalizeRelativePath(
   base::FilePath::StringType canonical_path =
       relative_path.NormalizePathSeparatorsTo('/').value();
   if (!IsFileAccessCaseSensitive()) {
+    // Use `FoldCase` to canonicalize case, this is like `ToLower` for many
+    // languages but works independently of the current locale.
 #if BUILDFLAG(IS_WIN)
     canonical_path =
-        base::AsWString(base::i18n::ToLower(base::AsString16(canonical_path)));
+        base::AsWString(base::i18n::FoldCase(base::AsString16(canonical_path)));
 #else
     canonical_path = base::UTF16ToUTF8(
-        base::i18n::ToLower(base::UTF8ToUTF16(canonical_path)));
+        base::i18n::FoldCase(base::UTF8ToUTF16(canonical_path)));
 #endif  // BUILDFLAG(IS_WIN)
   }
 

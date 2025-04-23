@@ -30,11 +30,12 @@ interface RemotingHostControl {
                             handle<platform> unprivileged_handle);
 
   // Requests the network process to bind a pending receiver of
-  // ChromotingHostServices coming from a user-launched process. On Windows, the
-  // daemon process is responsible for brokering all mojo IPCs, but it doesn't
-  // affect where the receivers and remotes are bound. Please see comments on
-  // the ChromotingHostServices interface.
-  [EnableIf=is_win]
+  // ChromotingHostServices coming from a user-launched process. On Windows and
+  // Mac, the daemon process or agent broker process is responsible for
+  // brokering all mojo IPCs, but it doesn't affect where the receivers and
+  // remotes are bound. Please see comments on the ChromotingHostServices
+  // interface.
+  [EnableIf=is_win|is_mac]
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver,
                              int32 peer_pid);
 };

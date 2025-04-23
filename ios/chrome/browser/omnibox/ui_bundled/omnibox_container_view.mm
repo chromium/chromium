@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_thumbnail_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -127,6 +127,10 @@ const CGFloat kClearButtonImageSize = 17.0f;
       // Button to delete the thumbnail.
       _thumbnailButton = [[OmniboxThumbnailButton alloc] init];
       _thumbnailButton.translatesAutoresizingMaskIntoConstraints = NO;
+      _thumbnailButton.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL);
+      _thumbnailButton.accessibilityHint =
+          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_HINT);
       _thumbnailButton.hidden = YES;
       [NSLayoutConstraint activateConstraints:@[
         [_thumbnailButton.widthAnchor

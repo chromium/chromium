@@ -114,6 +114,8 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode);
+    // ui::AXMode::kFromPlatform is unconditionally filtered out and is
+    // therefore never present in `mode`.
   }
 }
 

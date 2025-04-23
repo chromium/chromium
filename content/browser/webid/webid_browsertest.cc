@@ -2064,6 +2064,23 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   MockIdentityRequestDialogController* controller = mock.get();
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
+  base::RunLoop modal_loop;
+  auto configURL = BaseIdpUrl();
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(
+          ::testing::WithArg<6>([&modal_loop, &configURL](auto on_selected) {
+            std::move(on_selected)
+                .Run(GURL(configURL),
+                     /*account_id=*/"not_real_account",
+                     /*is_sign_in=*/true);
+
+            modal_loop.Quit();
+
+            return true;
+          }));
+
+  EXPECT_CALL(*controller, ShowLoadingDialog).WillOnce(Return(true));
+
   base::RunLoop run_loop;
   SetVcIssuanceConfigDetails(&run_loop);
 
@@ -2078,7 +2095,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
           format: 'vc+sd-jwt',
           fields: ['name'],
           configURL: ')" +
-                       BaseIdpUrl() + R"(',
+                       configURL + R"(',
           clientId: 'client_id_1',
           nonce: '12345',
         }],
@@ -2109,6 +2126,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   source->NotifyAutofillSuggestionAccepted(
       account->identity_provider->idp_metadata.config_url, account->id);
 
+  // Wait for the user to accept the prompt.
+  modal_loop.Run();
+
+  // Verify that the token is correct.
   auto public_key = sdjwt::ExportPublicKey(*private_key_);
   EXPECT_TRUE(public_key);
 
@@ -2325,11 +2346,15 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ("false", metrics_parameters_["did_show_ui"]);
 }
 
-// Verify that IDP sign-in via JS works.
+// Verify that stored accounts via login.setStatus can be used to complete
+// a signin flow with an empty accounts endpoint.
 IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
                        IdpSigninTopLevelSetViaJs) {
   GURL configURL = GURL(BaseIdpUrl());
-  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+  config_details.accounts_endpoint_url = "";
+  idp_server()->SetConfigResponseDetails(config_details);
+
   EXPECT_TRUE(NavigateToURL(shell(), configURL));
 
   EXPECT_FALSE(sharing_context()
@@ -2356,13 +2381,18 @@ IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
       sharing_context()->GetIdpSigninStatus(url::Origin::Create(configURL));
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(*value);
-
-  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts =
+  base::Value::List accounts =
       sharing_context()->GetAccounts(url::Origin::Create(configURL));
   ASSERT_EQ(1U, accounts.size());
-  EXPECT_EQ("12345", accounts[0]->id);
-  EXPECT_EQ("User", accounts[0]->name);
-  EXPECT_EQ("user@idp.example", accounts[0]->email);
+  EXPECT_EQ("12345", *accounts[0].GetDict().FindString("id"));
+  EXPECT_EQ("User", *accounts[0].GetDict().FindString("name"));
+  EXPECT_EQ("user@idp.example", *accounts[0].GetDict().FindString("email"));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  SetTestIdentityRequestDialogController("12345");
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
 }  // namespace content

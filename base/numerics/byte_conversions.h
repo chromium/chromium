@@ -709,7 +709,7 @@ inline constexpr std::array<uint8_t, 8u> DoubleToBigEndian(double val) {
 }
 
 // Deprecated: Prefer the shorter, less-namespaced names.
-// TODO(crbug.com/40284755): Remove these when callers have been migrated to
+// TODO(crbug.com/409350835): Remove these when callers have been migrated to
 // the shorter name.
 namespace numerics {
 using ::base::ByteSwap;
@@ -777,4 +777,4 @@ using ::base::U8ToNativeEndian;
 
 }  // namespace base
 
-#endif  //  BASE_NUMERICS_BYTE_CONVERSIONS_H_
+#endif  // BASE_NUMERICS_BYTE_CONVERSIONS_H_

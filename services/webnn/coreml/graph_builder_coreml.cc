@@ -30,7 +30,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -1141,11 +1140,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
       OperandDataType::kUint32};
   SupportedDataTypes arg_min_max_input_supported_data_types = kFloatsAndInt32;
-  // crbug.com/388117627: On Intel devices, passing float input containing NaNs
-  // sometimes triggers a crash in Core ML.
-  if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
-    arg_min_max_input_supported_data_types = {OperandDataType::kInt32};
-  }
 
   static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
       OperandDataType::kInt32};
@@ -3908,11 +3902,6 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
   CHECK(context_properties_.data_type_limits.instance_normalization_input
             .Supports(GetOperand(operation.input_operand_id).descriptor));
 
-  if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
-    // TODO(crbug.com/338398666) Support channels-last by adding transposes.
-    return NewNotSupportedError("Unsupported input layout.");
-  }
-
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpInstanceNormalizationTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
@@ -3985,12 +3974,6 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
         return (a + 1) != b;
       }) == operation.axes.end();
   if (!is_consecutive) {
-    if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
-      if (__builtin_available(macOS 15, *)) {
-        return NewNotSupportedError(
-            "Axes must be consecutive for layerNormalization.");
-      }
-    }
     if (device_ == mojom::CreateContextOptions::Device::kCpu) {
       return NewNotSupportedError(
           "Axes must be consecutive for layerNormalization on cpu.");

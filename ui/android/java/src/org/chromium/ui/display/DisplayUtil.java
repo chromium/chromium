@@ -10,10 +10,12 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -60,17 +62,31 @@ public abstract class DisplayUtil {
         return assumeNonNull(sUiScalingFactorForAutomotiveOverride);
     }
 
-    public static int getUiDensityForAutomotive(Context context, int baseDensity) {
+    /**
+     * Returns the target scaling factor for automotive devices. The final effective scaling factor
+     * is tweaked and may differ from this target. Note that this value can be overlaid by device
+     * manufacturers.
+     */
+    public static float getTargetScalingFactorForAutomotive(Context context) {
         TypedValue automotiveUiScaleFactor = new TypedValue();
         context.getResources()
                 .getValue(
                         org.chromium.ui.R.dimen.automotive_ui_scale_factor,
                         automotiveUiScaleFactor,
                         true);
+        return automotiveUiScaleFactor.getFloat();
+    }
+
+    /**
+     * Returns the UI density that has been adjusted for automotive displays. This density has been
+     * adjusted by a scaling factor, which can be customized by device manufacturers, and rounded to
+     * align with defined {@link DisplayMetrics} densities.
+     */
+    public static int getUiDensityForAutomotive(Context context, int baseDensity) {
         float uiScalingFactor =
                 sUiScalingFactorForAutomotiveOverride != null
                         ? sUiScalingFactorForAutomotiveOverride
-                        : automotiveUiScaleFactor.getFloat();
+                        : getTargetScalingFactorForAutomotive(context);
         int rawScaledDensity = (int) (baseDensity * uiScalingFactor);
         // Round up to the nearest 20 to align with DisplayMetrics defined densities.
         return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
@@ -272,6 +288,19 @@ public abstract class DisplayUtil {
         return xrUiScaleFactor.getFloat();
     }
 
+    /** Returns the scaling factor for the current device. */
+    public static float getCurrentUiScalingFactor(Context context) {
+        if (!isUiScaled()) return 1;
+        if (BuildInfo.getInstance().isAutomotive) {
+            return sUiScalingFactorForAutomotiveOverride != null
+                    ? sUiScalingFactorForAutomotiveOverride
+                    : getTargetScalingFactorForAutomotive(context);
+        }
+        return sUiScalingFactorForXrOverride != null
+                ? sUiScalingFactorForXrOverride
+                : getUiScalingFactorForXrFromResource(context);
+    }
+
     /** Get the density base on the UI scaling factor on XR devices. */
     public static int getUiDensityForXr(Context context, int baseDensity) {
         float uiScalingFactor =
@@ -320,5 +349,30 @@ public abstract class DisplayUtil {
                         + configuration.screenWidthDp
                         + ", heightDp="
                         + configuration.screenHeightDp);
+    }
+
+    /**
+     * Translates rectangles between global work area coordinates (as in Web API spec) and local
+     * coordinates (display ID and pixel coordinates relative to the origin of the display).
+     * Currently it uses only the current display which has to be explicitly provided as an
+     * argument. This additional argument will be removed when proper multi-display support is
+     * landed in Android as we will use solely global coordinates provided to determine the target
+     * display.
+     *
+     * @param globalCoordinatesDp Global coordinates in dp.
+     * @param targetDisplay Target display of the resulting local coordinates.
+     * @return A pair of display ID and local coordinates in px.
+     */
+    public static Pair<Integer, Rect> getLocalCoordinatesPx(
+            RectF globalCoordinatesDp, DisplayAndroid targetDisplay) {
+        float displayDensity = targetDisplay.getDipScale();
+        int targetDisplayId = targetDisplay.getDisplayId();
+
+        int leftPx = Math.round(globalCoordinatesDp.left * displayDensity);
+        int topPx = Math.round(globalCoordinatesDp.top * displayDensity);
+        int rightPx = Math.round(globalCoordinatesDp.right * displayDensity);
+        int bottomPx = Math.round(globalCoordinatesDp.bottom * displayDensity);
+
+        return Pair.create(targetDisplayId, new Rect(leftPx, topPx, rightPx, bottomPx));
     }
 }

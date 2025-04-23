@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -23,7 +24,7 @@ import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loa
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 import {PageContentType} from '../page_content_type.mojom-webui.js';
-import {handleEscapeSearchbox, onSearchboxKeydown} from '../searchbox_utils.js';
+import {handleEscapeSearchbox} from '../searchbox_utils.js';
 
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
@@ -36,13 +37,15 @@ const VIEWPORT_WIDTH_KEY = 'biw';
 
 export interface LensSidePanelAppElement {
   $: {
-    results: HTMLIFrameElement,
+    closeFeedbackToastButton: CrButtonElement,
+    feedbackToast: CrToastElement,
     ghostLoader: SidePanelGhostLoaderElement,
+    messageToast: CrToastElement,
     networkErrorPage: HTMLElement,
+    results: HTMLIFrameElement,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
-    toast: CrToastElement,
     uploadProgressBar: HTMLElement,
     uploadProgressBarContainer: HTMLElement,
   };
@@ -239,16 +242,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.browserProxy.callbackRouter.pageContentTypeChanged.addListener(
           this.pageContentTypeChanged.bind(this)),
       this.browserProxy.callbackRouter.showToast.addListener(
-          this.showToast.bind(this)),
+          this.showMessageToast.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
       this.showErrorState = false;
-    });
-    this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' && this.isSearchboxFocused) {
-        onSearchboxKeydown(this, this.$.searchbox);
-      }
     });
     this.eventTracker_.add(
         document, 'query-autocomplete',
@@ -278,6 +276,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       // The user submitted a new query, therefore the searchbox should not stay
       // focused.
       this.blurSearchbox();
+
+      this.$.feedbackToast.hide();
     } else {
       // Animate away the progress bar once the results are loaded.
       this.progressBarHideAnimation = this.$.uploadProgressBarContainer.animate(
@@ -291,6 +291,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         // and the progress bar stays invisible.
         this.uploadProgressPercentage = 0;
       };
+
+      this.showFeedbackToast();
     }
   }
 
@@ -358,8 +360,14 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   // Called when the searchbox requests autocomplete suggestions.
-  private handleQueryAutocomplete() {
+  private handleQueryAutocomplete(e: CustomEvent) {
     this.autocompleteRequestStarted = true;
+    if (!e.detail.inputValue.trim()) {
+      // If there is an input of only whitespace, don't show ghost loader since
+      // no results will ever be returned for these inputs.
+      this.suppressGhostLoader = e.detail.inputValue;
+      this.showErrorState = false;
+    }
   }
 
   private setShowErrorPage(shouldShowErrorPage: boolean) {
@@ -434,23 +442,48 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.pageContentType = newPageContentType;
   }
 
-  private async showToast(message: string) {
-    if (this.$.toast.open) {
-      // If toast already open, wait after hiding so that animation is
-      // smoother.
-      await this.$.toast.hide();
-      setTimeout(() => {
-        this.toastMessage = message;
-        this.$.toast.show();
-      }, 100);
-    } else {
-      this.toastMessage = message;
-      this.$.toast.show();
+  // Show the toast that asks the user to share their feedback.
+  private async showFeedbackToast() {
+    // Feature disabled, return early.
+    if (!loadTimeData.getBoolean('newFeedbackEnabled')) {
+      return;
     }
+
+    await this.$.messageToast.hide();
+    await this.showToast(this.$.feedbackToast);
   }
 
-  private onHideToastClick() {
-    this.$.toast.hide();
+  private async showMessageToast(message: string) {
+    await this.$.feedbackToast.hide();
+    await this.showToast(this.$.messageToast, message);
+  }
+
+  private async showToast(toast: CrToastElement, message?: string) {
+    if (toast.open) {
+      // If toast already open, wait after hiding so that animation is
+      // smoother.
+      await toast.hide();
+      setTimeout(() => {
+        this.toastMessage = message ?? this.toastMessage;
+        toast.show();
+      }, 100);
+      return;
+    }
+
+    this.toastMessage = message ?? this.toastMessage;
+    toast.show();
+  }
+
+  private onSendFeedbackClick() {
+    // TODO(crbug.com/408057740): Clicking button should open form.
+  }
+
+  private onHideFeedbackToastClick() {
+    this.$.feedbackToast.hide();
+  }
+
+  private onHideMessageToastClick() {
+    this.$.messageToast.hide();
   }
 
   makeGhostLoaderVisibleForTesting() {

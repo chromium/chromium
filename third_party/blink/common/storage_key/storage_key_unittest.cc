@@ -1101,6 +1101,25 @@ TEST_F(StorageKeyTest, NonceRequiresMatchingOriginSiteAndCrossSite) {
   }
 }
 
+TEST_F(StorageKeyTest, NoncedKeyForbidsUnpartitionedAccess) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
+  const net::SchemefulSite site(origin);
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    StorageKey key =
+        StorageKey::Create(origin, site, mojom::AncestorChainBit::kSameSite);
+    EXPECT_FALSE(key.ForbidsUnpartitionedStorageAccess());
+
+    key = StorageKey::CreateWithNonce(origin, nonce);
+    EXPECT_TRUE(key.ForbidsUnpartitionedStorageAccess());
+  }
+}
+
 TEST_F(StorageKeyTest, OpaqueTopLevelSiteRequiresCrossSite) {
   const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
   const net::SchemefulSite site(origin);

@@ -146,4 +146,8 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     void setCurrentUrl(GURL url) {
         mGurl = url;
     }
+
+    void setIsIncognitoForTesting(boolean isIncognito) {
+        mIsIncognito = isIncognito;
+    }
 }

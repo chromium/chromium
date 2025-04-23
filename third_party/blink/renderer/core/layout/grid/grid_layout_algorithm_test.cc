@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -47,8 +48,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void BuildGridGeometry(const GridLayoutAlgorithm& algorithm,
-                         GapGeometry* gap_geometry = nullptr) {
+  void BuildGridGeometry(const GridLayoutAlgorithm& algorithm) {
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
     algorithm.InitializeTrackSizes(&grid_sizing_tree);
@@ -67,15 +67,6 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
       item_data.row_span_properties = grid_item.row_span_properties;
       item_data.resolved_position = grid_item.resolved_position;
       grid_items_data_.emplace_back(std::move(item_data));
-    }
-
-    if (!gap_geometry) {
-      return;
-    }
-
-    algorithm.BuildGapIntersectionPoints(layout_data_, gap_geometry);
-    for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
-      algorithm.MarkBlockedStatusForGapIntersections(grid_item, gap_geometry);
     }
   }
 
@@ -234,6 +225,8 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
       display: grid;
       grid-gap: 10px;
       grid-template-columns: 100px 100px 100px;
+      column-rule-color: red;
+      column-rule-style: solid;
     }
     .item {
       width: 100px;
@@ -250,6 +243,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
     </div>
   )HTML");
 
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   BlockNode node(GetLayoutBoxByElementId("grid1"));
 
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
@@ -262,9 +256,9 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry =
-      MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
-  BuildGridGeometry(algorithm, gap_geometry);
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   Vector<GapIntersectionList> expected_column_intersections = {
       {
@@ -303,6 +297,8 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
       grid-template-columns: 100px 100px 100px;
       width: 300px;
       height: 320px;
+      column-rule-color: red;
+      column-rule-style: solid;
     }
     .item {
       background: red;
@@ -328,6 +324,7 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
   </div>
   )HTML");
 
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   BlockNode node(GetLayoutBoxByElementId("grid1"));
 
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
@@ -340,9 +337,9 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry =
-      MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
-  BuildGridGeometry(algorithm, gap_geometry);
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   Vector<GapIntersectionList> expected_column_intersections = {
       {

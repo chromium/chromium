@@ -6,16 +6,25 @@
 #define CHROME_BROWSER_UI_ASH_WM_CORAL_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/coral_delegate.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+class ApplicationLocaleStorage;
 class DesksTemplatesAppLaunchHandler;
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 class CoralDelegateImpl : public ash::CoralDelegate,
                           public signin::IdentityManager::Observer {
  public:
-  CoralDelegateImpl();
+  // `application_locale_storage` and `variations_service` must be non-null and
+  // must outlive `this`.
+  CoralDelegateImpl(const ApplicationLocaleStorage* application_locale_storage,
+                    const variations::VariationsService* variations_service);
   CoralDelegateImpl(const CoralDelegateImpl&) = delete;
   CoralDelegateImpl& operator=(const CoralDelegateImpl&) = delete;
   ~CoralDelegateImpl() override;
@@ -41,6 +50,9 @@ class CoralDelegateImpl : public ash::CoralDelegate,
 
  private:
   void HandleGenerativeAiInquiryTimeout();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const variations::VariationsService> variations_service_;
 
   // Handles launching apps and creating browsers for post login groups.
   std::map<base::Token, std::unique_ptr<DesksTemplatesAppLaunchHandler>>

@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -81,6 +83,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
+  [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
 }
 
@@ -88,17 +91,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     (FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface
       signinWithFakeManagedIdentityInPersonalProfile:identity];
+  [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
 }
 
 - (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity {
   [self signinWithFakeIdentity:identity];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
-}
-
-- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
-  [SigninEarlGreyAppInterface
-      signInWithoutHistorySyncWithFakeIdentity:identity];
 }
 
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
@@ -138,8 +137,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [fakeIdentity.gaiaID isEqualToString:primaryAccountGaiaID], errorStr);
 }
 
-- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
-                              consent:(signin::ConsentLevel)consent {
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail {
   EG_TEST_HELPER_ASSERT_TRUE(expectedEmail.length, @"Need to give an identity");
 
   // Required to avoid any problem since the following test is not dependant
@@ -148,23 +146,29 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   GREYAssert(WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForActionTimeout,
                  ^bool {
-                   NSString* primaryAccountEmail = [SigninEarlGreyAppInterface
-                       primaryAccountEmailWithConsent:consent];
+                   NSString* primaryAccountEmail =
+                       [SigninEarlGreyAppInterface primaryAccountEmail];
                    return primaryAccountEmail.length > 0;
                  }),
              @"Sign in did not complete.");
   GREYWaitForAppToIdle(@"App failed to idle");
 
   NSString* primaryAccountEmail =
-      [SigninEarlGreyAppInterface primaryAccountEmailWithConsent:consent];
+      [SigninEarlGreyAppInterface primaryAccountEmail];
 
   NSString* errorStr = [NSString
       stringWithFormat:@"Unexpected email of the signed in user [expected = "
-                       @"\"%@\", actual = \"%@\", consent %d]",
-                       expectedEmail, primaryAccountEmail,
-                       static_cast<int>(consent)];
+                       @"\"%@\", actual = \"%@\"]",
+                       expectedEmail, primaryAccountEmail];
   EG_TEST_HELPER_ASSERT_TRUE(
       [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
+}
+
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
+                              consent:(signin::ConsentLevel)consent {
+  GREYAssert(consent == signin::ConsentLevel::kSignin,
+             @"Only ConsentLevel::kSignin is supported");
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:expectedEmail];
 }
 
 - (void)verifySignedOut {
@@ -243,9 +247,37 @@ using base::test::ios::WaitUntilConditionOrTimeout;
           profileSeparationDataMigrationSettings];
 }
 
+- (void)closeManagedAccountSignInDialogIfAny:(FakeSystemIdentity*)fakeIdentity {
+  // Don't expect a managed account dialog when the account is @gmail.com and
+  // thus definitely not managed.
+  if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
+    return;
+  }
+  // Synchronization off due to an infinite spinner, in the user consent view,
+  // under the managed consent dialog. This spinner is started by the sign-in
+  // process.
+  ScopedSynchronizationDisabler disabler;
+
+  // Verify whether there is a management dialog and interact with it to
+  // complete the sign-in flow if present.
+  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:
+          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  BOOL hasDialog =
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];
+  if (hasDialog) {
+    [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  }
+}
+
 - (BOOL)areSeparateProfilesForManagedAccountsEnabled {
   return
       [SigninEarlGreyAppInterface areSeparateProfilesForManagedAccountsEnabled];
+}
+
+- (BOOL)isIdentityDiscAccountMenuEnabled {
+  return [SigninEarlGreyAppInterface isIdentityDiscAccountMenuEnabled];
 }
 
 @end

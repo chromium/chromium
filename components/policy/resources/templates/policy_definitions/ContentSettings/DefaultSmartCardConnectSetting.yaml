@@ -1,0 +1,33 @@
+caption: Control use of the Web Smart Card API
+default: null
+desc: |-
+  Setting the policy specifies whether Isolated Web Apps will by default be able to connect to smart card readers.
+
+  Setting the policy to 3 or leaving it unset allows Isolated Web App origins to ask for permission to connect to smart card readers. Leaving it unset also allows users to change this setting.
+
+  Setting the policy to 2 blocks Isolated Web App origins from connecting to smart card readers.
+
+  This policy can be overridden for specific Isolated Web App origins using the <ph name="SMART_CARD_CONNECT_ALLOWED_FOR_URLS_POLICY_NAME">SmartCardConnectAllowedForUrls</ph> and <ph name="SMART_CARD_CONNECT_BLOCKED_FOR_URLS_POLICY_NAME">SmartCardConnectBlockedForUrls</ph> policies.
+
+example_value: 3
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Do not allow Isolated Web App origins to connect to smart card readers
+  name: BlockSmartCardConnect
+  value: 2
+- caption: Allow Isolated Web App origins to ask to connect to smart card readers.
+  name: AskSmartCardConnect
+  value: 3
+owners:
+- file://content/browser/smart_card/OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+tags: []
+type: int-enum

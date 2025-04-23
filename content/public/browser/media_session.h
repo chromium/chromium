@@ -73,6 +73,10 @@ class MediaSession : public media_session::mojom::MediaSession {
   // service, if the routed service exists, nullptr otherwise.
   virtual RenderFrameHost* GetRoutedFrame() = 0;
 
+  // Report to all players that information related to automatic picture in
+  // picture has changed.
+  virtual void ReportAutoPictureInPictureInfoChanged() = 0;
+
   // media_session.mojom.MediaSession overrides -------------------------------
 
   // Suspend the media session.

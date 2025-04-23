@@ -180,12 +180,6 @@ const CGFloat kButtonImageInset = 3;
 
 - (void)initializeButton {
   self.translatesAutoresizingMaskIntoConstraints = NO;
-
-  __weak __typeof(self) weakSelf = self;
-  CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
-    [weakSelf setIphHighlighted:highlighted];
-  };
-  [self setCustomHighlightHandler:handler];
 }
 
 // Creates spotlightView if not done yet.

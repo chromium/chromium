@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -80,6 +81,13 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {
             view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
+        } else if (UrlBarProperties.USE_SMALL_TEXT.equals(propertyKey)) {
+            boolean useSmallText = model.get(UrlBarProperties.USE_SMALL_TEXT);
+            float textSize =
+                    useSmallText
+                            ? view.getResources().getDimension(R.dimen.text_size_small)
+                            : view.getResources().getDimension(R.dimen.location_bar_url_text_size);
+            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {

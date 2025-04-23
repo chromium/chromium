@@ -83,7 +83,7 @@ InterpolationValue CSSPercentageInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPercentageInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsPercentage()) {
@@ -101,6 +101,17 @@ CSSPercentageInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     return nullptr;
   }
   return CreatePercentageValue(*underlying_percentage);
+}
+
+InterpolationValue
+CSSPercentageInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* percentage_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (percentage_value->IsPercentage()) {
+      return CreatePercentageValue(percentage_value->GetDoubleValue());
+    }
+  }
+  return nullptr;
 }
 
 void CSSPercentageInterpolationType::ApplyStandardPropertyValue(

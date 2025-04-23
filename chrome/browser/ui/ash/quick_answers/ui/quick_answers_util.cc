@@ -203,19 +203,17 @@ std::unique_ptr<views::ImageButton> CreateImageButtonView(
 GURL GetDetailsUrlForQuery(const std::string& query) {
   // TODO(b/240619915): Refactor so that we can access the request metadata
   // instead of just the query itself.
-  if (base::StartsWith(query, kTranslationQueryPrefix)) {
-    auto query_text = base::EscapeUrlEncodedData(
-        query.substr(strlen(kTranslationQueryPrefix)), /*use_plus=*/true);
-    auto device_language =
-        l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
-    auto translate_url =
-        base::StringPrintf(kGoogleTranslateUrlTemplate, device_language.c_str(),
-                           query_text.c_str());
-    return GURL(translate_url);
-  } else {
+  auto remainder = base::RemovePrefix(query, kTranslationQueryPrefix);
+  if (!remainder) {
     return GURL(kGoogleSearchUrlPrefix +
                 base::EscapeUrlEncodedData(query, /*use_plus=*/true));
   }
+  auto query_text = base::EscapeUrlEncodedData(*remainder, /*use_plus=*/true);
+  auto device_language =
+      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
+  auto translate_url = base::StringPrintf(
+      kGoogleTranslateUrlTemplate, device_language.c_str(), query_text.c_str());
+  return GURL(translate_url);
 }
 
 void GenerateTTSAudio(content::BrowserContext* browser_context,

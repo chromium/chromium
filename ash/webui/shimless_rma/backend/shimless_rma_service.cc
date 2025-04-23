@@ -74,6 +74,21 @@ network_mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
       network_mojom::kNoLimit);
 }
 
+mojom::HardwareVerificationResultPtr ConvertHardwareVerificationResult(
+    const rmad::HardwareVerificationResult& result) {
+  if (result.is_skipped()) {
+    return mojom::HardwareVerificationResult::NewSkipResult(
+        mojom::SkipHardwareVerificationResult::New());
+  }
+  if (result.is_compliant()) {
+    return mojom::HardwareVerificationResult::NewPassResult(
+        mojom::PassHardwareVerificationResult::New());
+  }
+
+  return mojom::HardwareVerificationResult::NewFailResult(
+      mojom::FailHardwareVerificationResult::New(result.error_str()));
+}
+
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService(
@@ -1181,9 +1196,10 @@ void ShimlessRmaService::ExternalDiskState(bool detected) {
 void ShimlessRmaService::HardwareVerificationResult(
     const rmad::HardwareVerificationResult& result) {
   last_hardware_verification_result_ = result;
+  auto hardware_verification_result = ConvertHardwareVerificationResult(result);
   for (auto& observer : hardware_verification_observers_) {
-    observer->OnHardwareVerificationResult(result.is_compliant(),
-                                           result.error_str());
+    observer->OnHardwareVerificationResult(
+        std::move(hardware_verification_result));
   }
 }
 
@@ -1282,11 +1298,12 @@ void ShimlessRmaService::ObserveHardwareVerificationStatus(
     ::mojo::PendingRemote<mojom::HardwareVerificationStatusObserver> observer) {
   hardware_verification_observers_.Add(std::move(observer));
   if (last_hardware_verification_result_) {
+    auto hardware_verification_result = ConvertHardwareVerificationResult(
+        last_hardware_verification_result_.value());
     for (auto& hardware_verification_observer :
          hardware_verification_observers_) {
       hardware_verification_observer->OnHardwareVerificationResult(
-          last_hardware_verification_result_->is_compliant(),
-          last_hardware_verification_result_->error_str());
+          std::move(hardware_verification_result));
     }
   }
 }

@@ -97,7 +97,7 @@ std::optional<webapps::AppId> GetWebAppIdForPackage(
 }
 
 // TODO(b/304184466): Refactor this DelegateImpl to reduce code duplication.
-// Delegate implementation that actually talks to ARC And Lacros.
+// Delegate implementation that actually talks to ARC.
 // It looks up |ArcAppListPrefs| in the profile to find the ARC connection.
 class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
                                      public ApkWebAppInstaller::Owner {

@@ -30,6 +30,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
@@ -241,7 +242,7 @@ public class TabGridDialogToolbarView extends FrameLayout {
     void setColorIconColor(@TabGroupColorId int colorId, boolean isIncognito) {
         mColorIconContainer.setVisibility(View.VISIBLE);
         final @ColorInt int color =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         getContext(), colorId, isIncognito);
 
         GradientDrawable gradientDrawable = (GradientDrawable) mColorIcon.getBackground();

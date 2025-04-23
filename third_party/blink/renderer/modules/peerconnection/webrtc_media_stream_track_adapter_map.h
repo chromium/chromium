@@ -44,7 +44,8 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
     bool is_initialized() const { return adapter_->is_initialized(); }
     void InitializeOnMainThread();
     MediaStreamComponent* track() const { return adapter_->track(); }
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track() const {
+    webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track()
+        const {
       return adapter_->webrtc_track();
     }
 

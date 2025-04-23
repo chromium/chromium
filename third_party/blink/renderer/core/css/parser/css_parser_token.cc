@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 
 #include <limits.h>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -231,7 +228,8 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
         // This wasn't parsed as an integer, so when we serialize it back,
         // it cannot be an integer. Otherwise, we would round-trip e.g.
         // “2.0” to “2”, which could make an invalid value suddenly valid.
-        if (strchr(str, '.') == nullptr && strchr(str, 'e') == nullptr) {
+        if (UNSAFE_TODO(strchr(str, '.')) == nullptr &&
+            UNSAFE_TODO(strchr(str, 'e')) == nullptr) {
           builder.Append(".0");
         }
         return;

@@ -54,6 +54,7 @@ class Node:
     self.parent = None        # Our parent unless we are the root element.
     self.uberclique = None    # Allows overriding uberclique for parts of tree
     self.source = None        # File that this node was parsed from
+    self.translate_genders = False  # Translate into multiple per-gender files.
 
   # This context handler allows you to write "with node:" and get a
   # line identifying the offending node if an exception escapes from the body
@@ -675,6 +676,16 @@ class Node:
       return data
 
     raise Exception('Invalid value for compression')
+
+  def SetTranslateGenders(self, translate_genders):
+    '''Set the 'translate_genders' option, which, if enabled, causes translation
+    output to be split into up to 4 gendered files ('OTHER', 'MASCULINE',
+    'FEMININE', 'NEUTER').
+
+    Args:
+      translate_genders: Whether or not to enable gender translation.
+    '''
+    self.translate_genders = translate_genders
 
 
 class ContentNode(Node):

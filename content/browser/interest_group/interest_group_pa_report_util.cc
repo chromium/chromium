@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -257,6 +259,18 @@ CalculateContributionBucketAndValue(
       bucket, value, contribution->filtering_id);
 }
 
+bool DoesRequestUseErrorEvent(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+
+  const auction_worklet::mojom::AggregatableReportForEventContributionPtr&
+      for_event_contrib = request.contribution->get_for_event_contribution();
+
+  return for_event_contrib->event_type->is_reserved_error();
+}
+
 }  // namespace
 
 PrivateAggregationParticipantData::PrivateAggregationParticipantData() =
@@ -351,7 +365,8 @@ FillInPrivateAggregationRequest(
                 /*contribution=*/std::move(
                     request->contribution->get_histogram_contribution()),
                 request->aggregation_mode,
-                std::move(request->debug_mode_details));
+                std::move(request->debug_mode_details),
+                /*error_event=*/std::nullopt);
 
     PrivateAggregationRequestWithEventType request_with_event_type(
         std::move(finalized_request), /*event_type=*/std::nullopt);
@@ -367,19 +382,24 @@ FillInPrivateAggregationRequest(
   const auction_worklet::mojom::EventTypePtr& event_type =
       contribution->get_for_event_contribution()->event_type;
   std::optional<std::string> non_reserved_event_type = std::nullopt;
-  std::optional<auction_worklet::mojom::ReservedEventType> reserved_event_type =
-      std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedNonErrorEventType>
+      reserved_non_error_event_type = std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedErrorEventType>
+      reserved_error_event_type = std::nullopt;
+
   if (event_type->is_non_reserved()) {
     non_reserved_event_type = event_type->get_non_reserved();
+  } else if (event_type->is_reserved_non_error()) {
+    reserved_non_error_event_type = event_type->get_reserved_non_error();
   } else {
-    reserved_event_type = event_type->get_reserved();
+    reserved_error_event_type = event_type->get_reserved_error();
   }
 
   if (is_winner) {
     // Don't run loss events for a winner.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedLoss) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedLoss) {
       return std::nullopt;
     }
   } else {
@@ -390,9 +410,9 @@ FillInPrivateAggregationRequest(
     }
 
     // Don't run win events for a loser.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedWin) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedWin) {
       return std::nullopt;
     }
   }
@@ -408,9 +428,26 @@ FillInPrivateAggregationRequest(
   PrivateAggregationRequestWithEventType request_with_event_type(
       auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
           std::move(calculated_contribution), request->aggregation_mode,
-          std::move(request->debug_mode_details)),
+          std::move(request->debug_mode_details),
+          ConvertErrorEventToPAggType(reserved_error_event_type)),
       non_reserved_event_type);
   return request_with_event_type;
+}
+
+bool ShouldKeepRequestOnlyIfReservedOnceRep(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  };
+
+  const auction_worklet::mojom::EventTypePtr& event_type =
+      request.contribution->get_for_event_contribution()->event_type;
+
+  // Note: all error events get this treatment.
+  return event_type->is_reserved_error() ||
+         (event_type->is_reserved_non_error() &&
+          event_type->get_reserved_non_error() ==
+              auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce);
 }
 
 bool IsPrivateAggregationRequestReservedOnce(
@@ -419,10 +456,10 @@ bool IsPrivateAggregationRequestReservedOnce(
     return false;
   }
   return request.contribution->get_for_event_contribution()
-             ->event_type->is_reserved() &&
+             ->event_type->is_reserved_non_error() &&
          request.contribution->get_for_event_contribution()
-                 ->event_type->get_reserved() ==
-             auction_worklet::mojom::ReservedEventType::kReservedOnce;
+                 ->event_type->get_reserved_non_error() ==
+             auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce;
 }
 
 void SplitContributionsIntoBatchesThenSendToHost(
@@ -435,10 +472,10 @@ void SplitContributionsIntoBatchesThenSendToHost(
   CHECK_EQ(reporting_origin.scheme(), url::kHttpsScheme);
 
   // Split the vector of requests into those with matching debug mode details.
-  std::map<
-      blink::mojom::DebugModeDetailsPtr,
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
-      contributions_map;
+  std::map<blink::mojom::DebugModeDetailsPtr,
+           std::vector<
+               auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
+      requests_map;
 
   bool is_debug_mode_allowed = pa_manager.IsDebugModeAllowed(
       /*top_frame_origin=*/main_frame_origin, reporting_origin);
@@ -451,15 +488,17 @@ void SplitContributionsIntoBatchesThenSendToHost(
     CHECK_EQ(request->aggregation_mode,
              blink::mojom::AggregationServiceMode::kDefault);
 
+    blink::mojom::DebugModeDetailsPtr debug_mode_details =
+        std::move(request->debug_mode_details);
+
     // If debug mode will be ignored by the Private Aggregation layer, we
     // override the value here to allow the contributions to be batched
     // together.
     if (!is_debug_mode_allowed) {
-      request->debug_mode_details = blink::mojom::DebugModeDetails::New();
+      debug_mode_details = blink::mojom::DebugModeDetails::New();
     }
 
-    contributions_map[std::move(request->debug_mode_details)].push_back(
-        std::move(request->contribution));
+    requests_map[std::move(debug_mode_details)].push_back(std::move(request));
   }
 
   if (aggregation_coordinator_origin &&
@@ -469,7 +508,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
     return;
   }
 
-  for (auto& [debug_mode_details, contributions] : contributions_map) {
+  for (auto& [debug_mode_details, requests_vec] : requests_map) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote_host;
 
     bool bound = pa_manager.BindNewReceiver(
@@ -490,7 +529,19 @@ void SplitContributionsIntoBatchesThenSendToHost(
     if (debug_mode_details->is_enabled) {
       remote_host->EnableDebugMode(std::move(debug_mode_details->debug_key));
     }
-    remote_host->ContributeToHistogram(std::move(contributions));
+
+    for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+             request : requests_vec) {
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_vec;
+      contribution_vec.push_back(std::move(request->contribution));
+      if (request->error_event.has_value()) {
+        remote_host->ContributeToHistogramOnEvent(request->error_event.value(),
+                                                  std::move(contribution_vec));
+      } else {
+        remote_host->ContributeToHistogram(std::move(contribution_vec));
+      }
+    }
     remote_host.reset();
   }
 }
@@ -519,6 +570,9 @@ std::optional<std::string> ValidatePrivateAggregationRequests(
   bool additional_extensions_allowed = base::FeatureList::IsEnabled(
       blink::features::
           kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  bool error_events_allowed = base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
   for (const auto& request : pa_requests) {
     // The mojom API declaration should ensure none of these are null.
     CHECK(!request.is_null());
@@ -529,11 +583,44 @@ std::optional<std::string> ValidatePrivateAggregationRequests(
 
     if (!auction_worklet::
             IsValidPrivateAggregationRequestForAdditionalExtensions(
-                *request, additional_extensions_allowed)) {
+                *request, additional_extensions_allowed) ||
+        (!error_events_allowed && DoesRequestUseErrorEvent(*request))) {
       return "Private Aggregation request using disabled features";
     }
   }
   return std::nullopt;
+}
+
+std::optional<blink::mojom::PrivateAggregationErrorEvent>
+ConvertErrorEventToPAggType(
+    std::optional<auction_worklet::mojom::ReservedErrorEventType>
+        reserved_error_event) {
+  if (!reserved_error_event.has_value()) {
+    return std::nullopt;
+  }
+
+  using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
+  using PAggErrorEvent = blink::mojom::PrivateAggregationErrorEvent;
+  constexpr auto kErrorEventMap =
+      base::MakeFixedFlatMap<ReservedErrorEventType, PAggErrorEvent>({
+          {ReservedErrorEventType::kReportSuccess,
+           PAggErrorEvent::kReportSuccess},
+          {ReservedErrorEventType::kTooManyContributions,
+           PAggErrorEvent::kTooManyContributions},
+          {ReservedErrorEventType::kEmptyReportDropped,
+           PAggErrorEvent::kEmptyReportDropped},
+          {ReservedErrorEventType::kPendingReportLimitReached,
+           PAggErrorEvent::kPendingReportLimitReached},
+          {ReservedErrorEventType::kInsufficientBudget,
+           PAggErrorEvent::kInsufficientBudget},
+
+          // Contributions conditional on this should have been dropped by the
+          // script runner if it was not triggered.
+          {ReservedErrorEventType::kUncaughtError,
+           PAggErrorEvent::kAlreadyTriggeredExternalError},
+      });
+
+  return kErrorEventMap.at(*reserved_error_event);
 }
 
 }  // namespace content

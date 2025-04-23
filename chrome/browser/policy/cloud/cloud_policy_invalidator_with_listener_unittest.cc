@@ -501,8 +501,13 @@ CloudPolicyInvalidatorWithListenerTestBase::GetPolicyInvalidationScope() const {
 
 bool CloudPolicyInvalidatorWithListenerTestBase::CheckPolicyRefreshed(
     base::TimeDelta delay) {
-  base::TimeDelta max_delay =
-      delay + base::Milliseconds(CloudPolicyInvalidator::kMaxFetchDelayMin);
+  const auto* delay_policy_value = store_.policy_map().GetValue(
+      key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
+  const base::TimeDelta max_delay =
+      delay +
+      (delay_policy_value
+           ? base::Milliseconds(delay_policy_value->GetInt())
+           : base::Milliseconds(CloudPolicyInvalidator::kMaxFetchDelayMax));
 
   if (!task_runner_->HasPendingTask()) {
     return false;
@@ -577,6 +582,23 @@ TEST_F(CloudPolicyInvalidatorWithListenerTest, DisconnectCoreThenInitialize) {
 }
 
 TEST_F(CloudPolicyInvalidatorWithListenerTest,
+       DisconnectCoreThenIgnoreInvalidations) {
+  StartInvalidator();
+  StorePolicy();
+
+  // Disconnect core, change invalidations state and fire invalidation. The
+  // invalidations should be enabled but ignored.
+  DisconnectCore();
+  DisableInvalidationService();
+  EnableInvalidationService();
+  FireInvalidation(kTopicA, V(1), "test");
+
+  EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_TRUE(CheckPolicyNotRefreshed());
+  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
+}
+
+TEST_F(CloudPolicyInvalidatorWithListenerTest,
        InitializeThenStartRefreshScheduler) {
   // Make sure registration occurs and invalidations are processed when
   // Initialize is called before starting the refresh scheduler.
@@ -632,6 +654,28 @@ TEST_F(CloudPolicyInvalidatorWithListenerTest, UnregisterOnStoreLoaded) {
 TEST_F(CloudPolicyInvalidatorWithListenerTest, HandleInvalidation) {
   // Register and fire invalidation
   StorePolicy();
+  StartInvalidator();
+  EXPECT_TRUE(InvalidationsEnabled());
+  const invalidation::Invalidation inv =
+      FireInvalidation(kTopicA, V(12), "test_payload");
+
+  // Make sure client info is set as soon as the invalidation is received.
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  EXPECT_TRUE(CheckPolicyRefreshed());
+
+  // Make sure invalidation data is not removed from the client until the store
+  // is loaded.
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  StorePolicy(V(12));
+  EXPECT_TRUE(ClientInvalidationInfoIsUnset());
+  EXPECT_EQ(V(12), GetHighestHandledInvalidationVersion());
+}
+
+TEST_F(CloudPolicyInvalidatorWithListenerTest,
+       HandleInvalidationBeforePolicyLoaded) {
+  // Register and fire invalidation
   StartInvalidator();
   EXPECT_TRUE(InvalidationsEnabled());
   const invalidation::Invalidation inv =

@@ -101,10 +101,11 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
                 {base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                 std::move(serialize_log_callback)
-                    .Then(std::move(upload_complete))
                     .Then(base::BindPostTask(
                         task_runner,
-                        base::BindOnce(std::move(done_callback), true))));
+                        base::BindOnce(std::move(done_callback)
+                                           .Then(std::move(upload_complete)),
+                                       true))));
           },
           std::move(provide_embedder_metrics),
           std::move(serialize_log_callback), std::move(done_callback),

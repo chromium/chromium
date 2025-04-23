@@ -40,6 +40,10 @@ class WaylandWindowObserver : public base::CheckedObserver {
   // WaylandWindowManager::GetCurrentKeyboardFocusedWindow().
   virtual void OnKeyboardFocusedWindowChanged();
 
+  // Called when a window is being permanently removed from the
+  // session it did belong to.
+  virtual void OnWindowRemovedFromSession(WaylandWindow* window);
+
  protected:
   ~WaylandWindowObserver() override;
 };

@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_navigation_widget.h"
 
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -253,8 +254,9 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
       weak_ptr_factory_{this};
 };
 
-class ShelfNavigationWidgetDelegate : public views::AccessiblePaneView,
-                                      public views::WidgetDelegate {
+class ShelfNavigationWidgetDelegate
+    : public views::AccessiblePaneView,
+      public AccessibilityFocusableWidgetDelegate {
  public:
   ShelfNavigationWidgetDelegate(Shelf* shelf, ShelfView* shelf_view);
 
@@ -271,7 +273,6 @@ class ShelfNavigationWidgetDelegate : public views::AccessiblePaneView,
   View* GetDefaultFocusableChild() override;
 
   // views::WidgetDelegate:
-  bool CanActivate() const override;
   views::Widget* GetWidget() override { return View::GetWidget(); }
   const views::Widget* GetWidget() const override { return View::GetWidget(); }
 
@@ -297,8 +298,9 @@ class ShelfNavigationWidgetDelegate : public views::AccessiblePaneView,
 ShelfNavigationWidgetDelegate::ShelfNavigationWidgetDelegate(
     Shelf* shelf,
     ShelfView* shelf_view)
-    : shelf_(shelf) {
-  SetOwnedByWidget(true);
+    : AccessibilityFocusableWidgetDelegate(/*register_widget=*/false),
+      shelf_(shelf) {
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   set_allow_deactivate_on_esc(true);
 
@@ -334,12 +336,6 @@ ShelfNavigationWidgetDelegate::ShelfNavigationWidgetDelegate(
 }
 
 ShelfNavigationWidgetDelegate::~ShelfNavigationWidgetDelegate() = default;
-
-bool ShelfNavigationWidgetDelegate::CanActivate() const {
-  // We don't want mouse clicks to activate us, but we need to allow
-  // activation when the user is using the keyboard (FocusCycler).
-  return Shell::Get()->focus_cycler()->widget_activating() == GetWidget();
-}
 
 views::FocusTraversable*
 ShelfNavigationWidgetDelegate::GetPaneFocusTraversable() {

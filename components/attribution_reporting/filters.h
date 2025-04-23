@@ -88,13 +88,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
   base::DictValue ToJson() const;
 
   bool Matches(mojom::SourceType,
-               const base::Time& source_time,
-               const base::Time& trigger_time,
+               base::Time source_time,
+               base::Time trigger_time,
                const FilterPair&) const;
 
   bool MatchesForTesting(mojom::SourceType,
-                         const base::Time& source_time,
-                         const base::Time& trigger_time,
+                         base::Time source_time,
+                         base::Time trigger_time,
                          const FiltersDisjunction&,
                          bool negated) const;
 
@@ -104,8 +104,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
   explicit FilterData(FilterValues);
 
   bool Matches(mojom::SourceType,
-               const base::Time& source_time,
-               const base::Time& trigger_time,
+               base::Time source_time,
+               base::Time trigger_time,
                const FiltersDisjunction&,
                bool negated) const;
 

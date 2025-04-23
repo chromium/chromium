@@ -66,12 +66,15 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -82,6 +85,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -90,6 +94,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -101,6 +106,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -144,6 +150,7 @@ import java.util.Optional;
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 public class TabGridDialogMediatorUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
@@ -196,6 +203,11 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Tracker mTracker;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private View mCardView;
+    @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
@@ -224,6 +236,7 @@ public class TabGridDialogMediatorUnitTest {
         mActionTester = new UserActionTester();
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.isNativeInitialized()).thenReturn(true);
@@ -1927,7 +1940,9 @@ public class TabGridDialogMediatorUnitTest {
                         mShowColorPickerPopupRunnable,
                         mActionConfirmationManager,
                         mModalDialogManager,
-                        mDesktopWindowStateManager);
+                        mDesktopWindowStateManager,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
     }
 
     @Test
@@ -1950,6 +1965,26 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onAppHeaderStateChanged(state);
 
         assertThat(mModel.get(TabGridDialogProperties.APP_HEADER_HEIGHT), equalTo(10));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void onLongPress_tabGroupParityEnabled() {
+        CancelLongPressTabItemEventListener cancelLongPress =
+                mMediator.onLongPressEvent(TAB1_ID, mCardView, mTabGridContextMenuCoordinator);
+        verify(mTabGridContextMenuCoordinator).showMenu(any(), eq(TAB1_ID));
+
+        assertNotNull(cancelLongPress);
+        cancelLongPress.cancelLongPress();
+        verify(mTabGridContextMenuCoordinator).dismiss();
+    }
+
+    @Test
+    public void onLongPress_tabGroupParityDisabled() {
+        CancelLongPressTabItemEventListener cancelLongPress =
+                mMediator.onLongPressEvent(TAB1_ID, mCardView);
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), eq(TAB1_ID));
+        assertNull(cancelLongPress);
     }
 
     private void resetForDataSharing(boolean isShared, GroupMember... members) {

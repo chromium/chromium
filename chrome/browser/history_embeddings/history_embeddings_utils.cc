@@ -130,6 +130,7 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       "enableHistoryEmbeddingsImages",
       history_embeddings::GetFeatureParameters().enable_images_for_results);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+      {"foundSearchResults", IDS_HISTORY_FOUND_SEARCH_RESULTS},
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
       {"historyEmbeddingsWithAnswersResultsHeading",

@@ -23,11 +23,6 @@
  * SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
 #include "base/notreached.h"
@@ -36,62 +31,64 @@
 
 namespace blink {
 
-static const DateTimeFormat::FieldType kLowerCaseToFieldTypeMap[26] = {
-    DateTimeFormat::kFieldTypePeriod,                   // a
-    DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight,   // b
-    DateTimeFormat::kFieldTypeLocalDayOfWeekStandAlon,  // c
-    DateTimeFormat::kFieldTypeDayOfMonth,               // d
-    DateTimeFormat::kFieldTypeLocalDayOfWeek,           // e
-    DateTimeFormat::kFieldTypeInvalid,                  // f
-    DateTimeFormat::kFieldTypeModifiedJulianDay,        // g
-    DateTimeFormat::kFieldTypeHour12,                   // h
-    DateTimeFormat::kFieldTypeInvalid,                  // i
-    DateTimeFormat::kFieldTypeInvalid,                  // j
-    DateTimeFormat::kFieldTypeHour24,                   // k
-    DateTimeFormat::kFieldTypeInvalid,                  // l
-    DateTimeFormat::kFieldTypeMinute,                   // m
-    DateTimeFormat::kFieldTypeInvalid,                  // n
-    DateTimeFormat::kFieldTypeInvalid,                  // o
-    DateTimeFormat::kFieldTypeInvalid,                  // p
-    DateTimeFormat::kFieldTypeQuaterStandAlone,         // q
-    DateTimeFormat::kFieldTypeYearRelatedGregorian,     // r
-    DateTimeFormat::kFieldTypeSecond,                   // s
-    DateTimeFormat::kFieldTypeInvalid,                  // t
-    DateTimeFormat::kFieldTypeExtendedYear,             // u
-    DateTimeFormat::kFieldTypeNonLocationZone,          // v
-    DateTimeFormat::kFieldTypeWeekOfYear,               // w
-    DateTimeFormat::kFieldTypeZoneIso8601,              // x
-    DateTimeFormat::kFieldTypeYear,                     // y
-    DateTimeFormat::kFieldTypeZone,                     // z
+static const std::array<DateTimeFormat::FieldType, 26>
+    kLowerCaseToFieldTypeMap = {
+        DateTimeFormat::kFieldTypePeriod,                   // a
+        DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight,   // b
+        DateTimeFormat::kFieldTypeLocalDayOfWeekStandAlon,  // c
+        DateTimeFormat::kFieldTypeDayOfMonth,               // d
+        DateTimeFormat::kFieldTypeLocalDayOfWeek,           // e
+        DateTimeFormat::kFieldTypeInvalid,                  // f
+        DateTimeFormat::kFieldTypeModifiedJulianDay,        // g
+        DateTimeFormat::kFieldTypeHour12,                   // h
+        DateTimeFormat::kFieldTypeInvalid,                  // i
+        DateTimeFormat::kFieldTypeInvalid,                  // j
+        DateTimeFormat::kFieldTypeHour24,                   // k
+        DateTimeFormat::kFieldTypeInvalid,                  // l
+        DateTimeFormat::kFieldTypeMinute,                   // m
+        DateTimeFormat::kFieldTypeInvalid,                  // n
+        DateTimeFormat::kFieldTypeInvalid,                  // o
+        DateTimeFormat::kFieldTypeInvalid,                  // p
+        DateTimeFormat::kFieldTypeQuaterStandAlone,         // q
+        DateTimeFormat::kFieldTypeYearRelatedGregorian,     // r
+        DateTimeFormat::kFieldTypeSecond,                   // s
+        DateTimeFormat::kFieldTypeInvalid,                  // t
+        DateTimeFormat::kFieldTypeExtendedYear,             // u
+        DateTimeFormat::kFieldTypeNonLocationZone,          // v
+        DateTimeFormat::kFieldTypeWeekOfYear,               // w
+        DateTimeFormat::kFieldTypeZoneIso8601,              // x
+        DateTimeFormat::kFieldTypeYear,                     // y
+        DateTimeFormat::kFieldTypeZone,                     // z
 };
 
-static const DateTimeFormat::FieldType kUpperCaseToFieldTypeMap[26] = {
-    DateTimeFormat::kFieldTypeMillisecondsInDay,  // A
-    DateTimeFormat::kFieldTypePeriodFlexible,     // B
-    DateTimeFormat::kFieldTypeInvalid,            // C
-    DateTimeFormat::kFieldTypeDayOfYear,          // D
-    DateTimeFormat::kFieldTypeDayOfWeek,          // E
-    DateTimeFormat::kFieldTypeDayOfWeekInMonth,   // F
-    DateTimeFormat::kFieldTypeEra,                // G
-    DateTimeFormat::kFieldTypeHour23,             // H
-    DateTimeFormat::kFieldTypeInvalid,            // I
-    DateTimeFormat::kFieldTypeInvalid,            // J
-    DateTimeFormat::kFieldTypeHour11,             // K
-    DateTimeFormat::kFieldTypeMonthStandAlone,    // L
-    DateTimeFormat::kFieldTypeMonth,              // M
-    DateTimeFormat::kFieldTypeInvalid,            // N
-    DateTimeFormat::kFieldTypeZoneLocalized,      // O
-    DateTimeFormat::kFieldTypeInvalid,            // P
-    DateTimeFormat::kFieldTypeQuater,             // Q
-    DateTimeFormat::kFieldTypeInvalid,            // R
-    DateTimeFormat::kFieldTypeFractionalSecond,   // S
-    DateTimeFormat::kFieldTypeInvalid,            // T
-    DateTimeFormat::kFieldTypeYearCyclicName,     // U
-    DateTimeFormat::kFieldTypeZoneId,             // V
-    DateTimeFormat::kFieldTypeWeekOfMonth,        // W
-    DateTimeFormat::kFieldTypeZoneIso8601Z,       // X
-    DateTimeFormat::kFieldTypeYearOfWeekOfYear,   // Y
-    DateTimeFormat::kFieldTypeRFC822Zone,         // Z
+static const std::array<DateTimeFormat::FieldType, 26>
+    kUpperCaseToFieldTypeMap = {
+        DateTimeFormat::kFieldTypeMillisecondsInDay,  // A
+        DateTimeFormat::kFieldTypePeriodFlexible,     // B
+        DateTimeFormat::kFieldTypeInvalid,            // C
+        DateTimeFormat::kFieldTypeDayOfYear,          // D
+        DateTimeFormat::kFieldTypeDayOfWeek,          // E
+        DateTimeFormat::kFieldTypeDayOfWeekInMonth,   // F
+        DateTimeFormat::kFieldTypeEra,                // G
+        DateTimeFormat::kFieldTypeHour23,             // H
+        DateTimeFormat::kFieldTypeInvalid,            // I
+        DateTimeFormat::kFieldTypeInvalid,            // J
+        DateTimeFormat::kFieldTypeHour11,             // K
+        DateTimeFormat::kFieldTypeMonthStandAlone,    // L
+        DateTimeFormat::kFieldTypeMonth,              // M
+        DateTimeFormat::kFieldTypeInvalid,            // N
+        DateTimeFormat::kFieldTypeZoneLocalized,      // O
+        DateTimeFormat::kFieldTypeInvalid,            // P
+        DateTimeFormat::kFieldTypeQuater,             // Q
+        DateTimeFormat::kFieldTypeInvalid,            // R
+        DateTimeFormat::kFieldTypeFractionalSecond,   // S
+        DateTimeFormat::kFieldTypeInvalid,            // T
+        DateTimeFormat::kFieldTypeYearCyclicName,     // U
+        DateTimeFormat::kFieldTypeZoneId,             // V
+        DateTimeFormat::kFieldTypeWeekOfMonth,        // W
+        DateTimeFormat::kFieldTypeZoneIso8601Z,       // X
+        DateTimeFormat::kFieldTypeYearOfWeekOfYear,   // Y
+        DateTimeFormat::kFieldTypeRFC822Zone,         // Z
 };
 
 static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {

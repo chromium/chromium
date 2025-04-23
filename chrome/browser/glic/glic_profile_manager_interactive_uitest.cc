@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -72,7 +73,11 @@ class GlicProfileManagerUiTest
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
-    GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
+    GlicProfileManager::ForceMemoryPressureForTesting(
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    GlicProfileManager::ForceConnectionTypeForTesting(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
     fre_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -83,7 +88,8 @@ class GlicProfileManagerUiTest
 
   void TearDown() override {
     test::InteractiveGlicTest::TearDown();
-    GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
+    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -145,7 +151,7 @@ class GlicProfileManagerUiTest
         if (!warmed) {
           return false;
         }
-        auto* contents = service->window_controller().GetWebContents();
+        auto* contents = service->host().webui_contents();
         if (!contents) {
           contents = service->window_controller().GetFreWebContents();
         }
@@ -158,32 +164,34 @@ class GlicProfileManagerUiTest
   }
 
   auto ResetMemoryPressure() {
-    return Do([this]() {
-      forced_memory_pressure_ = base::MemoryPressureMonitor::
-          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+    return Do([]() {
+      GlicProfileManager::ForceMemoryPressureForTesting(
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_NONE);
     });
   }
 
   auto CacheClientContents(bool primary_profile) {
     return Do([this, primary_profile]() {
-      auto& controller = GetService(primary_profile)->window_controller();
+      auto* service = GetService(primary_profile);
       if (ShouldWarmFRE()) {
-        web_client_contents_ = controller.GetFreWebContents();
+        web_client_contents_ = service->window_controller().GetFreWebContents();
       } else {
-        web_client_contents_ = controller.GetWebContents();
+        web_client_contents_ = service->host().webui_contents();
       }
     });
   }
 
   auto CheckCachedClientContents(bool primary_profile) {
     return Do([this, primary_profile]() {
+      auto* service = GetService(primary_profile);
       auto& controller = GetService(primary_profile)->window_controller();
       if (ShouldWarmFRE()) {
         EXPECT_EQ(web_client_contents_, controller.GetFreWebContents());
         EXPECT_NE(nullptr, controller.GetFreWebContents());
       } else {
-        EXPECT_EQ(web_client_contents_, controller.GetWebContents());
-        EXPECT_NE(nullptr, controller.GetWebContents());
+        EXPECT_EQ(web_client_contents_, service->host().webui_contents());
+        EXPECT_NE(nullptr, service->host().webui_contents());
       }
       web_client_contents_ = nullptr;
     });
@@ -197,8 +205,9 @@ class GlicProfileManagerUiTest
 
   auto SendMemoryPressureSignal(bool primary_profile) {
     return Do([this, primary_profile]() {
-      forced_memory_pressure_ = base::MemoryPressureMonitor::
-          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
+      GlicProfileManager::ForceMemoryPressureForTesting(
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_CRITICAL);
       GetService(primary_profile)
           ->OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel::
                                  MEMORY_PRESSURE_LEVEL_CRITICAL);
@@ -210,9 +219,6 @@ class GlicProfileManagerUiTest
   }
 
  private:
-  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
-      base::MemoryPressureMonitor::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL;
   std::unique_ptr<GlicTestEnvironment> test_env_for_second_profile_;
   net::EmbeddedTestServer fre_server_;
   raw_ptr<content::WebContents> web_client_contents_ = nullptr;

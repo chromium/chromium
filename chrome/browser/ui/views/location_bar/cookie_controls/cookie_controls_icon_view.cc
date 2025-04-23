@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -60,24 +63,25 @@ CookieControlsIconView::CookieControlsIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "CookieControls"),
-      browser_(browser) {
+      browser_(browser),
+      bubble_coordinator_(CHECK_DEREF(
+          browser->GetFeatures().cookie_controls_bubble_coordinator())) {
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
-  bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
 
-CookieControlsBubbleCoordinator*
+CookieControlsBubbleCoordinator&
 CookieControlsIconView::GetCoordinatorForTesting() const {
   return bubble_coordinator_.get();
 }
 
 void CookieControlsIconView::SetCoordinatorForTesting(
-    std::unique_ptr<CookieControlsBubbleCoordinator> coordinator) {
-  bubble_coordinator_ = std::move(coordinator);
+    CookieControlsBubbleCoordinator& coordinator) {
+  bubble_coordinator_ = coordinator;
 }
 
 void CookieControlsIconView::DisableUpdatesForTesting() {
@@ -200,7 +204,9 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     protections_on_ = protections_on;
     blocking_status_ = blocking_status;
     should_highlight_ = should_highlight;
-    UpdateIcon();
+    if (!bubble_coordinator_->IsReloadingState()) {
+      UpdateIcon();
+    }
   }
 }
 
@@ -261,6 +267,9 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // setting.
   if (ShouldBeVisible()) {
     GetViewAccessibility().SetDescription(u"");
+    if (base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx)) {
+      UpdateIcon();
+    }
     // Animate the icon to provide a visual confirmation to the user that their
     // protection status on the site has changed.
     AnimateIn(GetLabelForStatus());
@@ -299,6 +308,7 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
       feature_engagement::kIPHCookieControlsFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   bubble_coordinator_->ShowBubble(
+      browser_->GetBrowserView().toolbar_button_provider(),
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
   CHECK(ShouldBeVisible());
   RecordOpenedAction(icon_visible_, protections_on_);

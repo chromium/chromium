@@ -29,7 +29,7 @@ void ReleaseFrameToDispatcher(
     scoped_refptr<CanvasResource> oldImage,
     viz::ResourceId resourceId) {
   if (dispatcher) {
-    dispatcher->ReclaimResource(resourceId, std::move(oldImage));
+    dispatcher->OnPlaceholderReleasedResource(resourceId, std::move(oldImage));
   }
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/uuid.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -180,7 +182,12 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     const auto color_id = GetTabGroupDialogColorId(tab_group->color());
     const auto group_icon = ui::ImageModel::FromVectorIcon(
         kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
-    const auto title = tab_group->title();
+    auto title = tab_group->title();
+    if (title.empty()) {
+      title = l10n_util::GetPluralStringFUTF16(
+          IDS_SAVED_TAB_GROUP_TABS_COUNT,
+          static_cast<int>(tab_group->saved_tabs().size()));
+    }
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
     const int command_id = GenerateTabGroupCommandID(i);
@@ -189,21 +196,9 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     // in bookmarks bar has normal tab groups items which show context menus
     // with right click.
     if (show_submenu_) {
-      menu_model->AddSubMenuWithIcon(
-          command_id,
-          title.empty() ? l10n_util::GetPluralStringFUTF16(
-                              IDS_SAVED_TAB_GROUP_TABS_COUNT,
-                              static_cast<int>(tab_group->saved_tabs().size()))
-                        : title,
-          nullptr, group_icon);
+      menu_model->AddSubMenuWithIcon(command_id, title, nullptr, group_icon);
     } else {
-      menu_model->AddItemWithIcon(
-          command_id,
-          title.empty() ? l10n_util::GetPluralStringFUTF16(
-                              IDS_SAVED_TAB_GROUP_TABS_COUNT,
-                              static_cast<int>(tab_group->saved_tabs().size()))
-                        : title,
-          group_icon);
+      menu_model->AddItemWithIcon(command_id, title, group_icon);
     }
 
     std::optional<int> index = menu_model->GetIndexOfCommandId(command_id);
@@ -217,6 +212,19 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
                                    kPeopleGroupIcon, ui::kColorMenuIcon,
                                    ui::SimpleMenuModel::kDefaultIconSize));
     }
+
+    std::u16string shared_state =
+        tab_group->is_shared_tab_group()
+            ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
+            : u"";
+    std::u16string open_state =
+        tab_group->local_group_id().has_value()
+            ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)
+            : l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_CLOSED);
+    menu_model->SetAccessibleNameAt(
+        index.value(),
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_GROUP_MENU_ITEM_FORMAT,
+                                   shared_state, title, open_state));
 
     // Set the first tab group item with element id `kTabGroup`.
     if (i == 0) {
@@ -368,6 +376,17 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
       widget_, /*button_controller=*/nullptr, gfx::Rect(p, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, source_type);
   return true;
+}
+
+bool STGEverythingMenu::GetAccelerator(int id,
+                                       ui::Accelerator* accelerator) const {
+  if (id == IDC_CREATE_NEW_TAB_GROUP) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    CHECK(browser_view);
+    return browser_view->GetAccelerator(id, accelerator);
+  }
+
+  return false;
 }
 
 STGEverythingMenu::~STGEverythingMenu() = default;

@@ -49,6 +49,7 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #if BUILDFLAG(RTC_USE_H265)
@@ -139,7 +140,7 @@ class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
   int width() const override { return width_; }
   int height() const override { return height_; }
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
     if (allow_to_i420_) {
       return webrtc::I420Buffer::Create(width_, height_);
     } else {
@@ -685,7 +686,7 @@ class RTCVideoEncoderTest {
     return codec;
   }
 
-  void FillFrameBuffer(rtc::scoped_refptr<webrtc::I420Buffer> frame) {
+  void FillFrameBuffer(webrtc::scoped_refptr<webrtc::I420Buffer> frame) {
     CHECK(libyuv::I420Rect(frame->MutableDataY(), frame->StrideY(),
                            frame->MutableDataU(), frame->StrideU(),
                            frame->MutableDataV(), frame->StrideV(), 0, 0,
@@ -1059,7 +1060,7 @@ class RTCVideoEncoderFrameSizeChangeTest : public RTCVideoEncoderEncodeTest {
               base::Unretained(client_), info));
 
       for (int i = 0; i < kFramesToEncodeBeforeFrameSizeChange; i++) {
-        const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
             webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
         FillFrameBuffer(buffer);
         std::vector<webrtc::VideoFrameType> frame_types;
@@ -1172,7 +1173,7 @@ TEST_F(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
       .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -1242,7 +1243,7 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
                 media::EncoderStatus::Codes::kEncoderFailedEncode));
       }));
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -1286,9 +1287,9 @@ TEST_F(RTCVideoEncoderEncodeTest, NoSoftwareFallbackOnMappableNativeInput) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> mapped_buffer(
-      rtc::make_ref_counted<FakeNativeBufferI420>(480, 360,
-                                                  /*allow_to_i420=*/false));
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> mapped_buffer(
+      webrtc::make_ref_counted<FakeNativeBufferI420>(480, 360,
+                                                     /*allow_to_i420=*/false));
 
   std::vector<webrtc::VideoFrameType> frame_types;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -1320,7 +1321,7 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   frame->set_timestamp(base::Milliseconds(1));
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
@@ -1363,7 +1364,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
       .Times(2)
       .WillRepeatedly(Invoke(this, &RTCVideoEncoderTest::VerifyEncodedFrame));
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -1376,7 +1377,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
                                      .build(),
                                  &frame_types));
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> upscaled_buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> upscaled_buffer =
       webrtc::I420Buffer::Create(2 * kInputFrameWidth, 2 * kInputFrameHeight);
   FillFrameBuffer(upscaled_buffer);
   webrtc::VideoFrame rtc_frame = webrtc::VideoFrame::Builder()
@@ -1405,7 +1406,7 @@ TEST_F(RTCVideoEncoderEncodeTest, PreserveTimestamps) {
 
   EXPECT_CALL(*mock_vea_, Encode(_, _))
       .WillOnce(Invoke(this, &RTCVideoEncoderTest::ReturnFrameWithTimeStamp));
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -1415,7 +1416,8 @@ TEST_F(RTCVideoEncoderEncodeTest, PreserveTimestamps) {
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build();
-  rtc_frame.set_timestamp_us(capture_time_ms * rtc::kNumMicrosecsPerMillisec);
+  rtc_frame.set_timestamp_us(capture_time_ms *
+                             webrtc::kNumMicrosecsPerMillisec);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(rtc_frame, &frame_types));
 }
@@ -1432,7 +1434,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   frame->set_timestamp(base::Milliseconds(1));
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
@@ -1464,7 +1466,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeVP9TemporalLayer) {
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
   size_t kNumEncodeFrames = 5u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -1553,7 +1555,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
   DropFrameVerifier dropframe_verifier;
   rtc_encoder_->RegisterEncodeCompleteCallback(&dropframe_verifier);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -1660,7 +1662,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
   CodecSpecificVerifier sl_verifier(sl_codec);
   rtc_encoder_->RegisterEncodeCompleteCallback(&sl_verifier);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -1749,7 +1751,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
   DropFrameVerifier dropframe_verifier;
   rtc_encoder_->RegisterEncodeCompleteCallback(&dropframe_verifier);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -1900,7 +1902,7 @@ TEST_F(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
     metadata.vp9->reference_lower_spatial_layers = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
@@ -1956,7 +1958,7 @@ TEST_F(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
   });
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
@@ -2021,7 +2023,7 @@ TEST_F(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
     metadata.vp9->reference_lower_spatial_layers = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
@@ -2192,7 +2194,7 @@ TEST_F(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     metadata.vp9->reference_lower_spatial_layers = true;
     client_->BitstreamBufferReady(/*buffer_id=*/2, metadata);
   });
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types{
@@ -2317,7 +2319,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 
   size_t kNumEncodeFrames = 3u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -2358,7 +2360,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 
   ResetSVCLayerFrameTimes();
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(tl_codec.width, tl_codec.height);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -2489,7 +2491,7 @@ TEST_F(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
                 media::EncoderStatus::Codes::kEncoderFailedEncode));
       }));
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -2551,7 +2553,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
 
   size_t kNumEncodeFrames = 5u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -2601,7 +2603,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   // Encode first frame: full size. This will pass through to the encoder.
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
@@ -2664,13 +2666,14 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
 
    private:
     base::WaitableEvent waiter_;
-    rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> last_encoded_image_;
+    webrtc::scoped_refptr<webrtc::EncodedImageBufferInterface>
+        last_encoded_image_;
   };
 
   EnodedBufferLifetimeVerifier lifetime_verifier;
   rtc_encoder_->RegisterEncodeCompleteCallback(&lifetime_verifier);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -2759,7 +2762,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   // dropped frames and zero encoded frames.
   base::WaitableEvent event;
   for (size_t i = 0; i < kMaxFramesInEncoder; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -2787,7 +2790,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   event.Reset();
   dropframe_verifier.SetEvent(&event);
   EXPECT_CALL(*mock_vea_, Encode).Times(0);
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -2844,14 +2847,14 @@ class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
   explicit FakeH265ParameterSetsTracker(
       H265ParameterSetsTracker::PacketAction action)
       : action_(action) {}
-  explicit FakeH265ParameterSetsTracker(rtc::ArrayView<const uint8_t> prefix)
+  explicit FakeH265ParameterSetsTracker(webrtc::ArrayView<const uint8_t> prefix)
       : action_(H265ParameterSetsTracker::PacketAction::kInsert),
         prefix_(prefix) {
     EXPECT_GT(prefix.size(), 0u);
   }
 
   FixedBitstream MaybeFixBitstream(
-      rtc::ArrayView<const uint8_t> bitstream) override {
+      webrtc::ArrayView<const uint8_t> bitstream) override {
     FixedBitstream fixed;
     fixed.action = action_;
     if (prefix_.size() > 0) {
@@ -2866,13 +2869,13 @@ class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
 
  private:
   H265ParameterSetsTracker::PacketAction action_;
-  rtc::ArrayView<const uint8_t> prefix_;
+  webrtc::ArrayView<const uint8_t> prefix_;
 };
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
   class FixedBitstreamVerifier : public webrtc::EncodedImageCallback {
    public:
-    explicit FixedBitstreamVerifier(rtc::ArrayView<const uint8_t> prefix,
+    explicit FixedBitstreamVerifier(webrtc::ArrayView<const uint8_t> prefix,
                                     size_t encoded_image_size)
         : prefix_(prefix), encoded_image_size_(encoded_image_size) {}
 
@@ -2880,9 +2883,9 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
         const webrtc::EncodedImage& encoded_image,
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
       EXPECT_EQ(encoded_image.size(), encoded_image_size_ + prefix_.size());
-      EXPECT_THAT(
-          rtc::ArrayView<const uint8_t>(encoded_image.data(), prefix_.size()),
-          ::testing::ElementsAreArray(prefix_));
+      EXPECT_THAT(webrtc::ArrayView<const uint8_t>(encoded_image.data(),
+                                                   prefix_.size()),
+                  ::testing::ElementsAreArray(prefix_));
       waiter_.Signal();
       return Result(Result::OK);
     }
@@ -2891,7 +2894,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
 
    private:
     base::WaitableEvent waiter_;
-    rtc::ArrayView<const uint8_t> prefix_;
+    webrtc::ArrayView<const uint8_t> prefix_;
     size_t encoded_image_size_;
   };
 
@@ -2912,8 +2915,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 
   uint8_t prefix[] = {0x90, 0x91, 0x92, 0x93};
-  rtc::ArrayView<uint8_t> prefix_view =
-      rtc::ArrayView<uint8_t>(prefix, sizeof(prefix));
+  webrtc::ArrayView<uint8_t> prefix_view =
+      webrtc::ArrayView<uint8_t>(prefix, sizeof(prefix));
   rtc_encoder_->SetH265ParameterSetsTracker(
       std::make_unique<FakeH265ParameterSetsTracker>(prefix_view));
   FixedBitstreamVerifier bitstream_verifier(prefix_view,
@@ -2923,7 +2926,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
   EXPECT_CALL(*mock_vea_, Encode(_, _))
       .WillOnce(Invoke(this, &RTCVideoEncoderTest::ReturnFrameWithTimeStamp));
 
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
   FillFrameBuffer(buffer);
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -2982,7 +2985,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupportedVP9) {
 
   size_t kNumEncodeFrames = 3u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(codec.width, codec.height);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3033,7 +3036,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 
   size_t kNumEncodeFrames = 3u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3076,7 +3079,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
 
   ResetSVCLayerFrameTimes();
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(tl_codec.width, tl_codec.height);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3140,7 +3143,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupported) {
           }));
 
   for (int i = 0; i < 2; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(codec.width, codec.height);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3201,7 +3204,7 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
         }));
 
     for (int i = 0; i < 2; i++) {
-      const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+      const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
           webrtc::I420Buffer::Create(codec.width, codec.height);
       FillFrameBuffer(buffer);
       std::vector<webrtc::VideoFrameType> frame_types;
@@ -3379,7 +3382,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerGenericFrameInfo) {
 
   size_t kNumEncodeFrames = 5u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3424,7 +3427,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerInvalidDependency) {
   base::WaitableEvent error_waiter;
   rtc_encoder_->SetErrorWaiter(&error_waiter);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3508,7 +3511,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerInconsistentTemporalId) {
   base::WaitableEvent error_waiter;
   rtc_encoder_->SetErrorWaiter(&error_waiter);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3582,7 +3585,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerMissingGenericFrameInfo) {
   base::WaitableEvent error_waiter;
   rtc_encoder_->SetErrorWaiter(&error_waiter);
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;
@@ -3829,7 +3832,7 @@ TEST_F(RTCVideoEncoderEncodeTest, H265TemporalLayerGenericFrameInfo) {
 
   size_t kNumEncodeFrames = 5u;
   for (size_t i = 0; i < kNumEncodeFrames; i++) {
-    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
     FillFrameBuffer(buffer);
     std::vector<webrtc::VideoFrameType> frame_types;

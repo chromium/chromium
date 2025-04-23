@@ -36,18 +36,16 @@ static_library("on_task") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/app:command_ids",
-    "//chrome/browser/apps/app_service",
-
-    # Explicitly depend on boca to get around with circular dependency on
-    # //chrome/browser/apps/almanac_api_client:almanac_api_client
     "//chrome/browser:primitives",
-    "//chrome/browser/ash/boca",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/on_task:activity",
@@ -64,6 +62,10 @@ static_library("on_task") {
     "//extensions/browser",
     "//ui/base",
     "//ui/chromeos",
+
+    # Explicitly depend on boca to get around with circular dependency on
+    # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser/ash/boca",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/boca" ]
@@ -111,6 +113,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/boca",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",

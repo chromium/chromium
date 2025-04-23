@@ -128,7 +128,7 @@ public class FullscreenSigninMediator
                         this::onContinueAsClicked,
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
-                                && !disableSignInForAutomotiveDevice(),
+                                && !mConfig.shouldDisableSignin,
                         mConfig.logoId,
                         R.string.fre_welcome,
                         mConfig.subtitleId,
@@ -243,7 +243,7 @@ public class FullscreenSigninMediator
         boolean isSigninSupported =
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                         && UserPrefs.get(profile).getBoolean(Pref.SIGNIN_ALLOWED)
-                        && !disableSignInForAutomotiveDevice();
+                        && !mConfig.shouldDisableSignin;
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
@@ -574,9 +574,5 @@ public class FullscreenSigninMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
-    }
-
-    private static boolean disableSignInForAutomotiveDevice() {
-        return BuildInfo.getInstance().isAutomotive;
     }
 }

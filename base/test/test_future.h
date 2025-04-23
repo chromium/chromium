@@ -193,7 +193,8 @@ class TestFuture {
   //
   //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
   //
-  [[nodiscard]] bool Wait() {
+  [[nodiscard]] bool Wait(
+      RunLoop::Type run_loop_type = RunLoop::Type::kDefault) {
     CheckNotUsedAfterMove();
     DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
 
@@ -202,7 +203,7 @@ class TestFuture {
     }
 
     // Wait for the value to arrive.
-    RunLoop loop;
+    RunLoop loop(run_loop_type);
     AutoReset<RepeatingClosure> quit_loop(&impl_->ready_signal,
                                           loop.QuitClosure());
     loop.Run();
@@ -526,12 +527,16 @@ class TestFuture<void> {
   // to improve the error reported:
   //
   //   ASSERT_TRUE(future.Wait()) << "Detailed error message";
-  [[nodiscard]] bool Wait() { return implementation_.Wait(); }
+  [[nodiscard]] bool Wait(
+      RunLoop::Type run_loop_type = RunLoop::Type::kDefault) {
+    return implementation_.Wait(run_loop_type);
+  }
 
   // Same as above, then clears the future, allowing it to be reused and accept
   // a new value.
-  [[nodiscard]] bool WaitAndClear() {
-    auto result = Wait();
+  [[nodiscard]] bool WaitAndClear(
+      RunLoop::Type run_loop_type = RunLoop::Type::kDefault) {
+    auto result = Wait(run_loop_type);
     Clear();
     return result;
   }

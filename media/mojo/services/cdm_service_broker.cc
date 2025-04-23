@@ -26,6 +26,11 @@
 
 namespace media {
 
+namespace {
+const char kUmaNameForDebuggerAttached[] =
+    "Media.EME.CdmProcessDebuggerAttached";
+}
+
 CdmServiceBroker::CdmServiceBroker(
     std::unique_ptr<CdmService::Client> client,
     mojo::PendingReceiver<mojom::CdmServiceBroker> receiver)
@@ -101,6 +106,15 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 
   CdmModule* instance = CdmModule::GetInstance();
 
+  // Need to call `BeingDebugged()` before sealing sandbox for Mac, otherwise
+  // behavior does not work.
+  if (base::debug::BeingDebugged()) {
+    instance->SetDebuggerAttached(true);
+    base::UmaHistogramBoolean(kUmaNameForDebuggerAttached, true);
+  } else {
+    base::UmaHistogramBoolean(kUmaNameForDebuggerAttached, false);
+  }
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   std::vector<CdmHostFilePath> cdm_host_file_paths;
   client_->AddCdmHostFilePaths(&cdm_host_file_paths);
@@ -108,13 +122,6 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 #else
   bool success = instance->Initialize(cdm_path);
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
-
-  // Need to call `BeingDebugged()` before sealing sandbox for Mac, otherwise
-  // behavior does not work.
-  if (base::debug::BeingDebugged()) {
-    instance->SetDebuggerAttached(true);
-    base::UmaHistogramBoolean("Media.EME.CdmProcessDebuggerAttached", true);
-  }
 
   // This may trigger the sandbox to be sealed. After this call, the process is
   // sandboxed.

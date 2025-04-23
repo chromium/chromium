@@ -17,6 +17,7 @@
 #include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,6 +53,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -154,7 +156,13 @@ mojom::CaptionConfigPtr GetCommonCaptionConfig() {
   return config;
 }
 
-::boca::Session GetCommonActiveSessionProto() {
+struct SessionOptions {
+  bool captions_enabled = false;
+  bool translations_enabled = false;
+};
+
+::boca::Session GetCommonActiveSessionProto(
+    SessionOptions opts = SessionOptions()) {
   ::boca::Session session;
   session.mutable_duration()->set_seconds(120);
   session.set_session_state(::boca::Session::ACTIVE);
@@ -164,8 +172,8 @@ mojom::CaptionConfigPtr GetCommonCaptionConfig() {
   ::boca::SessionConfig session_config;
   auto* caption_config_1 = session_config.mutable_captions_config();
 
-  caption_config_1->set_captions_enabled(false);
-  caption_config_1->set_translations_enabled(false);
+  caption_config_1->set_captions_enabled(opts.captions_enabled);
+  caption_config_1->set_translations_enabled(opts.translations_enabled);
 
   auto* active_bundle =
       session_config.mutable_on_task_config()->mutable_active_bundle();
@@ -244,8 +252,13 @@ class MockSessionManager : public BocaSessionManager {
               (override));
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
-  MOCK_METHOD(void, ToggleAppStatus, (bool), (override));
+  MOCK_METHOD(void, OnAppWindowOpened, (), (override));
   MOCK_METHOD(void, NotifyAppReload, (), (override));
+  MOCK_METHOD(void,
+              NotifySessionCaptionProducerEvents,
+              (const ::boca::CaptionsConfig&),
+              (override));
+  MOCK_METHOD(bool, disabled_on_non_managed_network, (), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -374,12 +387,12 @@ class BocaAppPageHandlerTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
-    auto* browser_context =
+    browser_context_ =
         browser_context_helper_delegate_ptr->CreateBrowserContext(
             browser_context_helper_delegate_ptr->GetUserDataDir()->AppendASCII(
                 "test-browser-context"),
             /*is_off_the_record=*/false);
-    ash::AnnotatedAccountId::Set(browser_context, account_id);
+    ash::AnnotatedAccountId::Set(browser_context_, account_id);
 
     // Create BocaSessionManager mock.
     EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
@@ -389,32 +402,16 @@ class BocaAppPageHandlerTest : public testing::Test {
     // Register self as listener.
     ON_CALL(*boca_app_client(), GetSessionManager())
         .WillByDefault(Return(session_manager()));
-
     // Create the WebContents for the BrowserContext.
     web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser_context));
+        content::WebContents::CreateParams(browser_context_));
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
-
-    mojo::PendingReceiver<mojom::Page> page_pending_receiver;
-    boca_app_handler_ = std::make_unique<BocaAppHandler>(
-        remote_.BindNewPipeAndPassReceiver(),
-        // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
-        // now. Adding test case for classroom and tab info.
-        page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
-        std::make_unique<MockWebviewAuthHandler>(browser_context,
-                                                 kWebviewHostName),
-        /*classroom_client_impl=*/nullptr,
-        /*content_settings_handler=*/nullptr,
-        /*system_web_app_manager=*/nullptr, &session_client_impl_,
-        /*is_producer=*/true);
-    fake_page_ = std::make_unique<FakePage>(std::move(page_pending_receiver));
-    boca_app_handler_->SetSpotlightService(&spotlight_service_);
-    // Explicitly set pref
-    boca_app_handler_->SetPrefForTesting(&local_state_);
+    CreateBocaAppHandler(/*is_producer=*/true);
   }
 
   void TearDown() override {
+    browser_context_ = nullptr;
     boca_app_handler_.reset();
     web_ui_.reset();
     web_contents_.reset();
@@ -425,6 +422,43 @@ class BocaAppPageHandlerTest : public testing::Test {
   }
 
  protected:
+  void CreateBocaAppHandler(bool is_producer) {
+    mojo::PendingReceiver<mojom::Page> page_pending_receiver;
+    remote_.reset();
+    boca_app_handler_ = std::make_unique<BocaAppHandler>(
+        remote_.BindNewPipeAndPassReceiver(),
+        // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
+        // now. Adding test case for classroom and tab info.
+        page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
+        std::make_unique<MockWebviewAuthHandler>(browser_context_,
+                                                 kWebviewHostName),
+        /*classroom_client_impl=*/nullptr,
+        /*content_settings_handler=*/nullptr,
+        /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
+    fake_page_ = std::make_unique<FakePage>(std::move(page_pending_receiver));
+    boca_app_handler_->SetSpotlightService(&spotlight_service_);
+    // Explicitly set pref
+    boca_app_handler_->SetPrefForTesting(&local_state_);
+  }
+
+  void PrepareGetSession(::boca::Session* current_session,
+                         const ::boca::Session& response_session) {
+    EXPECT_CALL(*session_manager(),
+                UpdateCurrentSession(_, /*dispatch_event=*/true))
+        .WillRepeatedly(
+            [current_session](std::unique_ptr<::boca::Session> session, bool) {
+              *current_session = *session;
+            });
+    EXPECT_CALL(*session_client_impl(), GetSession(_))
+        .WillOnce(
+            [&response_session](std::unique_ptr<GetSessionRequest> request) {
+              auto result = std::make_unique<::boca::Session>(response_session);
+              request->callback().Run(std::move(result));
+            });
+    EXPECT_CALL(*session_manager(), GetCurrentSession())
+        .WillRepeatedly(Return(current_session));
+  }
+
   void TestUserPref(mojom::BocaValidPref pref, base::Value value) {
     base::test::TestFuture<void> set_pref_future;
     boca_app_handler_.get()->SetUserPref(pref, value.Clone(),
@@ -479,6 +513,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   std::unique_ptr<FakePage> fake_page_;
   std::unique_ptr<BocaAppHandler> boca_app_handler_;
   StrictMock<MockSpotlightService> spotlight_service_{nullptr};
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
@@ -612,6 +647,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
 
   boca_app_handler()->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -662,10 +699,47 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
   // Verify local events not dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
 
   boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get());
+}
+
+TEST_F(BocaAppPageHandlerTest, CreateSessionFailedOnNonManagedNetwork) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<bool> future_1;
+
+  const auto config = mojom::Config::New(
+      base::Minutes(2), std::nullopt, nullptr,
+      std::vector<mojom::IdentityPtr>{}, std::vector<mojom::IdentityPtr>{},
+      mojom::OnTaskConfigPtr(nullptr), GetCommonCaptionConfig(), "");
+
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId.ToString());
+  CreateSessionRequest request(
+      nullptr, kTestUrlBase, teacher, config->session_duration,
+      ::boca::Session::SessionState::Session_SessionState_ACTIVE,
+      future.GetCallback());
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*session_client_impl(), CreateSession(_)).Times(0);
+
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(0);
+
+  // Verify local events dispatched
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get());
 }
 
 TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
@@ -756,6 +830,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
 
+  CreateBocaAppHandler(/*is_producer=*/false);
   boca_app_handler()->GetSession(future_1.GetCallback());
 
   auto result0 = std::move(future_1.Take()->get_session());
@@ -1038,7 +1113,7 @@ TEST_F(BocaAppPageHandlerTest, ExtendSessionDurationSucceed) {
   session->set_session_state(::boca::Session::ACTIVE);
 
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(session.get()));
+      .WillRepeatedly(Return(session.get()));
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
@@ -1074,7 +1149,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(&session));
+      .WillRepeatedly(Return(&session));
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -1142,7 +1217,6 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithNonActiveSession) {
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(2)
       .WillRepeatedly(Return(&session));
 
   // Page handler callback.
@@ -1207,6 +1281,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -1243,6 +1319,10 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
                                           future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
+
+  // Called on destruction to disable session captions.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionInitFailed) {
@@ -1336,118 +1416,132 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
   EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
 }
 
-TEST_F(BocaAppPageHandlerTest,
-       UpdateOnTaskConfigWithPendingCaptionConfigShouldNotOverride) {
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionOnTaskSessionDurationShouldBlock) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
-      .Times(2);
+      .Times(4);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
-  // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 
-  // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-  // API callback.
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
-
-  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
-                               session.session_id(), future.GetCallback());
-
+  std::vector<UpdateSessionCallback> update_session_cb;
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        // Use latest on task cofig value from session.
-        ASSERT_EQ(GetCommonActiveSessionProto()
-                      .student_group_configs()
-                      .at(kMainStudentGroupName)
-                      .on_task_config()
-                      .SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        // Use pending on task config.
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
+      .WillRepeatedly(WithArg<0>(Invoke([&](auto request) {
+        update_session_cb.emplace_back(request->callback());
       })));
   SetSessionCaptionInitializer(/*success=*/true);
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_2.GetCallback());
+                                         base::DoNothing());
+  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                          base::DoNothing());
+  boca_app_handler()->ExtendSessionDuration(base::Minutes(2),
+                                            base::DoNothing());
+  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                         base::DoNothing());
 
-  ASSERT_TRUE(future_1.Wait());
-  EXPECT_FALSE(future_1.Get().has_value());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(1));
+  std::move(update_session_cb[0]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(2));
+  std::move(update_session_cb[1]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(3));
+  std::move(update_session_cb[2]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(4));
+  std::move(update_session_cb[3]).Run(std::make_unique<::boca::Session>());
 
-  ASSERT_TRUE(future_2.Wait());
-  EXPECT_FALSE(future_2.Get().has_value());
+  // Called on destruction to disable session captions.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 }
 
-TEST_F(BocaAppPageHandlerTest,
-       UpdateCaptionConfigWithPendingOnTaskConfigShouldNotOverride) {
+TEST_F(BocaAppPageHandlerTest, ShouldNotUsePreviousSessionCaptionConfig) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
-  // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
-  // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-  // API callback.
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
-
-  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
-                               session.session_id(), future.GetCallback());
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
+  std::unique_ptr<UpdateSessionRequest> first_request;
+  std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        // Use latest caption cofig value from session.
-        ASSERT_EQ(GetCommonActiveSessionProto()
-                      .student_group_configs()
-                      .at(kMainStudentGroupName)
-                      .captions_config()
-                      .SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        // Use pending on task config.
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })));
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { first_request = std::move(request); })))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { second_request = std::move(request); })));
+  SetSessionCaptionInitializer(/*success=*/true);
+  // Update caption config.
+  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                          base::DoNothing());
+  ::boca::Session response = GetCommonActiveSessionProto();
+  *response.mutable_student_group_configs()
+       ->at(kMainStudentGroupName)
+       .mutable_captions_config() = *first_request->captions_config();
+  first_request->callback().Run(
+      std::make_unique<::boca::Session>(std::move(response)));
+  // Close current session and start a new one.
+  boca_app_handler()->OnSessionEnded(session.session_id());
+  boca_app_handler()->OnSessionStarted("new-session-id",
+                                       ::boca::UserIdentity());
+  // Update ontask config.
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_1.GetCallback());
+                                         base::DoNothing());
+  second_request->callback().Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(second_request, testing::NotNull());
+  EXPECT_NE(second_request->captions_config()->SerializeAsString(),
+            first_request->captions_config()->SerializeAsString());
+}
+
+TEST_F(BocaAppPageHandlerTest, ShouldNotUsePreviousSessionOnTaskConfig) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(2);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
+
+  std::unique_ptr<UpdateSessionRequest> first_request;
+  std::unique_ptr<UpdateSessionRequest> second_request;
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { first_request = std::move(request); })))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { second_request = std::move(request); })));
+  // Update ontask config.
+  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                         base::DoNothing());
+  ::boca::Session response = GetCommonActiveSessionProto();
+  *response.mutable_student_group_configs()
+       ->at(kMainStudentGroupName)
+       .mutable_on_task_config() = *first_request->on_task_config();
+  first_request->callback().Run(
+      std::make_unique<::boca::Session>(std::move(response)));
+  // Close current session and start a new one.
+  boca_app_handler()->OnSessionEnded(session.session_id());
+  boca_app_handler()->OnSessionStarted("new-session-id",
+                                       ::boca::UserIdentity());
+  // Update caption config.
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_2.GetCallback());
+                                          base::DoNothing());
 
-  ASSERT_TRUE(future_1.Wait());
-  EXPECT_FALSE(future_1.Get().has_value());
-  ASSERT_TRUE(future_2.Wait());
-  EXPECT_FALSE(future_2.Get().has_value());
+  second_request->callback().Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(second_request, testing::NotNull());
+  EXPECT_NE(second_request->on_task_config()->SerializeAsString(),
+            first_request->on_task_config()->SerializeAsString());
+
+  // Called on destruction to disable session captions.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 }
 
 TEST_F(BocaAppPageHandlerTest,
@@ -1523,6 +1617,8 @@ TEST_F(BocaAppPageHandlerTest,
       .WillRepeatedly(Return(&session));
   // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
                                         google_apis::ApiErrorCode>>
@@ -1572,6 +1668,10 @@ TEST_F(BocaAppPageHandlerTest,
   EXPECT_TRUE(future_1.Get().has_value());
   ASSERT_TRUE(future_2.Wait());
   EXPECT_FALSE(future_2.Get().has_value());
+
+  // Called on destruction to disable session captions.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateEmptyStudentActivitySucceed) {
@@ -1624,6 +1724,27 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_EQ("2", result[1]->id);
   EXPECT_EQ("youtube", result[1]->activity->active_tab);
   EXPECT_TRUE(result[1]->activity->is_active);
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateStudentActivityWithEmptyDeviceStateSucceed) {
+  std::map<std::string, ::boca::StudentStatus> activities;
+  ::boca::StudentStatus status_1;
+  status_1.set_state(::boca::StudentStatus::REMOVED_BY_OTHER_SESSION);
+  activities.emplace("1", std::move(status_1));
+
+  base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
+  fake_page()->SetActivityInterceptorCallback(future.GetCallback());
+  boca_app_handler()->OnConsumerActivityUpdated(activities);
+  auto result = future.Take();
+  EXPECT_EQ(1u, result.size());
+  // Verify only first device added.
+  EXPECT_EQ("1", result[0]->id);
+  EXPECT_EQ(mojom::StudentStatusDetail::kRemovedByOtherSession,
+            result[0]->activity->student_status_detail);
+  EXPECT_FALSE(result[0]->activity->is_active);
+  EXPECT_EQ("", result[0]->activity->active_tab);
+  EXPECT_EQ("", result[0]->activity->view_screen_session_code);
 }
 
 TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
@@ -1761,13 +1882,27 @@ TEST_F(BocaAppPageHandlerTest, AddStudentsSucceedAlsoTriggerSessionReload) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
-            ASSERT_EQ(2u, request->student_ids().size());
+            ASSERT_EQ(2u, request->students().size());
             ASSERT_EQ(group_id, request->student_group_id());
+            EXPECT_EQ("1", request->students()[0].gaia_id());
+            EXPECT_EQ("a", request->students()[0].full_name());
+            EXPECT_EQ("a@gmail.com", request->students()[0].email());
+            EXPECT_EQ("cdn://s1", request->students()[0].photo_url());
+
+            EXPECT_EQ("2", request->students()[1].gaia_id());
+            EXPECT_EQ("b", request->students()[1].full_name());
+            EXPECT_EQ("b@gmail.com", request->students()[1].email());
+            EXPECT_EQ("cdn://s2", request->students()[1].photo_url());
             request->callback().Run(true);
           })));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(1);
-  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  std::vector<mojom::IdentityPtr> students;
+  students.push_back(
+      mojom::Identity::New("1", "a", "a@gmail.com", GURL("cdn://s1")));
+  students.push_back(
+      mojom::Identity::New("2", "b", "b@gmail.com", GURL("cdn://s2")));
+  boca_app_handler()->AddStudents(std::move(students), future_1.GetCallback());
   ::testing::Mock::VerifyAndClearExpectations(session_client_impl());
   ::testing::Mock::VerifyAndClearExpectations(session_manager());
 
@@ -1798,13 +1933,13 @@ TEST_F(BocaAppPageHandlerTest, AddStudentsWithHTTPFailure) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
-            ASSERT_EQ(2u, request->student_ids().size());
+            ASSERT_EQ(0u, request->students().size());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(0);
-  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  boca_app_handler()->AddStudents({}, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get().has_value());
 }
@@ -1895,6 +2030,8 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionSucceeded) {
           Invoke([&](auto request) {
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
 
   boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1924,7 +2061,32 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
 
+  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, JoinSessionFailedDueToNonManagedNetwork) {
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(0);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::SubmitAccessCodeError>> future_1;
+
+  JoinSessionRequest request(nullptr, kTestUrlBase, ::boca::UserIdentity(),
+                             "device", "code", future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), JoinSession(_)).Times(0);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(true));
   boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
@@ -2133,6 +2295,188 @@ TEST_F(BocaAppPageHandlerTest, NotifyWhenLocalCaptionClosed) {
   fake_page()->SetLocalCaptionDisabledInterceptorCallback(future.GetCallback());
   boca_app_handler()->OnLocalCaptionClosed();
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerTest, ProducerCaptionsOverrideGetSessionCaptions) {
+  ::boca::Session response_session = GetCommonActiveSessionProto(
+      {.captions_enabled = true, .translations_enabled = true});
+  auto current_session = std::make_unique<::boca::Session>();
+  PrepareGetSession(current_session.get(), response_session);
+
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  CreateBocaAppHandler(/*is_producer=*/true);
+  boca_app_handler()->GetSession(future.GetCallback());
+  mojom::SessionResultPtr get_session_result = future.Take();
+
+  ASSERT_TRUE(get_session_result->is_session());
+  EXPECT_FALSE(get_session_result->get_session()
+                   ->config->caption_config->session_caption_enabled);
+  EXPECT_FALSE(get_session_result->get_session()
+                   ->config->caption_config->session_translation_enabled);
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       ProducerCaptionsOverrideGetSessionCaptionsAfterUpdate) {
+  ::boca::Session response_session = GetCommonActiveSessionProto();
+  auto current_session =
+      std::make_unique<::boca::Session>(GetCommonActiveSessionProto());
+  ::boca::CaptionsConfig captions_notified;
+  PrepareGetSession(current_session.get(), response_session);
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents)
+      .WillOnce(
+          [&captions_notified](const ::boca::CaptionsConfig& captions_config) {
+            captions_notified = captions_config;
+          });
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([](std::unique_ptr<UpdateSessionRequest> request) {
+        std::unique_ptr<::boca::Session> result =
+            std::make_unique<::boca::Session>(GetCommonActiveSessionProto(
+                {.captions_enabled = true, .translations_enabled = true}));
+        request->callback().Run(std::move(result));
+      });
+
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  CreateBocaAppHandler(/*is_producer=*/true);
+  SetSessionCaptionInitializer(/*success=*/true);
+  boca_app_handler()->UpdateCaptionConfig(
+      mojom::CaptionConfig::New(/*session_caption_enabled=*/true,
+                                /*local_caption_enabled=*/true,
+                                /*=session_translation_enabled=*/true),
+      base::DoNothing());
+  boca_app_handler()->GetSession(future.GetCallback());
+  mojom::SessionResultPtr get_session_result = future.Take();
+
+  EXPECT_TRUE(captions_notified.captions_enabled());
+  EXPECT_TRUE(captions_notified.translations_enabled());
+  ASSERT_TRUE(get_session_result->is_session());
+  EXPECT_TRUE(get_session_result->get_session()
+                  ->config->caption_config->session_caption_enabled);
+  EXPECT_TRUE(get_session_result->get_session()
+                  ->config->caption_config->session_translation_enabled);
+
+  // Called on destruction to disable session captions.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       ConsumerCaptionsDoesNotOverrideGetSessionCaptions) {
+  ::boca::Session response_session = GetCommonActiveSessionProto(
+      {.captions_enabled = true, .translations_enabled = true});
+  auto current_session = std::make_unique<::boca::Session>();
+  PrepareGetSession(current_session.get(), response_session);
+
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  CreateBocaAppHandler(/*is_producer=*/false);
+  boca_app_handler()->GetSession(future.GetCallback());
+  mojom::SessionResultPtr get_session_result = future.Take();
+
+  ASSERT_TRUE(get_session_result->is_session());
+  EXPECT_TRUE(get_session_result->get_session()
+                  ->config->caption_config->session_caption_enabled);
+  EXPECT_TRUE(get_session_result->get_session()
+                  ->config->caption_config->session_translation_enabled);
+}
+
+TEST_F(BocaAppPageHandlerTest, EnableSessionCaptionRequestErrorWillFail) {
+  ::boca::Session response_session = GetCommonActiveSessionProto();
+  auto current_session =
+      std::make_unique<::boca::Session>(GetCommonActiveSessionProto());
+  PrepareGetSession(current_session.get(), response_session);
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents).Times(0);
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([](std::unique_ptr<UpdateSessionRequest> request) {
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+
+  base::test::TestFuture<mojom::SessionResultPtr> get_future;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>>
+      update_future;
+  CreateBocaAppHandler(/*is_producer=*/true);
+  SetSessionCaptionInitializer(/*success=*/true);
+  boca_app_handler()->UpdateCaptionConfig(
+      mojom::CaptionConfig::New(/*session_caption_enabled=*/true,
+                                /*local_caption_enabled=*/true,
+                                /*=session_translation_enabled=*/true),
+      update_future.GetCallback());
+  std::optional<mojom::UpdateSessionError> update_error = update_future.Take();
+  boca_app_handler()->GetSession(get_future.GetCallback());
+  mojom::SessionResultPtr get_session_result = get_future.Take();
+
+  EXPECT_TRUE(update_error.has_value());
+  ASSERT_TRUE(get_session_result->is_session());
+  EXPECT_FALSE(get_session_result->get_session()
+                   ->config->caption_config->session_caption_enabled);
+  EXPECT_FALSE(get_session_result->get_session()
+                   ->config->caption_config->session_translation_enabled);
+}
+
+TEST_F(BocaAppPageHandlerTest, IgnoreDisableSessionCaptionRequestError) {
+  ::boca::CaptionsConfig enable_captions_notified;
+  ::boca::CaptionsConfig disable_captions_notified;
+  ::boca::Session response_session = GetCommonActiveSessionProto(
+      {.captions_enabled = true, .translations_enabled = true});
+  auto current_session =
+      std::make_unique<::boca::Session>(GetCommonActiveSessionProto());
+  PrepareGetSession(current_session.get(), response_session);
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents).Times(2);
+  CreateBocaAppHandler(/*is_producer=*/true);
+
+  // Simulate enable session captions success.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents)
+      .WillOnce([&enable_captions_notified](
+                    const ::boca::CaptionsConfig& captions_config) {
+        enable_captions_notified = captions_config;
+      });
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([](std::unique_ptr<UpdateSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetCommonActiveSessionProto(
+                {.captions_enabled = true, .translations_enabled = true})));
+      });
+  SetSessionCaptionInitializer(/*success=*/true);
+  boca_app_handler()->UpdateCaptionConfig(
+      mojom::CaptionConfig::New(/*session_caption_enabled=*/true,
+                                /*local_caption_enabled=*/false,
+                                /*=session_translation_enabled=*/true),
+      base::DoNothing());
+
+  // Simulate disable session captions error.
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents)
+      .WillOnce([&disable_captions_notified](
+                    const ::boca::CaptionsConfig& captions_config) {
+        disable_captions_notified = captions_config;
+      });
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([](std::unique_ptr<UpdateSessionRequest> request) {
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+  base::test::TestFuture<mojom::SessionResultPtr> get_future;
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>>
+      update_future;
+  boca_app_handler()->UpdateCaptionConfig(
+      mojom::CaptionConfig::New(/*session_caption_enabled=*/false,
+                                /*local_caption_enabled=*/false,
+                                /*=session_translation_enabled=*/true),
+      update_future.GetCallback());
+  std::optional<mojom::UpdateSessionError> update_error = update_future.Take();
+  boca_app_handler()->GetSession(get_future.GetCallback());
+  mojom::SessionResultPtr get_session_result = get_future.Take();
+
+  EXPECT_FALSE(update_error.has_value());
+  ASSERT_TRUE(get_session_result->is_session());
+  EXPECT_FALSE(get_session_result->get_session()
+                   ->config->caption_config->session_caption_enabled);
+  EXPECT_TRUE(get_session_result->get_session()
+                  ->config->caption_config->session_translation_enabled);
+  EXPECT_TRUE(enable_captions_notified.captions_enabled());
+  EXPECT_TRUE(enable_captions_notified.translations_enabled());
+  EXPECT_FALSE(disable_captions_notified.captions_enabled());
+  EXPECT_TRUE(disable_captions_notified.translations_enabled());
 }
 
 }  // namespace

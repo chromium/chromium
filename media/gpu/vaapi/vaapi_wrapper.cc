@@ -22,6 +22,7 @@
 #include <xf86drm.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -813,23 +814,7 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
                      VAProfile va_profile,
                      const std::string& va_vendor_string) {
   if (!IsModeEncoding(mode)) {
-    return va_profile == VAProfileAV1Profile0 &&
-           !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder);
-  }
-
-  if (va_profile == VAProfileVP8Version0_3 &&
-      !base::FeatureList::IsEnabled(kVaapiVP8Encoder)) {
-    return true;
-  }
-
-  if (va_profile == VAProfileVP9Profile0 &&
-      !base::FeatureList::IsEnabled(kVaapiVP9Encoder)) {
-    return true;
-  }
-
-  if (va_profile == VAProfileAV1Profile0 &&
-      !base::FeatureList::IsEnabled(kVaapiAV1Encoder)) {
-    return true;
+    return false;
   }
 
   if (mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate) {
@@ -901,7 +886,7 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
   }
   va_entrypoints.resize(num_va_entrypoints);
 
-  const std::vector<VAEntrypoint> kAllowedEntryPoints[] = {
+  const auto kAllowedEntryPoints = std::to_array<std::vector<VAEntrypoint>>({
       {VAEntrypointVLD},  // kDecode.
 #if BUILDFLAG(IS_CHROMEOS)
       {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
@@ -913,7 +898,8 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
       {VAEntrypointEncSlice,
        VAEntrypointEncSliceLP},  // kEncodeVariableBitrate.
       {VAEntrypointVideoProc}    // kVideoProcess.
-  };
+      ,
+  });
   static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
                 "");
 
@@ -1813,17 +1799,13 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
   }
 
   if (media_profile >= VP8PROFILE_MIN && media_profile <= VP8PROFILE_MAX) {
-    if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
-      scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-      scalability_modes.push_back(SVCScalabilityMode::kL1T3);
-    }
+    scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+    scalability_modes.push_back(SVCScalabilityMode::kL1T3);
   }
 
   if (media_profile >= H264PROFILE_MIN && media_profile <= H264PROFILE_MAX) {
-    if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
-      scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-      scalability_modes.push_back(SVCScalabilityMode::kL1T3);
-    }
+    scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+    scalability_modes.push_back(SVCScalabilityMode::kL1T3);
   }
 
   if (base::FeatureList::IsEnabled(kVaapiAV1TemporalLayerHWEncoding)) {
@@ -2392,25 +2374,6 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   // vpp, just passing 0x0.
   const int flag = mode_ != kVideoProcess ? VA_PROGRESSIVE : 0x0;
   const gfx::Size picture_size = mode_ != kVideoProcess ? size : gfx::Size();
-  if (base::FeatureList::IsEnabled(kVaapiEnforceVideoMinMaxResolution) &&
-      mode_ != kVideoProcess) {
-    const VASupportedProfiles::ProfileInfo* profile_info =
-        VASupportedProfiles::Get().IsProfileSupported(mode_, va_profile_,
-                                                      va_entrypoint_);
-    DCHECK(profile_info);
-    const bool is_picture_within_bounds =
-        gfx::Rect(picture_size)
-            .Contains(gfx::Rect(profile_info->min_resolution)) &&
-        gfx::Rect(profile_info->max_resolution)
-            .Contains(gfx::Rect(picture_size));
-    if (!is_picture_within_bounds) {
-      VLOG(2) << "Requested resolution=" << picture_size.ToString()
-              << " is not within bounds ["
-              << profile_info->min_resolution.ToString() << ", "
-              << profile_info->max_resolution.ToString() << "]";
-      return false;
-    }
-  }
 
   VAStatus va_res = vaCreateContext(
       va_display_, va_config_id_, picture_size.width(), picture_size.height(),

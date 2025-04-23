@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
 
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -67,6 +69,7 @@ public class TabListContainerViewBinderUnitTest {
     @Mock Callback<Function<Integer, View>> mFetchViewByIndexCallback;
     @Mock Callback<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCallback;
     @Mock Callback<ObservableSupplier<Boolean>> mIsScrollingSupplierCallback;
+    @Mock Callback<TabKeyEventData> mPageKeyEventDataCallback;
 
     @Captor ArgumentCaptor<Function<Integer, View>> mFetchViewByIndexCaptor;
     @Captor ArgumentCaptor<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCaptor;
@@ -159,5 +162,18 @@ public class TabListContainerViewBinderUnitTest {
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
         assertFalse(isScrollingSupplier.get());
+    }
+
+    @Test
+    public void testPageKeyListenerCallback() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
+                        .with(PAGE_KEY_LISTENER, mPageKeyEventDataCallback)
+                        .build();
+
+        TabListContainerViewBinder.bind(propertyModel, mTabListRecyclerViewMock, PAGE_KEY_LISTENER);
+
+        verify(mTabListRecyclerViewMock, times(1))
+                .setPageKeyListenerCallback(mPageKeyEventDataCallback);
     }
 }

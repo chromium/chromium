@@ -77,10 +77,10 @@ export class SettingsResetProfileDialogElement extends
     };
   }
 
-  private isTriggered_: boolean;
-  private triggeredResetToolName_: string;
-  private resetRequestOrigin_: string;
-  private clearingInProgress_: boolean;
+  declare private isTriggered_: boolean;
+  declare private triggeredResetToolName_: string;
+  declare private resetRequestOrigin_: string;
+  declare private clearingInProgress_: boolean;
   private browserProxy_: ResetBrowserProxy =
       ResetBrowserProxyImpl.getInstance();
 

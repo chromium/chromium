@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
 
 namespace {
 
@@ -45,8 +44,8 @@ class ScopedTestProfileManagerObserverIOS final
     return on_profile_unloaded_called_;
   }
 
-  bool on_profile_marked_for_permanent_deletation_called() const {
-    return on_profile_marked_for_permanent_deletation_called_;
+  bool on_profile_marked_for_permanent_deletion_called() const {
+    return on_profile_marked_for_permanent_deletion_called_;
   }
 
   // ProfileManagerObserverIOS implementation:
@@ -74,7 +73,7 @@ class ScopedTestProfileManagerObserverIOS final
   void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
                                            ProfileIOS* profile) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
-    on_profile_marked_for_permanent_deletation_called_ = true;
+    on_profile_marked_for_permanent_deletion_called_ = true;
   }
 
  private:
@@ -84,7 +83,7 @@ class ScopedTestProfileManagerObserverIOS final
   bool on_profile_created_called_ = false;
   bool on_profile_loaded_called_ = false;
   bool on_profile_unloaded_called_ = false;
-  bool on_profile_marked_for_permanent_deletation_called_ = false;
+  bool on_profile_marked_for_permanent_deletion_called_ = false;
 };
 
 // Returns a callback that fail the current test if invoked.
@@ -133,7 +132,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   ProfileIOS* created_profile = nullptr;
   ProfileIOS* loaded_profile = nullptr;
 
-  // Load the Profile asynchronously while disallowing blocking on the/ current
+  // Load the Profile asynchronously while disallowing blocking on the current
   // sequence (to ensure that the method is really asynchronous and does not
   // block the sequence).
   {
@@ -147,7 +146,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   }
 
   // The Profile instance should have been created but not yet fully initialized
-  // (as the initialisation is asynchronous).
+  // (as the initialization is asynchronous).
   EXPECT_TRUE(created_profile);
   EXPECT_FALSE(loaded_profile);
 
@@ -191,7 +190,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
     }
 
     // The Profile instance should have been created but not yet fully
-    // initialized (as the initialisation is asynchronous).
+    // initialized (as the initialization is asynchronous).
     EXPECT_TRUE(created_profile);
     EXPECT_FALSE(loaded_profile);
 
@@ -292,7 +291,7 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
   }
 
   // The Profile instance should have been created but not yet fully initialized
-  // (as the initialisation is asynchronous).
+  // (as the initialization is asynchronous).
   EXPECT_TRUE(created_profile);
   EXPECT_FALSE(loaded_profile);
 
@@ -354,7 +353,7 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {
     }
 
     // The Profile instance should have been created but not yet fully
-    // initialized (as the initialisation is asynchronous).
+    // initialized (as the initialization is asynchronous).
     EXPECT_TRUE(created_profile);
     EXPECT_FALSE(loaded_profile);
 
@@ -576,7 +575,7 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
-  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletion_called());
   EXPECT_FALSE(observer.on_profile_unloaded_called());
 
   // Check that the profiles are accessible.
@@ -590,7 +589,7 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
   EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
-  EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletion_called());
 }
 
 // Tests that marking unloaded profile for deletion does not invoke
@@ -602,7 +601,7 @@ TEST_F(ProfileManagerIOSImplTest,
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
-  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletion_called());
   EXPECT_FALSE(observer.on_profile_unloaded_called());
 
   // Check that the profiles are accessible.
@@ -623,7 +622,7 @@ TEST_F(ProfileManagerIOSImplTest,
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
   EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
-  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletion_called());
 }
 
 // Tests that it is not possible to create a profile with a name marked for

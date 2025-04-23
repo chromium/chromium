@@ -10,6 +10,7 @@
 #include "ash/public/cpp/graduation/graduation_manager.h"
 #include "ash/system/graduation/graduation_nudge_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -17,6 +18,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace base {
@@ -33,7 +35,9 @@ namespace ash::graduation {
 class GraduationManagerImpl : public ash::graduation::GraduationManager,
                               public session_manager::SessionManagerObserver {
  public:
-  GraduationManagerImpl();
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  explicit GraduationManagerImpl(
+      ApplicationLocaleStorage* application_locale_storage);
   GraduationManagerImpl(const GraduationManagerImpl&) = delete;
   GraduationManagerImpl& operator=(const GraduationManagerImpl&) = delete;
   ~GraduationManagerImpl() override;
@@ -66,6 +70,8 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
   void MaybeScheduleAppStatusUpdate();
   void UpdateAppReadiness();
   void NotifyAppUpdate();
+
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

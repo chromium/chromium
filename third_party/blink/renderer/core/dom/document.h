@@ -204,6 +204,7 @@ class HTMLMetaElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IntersectionObserverController;
+class ImportNodeOptions;
 class LayoutUpgrade;
 class LayoutView;
 class LazyLoadImageObserver;
@@ -473,7 +474,18 @@ class CORE_EXPORT Document : public ContainerNode,
   Attr* createAttributeNS(const AtomicString& namespace_uri,
                           const AtomicString& qualified_name,
                           ExceptionState&);
+
+  Node* importNode(Node* imported_node,
+                   ImportNodeOptions* options,
+                   ExceptionState&);
   Node* importNode(Node* imported_node, bool deep, ExceptionState&);
+
+  Node* importNode(Node* imported_node,
+                   bool deep,
+                   CustomElementRegistry*,
+                   ExceptionState&);
+
+  CustomElementRegistry* customElementRegistry() const override;
 
   // Creates an element without custom element processing.
   Element* CreateRawElement(const QualifiedName&,

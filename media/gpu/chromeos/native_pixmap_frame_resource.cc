@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "media/base/format_utils.h"
@@ -99,6 +100,10 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     const gfx::Size& natural_size,
     std::vector<base::ScopedFD> dmabuf_fds,
     base::TimeDelta timestamp) {
+  // If |layout| comes from Mojo, the VideoFrame traits should have validated
+  // this.
+  CHECK_EQ(layout.num_planes(), VideoFrame::NumPlanes(layout.format()));
+
   // Performs a sanity check that the number of planes matches the number of
   // file descriptors.
   if (dmabuf_fds.size() != layout.num_planes()) {
@@ -132,15 +137,11 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     handle.planes.emplace_back(plane.stride, plane.offset, plane.size,
                                std::move(dmabuf_fds[i]));
   }
-
-  // This is only ever called with V4L2-allocated buffers, so |layout.modifier|
-  // is expected to be kNoModifier.
-  CHECK_EQ(layout.modifier(), gfx::NativePixmapHandle::kNoModifier);
   handle.modifier = layout.modifier();
 
   // Note: |buffer_usage| is not set. As a result, the constructed
-  // NativePixmapFrameResource cannot be converted to a VideoFrame with the
-  // method, CreateVideoFrame().
+  // NativePixmapFrameResource cannot be converted to a
+  // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
       natural_size, timestamp, *buffer_format, GetNextSharedMemoryId(),
@@ -470,11 +471,58 @@ NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
   return gfx::GpuMemoryBufferHandle();
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame() const {
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame(
+    VideoFrame::StorageType storage_type) const {
+  CHECK(VideoFrame::STORAGE_DMABUFS == storage_type ||
+        VideoFrame::STORAGE_GPU_MEMORY_BUFFER == storage_type);
+
+  if (VideoFrame::STORAGE_DMABUFS == storage_type) {
+    return CreateDmabufVideoFrame();
+  }
+  return CreateGmbVideoFrame();
+}
+
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
+    const {
+  std::vector<base::ScopedFD> duped_fds;
+  const size_t num_fds = NumDmabufFds();
+  duped_fds.reserve(num_fds);
+  for (size_t i = 0; i < num_fds; ++i) {
+    base::ScopedFD duped_fd(HANDLE_EINTR(dup(GetDmabufFd(i))));
+    if (!duped_fd.is_valid()) {
+      LOG(ERROR) << "Unable to dup() an FD";
+      return nullptr;
+    }
+    duped_fds.push_back(std::move(duped_fd));
+  }
+
+  scoped_refptr<VideoFrame> video_frame =
+      VideoFrame::WrapExternalDmabufs(layout(), visible_rect(), natural_size(),
+                                      std::move(duped_fds), timestamp());
+  if (!video_frame) {
+    DLOGF(ERROR) << "Unable to create a VideoFrame";
+    return nullptr;
+  }
+
+  // Copies VideoFrameMetadata from |this| to the output VideoFrame.
+  video_frame->metadata().MergeMetadataFrom(metadata());
+  video_frame->set_color_space(ColorSpace());
+  video_frame->set_hdr_metadata(hdr_metadata());
+
+  // Adds a reference to |this| from the output VideoFrame to make sure the
+  // underlying frame does not get recycled back into the frame pool before it
+  // is used.
+  video_frame->AddDestructionObserver(base::DoNothingWithBoundArgs(
+      base::WrapRefCounted<const NativePixmapFrameResource>(this)));
+
+  return video_frame;
+}
+
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateGmbVideoFrame()
+    const {
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to GpuMemoryBuffer "
          "VideoFrame.";
-
   // Creates a GMB-backed frame with using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
       CreateGpuMemoryBufferHandle(), format(), coded_size(), visible_rect(),

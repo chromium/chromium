@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Error"
-    enum="AXTreeSnapshotErrorReason" expires_after="2025-08-10">
+    enum="AXTreeSnapshotErrorReason" expires_after="2025-10-12">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformCommand"
-    enum="ChromeVoxCommand" expires_after="2025-08-08">
+    enum="ChromeVoxCommand" expires_after="2025-10-12">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records when a user performs a ChromeVox command.</summary>
@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
-    enum="BooleanConnected" expires_after="2025-08-10">
+    enum="BooleanConnected" expires_after="2025-10-19">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1285,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionDuration"
-    units="seconds" expires_after="2025-08-10">
+    units="seconds" expires_after="2025-10-19">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1633,7 +1633,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.FaceGaze.AverageFaceLandmarkerLatency"
-    units="ms" expires_after="2025-08-03">
+    units="ms" expires_after="2025-10-05">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1923,7 +1923,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.CaptionBubbleError"
-    enum="CaptionBubbleErrorType" expires_after="2025-08-19">
+    enum="CaptionBubbleErrorType" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1933,7 +1933,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
-    units="ms" expires_after="2025-08-19">
+    units="ms" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1950,7 +1950,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1974,7 +1974,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled2"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1994,7 +1994,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
-    enum="WinGetLastError" expires_after="2025-08-19">
+    enum="WinGetLastError" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2005,7 +2005,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2025-08-19">
+    enum="LoadSodaResult" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2032,7 +2032,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session2"
-    enum="LiveCaptionSessionEvent" expires_after="2025-08-19">
+    enum="LiveCaptionSessionEvent" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2070,7 +2070,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2093,7 +2093,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-06-08">
+    enum="LocaleCodeISO639" expires_after="2025-10-12">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2104,7 +2104,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2025-08-19">
+    units="count" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-19">
+    enum="LocaleCodeISO639" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2140,7 +2140,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-19">
+    enum="LocaleCodeISO639" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2369,7 +2369,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.AXObjectCacheImpl.Incremental.{DataType}"
-    units="bytes" expires_after="2025-08-17">
+    units="bytes" expires_after="2025-10-19">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2393,7 +2393,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
-    units="bytes" expires_after="2025-08-10">
+    units="bytes" expires_after="2025-10-12">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3270,7 +3270,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3334,7 +3334,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.Time.PDF" units="ms"
-    expires_after="2025-08-17">
+    expires_after="2025-10-19">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3610,6 +3610,20 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WinJAWSCompatibleWithUIA" enum="Boolean"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks if the JAWS version predates the fix for Chrome’s UIA support. True
+    if the version is newer or exactly JAWS 2022.2402.1, 2023.2402.1,
+    2024.2312.99, or 2025. False otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WinJAWSVersion" enum="JAWSMajorVersion"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
@@ -3815,7 +3829,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mdjones@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -3912,7 +3926,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
-    enum="BooleanSuccess" expires_after="2025-07-28">
+    enum="BooleanSuccess" expires_after="2025-10-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -3928,7 +3942,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.Installation{Result}Time"
-    units="ms" expires_after="2025-07-28">
+    units="ms" expires_after="2025-10-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>

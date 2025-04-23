@@ -47,9 +47,7 @@
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_service.h"
 #include "content/public/browser/android/java_interfaces.h"
-#include "storage/browser/database/database_tracker.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
-#include "third_party/blink/public/mojom/webdatabase/web_database.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -163,15 +161,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
                           instance_weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-  // WebView.
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindWebDatabaseHostImpl,
-                          instance_weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   AddUIThreadInterface(
       registry.get(),

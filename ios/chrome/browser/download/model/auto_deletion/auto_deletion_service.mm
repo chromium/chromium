@@ -69,6 +69,17 @@ void AutoDeletionService::RegisterLocalStatePrefs(
 }
 
 void AutoDeletionService::ScheduleFileForDeletion(web::DownloadTask* task) {
+  if (!task->IsDone()) {
+    if (!download_tasks_observation_.IsObservingSource(task)) {
+      download_tasks_observation_.AddObservation(task);
+    }
+    return;
+  }
+
+  if (download_tasks_observation_.IsObservingSource(task)) {
+    download_tasks_observation_.RemoveObservation(task);
+  }
+
   task->GetResponseData(
       base::BindOnce(&AutoDeletionService::ScheduleFileForDeletionHelper,
                      weak_ptr_factory_.GetWeakPtr(), std::move(task)));
@@ -109,6 +120,15 @@ void AutoDeletionService::OnFilesDeletedFromDisk(base::Time instant,
                                                  base::OnceClosure closure) {
   scheduler_.RemoveExpiredFiles(instant);
   std::move(closure).Run();
+}
+
+void AutoDeletionService::OnDownloadUpdated(web::DownloadTask* download_task) {
+  ScheduleFileForDeletion(download_task);
+}
+
+void AutoDeletionService::OnDownloadDestroyed(
+    web::DownloadTask* download_task) {
+  download_tasks_observation_.RemoveObservation(download_task);
 }
 
 }  // namespace auto_deletion

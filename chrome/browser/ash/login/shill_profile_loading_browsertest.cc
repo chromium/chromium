@@ -20,6 +20,7 @@
 #include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/protobuf_matchers.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -47,6 +48,7 @@ namespace {
 
 namespace em = ::enterprise_management;
 
+using base::test::EqualsProto;
 using ::testing::ElementsAre;
 
 constexpr char kUnmanagedUser[] = "unmanaged@gmail.com";
@@ -88,15 +90,6 @@ class LoadShillProfileWaiter {
   base::RunLoop run_loop_;
   std::vector<cryptohome::AccountIdentifier> invocations_;
 };
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 }  // namespace
 

@@ -95,10 +95,13 @@ std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
   return removed_tabs;
 }
 
-std::vector<tab_groups::SavedTabGroupTab> GetUpdatedTabs(
-    const tab_groups::SavedTabGroup& before,
-    const tab_groups::SavedTabGroup& after) {
-  std::vector<tab_groups::SavedTabGroupTab> updated_tabs;
+std::vector<
+    std::pair<tab_groups::SavedTabGroupTab, tab_groups::SavedTabGroupTab>>
+GetUpdatedTabs(const tab_groups::SavedTabGroup& before,
+               const tab_groups::SavedTabGroup& after) {
+  std::vector<
+      std::pair<tab_groups::SavedTabGroupTab, tab_groups::SavedTabGroupTab>>
+      updated_tabs;
   for (const auto& old_tab : before.saved_tabs()) {
     if (!after.ContainsTab(old_tab.saved_tab_guid())) {
       // Skip if the tab has been removed.
@@ -117,7 +120,7 @@ std::vector<tab_groups::SavedTabGroupTab> GetUpdatedTabs(
       // show instant message about which tab has updated.
       tab_groups::SavedTabGroupTab updated_tab(*new_tab);
       updated_tab.SetTitle(old_tab.title());
-      updated_tabs.emplace_back(updated_tab);
+      updated_tabs.emplace_back(std::make_pair<>(old_tab, updated_tab));
     }
   }
   return updated_tabs;
@@ -315,6 +318,18 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
   }
 }
 
+void TabGroupChangeNotifierImpl::OnTabLastSeenTimeChanged(
+    const base::Uuid& tab_id,
+    tab_groups::TriggerSource source) {
+  if (!is_initialized_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabLastSeenTimeChanged(tab_id, source);
+  }
+}
+
 void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<tab_groups::LocalTabGroupID>& local_id) {
@@ -480,16 +495,18 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
     }
   }
 
-  std::vector<tab_groups::SavedTabGroupTab> updated_tabs =
-      GetUpdatedTabs(before, after);
-  if (updated_tabs.size() > 0) {
+  std::vector<
+      std::pair<tab_groups::SavedTabGroupTab, tab_groups::SavedTabGroupTab>>
+      updated_tab_pairs = GetUpdatedTabs(before, after);
+  if (updated_tab_pairs.size() > 0) {
     for (auto& observer : observers_) {
-      for (auto& tab : updated_tabs) {
-        bool is_selected = tab.local_tab_id()
-                               ? base::Contains(last_selected_tabs_,
-                                                tab.local_tab_id().value())
-                               : false;
-        observer.OnTabUpdated(tab, source, is_selected);
+      for (auto& [before_tab, after_tab] : updated_tab_pairs) {
+        bool is_selected =
+            after_tab.local_tab_id()
+                ? base::Contains(last_selected_tabs_,
+                                 after_tab.local_tab_id().value())
+                : false;
+        observer.OnTabUpdated(before_tab, after_tab, source, is_selected);
       }
     }
   }

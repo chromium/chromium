@@ -5,17 +5,17 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
 
 #import "base/functional/bind.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
 namespace {
 // Configs used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FirstConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(SecondConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ThirdConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(NonMatched);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FirstConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(SecondConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ThirdConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(NonMatched);
 
 // Creates a matcher callback for ConfigType.
 template <class ConfigType>

@@ -323,25 +323,115 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
   return base::ok();
 }
 
+// This helper method is intended to validate mean, variance, scale and bias
+// operands of batchNormalization and instanceNormalization against the input
+// operand. These operands share the same constraint.
+base::expected<void, std::string>
+ValidateNormalizationOperandIsCompatibleWithInput(
+    const OperandDescriptor& operand,
+    const OperandDataType input_data_type,
+    size_t input_size_on_axis,
+    std::string_view label,
+    std::string_view argument_name) {
+  if (operand.data_type() != input_data_type) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        base::StrCat(
+            {"For ", argument_name,
+             " operand: the data type doesn't match the input data type."})));
+  }
+
+  if (operand.shape()[0] != input_size_on_axis) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        base::StrCat({"For ", argument_name,
+                      " operand: the size of operand must be equal to the size "
+                      "of the feature dimension of the input."})));
+  }
+
+  return base::ok();
+}
+
 }  // namespace
 
-base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    uint32_t axis,
-    std::string_view label) {
-  if (!context_properties.data_type_limits.softmax_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.softmax_input)));
-  }
-  if (axis >= input.Rank()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "Axis must be a valid dimension."));
-  }
-  // The output tensor of softmax is the same shape as the input tensor.
-  return input;
-}
+BatchNormalizationAttributes::BatchNormalizationAttributes() = default;
+BatchNormalizationAttributes::~BatchNormalizationAttributes() = default;
+BatchNormalizationAttributes::BatchNormalizationAttributes(
+    BatchNormalizationAttributes&& other) = default;
+BatchNormalizationAttributes& BatchNormalizationAttributes::operator=(
+    BatchNormalizationAttributes&& other) = default;
+
+Conv2dAttributesBase::Conv2dAttributesBase() = default;
+Conv2dAttributesBase::~Conv2dAttributesBase() = default;
+Conv2dAttributesBase::Conv2dAttributesBase(Conv2dAttributesBase&& other) =
+    default;
+Conv2dAttributesBase& Conv2dAttributesBase::operator=(
+    Conv2dAttributesBase&& other) = default;
+
+Conv2dAttributes::Conv2dAttributes() = default;
+Conv2dAttributes::~Conv2dAttributes() = default;
+Conv2dAttributes::Conv2dAttributes(Conv2dAttributes&& other) = default;
+Conv2dAttributes& Conv2dAttributes::operator=(Conv2dAttributes&& other) =
+    default;
+
+ConvTranspose2dAttributes::ConvTranspose2dAttributes() = default;
+ConvTranspose2dAttributes::~ConvTranspose2dAttributes() = default;
+ConvTranspose2dAttributes::ConvTranspose2dAttributes(
+    ConvTranspose2dAttributes&& other) = default;
+ConvTranspose2dAttributes& ConvTranspose2dAttributes::operator=(
+    ConvTranspose2dAttributes&& other) = default;
+
+GemmAttributes::GemmAttributes() = default;
+GemmAttributes::~GemmAttributes() = default;
+GemmAttributes::GemmAttributes(GemmAttributes&& other) = default;
+GemmAttributes& GemmAttributes::operator=(GemmAttributes&& other) = default;
+
+GruAttributes::GruAttributes() = default;
+GruAttributes::~GruAttributes() = default;
+GruAttributes::GruAttributes(GruAttributes&& other) = default;
+GruAttributes& GruAttributes::operator=(GruAttributes&& other) = default;
+
+GruCellAttributes::GruCellAttributes() = default;
+GruCellAttributes::~GruCellAttributes() = default;
+GruCellAttributes::GruCellAttributes(GruCellAttributes&& other) = default;
+GruCellAttributes& GruCellAttributes::operator=(GruCellAttributes&& other) =
+    default;
+
+InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
+InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
+InstanceNormalizationAttributes::InstanceNormalizationAttributes(
+    InstanceNormalizationAttributes&& other) = default;
+InstanceNormalizationAttributes& InstanceNormalizationAttributes::operator=(
+    InstanceNormalizationAttributes&& other) = default;
+
+LayerNormalizationAttributes::LayerNormalizationAttributes() = default;
+LayerNormalizationAttributes::~LayerNormalizationAttributes() = default;
+LayerNormalizationAttributes::LayerNormalizationAttributes(
+    LayerNormalizationAttributes&& other) = default;
+LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
+    LayerNormalizationAttributes&& other) = default;
+
+LstmAttributes::LstmAttributes() = default;
+LstmAttributes::~LstmAttributes() = default;
+LstmAttributes::LstmAttributes(LstmAttributes&& other) = default;
+LstmAttributes& LstmAttributes::operator=(LstmAttributes&& other) = default;
+
+LstmCellAttributes::LstmCellAttributes() = default;
+LstmCellAttributes::~LstmCellAttributes() = default;
+LstmCellAttributes::LstmCellAttributes(LstmCellAttributes&& other) = default;
+LstmCellAttributes& LstmCellAttributes::operator=(LstmCellAttributes&& other) =
+    default;
+
+Pool2dAttributes::Pool2dAttributes() = default;
+Pool2dAttributes::~Pool2dAttributes() = default;
+Pool2dAttributes::Pool2dAttributes(Pool2dAttributes&& other) = default;
+Pool2dAttributes& Pool2dAttributes::operator=(Pool2dAttributes&& other) =
+    default;
+
+SliceAttributes::SliceAttributes() = default;
+SliceAttributes::~SliceAttributes() = default;
+SliceAttributes::SliceAttributes(SliceAttributes&& other) = default;
+SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
     const ContextProperties& context_properties,
@@ -373,129 +463,6 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
   return OperandDescriptor::Create(context_properties, output_data_type,
                                    output_shape, label);
 }
-
-base::expected<std::vector<OperandDescriptor>, std::string>
-ValidateSplitAndInferOutput(const ContextProperties& context_properties,
-                            const OperandDescriptor& input,
-                            const SplitAttribute& attributes) {
-  const std::string& label = attributes.label;
-  if (!context_properties.data_type_limits.split_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.split_input)));
-  }
-
-  if (attributes.axis >= input.Rank()) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The axis must be in the range [0, N-1] where N is the rank of the "
-        "input tensor."));
-  }
-
-  static_assert(std::variant_size<decltype(attributes.splits)>() == 2,
-                "When adding new variants update the branches below.");
-
-  std::vector<OperandDescriptor> outputs;
-  if (std::holds_alternative<uint32_t>(attributes.splits)) {
-    uint32_t splits = std::get<uint32_t>(attributes.splits);
-    if (splits == 0) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The splits must be greater than zero."));
-    }
-
-    if (input.shape()[attributes.axis] % splits != 0) {
-      return base::unexpected(
-          ErrorWithLabel(label,
-                         "The dimension size of the input tensor along "
-                         "options.axis must be divisible by splits."));
-    }
-
-    outputs.reserve(splits);
-    for (uint32_t i = 0; i < splits; ++i) {
-      // When splits is of type uint32_t, we create splits number of Operands.
-      // Each Operand will have the same new_dimensions shape.
-      std::vector<uint32_t> new_dimensions = input.shape();
-      new_dimensions[attributes.axis] /= splits;
-      auto split_descriptor = OperandDescriptor::Create(
-          context_properties, input.data_type(), new_dimensions, label);
-      // `split_descriptor` should always be valid, since it's a subset of the
-      // input.
-      CHECK(split_descriptor.has_value());
-      outputs.push_back(*std::move(split_descriptor));
-    }
-  } else if (std::holds_alternative<base::span<const uint32_t>>(
-                 attributes.splits)) {
-    const auto& splits =
-        std::get<base::span<const uint32_t>>(attributes.splits);
-    if (std::ranges::any_of(splits,
-                            [](uint32_t split) { return split == 0; })) {
-      return base::unexpected(
-          ErrorWithLabel(label, "All splits must be greater than zero."));
-    }
-
-    base::CheckedNumeric<uint32_t> sum = std::accumulate(
-        splits.begin(), splits.end(), base::MakeCheckedNum<uint32_t>(0));
-    if (!sum.IsValid() || sum.ValueOrDie() != input.shape()[attributes.axis]) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          "The sum of all sizes in splits must be equal to the dimension size "
-          "of the input tensor specified by options.axis."));
-    }
-
-    outputs.reserve(splits.size());
-    for (uint32_t split : splits) {
-      std::vector<uint32_t> new_dimensions = input.shape();
-      new_dimensions[attributes.axis] = split;
-      auto split_descriptor = OperandDescriptor::Create(
-          context_properties, input.data_type(), new_dimensions, label);
-      // `split_descriptor` should always be valid, since it's a subset of the
-      // input.
-      CHECK(split_descriptor.has_value());
-      outputs.push_back(*std::move(split_descriptor));
-    }
-  } else {
-    NOTREACHED();
-  }
-
-  return outputs;
-}
-
-// This helper method is intended to validate mean, variance, scale and bias
-// operands of batchNormalization and instanceNormalization against the input
-// operand. These operands share the same constraint.
-base::expected<void, std::string>
-ValidateNormalizationOperandIsCompatibleWithInput(
-    const OperandDescriptor& operand,
-    const OperandDataType input_data_type,
-    size_t input_size_on_axis,
-    std::string_view label,
-    std::string_view argument_name) {
-  if (operand.data_type() != input_data_type) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        base::StrCat(
-            {"For ", argument_name,
-             " operand: the data type doesn't match the input data type."})));
-  }
-
-  if (operand.shape()[0] != input_size_on_axis) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        base::StrCat({"For ", argument_name,
-                      " operand: the size of operand must be equal to the size "
-                      "of the feature dimension of the input."})));
-  }
-
-  return base::ok();
-}
-
-BatchNormalizationAttributes::BatchNormalizationAttributes() = default;
-BatchNormalizationAttributes::~BatchNormalizationAttributes() = default;
-
-BatchNormalizationAttributes::BatchNormalizationAttributes(
-    BatchNormalizationAttributes&& other) = default;
-BatchNormalizationAttributes& BatchNormalizationAttributes::operator=(
-    BatchNormalizationAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string>
 ValidateBatchNormalizationAndInferOutput(
@@ -582,20 +549,111 @@ ValidateBatchNormalizationAndInferOutput(
   return input;
 }
 
-Conv2dAttributesBase::Conv2dAttributesBase() = default;
-Conv2dAttributesBase::~Conv2dAttributesBase() = default;
+base::expected<OperandDescriptor, std::string> ValidateCastAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    OperandDataType output_data_type,
+    std::string_view label) {
+  // Validate input operand.
+  if (!context_properties.data_type_limits.cast_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.cast_input)));
+  }
 
-Conv2dAttributesBase::Conv2dAttributesBase(Conv2dAttributesBase&& other) =
-    default;
-Conv2dAttributesBase& Conv2dAttributesBase::operator=(
-    Conv2dAttributesBase&& other) = default;
+  // Validate output data type.
+  if (!context_properties.data_type_limits.cast_input.data_types.Has(
+          output_data_type)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedOpOutputTypeError(
+                   output_data_type,
+                   context_properties.data_type_limits.cast_input.data_types)));
+  }
 
-Conv2dAttributes::Conv2dAttributes() = default;
-Conv2dAttributes::~Conv2dAttributes() = default;
+  return OperandDescriptor::Create(context_properties, output_data_type,
+                                   input.shape(), label);
+}
 
-Conv2dAttributes::Conv2dAttributes(Conv2dAttributes&& other) = default;
-Conv2dAttributes& Conv2dAttributes::operator=(Conv2dAttributes&& other) =
-    default;
+base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
+    const ContextProperties& context_properties,
+    const std::vector<OperandDescriptor>& inputs,
+    const uint32_t axis,
+    std::string_view label) {
+  if (inputs.empty()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The inputs should not be empty."));
+  }
+
+  for (const auto& input : inputs) {
+    if (!context_properties.data_type_limits.concat_inputs.Supports(input)) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedInputArgumentError(
+              input, context_properties.data_type_limits.concat_inputs)));
+    }
+  }
+
+  const auto first_input_rank = inputs[0].Rank();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
+  // the axis that the inputs concatenate along, with the value in the interval
+  // [0, N-1] where N is the rank of input tensors. We just check the first
+  // input rank here because we will check all inputs have same rank in the
+  // following loop.
+  if (axis >= first_input_rank) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor."));
+  }
+
+  const std::vector<uint32_t>& first_input_shape = inputs[0].shape();
+  const auto output_type = inputs[0].data_type();
+  // The loop skips the first input to avoid repeated checks.
+  for (size_t i = 1; i < inputs.size(); ++i) {
+    if (inputs[i].data_type() != output_type) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The input data types don't match."));
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same dimension.
+    if (inputs[i].Rank() != first_input_rank) {
+      return base::unexpected(ErrorWithLabel(
+          label, "All input tensors must have the same dimension."));
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same shape, except for the size of the dimension to
+    // concatenate on.
+    for (size_t dim = 0; dim < first_input_rank; ++dim) {
+      if (dim == axis || inputs[i].shape()[dim] == first_input_shape[dim]) {
+        continue;
+      }
+      return base::unexpected(ErrorWithLabel(
+          label,
+          "All input tensors must have the same shape, except for the size of "
+          "the dimension to concatenate on."));
+    }
+  }
+  // Calculate the output shape according to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
+  // has the same shape except on the dimension that all the inputs concatenated
+  // along. The size of that dimension is computed as the sum of all the input
+  // sizes of the same dimension.
+  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
+  for (auto& input : inputs) {
+    axis_size += input.shape()[axis];
+  }
+  std::vector<uint32_t> output_shape = first_input_shape;
+  if (!axis_size.AssignIfValid(&output_shape[axis])) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The concatenated dimension size is too large."));
+  }
+
+  return OperandDescriptor::Create(context_properties, output_type,
+                                   output_shape, label);
+}
 
 base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
     const ContextProperties& context_properties,
@@ -699,14 +757,6 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
   return ValidateConv2dBiasAndCreateOutputOperand(context_properties, input,
                                                   attributes, output_info);
 }
-
-ConvTranspose2dAttributes::ConvTranspose2dAttributes() = default;
-ConvTranspose2dAttributes::~ConvTranspose2dAttributes() = default;
-
-ConvTranspose2dAttributes::ConvTranspose2dAttributes(
-    ConvTranspose2dAttributes&& other) = default;
-ConvTranspose2dAttributes& ConvTranspose2dAttributes::operator=(
-    ConvTranspose2dAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string>
 ValidateConvTranspose2dAndInferOutput(
@@ -970,382 +1020,74 @@ ValidateDequantizeLinearAndInferOutput(
                                    input.shape(), label);
 }
 
-base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
+base::expected<OperandDescriptor, std::string>
+ValidateQuantizeLinearAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
-    base::span<const uint32_t> beginning_padding,
-    base::span<const uint32_t> ending_padding,
+    const OperandDescriptor& scale,
+    const OperandDescriptor& zero_point,
     std::string_view label) {
-  if (!context_properties.data_type_limits.pad_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.pad_input)));
-  }
+  // Validate scale and zero_point operands.
+  RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
+      input.shape(), scale.shape(), zero_point.shape(), label));
 
-  // Validate the beginning_padding and ending_padding.
-  if (beginning_padding.size() != input.Rank()) {
-    return base::unexpected(
-        ErrorWithLabel(label,
-                       "The length of beginningPadding must be "
-                       "equal to the rank of the input tensor."));
-  }
-  if (ending_padding.size() != input.Rank()) {
-    return base::unexpected(
-        ErrorWithLabel(label,
-                       "The length of endingPadding must be "
-                       "equal to the rank of the input tensor."));
-  }
-
-  // Infer the output.
-  // Each dimension of the output tensor can be calculated as follow:
-  // input_size = input_shape[i];
-  // output_size = beginning_padding + input_size + ending_padding.
-  std::vector<uint32_t> output_shape(input.Rank());
-  for (size_t i = 0; i < input.Rank(); ++i) {
-    auto checked_output_size =
-        base::MakeCheckedNum<uint32_t>(input.shape()[i]) +
-        beginning_padding[i] + ending_padding[i];
-    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
-      return base::unexpected(ErrorWithLabel(
-          label, base::StringPrintf(
-                     "The padding of dimension (%zu) is too large.", i)));
-    }
-  }
-
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   output_shape, label);
-}
-
-base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& a,
-    const OperandDescriptor& b,
-    std::string_view label) {
-  if (!context_properties.data_type_limits.matmul_input.Supports(a)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentError(
-                   "a", a, context_properties.data_type_limits.matmul_input)));
-  }
-
-  if (!context_properties.data_type_limits.matmul_input.Supports(b)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentError(
-                   "b", b, context_properties.data_type_limits.matmul_input)));
-  }
-
-  if (a.data_type() != b.data_type()) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The data types of first two inputs don't match."));
-  }
-
-  std::vector<uint32_t> a_dimensions = a.shape();
-  CHECK_GE(a_dimensions.size(), 2u);
-  std::vector<uint32_t> b_dimensions = b.shape();
-  CHECK_GE(b_dimensions.size(), 2u);
-
-  // The number of columns in the first matrix must be equal to the number of
-  // rows in the second matrix.
-  const uint32_t a_cols = a_dimensions[a_dimensions.size() - 1];
-  const uint32_t a_rows = a_dimensions[a_dimensions.size() - 2];
-  const uint32_t b_cols = b_dimensions[b_dimensions.size() - 1];
-  const uint32_t b_rows = b_dimensions[b_dimensions.size() - 2];
-  if (a_cols != b_rows) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        base::StringPrintf(
-            "The number of columns (%u) in the first matrix isn't equal to "
-            "the number of rows (%u) in the second matrix.",
-            a_cols, b_rows)));
-  }
-
-  size_t output_rank = std::max(a_dimensions.size(), b_dimensions.size());
-  std::vector<uint32_t> output_dimensions;
-  // Figure out the output shape by broadcasting all the dimensions except the
-  // last two. The output is 2-D tensor of shape [M, N].
-  if (a.Rank() > 2 && b.Rank() > 2) {
-    std::vector<uint32_t> sliced_a_dimensions(a_dimensions.begin(),
-                                              a_dimensions.end() - 2);
-    std::vector<uint32_t> sliced_b_dimensions(b_dimensions.begin(),
-                                              b_dimensions.end() - 2);
-    std::optional<std::vector<uint32_t>> optional_output_dimensions =
-        BroadcastShapes(sliced_a_dimensions, sliced_b_dimensions, true);
-    if (!optional_output_dimensions) {
-      return base::unexpected(ErrorWithLabel(
-          label, "The matmul input shapes are not broadcastable."));
-    }
-    output_dimensions = *optional_output_dimensions;
-    output_dimensions.push_back(a_rows);
-    output_dimensions.push_back(b_cols);
-  } else if (a.Rank() == 2 && b.Rank() == 2) {
-    output_dimensions.push_back(a_rows);
-    output_dimensions.push_back(b_cols);
-  } else {
-    output_dimensions =
-        a_dimensions.size() > b_dimensions.size() ? a_dimensions : b_dimensions;
-    output_dimensions[output_rank - 2] = a_rows;
-    output_dimensions[output_rank - 1] = b_cols;
-  }
-  CHECK_EQ(output_rank, output_dimensions.size());
-
-  return OperandDescriptor::Create(context_properties, a.data_type(),
-                                   output_dimensions, label);
-}
-
-Pool2dAttributes::Pool2dAttributes() = default;
-Pool2dAttributes::~Pool2dAttributes() = default;
-
-Pool2dAttributes::Pool2dAttributes(Pool2dAttributes&& other) = default;
-Pool2dAttributes& Pool2dAttributes::operator=(Pool2dAttributes&& other) =
-    default;
-
-base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    const Pool2dAttributes& attributes,
-    Pool2dKind kind) {
-  const std::string& label = attributes.label;
-  // Validate input operand and set its sizes.
-  const SupportedTensors& tensor_constraint = [&](Pool2dKind kind) {
-    switch (kind) {
-      case Pool2dKind::kAverage:
-        return context_properties.data_type_limits.average_pool2d_input;
-      case Pool2dKind::kL2:
-        return context_properties.data_type_limits.l2_pool2d_input;
-      case Pool2dKind::kMax:
-        return context_properties.data_type_limits.max_pool2d_input;
-    }
-  }(kind);
-
-  if (!tensor_constraint.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(input, tensor_constraint)));
-  }
-
-  const std::vector<uint32_t>& input_shape = input.shape();
-  CHECK_EQ(input_shape.size(), 4u);
-  // The layout option specifies the layout format of the input tensor.
-  uint32_t input_batches, input_channels, input_height, input_width;
-  switch (attributes.layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, channels, height, width]
-      input_batches = input_shape[0];
-      input_channels = input_shape[1];
-      input_height = input_shape[2];
-      input_width = input_shape[3];
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, channels]
-      input_batches = input_shape[0];
-      input_height = input_shape[1];
-      input_width = input_shape[2];
-      input_channels = input_shape[3];
-      break;
-  }
-
-  // Validate windowDimensions and get its values. If not present, the window
-  // dimensions are assumed to be the height and width dimensions of the input
-  // shape.
-  uint32_t window_height = input_height;
-  uint32_t window_width = input_width;
-  if (attributes.window_dimensions) {
-    if (attributes.window_dimensions->height == 0 ||
-        attributes.window_dimensions->width == 0) {
-      return base::unexpected(ErrorWithLabel(
-          label, "All window dimensions should be greater than 0."));
-    }
-    window_height = attributes.window_dimensions->height;
-    window_width = attributes.window_dimensions->width;
-  }
-
-  // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
-  // sizes.
-  ASSIGN_OR_RETURN(
-      Size2d<double> output_sizes,
-      ValidateAndCalculateConv2dOutputSizes(
-          input_height, input_width, window_height, window_width,
-          attributes.padding, attributes.strides, attributes.dilations, label));
-
-  const uint32_t floor_output_height =
-      base::ClampFloor<uint32_t>(output_sizes.height);
-  const uint32_t ceil_output_height =
-      base::ClampCeil<uint32_t>(output_sizes.height);
-  const uint32_t floor_output_width =
-      base::ClampFloor<uint32_t>(output_sizes.width);
-  const uint32_t ceil_output_width =
-      base::ClampCeil<uint32_t>(output_sizes.width);
-
-  uint32_t output_height, output_width;
-  if (attributes.output_sizes) {
-    auto& output_size = attributes.output_sizes.value();
-    if (output_size.height == 0 || output_size.width == 0) {
-      return base::unexpected(
-          ErrorWithLabel(label, "All output sizes should be greater than 0."));
-    }
-    uint32_t user_output_height = output_size.height;
-    uint32_t user_output_width = output_size.width;
-
-    // Check whether the user supplied output sizes is either floor or ceil
-    // rounding of the calculated output sizes. The backend implementation
-    // should check whether the indicated rounding type is supported.
-    if ((user_output_height == floor_output_height &&
-         user_output_width == floor_output_width) ||
-        (user_output_height == ceil_output_height &&
-         user_output_width == ceil_output_width)) {
-      output_height = user_output_height;
-      output_width = user_output_width;
-    } else {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          (floor_output_height == ceil_output_height &&
-           floor_output_width == ceil_output_width)
-              ? base::StringPrintf("The output sizes should be [%u, %u].",
-                                   floor_output_height, floor_output_width)
-              : base::StringPrintf(
-                    "The output sizes should be either [%u, %u] or [%u, %u].",
-                    floor_output_height, floor_output_width, ceil_output_height,
-                    ceil_output_width)));
-    }
-  } else {
-    switch (attributes.rounding_type) {
-      case RoundingType::kFloor:
-        output_height = floor_output_height;
-        output_width = floor_output_width;
-        break;
-      case RoundingType::kCeil:
-        output_height = ceil_output_height;
-        output_width = ceil_output_width;
-        break;
-    }
-  }
-  // The layout option specifies the layout format of the output tensor.
-  std::vector<uint32_t> output_shape;
-  switch (attributes.layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, channels, height, width]
-      output_shape = {input_batches, input_channels, output_height,
-                      output_width};
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, channels]
-      output_shape = {input_batches, output_height, output_width,
-                      input_channels};
-      break;
-  }
-
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   output_shape, label);
-}
-
-// The current WebNN spec doesn't define the calculation formula of the output
-// size for resample2d. An issue has been filed to track it -
-// https://github.com/webmachinelearning/webnn/issues/360.
-base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
-    const uint32_t input_size,
-    const float scale,
-    std::string_view label) {
-  // Calculate the output size in double precision floating point number that
-  // ensures values of type uint32_t can be exactly represented.
-  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
-
-  // Check if the value is valid for rounding to uint32_t type.
-  if (!checked_output_size.IsValid<uint32_t>()) {
-    return base::unexpected(ErrorWithLabel(label, "The scale is too large."));
-  }
-  const uint32_t output_size =
-      base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
-  if (output_size == 0) {
-    return base::unexpected(ErrorWithLabel(label, "The scale is too small."));
-  }
-  return output_size;
-}
-
-base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    const std::variant<base::span<const float>, base::span<const uint32_t>>&
-        scales_or_sizes,
-    base::span<const uint32_t> axes,
-    std::string_view label) {
-  if (!context_properties.data_type_limits.resample2d_input.Supports(input)) {
+  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
         NotSupportedInputArgumentError(
-            input, context_properties.data_type_limits.resample2d_input)));
+            input, context_properties.data_type_limits.quantize_linear_input)));
   }
 
-  if (axes.size() != 2) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The length of axes should be 2."));
-  }
-  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
-
-  // Validate scales or sizes and infer the output.
-  std::vector<uint32_t> output_shape(input.shape());
-  if (std::holds_alternative<base::span<const float>>(scales_or_sizes)) {
-    const auto& scales = std::get<base::span<const float>>(scales_or_sizes);
-    if (scales.size() != 2) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The length of scales should be 2."));
-    }
-    if (scales[0] <= 0 || scales[1] <= 0) {
-      return base::unexpected(
-          ErrorWithLabel(label, "All scales should be greater than 0."));
-    }
-
-    auto output_first_axis =
-        CalculateResample2dOutputSize(input.shape()[axes[0]], scales[0], label);
-    if (!output_first_axis.has_value()) {
-      return base::unexpected(ErrorWithLabel(
-          label, "Failed to calculate the output shape for first axis : " +
-                     output_first_axis.error()));
-    }
-    output_shape[axes[0]] = output_first_axis.value();
-
-    auto output_second_axis =
-        CalculateResample2dOutputSize(input.shape()[axes[1]], scales[1], label);
-    if (!output_second_axis.has_value()) {
-      return base::unexpected(ErrorWithLabel(
-          label, "Failed to calculate the output shape for second axis: " +
-                     output_second_axis.error()));
-    }
-    output_shape[axes[1]] = output_second_axis.value();
-  } else if (std::holds_alternative<base::span<const uint32_t>>(
-                 scales_or_sizes)) {
-    const auto& sizes = std::get<base::span<const uint32_t>>(scales_or_sizes);
-    if (sizes.size() != 2) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The length of sizes should be 2."));
-    }
-    if (sizes[0] == 0 || sizes[1] == 0) {
-      return base::unexpected(
-          ErrorWithLabel(label, "All sizes should be greater than 0."));
-    }
-
-    output_shape[axes[0]] = sizes[0];
-    output_shape[axes[1]] = sizes[1];
-  } else {
-    NOTREACHED();
+  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
+          scale)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kScaleParam, scale,
+                   context_properties.data_type_limits.quantize_linear_input)));
   }
 
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   output_shape, label);
+  if (input.data_type() != scale.data_type()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The data type of input and scale must be the same."));
+  }
+
+  if (!context_properties.data_type_limits.quantize_linear_zero_point.Supports(
+          zero_point)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentError(
+            kZeroPointParam, zero_point,
+            context_properties.data_type_limits.quantize_linear_zero_point)));
+  }
+  // The data type of zero_point determines the output type.
+  return OperandDescriptor::Create(context_properties, zero_point.data_type(),
+                                   input.shape(), label);
 }
 
-base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
+base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
-    base::span<const uint32_t> axes,
+    base::span<const uint32_t> new_shape,
     std::string_view label) {
-  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
-
-  if (!context_properties.data_type_limits.reverse_input.Supports(input)) {
+  // Validate input operand.
+  if (!context_properties.data_type_limits.expand_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.reverse_input)));
+                   input, context_properties.data_type_limits.expand_input)));
   }
 
-  return input;
+  std::optional<std::vector<uint32_t>> output_shape =
+      BroadcastShapes(input.shape(), new_shape,
+                      /*bidirectional=*/false);
+  if (!output_shape) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The input shape is not broadcastable to the new shape."));
+  }
+  CHECK_EQ(new_shape, base::span<const uint32_t>(*output_shape));
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   *output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
@@ -1501,14 +1243,8 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
                     input.shape().end(), std::back_inserter(output_shape));
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
+                                   output_shape, label);
 }
-
-GemmAttributes::GemmAttributes() = default;
-GemmAttributes::~GemmAttributes() = default;
-
-GemmAttributes::GemmAttributes(GemmAttributes&& other) = default;
-GemmAttributes& GemmAttributes::operator=(GemmAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
     const ContextProperties& context_properties,
@@ -1588,12 +1324,6 @@ base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
   return OperandDescriptor::Create(context_properties, a.data_type(),
                                    output_shape, label);
 }
-
-GruAttributes::GruAttributes() = default;
-GruAttributes::~GruAttributes() = default;
-
-GruAttributes::GruAttributes(GruAttributes&& other) = default;
-GruAttributes& GruAttributes::operator=(GruAttributes&& other) = default;
 
 base::expected<std::vector<OperandDescriptor>, std::string>
 ValidateGruAndInferOutput(const ContextProperties& context_properties,
@@ -1736,13 +1466,6 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
   return outputs;
 }
 
-GruCellAttributes::GruCellAttributes() = default;
-GruCellAttributes::~GruCellAttributes() = default;
-
-GruCellAttributes::GruCellAttributes(GruCellAttributes&& other) = default;
-GruCellAttributes& GruCellAttributes::operator=(GruCellAttributes&& other) =
-    default;
-
 base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
@@ -1855,14 +1578,6 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
                                    output_shape, label);
 }
 
-InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
-InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
-
-InstanceNormalizationAttributes::InstanceNormalizationAttributes(
-    InstanceNormalizationAttributes&& other) = default;
-InstanceNormalizationAttributes& InstanceNormalizationAttributes::operator=(
-    InstanceNormalizationAttributes&& other) = default;
-
 base::expected<OperandDescriptor, std::string>
 ValidateInstanceNormalizationAndInferOutput(
     const ContextProperties& context_properties,
@@ -1920,14 +1635,6 @@ ValidateInstanceNormalizationAndInferOutput(
 
   return input;
 }
-
-LayerNormalizationAttributes::LayerNormalizationAttributes() = default;
-LayerNormalizationAttributes::~LayerNormalizationAttributes() = default;
-
-LayerNormalizationAttributes::LayerNormalizationAttributes(
-    LayerNormalizationAttributes&& other) = default;
-LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
-    LayerNormalizationAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string>
 ValidateLayerNormalizationAndInferOutput(
@@ -1993,12 +1700,6 @@ ValidateLayerNormalizationAndInferOutput(
 
   return input;
 }
-
-LstmAttributes::LstmAttributes() = default;
-LstmAttributes::~LstmAttributes() = default;
-
-LstmAttributes::LstmAttributes(LstmAttributes&& other) = default;
-LstmAttributes& LstmAttributes::operator=(LstmAttributes&& other) = default;
 
 base::expected<std::vector<OperandDescriptor>, std::string>
 ValidateLstmAndInferOutput(const ContextProperties& context_properties,
@@ -2178,13 +1879,6 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
   return outputs;
 }
 
-LstmCellAttributes::LstmCellAttributes() = default;
-LstmCellAttributes::~LstmCellAttributes() = default;
-
-LstmCellAttributes::LstmCellAttributes(LstmCellAttributes&& other) = default;
-LstmCellAttributes& LstmCellAttributes::operator=(LstmCellAttributes&& other) =
-    default;
-
 base::expected<std::vector<OperandDescriptor>, std::string>
 ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
                                const OperandDescriptor& input,
@@ -2337,84 +2031,262 @@ ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
   return outputs;
 }
 
-base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
+base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
     const ContextProperties& context_properties,
-    const std::vector<OperandDescriptor>& inputs,
-    const uint32_t axis,
+    const OperandDescriptor& a,
+    const OperandDescriptor& b,
     std::string_view label) {
-  if (inputs.empty()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The inputs should not be empty."));
+  if (!context_properties.data_type_limits.matmul_input.Supports(a)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   "a", a, context_properties.data_type_limits.matmul_input)));
   }
 
-  for (const auto& input : inputs) {
-    if (!context_properties.data_type_limits.concat_inputs.Supports(input)) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          NotSupportedInputArgumentError(
-              input, context_properties.data_type_limits.concat_inputs)));
-    }
+  if (!context_properties.data_type_limits.matmul_input.Supports(b)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   "b", b, context_properties.data_type_limits.matmul_input)));
   }
 
-  const auto first_input_rank = inputs[0].Rank();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
-  // the axis that the inputs concatenate along, with the value in the interval
-  // [0, N-1] where N is the rank of input tensors. We just check the first
-  // input rank here because we will check all inputs have same rank in the
-  // following loop.
-  if (axis >= first_input_rank) {
+  if (a.data_type() != b.data_type()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The data types of first two inputs don't match."));
+  }
+
+  std::vector<uint32_t> a_dimensions = a.shape();
+  CHECK_GE(a_dimensions.size(), 2u);
+  std::vector<uint32_t> b_dimensions = b.shape();
+  CHECK_GE(b_dimensions.size(), 2u);
+
+  // The number of columns in the first matrix must be equal to the number of
+  // rows in the second matrix.
+  const uint32_t a_cols = a_dimensions[a_dimensions.size() - 1];
+  const uint32_t a_rows = a_dimensions[a_dimensions.size() - 2];
+  const uint32_t b_cols = b_dimensions[b_dimensions.size() - 1];
+  const uint32_t b_rows = b_dimensions[b_dimensions.size() - 2];
+  if (a_cols != b_rows) {
     return base::unexpected(ErrorWithLabel(
         label,
-        "The axis must be in the range [0, N-1] where N is the rank of input "
-        "tensor."));
+        base::StringPrintf(
+            "The number of columns (%u) in the first matrix isn't equal to "
+            "the number of rows (%u) in the second matrix.",
+            a_cols, b_rows)));
   }
 
-  const std::vector<uint32_t>& first_input_shape = inputs[0].shape();
-  const auto output_type = inputs[0].data_type();
-  // The loop skips the first input to avoid repeated checks.
-  for (size_t i = 1; i < inputs.size(); ++i) {
-    if (inputs[i].data_type() != output_type) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The input data types don't match."));
-    }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same dimension.
-    if (inputs[i].Rank() != first_input_rank) {
+  size_t output_rank = std::max(a_dimensions.size(), b_dimensions.size());
+  std::vector<uint32_t> output_dimensions;
+  // Figure out the output shape by broadcasting all the dimensions except the
+  // last two. The output is 2-D tensor of shape [M, N].
+  if (a.Rank() > 2 && b.Rank() > 2) {
+    std::vector<uint32_t> sliced_a_dimensions(a_dimensions.begin(),
+                                              a_dimensions.end() - 2);
+    std::vector<uint32_t> sliced_b_dimensions(b_dimensions.begin(),
+                                              b_dimensions.end() - 2);
+    std::optional<std::vector<uint32_t>> optional_output_dimensions =
+        BroadcastShapes(sliced_a_dimensions, sliced_b_dimensions, true);
+    if (!optional_output_dimensions) {
       return base::unexpected(ErrorWithLabel(
-          label, "All input tensors must have the same dimension."));
+          label, "The matmul input shapes are not broadcastable."));
     }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same shape, except for the size of the dimension to
-    // concatenate on.
-    for (size_t dim = 0; dim < first_input_rank; ++dim) {
-      if (dim == axis || inputs[i].shape()[dim] == first_input_shape[dim]) {
-        continue;
-      }
+    output_dimensions = *optional_output_dimensions;
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else if (a.Rank() == 2 && b.Rank() == 2) {
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else {
+    output_dimensions =
+        a_dimensions.size() > b_dimensions.size() ? a_dimensions : b_dimensions;
+    output_dimensions[output_rank - 2] = a_rows;
+    output_dimensions[output_rank - 1] = b_cols;
+  }
+  CHECK_EQ(output_rank, output_dimensions.size());
+
+  return OperandDescriptor::Create(context_properties, a.data_type(),
+                                   output_dimensions, label);
+}
+
+base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> beginning_padding,
+    base::span<const uint32_t> ending_padding,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.pad_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.pad_input)));
+  }
+
+  // Validate the beginning_padding and ending_padding.
+  if (beginning_padding.size() != input.Rank()) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The length of beginningPadding must be "
+                       "equal to the rank of the input tensor."));
+  }
+  if (ending_padding.size() != input.Rank()) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The length of endingPadding must be "
+                       "equal to the rank of the input tensor."));
+  }
+
+  // Infer the output.
+  // Each dimension of the output tensor can be calculated as follow:
+  // input_size = input_shape[i];
+  // output_size = beginning_padding + input_size + ending_padding.
+  std::vector<uint32_t> output_shape(input.Rank());
+  for (size_t i = 0; i < input.Rank(); ++i) {
+    auto checked_output_size =
+        base::MakeCheckedNum<uint32_t>(input.shape()[i]) +
+        beginning_padding[i] + ending_padding[i];
+    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
+      return base::unexpected(ErrorWithLabel(
+          label, base::StringPrintf(
+                     "The padding of dimension (%zu) is too large.", i)));
+    }
+  }
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
+}
+
+base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const Pool2dAttributes& attributes,
+    Pool2dKind kind) {
+  const std::string& label = attributes.label;
+  // Validate input operand and set its sizes.
+  const SupportedTensors& tensor_constraint = [&](Pool2dKind kind) {
+    switch (kind) {
+      case Pool2dKind::kAverage:
+        return context_properties.data_type_limits.average_pool2d_input;
+      case Pool2dKind::kL2:
+        return context_properties.data_type_limits.l2_pool2d_input;
+      case Pool2dKind::kMax:
+        return context_properties.data_type_limits.max_pool2d_input;
+    }
+  }(kind);
+
+  if (!tensor_constraint.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(input, tensor_constraint)));
+  }
+
+  const std::vector<uint32_t>& input_shape = input.shape();
+  CHECK_EQ(input_shape.size(), 4u);
+  // The layout option specifies the layout format of the input tensor.
+  uint32_t input_batches, input_channels, input_height, input_width;
+  switch (attributes.layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, channels, height, width]
+      input_batches = input_shape[0];
+      input_channels = input_shape[1];
+      input_height = input_shape[2];
+      input_width = input_shape[3];
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, channels]
+      input_batches = input_shape[0];
+      input_height = input_shape[1];
+      input_width = input_shape[2];
+      input_channels = input_shape[3];
+      break;
+  }
+
+  // Validate windowDimensions and get its values. If not present, the window
+  // dimensions are assumed to be the height and width dimensions of the input
+  // shape.
+  uint32_t window_height = input_height;
+  uint32_t window_width = input_width;
+  if (attributes.window_dimensions) {
+    if (attributes.window_dimensions->height == 0 ||
+        attributes.window_dimensions->width == 0) {
+      return base::unexpected(ErrorWithLabel(
+          label, "All window dimensions should be greater than 0."));
+    }
+    window_height = attributes.window_dimensions->height;
+    window_width = attributes.window_dimensions->width;
+  }
+
+  // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
+  // sizes.
+  ASSIGN_OR_RETURN(
+      Size2d<double> output_sizes,
+      ValidateAndCalculateConv2dOutputSizes(
+          input_height, input_width, window_height, window_width,
+          attributes.padding, attributes.strides, attributes.dilations, label));
+
+  const uint32_t floor_output_height =
+      base::ClampFloor<uint32_t>(output_sizes.height);
+  const uint32_t ceil_output_height =
+      base::ClampCeil<uint32_t>(output_sizes.height);
+  const uint32_t floor_output_width =
+      base::ClampFloor<uint32_t>(output_sizes.width);
+  const uint32_t ceil_output_width =
+      base::ClampCeil<uint32_t>(output_sizes.width);
+
+  uint32_t output_height, output_width;
+  if (attributes.output_sizes) {
+    auto& output_size = attributes.output_sizes.value();
+    if (output_size.height == 0 || output_size.width == 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "All output sizes should be greater than 0."));
+    }
+    uint32_t user_output_height = output_size.height;
+    uint32_t user_output_width = output_size.width;
+
+    // Check whether the user supplied output sizes is either floor or ceil
+    // rounding of the calculated output sizes. The backend implementation
+    // should check whether the indicated rounding type is supported.
+    if ((user_output_height == floor_output_height &&
+         user_output_width == floor_output_width) ||
+        (user_output_height == ceil_output_height &&
+         user_output_width == ceil_output_width)) {
+      output_height = user_output_height;
+      output_width = user_output_width;
+    } else {
       return base::unexpected(ErrorWithLabel(
           label,
-          "All input tensors must have the same shape, except for the size of "
-          "the dimension to concatenate on."));
+          (floor_output_height == ceil_output_height &&
+           floor_output_width == ceil_output_width)
+              ? base::StringPrintf("The output sizes should be [%u, %u].",
+                                   floor_output_height, floor_output_width)
+              : base::StringPrintf(
+                    "The output sizes should be either [%u, %u] or [%u, %u].",
+                    floor_output_height, floor_output_width, ceil_output_height,
+                    ceil_output_width)));
+    }
+  } else {
+    switch (attributes.rounding_type) {
+      case RoundingType::kFloor:
+        output_height = floor_output_height;
+        output_width = floor_output_width;
+        break;
+      case RoundingType::kCeil:
+        output_height = ceil_output_height;
+        output_width = ceil_output_width;
+        break;
     }
   }
-  // Calculate the output shape according to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
-  // has the same shape except on the dimension that all the inputs concatenated
-  // along. The size of that dimension is computed as the sum of all the input
-  // sizes of the same dimension.
-  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
-  for (auto& input : inputs) {
-    axis_size += input.shape()[axis];
-  }
-  std::vector<uint32_t> output_shape = first_input_shape;
-  if (!axis_size.AssignIfValid(&output_shape[axis])) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The concatenated dimension size is too large."));
+  // The layout option specifies the layout format of the output tensor.
+  std::vector<uint32_t> output_shape;
+  switch (attributes.layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, channels, height, width]
+      output_shape = {input_batches, input_channels, output_height,
+                      output_width};
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, channels]
+      output_shape = {input_batches, output_height, output_width,
+                      input_channels};
+      break;
   }
 
-  return OperandDescriptor::Create(context_properties, output_type,
+  return OperandDescriptor::Create(context_properties, input.data_type(),
                                    output_shape, label);
 }
 
@@ -2450,211 +2322,6 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
   }
 
   return input;
-}
-
-base::expected<OperandDescriptor, std::string>
-ValidateQuantizeLinearAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    const OperandDescriptor& scale,
-    const OperandDescriptor& zero_point,
-    std::string_view label) {
-  // Validate scale and zero_point operands.
-  RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
-      input.shape(), scale.shape(), zero_point.shape(), label));
-
-  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
-          input)) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedInputArgumentError(
-            input, context_properties.data_type_limits.quantize_linear_input)));
-  }
-
-  if (!context_properties.data_type_limits.quantize_linear_input.Supports(
-          scale)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentError(
-                   kScaleParam, scale,
-                   context_properties.data_type_limits.quantize_linear_input)));
-  }
-
-  if (input.data_type() != scale.data_type()) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The data type of input and scale must be the same."));
-  }
-
-  if (!context_properties.data_type_limits.quantize_linear_zero_point.Supports(
-          zero_point)) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedArgumentError(
-            kZeroPointParam, zero_point,
-            context_properties.data_type_limits.quantize_linear_zero_point)));
-  }
-  // The data type of zero_point determines the output type.
-  return OperandDescriptor::Create(context_properties, zero_point.data_type(),
-                                   input.shape(), label);
-}
-
-base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    base::span<const uint32_t> repetitions,
-    std::string_view label) {
-  if (!context_properties.data_type_limits.tile_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.tile_input)));
-  }
-
-  if (repetitions.size() != input.Rank()) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The number of values in repetitions must be the same as the rank of "
-        "the input tensor."));
-  }
-
-  std::vector<uint32_t> output_shape(input.Rank());
-  for (size_t i = 0; i < input.Rank(); ++i) {
-    if (repetitions[i] == 0) {
-      return base::unexpected(
-          ErrorWithLabel(label, "Any value in repetitions must not be 0."));
-    }
-    auto tiled_dim =
-        base::MakeCheckedNum<uint32_t>(repetitions[i]) * input.shape()[i];
-    if (!tiled_dim.AssignIfValid(&output_shape[i])) {
-      return base::unexpected(
-          ErrorWithLabel(label, "The tiled dimension size is too large."));
-    }
-  }
-
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
-}
-
-base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    base::span<const uint32_t> permutation,
-    std::string_view label) {
-  if (!context_properties.data_type_limits.transpose_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedInputArgumentError(
-            input, context_properties.data_type_limits.transpose_input)));
-  }
-
-  if (permutation.size() != static_cast<size_t>(input.Rank())) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The number of values in permutation must be the same as the rank of "
-        "the input tensor."));
-  }
-  RETURN_IF_ERROR(ValidateAxes(permutation, input.Rank(), label));
-
-  std::vector<uint32_t> output_shape(input.Rank());
-  for (uint32_t i = 0; i < input.Rank(); ++i) {
-    output_shape[i] = input.shape()[permutation[i]];
-  }
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
-}
-
-SliceAttributes::SliceAttributes() = default;
-SliceAttributes::~SliceAttributes() = default;
-
-SliceAttributes::SliceAttributes(SliceAttributes&& other) = default;
-SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
-
-base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
-    const ContextProperties& context_properties,
-    const OperandDescriptor& input,
-    const SliceAttributes& attributes) {
-  const std::string& label = attributes.label;
-  const auto input_rank = input.Rank();
-
-  if (!context_properties.data_type_limits.slice_input.Supports(input)) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentError(
-                   input, context_properties.data_type_limits.slice_input)));
-  }
-
-  if (attributes.starts.size() != input_rank) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The length of starts must be equal to the rank of the input tensor."));
-  }
-
-  if (attributes.sizes.size() != input_rank) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The length of sizes must be equal to the rank of the input tensor."));
-  }
-
-  if (attributes.strides.size() != input_rank) {
-    return base::unexpected(
-        ErrorWithLabel(label,
-                       "The length of strides must be equal to the rank of the "
-                       "input tensor."));
-  }
-
-  std::vector<uint32_t> output_shape;
-  output_shape.reserve(input_rank);
-
-  for (uint32_t i = 0; i < input_rank; ++i) {
-    if (attributes.starts[i] >= input.shape()[i]) {
-      return base::unexpected(ErrorWithLabel(
-          label, base::StringPrintf(
-                     "For dimension (%u): the starting index to slice must "
-                     "be less than input size (%u).",
-                     i, input.shape()[i])));
-    }
-
-    // WebNN plans to allow 0 size dimensions and an issue has been filed to
-    // track it: https://github.com/webmachinelearning/webnn/issues/391.
-    if (attributes.sizes[i] == 0) {
-      return base::unexpected(ErrorWithLabel(
-          label, base::StringPrintf(
-                     "For dimension (%u): the number of elements to slice "
-                     "must not be 0.",
-                     i)));
-    }
-
-    if (attributes.strides[i] < 1) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          base::StringPrintf(
-              "For dimension (%u): the stride (%u) must not be less than 1.", i,
-              attributes.strides[i])));
-    }
-
-    auto checked_ending_index =
-        base::MakeCheckedNum<uint32_t>(attributes.starts[i]) +
-        attributes.sizes[i];
-    if (!checked_ending_index.IsValid<uint32_t>()) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          base::StringPrintf(
-              "For dimension (%u): the ending index to slice is too large.",
-              i)));
-    }
-
-    if (checked_ending_index.ValueOrDie() > input.shape()[i]) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          base::StringPrintf("For dimension (%u): the ending index to slice "
-                             "must not be greater than input size (%u).",
-                             i, input.shape()[i])));
-    }
-
-    uint32_t output_size = attributes.sizes[i] / attributes.strides[i] +
-                           (attributes.sizes[i] % attributes.strides[i] != 0);
-    output_shape.push_back(output_size);
-  }
-
-  return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
@@ -2700,6 +2367,118 @@ base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
                                    output_shape, label);
+}
+
+// The current WebNN spec doesn't define the calculation formula of the output
+// size for resample2d. An issue has been filed to track it -
+// https://github.com/webmachinelearning/webnn/issues/360.
+base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
+    const uint32_t input_size,
+    const float scale,
+    std::string_view label) {
+  // Calculate the output size in double precision floating point number that
+  // ensures values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    return base::unexpected(ErrorWithLabel(label, "The scale is too large."));
+  }
+  const uint32_t output_size = base::ClampFloor<uint32_t>(
+      static_cast<double>(checked_output_size.ValueOrDie()));
+  if (output_size == 0) {
+    return base::unexpected(ErrorWithLabel(label, "The scale is too small."));
+  }
+  return output_size;
+}
+
+base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const std::variant<base::span<const float>, base::span<const uint32_t>>&
+        scales_or_sizes,
+    base::span<const uint32_t> axes,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.resample2d_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.resample2d_input)));
+  }
+
+  if (axes.size() != 2) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The length of axes should be 2."));
+  }
+  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
+
+  // Validate scales or sizes and infer the output.
+  std::vector<uint32_t> output_shape(input.shape());
+  if (std::holds_alternative<base::span<const float>>(scales_or_sizes)) {
+    const auto& scales = std::get<base::span<const float>>(scales_or_sizes);
+    if (scales.size() != 2) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The length of scales should be 2."));
+    }
+    if (scales[0] <= 0 || scales[1] <= 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "All scales should be greater than 0."));
+    }
+
+    auto output_first_axis =
+        CalculateResample2dOutputSize(input.shape()[axes[0]], scales[0], label);
+    if (!output_first_axis.has_value()) {
+      return base::unexpected(ErrorWithLabel(
+          label, "Failed to calculate the output shape for first axis : " +
+                     output_first_axis.error()));
+    }
+    output_shape[axes[0]] = output_first_axis.value();
+
+    auto output_second_axis =
+        CalculateResample2dOutputSize(input.shape()[axes[1]], scales[1], label);
+    if (!output_second_axis.has_value()) {
+      return base::unexpected(ErrorWithLabel(
+          label, "Failed to calculate the output shape for second axis: " +
+                     output_second_axis.error()));
+    }
+    output_shape[axes[1]] = output_second_axis.value();
+  } else if (std::holds_alternative<base::span<const uint32_t>>(
+                 scales_or_sizes)) {
+    const auto& sizes = std::get<base::span<const uint32_t>>(scales_or_sizes);
+    if (sizes.size() != 2) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The length of sizes should be 2."));
+    }
+    if (sizes[0] == 0 || sizes[1] == 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "All sizes should be greater than 0."));
+    }
+
+    output_shape[axes[0]] = sizes[0];
+    output_shape[axes[1]] = sizes[1];
+  } else {
+    NOTREACHED();
+  }
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
+}
+
+base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> axes,
+    std::string_view label) {
+  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
+
+  if (!context_properties.data_type_limits.reverse_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.reverse_input)));
+  }
+
+  return input;
 }
 
 base::expected<OperandDescriptor, std::string>
@@ -2841,6 +2620,264 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
   return input;
 }
 
+base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const SliceAttributes& attributes) {
+  const std::string& label = attributes.label;
+  const auto input_rank = input.Rank();
+
+  if (!context_properties.data_type_limits.slice_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.slice_input)));
+  }
+
+  if (attributes.starts.size() != input_rank) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The length of starts must be equal to the rank of the input tensor."));
+  }
+
+  if (attributes.sizes.size() != input_rank) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The length of sizes must be equal to the rank of the input tensor."));
+  }
+
+  if (attributes.strides.size() != input_rank) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The length of strides must be equal to the rank of the "
+                       "input tensor."));
+  }
+
+  std::vector<uint32_t> output_shape;
+  output_shape.reserve(input_rank);
+
+  for (uint32_t i = 0; i < input_rank; ++i) {
+    if (attributes.starts[i] >= input.shape()[i]) {
+      return base::unexpected(ErrorWithLabel(
+          label, base::StringPrintf(
+                     "For dimension (%u): the starting index to slice must "
+                     "be less than input size (%u).",
+                     i, input.shape()[i])));
+    }
+
+    // WebNN plans to allow 0 size dimensions and an issue has been filed to
+    // track it: https://github.com/webmachinelearning/webnn/issues/391.
+    if (attributes.sizes[i] == 0) {
+      return base::unexpected(ErrorWithLabel(
+          label, base::StringPrintf(
+                     "For dimension (%u): the number of elements to slice "
+                     "must not be 0.",
+                     i)));
+    }
+
+    if (attributes.strides[i] < 1) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          base::StringPrintf(
+              "For dimension (%u): the stride (%u) must not be less than 1.", i,
+              attributes.strides[i])));
+    }
+
+    auto checked_ending_index =
+        base::MakeCheckedNum<uint32_t>(attributes.starts[i]) +
+        attributes.sizes[i];
+    if (!checked_ending_index.IsValid<uint32_t>()) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          base::StringPrintf(
+              "For dimension (%u): the ending index to slice is too large.",
+              i)));
+    }
+
+    if (checked_ending_index.ValueOrDie() > input.shape()[i]) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          base::StringPrintf("For dimension (%u): the ending index to slice "
+                             "must not be greater than input size (%u).",
+                             i, input.shape()[i])));
+    }
+
+    uint32_t output_size = attributes.sizes[i] / attributes.strides[i] +
+                           (attributes.sizes[i] % attributes.strides[i] != 0);
+    output_shape.push_back(output_size);
+  }
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
+}
+
+base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    uint32_t axis,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.softmax_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.softmax_input)));
+  }
+  if (axis >= input.Rank()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "Axis must be a valid dimension."));
+  }
+  // The output tensor of softmax is the same shape as the input tensor.
+  return input;
+}
+
+base::expected<std::vector<OperandDescriptor>, std::string>
+ValidateSplitAndInferOutput(const ContextProperties& context_properties,
+                            const OperandDescriptor& input,
+                            const SplitAttribute& attributes) {
+  const std::string& label = attributes.label;
+  if (!context_properties.data_type_limits.split_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.split_input)));
+  }
+
+  if (attributes.axis >= input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The axis must be in the range [0, N-1] where N is the rank of the "
+        "input tensor."));
+  }
+
+  static_assert(std::variant_size<decltype(attributes.splits)>() == 2,
+                "When adding new variants update the branches below.");
+
+  std::vector<OperandDescriptor> outputs;
+  if (std::holds_alternative<uint32_t>(attributes.splits)) {
+    uint32_t splits = std::get<uint32_t>(attributes.splits);
+    if (splits == 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The splits must be greater than zero."));
+    }
+
+    if (input.shape()[attributes.axis] % splits != 0) {
+      return base::unexpected(
+          ErrorWithLabel(label,
+                         "The dimension size of the input tensor along "
+                         "options.axis must be divisible by splits."));
+    }
+
+    outputs.reserve(splits);
+    for (uint32_t i = 0; i < splits; ++i) {
+      // When splits is of type uint32_t, we create splits number of Operands.
+      // Each Operand will have the same new_dimensions shape.
+      std::vector<uint32_t> new_dimensions = input.shape();
+      new_dimensions[attributes.axis] /= splits;
+      auto split_descriptor = OperandDescriptor::Create(
+          context_properties, input.data_type(), new_dimensions, label);
+      // `split_descriptor` should always be valid, since it's a subset of the
+      // input.
+      CHECK(split_descriptor.has_value());
+      outputs.push_back(*std::move(split_descriptor));
+    }
+  } else if (std::holds_alternative<base::span<const uint32_t>>(
+                 attributes.splits)) {
+    const auto& splits =
+        std::get<base::span<const uint32_t>>(attributes.splits);
+    if (std::ranges::any_of(splits,
+                            [](uint32_t split) { return split == 0; })) {
+      return base::unexpected(
+          ErrorWithLabel(label, "All splits must be greater than zero."));
+    }
+
+    base::CheckedNumeric<uint32_t> sum = std::accumulate(
+        splits.begin(), splits.end(), base::MakeCheckedNum<uint32_t>(0));
+    if (!sum.IsValid() || sum.ValueOrDie() != input.shape()[attributes.axis]) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          "The sum of all sizes in splits must be equal to the dimension size "
+          "of the input tensor specified by options.axis."));
+    }
+
+    outputs.reserve(splits.size());
+    for (uint32_t split : splits) {
+      std::vector<uint32_t> new_dimensions = input.shape();
+      new_dimensions[attributes.axis] = split;
+      auto split_descriptor = OperandDescriptor::Create(
+          context_properties, input.data_type(), new_dimensions, label);
+      // `split_descriptor` should always be valid, since it's a subset of the
+      // input.
+      CHECK(split_descriptor.has_value());
+      outputs.push_back(*std::move(split_descriptor));
+    }
+  } else {
+    NOTREACHED();
+  }
+
+  return outputs;
+}
+
+base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> repetitions,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.tile_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.tile_input)));
+  }
+
+  if (repetitions.size() != input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The number of values in repetitions must be the same as the rank of "
+        "the input tensor."));
+  }
+
+  std::vector<uint32_t> output_shape(input.Rank());
+  for (size_t i = 0; i < input.Rank(); ++i) {
+    if (repetitions[i] == 0) {
+      return base::unexpected(
+          ErrorWithLabel(label, "Any value in repetitions must not be 0."));
+    }
+    auto tiled_dim =
+        base::MakeCheckedNum<uint32_t>(repetitions[i]) * input.shape()[i];
+    if (!tiled_dim.AssignIfValid(&output_shape[i])) {
+      return base::unexpected(
+          ErrorWithLabel(label, "The tiled dimension size is too large."));
+    }
+  }
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
+}
+
+base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> permutation,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.transpose_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.transpose_input)));
+  }
+
+  if (permutation.size() != static_cast<size_t>(input.Rank())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The number of values in permutation must be the same as the rank of "
+        "the input tensor."));
+  }
+  RETURN_IF_ERROR(ValidateAxes(permutation, input.Rank(), label));
+
+  std::vector<uint32_t> output_shape(input.Rank());
+  for (uint32_t i = 0; i < input.Rank(); ++i) {
+    output_shape[i] = input.shape()[permutation[i]];
+  }
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
+}
+
 base::expected<OperandDescriptor, std::string> ValidateTriangularAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
@@ -2907,7 +2944,7 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
         "from trueValue and falseValue."));
   }
   return OperandDescriptor::Create(context_properties, true_value.data_type(),
-                                   *std::move(output_shape), label);
+                                   *output_shape, label);
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,

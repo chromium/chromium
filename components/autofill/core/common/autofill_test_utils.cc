@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -230,13 +231,13 @@ FormFieldData CreateTestSelectField(std::string_view label,
   field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
 
-  CHECK_EQ(values.size(), contents.size());
   std::vector<SelectOption> options;
   options.reserve(values.size());
-  for (size_t i = 0; i < values.size(); ++i) {
+  for (const auto [option_value, option_content] :
+       base::zip(values, contents)) {
     options.push_back({
-        .value = base::UTF8ToUTF16(values[i]),
-        .text = base::UTF8ToUTF16(contents[i]),
+        .value = base::UTF8ToUTF16(option_value),
+        .text = base::UTF8ToUTF16(option_content),
     });
   }
   field.set_options(std::move(options));
@@ -252,10 +253,10 @@ FormFieldData CreateTestDatalistField(std::string_view label,
   FormFieldData field =
       CreateTestFormField(label, name, value, FormControlType::kInputText);
   std::vector<SelectOption> datalist_options;
-  datalist_options.reserve(std::min(values.size(), labels.size()));
-  for (size_t i = 0; i < std::min(values.size(), labels.size()); ++i) {
-    datalist_options.push_back({.value = base::UTF8ToUTF16(values[i]),
-                                .text = base::UTF8ToUTF16(labels[i])});
+  datalist_options.reserve(values.size());
+  for (auto [entry_value, entry_label] : base::zip(values, labels)) {
+    datalist_options.push_back({.value = base::UTF8ToUTF16(entry_value),
+                                .text = base::UTF8ToUTF16(entry_label)});
   }
   field.set_datalist_options(std::move(datalist_options));
   return field;

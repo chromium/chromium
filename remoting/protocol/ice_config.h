@@ -49,10 +49,10 @@ struct IceConfig {
   // Time when the config will stop being valid and need to be refreshed.
   base::Time expiration_time;
 
-  std::vector<rtc::SocketAddress> stun_servers;
+  std::vector<webrtc::SocketAddress> stun_servers;
 
   // Standard TURN servers
-  std::vector<cricket::RelayServerConfig> turn_servers;
+  std::vector<webrtc::RelayServerConfig> turn_servers;
 
   // If greater than 0, the max bandwidth used for relayed connections should be
   // set to this value.

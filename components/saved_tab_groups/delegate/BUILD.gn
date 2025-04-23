@@ -12,6 +12,7 @@ source_set("delegate") {
   sources = [
     "empty_tab_group_sync_delegate.cc",
     "empty_tab_group_sync_delegate.h",
+    "tab_group_sync_delegate.cc",
     "tab_group_sync_delegate.h",
   ]
   deps = [

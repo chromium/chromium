@@ -22,6 +22,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -581,11 +582,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   const raw_ptr<content::WebContents> web_contents_;
 
-  // Holds the RenderFrameHost for the main frame of the page that this tracker
-  // instance is bound. Safe to use raw_ptr as the tracker instance is accessed
-  // via a map that uses the RenderFrameHost as the key while it's valid.
-  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
-      page_main_frame_;
+  // ID of the RenderFrameHost for the main frame of the page that this tracker
+  // instance is bound.
+  content::GlobalRenderFrameHostId page_main_frame_id_;
 
   const bool is_first_navigation_in_web_contents_;
   const bool is_origin_visit_;

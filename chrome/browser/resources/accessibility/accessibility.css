@@ -73,10 +73,6 @@ label {
   padding: 0;
 }
 
-label.disabled {
-  color: rgb(128, 134, 139);
-}
-
 input[type='checkbox'] {
   margin-inline-end: 6px;
 }

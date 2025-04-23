@@ -310,7 +310,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
       rfh->IsNestedWithinFencedFrame() ||
       rfh->IsSandboxed(
-          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation)) {
+          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
+      rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess()) {
     // No need to log anything here, since well-behaved renderers have already
     // done these checks and have logged to the console. This block is to handle
     // compromised renderers.

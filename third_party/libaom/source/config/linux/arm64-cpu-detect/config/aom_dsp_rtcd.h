@@ -314,18 +314,8 @@ void aom_fft8x8_float_c(const float *input, float *temp, float *output);
 
 void aom_get_blk_sse_sum_c(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
 void aom_get_blk_sse_sum_neon(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
-void aom_get_blk_sse_sum_sve(const int16_t* data,
-                             int stride,
-                             int bw,
-                             int bh,
-                             int* x_sum,
-                             int64_t* x2_sum);
-RTCD_EXTERN void (*aom_get_blk_sse_sum)(const int16_t* data,
-                                        int stride,
-                                        int bw,
-                                        int bh,
-                                        int* x_sum,
-                                        int64_t* x2_sum);
+void aom_get_blk_sse_sum_sve(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
+RTCD_EXTERN void (*aom_get_blk_sse_sum)(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
 
 void aom_get_var_sse_sum_16x16_dual_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse16x16, unsigned int *tot_sse, int *tot_sum, uint32_t *var16x16);
 void aom_get_var_sse_sum_16x16_dual_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse16x16, unsigned int *tot_sse, int *tot_sum, uint32_t *var16x16);
@@ -1170,39 +1160,9 @@ int aom_satd_lp_neon(const int16_t *coeff, int length);
 
 void aom_scaled_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
 void aom_scaled_2d_neon(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
-void aom_scaled_2d_neon_dotprod(const uint8_t* src,
-                                ptrdiff_t src_stride,
-                                uint8_t* dst,
-                                ptrdiff_t dst_stride,
-                                const InterpKernel* filter,
-                                int x0_q4,
-                                int x_step_q4,
-                                int y0_q4,
-                                int y_step_q4,
-                                int w,
-                                int h);
-void aom_scaled_2d_neon_i8mm(const uint8_t* src,
-                             ptrdiff_t src_stride,
-                             uint8_t* dst,
-                             ptrdiff_t dst_stride,
-                             const InterpKernel* filter,
-                             int x0_q4,
-                             int x_step_q4,
-                             int y0_q4,
-                             int y_step_q4,
-                             int w,
-                             int h);
-RTCD_EXTERN void (*aom_scaled_2d)(const uint8_t* src,
-                                  ptrdiff_t src_stride,
-                                  uint8_t* dst,
-                                  ptrdiff_t dst_stride,
-                                  const InterpKernel* filter,
-                                  int x0_q4,
-                                  int x_step_q4,
-                                  int y0_q4,
-                                  int y_step_q4,
-                                  int w,
-                                  int h);
+void aom_scaled_2d_neon_dotprod(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
+void aom_scaled_2d_neon_i8mm(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
+RTCD_EXTERN void (*aom_scaled_2d)(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
 
 void aom_smooth_h_predictor_16x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 void aom_smooth_h_predictor_16x16_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
@@ -1502,32 +1462,18 @@ void aom_subtract_block_neon(int rows, int cols, int16_t *diff_ptr, ptrdiff_t di
 
 uint64_t aom_sum_squares_2d_i16_c(const int16_t *src, int stride, int width, int height);
 uint64_t aom_sum_squares_2d_i16_neon(const int16_t *src, int stride, int width, int height);
-uint64_t aom_sum_squares_2d_i16_sve(const int16_t* src,
-                                    int stride,
-                                    int width,
-                                    int height);
-RTCD_EXTERN uint64_t (*aom_sum_squares_2d_i16)(const int16_t* src,
-                                               int stride,
-                                               int width,
-                                               int height);
+uint64_t aom_sum_squares_2d_i16_sve(const int16_t *src, int stride, int width, int height);
+RTCD_EXTERN uint64_t (*aom_sum_squares_2d_i16)(const int16_t *src, int stride, int width, int height);
 
 uint64_t aom_sum_squares_i16_c(const int16_t *src, uint32_t N);
 uint64_t aom_sum_squares_i16_neon(const int16_t *src, uint32_t N);
-uint64_t aom_sum_squares_i16_sve(const int16_t* src, uint32_t N);
-RTCD_EXTERN uint64_t (*aom_sum_squares_i16)(const int16_t* src, uint32_t N);
+uint64_t aom_sum_squares_i16_sve(const int16_t *src, uint32_t N);
+RTCD_EXTERN uint64_t (*aom_sum_squares_i16)(const int16_t *src, uint32_t N);
 
 uint64_t aom_sum_sse_2d_i16_c(const int16_t *src, int src_stride, int width, int height, int *sum);
 uint64_t aom_sum_sse_2d_i16_neon(const int16_t *src, int src_stride, int width, int height, int *sum);
-uint64_t aom_sum_sse_2d_i16_sve(const int16_t* src,
-                                int src_stride,
-                                int width,
-                                int height,
-                                int* sum);
-RTCD_EXTERN uint64_t (*aom_sum_sse_2d_i16)(const int16_t* src,
-                                           int src_stride,
-                                           int width,
-                                           int height,
-                                           int* sum);
+uint64_t aom_sum_sse_2d_i16_sve(const int16_t *src, int src_stride, int width, int height, int *sum);
+RTCD_EXTERN uint64_t (*aom_sum_sse_2d_i16)(const int16_t *src, int src_stride, int width, int height, int *sum);
 
 void aom_v_predictor_16x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 void aom_v_predictor_16x16_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
@@ -1668,10 +1614,8 @@ RTCD_EXTERN unsigned int (*aom_variance8x8)(const uint8_t *src_ptr, int source_s
 
 int aom_vector_var_c(const int16_t *ref, const int16_t *src, int bwl);
 int aom_vector_var_neon(const int16_t *ref, const int16_t *src, int bwl);
-int aom_vector_var_sve(const int16_t* ref, const int16_t* src, int bwl);
-RTCD_EXTERN int (*aom_vector_var)(const int16_t* ref,
-                                  const int16_t* src,
-                                  int bwl);
+int aom_vector_var_sve(const int16_t *ref, const int16_t *src, int bwl);
+RTCD_EXTERN int (*aom_vector_var)(const int16_t *ref, const int16_t *src, int bwl);
 
 void aom_dsp_rtcd(void);
 
@@ -1692,9 +1636,7 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON_DOTPROD) aom_convolve8_vert = aom_convolve8_vert_neon_dotprod;
     if (flags & HAS_NEON_I8MM) aom_convolve8_vert = aom_convolve8_vert_neon_i8mm;
     aom_get_blk_sse_sum = aom_get_blk_sse_sum_neon;
-    if (flags & HAS_SVE) {
-      aom_get_blk_sse_sum = aom_get_blk_sse_sum_sve;
-    }
+    if (flags & HAS_SVE) aom_get_blk_sse_sum = aom_get_blk_sse_sum_sve;
     aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_neon;
     if (flags & HAS_NEON_DOTPROD) aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_neon_dotprod;
     aom_get_var_sse_sum_8x8_quad = aom_get_var_sse_sum_8x8_quad_neon;
@@ -1836,26 +1778,16 @@ static void setup_rtcd_internal(void)
     aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_neon;
     if (flags & HAS_NEON_DOTPROD) aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_neon_dotprod;
     aom_scaled_2d = aom_scaled_2d_neon;
-    if (flags & HAS_NEON_DOTPROD) {
-      aom_scaled_2d = aom_scaled_2d_neon_dotprod;
-    }
-    if (flags & HAS_NEON_I8MM) {
-      aom_scaled_2d = aom_scaled_2d_neon_i8mm;
-    }
+    if (flags & HAS_NEON_DOTPROD) aom_scaled_2d = aom_scaled_2d_neon_dotprod;
+    if (flags & HAS_NEON_I8MM) aom_scaled_2d = aom_scaled_2d_neon_i8mm;
     aom_sse = aom_sse_neon;
     if (flags & HAS_NEON_DOTPROD) aom_sse = aom_sse_neon_dotprod;
     aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_neon;
-    if (flags & HAS_SVE) {
-      aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_sve;
-    }
+    if (flags & HAS_SVE) aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_sve;
     aom_sum_squares_i16 = aom_sum_squares_i16_neon;
-    if (flags & HAS_SVE) {
-      aom_sum_squares_i16 = aom_sum_squares_i16_sve;
-    }
+    if (flags & HAS_SVE) aom_sum_squares_i16 = aom_sum_squares_i16_sve;
     aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_neon;
-    if (flags & HAS_SVE) {
-      aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_sve;
-    }
+    if (flags & HAS_SVE) aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_sve;
     aom_var_2d_u8 = aom_var_2d_u8_neon;
     if (flags & HAS_NEON_DOTPROD) aom_var_2d_u8 = aom_var_2d_u8_neon_dotprod;
     aom_variance128x128 = aom_variance128x128_neon;
@@ -1891,9 +1823,7 @@ static void setup_rtcd_internal(void)
     aom_variance8x8 = aom_variance8x8_neon;
     if (flags & HAS_NEON_DOTPROD) aom_variance8x8 = aom_variance8x8_neon_dotprod;
     aom_vector_var = aom_vector_var_neon;
-    if (flags & HAS_SVE) {
-      aom_vector_var = aom_vector_var_sve;
-    }
+    if (flags & HAS_SVE) aom_vector_var = aom_vector_var_sve;
 }
 #endif
 

@@ -109,7 +109,7 @@ class CollaborationControllerDelegate {
     kSuccess = 0,
     kFailure = 1,
     kCancel = 2,
-    kDeleteOrLeaveGroup = 3,
+    kGroupLeftOrDeleted = 3,
   };
 
   CollaborationControllerDelegate() = default;
@@ -164,6 +164,14 @@ class CollaborationControllerDelegate {
 
   // Request to show the manage dialog.
   virtual void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
+                                ResultCallback result) = 0;
+
+  // Request to show the leave dialog.
+  virtual void ShowLeaveDialog(const tab_groups::EitherGroupID& either_id,
+                               ResultCallback result) = 0;
+
+  // Request to show the delete dialog.
+  virtual void ShowDeleteDialog(const tab_groups::EitherGroupID& either_id,
                                 ResultCallback result) = 0;
 
   // Open the local tab group associated with `group_id` in UI.

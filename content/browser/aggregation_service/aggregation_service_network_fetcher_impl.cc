@@ -153,8 +153,9 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   loaders_in_progress_.erase(it);
 
   std::optional<int> http_response_code;
-  if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     http_response_code = loader->ResponseInfo()->headers->response_code();
+  }
 
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.

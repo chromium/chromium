@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_tab_util.h"
+
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -355,6 +363,69 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
     histogram_tester.ExpectBucketCount("Extensions.Navigation.Scheme",
                                        test_case.expected_bucket, 1);
   }
+}
+
+class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
+ public:
+  SharedTabGroupExtensionsTabUtilTest() {
+    feature_list_.InitWithFeatures(
+        {
+            tab_groups::kTabGroupSyncServiceDesktopMigration,
+            data_sharing::features::kDataSharingFeature,
+        },
+        {});
+  }
+
+  SharedTabGroupExtensionsTabUtilTest(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+  SharedTabGroupExtensionsTabUtilTest& operator=(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+
+  void SetUp() override { ExtensionTabUtilBrowserTest ::SetUp(); }
+
+  // Adds tab navigated to |url| in the given |browser|.
+  tabs::TabInterface* AddTab(const GURL& url) {
+    return browser()->tab_strip_model()->GetTabForWebContents(
+        content::WebContents::FromRenderFrameHost(
+            ui_test_utils::NavigateToURLWithDisposition(
+                browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)));
+  }
+
+  tab_groups::TabGroupId CreateTabGroup() {
+    auto* tab_1 = AddTab(GURL("https://www.site1.com"));
+    auto* tab_2 = AddTab(GURL("https://www.site2.com"));
+
+    auto* tsm = browser()->tab_strip_model();
+
+    return tsm->AddToNewGroup(
+        {tsm->GetIndexOfTab(tab_1), tsm->GetIndexOfTab(tab_2)});
+  }
+
+  void ShareTabGroup(const tab_groups::TabGroupId& group_id,
+                     const std::string& collaboration_id) {
+    tab_groups::TabGroupSyncService* service =
+        static_cast<tab_groups::TabGroupSyncService*>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->profile()));
+    service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsTabUtilTest,
+                       GetSharedGroupState) {
+  auto group_id = CreateTabGroup();
+
+  EXPECT_FALSE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
+  EXPECT_FALSE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
+
+  ShareTabGroup(group_id, {"share_id"});
+
+  EXPECT_TRUE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
+  EXPECT_TRUE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
 }
 
 }  // namespace extensions

@@ -22,6 +22,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -57,7 +58,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
             .Build();
     extensions::PermissionsUpdater(profile()).GrantActivePermissions(
         extension.get());
-    extension_service_->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension.get());
 
     return extension;
   }
@@ -96,6 +97,10 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
     return extension_service_.get();
   }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extension_registrar_.get();
+  }
+
  private:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -124,12 +129,14 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
         profile());
 
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
   }
 
   void TearDown() override {
     extension_service_ = nullptr;
     extension_prefs_ = nullptr;
+    extension_registrar_ = nullptr;
     extension_registry_ = nullptr;
     WaitForStorageCleanup();
     // Clean up global state for the delegates. Since profiles are stored in
@@ -152,6 +159,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
       ControlledHomeBubbleDelegate::IgnoreLearnMoreForTesting()};
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

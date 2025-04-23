@@ -67,6 +67,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks/model",
@@ -80,6 +81,7 @@ source_set("ui") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model:model",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

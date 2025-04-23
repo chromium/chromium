@@ -11,6 +11,7 @@
 #include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
@@ -87,7 +89,8 @@ class OnTaskPodControllerImplSetupBrowserTest
  protected:
   OnTaskPodControllerImplSetupBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features{
-        features::kBoca, features::kBocaConsumer};
+        features::kBoca, features::kBocaConsumer,
+        features::kOnDeviceSpeechRecognition};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsOnTaskPodEnabled()) {
       enabled_features.push_back(features::kBocaOnTaskPod);
@@ -144,7 +147,8 @@ class OnTaskPodControllerImplBrowserTest
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
-                              features::kBocaOnTaskPod},
+                              features::kBocaOnTaskPod,
+                              features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 
@@ -344,6 +348,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, BackButtonDisabled) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -381,10 +387,15 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, BackButtonDisabled) {
             tab_url);
   ASSERT_FALSE(on_task_pod_controller()->CanNavigateToPreviousPage());
   ASSERT_TRUE(on_task_pod_controller()->CanNavigateToNextPage());
+
+  EXPECT_EQ(
+      actions.GetActionCount(boca::kBocaOnTaskActionOfStudentNavigateBack), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        NavigateBackAndForward) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -429,6 +440,12 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             new_url);
+
+  EXPECT_EQ(
+      actions.GetActionCount(boca::kBocaOnTaskActionOfStudentNavigateBack), 1);
+  EXPECT_EQ(
+      actions.GetActionCount(boca::kBocaOnTaskActionOfStudentNavigateForward),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
@@ -476,6 +493,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -511,6 +530,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {
   content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
   EXPECT_NE(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             tab_url);
+
+  EXPECT_EQ(actions.GetActionCount(boca::kBocaOnTaskActionOfStudentReloadPage),
+            2);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
@@ -632,6 +654,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        ShowAndHideTabStripWhenTogglePinTabStripButton) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -659,12 +683,16 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   ASSERT_EQ(tab_strip_model->count(), 2);
   ASSERT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
 
-  on_task_pod_controller()->ToggleTabStripVisibility(true);
+  on_task_pod_controller()->ToggleTabStripVisibility(true, true);
   EXPECT_THAT(on_task_pod_controller()->GetTabStripRevealLockForTesting(),
               NotNull());
-  on_task_pod_controller()->ToggleTabStripVisibility(false);
+  on_task_pod_controller()->ToggleTabStripVisibility(false, true);
   EXPECT_THAT(on_task_pod_controller()->GetTabStripRevealLockForTesting(),
               IsNull());
+
+  EXPECT_EQ(actions.GetActionCount(
+                boca::kBocaOnTaskActionOfStudentToggleTabStripVisibility),
+            2);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
@@ -715,6 +743,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -771,10 +801,19 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
                        boca_app_browser_bounds.y() +
                            boca_app_browser_frame_header_height +
                            kPodHorizontalBorder));
+
+  EXPECT_EQ(actions.GetActionCount(
+                boca::kBocaOnTaskActionOfStudentSetSnapLocationToRight),
+            1);
+  EXPECT_EQ(actions.GetActionCount(
+                boca::kBocaOnTaskActionOfStudentSetSnapLocationToLeft),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        RepositionPodWhenSnapLocationAndLocked) {
+  base::UserActionTester actions;
+
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -836,6 +875,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        new_boca_app_browser_bounds.y() +
                            boca_app_browser_frame_header_height +
                            kPodHorizontalBorder));
+
+  EXPECT_EQ(actions.GetActionCount(
+                boca::kBocaOnTaskActionOfStudentSetSnapLocationToRight),
+            1);
 }
 
 }  // namespace

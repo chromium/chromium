@@ -66,7 +66,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "ChromeOS forces a restart) to apply the update."
           trigger:
             "When Chrome detects that an update is available, if the "
-            "RelaunchSupersededReleaseAge policy is set."
+            "RelaunchFastIfOutdated policy is set."
           data: "The version number of the currently-running Chrome/ChromeOS, "
             "the update channel name, and an identifier of the platform."
           destination: GOOGLE_OWNED_SERVICE
@@ -84,8 +84,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           cookies_allowed: NO
           setting: "This feature cannot be disabled by settings."
           chrome_policy {
-            RelaunchSupersededReleaseAge {
-              RelaunchSupersededReleaseAge: 0
+            RelaunchFastIfOutdated {
+              RelaunchFastIfOutdated: 0
             }
           }
         })");

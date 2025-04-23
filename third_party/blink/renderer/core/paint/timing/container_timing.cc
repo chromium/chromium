@@ -41,7 +41,8 @@ ContainerTiming::ContainerTiming(LocalDOMWindow& window)
 
 bool ContainerTiming::CanReportToContainerTiming() const {
   DCHECK(performance_);
-  return performance_->HasObserverFor(PerformanceEntry::kContainer);
+  return performance_->HasObserverFor(PerformanceEntry::kContainer) ||
+         !performance_->IsContainerTimingBufferFull();
 }
 
 // static

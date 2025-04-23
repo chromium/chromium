@@ -38,6 +38,11 @@ void WaylandWindowManager::NotifyWindowRoleAssigned(WaylandWindow* window) {
   observers_.Notify(&WaylandWindowObserver::OnWindowRoleAssigned, window);
 }
 
+void WaylandWindowManager::NotifyWindowRemovedFromSession(
+    WaylandWindow* window) {
+  observers_.Notify(&WaylandWindowObserver::OnWindowRemovedFromSession, window);
+}
+
 void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
   DCHECK_NE(located_events_grabber_, window);
 

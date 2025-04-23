@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
 
 /** Interface for the Tab Switcher. */
+@NullMarked
 public interface TabSwitcher {
 
     /** Called when native initialization is completed. */

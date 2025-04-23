@@ -24,6 +24,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
@@ -357,6 +358,12 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
   delete this;
 }
 
+base::SequencedTaskRunner* GetGlobalSequencedTaskRunner() {
+  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>> instance(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  return instance->get();
+}
+
 }  // namespace
 
 WebContentsKey GetWebContentsKey(content::WebContents& web_contents) {
@@ -453,6 +460,7 @@ AwContentsIoThreadClient::InterceptResponseData NoInterceptRequest() {
 }
 
 void OnShouldInterceptCallback(
+    const base::TimeTicks request_started,
     AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
     AwWebResourceInterceptResponse java_response) {
   JNIEnv* env = AttachCurrentThread();
@@ -475,12 +483,17 @@ void OnShouldInterceptCallback(
   }
   response_data.response =
       std::make_unique<AwWebResourceInterceptResponse>(java_response);
+
+  base::UmaHistogramTimes(
+      "Android.WebView.ShouldInterceptRequest.InterceptDuration",
+      base::TimeTicks::Now() - request_started);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response_data)));
 }
 
 void StartShouldInterceptRequest(
     AwWebResourceRequest request,
+    const base::TimeTicks request_started,
     AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
     JavaObjectWeakGlobalRef ref) {
   // Historically this method was called `RunShouldInterceptRequest` and so we
@@ -505,8 +518,8 @@ void StartShouldInterceptRequest(
   Java_ShouldInterceptRequestMediator_shouldInterceptRequestFromNative(
       env, obj, request,
       base::android::ToJniCallback(
-          env,
-          base::BindOnce(&OnShouldInterceptCallback, std::move(callback))));
+          env, base::BindOnce(&OnShouldInterceptCallback, request_started,
+                              std::move(callback))));
 }
 
 }  // namespace
@@ -534,11 +547,22 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
       "Android.WebView.ShouldInterceptRequest.IsRequestSkipped", !mediator);
 
   if (mediator) {
+    const base::TimeTicks request_started = base::TimeTicks::Now();
     // The mediator is kept alive on the Java side.
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&StartShouldInterceptRequest,
-                                  std::move(request), std::move(callback),
-                                  JavaObjectWeakGlobalRef(env, mediator)));
+    if (base::FeatureList::IsEnabled(
+            features::kWebViewSequencedShouldInterceptRequest)) {
+      GetGlobalSequencedTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
+                         request_started, std::move(callback),
+                         JavaObjectWeakGlobalRef(env, mediator)));
+    } else {
+      sequenced_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
+                         request_started, std::move(callback),
+                         JavaObjectWeakGlobalRef(env, mediator)));
+    }
   } else {
     Java_AwContentsIoThreadClient_onLoadResource(env, java_object_,
                                                  request.url);

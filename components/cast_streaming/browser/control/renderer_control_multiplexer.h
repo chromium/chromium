@@ -50,7 +50,6 @@ class RendererControlMultiplexer : public media::mojom::Renderer {
       std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
-      media::mojom::MediaUrlParamsPtr media_url_params,
       InitializeCallback callback) override;
   void Flush(FlushCallback callback) override;
 

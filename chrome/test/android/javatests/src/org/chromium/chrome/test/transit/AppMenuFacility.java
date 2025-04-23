@@ -34,7 +34,6 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -59,7 +58,7 @@ import java.util.function.Function;
 public abstract class AppMenuFacility<HostStationT extends Station<?>>
         extends ScrollableFacility<HostStationT> {
 
-    private ViewElement mMenuList;
+    public ViewElement<ListView> menuListElement;
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
     protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
@@ -125,7 +124,6 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     }
 
     public static final Matcher<View> MENU_LIST_MATCHER = withId(R.id.app_menu_list);
-    public static final ViewSpec MENU_LIST = viewSpec(MENU_LIST_MATCHER);
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
@@ -137,8 +135,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int SHARE_ID = R.id.share_menu_id;
     public static final @IdRes int FIND_IN_PAGE_ID = R.id.find_in_page_id;
     public static final @IdRes int TRANSLATE_ID = R.id.translate_id;
-    public static final @IdRes int ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID =
-            R.id.universal_install;
+    public static final @IdRes int ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID = R.id.universal_install;
     public static final @IdRes int OPEN_WEBAPK_ID = R.id.open_webapk_id;
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
     public static final @IdRes int SETTINGS_ID = R.id.preferences_id;
@@ -147,7 +144,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        mMenuList = elements.declareView(MENU_LIST);
+        menuListElement = elements.declareView(viewSpec(ListView.class, MENU_LIST_MATCHER));
 
         super.declareElements(elements);
     }
@@ -236,12 +233,6 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                 this,
                 Transition.runTriggerOnUiThreadOption(),
                 () -> getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
-    }
-
-    /** Get the menu list {@link ListView}. */
-    public ListView getView() {
-        assertSuppliersCanBeUsed();
-        return (ListView) mMenuList.get();
     }
 
     /** Verify that the menu model has the expected menu item ids and nothing beyond them. */

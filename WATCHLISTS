@@ -160,8 +160,11 @@
     'android_webview_network_service': {
       'filepath': 'android_webview/browser/network_service/',
     },
+    'android_webview_stable_webexposed': {
+      'filepath': 'android_webview/test/data/web_tests/virtual/stable/webexposed/global-interface-listing-expected.txt',
+    },
     'android_webview_webexposed': {
-      'filepath': 'android_webview/test/data/web_tests/(virtual/stable/)?webexposed/global-interface-listing-expected.txt',
+      'filepath': 'android_webview/test/data/web_tests/webexposed/global-interface-listing-expected.txt',
     },
     'app_service_protos': {
       'filepath': 'components/services/app_service/public/protos/',
@@ -695,13 +698,6 @@
     'browser_compositor': {
       'filepath': 'ui/compositor/'
     },
-    'browser_manager': {
-      'filepath': 'chrome/browser/ash/crosapi/browser_manager' \
-                  '|chrome/browser/ash/crosapi/browser_loader' \
-                  '|chrome/browser/ash/crosapi/lacros_selection_loader' \
-                  '|chrome/browser/ash/crosapi/rootfs_lacros_loader' \
-                  '|chrome/browser/ash/crosapi/stateful_lacros_loader'
-    },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'
     },
@@ -1018,9 +1014,6 @@
     'crosapi': {
       'filepath': 'chromeos/crosapi/'\
                   '|chrome/browser/ash/crosapi/',
-    },
-    'crosapi_mojom': {
-      'filepath': 'chromeos/crosapi/mojom/crosapi.mojom',
     },
     'crostini': {
       'filepath': 'cicerone'\
@@ -2545,8 +2538,9 @@
     'android_webapk': ['webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
-    'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
-                                   'peter+watch-webexposed@chromium.org'],
+    'android_webview_stable_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
+                                          'peter+watch-webexposed@chromium.org'],
+    'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org'],
     'app_service_protos': ['cros-reporting-team+watch@google.com',
                            'vshenvi+watch@google.com'],
     'app_shortcuts': ['loyso+watch@chromium.org',
@@ -2760,7 +2754,6 @@
     'bound_session_credentials': ['drubery+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
-    'browser_manager': ['elkurin+watch@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
@@ -2890,7 +2883,6 @@
     'cros_commercial_policy_proto': ['vsavu+watch@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
-    'crosapi_mojom': ['elkurin+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
@@ -2915,13 +2907,11 @@
     'diagnostics_mojo': ['ashleydp+watch-diagnostics_mojo@google.com',
                          'gavindodd+watch-diagnostics_mojo@google.com',
                          'michaelcheco+watch-diagnostics_mojo@google.com',
-                         'dpad+watch-diagnostics_mojo@google.com',
                          'zhangwenyu+watch-diagnostics_mojo@google.com'],
     'diagnostics_ui': ['gavinwill+diagnostics-watch@chromium.org',
                        'michaelcheco+diagnostics-watch@google.com',
                        'gavindodd+diagnostics-watch@google.com',
                        'ashleydp+diagnostics-watch@google.com',
-                       'dpad+diagnostics-watch@google.com',
                        'zhangwenyu+diagnostics-watch@google.com'],
     'dips': ['jdh+watch-dips@chromium.org',
              'njeunje+watch-dips@chromium.org',
@@ -2946,7 +2936,7 @@
              'jonmann+watch-eche@chromium.org',
              'pushi+watch-eche@google.com'],
     'eme': ['eme-reviews@chromium.org'],
-    'enterprise_data_protection': ['dpr-eng+chromium-cl@google.com'],
+    'enterprise_data_protection': ['cbe-cep-eng+chromium-cl@google.com'],
     'exo': ['crostini-ui+exo@chromium.org',
             'yhanada+watchexo@chromium.org'],
     'explore_sites': ['chili+watch@chromium.org',
@@ -3000,8 +2990,7 @@
     'indexed_db': ['dmurph+watching-idb@chromium.org',
                    'enne+idb@chromium.org'],
     'input': ['dtapuska+chromiumwatch@chromium.org'],
-    'input_device_settings': ['dpad+watch-input-device-settings@google.com',
-                              'michaelcheco+watch-input-device-settings@google.com',
+    'input_device_settings': ['michaelcheco+watch-input-device-settings@google.com',
                               'wangdanny+watch-input-device-settings@google.com',
                               'yyhyyh+watch-input-device-settings@google.com'],
     'input_devices': ['spang+watch@chromium.org'],
@@ -3229,8 +3218,7 @@
     'remoteplayback': ['mfoltz+watch@chromium.org'],
     'remoting': ['chromoting-reviews@chromium.org'],
     'rgb_kbd': ['michaelcheco+watch-rgb-kbd@google.com',
-                'jimmyxgong+watch-rgb-kbd@chromium.org',
-                'dpad+watch-rgb-kbd@google.com'],
+                'jimmyxgong+watch-rgb-kbd@chromium.org'],
     'rlz_id': ['gab+watch@chromium.org',
                'robertshield+watch@chromium.org'],
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],

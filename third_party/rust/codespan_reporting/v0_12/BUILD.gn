@@ -43,6 +43,7 @@ cargo_crate("lib") {
     "//third_party/rust/unicode_width/v0_1:lib",
   ]
   features = [
+    "default",
     "std",
     "termcolor",
   ]

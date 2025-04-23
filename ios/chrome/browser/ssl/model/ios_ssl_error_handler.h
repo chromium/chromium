@@ -114,8 +114,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       captive_portal_detector_;
 
   base::WeakPtrFactory<IOSSSLErrorHandler> weak_factory_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SSL_MODEL_IOS_SSL_ERROR_HANDLER_H_

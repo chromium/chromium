@@ -214,6 +214,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
           mojom::blink::ConsoleMessageSource::kRecommendation,
           mojom::blink::ConsoleMessageLevel::kError,
           GetMessageForReason(issue_reason));
+      RecordIssueByType(issue_reason);
     }
   }
 
@@ -304,7 +305,41 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     return false;
   }
 
+  void RecordIssueByType(SelectElementAccessibilityIssueReason issue_reason) {
+    switch (issue_reason) {
+      case SelectElementAccessibilityIssueReason::kDisallowedSelectChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kDisallowedSelectChild);
+        break;
+      case SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kDisallowedOptGroupChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kNonPhrasingContentOptionChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kNonPhrasingContentOptionChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentOptionChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kInteractiveContentOptionChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentLegendChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kInteractiveContentLegendChild);
+        break;
+      case SelectElementAccessibilityIssueReason::kValidChild:
+      default:
+        NOTREACHED();
+    }
+  }
+
   SelectElementAccessibilityIssueReason CheckForIssue(const Node& descendant) {
+    if (descendant.getNodeType() == Node::kCommentNode) {
+      return SelectElementAccessibilityIssueReason::kValidChild;
+    }
     // Get the parent of the descendant.
     const Node* parent = descendant.parentNode();
     // If the node has no parent, assume it is being appended to a
@@ -344,10 +379,10 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       return TraverseAncestorsAndCheckDescendant(descendant);
     }
     if (IsA<HTMLButtonElement>(*parent)) {
-      if (IsA<HTMLSelectedContentElement>(descendant)) {
+      if (IsAllowedDescendantOfButton(descendant)) {
         return SelectElementAccessibilityIssueReason::kValidChild;
       }
-      return CheckDescedantOfOption(descendant);
+      return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
     }
     if (IsA<HTMLLegendElement>(*parent)) {
       if (IsAllowedPhrasingContent(descendant) &&
@@ -386,6 +421,12 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLNoScriptElement>(descendant) ||
            IsA<HTMLScriptElement>(descendant) ||
            IsA<HTMLTemplateElement>(descendant);
+  }
+
+  bool IsAllowedDescendantOfButton(const Node& descendant) {
+    return IsA<HTMLSelectedContentElement>(descendant) ||
+           CheckDescedantOfOption(descendant) ==
+               SelectElementAccessibilityIssueReason::kValidChild;
   }
 
   SelectElementAccessibilityIssueReason CheckDescedantOfOption(
@@ -439,6 +480,10 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       }
       if (IsA<HTMLSelectElement>(*ancestor) &&
           IsAllowedDescendantOfSelect(descendant, *parent)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      if (IsA<HTMLButtonElement>(*ancestor) &&
+          IsAllowedDescendantOfButton(descendant)) {
         return SelectElementAccessibilityIssueReason::kValidChild;
       }
     }

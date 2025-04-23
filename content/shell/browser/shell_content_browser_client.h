@@ -148,6 +148,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const url::Origin& origin,
       bool is_for_isolated_world,
+      bool is_for_service_worker,
       network::mojom::URLLoaderFactoryParams* factory_params) override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
@@ -210,7 +211,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       base::RepeatingCallback<void(
           const network::mojom::URLLoaderFactoryParams*,
           const url::Origin&,
-          bool is_for_isolated_world)> url_loader_factory_params_callback) {
+          bool is_for_isolated_world,
+          bool is_for_service_worker)> url_loader_factory_params_callback) {
     url_loader_factory_params_callback_ =
         std::move(url_loader_factory_params_callback);
   }
@@ -265,7 +267,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       login_request_callback_;
   base::RepeatingCallback<void(const network::mojom::URLLoaderFactoryParams*,
                                const url::Origin&,
-                               bool is_for_isolated_world)>
+                               bool is_for_isolated_world,
+                               bool is_for_service_worker)>
       url_loader_factory_params_callback_;
   base::RepeatingCallback<std::vector<std::unique_ptr<NavigationThrottle>>(
       NavigationHandle*)>

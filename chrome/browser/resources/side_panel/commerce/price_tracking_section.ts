@@ -48,19 +48,25 @@ export class PriceTrackingSection extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      folderName_: String,
+      saveLocationEndText_: String,
+      saveLocationStartText_: String,
+      showSaveLocationText_: Boolean,
+      toggleAnnotationText_: String,
     };
   }
 
-  productInfo: ProductInfo;
-  priceInsightsInfo: PriceInsightsInfo;
-  isProductTracked: boolean;
-  private listenerIds_: number[] = [];
-  private toggleAnnotationText_: string;
-  private saveLocationStartText_: string;
-  private saveLocationEndText_: string;
-  private showSaveLocationText_: boolean;
-  private folderName_: string;
+  declare productInfo: ProductInfo;
+  declare isProductTracked: boolean;
+  declare private folderName_: string;
+  declare private saveLocationStartText_: string;
+  declare private saveLocationEndText_: string;
+  declare private showSaveLocationText_: boolean;
+  declare private toggleAnnotationText_: string;
 
+  priceInsightsInfo: PriceInsightsInfo;
+  private listenerIds_: number[] = [];
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =

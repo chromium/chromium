@@ -12,7 +12,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/chromeos/default_video_frame_converter.h"
+#include "media/gpu/chromeos/dmabuf_video_frame_converter.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -90,7 +90,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
         gpu_driver_bug_workarounds_,
         /*client_task_runner=*/std::move(task_runner),
         std::make_unique<PlatformVideoFramePool>(),
-        DefaultFrameConverter::Create(),
+        DmabufVideoFrameConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::move(log),
         /*oop_video_decoder=*/{},

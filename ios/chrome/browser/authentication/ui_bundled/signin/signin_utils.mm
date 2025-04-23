@@ -6,6 +6,7 @@
 
 #import "base/barrier_closure.h"
 #import "base/command_line.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
@@ -54,8 +55,32 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "net/base/network_change_notifier.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
+
+// Initiate synchronously the change to `profile`, then run `continuation`
+// when the change completes asynchronously. The UI (thus `scene_state`)
+// will be destroyed synchronously, so this function should not be called
+// directly, instead it should be posted as a task.
+//
+// Destroying the UI will destroy the SceneState, the SceneController and
+// the Browser. As the SceneState is an Objective-C class and the Browser
+// is a C++ class, this method take a SceneState* as parameter to avoid
+// risking accessing a dangling pointer to a C++ object.
+void SwitchToProfileSynchronously(const std::string& profile_name,
+                                  __weak SceneState* weak_scene_state,
+                                  ChangeProfileContinuation continuation) {
+  if (SceneState* scene_state = weak_scene_state) {
+    id<ChangeProfileCommands> change_profile_handler = HandlerForProtocol(
+        scene_state.profileState.appState.appCommandDispatcher,
+        ChangeProfileCommands);
+
+    [change_profile_handler changeProfile:profile_name
+                                 forScene:scene_state
+                             continuation:std::move(continuation)];
+  }
+}
 
 // Maximum delay to wait for fetching the account capabilities before showing
 // the sign-in upgrade promo. If fetching the account capabilities takes more
@@ -106,25 +131,37 @@ bool ShouldSwitchProfileAtSignout(AuthenticationService* authentication_service,
          is_work_profile;
 }
 
-// Switch from a managed profile to a personal profile then run `continuation`.
+// Post an asynchronous request to switch to `profile`, running `continuation`
+// when the change completes.
+void SwitchToProfile(Browser* browser,
+                     const std::string& profile_name,
+                     ChangeProfileContinuation continuation) {
+  __weak SceneState* weak_scene_state = browser->GetSceneState();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SwitchToProfileSynchronously, profile_name,
+                                weak_scene_state, std::move(continuation)));
+}
+
+// Post an asynchronous request to switch from a managed profile to the
+// personal profile, running `continuation` when the change completes.
 void SwitchToPersonalProfile(Browser* browser,
                              ChangeProfileContinuation continuation) {
-  SceneState* scene_state = browser->GetSceneState();
-
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
-  std::string default_profile_name =
+  std::string personal_profile_name =
       profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  CHECK(profile_manager->HasProfileWithName(personal_profile_name));
 
-  CHECK(profile_manager->HasProfileWithName(default_profile_name));
+  SwitchToProfile(browser, personal_profile_name, std::move(continuation));
+}
 
-  id<ChangeProfileCommands> change_profile_handler =
-      HandlerForProtocol(scene_state.profileState.appState.appCommandDispatcher,
-                         ChangeProfileCommands);
-
-  [change_profile_handler changeProfile:default_profile_name
-                               forScene:scene_state
-                           continuation:std::move(continuation)];
+syncer::DataTypeSet DataCountsMapToDataTypeSet(
+    absl::flat_hash_map<syncer::DataType, size_t> type_counts) {
+  syncer::DataTypeSet types;
+  for (const auto& [type, count] : type_counts) {
+    types.Put(type);
+  }
+  return types;
 }
 
 }  // namespace
@@ -386,25 +423,65 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile) {
       ChromeAccountManagerServiceFactory::GetForProfile(profile));
 }
 
-void MultiProfileSignOut(Browser* browser,
-                         signin_metrics::ProfileSignout signout_source,
-                         bool force_snackbar_over_toolbar,
-                         MDCSnackbarMessage* snackbar_message,
-                         ProceduralBlock signout_completion,
-                         bool should_record_metrics) {
+ProfileSignoutRequest::ProfileSignoutRequest(
+    signin_metrics::ProfileSignout source)
+    : source_(source),
+      prepare_callback_(base::DoNothing()),
+      completion_callback_(base::DoNothing()) {}
+
+ProfileSignoutRequest::~ProfileSignoutRequest() {
+  CHECK(run_has_been_called_);
+}
+
+ProfileSignoutRequest&& ProfileSignoutRequest::SetSnackbarMessage(
+    MDCSnackbarMessage* snackbar_message,
+    bool force_snackbar_over_toolbar) && {
+  CHECK(!run_has_been_called_);
+  snackbar_message_ = snackbar_message;
+  force_snackbar_over_toolbar_ = force_snackbar_over_toolbar;
+  return std::move(*this);
+}
+
+ProfileSignoutRequest&& ProfileSignoutRequest::SetPrepareCallback(
+    PrepareCallback prepare_callback) && {
+  CHECK(!run_has_been_called_);
+  CHECK(!prepare_callback.is_null());
+  prepare_callback_ = std::move(prepare_callback);
+  return std::move(*this);
+}
+
+ProfileSignoutRequest&& ProfileSignoutRequest::SetCompletionCallback(
+    CompletionCallback completion_callback) && {
+  CHECK(!run_has_been_called_);
+  CHECK(!completion_callback.is_null());
+  completion_callback_ = std::move(completion_callback);
+  return std::move(*this);
+}
+
+ProfileSignoutRequest&& ProfileSignoutRequest::SetShouldRecordMetrics(
+    bool value) && {
+  CHECK(!run_has_been_called_);
+  should_record_metrics_ = value;
+  return std::move(*this);
+}
+
+void ProfileSignoutRequest::Run(Browser* browser) && {
+  CHECK(!run_has_been_called_);
+  run_has_been_called_ = true;
+
   // The regular browser should be used to execute the signout.
   CHECK_EQ(browser->type(), Browser::Type::kRegular);
   SceneState* scene_state = browser->GetSceneState();
 
   ChangeProfileContinuation continuation =
       CreateChangeProfileSignoutContinuation(
-          signout_source, force_snackbar_over_toolbar, should_record_metrics,
-          snackbar_message, signout_completion);
+          source_, force_snackbar_over_toolbar_, should_record_metrics_,
+          snackbar_message_, std::move(completion_callback_));
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
 
-  if (signout_source == signin_metrics::ProfileSignout::kPrefChanged) {
+  if (source_ == signin_metrics::ProfileSignout::kPrefChanged) {
     ChangeProfileContinuation postSignoutContinuation =
         CreateChangeProfileForceSignoutContinuation();
     continuation = ChainChangeProfileContinuations(
@@ -413,18 +490,19 @@ void MultiProfileSignOut(Browser* browser,
 
   if (!ShouldSwitchProfileAtSignout(authentication_service,
                                     profile->GetProfileName())) {
+    std::move(prepare_callback_).Run(/*will_change_profile=*/false);
     std::move(continuation).Run(scene_state, base::DoNothing());
     return;
   }
 
-  if (signout_source ==
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings) {
+  if (source_ == signin_metrics::ProfileSignout::kUserClickedSignoutSettings) {
     ChangeProfileContinuation postSignoutContinuation =
         CreateChangeProfileSettingsContinuation();
     continuation = ChainChangeProfileContinuations(
         std::move(continuation), std::move(postSignoutContinuation));
   }
 
+  std::move(prepare_callback_).Run(/*will_change_profile=*/true);
   SwitchToPersonalProfile(browser, std::move(continuation));
 }
 
@@ -462,7 +540,7 @@ void MultiProfileSignOutForProfile(
         CreateChangeProfileSignoutContinuation(
             signout_source, /*force_snackbar_over_toolbar=*/false,
             /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-            base::CallbackToBlock(barrier));
+            base::IgnoreArgs<SceneState*>(barrier));
     SwitchToPersonalProfile(browser, std::move(continuation));
   }
 }
@@ -482,8 +560,9 @@ void FetchUnsyncedDataForSignOutOrProfileSwitching(
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback) {
   constexpr syncer::DataTypeSet kDataTypesToQuery =
       syncer::TypesRequiringUnsyncedDataCheckOnSignout();
-  sync_service->GetTypesWithUnsyncedData(kDataTypesToQuery,
-                                         std::move(callback));
+  sync_service->GetTypesWithUnsyncedData(
+      kDataTypesToQuery,
+      base::BindOnce(&DataCountsMapToDataTypeSet).Then(std::move(callback)));
 }
 
 }  // namespace signin

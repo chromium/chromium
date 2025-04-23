@@ -5,6 +5,7 @@
 #include "components/crash/core/app/crashpad.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/debug/crash_logging.h"
@@ -97,7 +98,10 @@ bool PlatformCrashpadInitialization(
 
     // Allow the crash server to be overridden for testing. If the variable
     // isn't present in the environment then the default URL will remain.
-    env->GetVar(kServerUrlVar, &url);
+    std::optional<std::string> server_url = env->GetVar(kServerUrlVar);
+    if (server_url.has_value()) {
+      url = server_url.value();
+    }
 
     base::FilePath exe_file(exe_path);
     if (exe_file.empty()) {
@@ -155,10 +159,10 @@ bool PlatformCrashpadInitialization(
                   base::WideToUTF8(GetCrashpadClient().GetHandlerIPCPipe()));
     }
   } else {
-    std::string pipe_name_utf8;
-    if (env->GetVar(kPipeNameVar, &pipe_name_utf8)) {
+    std::optional<std::string> pipe_name_utf8 = env->GetVar(kPipeNameVar);
+    if (pipe_name_utf8.has_value()) {
       initialized = GetCrashpadClient().SetHandlerIPCPipe(
-          base::UTF8ToWide(pipe_name_utf8));
+          base::UTF8ToWide(pipe_name_utf8.value()));
     }
   }
 

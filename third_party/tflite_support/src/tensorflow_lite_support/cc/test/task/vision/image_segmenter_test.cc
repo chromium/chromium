@@ -284,8 +284,8 @@ TEST(SegmentTest, SucceedsWithCategoryMask) {
   ExpectApproximatelyEqual(
       segmentation, ParseTextProtoOrDie<Segmentation>(kDeepLabV3PartialResult));
   EXPECT_TRUE(segmentation.has_category_mask());
-  const uint8* mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
 
   int inconsistent_pixels = 0;
   int num_pixels = golden_mask.height * golden_mask.width;
@@ -324,8 +324,8 @@ TEST(SegmentTest, SucceedsWithOrientation) {
   ExpectApproximatelyEqual(
       segmentation, ParseTextProtoOrDie<Segmentation>(kDeepLabV3PartialResult));
   EXPECT_TRUE(segmentation.has_category_mask());
-  const uint8* mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
   int inconsistent_pixels = 0;
   int num_pixels = golden_mask.height * golden_mask.width;
   for (int i = 0; i < num_pixels; ++i) {
@@ -362,8 +362,8 @@ TEST(SegmentTest, SucceedsWithBaseOptions) {
   ExpectApproximatelyEqual(
       segmentation, ParseTextProtoOrDie<Segmentation>(kDeepLabV3PartialResult));
   EXPECT_TRUE(segmentation.has_category_mask());
-  const uint8* mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
 
   int inconsistent_pixels = 0;
   int num_pixels = golden_mask.height * golden_mask.width;
@@ -480,8 +480,8 @@ TEST_F(PostprocessTest, SucceedsWithCategoryMask) {
       segmentation, ParseTextProtoOrDie<Segmentation>(kDeepLabV3PartialResult));
   EXPECT_TRUE(segmentation.has_category_mask());
   // Check top-left corner has expected class.
-  const uint8* category_mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* category_mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
   EXPECT_EQ(category_mask[0], /*car*/ 7);
 }
 
@@ -507,8 +507,8 @@ TEST_F(PostprocessTest, SucceedsWithCategoryMaskAndOrientation) {
       segmentation, ParseTextProtoOrDie<Segmentation>(kDeepLabV3PartialResult));
   EXPECT_TRUE(segmentation.has_category_mask());
   // Check bottom-right corner has expected class.
-  const uint8* category_mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* category_mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
   EXPECT_EQ(category_mask[/*width*/ 257 * /*height*/ 257 - 1], /*car*/ 7);
 }
 

@@ -29,7 +29,7 @@ BASE_FEATURE(kWebRtcThermalResource,
 // static
 scoped_refptr<ThermalResource> ThermalResource::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  return new rtc::RefCountedObject<ThermalResource>(std::move(task_runner));
+  return new webrtc::RefCountedObject<ThermalResource>(std::move(task_runner));
 }
 
 ThermalResource::ThermalResource(
@@ -75,13 +75,13 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
     case mojom::blink::DeviceThermalState::kNominal:
     case mojom::blink::DeviceThermalState::kFair:
       listener_->OnResourceUsageStateMeasured(
-          rtc::scoped_refptr<Resource>(this),
+          webrtc::scoped_refptr<Resource>(this),
           webrtc::ResourceUsageState::kUnderuse);
       break;
     case mojom::blink::DeviceThermalState::kSerious:
     case mojom::blink::DeviceThermalState::kCritical:
       listener_->OnResourceUsageStateMeasured(
-          rtc::scoped_refptr<Resource>(this),
+          webrtc::scoped_refptr<Resource>(this),
           webrtc::ResourceUsageState::kOveruse);
       break;
   }
@@ -90,7 +90,8 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ThermalResource::ReportMeasurement,
-                     rtc::scoped_refptr<ThermalResource>(this), measurement_id),
+                     webrtc::scoped_refptr<ThermalResource>(this),
+                     measurement_id),
       base::Seconds(kReportIntervalSeconds));
 }
 

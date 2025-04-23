@@ -161,9 +161,7 @@ TEST_F(BtmPageVisitObserverTest, FlushPendingVisitsAtDestruction) {
     BtmPageVisitObserver observer(
         web_contents(),
         base::BindLambdaForTesting(
-            [&counter](const BtmPageVisitInfo&, const BtmNavigationInfo&) {
-              ++counter;
-            }));
+            [&counter](BtmPageVisitInfo, BtmNavigationInfo) { ++counter; }));
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                       GURL("http://a.test/"));
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),

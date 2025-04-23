@@ -8,6 +8,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -18,8 +20,9 @@ import java.util.Locale;
  * An {@link OfflineItemFilter} responsible for pruning out items that don't match a specific search
  * query.
  */
+@NullMarked
 public class SearchOfflineItemFilter extends OfflineItemFilter {
-    private String mQuery;
+    private @Nullable String mQuery;
 
     /** Creates an instance of this fitler and wraps {@code source}. */
     public SearchOfflineItemFilter(OfflineItemFilterSource source) {
@@ -32,7 +35,7 @@ public class SearchOfflineItemFilter extends OfflineItemFilter {
      * this filter will allow all {@link OfflineItem}s through.
      * @param query The new query string to filter on.
      */
-    public void onQueryChanged(String query) {
+    public void onQueryChanged(@Nullable String query) {
         if (query == null) query = "";
 
         query = query.toLowerCase(Locale.getDefault());
@@ -46,11 +49,11 @@ public class SearchOfflineItemFilter extends OfflineItemFilter {
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
         if (TextUtils.isEmpty(mQuery)) return false;
-        return !fieldContainsQuery(formatUrl(item.originalUrl.getSpec()))
-                && !fieldContainsQuery(item.title);
+        String url = item.originalUrl == null ? null : item.originalUrl.getSpec();
+        return !fieldContainsQuery(formatUrl(url)) && !fieldContainsQuery(item.title);
     }
 
-    private boolean fieldContainsQuery(String field) {
+    private boolean fieldContainsQuery(@Nullable String field) {
         if (TextUtils.isEmpty(field)) return false;
 
         return field.toLowerCase(Locale.getDefault()).contains(mQuery);
@@ -58,7 +61,7 @@ public class SearchOfflineItemFilter extends OfflineItemFilter {
 
     /** Visible to allow tests to avoid calls to native. */
     @VisibleForTesting
-    protected String formatUrl(String url) {
+    protected String formatUrl(@Nullable String url) {
         return UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
     }
 }

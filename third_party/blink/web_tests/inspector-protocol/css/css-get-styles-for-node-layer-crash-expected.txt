@@ -1,0 +1,16 @@
+Tests CSS.getMatchedStylesForNode() under @layer rules.
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+@layer base
+    *:where(#inspected)* {    regular
+    }
+@media (width > 0px)
+    @layer base
+         {    regular
+            color: green; @[5:14-5:27]
+            color: green; @[undefined-undefined]
+        }
+Dumping inherited rules: 
+

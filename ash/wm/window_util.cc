@@ -42,7 +42,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -153,16 +152,10 @@ aura::Window* FindTopMostChild(aura::Window* parent,
 
 }  // namespace
 
-int GetMiniWindowRoundedCornerRadius() {
-  return chromeos::features::IsRoundedWindowsEnabled()
-             ? chromeos::features::RoundedWindowsRadius()
-             : kWindowMiniViewCornerRadius;
-}
-
 gfx::RoundedCornersF GetMiniWindowRoundedCorners(const aura::Window* window,
                                                  bool include_header_rounding,
                                                  std::optional<float> scale) {
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+  const int corner_radius = kWindowMiniViewCornerRadius;
   const float scaled_corner_radius = corner_radius / scale.value_or(1.0f);
 
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
+class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
@@ -205,18 +205,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting
-    void moveTabGroupAction(
-            InstanceInfo info,
-            TabGroupMetadata tabGroupMetadata,
-            int startIndex,
-            @Nullable Runnable onFinishedRunnable) {
+    void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         assert targetActivity != null;
         reparentTabGroupToRunningActivity(
-                (ChromeTabbedActivity) targetActivity,
-                tabGroupMetadata,
-                startIndex,
-                onFinishedRunnable);
+                (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
     }
 
     @VisibleForTesting
@@ -231,10 +224,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
         beginReparenting(
-                tab,
-                intent,
-                mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(),
-                null);
+                tab, intent, /* startActivityOptions= */ null, /* finalizeCallback= */ null);
     }
 
     @VisibleForTesting
@@ -251,8 +241,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     void reparentTabGroupToRunningActivity(
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
-            int tabAtIndex,
-            @Nullable Runnable onFinishedRunnable) {
+            int tabAtIndex) {
         // 1. Temporarily disable sync service from observing local changes to prevent unintended
         // updates during tab group re-parenting.
         @Nullable
@@ -280,8 +269,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
                     setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
-
-                    if (onFinishedRunnable != null) onFinishedRunnable.run();
                 });
     }
 
@@ -316,11 +303,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-            Bundle bundle = mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions();
-            mActivity.startActivity(intent, bundle);
-        } else {
-            mActivity.startActivity(intent);
         }
+        mActivity.startActivity(intent);
         Log.i(TAG_MULTI_INSTANCE, "Opening new window from action: " + umaAction);
         RecordUserAction.record(umaAction);
     }
@@ -879,12 +863,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                         /* preferNew= */ false,
                         openAdjacently,
                         /* addTrustedIntentExtras= */ true);
-        if (openAdjacently) {
-            mActivity.startActivity(
-                    intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
-        } else {
-            mActivity.startActivity(intent);
-        }
+        mActivity.startActivity(intent);
     }
 
     /**
@@ -1052,12 +1031,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Open a new instance of the ChromeTabbedActivity window and move the specified tab from
-     * existing instance to the new one.
-     *
-     * @param tab Tab that is to be moved to a new Chrome instance.
-     */
     @Override
     public void moveTabToNewWindow(Tab tab) {
         // Check if the new Chrome instance can be opened.
@@ -1076,13 +1049,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Move the specified tab to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab is to be moved.
-     * @param tab Tab that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     */
     @Override
     public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
         // Get the current instance and move tab there.
@@ -1094,26 +1060,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab group is to be moved.
-     * @param tabGroupMetadata The object containing the metadata of the tab group.
-     * @param atIndex Tab position index in the destination window instance.
-     * @param onFinishedRunnable Runnable to execute after the group reparenting is finished.
-     */
     @Override
     public void moveTabGroupToWindow(
-            Activity activity,
-            TabGroupMetadata tabGroupMetadata,
-            int atIndex,
-            @Nullable Runnable onFinishedRunnable) {
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
-            moveTabGroupAction(info, tabGroupMetadata, atIndex, onFinishedRunnable);
+            moveTabGroupAction(info, tabGroupMetadata, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }

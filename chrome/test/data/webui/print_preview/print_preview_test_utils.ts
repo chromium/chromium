@@ -24,7 +24,6 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
     documentTitle: 'title',
     documentHasSelection: true,
     shouldPrintSelectionOnly: false,
-    previewIsFromArc: false,
     printerName: 'FooDevice',
     serializedAppStateStr: null,
     serializedDefaultDestinationSelectionRulesStr: null,

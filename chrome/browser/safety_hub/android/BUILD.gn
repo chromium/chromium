@@ -17,6 +17,10 @@ generate_jni("jni_headers") {
   ]
 }
 
+java_cpp_enum("java_enum_srcjar") {
+  sources = [ "//chrome/browser/ui/safety_hub/revoked_permissions_service.h" ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
@@ -25,7 +29,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsDataSource.java",
-    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsHasCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsHasReusedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsHasWeakPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsModuleMediator.java",
@@ -36,6 +39,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBaseFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBrowserStateModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreferenceCategory.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
@@ -46,7 +50,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsCheckingModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsDataSource.java",
-    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsModuleMediator.java",
@@ -71,6 +74,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsFetchService.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsRevocationModuleMediator.java",
@@ -131,7 +135,10 @@ android_library("java") {
     "//ui/android:ui_java",
     "//url:url_java",
   ]
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni_headers",
+  ]
   resources_package = "org.chromium.chrome.browser.safety_hub"
 }
 
@@ -153,6 +160,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsFetchServiceTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsRevocationModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubSafeBrowsingModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",

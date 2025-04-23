@@ -897,7 +897,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
     case PIXEL_FORMAT_ARGB: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_RGB32, coded_size,
-          {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite});
+          {VaapiWrapper::SurfaceUsageHint::kGeneric});
       break;
     }
     default: {

@@ -42,7 +42,7 @@ constexpr int kTailoredWarningVersion = 5;
 // LINT.ThenChange(/components/safe_browsing/core/common/proto/csd.proto)
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
-    content::WebContents* web_contents) {
+    base::WeakPtr<content::WebContents> web_contents) {
   DownloadRequestMaker::TabUrls result;
   if (web_contents) {
     content::NavigationEntry* entry =

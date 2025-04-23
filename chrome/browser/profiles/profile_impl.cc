@@ -1329,7 +1329,7 @@ DownloadManagerDelegate* ProfileImpl::GetDownloadManagerDelegate() {
 }
 
 storage::SpecialStoragePolicy* ProfileImpl::GetSpecialStoragePolicy() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return GetExtensionSpecialStoragePolicy();
 #else
   return NULL;

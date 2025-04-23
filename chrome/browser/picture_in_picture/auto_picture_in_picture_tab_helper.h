@@ -159,6 +159,11 @@ class AutoPictureInPictureTabHelper
   media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
       const;
 
+  // Returns information related to auto picture in picture. This information
+  // includes the reason for entering picture in picture automatically, if
+  // known, and various conditions that are used to allow/deny autopip requests.
+  media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -226,12 +231,18 @@ class AutoPictureInPictureTabHelper
   void EnsureAutoPipSettingHelper();
 
   // Returns the primary main routed frame for the MediaSession, if it exists.
-  // Otherwise, an empty optional is returned.
+  // Otherwise, the primary main frame for the WebContent. If both do not exist,
+  // an empty optional is returned.
   //
   // This method retrieves the routed frame associated with the WebContents's
   // MediaSession. If a routed frame is found and it resides within the primary
   // main frame, an optional containing a pointer to the RenderFrameHost is
-  // returned. Otherwise, an empty optional is returned.
+  // returned.
+  //
+  // If there is no MediaSession routed frame, an optional containing a pointer
+  // to the WebContent primary main frame is returned. For cases where both, the
+  // MediaSession routed frame and the WebContent, primary main frames do not
+  // exist an empty optional is returned.
   std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
   // Returns the page UKM SourceId associated with the primary main routed frame

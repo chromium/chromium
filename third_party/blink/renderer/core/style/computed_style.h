@@ -601,8 +601,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // contain a gap decoration, which is a visible separator (such as a line)
     // painted between adjacent boxes.
     // See https://drafts.csswg.org/css-gaps-1/#gap-decorations
-    return (!HasAutoColumnCount() || !HasAutoColumnWidth()) ||
-           IsDisplayFlexibleBox() || IsDisplayGridBox() ||
+    return SpecifiesColumns() || IsDisplayFlexibleBox() || IsDisplayGridBox() ||
            IsDisplayMasonryBox();
   }
 
@@ -985,7 +984,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Column utility functions.
   bool SpecifiesColumns() const {
-    return !HasAutoColumnCount() || !HasAutoColumnWidth();
+    return !HasAutoColumnCount() || !HasAutoColumnWidth() ||
+           !HasAutoColumnHeight();
   }
   bool ColumnRuleIsTransparent() const {
     return ColumnRuleColor()
@@ -1096,46 +1096,20 @@ class ComputedStyle final : public ComputedStyleBase {
   // Grid axis utility functions, usable in Grid and Masonry.
   const NGGridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(Display())) {
-      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the auto tracks of its stacking axis.";
-      return MasonryAutoTracks();
-    }
     return (track_direction == kForColumns) ? GridAutoColumns()
                                             : GridAutoRows();
   }
   const ComputedGridTrackList& TemplateTracks(
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(Display())) {
-      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the template tracks of its stacking axis.";
-      return MasonryTemplateTracks();
-    }
     return (track_direction == kForColumns) ? GridTemplateColumns()
                                             : GridTemplateRows();
   }
   const GridPosition& TrackStart(
-      const ComputedStyle& parent_style,
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(parent_style.Display())) {
-      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the track start in the stacking axis.";
-      return MasonryTrackStart();
-    }
     return (track_direction == kForColumns) ? GridColumnStart()
                                             : GridRowStart();
   }
-  const GridPosition& TrackEnd(const ComputedStyle& parent_style,
-                               GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(parent_style.Display())) {
-      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the track end in the stacking axis.";
-      return MasonryTrackEnd();
-    }
+  const GridPosition& TrackEnd(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? GridColumnEnd() : GridRowEnd();
   }
 
@@ -1918,12 +1892,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollsOverflowX() || ScrollsOverflowY();
   }
 
-  // Returns true if the element is HTML inert, or if 'interactivity' computes
-  // to 'inert'.
-  bool IsInert() const {
-    return IsHTMLInert() || Interactivity() == EInteractivity::kInert;
-  }
-
   // Visibility utility functions.
   bool VisibleToHitTesting() const {
     return Visibility() == EVisibility::kVisible &&
@@ -2332,6 +2300,11 @@ class ComputedStyle final : public ComputedStyleBase {
   CORE_EXPORT blink::Color VisitedDependentColor(
       const Longhand& color_property,
       bool* is_current_color = nullptr) const;
+
+  // Used to resolve gap decoration colors for painting.
+  CORE_EXPORT blink::Color VisitedDependentGapColor(const StyleColor& gap_color,
+                                                    const ComputedStyle& style,
+                                                    bool is_column_rule) const;
 
   // Used to resolve 'context-fill' and 'context-stroke' paints
   CORE_EXPORT blink::Color VisitedDependentContextFill(

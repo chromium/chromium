@@ -27,8 +27,8 @@ suite('cr-lazy-render', function() {
       };
     }
 
-    name: string = '';
-    checked: boolean = false;
+    accessor name: string = '';
+    accessor checked: boolean = false;
 
     override render() {
       return html`

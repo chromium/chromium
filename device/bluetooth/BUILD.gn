@@ -254,7 +254,6 @@ component("bluetooth") {
     ]
     frameworks = [
       "CoreBluetooth.framework",
-      "IOKit.framework",
       "Foundation.framework",
     ]
   }
@@ -276,7 +275,10 @@ component("bluetooth") {
       "bluetooth_socket_mac.h",
       "bluetooth_socket_mac.mm",
     ]
-    frameworks += [ "IOBluetooth.framework" ]
+    frameworks += [
+      "IOBluetooth.framework",
+      "IOKit.framework",
+    ]
   }
 
   if (is_ios) {
@@ -705,6 +707,7 @@ if (is_android) {
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothLeScannerWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothSocketWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/DeviceBondStateReceiverWrapper.java",
+                   "android/java/src/org/chromium/device/bluetooth/wrapper/DeviceConnectStateReceiverWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanCallbackWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanResultWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanResultWrapperImpl.java",

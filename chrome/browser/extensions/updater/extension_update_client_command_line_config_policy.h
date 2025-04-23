@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_UPDATER_EXTENSION_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 
 #include "components/update_client/command_line_config_policy.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class CommandLine;

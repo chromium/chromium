@@ -328,14 +328,20 @@ android_library("native_java_unittests_java") {
     "//third_party/junit",
   ]
   srcjar_deps = [ ":native_j_unittests_jni_headers" ]
-  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+  sources = [
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java",
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/WebResourceResponseUnittest.java",
+  ]
 }
 
 # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
 # can't put 'java' in the name here.
 generate_jni("native_j_unittests_jni_headers") {
   testonly = true
-  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+  sources = [
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java",
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/WebResourceResponseUnittest.java",
+  ]
 }
 
 robolectric_library("junit_test_support") {

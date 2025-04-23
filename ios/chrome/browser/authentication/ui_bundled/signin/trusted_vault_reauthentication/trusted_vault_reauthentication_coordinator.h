@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_TRUSTED_VAULT_REAUTHENTICATION_TRUSTED_VAULT_REAUTHENTICATION_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
@@ -16,10 +17,12 @@ enum class SecurityDomainId;
 
 // Coordinates the Trusted Vault re-authentication dialog. Trusted Valut is
 // managed by IOSTrustedValueClient.
-@interface TrustedVaultReauthenticationCoordinator : SigninCoordinator
+@interface TrustedVaultReauthenticationCoordinator
+    : SigninCoordinator <StopAnimatedChromeCoordinator>
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_UNAVAILABLE;

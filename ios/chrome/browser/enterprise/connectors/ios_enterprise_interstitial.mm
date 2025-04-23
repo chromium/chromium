@@ -6,8 +6,12 @@
 
 #import "components/grit/components_resources.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/urls.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/webui/web_ui_util.h"
@@ -97,7 +101,19 @@ IOSEnterpriseInterstitial::IOSEnterpriseInterstitial(
       unsafe_resources_({resource}),
       // Always do the `client` std::move after it's been passed to the
       // `IOSSecurityInterstitialPage` constructor or other members.
-      client_(std::move(client)) {}
+      client_(std::move(client)) {
+  if (web_state()) {
+    // The EnterpriseWarnPage requires the allow list to be instantiated. The
+    // allow list is not intantiated when opening the interstitial directly
+    // through the chrome://interstitials WebUI page.
+    SafeBrowsingUrlAllowList::CreateForWebState(web_state());
+  }
+
+  client_->metrics_helper()->RecordUserDecision(
+      security_interstitials::MetricsHelper::SHOW);
+  client_->metrics_helper()->RecordUserInteraction(
+      security_interstitials::MetricsHelper::TOTAL_VISITS);
+}
 
 IOSEnterpriseInterstitial::~IOSEnterpriseInterstitial() = default;
 
@@ -115,26 +131,19 @@ std::string IOSEnterpriseInterstitial::GetHtmlContents() const {
 
 void IOSEnterpriseInterstitial::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
-  if (command == security_interstitials::CMD_DONT_PROCEED) {
-    client_->metrics_helper()->RecordUserDecision(
-        security_interstitials::MetricsHelper::DONT_PROCEED);
-  } else if (command == security_interstitials::CMD_OPEN_HELP_CENTER) {
-    client_->metrics_helper()->RecordUserInteraction(
-        security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
-    client_->OpenUrlInNewForegroundTab(
-        GURL(security_interstitials::kEnterpriseInterstitialHelpLink));
-  } else if (command == security_interstitials::CMD_PROCEED &&
-             type() == EnterpriseInterstitialBase::Type::kWarn) {
-    client_->metrics_helper()->RecordUserDecision(
-        security_interstitials::MetricsHelper::PROCEED);
-  } else {
-    // Not supported by the URL blocking page.
-    NOTREACHED() << "Unsupported command: " << command;
-  }
+  // Delegate the primary command handling logic to the client.
+  client_->HandleCommand(command);
 }
 
 bool IOSEnterpriseInterstitial::ShouldCreateNewNavigation() const {
   return true;
+}
+
+void IOSEnterpriseInterstitial::WasDismissed() {
+  // Record do not proceed when tab is closed but not via page commands. For
+  // example: tapping the back button or closing the tab.
+  client_->metrics_helper()->RecordUserDecision(
+      security_interstitials::MetricsHelper::DONT_PROCEED);
 }
 
 void IOSEnterpriseInterstitial::PopulateInterstitialStrings(
@@ -159,10 +168,67 @@ IOSEnterpriseInterstitial::EnterprisePageControllerClient::
     : IOSBlockingPageControllerClient(
           resource.weak_web_state.get(),
           CreateMetricsHelper(resource),
-          GetApplicationContext()->GetApplicationLocale()) {}
+          GetApplicationContext()->GetApplicationLocale()),
+      request_url_(resource.url),
+      threat_type_(resource.threat_type),
+      threat_source_(resource.threat_source) {}
 
 IOSEnterpriseInterstitial::EnterprisePageControllerClient::
-    ~EnterprisePageControllerClient() = default;
+    ~EnterprisePageControllerClient() {
+  RemovePendingUnsafeNavigationDecisionsFromAllowList();
+}
+
+void IOSEnterpriseInterstitial::EnterprisePageControllerClient::HandleCommand(
+    security_interstitials::SecurityInterstitialCommand command) {
+  switch (command) {
+    case security_interstitials::CMD_DONT_PROCEED:
+      metrics_helper()->RecordUserDecision(
+          security_interstitials::MetricsHelper::DONT_PROCEED);
+      RemovePendingUnsafeNavigationDecisionsFromAllowList();
+      GoBack();
+      break;
+
+    case security_interstitials::CMD_OPEN_HELP_CENTER:
+      metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
+      OpenUrlInNewForegroundTab(
+          GURL(security_interstitials::kEnterpriseInterstitialHelpLink));
+      break;
+
+    case security_interstitials::CMD_PROCEED:
+      // Proceed is only valid for Warning pages.
+      CHECK_EQ(threat_type_,
+               safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+
+      if (!web_state()) {
+        return;
+      }
+
+      // Add the URL to the allowlist for this specific threat type.
+      if (SafeBrowsingUrlAllowList* allow_list =
+              SafeBrowsingUrlAllowList::FromWebState(web_state())) {
+        allow_list->AllowUnsafeNavigations(request_url_, threat_type_);
+      }
+
+      // Record bypass metrics.
+      if (ProfileIOS* profile =
+              ProfileIOS::FromBrowserState(web_state()->GetBrowserState())) {
+        if (safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+                SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)) {
+          metrics_collector->AddBypassEventToPref(threat_source_);
+        }
+      }
+
+      metrics_helper()->RecordUserDecision(
+          security_interstitials::MetricsHelper::PROCEED);
+      // Trigger the actual navigation/reload.
+      Proceed();
+      break;
+
+    default:
+      NOTREACHED() << "Unsupported command received: " << command;
+  }
+}
 
 void IOSEnterpriseInterstitial::EnterprisePageControllerClient::Proceed() {
   Reload();
@@ -175,6 +241,14 @@ void IOSEnterpriseInterstitial::EnterprisePageControllerClient::GoBack() {
 void IOSEnterpriseInterstitial::EnterprisePageControllerClient::
     GoBackAfterNavigationCommitted() {
   GoBack();
+}
+
+void IOSEnterpriseInterstitial::EnterprisePageControllerClient::
+    RemovePendingUnsafeNavigationDecisionsFromAllowList() {
+  if (web_state()) {
+    SafeBrowsingUrlAllowList::FromWebState(web_state())
+        ->RemovePendingUnsafeNavigationDecisions(request_url_);
+  }
 }
 
 }  // namespace enterprise_connectors

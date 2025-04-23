@@ -65,8 +65,8 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
     ];
   }
 
-  private pref_: chrome.settingsPrivate.PrefObject<boolean>;
-  private toggleDisabled_: boolean;
+  declare private pref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private toggleDisabled_: boolean;
 
   override ready() {
     super.ready();

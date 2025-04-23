@@ -10,7 +10,11 @@
 
 iframe {
   width: 100%;
-  height: 500px
+  height: 500px;
+}
+
+#zoom5 {
+  zoom: 5;
 }
 </style>
 </head>
@@ -22,10 +26,13 @@ iframe {
 
 <script>
 var old_iframe_offset = -1;
-function insertIframe(url) {
+function insertIframe(url, id) {
   const iframe = document.createElement('iframe');
   iframe.src = url;
   iframe.allow = "camera; microphone; geolocation;";
+  if (id !== undefined) {
+    iframe.id = id;
+  }
 
   iframe.onload = function() {
     const doneDiv = document.createElement('div');
@@ -44,7 +51,7 @@ function clickInIframe(message) {
   setTimeout(() => { 
     const iframe = document.getElementById('iframeContainer').firstChild;
     iframe.contentWindow.postMessage(message, '*'); }, 500);
-  }
+}
 </script>
 
 </body>

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sql/sandboxed_vfs.h"
 
 #include <algorithm>
@@ -21,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -238,7 +234,7 @@ int SandboxedVfs::FullPathname(const char* file_path,
   size_t file_path_size = std::strlen(file_path) + 1;
   if (static_cast<size_t>(result_size) < file_path_size)
     return SQLITE_CANTOPEN;
-  std::memcpy(result, file_path, file_path_size);
+  UNSAFE_TODO(std::memcpy(result, file_path, file_path_size));
   return SQLITE_OK;
 }
 
@@ -247,7 +243,7 @@ int SandboxedVfs::Randomness(int result_size, char* result) {
   DCHECK(result);
 
   // TODO(pwnall): Figure out if we need a real implementation.
-  std::memset(result, 0, result_size);
+  UNSAFE_TODO(std::memset(result, 0, result_size));
   return result_size;
 }
 

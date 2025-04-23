@@ -10,9 +10,11 @@
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
+@protocol AuthenticationFlowRequestHelper;
 class Browser;
 @protocol ChangeProfileCommands;
 class ProfileIOS;
@@ -86,12 +88,19 @@ using OnProfileSwitchCompletion =
         currentProfile:(ProfileIOS*)currentProfile;
 
 // Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
+// The requestHelper must be called before the change of profile.
+// ChangeProfileContinuationProvider is a base::RepeatingCallback, which is not
+// compatible with unit tests mocks. This is why this method use a protocol as
+// argument instead.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                         sceneState:(SceneState*)sceneState;
+                         sceneState:(SceneState*)sceneState
+                      requestHelper:
+                          (id<AuthenticationFlowRequestHelper>)requestHelper;
 
 // Switches to the profile with `profileName`, for `sceneIdentifier`.
 - (void)switchToProfileWithName:(const std::string&)profileName
-                     sceneState:(SceneState*)sceneState;
+                     sceneState:(SceneState*)sceneState
+      changeProfileContinuation:(ChangeProfileContinuation)continuation;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
@@ -120,7 +129,8 @@ using OnProfileSwitchCompletion =
 // the user.
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
                      withIdentity:(id<SystemIdentity>)identity
-                          browser:(Browser*)browser;
+                          browser:(Browser*)browser
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Shows `error` to the user and calls `callback` on dismiss.
 - (void)showAuthenticationError:(NSError*)error

@@ -48,7 +48,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
   void OnAppReloaded() override;
 
-  ActiveTabTracker* active_tab_tracker() { return &active_tab_tracker_; }
+  ActiveTabTracker* active_tab_tracker() { return active_tab_tracker_.get(); }
 
   // BocaWindowObserver:
   void OnTabAdded(const SessionID active_tab_id,
@@ -63,6 +63,9 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   boca::OnTaskNotificationsManager* GetOnTaskNotificationsManager() {
     return notifications_manager_.get();
   }
+
+  void SetActiveTabTrackerForTesting(
+      std::unique_ptr<ActiveTabTracker> active_tab_tracker);
 
   void SetNotificationManagerForTesting(
       std::unique_ptr<ash::boca::OnTaskNotificationsManager>
@@ -93,6 +96,11 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
                    base::OnceClosure callback);
     void SetPinStateForActiveSWAWindow(bool pinned,
                                        base::RepeatingClosure callback);
+
+    void SetObserversForTesting(
+        std::vector<boca::BocaWindowObserver*> observers) {
+      observers_ = std::move(observers);
+    }
 
    private:
     // Callback triggered when the Boca SWA is launched. Normally at the onset
@@ -138,7 +146,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   // Set the `active_tab_url_` to be the url associated with `tab_id`.
   void TrackActiveTabURLFromTab(SessionID tab_id);
 
-  ActiveTabTracker active_tab_tracker_;
+  std::unique_ptr<ActiveTabTracker> active_tab_tracker_;
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
 

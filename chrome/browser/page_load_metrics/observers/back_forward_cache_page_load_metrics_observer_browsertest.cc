@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -9,8 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -36,7 +38,9 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}}),
+            {{page_load_metrics::features::
+                  kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+              {{}}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
 
     MetricIntegrationTest::SetUpCommandLine(command_line);
@@ -65,10 +69,12 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
       auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
       DCHECK(source);
-      if (source->url() != url)
+      if (source->url() != url) {
         continue;
-      if (!ukm_recorder().EntryHasMetric(entry, metric_name))
+      }
+      if (!ukm_recorder().EntryHasMetric(entry, metric_name)) {
         continue;
+      }
       ukm_recorder().ExpectEntryMetric(entry, metric_name, expected_value);
     }
   }
@@ -86,10 +92,12 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
       auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
       DCHECK(source);
-      if (source->url() != url)
+      if (source->url() != url) {
         continue;
-      if (!ukm_recorder().EntryHasMetric(entry, metric_name))
+      }
+      if (!ukm_recorder().EntryHasMetric(entry, metric_name)) {
         continue;
+      }
       count++;
     }
     EXPECT_EQ(count, expected_count);
@@ -101,8 +109,9 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
     for (const ukm::mojom::UkmEntry* entry :
          ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
       auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
-      if (source->url() != url)
+      if (source->url() != url) {
         continue;
+      }
       if (ukm_recorder().EntryHasMetric(
               entry,
               UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName)) {

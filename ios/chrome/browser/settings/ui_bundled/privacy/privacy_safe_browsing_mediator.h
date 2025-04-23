@@ -32,6 +32,9 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Must be called before -dealloc.
+- (void)disconnect;
+
 // Handles logic for selecting an item in the view and the Privacy Safe Browsing
 // No Protection pop up.
 - (void)selectSettingItem:(TableViewItem*)item;

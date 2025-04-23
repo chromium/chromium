@@ -9,7 +9,7 @@
 #include "base/path_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/FileUtils_jni.h"
+#include "base/file_utils_jni/FileUtils_jni.h"
 
 namespace base {
 namespace android {

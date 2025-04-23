@@ -13,20 +13,7 @@ GtkUiPlatformStub::GtkUiPlatformStub() = default;
 
 GtkUiPlatformStub::~GtkUiPlatformStub() = default;
 
-void GtkUiPlatformStub::OnInitialized(GtkWidget* widget) {}
-
-GdkModifierType GtkUiPlatformStub::GetGdkKeyEventState(
-    const ui::KeyEvent& key_event) {
-  return static_cast<GdkModifierType>(0);
-}
-
-int GtkUiPlatformStub::GetGdkKeyEventGroup(const ui::KeyEvent& key_event) {
-  return 0;
-}
-
-GdkWindow* GtkUiPlatformStub::GetGdkWindow(gfx::AcceleratedWidget window_id) {
-  return nullptr;
-}
+void GtkUiPlatformStub::OnInitialized() {}
 
 bool GtkUiPlatformStub::SetGtkWidgetTransientFor(
     GtkWidget* widget,

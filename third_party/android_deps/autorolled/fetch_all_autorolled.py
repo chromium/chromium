@@ -73,7 +73,7 @@ def main():
                              extra_args=extra_args,
                              verbose_count=args.verbose_count)
 
-    version_map_str, version_hash = fetch_util.generate_version_map_str(
+    version_map_str, bom_hash = fetch_util.generate_version_map_str(
         _CIPD_PATH / _BOM_NAME, with_hash=True)
 
     # Regenerate the build.gradle file filling in the the version map so that
@@ -82,21 +82,27 @@ def main():
                              _CIPD_PATH / 'build.gradle',
                              version_overrides=version_map_str)
 
-    version_txt_path = os.path.join(_CIPD_PATH, 'VERSION.txt')
-    with open(version_txt_path, 'w') as f:
-        f.write(version_hash)
-
-    to_commit_zip_path = _CIPD_PATH / 'to_commit.zip'
-    files_in_tree = [
+    generated_files = [
         'BUILD.gn',
-        'VERSION.txt',
         'bill_of_materials.json',
         'additional_readme_paths.json',
         'build.gradle',
     ]
+    # TODO(mheikal): probably need to hash all text files, including licenses
+    # and readmes.
+    content_hash = fetch_util.hash_files(
+        [_CIPD_PATH / filename for filename in generated_files])
+
+    version_string = f'{bom_hash}.{content_hash}'
+    version_txt_path = os.path.join(_CIPD_PATH, 'VERSION.txt')
+    with open(version_txt_path, 'w') as f:
+        f.write(version_string)
+    generated_files.append('VERSION.txt')
+
+    to_commit_zip_path = _CIPD_PATH / 'to_commit.zip'
     file_map = {
         f: f'third_party/android_deps/autorolled/{f}'
-        for f in files_in_tree
+        for f in generated_files
     }
     fetch_util.create_to_commit_zip(output_path=to_commit_zip_path,
                                     package_root=_CIPD_PATH,
@@ -112,7 +118,7 @@ def main():
 
     fetch_util.write_cipd_yaml(package_root=_CIPD_PATH,
                                package_name=_CIPD_PACKAGE,
-                               version=version_hash,
+                               version=version_string,
                                output_path=_CIPD_PATH / 'cipd.yaml')
 
 

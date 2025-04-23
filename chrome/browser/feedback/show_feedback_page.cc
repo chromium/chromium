@@ -49,15 +49,14 @@ constexpr char kDescriptionTemplateQueryParam[] = "description_template";
 constexpr char kDescriptionPlaceholderQueryParam[] =
     "description_placeholder_text";
 constexpr char kFromAssistantQueryParam[] = "from_assistant";
-constexpr char kSettingsSearchFeedbackQueryParam[] = "from_settings_search";
-constexpr char kIsQueryFingerprint[] = "is_query_fingerprint";
+constexpr char kSettingsSearchDoNotRecordMetricsQueryParam[] =
+    "settings_search_do_not_record_metrics";
 constexpr char kCategoryTagParam[] = "category_tag";
 constexpr char kPageURLParam[] = "page_url";
 constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
 constexpr char kFromAssistantQueryParamValue[] = "true";
-constexpr char kSettingsSearchFeedbackQueryParamValue[] = "true";
-constexpr char kIsQueryFingerprintValue[] = "true";
+constexpr char kSettingsSearchDoNotRecordMetricsQueryParamValue[] = "true";
 constexpr char kFromAutofillQueryParam[] = "from_autofill";
 constexpr char kFromAutofillParamValue[] = "true";
 constexpr char kAutofillMetadataQueryParam[] = "autofill_metadata";
@@ -87,14 +86,6 @@ GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
   if (!description_template.empty()) {
     query_params.emplace_back(
         StrCatQueryParam(kDescriptionTemplateQueryParam, description_template));
-
-    // If the user has queried for "fingerprint" in Settings app, we want to
-    // check the 'Send system & app info and metrics' checkbox in the feedback
-    // dialog.
-    if (re2::RE2::PartialMatch(description_template, "fingerprint")) {
-      query_params.emplace_back(
-          StrCatQueryParam(kIsQueryFingerprint, kIsQueryFingerprintValue));
-    }
   }
 
   if (!description_placeholder_text.empty()) {
@@ -117,9 +108,15 @@ GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
   }
 
   if (source == feedback::kFeedbackSourceOsSettingsSearch) {
-    query_params.emplace_back(
-        StrCatQueryParam(kSettingsSearchFeedbackQueryParam,
-                         kSettingsSearchFeedbackQueryParamValue));
+    // If the user has queried for "fingerprint" in Settings app, we want to
+    // check the 'Send system & app info and metrics' checkbox in the feedback
+    // dialog.
+    if (description_template.empty() ||
+        !re2::RE2::PartialMatch(description_template, "fingerprint")) {
+      query_params.emplace_back(
+          StrCatQueryParam(kSettingsSearchDoNotRecordMetricsQueryParam,
+                           kSettingsSearchDoNotRecordMetricsQueryParamValue));
+    }
   }
 
   if (source == feedback::kFeedbackSourceAutofillContextMenu) {

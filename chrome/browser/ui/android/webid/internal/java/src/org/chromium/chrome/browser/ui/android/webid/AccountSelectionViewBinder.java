@@ -983,23 +983,13 @@ class AccountSelectionViewBinder {
 
         // If there are multiple IDPs, show the title with just the RP.
         if (isMultipleIdps) {
-            switch (rpContext) {
-                case RpContext.SIGN_UP:
-                    titleStringId =
-                            R.string.account_selection_multi_idp_sheet_title_explicit_signup;
-                    break;
-                case RpContext.USE:
-                    titleStringId = R.string.account_selection_multi_idp_sheet_title_explicit_use;
-                    break;
-                case RpContext.CONTINUE:
-                    titleStringId =
-                            R.string.account_selection_multi_idp_sheet_title_explicit_continue;
-                    break;
-                default:
-                    titleStringId =
-                            R.string.account_selection_multi_idp_sheet_title_explicit_signin;
-            }
-            return String.format(resources.getString(titleStringId), rpUrl);
+            // The title does not change depending on RP context in a dialog involving multiple
+            // IDPs. Note that context is indeed shown when the dialog is transitioned to single
+            // IDP, e.g. once the user selects an account.
+            return String.format(
+                    resources.getString(
+                            R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                    rpUrl);
         }
 
         switch (rpContext) {

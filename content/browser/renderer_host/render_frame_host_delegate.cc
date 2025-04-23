@@ -238,9 +238,9 @@ gfx::NativeWindow RenderFrameHostDelegate::GetOwnerNativeWindow() {
   return gfx::NativeWindow();
 }
 
-media::PictureInPictureEventsInfo::AutoPipReason
-RenderFrameHostDelegate::GetAutoPipReason() const {
-  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+media::PictureInPictureEventsInfo::AutoPipInfo
+RenderFrameHostDelegate::GetAutoPipInfo() const {
+  return media::PictureInPictureEventsInfo::AutoPipInfo();
 }
 
 }  // namespace content

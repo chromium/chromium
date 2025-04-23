@@ -55,7 +55,7 @@ class ThemedFullyRoundedRectBackground : public views::Background {
     cc::PaintFlags paint;
     paint.setAntiAlias(true);
 
-    SkColor resolved_color = color().ConvertToSkColor(view->GetColorProvider());
+    SkColor resolved_color = color().ResolveToSkColor(view->GetColorProvider());
     if (!view->GetEnabled()) {
       resolved_color = ColorUtil::GetDisabledColor(resolved_color);
     }

@@ -165,13 +165,12 @@ class RemoteSuggestionsService : public KeyedService {
   void LogResponseTime(RemoteRequestType request_type, bool interrupted);
 
   // Returns the suggest endpoint URL for `template_url`.
-  //
-  // `template_url` must not be nullptr.
   // `search_terms_args` is used to build the endpoint URL.
   // `search_terms_data` is used to build the endpoint URL.
-  static GURL EndpointUrl(const TemplateURL* template_url,
-                          TemplateURLRef::SearchTermsArgs search_terms_args,
-                          const SearchTermsData& search_terms_data);
+  static GURL EndpointUrl(
+      const TemplateURL& template_url,
+      const TemplateURLRef::SearchTermsArgs& search_terms_args,
+      const SearchTermsData& search_terms_data);
 
   // Creates and returns a loader for remote suggestions for `template_url`.
   // It uses a number of signals to create the loader, including field trial
@@ -264,12 +263,14 @@ class RemoteSuggestionsService : public KeyedService {
                              const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
-  void OnRequestCompleted(const base::UnguessableToken& request_id,
-                          RemoteRequestType request_type,
-                          base::ElapsedTimer request_timer,
-                          CompletionCallback completion_callback,
-                          const network::SimpleURLLoader* source,
-                          std::unique_ptr<std::string> response_body);
+  void OnRequestCompleted(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      base::ElapsedTimer request_timer,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      CompletionCallback completion_callback,
+      const network::SimpleURLLoader* source,
+      std::unique_ptr<std::string> response_body);
 
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.

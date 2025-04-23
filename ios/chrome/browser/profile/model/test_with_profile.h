@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 #include "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -21,6 +22,8 @@ class IOSChromeIOThread;
 class TestWithProfile : public PlatformTest {
  public:
   TestWithProfile();
+  TestWithProfile(const std::vector<base::test::FeatureRef>& enabled_features,
+                  const std::vector<base::test::FeatureRef>& disabled_features);
 
   ~TestWithProfile() override;
 
@@ -36,6 +39,23 @@ class TestWithProfile : public PlatformTest {
   }
 
  private:
+  // Helper around a ScopedFeatureList that initialize it in its constructor.
+  class InitializedFeatureList {
+   public:
+    InitializedFeatureList(
+        const std::vector<base::test::FeatureRef>& enabled_features,
+        const std::vector<base::test::FeatureRef>& disabled_features);
+
+    InitializedFeatureList(const InitializedFeatureList&) = delete;
+    InitializedFeatureList& operator=(const InitializedFeatureList&) = delete;
+
+    ~InitializedFeatureList();
+
+   private:
+    base::test::ScopedFeatureList scoped_feature_list_;
+  };
+
+  InitializedFeatureList initialized_scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
   web::WebTaskEnvironment web_task_environment_{

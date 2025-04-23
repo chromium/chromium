@@ -11,6 +11,7 @@
 
 #include "autofill_address_util.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
@@ -294,22 +295,18 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     differences_for_ui.push_back(
         {ADDRESS_HOME_ADDRESS, first_address, second_address});
   }
+  static constexpr auto kPriorityOrder =
+      std::to_array({NAME_FULL, ALTERNATIVE_FULL_NAME, ADDRESS_HOME_ADDRESS,
+                     EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});
+
+  std::erase_if(differences_for_ui, [](const ProfileValueDifference& diff) {
+    return !base::Contains(kPriorityOrder, diff.type);
+  });
 
   auto get_priority = [](FieldType type) -> size_t {
-    switch (type) {
-      case NAME_FULL:
-        return 0;
-      case ALTERNATIVE_FULL_NAME:
-        return 1;
-      case ADDRESS_HOME_ADDRESS:
-        return 2;
-      case EMAIL_ADDRESS:
-        return 3;
-      case PHONE_HOME_WHOLE_NUMBER:
-        return 4;
-      default:
-        NOTREACHED();
-    }
+    auto it = std::ranges::find(kPriorityOrder, type);
+    CHECK(it != kPriorityOrder.end());
+    return std::distance(kPriorityOrder.begin(), it);
   };
 
   std::ranges::sort(differences_for_ui,
@@ -335,6 +332,138 @@ std::u16string GetProfileSummaryForMigrationPrompt(
     }
   }
   return base::JoinString(values, u"\n");
+}
+
+AddressUIComponentIconType GetAddressUIComponentIconTypeForFieldType(
+    FieldType field_type) {
+  switch (field_type) {
+    case NAME_FULL:
+    case ALTERNATIVE_FULL_NAME:
+      return AddressUIComponentIconType::kName;
+    case ADDRESS_HOME_STREET_ADDRESS:
+    case ADDRESS_HOME_ADDRESS:
+      return AddressUIComponentIconType::kAddress;
+    case EMAIL_ADDRESS:
+      return AddressUIComponentIconType::kEmail;
+    case PHONE_HOME_WHOLE_NUMBER:
+      return AddressUIComponentIconType::kPhone;
+    case NAME_HONORIFIC_PREFIX:
+    case NAME_FIRST:
+    case NAME_MIDDLE:
+    case NAME_LAST:
+    case NAME_LAST_FIRST:
+    case NAME_LAST_CONJUNCTION:
+    case NAME_LAST_SECOND:
+    case NAME_MIDDLE_INITIAL:
+    case NAME_SUFFIX:
+    case NAME_LAST_PREFIX:
+    case NAME_LAST_CORE:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case USERNAME_AND_EMAIL_ADDRESS:
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case PHONE_HOME_COUNTRY_CODE:
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+    case PHONE_HOME_EXTENSION:
+    case CREDIT_CARD_NAME_FULL:
+    case CREDIT_CARD_NAME_FIRST:
+    case CREDIT_CARD_NAME_LAST:
+    case CREDIT_CARD_NUMBER:
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case CREDIT_CARD_TYPE:
+    case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case IBAN_VALUE:
+    case MERCHANT_PROMO_CODE:
+    case USERNAME:
+    case PASSWORD:
+    case ACCOUNT_CREATION_PASSWORD:
+    case CONFIRMATION_PASSWORD:
+    case SINGLE_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case NOT_PASSWORD:
+    case NOT_USERNAME:
+    case NOT_ACCOUNT_CREATION_PASSWORD:
+    case NEW_PASSWORD:
+    case PROBABLY_NEW_PASSWORD:
+    case NOT_NEW_PASSWORD:
+    case ONE_TIME_CODE:
+    case NO_SERVER_DATA:
+    case EMPTY_TYPE:
+    case AMBIGUOUS_TYPE:
+    case FIELD_WITH_DEFAULT_VALUE:
+    case MERCHANT_EMAIL_SIGNUP:
+    case PRICE:
+    case NUMERIC_QUANTITY:
+    case SEARCH_TERM:
+    case IMPROVED_PREDICTION:
+    case PASSPORT_NAME_TAG:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case LOYALTY_MEMBERSHIP_ID:
+    case VEHICLE_OWNER_TAG:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
+    case DRIVERS_LICENSE_NAME_TAG:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_NUMBER:
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
+    case MAX_VALID_FIELD_TYPE:
+    case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_SUBPREMISE:
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case ADDRESS_HOME_FLOOR:
+    case ADDRESS_HOME_SORTING_CODE:
+    case UNKNOWN_TYPE:
+    case ADDRESS_HOME_LINE1:
+    case ADDRESS_HOME_LINE2:
+    case ADDRESS_HOME_LINE3:
+    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT:
+    case ADDRESS_HOME_APT_TYPE:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+    case ADDRESS_HOME_CITY:
+    case ADDRESS_HOME_STATE:
+    case ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_COUNTRY:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_STREET_NAME:
+    case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+    case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case COMPANY_NAME:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+      return AddressUIComponentIconType::kNoIcon;
+  }
 }
 
 }  // namespace autofill

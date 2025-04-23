@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
 #define CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
 
-#include "chrome/browser/ui/tabs/split_tab_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/widget/widget.h"
@@ -73,21 +73,25 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
   MOCK_METHOD(bool, IsSplit, (), (const override));
-  MOCK_METHOD(std::optional<split_tabs::SplitTabId>,
-              GetSplit,
-              (),
-              (const override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
               GetGroup,
               (),
               (const override));
-  MOCK_METHOD(bool,
-              ShouldAcceptMouseEventsWhileWindowInactive,
+  MOCK_METHOD(std::optional<split_tabs::SplitTabId>,
+              GetSplit,
               (),
               (const override));
-  MOCK_METHOD(std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>,
-              AcceptMouseEventsWhileWindowInactive,
-              (),
+  MOCK_METHOD(TabCollection*,
+              GetParentCollection,
+              (base::PassKey<TabCollection>),
+              (const override));
+  MOCK_METHOD(void,
+              OnReparented,
+              (TabCollection*, base::PassKey<TabCollection>),
+              (override));
+  MOCK_METHOD(void,
+              OnAncestorChanged,
+              (base::PassKey<TabCollection>),
               (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };

@@ -186,13 +186,12 @@ using DownloadToFileCompleteCallback =
 
   _callbackRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(_postRequestCompleteCallback),
-                     std::make_unique<std::string>(
-                         reinterpret_cast<const char*>([_downloadedData bytes]),
-                         [_downloadedData length]),
-                     error.code, base::SysNSStringToUTF8(etag),
-                     base::SysNSStringToUTF8(cupServerProof),
-                     retryAfterResult));
+      base::BindOnce(
+          std::move(_postRequestCompleteCallback),
+          std::string(reinterpret_cast<const char*>([_downloadedData bytes]),
+                      [_downloadedData length]),
+          error.code, base::SysNSStringToUTF8(etag),
+          base::SysNSStringToUTF8(cupServerProof), retryAfterResult));
 }
 
 @end

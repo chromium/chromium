@@ -28,12 +28,14 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
       override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-  AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
+  std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
+      const override;
   std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const override;
-  WebViewGuestDelegate* CreateWebViewGuestDelegate(
+  std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const override;
-  WebViewPermissionHelperDelegate* CreateWebViewPermissionHelperDelegate(
+  std::unique_ptr<WebViewPermissionHelperDelegate>
+  CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const override;
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(

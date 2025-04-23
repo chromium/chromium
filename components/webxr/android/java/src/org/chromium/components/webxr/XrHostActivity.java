@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.SurfaceView;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 // TODO(crbug.com/40904930): Investigate if this would benefit from
 // extending ChromeBaseAppCompatActivity
@@ -20,6 +22,7 @@ import org.chromium.base.Log;
  * separate activity than that of the main browser makes lifetime tracking and returning to the 2D
  * browser when done cleaner.
  */
+@NullMarked
 public class XrHostActivity extends Activity {
     private static final String TAG = "XrHostActivity";
     private static final boolean DEBUG_LOGS = false;
@@ -39,7 +42,7 @@ public class XrHostActivity extends Activity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         if (DEBUG_LOGS) Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
@@ -74,6 +77,7 @@ public class XrHostActivity extends Activity {
     }
 
     @Override
+    @SuppressWarnings("GestureBackNavigation")
     public void onBackPressed() {
         if (DEBUG_LOGS) Log.i(TAG, "onBackPressed");
         super.onBackPressed();

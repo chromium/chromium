@@ -680,7 +680,7 @@ build_webui("build") {
   grd_prefix = "donuts"
 
   # You will add these files in the next step:
-  non_web_component_files = [
+  ts_files = [
     "donuts.ts",
     "browser_proxy.ts",
   ]

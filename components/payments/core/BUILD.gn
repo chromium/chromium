@@ -54,7 +54,6 @@ static_library("core") {
     "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
-    "pre_purchase_query.h",
     "secure_payment_confirmation_credential.cc",
     "secure_payment_confirmation_credential.h",
     "secure_payment_confirmation_metrics.cc",
@@ -189,7 +188,6 @@ source_set("unit_tests") {
     "payment_request_metrics_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
-    "secure_payment_confirmation_credential_unittest.cc",
     "url_util_unittest.cc",
   ]
 

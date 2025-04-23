@@ -5,6 +5,7 @@
 blink_core_sources_canvas_interventions = [
   "canvas_interventions_helper.cc",
   "canvas_interventions_helper.h",
+  "canvas_interventions_enums.h",
   "noise_hash.cc",
   "noise_hash.h",
   "noise_helper.cc",

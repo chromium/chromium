@@ -4,9 +4,13 @@
 
 package org.chromium.base.test.transit;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** A {@link Transition} out of one or more {@link Facility}s into another {@link Facility}. */
+@NullMarked
 public class FacilitySwap extends Transition {
     private final List<Facility<?>> mFacilitiesToExit;
     private final List<Facility<?>> mFacilitiesToEnter;
@@ -23,7 +27,7 @@ public class FacilitySwap extends Transition {
             List<Facility<?>> facilitiesToExit,
             List<Facility<?>> facilitiesToEnter,
             TransitionOptions options,
-            Trigger trigger) {
+            @Nullable Trigger trigger) {
         super(options, facilitiesToExit, facilitiesToEnter, trigger);
         assert !facilitiesToExit.isEmpty();
         mFacilitiesToExit = facilitiesToExit;

@@ -60,17 +60,22 @@ void ArcDlcInstaller::OnHardwareCheckComplete(
     return;
   }
 
-  VLOG(1) << "Device is compatible for ARC. Installing ARCVM DLC.";
+  auto installation_triggered = std::make_unique<bool>(false);
+  auto* installation_triggered_ptr = installation_triggered.get();
   dlcservice::InstallRequest install_request;
   install_request.set_id(kArcvmDlcId);
-  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
+
+  VLOG(1) << "Device is compatible for ARC. Installing ARCVM DLC.";
   base::TimeTicks start_installation_time = base::TimeTicks::Now();
   ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     start_installation_time),
-      base::DoNothing());
+                     start_installation_time,
+                     std::move(installation_triggered)),
+      base::BindRepeating(&ArcDlcInstaller::OnDlcProgress,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          installation_triggered_ptr));
 }
 
 bool ArcDlcInstaller::IsDlcRequired() {
@@ -119,9 +124,21 @@ void ArcDlcInstaller::OnPrimaryUserSessionStarted(const AccountId& account_id) {
   dlc_install_pending_notifications_.clear();
 }
 
+void ArcDlcInstaller::OnDlcProgress(bool* installation_triggered_ptr,
+                                    double progress) {
+  CHECK(installation_triggered_ptr);
+  if (*installation_triggered_ptr) {
+    return;
+  }
+
+  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
+  *installation_triggered_ptr = true;
+}
+
 void ArcDlcInstaller::OnDlcInstalled(
     base::OnceCallback<void(bool)> callback,
     base::TimeTicks start_installation_time,
+    std::unique_ptr<bool> installation_triggered,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(1) << "Failed to install ARCVM DLC: " << install_result.error;
@@ -135,7 +152,16 @@ void ArcDlcInstaller::OnDlcInstalled(
       base::TimeTicks::Now() - start_installation_time;
   base::UmaHistogramLongTimes("Arc.DlcInstaller.InstallTime", install_duration);
   base::UmaHistogramBoolean("Arc.DlcInstaller.Install", true);
-  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
+  // If installation_triggered is false, the DLC image was already
+  // installed, preventing a duplicate "installation complete" notification. If
+  // installation_triggered is true, it means the DLC installation did not
+  // complete previously; the user should receive the notification if
+  // installation succeeds.
+  CHECK(installation_triggered);
+  if (*installation_triggered) {
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
+  }
+
   OnPrepareArcDlc(std::move(callback), true);
 }
 

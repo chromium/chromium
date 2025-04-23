@@ -26,8 +26,8 @@ uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
   // Xor with a mask to reduce likelihood of flow id collision with non-surface
   // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
   // interpreted as a big-endian integer. Python snippet:
-  // hashlib.sha256(b'gpu::Scheduler').hexdigest()[:8]
-  static constexpr uint64_t kMask = 0x03af6247;
+  // hashlib.sha256(b'gpu::Scheduler').hexdigest()[:16]
+  static constexpr uint64_t kMask = 0x03af62470b040902;
   return kMask ^ (sequence_id) ^ (uint64_t{order_num} << 32);
 }
 }  // namespace

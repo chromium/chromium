@@ -47,6 +47,10 @@ uint32_t HashMetricNameAs32Bits(std::string_view name) {
   return DigestToUInt32(digest);
 }
 
+uint32_t ParseMetricHashTo32Bits(uint64_t hash) {
+  return (hash >> 32);
+}
+
 uint32_t HashFieldTrialName(std::string_view name) {
   // SHA-1 is designed to produce a uniformly random spread in its output space,
   // even for nearly-identical inputs.

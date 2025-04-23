@@ -12,7 +12,7 @@ build_webui("build") {
     "gcm_internals.html",
   ]
 
-  non_web_component_files = [ "gcm_internals.ts" ]
+  ts_files = [ "gcm_internals.ts" ]
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

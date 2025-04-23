@@ -657,8 +657,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -742,8 +741,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -801,8 +799,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Wait for the History Sync Opt-In screen.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -889,8 +886,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Wait for the History Sync Opt-In screen.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -1014,8 +1010,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -1118,8 +1113,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is hidden.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -1160,8 +1154,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is hidden.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -1202,8 +1195,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(

@@ -110,8 +110,9 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
     return is_ad_frame;
   }
   std::optional<bool> LastActivated() {
-    if (!last_activation_)
+    if (!last_activation_) {
       return std::nullopt;
+    }
     bool activated =
         last_activation_->activation_level != mojom::ActivationLevel::kDisabled;
     last_activation_.reset();
@@ -255,8 +256,11 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
   void TearDown() override {
-    throttle_manager_test_support_.reset();
+    // Delete `WebContents` before deleting the dealer handle.
+    DeleteContents();
     dealer_handle_.reset();
+
+    throttle_manager_test_support_.reset();
     base::RunLoop().RunUntilIdle();
     content::RenderViewHostTestHarness::TearDown();
 #if BUILDFLAG(IS_ANDROID)
@@ -355,8 +359,9 @@ class ContentSubresourceFilterThrottleManagerTest
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->IsSameDocument())
+    if (navigation_handle->IsSameDocument()) {
       return;
+    }
 
     // Inject the proper throttles at this time.
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;

@@ -291,10 +291,10 @@
     zoom levels
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION" desc="The label used for the web app installation site settings controls.">
-    Web applications
+    Web app installations
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE" desc="The label used for the web app installation site settings controls when used mid-sentence. 'apps' is being used as an acceptable abbreviation of 'applications'.">
-    web applications
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE" desc="The label used for the web app installation site settings controls when used mid-sentence.">
+    web app installations
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING" desc="The label used for the web printing site settings controls.">
     Advanced printer features

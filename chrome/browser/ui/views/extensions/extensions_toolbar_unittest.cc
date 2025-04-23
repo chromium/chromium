@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -114,7 +115,7 @@ ExtensionsToolbarUnitTest::InstallExtension(
           .AddHostPermissions(host_permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
 
   // Force the container to re-layout, since a new extension was added.
   LayoutContainerIfNecessary();
@@ -124,7 +125,7 @@ ExtensionsToolbarUnitTest::InstallExtension(
 
 void ExtensionsToolbarUnitTest::ReloadExtension(
     const extensions::ExtensionId& extension_id) {
-  extension_service()->ReloadExtension(extension_id);
+  extension_registrar()->ReloadExtension(extension_id);
 }
 
 void ExtensionsToolbarUnitTest::UninstallExtension(
@@ -137,7 +138,7 @@ void ExtensionsToolbarUnitTest::UninstallExtension(
   // race with a bunch of things, and extension uninstall is just one of them.
   // See crbug.com/1191455.
   base::RunLoop run_loop;
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       extension_id, extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING,
       nullptr, run_loop.QuitClosure());
   run_loop.Run();

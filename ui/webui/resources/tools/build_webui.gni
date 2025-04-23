@@ -65,8 +65,8 @@ template("build_webui") {
   minify = optimize
   bundle = optimize && defined(invoker.optimize_webui_in_files)
 
-  has_ts_in_files = defined(invoker.web_component_files) ||
-                    defined(invoker.non_web_component_files)
+  has_ts_in_files =
+      defined(invoker.web_component_files) || defined(invoker.ts_files)
   enable_source_maps = enable_webui_inline_sourcemaps && has_ts_in_files
   if (defined(invoker.enable_source_maps) && has_ts_in_files) {
     assert(!invoker.enable_source_maps || !optimize)
@@ -89,17 +89,18 @@ template("build_webui") {
   ### Compute the lists of files that are used across multiple targets.
 
   # At least one of `web_component_files`, `css_files`, `mojo_files`, or
-  # 'non_web_component_files` must be defined. Otherwise, the build rule
-  # does not actually generate any input for TS compiler.
+  # 'ts_files` must be defined. Otherwise, the build rule does not actually
+  # generate any input for TS compiler.
   assert(has_ts_in_files || defined(invoker.css_files) ||
          defined(invoker.mojo_files))
 
-  ts_files = []
+  all_ts_files = []
   if (defined(invoker.web_component_files)) {
-    ts_files += invoker.web_component_files
+    all_ts_files += invoker.web_component_files
   }
-  if (defined(invoker.non_web_component_files)) {
-    ts_files += invoker.non_web_component_files
+
+  if (defined(invoker.ts_files)) {
+    all_ts_files += invoker.ts_files
   }
 
   if (defined(invoker.web_component_files) ||
@@ -220,7 +221,7 @@ template("build_webui") {
         out_folder = "${preprocess_dir}/_tmp"
         enable_removal_comments = enable_source_maps
       }
-      in_files = ts_files
+      in_files = all_ts_files
     }
   }
 
@@ -402,7 +403,7 @@ template("build_webui") {
       }
     }
 
-    in_files = ts_files
+    in_files = all_ts_files
     if (defined(invoker.ts_deps)) {
       path_mappings_file = "$target_gen_dir/path_mappings_build_path_map.json"
       extra_deps = [ ":build_path_map" ]
@@ -465,7 +466,7 @@ template("build_webui") {
   if (enable_type_aware_eslint_checks) {
     eslint_ts("lint") {
       in_folder = preprocess_dir
-      in_files = filter_exclude(ts_files, [ "*.js" ])
+      in_files = filter_exclude(all_ts_files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
       deps = [ ":build_ts" ]
       if (enable_source_maps) {

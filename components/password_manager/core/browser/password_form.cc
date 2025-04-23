@@ -184,10 +184,6 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("is_gaia_with_skip_save_password_form",
              form.form_data.is_gaia_with_skip_save_password_form());
   target.Set("in_store", ToString(form.in_store));
-  target.Set("server_side_classification_successful",
-             form.server_side_classification_successful);
-  target.Set("username_may_use_prefilled_placeholder",
-             form.username_may_use_prefilled_placeholder);
   target.Set("form_has_autofilled_value", form.form_has_autofilled_value);
   target.Set("keychain_identifier", form.keychain_identifier);
   target.Set("accepts_webauthn_credentials", form.accepts_webauthn_credentials);

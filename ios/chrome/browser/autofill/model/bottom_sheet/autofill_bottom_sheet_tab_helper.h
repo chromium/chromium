@@ -299,8 +299,6 @@ class AutofillBottomSheetTabHelper
   autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
 
   base::WeakPtrFactory<AutofillBottomSheetTabHelper> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_

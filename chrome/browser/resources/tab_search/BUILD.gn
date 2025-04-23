@@ -22,7 +22,7 @@ build_webui("build") {
 
   icons_html_files = [ "icons.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "auto_tab_groups/auto_tab_groups_failure.html.ts",
@@ -49,8 +49,8 @@ build_webui("build") {
     "search.ts",
     "selectable_lazy_list.ts",
     "split_new_tab_page.ts",
-    "split_view/app.ts",
     "split_view/app.html.ts",
+    "split_view/app.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
     "tab_organization_selector.html.ts",

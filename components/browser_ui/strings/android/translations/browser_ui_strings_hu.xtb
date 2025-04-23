@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
 <translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
+<translation id="3670480940339182416">A webhelyek használhatják a V8 optimalizálót</translation>
 <translation id="3676777756440746804">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
 <translation id="3697164069658504920">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek USB-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak USB-eszközöket.</translation>
+<translation id="3703430731944883733">A feed kezelése</translation>
 <translation id="3707034683772193706">A felkeresett webhelyek menthetnek kis mennyiségű adatot a Chrome-ban, elsősorban annak ellenőrzéséhez, hogy Ön nem robot.</translation>
 <translation id="3708684582558000260">A bezárt webhelyek nem fejezhetik be az adatküldést és -fogadást</translation>
 <translation id="3709818294139939629">Webhely fájlhozzáférése megvonva</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az NFC-eszközökön található információk megtekintését és az ilyen eszközökkel való információcserét (ajánlott)</translation>
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
 <translation id="421742575134139848">A webhelyek lejátszhatnak hangot, hogy a zeneszámok, videók és egyéb médiatartalmak hallhatók legyenek.</translation>
+<translation id="4217710972110098902">Soros porthoz csatlakoztatva</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Elhagyásuk után a webhelyek tovább folytathatják a szinkronizálást a feladatok (például fotók feltöltése vagy csevegőüzenetek küldése) befejezése érdekében.</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
 <translation id="4570913071927164677">Részletek</translation>
+<translation id="4578289292431526768">Indítás</translation>
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="461356340001513807">Lehetővé teszi, hogy identitásszolgáltató által biztosított fiókkal jelentkezzen be a webhelyekre.</translation>
 <translation id="4635969503923889910">A webhelyek nem használhatnak NFC-eszközöket</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
 <translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
+<translation id="571222594670061844">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket</translation>
 <translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5740126560802162366">Webhelyek menthetnek adatokat az eszközére</translation>
+<translation id="5743425052258407233">Előzményeihez minden eszközén hozzáférhet, így könnyen folytathatja ott, ahol abbahagyta</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5876056640971328065">Videó szüneteltetése</translation>
 <translation id="5877248419911025165">Az összes kérelem összecsukása</translation>
+<translation id="5878945009165002849">Az identitásszolgáltatásoktól származó bejelentkezési értesítések letiltása</translation>
 <translation id="5884085660368669834">Webhelybeállítás</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
 <translation id="5908617755156109052">A webhelyek nem készíthetnek 3D-s térképet az Ön környezetéről, valamint nem követhetik a kamera pozícióját</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6320088164292336938">Rezgés</translation>
-<translation id="6344622098450209924">Nyomon követés elleni védelem</translation>
 <translation id="6367753977865761591">Letilthatja a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="640163077447496506">Ma jár le</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
 <translation id="8471525937465764768">A webhelyek általában bizonyos funkciók (például dokumentumok nyomtatásának vagy tárolóeszközön való mentésének) végrehajtása érdekében csatlakoznak USB-eszközökhöz</translation>
 <translation id="8473055640493819707">A(z) „<ph name="APP_NAME" />” elavult. Telepítse újra az alkalmazást.</translation>
+<translation id="847433688444405067">Böngészés több eszközön</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="848952951823693243">Mindig a mobilwebhely kérése</translation>
 <translation id="8492822722330266509">A webhelyek megjeleníthetnek előugró ablakokat, és használhatnak átirányításokat</translation>

@@ -135,8 +135,8 @@ AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
   ui::BrowserAccessibilityManager* manager =
       GetRootBrowserAccessibilityManager();
 
-  AccessibilityNotificationWaiter event_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, event_to_fire);
+  AccessibilityNotificationWaiter event_waiter(shell()->web_contents(),
+                                               event_to_fire);
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kHitTest;
   action_data.target_point = CSSToFramePoint(point);
@@ -195,8 +195,8 @@ AccessibilityHitTestingBrowserTest::CallCachingAsyncHitTest(
   // Each call to CachingAsyncHitTest results in at least one HOVER
   // event received. Block until we receive it. CachingAsyncHitTestNearestLeaf
   // will call CachingAsyncHitTest.
-  AccessibilityNotificationWaiter hover_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
+  AccessibilityNotificationWaiter hover_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kHover);
 
   ui::BrowserAccessibility* result =
       GetRootBrowserAccessibilityManager()->CachingAsyncHitTest(screen_point);
@@ -216,8 +216,8 @@ AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
   // Each call to CachingAsyncHitTest results in at least one HOVER
   // event received. Block until we receive it. CachingAsyncHitTest
   // will call CachingAsyncHitTest.
-  AccessibilityNotificationWaiter hover_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
+  AccessibilityNotificationWaiter hover_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kHover);
   ui::AXPlatformNodeBase* platform_node = nullptr;
   if (manager->GetBrowserAccessibilityRoot()->GetAXPlatformNode()) {
     platform_node =
@@ -245,8 +245,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
     float desired_page_scale) {
   RenderFrameSubmissionObserver observer(shell()->web_contents());
   AccessibilityNotificationWaiter accessibility_waiter(
-      shell()->web_contents(), ui::AXMode(),
-      ax::mojom::Event::kLocationChanged);
+      shell()->web_contents(), ax::mojom::Event::kLocationChanged);
 
   const gfx::Rect contents_rect = shell()->web_contents()->GetContainerBounds();
   const gfx::Point pinch_position(contents_rect.x(), contents_rect.y());
@@ -319,6 +318,7 @@ class AccessibilityHitTestingCrossProcessBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    AccessibilityHitTestingBrowserTest::SetUpOnMainThread();
   }
 };
 
@@ -347,7 +347,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
@@ -388,7 +387,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
@@ -447,7 +445,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/input-color-with-popup-open.html"));
@@ -457,8 +454,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "color picker");
 
-  AccessibilityNotificationWaiter click_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  AccessibilityNotificationWaiter click_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kClicked);
   auto* input = FindNode(ax::mojom::Role::kColorWell, "color picker");
   ASSERT_TRUE(input);
   ui::AXActionData action_data;
@@ -489,7 +486,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 
   // Load the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   const char url_str[] =
       "data:text/html,"
@@ -527,7 +523,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -663,8 +658,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   action_data.child_tree_id = update.tree_data.tree_id;
 
   AccessibilityNotificationWaiter stitch_waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+      shell()->web_contents(), ui::AXEventGenerator::Event::CHILDREN_CHANGED);
   link->AccessibilityPerformAction(action_data);
   ASSERT_TRUE(stitch_waiter.WaitForNotification());
 
@@ -704,7 +698,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles_with_curtain.html"));
@@ -760,7 +753,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(embedded_test_server()->GetURL(
@@ -806,7 +798,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(embedded_test_server()->GetURL(
@@ -859,7 +850,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles_with_curtain.html"));
@@ -920,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/text_ranges.html"));

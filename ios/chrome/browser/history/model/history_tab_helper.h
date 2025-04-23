@@ -121,8 +121,6 @@ class HistoryTabHelper
     GURL url;
   };
   std::optional<NavigationState> cached_navigation_state_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_TAB_HELPER_H_

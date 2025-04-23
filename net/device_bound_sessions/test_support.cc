@@ -43,7 +43,8 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
     response->set_content_type("text/html");
     return response;
-  } else if (request.relative_url == "/dbsc_register_session") {
+  } else if (request.relative_url == "/dbsc_register_session" ||
+             request.relative_url == "/dbsc_refresh_session") {
     response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
 
     const auto registration_response =
@@ -51,6 +52,14 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
             .Set("session_identifier", "session_id")
             .Set("refresh_url",
                  base_url.Resolve("/dbsc_refresh_session").spec())
+            .Set("scope", base::Value::Dict()
+                              .Set("include_site", true)
+                              .Set("scope_specification",
+                                   base::Value::List().Append(
+                                       base::Value::Dict()
+                                           .Set("type", "exclude")
+                                           .Set("domain", base_url.host())
+                                           .Set("path", "/favicon.ico"))))
             .Set("credentials",
                  base::Value::List().Append(base::Value::Dict()
                                                 .Set("type", "cookie")
@@ -67,7 +76,19 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         R"*(<html><body onload="fetch('%s')"></body></html>)*",
         base_url.Resolve("/dbsc_required").spec()));
     return response;
+  } else if (request.relative_url == "/ensure_authenticated") {
+    // We do a very coarse-grained cookie check here rather than parsing
+    // cookies.
+    auto it = request.headers.find("Cookie");
+    if (it == request.headers.end()) {
+      response->set_code(net::HTTP_UNAUTHORIZED);
+    } else if (it->second.find("auth_cookie") == std::string::npos) {
+      response->set_code(net::HTTP_UNAUTHORIZED);
+    }
+    response->set_content_type("text/html");
+    return response;
   }
+
   return nullptr;
 }
 

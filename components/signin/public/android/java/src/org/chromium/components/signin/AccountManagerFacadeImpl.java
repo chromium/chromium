@@ -36,6 +36,8 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,13 +159,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         assert scope != null;
 
         if (mDisallowTokenRequestsForTesting) {
-            callback.onGetTokenFailure(false);
+            callback.onGetTokenFailure(
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.REQUEST_CANCELED));
             return;
         }
 
         pendingRequestStarted();
         ConnectionRetry.runAuthTask(
-                new AuthTask<AccessTokenData>() {
+                new AuthTask() {
                     @Override
                     public AccessTokenData run() throws AuthException {
                         return mDelegate.getAccessToken(
@@ -172,14 +175,15 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     }
 
                     @Override
-                    public void onSuccess(AccessTokenData token) {
+                    public void onSuccess(@Nullable AccessTokenData token) {
+                        assert token != null : "AccessTokenData must not be null on success.";
                         callback.onGetTokenSuccess(token);
                         pendingRequestFinished();
                     }
 
                     @Override
-                    public void onFailure(boolean isTransientError) {
-                        callback.onGetTokenFailure(isTransientError);
+                    public void onFailure(GoogleServiceAuthError authError) {
+                        callback.onGetTokenFailure(authError);
                         pendingRequestFinished();
                     }
                 });
@@ -212,22 +216,22 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             return;
         }
         ConnectionRetry.runAuthTask(
-                new AuthTask<Void>() {
+                new AuthTask() {
                     @Override
-                    public Void run() throws AuthException {
+                    public @Nullable AccessTokenData run() throws AuthException {
                         mDelegate.invalidateAccessToken(accessToken);
                         return null;
                     }
 
                     @Override
-                    public void onSuccess(Void ignored) {
+                    public void onSuccess(@Nullable AccessTokenData ignored) {
                         if (completedRunnable != null) {
                             completedRunnable.run();
                         }
                     }
 
                     @Override
-                    public void onFailure(boolean ignored) {
+                    public void onFailure(GoogleServiceAuthError ignored) {
                         if (completedRunnable != null) {
                             completedRunnable.run();
                         }

@@ -385,6 +385,7 @@ public class CastWebContentsActivity extends Activity {
     }
 
     @Override
+    @SuppressWarnings("GestureBackNavigation")
     public void onBackPressed() {
         WebContents webContents = CastWebContentsIntentUtils.getWebContents(getIntent());
         if (webContents == null) {

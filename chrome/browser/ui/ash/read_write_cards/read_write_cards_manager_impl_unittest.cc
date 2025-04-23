@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
@@ -82,6 +83,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
     magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
     manager_ = std::make_unique<ReadWriteCardsManagerImpl>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 

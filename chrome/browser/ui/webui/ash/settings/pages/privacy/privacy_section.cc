@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
@@ -83,7 +84,7 @@ base::span<const SearchConcept> GetPrivacySearchConceptsSharedWithGuestMode() {
 }
 
 base::span<const SearchConcept> GetPrivacySearchConcepts(
-    const user_manager::User* user) {
+    const user_manager::User& user) {
   DCHECK(!IsGuestModeActive(user));
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MANAGE_OTHER_PEOPLE_PAGE,
@@ -254,7 +255,7 @@ base::span<const SearchConcept> GetPrivacyGoogleChromeSearchConcepts() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 base::span<const SearchConcept> GetPrivacyControlsSearchConcepts(
-    const user_manager::User* user) {
+    const user_manager::User& user) {
   DCHECK(!IsGuestModeActive(user));
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
@@ -280,7 +281,7 @@ base::span<const SearchConcept> GetPrivacyControlsSearchConcepts(
 }
 
 base::span<const SearchConcept> GetPrivacyControlsLocationSearchConcepts(
-    const user_manager::User* user) {
+    const user_manager::User& user) {
   DCHECK(!IsGuestModeActive(user));
   DCHECK(features::IsCrosPrivacyHubLocationEnabled());
   static constexpr auto tags = std::to_array<SearchConcept>(
@@ -337,7 +338,8 @@ PrivacySection::PrivacySection(Profile* profile,
       fp_engine_(&auth_performer_) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrivacySearchConceptsSharedWithGuestMode());
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   if (!IsGuestModeActive(user)) {
     updater.AddSearchTags(GetPrivacySearchConcepts(user));
   }

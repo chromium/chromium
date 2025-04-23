@@ -62,8 +62,8 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
     };
   }
 
-  private sites_: ZoomLevelEntry[];
-  private showNoSites_: boolean;
+  declare private sites_: ZoomLevelEntry[];
+  declare private showNoSites_: boolean;
 
   override ready() {
     super.ready();

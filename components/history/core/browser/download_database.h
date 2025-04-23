@@ -60,55 +60,6 @@ class DownloadDatabase {
   // Returns the database for the functions in this interface.
   virtual sql::Database& GetDB() = 0;
 
-  // Returns true if able to successfully add mime types to the downloads table.
-  bool MigrateMimeType();
-
-  // Returns true if able to successfully rewrite the invalid values for the
-  // `state` field from 3 to 4. Returns false if there was an error fixing the
-  // database. See http://crbug.com/140687
-  bool MigrateDownloadsState();
-
-  // Returns true if able to successfully add the last interrupt reason and the
-  // two target paths to downloads.
-  bool MigrateDownloadsReasonPathsAndDangerType();
-
-  // Returns true if able to successfully add the referrer column to the
-  // downloads table.
-  bool MigrateReferrer();
-
-  // Returns true if able to successfully add the by_ext_id and by_ext_name
-  // columns to the downloads table.
-  bool MigrateDownloadedByExtension();
-
-  // Returns true if able to successfully add the etag and last-modified columns
-  // to the downloads table.
-  bool MigrateDownloadValidators();
-
-  // Returns true if able to add GUID, hash and HTTP method columns to the
-  // download table.
-  bool MigrateHashHttpMethodAndGenerateGuids();
-
-  // Returns true if able to add tab_url and tab_referrer_url columns to the
-  // download table.
-  bool MigrateDownloadTabUrl();
-
-  // Returns true if able to add the site_url column to the download
-  // table.
-  bool MigrateDownloadSiteInstanceUrl();
-
-  // Returns true if able to add the embedder_download_data column to the
-  // download table.
-  bool MigrateEmbedderDownloadData();
-
-  // Returns true if able to add last_access_time column to the download table.
-  bool MigrateDownloadLastAccessTime();
-
-  // Returns true if able to add transient column to the download table.
-  bool MigrateDownloadTransient();
-
-  // Returns true if able to add the finished column to downloads slices table.
-  bool MigrateDownloadSliceFinished();
-
   // Returns true if able to rename the by_ext_id column to by_ext_or_web_app_id
   // and add the is_by_web_app column.
   bool MigrateDownloadByWebApp();

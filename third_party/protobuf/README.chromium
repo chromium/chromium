@@ -85,30 +85,10 @@ Steps used to create the current version (or roll a newer one):
 
 Notes (hints) for the next roll(er):
 
-* This is probably harder to roll than most things you've rolled in the past.
-  Good luck! Also please reach out for help proactively. The current roll as of
-  writing this required help from multiple very-senior people to even figure out
-  what was broken in the first place. `protobuf` rolling is not in a good place.
 * Update README.chromium as you go so you don't forget (after step 2. above, so
   you don't nuke those changes).
-* Rolling one version of protobuf likely introduces a large amount of changes.
-  We should possibly figure out if it's reasonable to stay close to tip of tree
-  and roll frequently rather than use released versions. Sharp corners here
-  likely include that the version is encoded in protobuf output and I (pbos@)
-  don't know if that version tag changes immediately on format incompatibilities
-  or get bumped every time something format incompatible is introduced.
-* After v3.20 protobuf-javascript/ split out from upstream protobuf/. You may
-  need to be aware of both repositories. Also upstream protobuf/ seems to move
-  faster / out of sync with protobuf-javascript/. Hopefully that doesn't cause
-  format incompatibilities in the future (protobuf/ supports something we need
-  that protobuf-javascript/ doesn't).
 * Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`
   may require updating `build/config/siso/protoc_wrapper.star` as well.
-* We've seen instances where instead of rolling protobuf a local copy of a new
-  built-in type has been checked in. When that happens you may see ODR
-  violations as your built-in type is defined in multiple files. If that happens
-  you may want to move the copy that should never have been checked in into its
-  own namespace, complete the roll and then cleanup the local copy.
 * The protobuf wheel for vpython3 needs to stay in sync with this protobuf, at
   least if there are breaking changes in protobuf's python bindings. See
   https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
@@ -247,3 +227,10 @@ Description of the patches:
   of forward declarations to work around known issue with protobuf +
   newer abseil version,
   https://github.com/protocolbuffers/protobuf/issues/20331
+
+- 0055-optimize-compile-time.patch
+
+  This backports clang compile speed optimization from upstream.
+  https://github.com/protocolbuffers/protobuf/commit/d8964801b196a65cb9ab26f7c17872993c76b140
+  It mitigates the build time regression https://crbug.com/397550708.
+  It should be possible to remove this patch when rolling out v31.0.

@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -21,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
@@ -231,9 +231,8 @@ bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
           "Extensions.RemovedDefaultInstalledExtension"));
     }
 
-    return ExtensionSystem::Get(profile_)
-        ->extension_service()
-        ->UninstallExtension(extension_->id(), uninstall_reason_, error);
+    return ExtensionRegistrar::Get(profile_)->UninstallExtension(
+        extension_->id(), uninstall_reason_, error);
   }
   *error = kExtensionRemovedError;
   return false;

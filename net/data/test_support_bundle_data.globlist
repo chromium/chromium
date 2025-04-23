@@ -6,5 +6,4 @@
 # files are used to update their .filelist counterparts.
 
 data/quic_http_response_cache_data/test.example.com/*
-data/quic_http_response_cache_data_with_push/test.example.com/*
 data/ssl/certificates/*

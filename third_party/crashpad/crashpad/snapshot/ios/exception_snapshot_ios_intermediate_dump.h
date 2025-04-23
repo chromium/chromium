@@ -25,7 +25,6 @@
 #include "snapshot/exception_snapshot.h"
 #include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_map.h"
-#include "util/mach/mach_extensions.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {

@@ -33,7 +33,6 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -76,6 +75,7 @@
 #include "extensions/browser/error_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/file_highlighter.h"
 #include "extensions/browser/management_policy.h"
@@ -122,10 +122,8 @@ namespace developer = api::developer_private;
 namespace {
 constexpr char kUnpackedAppsFolder[] = "apps_target";
 
-ExtensionService* GetExtensionService(content::BrowserContext* context) {
-  return ExtensionSystem::Get(context)->extension_service();
-}
-
+// TODO(crbug.com/392777363): Remove this function moving all its usage to
+// shared.cc.
 std::string ReadFileToString(const base::FilePath& path) {
   std::string data;
   // This call can fail, but it doesn't matter for our purposes. If it fails,
@@ -196,57 +194,6 @@ namespace Reload = api::developer_private::Reload;
 
 namespace api {
 
-DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
-    default;
-
-ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
-  if (updater->enabled()) {
-    ExtensionUpdater::CheckParams params;
-    params.fetch_priority = DownloadFetchPriority::kForeground;
-    params.install_immediately = true;
-    params.callback =
-        base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete, this);
-    updater->CheckNow(std::move(params));
-  }
-  return RespondLater();
-}
-
-void DeveloperPrivateAutoUpdateFunction::OnComplete() {
-  Respond(NoArguments());
-}
-
-DeveloperPrivateGetExtensionSizeFunction::
-    DeveloperPrivateGetExtensionSizeFunction() = default;
-
-DeveloperPrivateGetExtensionSizeFunction::
-    ~DeveloperPrivateGetExtensionSizeFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateGetExtensionSizeFunction::Run() {
-  std::optional<developer::GetExtensionSize::Params> params =
-      developer::GetExtensionSize::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const Extension* extension = GetExtensionById(params->id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  extensions::path_util::CalculateAndFormatExtensionDirectorySize(
-      extension->path(), IDS_APPLICATION_INFO_SIZE_SMALL_LABEL,
-      base::BindOnce(
-          &DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated, this));
-
-  return RespondLater();
-}
-
-void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
-    const std::u16string& size) {
-  Respond(WithArguments(size));
-}
-
 DeveloperPrivateReloadFunction::DeveloperPrivateReloadFunction() = default;
 DeveloperPrivateReloadFunction::~DeveloperPrivateReloadFunction() = default;
 
@@ -273,11 +220,11 @@ ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
                           Manifest::IsUnpackedLocation(extension->location());
   }
 
-  ExtensionService* service = GetExtensionService(browser_context());
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
   if (fail_quietly) {
-    service->ReloadExtensionWithQuietFailure(params->extension_id);
+    registrar->ReloadExtensionWithQuietFailure(params->extension_id);
   } else {
-    service->ReloadExtension(params->extension_id);
+    registrar->ReloadExtension(params->extension_id);
   }
 
   if (!wait_for_completion) {
@@ -334,7 +281,7 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
   // reloading through developerPrivate.loadUnpacked().
   // TODO(devlin): This is weird. Really, we should allow retrying through this
   // function instead of through loadUnpacked(), but
-  // ExtensionService::ReloadExtension doesn't behave well with an extension
+  // ExtensionRegistrar::ReloadExtension doesn't behave well with an extension
   // that failed to reload, and untangling that mess is quite significant.
   // See https://crbug.com/792277.
   Respond(WithArguments(
@@ -475,7 +422,7 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
 void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
     const base::FilePath file_path) {
   scoped_refptr<UnpackedInstaller> installer(
-      UnpackedInstaller::Create(GetExtensionService(browser_context())));
+      UnpackedInstaller::Create(browser_context()));
   installer->set_be_noisy_on_failure(!fail_quietly_);
   installer->set_completion_callback(base::BindOnce(
       &DeveloperPrivateLoadUnpackedFunction::OnLoadComplete, this));
@@ -697,8 +644,7 @@ DeveloperPrivateLoadDirectoryFunction::LoadByFileSystemAPI(
 }
 
 void DeveloperPrivateLoadDirectoryFunction::Load() {
-  ExtensionService* service = GetExtensionService(browser_context());
-  UnpackedInstaller::Create(service)->Load(project_base_path_);
+  UnpackedInstaller::Create(browser_context())->Load(project_base_path_);
 
   // TODO(grv) : The unpacked installer should fire an event when complete
   // and return the extension_id.
@@ -834,168 +780,6 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 
 DeveloperPrivateLoadDirectoryFunction::
     ~DeveloperPrivateLoadDirectoryFunction() {}
-
-DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() =
-    default;
-
-DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
-  // There may be pending file dialogs, we need to tell them that we've gone
-  // away so they don't try and call back to us.
-  if (select_file_dialog_.get()) {
-    select_file_dialog_->ListenerDestroyed();
-  }
-}
-
-ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
-  std::optional<developer::ChoosePath::Params> params =
-      developer::ChoosePath::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
-
-  // Start or cancel the file selection without showing the select file dialog
-  // for tests that require it.
-  if (accept_dialog_for_testing_.has_value()) {
-    AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
-    if (accept_dialog_for_testing_.value()) {
-      CHECK(selected_file_for_testing_.has_value());
-      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
-    } else {
-      FileSelectionCanceled();
-    }
-    CHECK(did_respond());
-    return AlreadyResponded();
-  }
-
-  ui::SelectFileDialog::Type file_type = ui::SelectFileDialog::SELECT_FOLDER;
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  std::u16string select_title;
-
-  if (params->select_type == developer::SelectType::kFile) {
-    file_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
-  }
-
-  int file_type_index = 0;
-  if (params->file_type == developer::FileType::kLoad) {
-    select_title = l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY);
-  } else if (params->file_type == developer::FileType::kPem) {
-    select_title =
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
-    file_type_info.extensions.emplace_back(1, FILE_PATH_LITERAL("pem"));
-    file_type_info.extension_description_overrides.push_back(
-        l10n_util::GetStringUTF16(
-            IDS_EXTENSION_PACK_DIALOG_KEY_FILE_TYPE_DESCRIPTION));
-    file_type_info.include_all_files = true;
-    file_type_index = 1;
-  } else {
-    NOTREACHED();
-  }
-
-  const base::FilePath last_directory =
-      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
-  gfx::NativeWindow owning_window =
-      platform_util::GetTopLevel(web_contents->GetNativeView());
-
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
-  select_file_dialog_->SelectFile(file_type, select_title, last_directory,
-                                  &file_type_info, file_type_index,
-                                  base::FilePath::StringType(), owning_window);
-
-  AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
-  return RespondLater();
-}
-
-void DeveloperPrivateChoosePathFunction::FileSelected(
-    const ui::SelectedFileInfo& file,
-    int index) {
-  Respond(WithArguments(file.path().LossyDisplayName()));
-  Release();
-}
-
-void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
-  // This isn't really an error, but we should keep it like this for
-  // backward compatability.
-  Respond(Error(kFileSelectionCanceled));
-  Release();
-}
-
-DeveloperPrivateRequestFileSourceFunction::
-    DeveloperPrivateRequestFileSourceFunction() = default;
-
-DeveloperPrivateRequestFileSourceFunction::
-    ~DeveloperPrivateRequestFileSourceFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateRequestFileSourceFunction::Run() {
-  params_ = developer::RequestFileSource::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_);
-
-  const developer::RequestFileSourceProperties& properties =
-      params_->properties;
-  const Extension* extension = GetExtensionById(properties.extension_id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  // Under no circumstances should we ever need to reference a file outside of
-  // the extension's directory. If it tries to, abort.
-  base::FilePath path_suffix =
-      base::FilePath::FromUTF8Unsafe(properties.path_suffix);
-  if (path_suffix.empty() || path_suffix.ReferencesParent()) {
-    return RespondNow(Error(kInvalidPathError));
-  }
-
-  if (properties.path_suffix == kManifestFile && !properties.manifest_key) {
-    return RespondNow(Error(kManifestKeyIsRequiredError));
-  }
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ReadFileToString, extension->path().Append(path_suffix)),
-      base::BindOnce(&DeveloperPrivateRequestFileSourceFunction::Finish, this));
-
-  return RespondLater();
-}
-
-void DeveloperPrivateRequestFileSourceFunction::Finish(
-    const std::string& file_contents) {
-  const developer::RequestFileSourceProperties& properties =
-      params_->properties;
-  const Extension* extension = GetExtensionById(properties.extension_id);
-  if (!extension) {
-    Respond(Error(kNoSuchExtensionError));
-    return;
-  }
-
-  developer::RequestFileSourceResponse response;
-  base::FilePath path_suffix =
-      base::FilePath::FromUTF8Unsafe(properties.path_suffix);
-  base::FilePath path = extension->path().Append(path_suffix);
-  response.title = base::StringPrintf("%s: %s", extension->name().c_str(),
-                                      path.BaseName().AsUTF8Unsafe().c_str());
-  response.message = properties.message;
-
-  std::unique_ptr<FileHighlighter> highlighter;
-  if (properties.path_suffix == kManifestFile) {
-    highlighter = std::make_unique<ManifestHighlighter>(
-        file_contents, *properties.manifest_key,
-        properties.manifest_specific ? *properties.manifest_specific
-                                     : std::string());
-  } else {
-    highlighter = std::make_unique<SourceHighlighter>(
-        file_contents, properties.line_number ? *properties.line_number : 0);
-  }
-
-  response.before_highlight = highlighter->GetBeforeFeature();
-  response.highlight = highlighter->GetFeature();
-  response.after_highlight = highlighter->GetAfterFeature();
-
-  Respond(WithArguments(response.ToValue()));
-}
 
 DeveloperPrivateRepairExtensionFunction::
     ~DeveloperPrivateRepairExtensionFunction() = default;
@@ -1218,7 +1002,7 @@ void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
     }
     // If an extension fails to be uninstalled, it will not pause the
     // uninstall of the other extensions on the list.
-    ExtensionSystem::Get(profile_)->extension_service()->UninstallExtension(
+    ExtensionRegistrar::Get(profile_)->UninstallExtension(
         extension_id, UNINSTALL_REASON_USER_INITIATED, nullptr);
   }
   Respond(NoArguments());

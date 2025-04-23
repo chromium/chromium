@@ -240,13 +240,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Shill error"/>
 </enum>
 
-<enum name="CreateDataPipeMojoResult">
-  <int value="0" label="MOJO_RESULT_OK"/>
-  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
-  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
-  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
-</enum>
-
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>
@@ -1540,8 +1533,8 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="upgrade_if_insecure"/>
   <int value="39" label="is_revalidating"/>
   <int value="40" label="throttling_profile_id"/>
-  <int value="41" label="custom_proxy_pre_cache_headers"/>
-  <int value="42" label="custom_proxy_post_cache_headers"/>
+  <int value="41" label="custom_proxy_pre_cache_headers (deprecated)"/>
+  <int value="42" label="custom_proxy_post_cache_headers (deprecated)"/>
   <int value="43" label="fetch_window_id"/>
   <int value="44" label="devtools_request_id"/>
   <int value="45" label="devtools_stack_id"/>

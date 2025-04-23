@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 // TODO(crbug.com/391366601): Implement SaveCardBottomSheetCoordinator.
 @implementation SaveCardBottomSheetCoordinator {
@@ -44,18 +46,34 @@
 
 - (void)start {
   _mediator = [[SaveCardBottomSheetMediator alloc]
-      initWithUIModel:std::move(_saveCardBottomSheetModel)];
+              initWithUIModel:std::move(_saveCardBottomSheetModel)
+      autofillCommandsHandler:HandlerForProtocol(
+                                  self.browser->GetCommandDispatcher(),
+                                  AutofillCommands)];
   _viewController = [[SaveCardBottomSheetViewController alloc] init];
+  _viewController.mutator = _mediator;
+  _mediator.consumer = _viewController;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   [_mediator disconnect];
+  _mediator.consumer = nil;
   _mediator = nil;
+}
+
+#pragma mark - Private
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _viewController.titleLabel);
 }
 
 @end

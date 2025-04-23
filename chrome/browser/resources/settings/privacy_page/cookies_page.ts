@@ -111,17 +111,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
 
-      isIpProtectionAvailable_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isIpProtectionUxEnabled'),
-      },
-
-      isFingerprintingProtectionAvailable_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isFingerprintingProtectionUxEnabled'),
-      },
-
       isAlwaysBlock3pcsIncognitoEnabled_: {
         type: Boolean,
         value: () =>
@@ -130,14 +119,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     };
   }
 
-  searchTerm: string;
-  private cookiesContentSettingType_: ContentSettingsTypes;
-  private blockAllPref_: chrome.settingsPrivate.PrefObject;
-  focusConfig: FocusConfig;
-  private is3pcdRedesignEnabled_: boolean;
-  private isIpProtectionAvailable_: boolean;
-  private isFingerprintingProtectionAvailable_: boolean;
-  private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
+  declare searchTerm: string;
+  declare private cookiesContentSettingType_: ContentSettingsTypes;
+  declare private blockAllPref_: chrome.settingsPrivate.PrefObject;
+  declare focusConfig: FocusConfig;
+  declare private is3pcdRedesignEnabled_: boolean;
+  declare private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -173,16 +160,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Block3PCookies');
     }
-  }
-
-  private onFpProtectionChanged_() {
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.FINGERPRINTING_PROTECTION);
-  }
-
-  private onIpProtectionChanged_() {
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.IP_PROTECTION);
   }
 
   private showOrHideToast(switchedToBlock3pcs: boolean) {

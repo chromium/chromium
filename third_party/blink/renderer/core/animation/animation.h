@@ -451,13 +451,14 @@ class CORE_EXPORT Animation : public EventTarget,
   NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
   static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
+  static RangeBoundary* ToRangeBoundary(TimelineOffsetOrAuto offset_or_auto);
 
   AnimationTrigger* trigger() {
     FlushPendingUpdates();
     return GetTriggerInternal();
   }
   AnimationTrigger* GetTriggerInternal() const { return trigger_; }
-  virtual void setTrigger(AnimationTrigger* trigger) { trigger_ = trigger; }
+  virtual void setTrigger(AnimationTrigger* trigger);
 
   struct AnimationTriggerData {
     AnimationTriggerState state = blink::AnimationTriggerState::kIdle;

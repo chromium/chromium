@@ -76,8 +76,9 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
   }
 
   void RunBlockingTasks() {
-    if (blocking_task_runner_->HasPendingTask())
+    if (blocking_task_runner_->HasPendingTask()) {
       blocking_task_runner_->RunPendingTasks();
+    }
   }
 
   VerifiedRulesetDealer::Handle* dealer_handle() {

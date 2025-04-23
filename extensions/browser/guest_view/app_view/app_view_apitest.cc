@@ -80,9 +80,9 @@ class MockExtensionsAPIClient : public extensions::ShellExtensionsAPIClient {
  public:
   MockExtensionsAPIClient() = default;
 
-  extensions::AppViewGuestDelegate* CreateAppViewGuestDelegate()
+  std::unique_ptr<extensions::AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override {
-    return new MockShellAppViewGuestDelegate();
+    return std::make_unique<MockShellAppViewGuestDelegate>();
   }
 };
 

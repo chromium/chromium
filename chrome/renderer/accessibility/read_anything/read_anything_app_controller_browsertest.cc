@@ -754,7 +754,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
@@ -777,7 +776,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 0;
@@ -1315,7 +1313,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 0;
@@ -1334,7 +1331,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 2;
   update.tree_data.sel_anchor_offset = 0;
@@ -1576,45 +1572,6 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityLocationChangesReceived) {
   controller().AccessibilityLocationChangesReceived(
       id_1, location_and_scroll_updates);
   EXPECT_EQ(model().GetAXNode(2)->data().relative_bounds, location_update);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       AccessibilityLocationChangesReceivedOnMissingTree) {
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  ui::AXRelativeBounds initial_bounds;
-  initial_bounds.bounds = gfx::RectF(1, 1, 100, 100);
-  initial_bounds.offset_container_id = 12345;
-  ui::AXNodeData node;
-  node.id = 2;
-  node.relative_bounds = std::move(initial_bounds);
-
-  ui::AXNodeData root;
-  root.id = 1;
-  root.child_ids = {node.id};
-  update.root_id = root.id;
-  update.nodes = {std::move(root), std::move(node)};
-
-  AccessibilityEventReceived({std::move(update)});
-  controller().OnAXTreeDistilled(tree_id_, {1});
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-
-  // Create a new bounding box that the node will update to have
-  ui::AXRelativeBounds location_update;
-  location_update.offset_container_id = 1;
-  location_update.bounds = gfx::RectF(5, 5, 100, 100);
-  ui::AXLocationAndScrollUpdates location_and_scroll_updates;
-  location_and_scroll_updates.location_changes.emplace_back(2, location_update);
-
-  // Destroy the tree.
-  controller().OnAXTreeDestroyed(id_1);
-
-  // Receive location updates after the tree is destroyed.
-  controller().AccessibilityLocationChangesReceived(
-      id_1, location_and_scroll_updates);
-  EXPECT_EQ(model().active_tree_id(), ui::AXTreeIDUnknown());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
@@ -2117,6 +2074,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
       .Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_TRUE(model().selection_from_reading_mode());
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -2140,7 +2098,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate selection;
   test::SetUpdateTreeID(&selection, tree_id_);
   selection.has_tree_data = true;
-  selection.event_from = ax::mojom::EventFrom::kUser;
   selection.tree_data.sel_anchor_object_id = 2;
   selection.tree_data.sel_focus_object_id = 2;
   selection.tree_data.sel_anchor_offset = 0;
@@ -2149,6 +2106,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(3, 5, 3, 5);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
 }
 
@@ -2161,7 +2119,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate selection;
   test::SetUpdateTreeID(&selection, tree_id_);
   selection.has_tree_data = true;
-  selection.event_from = ax::mojom::EventFrom::kUser;
   selection.tree_data.sel_anchor_object_id = 2;
   selection.tree_data.sel_focus_object_id = 3;
   selection.tree_data.sel_anchor_offset = 0;
@@ -2175,6 +2132,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_TRUE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2196,6 +2154,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // If distillation is in progress, OnSelectionChange should not be called.
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(2, 0, 3, 1);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2224,6 +2183,7 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(0);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2233,17 +2193,17 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_EQ(3, controller().StartNodeId());
-  EXPECT_EQ(4, controller().EndNodeId());
-  EXPECT_EQ(0, controller().StartOffset());
-  EXPECT_EQ(1, controller().EndOffset());
+  ASSERT_EQ(3, controller().StartNodeId());
+  ASSERT_EQ(4, controller().EndNodeId());
+  ASSERT_EQ(0, controller().StartOffset());
+  ASSERT_EQ(1, controller().EndOffset());
+  ASSERT_FALSE(model().selection_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
@@ -2251,7 +2211,6 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 1;
@@ -2262,6 +2221,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   EXPECT_EQ(4, controller().EndNodeId());
   EXPECT_EQ(0, controller().StartOffset());
   EXPECT_EQ(1, controller().EndOffset());
+  ASSERT_FALSE(model().selection_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
@@ -2300,7 +2260,6 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 2;
   update.tree_data.sel_anchor_offset = 3;
@@ -2807,6 +2766,87 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   EXPECT_EQ(next_node_ids.size(), 0u);
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
+  std::u16string sentence1 = u"Trials and tribulations, I\'ve had my share. ";
+  std::u16string sentence2 = u"There ain\'t nothing gonna stop me now. ";
+  std::u16string sentence3 = u"\'Cause I\'m almost there. ";
+  std::u16string ad_break = u"Click here to learn more! ";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  // This should have the same id as one of the other text nodes.
+  ui::AXNodeData static_text_with_duplicate_id = test::TextNode(kId2, ad_break);
+
+  ui::AXNodeData ad_child_node;
+  ad_child_node.id = 333;
+  ui::AXNodeData ad_child_root;
+
+  ui::AXTreeID ad_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate ad_child_update;
+  test::SetUpdateTreeID(&ad_child_update, ad_child_tree_id);
+  ad_child_root.id = 150;
+  ad_child_root.child_ids = {kId2};
+  ad_child_update.root_id = ad_child_root.id;
+  ad_child_update.nodes = {std::move(ad_child_root),
+                           std::move(static_text_with_duplicate_id)};
+  ad_child_node.AddChildTreeId(ad_child_tree_id);
+
+  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate parent_update;
+  test::SetUpdateTreeID(&parent_update, parent_tree_id);
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {kId1, ad_child_node.id, kId2, kId3};
+
+  ad_child_update.tree_data.parent_tree_id = parent_tree_id;
+
+  parent_update.root_id = root.id;
+  parent_update.nodes = {std::move(root), std::move(static_text1),
+                         std::move(ad_child_node), std::move(static_text2),
+                         std::move(static_text3)};
+  controller().OnActiveAXTreeIDChanged(ad_child_tree_id, ukm::kInvalidSourceId,
+                                       false);
+  AccessibilityEventReceived({std::move(ad_child_update)});
+  controller().OnActiveAXTreeIDChanged(parent_tree_id, ukm::kInvalidSourceId,
+                                       false);
+  AccessibilityEventReceived({std::move(parent_update)});
+  controller().OnAXTreeDistilled(parent_tree_id,
+                                 {kId1, ad_child_node.id, kId2, kId3});
+  controller().InitAXPositionWithNode(kId1);
+
+  std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
+  EXPECT_EQ(next_node_ids.size(), 1u);
+  EXPECT_EQ(next_node_ids[0], kId1);
+  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
+            (int)sentence1.length());
+
+  // Move to the 2nd sentence
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ(next_node_ids.size(), 1u);
+  EXPECT_EQ(next_node_ids[0], kId2);
+  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
+            (int)sentence2.length());
+
+  // Move to the third sentence- the content on a different tree should be
+  // skipped.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ(next_node_ids.size(), 1u);
+  EXPECT_EQ(next_node_ids[0], kId3);
+  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
+            (int)sentence3.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ(next_node_ids.size(), 0u);
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_SentenceSplitAcrossMultipleNodes) {
   std::u16string sentence1 = u"The wind is howling like this ";
@@ -2944,7 +2984,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
   ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-  ui::AXNodeData static_text4 = test::TextNode(kId4, sentence3);
+  ui::AXNodeData static_text4 = test::TextNode(kId4, sentence4);
 
   static constexpr ui::AXNodeID kSuperscriptId = 13;
   ui::AXNodeData superscript = test::GenericContainerNode(kSuperscriptId);

@@ -20,7 +20,6 @@
 
 namespace content {
 class BrowserContext;
-class IdentityRequestAccount;
 }  // namespace content
 
 namespace blink::common::webid {
@@ -81,8 +80,7 @@ class FederatedIdentityPermissionContext
       const std::string& account_id) override;
   std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
-  std::vector<scoped_refptr<content::IdentityRequestAccount>> GetAccounts(
-      const url::Origin& identity_provider) override;
+  base::Value::List GetAccounts(const url::Origin& identity_provider) override;
   void SetIdpSigninStatus(
       const url::Origin& idp_origin,
       bool idp_signin_status,

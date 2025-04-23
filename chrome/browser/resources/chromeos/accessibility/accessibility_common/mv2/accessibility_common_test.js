@@ -7,7 +7,7 @@ GEN_INCLUDE(['../../common/testing/common_e2e_test_base.js']);
 /**
  * Accessibility common extension browser tests.
  */
-AccessibilityCommonE2ETest = class extends CommonE2ETestBase {
+AccessibilityCommonMV2E2ETest = class extends CommonE2ETestBase {
   async getFeature(name) {
     return new Promise(resolve => {
       chrome.accessibilityPrivate.isFeatureEnabled(
@@ -16,7 +16,7 @@ AccessibilityCommonE2ETest = class extends CommonE2ETestBase {
   }
 };
 
-TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
+TEST_F('AccessibilityCommonMV2E2ETest', 'ToggleFeatures', function() {
   this.newCallback(async () => {
     // First, verify autoclick is already on.
     let pref = await this.getPref('settings.a11y.autoclick');
@@ -71,7 +71,7 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
   })();
 });
 
-TEST_F('AccessibilityCommonE2ETest', 'FaceGazeEnabled', function() {
+TEST_F('AccessibilityCommonMV2E2ETest', 'FaceGazeEnabled', function() {
   this.newCallback(async () => {
     // Check that FaceGaze is enabled from the command line.
     const enabled = await this.getFeature(

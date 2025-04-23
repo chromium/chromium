@@ -17,6 +17,7 @@ namespace page_actions {
 
 class PageActionController;
 class PageActionView;
+class PageActionPropertiesProviderInterface;
 struct PageActionViewParams;
 
 // PageActionContainerView is the parent view of all PageActionViews.
@@ -25,8 +26,10 @@ class PageActionContainerView : public views::View {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageActionContainerViewElementId);
 
-  PageActionContainerView(const std::vector<actions::ActionItem*>& action_items,
-                          const PageActionViewParams& params);
+  PageActionContainerView(
+      const std::vector<actions::ActionItem*>& action_items,
+      const PageActionPropertiesProviderInterface& properties_provider,
+      const PageActionViewParams& params);
   PageActionContainerView(const PageActionContainerView&) = delete;
   PageActionContainerView& operator=(const PageActionContainerView&) = delete;
   ~PageActionContainerView() override;

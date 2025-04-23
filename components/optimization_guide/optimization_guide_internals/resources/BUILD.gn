@@ -12,7 +12,7 @@ build_webui("build") {
     "optimization_guide_internals.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "optimization_guide_internals.ts",
     "optimization_guide_internals_browser_proxy.ts",
   ]

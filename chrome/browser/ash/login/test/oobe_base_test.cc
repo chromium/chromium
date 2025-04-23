@@ -150,7 +150,9 @@ void OobeBaseTest::WaitForGaiaPageBackButtonUpdate() {
 
 std::unique_ptr<test::TestConditionWaiter>
 OobeBaseTest::CreateGaiaPageEventWaiter(const std::string& event) {
-  return std::make_unique<GaiaPageEventWaiter>(authenticator_id_, event);
+  return std::make_unique<GaiaPageEventWaiter>(
+      LoginDisplayHost::default_host()->GetOobeWebContents(), authenticator_id_,
+      event);
 }
 
 void OobeBaseTest::WaitForSigninScreen() {

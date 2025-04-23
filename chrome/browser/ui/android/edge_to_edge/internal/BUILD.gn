@@ -12,6 +12,7 @@ android_library("java") {
     "//chrome/android:chrome_all_java",
     "//chrome/android/javatests:*",
     "//chrome/browser/ui/android/edge_to_edge/test:*",
+    "//chrome/browser/ui/android/toolbar:junit",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinCoordinator.java",

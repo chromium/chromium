@@ -11,6 +11,15 @@ enum PaymentCredentialStorageStatus {
   FAILED_TO_STORE_CREDENTIAL,
 };
 
+// https://w3c.github.io/secure-payment-confirmation/#enumdef-securepaymentconfirmationavailability
+enum SecurePaymentConfirmationAvailabilityEnum {
+  kAvailable,
+  kUnavailableUnknownReason,
+  kUnavailableFeatureNotEnabled,
+  kUnavailableNoPermissionPolicy,
+  kUnavailableNoUserVerifyingPlatformAuthenticator,
+};
+
 // Interface providing browser services related to SecurePaymentConfirmation,
 // which are not tied to a specific PaymentRequest instantiation. This includes
 // services required at credential-creation time, which occurs outside of the
@@ -21,8 +30,8 @@ interface SecurePaymentConfirmationService {
   // available to the current browsing context (e.g., there is a compatible
   // authenticator device, etc).
   //
-  // https://w3c.github.io/secure-payment-confirmation/#dom-paymentrequest-issecurepaymentconfirmationavailable
-  IsSecurePaymentConfirmationAvailable() => (bool available);
+  // https://w3c.github.io/secure-payment-confirmation/#dom-paymentrequest-securepaymentconfirmationavailability
+  SecurePaymentConfirmationAvailability() => (SecurePaymentConfirmationAvailabilityEnum availability);
 
   // Store a new PublicKeyCredential with "payment" extension on disk. It can be
   // later used for PaymentRequests.

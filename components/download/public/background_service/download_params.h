@@ -18,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace download {
 
@@ -135,6 +136,13 @@ struct COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
   // considered a main frame navigation. However, this is not true for
   // background fetch.
   bool update_first_party_url_on_redirect = true;
+
+  // The origin that initiated the request. This is used to perform
+  // security checks. Normally, these checks aren't required for downloads,
+  // but necessary for background fetch.
+  // See |request_initiator| in url_request.mojom for a more detailed
+  // explanation.
+  std::optional<url::Origin> initiator;
 };
 
 // The parameters that describe a download request made to the DownloadService.

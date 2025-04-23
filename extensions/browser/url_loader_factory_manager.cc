@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -16,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -118,26 +120,32 @@ bool ShouldCreateSeparateFactoryForContentScripts(const Extension& extension) {
 }
 
 void OverrideFactoryParams(const Extension& extension,
+                           bool is_for_service_worker,
                            FactoryUser factory_user,
                            network::mojom::URLLoaderFactoryParams* params) {
-  if (!ShouldRelaxCors(extension, factory_user)) {
-    return;
+  if (is_for_service_worker &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kSkipResetServiceWorkerURLLoaderFactories)) {
+    CHECK_EQ(factory_user, FactoryUser::kExtensionProcess);
+    params->ignore_factory_reset = true;
   }
 
-  params->is_orb_enabled = false;
-  switch (factory_user) {
-    case FactoryUser::kContentScript:
-      // Requests from content scripts set
-      // network::ResourceRequest::isolated_world_origin to the origin of the
-      // extension.  This field of ResourceRequest is normally ignored, but by
-      // setting `ignore_isolated_world_origin` to false below, we ensure that
-      // OOR-CORS will use the extension origin when checking if content script
-      // requests should bypass CORS.
-      params->ignore_isolated_world_origin = false;
-      break;
-    case FactoryUser::kExtensionProcess:
-      params->unsafe_non_webby_initiator = true;
-      break;
+  if (ShouldRelaxCors(extension, factory_user)) {
+    params->is_orb_enabled = false;
+    switch (factory_user) {
+      case FactoryUser::kContentScript:
+        // Requests from content scripts set
+        // network::ResourceRequest::isolated_world_origin to the origin of the
+        // extension.  This field of ResourceRequest is normally ignored, but by
+        // setting `ignore_isolated_world_origin` to false below, we ensure that
+        // OOR-CORS will use the extension origin when checking if content
+        // script requests should bypass CORS.
+        params->ignore_isolated_world_origin = false;
+        break;
+      case FactoryUser::kExtensionProcess:
+        params->unsafe_non_webby_initiator = true;
+        break;
+    }
   }
 }
 
@@ -211,6 +219,7 @@ void URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
     content::BrowserContext* browser_context,
     const url::Origin& origin,
     bool is_for_isolated_world,
+    bool is_for_service_worker,
     network::mojom::URLLoaderFactoryParams* factory_params) {
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);  // CreateFactory shouldn't happen during shutdown.
@@ -241,7 +250,8 @@ void URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
   FactoryUser factory_user = is_for_isolated_world
                                  ? FactoryUser::kContentScript
                                  : FactoryUser::kExtensionProcess;
-  OverrideFactoryParams(*extension, factory_user, factory_params);
+  OverrideFactoryParams(*extension, is_for_service_worker, factory_user,
+                        factory_params);
 }
 
 }  // namespace extensions

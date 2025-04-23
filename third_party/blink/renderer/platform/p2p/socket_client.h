@@ -27,7 +27,7 @@ class P2PSocketClient {
   // |dscp|. Return value is the unique packet_id for this packet.
   virtual uint64_t Send(const net::IPEndPoint& address,
                         base::span<const uint8_t> data,
-                        const rtc::PacketOptions& options) = 0;
+                        const webrtc::AsyncSocketPacketOptions& options) = 0;
 
   // Call to complete sending of any batched packets.
   virtual void FlushBatch() = 0;

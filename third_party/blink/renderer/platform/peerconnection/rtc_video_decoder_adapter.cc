@@ -124,7 +124,8 @@ struct EncodedImageExternalMemory
     : public media::DecoderBuffer::ExternalMemory {
  public:
   explicit EncodedImageExternalMemory(
-      rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> buffer_interface)
+      webrtc::scoped_refptr<webrtc::EncodedImageBufferInterface>
+          buffer_interface)
       : buffer_interface_(std::move(buffer_interface)) {
     DCHECK(buffer_interface_);
   }
@@ -142,7 +143,7 @@ struct EncodedImageExternalMemory
   }
 
  private:
-  rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> buffer_interface_;
+  webrtc::scoped_refptr<webrtc::EncodedImageBufferInterface> buffer_interface_;
 };
 
 scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
@@ -485,9 +486,10 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
   const base::TimeDelta timestamp = frame->timestamp();
   webrtc::VideoFrame rtc_frame =
       webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
-              new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  std::move(frame), frame_adapter_shared_resources_)))
+          .set_video_frame_buffer(
+              webrtc::scoped_refptr<WebRtcVideoFrameAdapter>(
+                  new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+                      std::move(frame), frame_adapter_shared_resources_)))
           .set_rtp_timestamp(static_cast<uint32_t>(timestamp.InMicroseconds()))
           .set_timestamp_us(0)
           .set_rotation(webrtc::kVideoRotation_0)

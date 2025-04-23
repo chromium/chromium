@@ -41,14 +41,13 @@ class FakeResponseInfo : public OverlayResponseInfo<FakeResponseInfo> {
   NSString* input() const { return input_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(FakeResponseInfo);
+  friend class OverlayUserData<FakeResponseInfo>;
   FakeResponseInfo(bool ok_button_tapped, NSString* input)
       : ok_button_tapped_(ok_button_tapped), input_(input) {}
 
   const bool ok_button_tapped_ = false;
   NSString* const input_ = nil;
 };
-OVERLAY_USER_DATA_SETUP_IMPL(FakeResponseInfo);
 
 // Creates an OverlayResponse with a FakeResponseInfo from one created with an
 // AlertResponse.
@@ -67,7 +66,7 @@ class FakeRequestConfig : public OverlayResponseInfo<FakeRequestConfig> {
   ~FakeRequestConfig() override {}
 
  private:
-  OVERLAY_USER_DATA_SETUP(FakeRequestConfig);
+  friend class OverlayUserData<FakeRequestConfig>;
   FakeRequestConfig() {}
 
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override {
@@ -91,7 +90,7 @@ class FakeRequestConfig : public OverlayResponseInfo<FakeRequestConfig> {
                                     base::BindRepeating(&CreateFakeResponse));
   }
 };
-OVERLAY_USER_DATA_SETUP_IMPL(FakeRequestConfig);
+
 }  // namespace
 
 #pragma mark - FakeAlertOverlayMediatorDataSource

@@ -179,7 +179,7 @@ class TabStrip : public views::View,
   // Destroys the views associated with a recently deleted tab group.
   void OnGroupClosed(const tab_groups::TabGroupId& group);
 
-  void SetSplit(int split_index,
+  void SetSplit(std::vector<int> split_indices,
                 std::optional<split_tabs::SplitTabId> split_id);
 
   // Returns whether or not strokes should be drawn around and under the tabs.

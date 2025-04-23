@@ -24,10 +24,7 @@
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(CRONET_BUILD)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
-#endif
 
 namespace net {
 
@@ -2033,8 +2030,6 @@ TEST(HttpResponseHeadersTest, TryToCreateWithNul) {
   EXPECT_EQ(headers, nullptr);
 }
 
-#if !BUILDFLAG(CRONET_BUILD)
-// Cronet disables tracing so this test would fail.
 TEST(HttpResponseHeadersTest, TracingSupport) {
   scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
       "HTTP/1.1 200 OK\n"
@@ -2044,7 +2039,6 @@ TEST(HttpResponseHeadersTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(headers),
             "{response_code:200,headers:[{name:connection,value:keep-alive}]}");
 }
-#endif
 
 struct RemoveHeaderTestData {
   const char* orig_headers;

@@ -20,6 +20,8 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
   void Composite(UnderlyingValueOwner&,
                  double underlying_fraction,
                  const InterpolationValue&,
@@ -40,7 +42,7 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
   InterpolationValue PreInterpolationCompositeIfNeeded(

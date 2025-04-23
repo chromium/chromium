@@ -130,10 +130,11 @@ class ExportTimeDeltaToHistogram {
       : histogram_(histogram) {}
 
   void operator()(base::TimeDelta duration) {
-    if (is_microsec_precision)
+    if (is_microsec_precision) {
       histogram_->Add(duration.InMicroseconds());
-    else
+    } else {
       histogram_->Add(duration.InMilliseconds());
+    }
   }
 
  private:

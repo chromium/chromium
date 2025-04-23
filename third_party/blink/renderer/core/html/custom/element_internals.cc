@@ -369,7 +369,7 @@ Element* ElementInternals::GetElementAttribute(
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& attribute,
-    const HeapVector<Member<Element>>* given_elements) {
+    const GCedHeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(attribute);
     setAttribute(attribute, g_empty_atom);
@@ -377,7 +377,8 @@ void ElementInternals::SetElementArrayAttribute(
   }
 
   FrozenArray<Element>* frozen_elements =
-      MakeGarbageCollected<FrozenArray<Element>>((std::move(*given_elements)));
+      MakeGarbageCollected<FrozenArray<Element>>(
+          HeapVector<Member<Element>>(std::move(*given_elements)));
   explicitly_set_attr_elements_map_.Set(attribute, frozen_elements);
 
   // Ensure that the appropriate updates are made in the AXObjectCache, and that
@@ -398,7 +399,7 @@ const FrozenArray<Element>* ElementInternals::ariaControlsElements() const {
   return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }
 void ElementInternals::setAriaControlsElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaControlsAttr, given_elements);
 }
 
@@ -406,7 +407,7 @@ const FrozenArray<Element>* ElementInternals::ariaDescribedByElements() const {
   return GetElementArrayAttribute(html_names::kAriaDescribedbyAttr);
 }
 void ElementInternals::setAriaDescribedByElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaDescribedbyAttr, given_elements);
 }
 
@@ -414,7 +415,7 @@ const FrozenArray<Element>* ElementInternals::ariaDetailsElements() const {
   return GetElementArrayAttribute(html_names::kAriaDetailsAttr);
 }
 void ElementInternals::setAriaDetailsElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaDetailsAttr, given_elements);
 }
 
@@ -422,7 +423,7 @@ const FrozenArray<Element>* ElementInternals::ariaErrorMessageElements() const {
   return GetElementArrayAttribute(html_names::kAriaErrormessageAttr);
 }
 void ElementInternals::setAriaErrorMessageElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaErrormessageAttr, given_elements);
 }
 
@@ -430,7 +431,7 @@ const FrozenArray<Element>* ElementInternals::ariaFlowToElements() const {
   return GetElementArrayAttribute(html_names::kAriaFlowtoAttr);
 }
 void ElementInternals::setAriaFlowToElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaFlowtoAttr, given_elements);
 }
 
@@ -438,7 +439,7 @@ const FrozenArray<Element>* ElementInternals::ariaLabelledByElements() const {
   return GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
 }
 void ElementInternals::setAriaLabelledByElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaLabelledbyAttr, given_elements);
 }
 
@@ -446,7 +447,7 @@ const FrozenArray<Element>* ElementInternals::ariaOwnsElements() const {
   return GetElementArrayAttribute(html_names::kAriaOwnsAttr);
 }
 void ElementInternals::setAriaOwnsElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaOwnsAttr, given_elements);
 }
 

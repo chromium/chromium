@@ -157,7 +157,7 @@ void AudioWorkletHandler::ProcessInternal(uint32_t frames_to_process) {
     if (param_handler->HasSampleAccurateValues() &&
         param_handler->IsAudioRate()) {
       param_handler->CalculateSampleAccurateValues(
-          param_values->Data(), static_cast<uint32_t>(frames_to_process));
+          param_values->as_span().first(frames_to_process));
     } else {
       std::fill(param_values->Data(),
                 UNSAFE_TODO(param_values->Data() + frames_to_process),

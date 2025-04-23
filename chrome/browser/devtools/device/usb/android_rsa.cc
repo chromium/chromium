@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -43,8 +45,8 @@ static const char kDummyRSAPublicKey[] =
 typedef struct RSAPublicKey {
   int len;                    // Length of n[] in number of uint32_t
   uint32_t n0inv;             // -1 / n[0] mod 2^32
-  uint32_t n[kRSANumWords];   // modulus as little endian array
-  uint32_t rr[kRSANumWords];  // R^2 as little endian array
+  std::array<uint32_t, kRSANumWords> n;   // modulus as little endian array
+  std::array<uint32_t, kRSANumWords> rr;  // R^2 as little endian array
   int exponent;               // 3 or 65537
 } RSAPublicKey;
 

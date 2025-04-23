@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -28,6 +29,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -121,6 +123,8 @@ class ClientSideDetectionHost
   // pointer or vibrate the page has arrived, we will re-trigger classification.
   // If a request to fullscreen the tab happens, check in preclassification
   // check for allowlist matches for metric collection.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
@@ -364,6 +368,8 @@ class ClientSideDetectionHost
   GURL current_url_;
   // The current outermost main frame's id.
   content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
+  // The navigation ID that commits the current URL. Used to set UnsafeResource.
+  int64_t current_navigation_id_;
 
   // The last URL that the fullscreen API was called. This is used because the
   // DidToggleFullscreenModeForTab can be called for both entering and exiting

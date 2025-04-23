@@ -120,27 +120,6 @@ MaybeCreateSyncConfigurationForSharedTabGroupData(
       CreateSharedTabGroupDataChangeProcessor(), std::move(store_factory));
 }
 
-std::unique_ptr<syncer::DataTypeLocalChangeProcessor>
-CreateSharedTabGroupAccountDataChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-      syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
-      base::BindRepeating(&syncer::ReportUnrecoverableError,
-                          chrome::GetChannel()));
-}
-
-std::unique_ptr<SyncDataTypeConfiguration>
-MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
-    syncer::OnceDataTypeStoreFactory store_factory) {
-  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
-      !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
-    return nullptr;
-  }
-
-  return std::make_unique<SyncDataTypeConfiguration>(
-      CreateSharedTabGroupAccountDataChangeProcessor(),
-      std::move(store_factory));
-}
-
 }  // anonymous namespace
 
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(
@@ -163,14 +142,6 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()))),
       metrics_logger_(std::make_unique<TabGroupSyncMetricsLoggerImpl>(
           device_info_tracker)) {
-  std::unique_ptr<SyncDataTypeConfiguration> shared_tab_account_configuration =
-      MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
-          GetStoreFactory());
-  if (shared_tab_account_configuration) {
-    shared_tab_group_account_data_bridge_ =
-        std::make_unique<SharedTabGroupAccountDataSyncBridge>(
-            std::move(shared_tab_account_configuration));
-  }
   model_->AddObserver(this);
 
   metrics_timer_.Start(
@@ -201,9 +172,11 @@ SavedTabGroupKeyedService::GetSharedTabGroupControllerDelegate() {
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSharedTabGroupAccountControllerDelegate() {
-  CHECK(shared_tab_group_account_data_bridge_);
-  return shared_tab_group_account_data_bridge_->change_processor()
-      ->GetControllerDelegate();
+  // SharedTabGroupAccountDataSyncBridge needs access to the
+  // TabGroupSyncService in order to access the data model. This is
+  // incompatible with SavedTabGroupKeyedService (which will be removed
+  // shortly), so the controller delegate is not available.
+  return nullptr;
 }
 
 void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
@@ -567,6 +540,8 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   // Clear restored groups to connect and save now that we have processed them.
   restored_groups_to_connect_on_load_.clear();
   restored_groups_to_save_on_load_.clear();
+
+  RecordStartupMetrics();
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
@@ -733,6 +708,29 @@ void SavedTabGroupKeyedService::UpdateGroupVisualData(
       saved_group->title(), saved_group->color(),
       /*is_collapsed=*/tab_group->visual_data()->is_collapsed());
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
+}
+
+bool SavedTabGroupKeyedService::IsRemoteDevice(
+    const std::optional<std::string>& cache_guid) const {
+  std::optional<std::string> local_cache_guid =
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge();
+  if (!local_cache_guid || !cache_guid) {
+    return false;
+  }
+
+  return local_cache_guid.value() != cache_guid.value();
+}
+
+void SavedTabGroupKeyedService::RecordStartupMetrics() {
+  auto saved_tab_groups = model_->saved_tab_groups();
+  std::vector<bool> is_remote(saved_tab_groups.size());
+
+  for (size_t i = 0; i < saved_tab_groups.size(); ++i) {
+    is_remote[i] = IsRemoteDevice(saved_tab_groups[i].creator_cache_guid());
+  }
+
+  TabGroupSyncMetricsLoggerImpl metrics_logger(nullptr);
+  metrics_logger.RecordMetricsOnStartup(saved_tab_groups, is_remote);
 }
 
 void SavedTabGroupKeyedService::RecordMetrics() {

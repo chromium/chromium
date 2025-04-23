@@ -28,7 +28,6 @@
 namespace ash {
 enum class AnimationChangeType;
 class DragHandle;
-class FocusCycler;
 class HotseatWidget;
 class LoginShelfView;
 class Shelf;
@@ -83,10 +82,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   void PostCreateShelf();
 
   bool IsShowingMenu() const;
-
-  // Sets the focus cycler. Also adds the shelf to the cycle.
-  void SetFocusCycler(FocusCycler* focus_cycler);
-  FocusCycler* GetFocusCycler();
 
   // See Shelf::GetScreenBoundsOfItemIconForWindow().
   gfx::Rect GetScreenBoundsOfItemIconForWindow(aura::Window* window);

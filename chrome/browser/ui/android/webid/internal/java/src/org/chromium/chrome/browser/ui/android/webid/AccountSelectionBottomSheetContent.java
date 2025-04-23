@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -32,7 +33,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
      * trigger. Therefore, we are able to show more accounts at once compared to passive mode. And
      * multi IDP UI accounts take more space, so we show even less accounts in that case.
      */
-    private static final float MAX_VISIBLE_ACCOUNTS_PASSIVE_MODE_MULTI_IDP = 1.5f;
+    private static final float MAX_VISIBLE_ACCOUNTS_PASSIVE_MODE_MULTI_IDP = 1.4f;
 
     private static final float MAX_VISIBLE_ACCOUNTS_PASSIVE_MODE_SINGLE_IDP = 2.5f;
 
@@ -49,6 +50,9 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
             new ObservableSupplierImpl<>();
 
     private boolean mIsMultipleIdps;
+    // Used to disable the half state in passive mode to enable proper a11y traversal.
+    private boolean mIsPassiveModeHalfHeightEnabled = true;
+    private boolean mCustomAccessibilityDelegateSet;
 
     /** Constructs the AccountSelection bottom sheet view. */
     AccountSelectionBottomSheetContent(
@@ -76,6 +80,10 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     public void setIsMultipleIdps(boolean isMultipleIdps) {
         mIsMultipleIdps = isMultipleIdps;
+    }
+
+    public void setIsPassiveModeHalfHeightEnabled(boolean isPassiveModeHalfHeightEnabled) {
+        mIsPassiveModeHalfHeightEnabled = isPassiveModeHalfHeightEnabled;
     }
 
     public void computeAndUpdateAccountListHeightForPassiveSingleIdp() {
@@ -176,6 +184,15 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
      * @return the half state height in pixels. Never 0. Can theoretically exceed the screen height.
      */
     private @Px int getDesiredPassiveModeMultiIdpSheetHeightPx() {
+        if (!mCustomAccessibilityDelegateSet && mContentView != null) {
+            // Add delegate so that the BottomSheet expands to full height if a11y focus occurs. We
+            // could pass the item list instead but this is less disruptive since the focus shifts
+            // when expandSheet occurs.
+            ViewCompat.setAccessibilityDelegate(
+                    mContentView,
+                    new ExpandOnFocusAccessibilityDelegate(this, mBottomSheetController));
+            mCustomAccessibilityDelegateSet = true;
+        }
         return getDesiredSheetHeight(
                 MAX_VISIBLE_ACCOUNTS_PASSIVE_MODE_MULTI_IDP, getMaximumSheetHeightPx());
     }
@@ -240,8 +257,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     @Override
     public float getHalfHeightRatio() {
         if (mRpMode == RpMode.PASSIVE) {
-            if (!mIsMultipleIdps) {
-                // Passive mode single IDP UI does not use half height.
+            if (!mIsMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
                 return HeightMode.DISABLED;
             }
             return Math.min(

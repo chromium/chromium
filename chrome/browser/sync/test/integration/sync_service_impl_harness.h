@@ -12,11 +12,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
 
@@ -185,6 +187,11 @@ class SyncServiceImplHarness {
 
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;
+
+  // Returns a TestFuture that will be resolved with the set of data types that
+  // have unsynced data.
+  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
+  GetTypesWithUnsyncedData(syncer::DataTypeSet requested_types) const;
 
  private:
   SyncServiceImplHarness(Profile* profile,

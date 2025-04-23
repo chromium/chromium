@@ -10,9 +10,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import type {ProfileData, Tab} from '../tab_search.mojom-webui.js';
+import type {ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
+import type {TabSearchItemElement} from '../tab_search_item.js';
+import {tabHasMediaAlerts} from '../tab_search_utils.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -33,20 +35,36 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   static override get properties() {
     return {
       openTabs_: {type: Array},
+      mediaTabs_: {type: Array},
     };
   }
 
   protected accessor openTabs_: TabData[] = [];
+  protected accessor mediaTabs_: TabData[] = [];
+  private allInvisibleTabs_: TabData[] = [];
+  private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
-    assert(loadTimeData.getBoolean('splitViewEnabled'));
+
+    if (loadTimeData.getBoolean('splitViewEnabled')) {
+      this.apiProxy_.getIsSplit().then(({isSplit}) => {
+        if (!isSplit) {
+          this.redirectToNtp_();
+        }
+      });
+    } else {
+      this.redirectToNtp_();
+    }
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
-        callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)));
+        callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)),
+        callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this)),
+        callbackRouter.tabsRemoved.addListener(this.onTabsRemoved_.bind(this)),
+        callbackRouter.tabUnsplit.addListener(this.redirectToNtp_.bind(this)));
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
       this.onTabsChanged_(profileData);
@@ -61,12 +79,65 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.listenerIds_ = [];
   }
 
+  protected onClose_() {
+    // Close should never be triggered from an inactive tab, so this should
+    // always close the tab hosting this WebUI.
+    assert(this.activeTabId_ >= 0);
+    this.apiProxy_.closeTab(this.activeTabId_);
+  }
+
+  protected onTabClick_(e: Event) {
+    const target = e.currentTarget as TabSearchItemElement;
+    this.apiProxy_.replaceActiveSplitTab((target.data.tab as Tab).tabId);
+  }
+
   private onTabsChanged_(profileData: ProfileData) {
-    this.openTabs_ = profileData.windows.reduce((acc, {active, tabs}) => {
-      acc.push(...tabs.map(
-          tab => this.getTabData_(tab, active, TabItemType.OPEN_TAB)));
-      return acc;
-    }, [] as TabData[]);
+    const activeWindow = profileData.windows.find(({active}) => active)!;
+    this.activeTabId_ = activeWindow.tabs.find((tab) => tab.active)!.tabId;
+    this.allInvisibleTabs_ =
+        activeWindow.tabs.filter(tab => !tab.visible)
+            .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
+    this.updateFilteredTabs_();
+  }
+
+  private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
+    const {tab, inActiveWindow} = tabUpdateInfo;
+    if (!inActiveWindow) {
+      return;
+    }
+
+    const tabData = this.getTabData_(tab, inActiveWindow, TabItemType.OPEN_TAB);
+    const tabIndex =
+        this.allInvisibleTabs_.findIndex(el => el.tab.tabId === tab.tabId);
+    if (tabIndex >= 0) {
+      this.allInvisibleTabs_[tabIndex] = tabData;
+    } else {
+      this.allInvisibleTabs_.push(tabData);
+    }
+    this.updateFilteredTabs_();
+  }
+
+  private onTabsRemoved_(tabsRemovedInfo: TabsRemovedInfo) {
+    if (this.allInvisibleTabs_.length === 0) {
+      return;
+    }
+
+    const ids = new Set(tabsRemovedInfo.tabIds);
+    // Splicing in descending index order to avoid affecting preceding indices
+    // that are to be removed.
+    for (let i = this.allInvisibleTabs_.length - 1; i >= 0; i--) {
+      if (ids.has(this.allInvisibleTabs_[i]!.tab.tabId)) {
+        this.allInvisibleTabs_.splice(i, 1);
+      }
+    }
+    this.updateFilteredTabs_();
+  }
+
+  private updateFilteredTabs_() {
+    this.mediaTabs_ = this.allInvisibleTabs_.filter(
+        tabData => tabHasMediaAlerts(tabData.tab as Tab));
+    this.openTabs_ = this.allInvisibleTabs_.filter(
+        tabData => !tabHasMediaAlerts(tabData.tab as Tab));
   }
 
   private getTabData_(tab: Tab, inActiveWindow: boolean, type: TabItemType):
@@ -78,11 +149,13 @@ export class SplitNewTabPageAppElement extends CrLitElement {
       tabData.inActiveWindow = inActiveWindow;
     }
 
-    tabData.a11yTypeText = loadTimeData.getString(
-        type === TabItemType.OPEN_TAB ? 'a11yOpenTab' :
-                                        'a11yRecentlyClosedTab');
+    tabData.a11yTypeText = loadTimeData.getString('a11yOpenTab');
 
     return tabData;
+  }
+
+  private redirectToNtp_() {
+    window.location.replace(loadTimeData.getString('newTabPageUrl'));
   }
 }
 

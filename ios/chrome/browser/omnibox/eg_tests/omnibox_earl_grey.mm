@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -86,8 +87,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     [OmniboxEarlGrey openPage:i testServer:testServer];
     GURL URL = testServer->GetURL(omnibox::PageURL(pageI));
     [ChromeEarlGreyUI
-        focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
-                                       omnibox::PageTitle(pageI))];
+        focusOmniboxAndReplaceText:[NSString cr_fromString:omnibox::PageTitle(
+                                                               pageI)]];
     [[EarlGrey selectElementWithMatcher:omnibox::PopupRowWithUrlMatcher(URL)]
         performAction:grey_tap()];
     [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(pageI)];
@@ -124,6 +125,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
   // Wait for animation to finish.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+- (void)acceptOmniboxText {
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
 @end

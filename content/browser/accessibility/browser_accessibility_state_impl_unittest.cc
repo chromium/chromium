@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -126,6 +127,7 @@ class MockAXModeObserver : public ui::AXModeObserver {
 };
 
 }  // namespace
+
 TEST_F(BrowserAccessibilityStateImplTest,
        EnablingAccessibilityTwiceSendsASingleNotification) {
   // Initially accessibility should be disabled.
@@ -145,6 +147,45 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // A second call should be a no-op.
   ScopedAccessibilityModeOverride scoped_mode_2(ui::kAXModeComplete);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
+// Tests platform activation filtering.
+TEST_F(BrowserAccessibilityStateImplTest, PlatformActivationFiltering) {
+  // Disabled by default in all unit tests.
+  ASSERT_FALSE(state_->IsActivationFromPlatformEnabled());
+  ASSERT_EQ(state_->GetAccessibilityMode(), ui::AXMode());
+
+  {
+    // Adding a modes from the platform is a no-op.
+    auto complete = state_->CreateScopedModeForProcess(
+        ui::kAXModeComplete | ui::AXMode::kFromPlatform);
+    ASSERT_EQ(state_->GetAccessibilityMode(), ui::AXMode());
+
+    // Until platform activation is enabled.
+    state_->SetActivationFromPlatformEnabled(true);
+    ASSERT_TRUE(state_->IsActivationFromPlatformEnabled());
+    EXPECT_EQ(state_->GetAccessibilityMode(), ui::kAXModeComplete);
+
+    // Enabling when already enabled does nothing.
+    state_->SetActivationFromPlatformEnabled(true);
+    ASSERT_TRUE(state_->IsActivationFromPlatformEnabled());
+    EXPECT_EQ(state_->GetAccessibilityMode(), ui::kAXModeComplete);
+
+    state_->SetActivationFromPlatformEnabled(false);
+  }
+
+  {
+    // Adding modes without the bit works as expected.
+    auto basic = state_->CreateScopedModeForProcess(ui::kAXModeBasic);
+    EXPECT_EQ(state_->GetAccessibilityMode() & ui::kAXModeBasic,
+              ui::kAXModeBasic);
+
+    // And filtering has no impact.
+    state_->SetActivationFromPlatformEnabled(true);
+    EXPECT_EQ(state_->GetAccessibilityMode() & ui::kAXModeBasic,
+              ui::kAXModeBasic);
+    state_->SetActivationFromPlatformEnabled(false);
+  }
 }
 
 }  // namespace content

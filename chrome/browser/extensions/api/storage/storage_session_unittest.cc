@@ -126,7 +126,7 @@ TEST_F(SessionStorageApiUnittest,
 
   // Reload the extension and check the session storage is cleared.
   TestExtensionRegistryObserver registry_observer(registry(), extension_id);
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   scoped_refptr<const Extension> reloaded_extension =
       registry_observer.WaitForExtensionLoaded();
   EXPECT_THAT(*GetStorage(reloaded_extension), base::test::IsJson(R"({})"));

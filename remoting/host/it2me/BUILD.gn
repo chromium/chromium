@@ -319,12 +319,10 @@ if (!is_chromeos && enable_remoting_host) {
 
       sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 
-      deps = [ ":main_headers" ]
-      if (is_mac) {
-        deps += [ ":main" ]
-      } else {
-        deps += [ "//remoting/host:remoting_core" ]
-      }
+      deps = [
+        ":main_headers",
+        "//remoting/host:remoting_core",
+      ]
 
       if (is_mac) {
         foreach(locale, remoting_locales_with_underscores) {

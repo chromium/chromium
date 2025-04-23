@@ -207,7 +207,8 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(undoButton.hidden);
   });
 
-  test('Test password moved toast', async () => {
+  // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
+  test.skip('Test password moved toast', async () => {
     const testEmail = 'test.user@gmail.com';
     const group = createCredentialGroup({
       name: 'test.com',
@@ -361,7 +362,8 @@ suite('PasswordManagerAppTest', function() {
                    .includes(testEmail));
   });
 
-  test('import can be triggered from empty state', async function() {
+  // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
+  test.skip('import can be triggered from empty state', async function() {
     // This is done to avoid flakiness.
     Router.getInstance().navigateTo(Page.PASSWORDS);
     await flushTasks();

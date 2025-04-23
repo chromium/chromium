@@ -91,7 +91,7 @@ class TestPageManager extends CrLitElement {
     };
   }
 
-  page: string = '';
+  accessor page: string = '';
 
   override render() {
     return html`<cr-page-selector has-nested-slots attr-for-selected="path"

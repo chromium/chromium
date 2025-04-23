@@ -18,13 +18,12 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
   explicit ContentIdentityCredentialDelegate(
       content::WebContents* web_contents);
 
-  // Gets verified autofill suggestions from identity credentials requests.
   std::vector<Suggestion> GetVerifiedAutofillSuggestions(
-      const AutofillField& field) const override;
+      const FieldType& field_type) const override;
 
-  // Notifies the delegate that a suggestion from an identity credential
-  // conditional request was accepted.
-  void NotifySuggestionAccepted(const Suggestion& suggestion) const override;
+  void NotifySuggestionAccepted(
+      const Suggestion& suggestion,
+      OnFederatedTokenReceivedCallback callback) const override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;

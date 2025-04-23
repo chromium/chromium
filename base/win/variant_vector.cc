@@ -86,14 +86,6 @@ VariantVector::~VariantVector() {
   Reset();
 }
 
-bool VariantVector::operator==(const VariantVector& other) const {
-  return !Compare(other);
-}
-
-bool VariantVector::operator!=(const VariantVector& other) const {
-  return !VariantVector::operator==(other);
-}
-
 void VariantVector::Reset() {
   vector_.clear();
   vartype_ = VT_EMPTY;

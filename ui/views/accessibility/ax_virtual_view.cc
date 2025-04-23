@@ -52,7 +52,7 @@ AXVirtualView* AXVirtualView::GetFromId(int32_t id) {
 
 AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
   GetIdMap()[ViewAccessibility::GetUniqueId()] = this;
-  ax_platform_node_ = ui::AXPlatformNode::Create(this);
+  ax_platform_node_ = ui::AXPlatformNode::Create(*this);
   DCHECK(ax_platform_node_);
   SetClassName(GetViewClassName());
 }

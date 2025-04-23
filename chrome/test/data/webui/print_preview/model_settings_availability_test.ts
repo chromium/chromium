@@ -21,7 +21,6 @@ suite('ModelSettingsAvailabilityTest', function() {
       allPagesHaveCustomSize: false,
       allPagesHaveCustomOrientation: false,
       hasSelection: false,
-      isFromArc: false,
       isModifiable: true,
       isScalingDisabled: false,
       fitToPageScaling: 100,
@@ -116,14 +115,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Test with PDF - should be hidden.
     model.set('documentSettings.isModifiable', false);
     assertFalse(model.settings.layout.available);
-
-    // Test with ARC - should be available.
-    model.set('documentSettings.isFromArc', true);
-    assertTrue(model.settings.layout.available);
-
-    model.set('documentSettings.isModifiable', true);
-    model.set('documentSettings.isFromArc', false);
-    assertTrue(model.settings.layout.available);
 
     // Unavailable if all pages have specified an orientation.
     model.set('documentSettings.allPagesHaveCustomOrientation', true);
@@ -315,15 +306,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.margins.available);
     assertTrue(model.settings.customMargins.available);
 
-    // No margins settings for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.margins.available);
-    assertFalse(model.settings.customMargins.available);
-    assertFalse(model.settings.margins.setFromUi);
-    assertFalse(model.settings.customMargins.setFromUi);
-
     // No margins settings for PDFs.
-    model.set('documentSettings.isFromArc', false);
     model.set('documentSettings.isModifiable', false);
     assertFalse(model.settings.margins.available);
     assertFalse(model.settings.customMargins.available);
@@ -335,19 +318,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     // The settings are available since the printer has multiple DPI options.
     assertTrue(model.settings.dpi.available);
 
-    // No resolution settings for ARC, but uses the default value.
-    model.set('documentSettings.isFromArc', true);
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.dpi.available);
-    assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
-    assertEquals(200, model.settings.dpi.unavailableValue.vertical_dpi);
-
-    model.set('documentSettings.isFromArc', false);
-    assertTrue(model.settings.dpi.available);
-
     // Remove capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
+    let capabilities = getCddTemplate(model.destination.id).capabilities!;
     delete capabilities.printer.dpi;
 
     // Section should now be hidden.
@@ -382,15 +354,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('destination', defaultDestination);
     assertTrue(model.settings.scaling.available);
     assertFalse(model.settings.scaling.setFromUi);
-
-    // ARC -> printer
-    model.set('destination', defaultDestination);
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scaling.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scaling.available);
   });
 
   test('scalingType', function() {
@@ -408,14 +371,6 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // PDF -> printer
     model.set('destination', defaultDestination);
-    assertFalse(model.settings.scalingType.available);
-
-    // ARC -> printer
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scalingType.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
     assertFalse(model.settings.scalingType.available);
   });
 
@@ -435,14 +390,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     // PDF -> printer
     model.set('destination', defaultDestination);
     assertTrue(model.settings.scalingTypePdf.available);
-
-    // ARC -> printer
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scalingTypePdf.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scalingTypePdf.available);
   });
 
   test('header footer', function() {
@@ -531,11 +478,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.isModifiable', false);
     assertFalse(model.settings.headerFooter.available);
     assertFalse(model.settings.headerFooter.setFromUi);
-
-    // Header/footer is never available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.headerFooter.available);
-    assertFalse(model.settings.headerFooter.setFromUi);
   });
 
   test('css background', function() {
@@ -544,11 +486,6 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // No CSS background setting for PDFs.
     model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.cssBackground.available);
-    assertFalse(model.settings.cssBackground.setFromUi);
-
-    // No CSS background setting for ARC.
-    model.set('documentSettings.isFromArc', true);
     assertFalse(model.settings.cssBackground.available);
     assertFalse(model.settings.cssBackground.setFromUi);
   });
@@ -600,10 +537,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.rasterize.available);
     assertFalse(model.settings.rasterize.setFromUi);
     // </if>
-
-    // Unavailable for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.rasterize.available);
   });
 
   test('selection only', function() {
@@ -617,11 +550,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.isModifiable', false);
     assertFalse(model.settings.selectionOnly.available);
     assertFalse(model.settings.selectionOnly.setFromUi);
-
-    // Not available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.selectionOnly.available);
-    assertFalse(model.settings.selectionOnly.setFromUi);
   });
 
   test('pages per sheet', function() {
@@ -633,9 +561,5 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Still available for PDF content.
     model.set('documentSettings.isModifiable', false);
     assertTrue(model.settings.pagesPerSheet.available);
-
-    // Not available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.pagesPerSheet.available);
   });
 });

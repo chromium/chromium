@@ -223,7 +223,7 @@ bool H264ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
         return false;  // Failed to convert the buffer.
       }
       outscan += config_size;
-      avc_config = NULL;
+      avc_config = nullptr;
     }
     uint32_t start_code_len;
     first_nal_unit_in_access_unit_ ?

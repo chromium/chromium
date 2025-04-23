@@ -6,8 +6,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile_key_android.h"
+#include "ui/gfx/image/image.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/AutofillImageFetcher_jni.h"
@@ -19,11 +22,9 @@ AutofillImageFetcherImpl::AutofillImageFetcherImpl(ProfileKey* key)
 
 AutofillImageFetcherImpl::~AutofillImageFetcherImpl() = default;
 
-void AutofillImageFetcherImpl::FetchImagesForURLs(
+void AutofillImageFetcherImpl::FetchCreditCardArtImagesForURLs(
     base::span<const GURL> image_urls,
-    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
-    base::OnceCallback<void(const std::vector<std::unique_ptr<AutofillImage>>&)>
-        callback_unused) {
+    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) {
   if (image_urls.empty()) {
     return;
   }
@@ -35,12 +36,12 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
   std::transform(image_sizes.begin(), image_sizes.end(),
                  std::back_inserter(image_sizes_vector),
                  [](auto image_size) { return static_cast<int>(image_size); });
-  Java_AutofillImageFetcher_prefetchImages(
+  Java_AutofillImageFetcher_prefetchCardArtImages(
       env, GetOrCreateJavaImageFetcher(), image_urls,
       base::android::ToJavaIntArray(env, image_sizes_vector));
 }
 
-void AutofillImageFetcherImpl::FetchPixAccountImages(
+void AutofillImageFetcherImpl::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {
   if (image_urls.empty()) {
     return;
@@ -48,6 +49,19 @@ void AutofillImageFetcherImpl::FetchPixAccountImages(
   Java_AutofillImageFetcher_prefetchPixAccountImages(
       base::android::AttachCurrentThread(), GetOrCreateJavaImageFetcher(),
       image_urls);
+}
+
+void AutofillImageFetcherImpl::FetchValuableImagesForURLs(
+    base::span<const GURL> image_urls) {
+  // TODO: crbug.com/393123618 - Implement the API on Android.
+  NOTIMPLEMENTED();
+}
+
+const gfx::Image* AutofillImageFetcherImpl::GetCachedImageForUrl(
+    const GURL& image_url,
+    ImageType image_type) const {
+  // The images are cached on the Java side on Android.
+  return nullptr;
 }
 
 base::android::ScopedJavaLocalRef<jobject>

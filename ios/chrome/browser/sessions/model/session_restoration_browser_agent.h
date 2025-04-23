@@ -75,7 +75,6 @@ class SessionRestorationBrowserAgent
 
  private:
   friend class BrowserUserData<SessionRestorationBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   SessionRestorationBrowserAgent(Browser* browser,
                                  SessionServiceIOS* session_service,

@@ -38,10 +38,6 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kUnpremultiplyAndDitherLowBitDepthTiles,
-             "UnpremultiplyAndDitherLowBitDepthTiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, scrollbar fade animations' delay and duration are scaled
 // according to `kFadeDelayScalingFactor` and `kFadeDurationScalingFactor`
 // below, respectively. For more context, please see https://crbug.com/1245964.
@@ -547,16 +543,10 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
             base::CommandLine::ForCurrentProcess())) {
       settings.use_rgba_4444 = true;
 
-      // If we are going to unpremultiply and dither these tiles, we need to
-      // allocate an additional RGBA_8888 intermediate for each tile
-      // rasterization when rastering to RGBA_4444 to allow for dithering.
-      // Setting a reasonable sized max tile size allows this intermediate to
-      // be consistently reused.
-      if (base::FeatureList::IsEnabled(
-              kUnpremultiplyAndDitherLowBitDepthTiles)) {
-        settings.max_gpu_raster_tile_size = gfx::Size(512, 256);
-        settings.unpremultiply_and_dither_low_bit_depth_tiles = true;
-      }
+      // TODO(crbug.com/40042400): Determine whether this is actually necessary;
+      // its purpose was to support unpremultiply-and-dither, but it ended up
+      // being always set for RGBA4444.
+      settings.max_gpu_raster_tile_size = gfx::Size(512, 256);
     }
   }
 

@@ -44,7 +44,8 @@ function registerServiceWorker() {
   // The base dir used to resolve service_worker.js and the scope depends on
   // whether this script is included from an html file in ./, subscope1/, or
   // subscope2/.
-  return navigator.serviceWorker.register('service_worker.js', {
+  return navigator.serviceWorker.register(
+      'service_worker.js' + window.location.search, {
     scope: './'
   }).then(swRegistrationReady).then(() => {
     return 'ok - service worker registered';
@@ -283,5 +284,7 @@ navigator.serviceWorker.addEventListener('message', function(event) {
   } else if (message.type === 'pushsubscriptionchange') {
     resultQueue.push(message.data.oldEndpoint);
     resultQueue.push(message.data.newEndpoint);
+  } else if (message.type === 'autoresubscribe') {
+    resultQueue.push(message.data.endpoint);
   }
 }, false);

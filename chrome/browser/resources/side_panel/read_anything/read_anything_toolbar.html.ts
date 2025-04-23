@@ -63,6 +63,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         title="$i18n{voiceSpeedLabel}"
         aria-haspopup="menu"
         iron-icon="voice-rate:${this.speechRate_}"
+        suppress-rtl-flip
         @click="${this.onShowRateMenuClick_}">
     </cr-icon-button>
     <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -66,6 +67,7 @@ class BocaManager : public KeyedService {
  private:
   void AddObservers(const user_manager::User* user);
 
+  std::unique_ptr<babelorca::SodaInstaller> soda_installer_;
   std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager_;
   std::unique_ptr<boca::SessionClientImpl> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -16,6 +16,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -63,6 +65,7 @@ import java.lang.annotation.RetentionPolicy;
  *       </ul>
  * </ul>
  */
+@NullMarked
 class ChoiceDialogMediator {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -213,7 +216,7 @@ class ChoiceDialogMediator {
      * @param delegate processes state changes communicated by the mediator and updates the state of
      *     the UI.
      */
-    void startObserving(@NonNull Delegate delegate) {
+    void startObserving(Delegate delegate) {
         assert mDelegate == null;
         mDelegate = delegate;
 
@@ -241,6 +244,7 @@ class ChoiceDialogMediator {
                             return;
                         }
 
+                        assumeNonNull(mDelegate);
                         mDelegate.updateDialogType(DialogType.LOADING);
                         mDelegate.showDialog();
 
@@ -325,7 +329,8 @@ class ChoiceDialogMediator {
                                 + "time since observation started: %s millis",
                         isDeviceChoiceRequired,
                         wasDialogShown
-                                ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis
+                                ? mFirstServiceEventTimeMillis
+                                        - assumeNonNull(mDialogAddedTimeMillis)
                                 : "<N/A>",
                         mObservationStartedTimeMillis != null
                                 ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
@@ -333,7 +338,9 @@ class ChoiceDialogMediator {
             }
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
-                    wasDialogShown ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis : 0);
+                    wasDialogShown
+                            ? mFirstServiceEventTimeMillis - assumeNonNull(mDialogAddedTimeMillis)
+                            : 0);
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
                     mObservationStartedTimeMillis == null

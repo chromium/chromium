@@ -337,12 +337,30 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 }
 
 // Tests that the sign out button actually signs out and the account menu view
-// is closed.
+// is closed, from a personal account.
 - (void)testSignOut {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSignoutButtonId)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+  [self assertAccountMenuIsNotShown];
+}
+
+// Tests that the sign out button actually signs out and the account menu view
+// is closed, from a managed account.
+- (void)testSignOutFromManaged {
+  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSignoutButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
   [self assertAccountMenuIsNotShown];

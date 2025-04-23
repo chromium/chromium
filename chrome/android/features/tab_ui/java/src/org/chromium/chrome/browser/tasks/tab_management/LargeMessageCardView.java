@@ -21,7 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ButtonCompat;
@@ -284,8 +284,7 @@ class LargeMessageCardView extends FrameLayout {
                 ColorStateList.valueOf(
                         isIncognito
                                 ? mContext.getColor(R.color.incognito_card_bg_color)
-                                : ChromeColors.getSurfaceColor(
-                                        mContext, R.dimen.default_elevation_2));
+                                : SemanticColorUtils.getColorSurfaceContainer(mContext));
         mMaterialCardViewNoShadow.setBackgroundTintList(backgroundTint);
     }
 }

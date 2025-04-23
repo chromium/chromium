@@ -67,8 +67,8 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   AttributionResolverDelegateImpl& operator=(
       const AttributionResolverDelegateImpl&) = delete;
   AttributionResolverDelegateImpl(AttributionResolverDelegateImpl&&) = delete;
-  AttributionResolverDelegateImpl& operator=(AttributionResolverDelegateImpl&&) =
-      delete;
+  AttributionResolverDelegateImpl& operator=(
+      AttributionResolverDelegateImpl&&) = delete;
   ~AttributionResolverDelegateImpl() override;
 
   // AttributionResolverDelegate:
@@ -97,8 +97,8 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
 
  protected:
   AttributionResolverDelegateImpl(AttributionNoiseMode noise_mode,
-                                 AttributionDelayMode delay_mode,
-                                 const AttributionConfig& config);
+                                  AttributionDelayMode delay_mode,
+                                  const AttributionConfig& config);
 
  private:
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);

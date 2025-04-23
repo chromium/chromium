@@ -8,6 +8,7 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+components/browser_ui/styles/android",
   "+third_party/skia/include",
+  "+ui/accessibility/android",
   "+ui/android",
   "+ui/gfx/android",
 ]

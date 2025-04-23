@@ -17,6 +17,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -120,24 +121,43 @@ const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
         switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
     },
     {
-        "DisabledWithWsbetaEnabled",
-        {{kEnableBoundSessionCredentialsWsbetaBypass, {}}},
+        "DisabledWithExtrasEnabled",
+        {{kEnableBoundSessionCredentialsWsbetaBypass, {}},
+         {kEnableBoundSessionCredentialsContinuity, {}}},
         {switches::kEnableBoundSessionCredentials},
         false,
         switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
     },
     {
-        "DisabledWithWsbetaDisabled",
-        {},
+        "DisabledWithWsbetaEnabled",
+        {{kEnableBoundSessionCredentialsWsbetaBypass, {}}},
+        {switches::kEnableBoundSessionCredentials,
+         kEnableBoundSessionCredentialsContinuity},
+        false,
+        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+    },
+    {
+        "DisabledWithContinuityEnabled",
+        {{kEnableBoundSessionCredentialsContinuity, {}}},
         {switches::kEnableBoundSessionCredentials,
          kEnableBoundSessionCredentialsWsbetaBypass},
+        false,
+        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+    },
+    {
+        "DisabledWithExtrasDisabled",
+        {},
+        {switches::kEnableBoundSessionCredentials,
+         kEnableBoundSessionCredentialsWsbetaBypass,
+         kEnableBoundSessionCredentialsContinuity},
         std::nullopt,
         std::nullopt,
     },
     {
-        "EnabledWithWsbetaDisabled",
+        "EnabledWithExtrasDisabled",
         {{switches::kEnableBoundSessionCredentials, {}}},
-        {kEnableBoundSessionCredentialsWsbetaBypass},
+        {kEnableBoundSessionCredentialsWsbetaBypass,
+         kEnableBoundSessionCredentialsContinuity},
         std::nullopt,
         switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
     },

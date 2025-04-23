@@ -5,6 +5,7 @@
 import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/create_signed_bundle.gni")
 import("//build/config/apple/mobile_bundle_data.gni")
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/ios/ios_sdk.gni")
@@ -94,8 +95,13 @@ template("ios_info_plist") {
     if (defined(invoker.extra_substitutions)) {
       extra_substitutions += invoker.extra_substitutions
     }
+    if (target_platform == "iphoneos") {
+      _build_info_plist = "//build/config/ios/BuildInfo.plist"
+    } else if (target_platform == "tvos") {
+      _build_info_plist = "//build/config/tvos/BuildInfo.plist"
+    }
     plist_templates = [
-      "//build/config/ios/BuildInfo.plist",
+      _build_info_plist,
       _info_plist,
     ]
     if (defined(invoker.info_plist_target)) {

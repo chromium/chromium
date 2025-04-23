@@ -102,6 +102,9 @@ struct Tab {
   // Whether the tab is active.
   bool active;
 
+  // Whether the tab is visible.
+  bool visible;
+
   // The alert states of the tab.
   array<tabs.mojom.TabAlertState> alert_states;
 
@@ -304,6 +307,10 @@ interface PageHandler {
   // Get the current tab organization model strategy.
   GetTabOrganizationModelStrategy() => (TabOrganizationModelStrategy strategy);
 
+  // Returns whether or not the tab associated with this WebUI, if any, is in a
+  // split view.
+  GetIsSplit() => (bool is_split);
+
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 
@@ -318,6 +325,9 @@ interface PageHandler {
 
   // Reject all tab organizations in the current session.
   RejectSession(int32 session_id);
+
+  // Within a split view, replace the current tab with the given tab.
+  ReplaceActiveSplitTab(int32 replacement_tab_id);
 
   // Clear the current tab organization session state and start a new request.
   RestartSession();
@@ -401,4 +411,8 @@ interface Page {
   // Called when the list of tabs considered stale based on their last active
   // time, or duplicate based on partial URL match, has changed.
   UnusedTabsChanged(UnusedTabInfo tabs);
+
+  // Called when the tab corresponding to this WebUI, if any, has become newly
+  // unsplit.
+  TabUnsplit();
 };

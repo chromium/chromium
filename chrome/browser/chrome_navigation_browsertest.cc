@@ -3243,7 +3243,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameNavigationBrowserTest,
 
   // Open the link in new tab.
   content::OpenURLParams params(
-      target_url, content::Referrer(), fenced_frame_rfh->GetFrameTreeNodeId(),
+      target_url, content::Referrer(), content::FrameTreeNodeId(),
       WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/false);
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../module_header.js';
+import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -47,8 +47,8 @@ export class OutlookCalendarModuleElement extends
     };
   }
 
-  protected events_: CalendarEvent[];
-  protected showInfoDialog_: boolean;
+  protected accessor events_: CalendarEvent[];
+  protected accessor showInfoDialog_: boolean;
 
   private handler_: OutlookCalendarPageHandlerRemote;
 

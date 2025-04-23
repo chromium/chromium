@@ -332,11 +332,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   void UninstallExtension(const extensions::Extension* extension,
                           Profile* profile) {
     std::u16string error;
-    extensions::ExtensionSystem::Get(profile)
-        ->extension_service()
-        ->UninstallExtension(
-            extension->id(),
-            extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
+    extensions::ExtensionRegistrar::Get(profile)->UninstallExtension(
+        extension->id(),
+        extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
   }
 
   // BrowserWithTestWindowTest:

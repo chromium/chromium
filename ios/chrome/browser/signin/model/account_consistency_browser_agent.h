@@ -48,7 +48,6 @@ class AccountConsistencyBrowserAgent
 
  private:
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   // `base_view_controller` is the view controller which UI will be presented
   // from.

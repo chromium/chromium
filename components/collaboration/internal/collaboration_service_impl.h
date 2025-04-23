@@ -42,7 +42,6 @@ class CollaborationServiceImpl : public CollaborationService,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service,
       signin::IdentityManager* identity_manager,
-      syncer::SyncService* sync_service,
       PrefService* profile_prefs);
   ~CollaborationServiceImpl() override;
 
@@ -51,14 +50,18 @@ class CollaborationServiceImpl : public CollaborationService,
   void AddObserver(CollaborationService::Observer* observer) override;
   void RemoveObserver(CollaborationService::Observer* observer) override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
-                     const GURL& url,
-                     CollaborationServiceJoinEntryPoint entry) override;
+                     const GURL& url) override;
   void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceShareOrManageEntryPoint entry) override;
+  void StartLeaveOrDeleteFlow(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& either_id,
+      CollaborationServiceLeaveOrDeleteEntryPoint entry) override;
   void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
   ServiceStatus GetServiceStatus() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
   std::optional<data_sharing::GroupData> GetGroupData(
@@ -67,6 +70,11 @@ class CollaborationServiceImpl : public CollaborationService,
                    base::OnceCallback<void(bool)> callback) override;
   void LeaveGroup(const data_sharing::GroupId& group_id,
                   base::OnceCallback<void(bool)> callback) override;
+  bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
+  void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<data_sharing::ShareURLInterceptionContext> context,
+      CollaborationServiceJoinEntryPoint entry) override;
 
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -89,7 +97,7 @@ class CollaborationServiceImpl : public CollaborationService,
 
   // Called to clean up a flow given a GroupToken.
   void FinishJoinFlow(const data_sharing::GroupToken& token);
-  void FinishShareFlow(const tab_groups::EitherGroupID& group_id);
+  void FinishCollaborationFlow(const tab_groups::EitherGroupID& group_id);
 
  private:
   SyncStatus GetSyncStatus();
@@ -99,9 +107,10 @@ class CollaborationServiceImpl : public CollaborationService,
   void StartJoinFlowInternal(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const data_sharing::GroupToken& token);
-  void StartShareOrManageFlowInternal(
+  void StartCollaborationFlowInternal(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const tab_groups::EitherGroupID& group_id);
+      const tab_groups::EitherGroupID& either_id,
+      FlowType type);
   void OnCollaborationGroupRemoved(
       const data_sharing::GroupId& group_id,
       base::OnceCallback<void(bool)> callback,
@@ -127,7 +136,7 @@ class CollaborationServiceImpl : public CollaborationService,
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Service providing information about sync.
-  const raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   const raw_ptr<PrefService> profile_prefs_;
 
@@ -136,7 +145,7 @@ class CollaborationServiceImpl : public CollaborationService,
   std::map<data_sharing::GroupToken, std::unique_ptr<CollaborationController>>
       join_controllers_;
   std::map<tab_groups::EitherGroupID, std::unique_ptr<CollaborationController>>
-      share_controllers_;
+      collaboration_controllers_;
 
   base::WeakPtrFactory<CollaborationServiceImpl> weak_ptr_factory_{this};
 };

@@ -82,6 +82,9 @@ group("perf_without_chrome") {
     # For Speedometer benchmarks.
     "//third_party/speedometer",
 
+    # For Jetstream benchmarks.
+    "//third_party/jetstream",
+
     # For smoothness.tough_canvas_cases
     "//chrome/test/data/perf/",
 
@@ -90,6 +93,9 @@ group("perf_without_chrome") {
 
     # For Pylib used by VR tests
     "//build/android/pylib/",
+
+    # For Crossbench WPR network
+    "//third_party/webpagereplay/",
   ]
 
   # Runs a script which generates the ad tagging ruleset.

@@ -577,8 +577,9 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
     // stripped off, other properties are nested in the "Provider" dictionary
     // as-is.
     std::string key = property;
-    if (base::StartsWith(property, "Provider.", case_sensitive)) {
-      key = property.substr(strlen("Provider."));
+    if (auto remainder =
+            base::RemovePrefix(property, "Provider.", case_sensitive)) {
+      key = std::string(*remainder);
     }
     base::Value::Dict* provider = dict->EnsureDict(shill::kProviderProperty);
     provider->Set(key, value.Clone());

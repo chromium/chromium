@@ -8,7 +8,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for AutoScrollHandler.
  */
-ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2AutoScrollHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -163,7 +163,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'DontScrollInSameScrollable',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'DontScrollInSameScrollable',
     async function() {
       const root = await this.runWithFakeArcSimpleScrollable();
       const handler = new AutoScrollHandler();
@@ -180,7 +180,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'PreventMultipleScrolling',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'PreventMultipleScrolling',
     async function() {
       const root = await this.runWithFakeArcSimpleScrollable();
       const handler = new AutoScrollHandler();
@@ -206,23 +206,24 @@ AX_TEST_F(
           /*speechProps=*/ null));
     });
 
-AX_TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithFakeArcSimpleScrollable();
-  mockFeedback.expectSpeech('1st item')
-      .call(doCmd('nextObject'))
-      .expectSpeech('2nd item')
-      .call(doCmd('nextObject'))
-      .expectSpeech('3rd item')
-      .call(doCmd('nextObject'))
-      .expectSpeech('4th item')
-      .call(doCmd('nextObject'))
-      .expectSpeech('5th item');
-  await mockFeedback.replay();
-});
+AX_TEST_F(
+    'ChromeVoxMV2AutoScrollHandlerTest', 'ScrollForward', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithFakeArcSimpleScrollable();
+      mockFeedback.expectSpeech('1st item')
+          .call(doCmd('nextObject'))
+          .expectSpeech('2nd item')
+          .call(doCmd('nextObject'))
+          .expectSpeech('3rd item')
+          .call(doCmd('nextObject'))
+          .expectSpeech('4th item')
+          .call(doCmd('nextObject'))
+          .expectSpeech('5th item');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'ScrollForwardReturnsFalse',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'ScrollForwardReturnsFalse',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcSimpleScrollable();
@@ -242,7 +243,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByObject', async function() {
+    'ChromeVoxMV2AutoScrollHandlerTest', 'RecyclerViewByObject',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();
       mockFeedback.expectSpeech('1st item')
@@ -256,7 +258,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByWord', async function() {
+    'ChromeVoxMV2AutoScrollHandlerTest', 'RecyclerViewByWord',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();
       mockFeedback.expectSpeech('1st item')
@@ -274,7 +277,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByCharacter',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'RecyclerViewByCharacter',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();
@@ -303,7 +306,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByPredicate',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'RecyclerViewByPredicate',
     async function() {
       // TODO(hirokisato): This test fails without '<p>unrelated content</p>' in
       // the tree, because the next item of '2nd item' without scrolling is '1st
@@ -322,7 +325,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'DontScrollInWebContents',
+    'ChromeVoxMV2AutoScrollHandlerTest', 'DontScrollInWebContents',
     async function() {
       const mockFeedback = this.createMockFeedback();
       // Tests for fix to b/284050731.

@@ -6,22 +6,20 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.graphics.Point;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.url.GURL;
 
 /** The interface of the host surface which owns the magic stack. */
+@NullMarked
 public interface ModuleDelegateHost {
     /** Gets the starting position of the context menu which is shown by long clicking a module. */
-    @NonNull
     Point getContextMenuStartPoint();
 
     /** Gets the instance of {@link UiConfig} of the host surface. */
-    @Nullable
-    UiConfig getUiConfig();
+    @Nullable UiConfig getUiConfig();
 
     /**
      * Called when the user clicks a module to open a URL.
@@ -52,8 +50,7 @@ public interface ModuleDelegateHost {
     /**
      * Returns the tab that the home surface is tracking. It is non-null on NTP home surface only.
      */
-    @Nullable
-    default Tab getTrackingTab() {
+    default @Nullable Tab getTrackingTab() {
         return null;
     }
 

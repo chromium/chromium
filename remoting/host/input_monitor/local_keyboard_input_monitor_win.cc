@@ -4,14 +4,21 @@
 
 #include "remoting/host/input_monitor/local_keyboard_input_monitor.h"
 
+#include <cstdint>
+#include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "remoting/host/input_monitor/local_input_monitor_win.h"
+#include "remoting/host/input_monitor/raw_input_handler.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
@@ -19,123 +26,96 @@ namespace remoting {
 namespace {
 
 // From the HID Usage Tables specification.
-const USHORT kGenericDesktopPage = 1;
-const USHORT kKeyboardUsage = 6;
+const std::uint16_t kKeyboardUsage = 6;
 
-class KeyboardRawInputHandlerWin
-    : public LocalInputMonitorWin::RawInputHandler {
+// Handles Keyboard Raw Input events.  This class should be instantiated at-most
+// once per process instance to prevent the events being silently dropped.
+class KeyboardRawInputHandler : public RawInputHandler {
  public:
-  KeyboardRawInputHandlerWin(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+  explicit KeyboardRawInputHandler(
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  KeyboardRawInputHandler(const KeyboardRawInputHandler&) = delete;
+  KeyboardRawInputHandler& operator=(const KeyboardRawInputHandler&) = delete;
+
+  ~KeyboardRawInputHandler() override;
+
+  // RawInputHandler implementation.
+  void OnInputEvent(const RAWINPUT& event) override;
+};
+
+KeyboardRawInputHandler::KeyboardRawInputHandler(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    : RawInputHandler(ui_task_runner, kKeyboardUsage) {}
+
+KeyboardRawInputHandler::~KeyboardRawInputHandler() = default;
+
+void KeyboardRawInputHandler::OnInputEvent(const RAWINPUT& event) {
+  if (event.header.dwType == RIM_TYPEKEYBOARD &&
+      event.header.hDevice != nullptr) {
+    std::uint16_t vkey = event.data.keyboard.VKey;
+    std::uint32_t scancode = MapVirtualKey(vkey, MAPVK_VK_TO_VSC);
+    std::uint32_t usb_keycode =
+        ui::KeycodeConverter::NativeKeycodeToUsbKeycode(scancode);
+
+    NotifyKeyboardInput(FROM_HERE, usb_keycode);
+  }
+}
+
+class ScopedKeyboardInputMonitorWin : public LocalKeyboardInputMonitor,
+                                      public RawInputHandler::Observer {
+ public:
+  explicit ScopedKeyboardInputMonitorWin(
+      KeyboardRawInputHandler& raw_input_handler,
       LocalInputMonitor::KeyPressedCallback on_key_event_callback,
       base::OnceClosure disconnect_callback);
+  ~ScopedKeyboardInputMonitorWin() override;
 
-  KeyboardRawInputHandlerWin(const KeyboardRawInputHandlerWin&) = delete;
-  KeyboardRawInputHandlerWin& operator=(const KeyboardRawInputHandlerWin&) =
-      delete;
-
-  ~KeyboardRawInputHandlerWin() override;
-
-  // LocalInputMonitorWin::RawInputHandler implementation.
-  bool Register(HWND hwnd) override;
-  void Unregister() override;
-  void OnInputEvent(const RAWINPUT* input) override;
+  // Observer implementation.
+  void OnMouseMove(const webrtc::DesktopVector&, ui::EventType) override;
+  void OnKeyboardInput(std::uint32_t usb_keycode) override;
   void OnError() override;
 
-  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+ private:
+  base::raw_ref<KeyboardRawInputHandler> keyboard_raw_input_handler_;
 
   LocalInputMonitor::KeyPressedCallback on_key_event_callback_;
   base::OnceClosure disconnect_callback_;
 
-  // Tracks whether the instance is registered to receive raw input events.
-  bool registered_ = false;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
-KeyboardRawInputHandlerWin::KeyboardRawInputHandlerWin(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+ScopedKeyboardInputMonitorWin::ScopedKeyboardInputMonitorWin(
+    KeyboardRawInputHandler& raw_input_handler,
     LocalInputMonitor::KeyPressedCallback on_key_event_callback,
     base::OnceClosure disconnect_callback)
-    : caller_task_runner_(caller_task_runner),
-      ui_task_runner_(ui_task_runner),
+    : keyboard_raw_input_handler_(raw_input_handler),
       on_key_event_callback_(std::move(on_key_event_callback)),
-      disconnect_callback_(std::move(disconnect_callback)) {}
-
-KeyboardRawInputHandlerWin::~KeyboardRawInputHandlerWin() {
-  DCHECK(!registered_);
+      disconnect_callback_(std::move(disconnect_callback)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_raw_input_handler_->AddObserver(this);
 }
 
-bool KeyboardRawInputHandlerWin::Register(HWND hwnd) {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
-
-  // Register to receive raw keyboard input.
-  RAWINPUTDEVICE device = {0};
-  device.dwFlags = RIDEV_INPUTSINK;
-  device.usUsagePage = kGenericDesktopPage;
-  device.usUsage = kKeyboardUsage;
-  device.hwndTarget = hwnd;
-  if (!RegisterRawInputDevices(&device, 1, sizeof(device))) {
-    PLOG(ERROR) << "RegisterRawInputDevices() failed";
-    return false;
-  }
-
-  registered_ = true;
-  return true;
+ScopedKeyboardInputMonitorWin::~ScopedKeyboardInputMonitorWin() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_raw_input_handler_->RemoveObserver(this);
 }
 
-void KeyboardRawInputHandlerWin::Unregister() {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
-
-  RAWINPUTDEVICE device = {0};
-  device.dwFlags = RIDEV_REMOVE;
-  device.usUsagePage = kGenericDesktopPage;
-  device.usUsage = kKeyboardUsage;
-  device.hwndTarget = nullptr;
-
-  // The error is harmless, ignore it.
-  RegisterRawInputDevices(&device, 1, sizeof(device));
-  registered_ = false;
+void ScopedKeyboardInputMonitorWin::OnKeyboardInput(uint32_t usb_keycode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  on_key_event_callback_.Run(usb_keycode);
 }
 
-void KeyboardRawInputHandlerWin::OnInputEvent(const RAWINPUT* input) {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
-
-  if (input->header.dwType == RIM_TYPEKEYBOARD &&
-      input->header.hDevice != nullptr) {
-    USHORT vkey = input->data.keyboard.VKey;
-    UINT scancode = MapVirtualKey(vkey, MAPVK_VK_TO_VSC);
-    uint32_t usb_keycode =
-        ui::KeycodeConverter::NativeKeycodeToUsbKeycode(scancode);
-    caller_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_key_event_callback_, usb_keycode));
-  }
+void ScopedKeyboardInputMonitorWin::OnMouseMove(
+    const webrtc::DesktopVector& position,
+    ui::EventType event_type) {
+  NOTREACHED();
 }
 
-void KeyboardRawInputHandlerWin::OnError() {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
-
-  if (disconnect_callback_) {
-    caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));
-  }
+void ScopedKeyboardInputMonitorWin::OnError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(disconnect_callback_).Run();
 }
-
-class LocalKeyboardInputMonitorWin : public LocalKeyboardInputMonitor {
- public:
-  explicit LocalKeyboardInputMonitorWin(
-      std::unique_ptr<LocalInputMonitorWin> local_input_monitor);
-  ~LocalKeyboardInputMonitorWin() override;
-
- private:
-  std::unique_ptr<LocalInputMonitorWin> local_input_monitor_;
-};
-
-LocalKeyboardInputMonitorWin::LocalKeyboardInputMonitorWin(
-    std::unique_ptr<LocalInputMonitorWin> local_input_monitor)
-    : local_input_monitor_(std::move(local_input_monitor)) {}
-
-LocalKeyboardInputMonitorWin::~LocalKeyboardInputMonitorWin() = default;
 
 }  // namespace
 
@@ -145,13 +125,22 @@ std::unique_ptr<LocalKeyboardInputMonitor> LocalKeyboardInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     LocalInputMonitor::KeyPressedCallback on_key_event_callback,
     base::OnceClosure disconnect_callback) {
-  auto raw_input_handler = std::make_unique<KeyboardRawInputHandlerWin>(
-      caller_task_runner, ui_task_runner, std::move(on_key_event_callback),
-      std::move(disconnect_callback));
+  // Ensure there is only one instance of KeyboardRawInputHandler because
+  // Windows does not allow multiple windows to receive WM_INPUT messages for
+  // the same raw input type in the same process.
+  // Note: We reuse the initial |ui_task_runner| provided to init the handler,
+  // this is reasonable as we just need a UI thread to run the core object on
+  // and in practice, every invocation of this method passes the same
+  // task_runner because it is retrieved via the ChromotingHostContext.
+  static base::NoDestructor<KeyboardRawInputHandler> raw_input_handler{
+      ui_task_runner};
 
-  return std::make_unique<LocalKeyboardInputMonitorWin>(
-      LocalInputMonitorWin::Create(caller_task_runner, ui_task_runner,
-                                   std::move(raw_input_handler)));
+  // Bind the callbacks to |caller_task_runner| to ensure they are executed on
+  // the proper thread.
+  return std::make_unique<ScopedKeyboardInputMonitorWin>(
+      *raw_input_handler,
+      base::BindPostTask(caller_task_runner, std::move(on_key_event_callback)),
+      base::BindPostTask(caller_task_runner, std::move(disconnect_callback)));
 }
 
 }  // namespace remoting

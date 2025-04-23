@@ -663,6 +663,11 @@ class BrowserCommandControllerBrowserTestGlic
     BrowserCommandControllerBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Bypass glic eligibility check.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -685,8 +690,15 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_GLIC_TOGGLE_PIN));
 }
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DisabledInIncognitoProfile DISABLED_DisabledInIncognitoProfile
+#else
+#define MAYBE_DisabledInIncognitoProfile DisabledInIncognitoProfile
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
-                       DisabledInIncognitoProfile) {
+                       MAYBE_DisabledInIncognitoProfile) {
   // Set up a profile with an off the record profile.
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   Profile* incognito_profile =
@@ -730,9 +742,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ExecuteGlicThreeDotMenuItem) {
   // Bypass glic eligibility check.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
-  // Bypass fre.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  // Bypass fre.
   profile_prefs->SetInteger(glic::prefs::kGlicCompletedFre,
                             static_cast<int>(glic::prefs::FreStatus::kCompleted));
 

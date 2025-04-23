@@ -432,7 +432,7 @@ public class WebContentsTest {
                 "Failed to remove moderate binding");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> webContents.setImportance(ChildProcessImportance.MODERATE));
+                () -> webContents.setPrimaryMainFrameImportance(ChildProcessImportance.MODERATE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isVisibleBindingBound()));
     }

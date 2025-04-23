@@ -292,18 +292,17 @@ class ManualFillingComponentBridge {
                                     sheetType,
                                     field);
                 };
-        ((PromoCodeInfo) promoCodeInfo)
-                .setPromoCode(
-                        new UserInfoField.Builder()
-                                .setSuggestionType(suggestionType)
-                                .setDisplayText(displayText)
-                                .setTextToFill(textToFill)
-                                .setA11yDescription(a11yDescription)
-                                .setId(guid)
-                                .setIsObfuscated(isObfuscated)
-                                .setCallback(callback)
-                                .build());
-        ((PromoCodeInfo) promoCodeInfo).setDetailsText(detailsText);
+        promoCodeInfo.initialize(
+                /* promoCode= */ new UserInfoField.Builder()
+                        .setSuggestionType(suggestionType)
+                        .setDisplayText(displayText)
+                        .setTextToFill(textToFill)
+                        .setA11yDescription(a11yDescription)
+                        .setId(guid)
+                        .setIsObfuscated(isObfuscated)
+                        .setCallback(callback)
+                        .build(),
+                /* detailsText= */ detailsText);
     }
 
     @CalledByNative

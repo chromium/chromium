@@ -784,6 +784,10 @@ void MetricsReporter::OtherUserAction(FeedUserActionType action_type) {
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.ManageFollowing"));
       break;
+    case FeedUserActionType::kTappedLearnMore:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.LearnMore"));
+      break;
     default:
       break;
   }

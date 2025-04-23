@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
+import {RecommendationType} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import {FileSuggestionElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,7 +19,8 @@ suite('FileSuggestion', () => {
     document.body.appendChild(fileSuggestion);
   });
 
-  function createFiles(numFiles: number): File[] {
+  function createFiles(
+      numFiles: number, fileType: RecommendationType|null): File[] {
     const files: File[] = [];
     for (let i = 1; i < numFiles + 1; i++) {
       files.push({
@@ -27,6 +29,7 @@ suite('FileSuggestion', () => {
         id: `${i} id`,
         iconUrl: {url: `https://example.com/application/vnd.google-apps.${i}`},
         itemUrl: {url: 'https://${i}.com'},
+        recommendationType: fileType,
       });
     }
     return files;
@@ -34,7 +37,7 @@ suite('FileSuggestion', () => {
 
   test('files render correctly', async () => {
     const numFiles = 2;
-    fileSuggestion.files = createFiles(numFiles);
+    fileSuggestion.files = createFiles(numFiles, /*fileType=*/ null);
     await microtasksFinished();
 
     const files =
@@ -76,22 +79,41 @@ suite('FileSuggestion', () => {
         const moduleName = 'Foo';
         const metrics = fakeMetricsPrivate();
         fileSuggestion.moduleName = moduleName;
-        fileSuggestion.files = createFiles(numFiles);
+        fileSuggestion.files = createFiles(numFiles, /*fileType=*/ null);
         await microtasksFinished();
 
-        const files =
+        let files =
             fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
         const clickIndex = 1;
         assertTrue(!!files[clickIndex]);
-        const usagePromise = eventToPromise('usage', fileSuggestion);
+        let usagePromise = eventToPromise('usage', fileSuggestion);
 
         files[clickIndex].click();
-        const usageEvent: Event = await usagePromise;
+        let usageEvent: Event = await usagePromise;
         assertTrue(!!usageEvent);
         await microtasksFinished();
 
         assertEquals(1, metrics.count(`NewTabPage.${moduleName}.FileClick`));
         assertEquals(
             1, metrics.count(`NewTabPage.${moduleName}.FileClick`, clickIndex));
+
+        // Test that files with non-null `recommendationType` get a histogram
+        // emission for the type.
+        fileSuggestion.files =
+            createFiles(numFiles, /*fileType=*/ RecommendationType.kTrending);
+        await microtasksFinished();
+        files =
+            fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
+        assertTrue(!!files[clickIndex]);
+        usagePromise = eventToPromise('usage', fileSuggestion);
+        files[clickIndex].click();
+        usageEvent = await usagePromise;
+        assertTrue(!!usageEvent);
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                `NewTabPage.${moduleName}.RecommendationTypeClick`,
+                RecommendationType.kTrending));
       });
 });

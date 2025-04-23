@@ -54,8 +54,8 @@ class BASE_EXPORT SequenceManager {
 
     static PrioritySettings CreateDefault();
 
-    template <typename T,
-              typename = typename std::enable_if_t<std::is_enum_v<T>>>
+    template <typename T>
+      requires(std::is_enum_v<T>)
     PrioritySettings(T priority_count, T default_priority)
         : PrioritySettings(
               static_cast<TaskQueue::QueuePriority>(priority_count),

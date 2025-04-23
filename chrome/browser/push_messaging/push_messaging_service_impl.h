@@ -169,11 +169,21 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
+  // Fires the `pushsubscriptionchange` event to the service worker with
+  // `service_worker_registration_id` and `origin`. The two subscriptions
+  // `old_subscription` and `new_subscription` can be null.
+  void FirePushSubscriptionChange(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      base::OnceClosure completed_closure,
+      blink::mojom::PushSubscriptionPtr new_subscription,
+      blink::mojom::PushSubscriptionPtr old_subscription);
+
   // Fires the `pushsubscriptionchange` event to the associated service worker
   // of |app_identifier|, which is the app identifier for |old_subscription|
   // whereas |new_subscription| can be either null e.g. when a subscription is
   // lost due to permission changes or a new subscription when it was refreshed.
-  void FirePushSubscriptionChange(
+  void FirePushSubscriptionChangeForAppIdentifier(
       const PushMessagingAppIdentifier& app_identifier,
       base::OnceClosure completed_closure,
       blink::mojom::PushSubscriptionPtr new_subscription,
@@ -398,10 +408,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       blink::mojom::PushUnregistrationReason reason,
       UnregisterCallback callback,
       const std::string& sender_id);
-
-  void FirePushSubscriptionChangeCallback(
-      const PushMessagingAppIdentifier& app_identifier,
-      blink::mojom::PushEventStatus status);
 
   // Checks if a given origin is allowed to use Push.
   //

@@ -19,6 +19,11 @@
                    completionIdentity:(id<SystemIdentity>)completionIdentity
     NS_REQUIRES_SUPER;
 
+// TODO(crbug.com/381444097): implements StopAnimatedChromeCoordinator in the
+// header file once each class inheriting SigninCoordinator implements this
+// protocol.
+- (void)stopAnimated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_COORDINATOR_PROTECTED_H_

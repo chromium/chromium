@@ -188,6 +188,7 @@ public class AppMenuItemViewBinderTest {
     static final int MENU_ID5 = 500;
     static final int MENU_ID6 = 600;
     static final int MENU_ID7 = 700;
+    static final int MENU_ID8 = 800;
     static final String TITLE_1 = "Menu Item One";
     static final String TITLE_2 = "Menu Item Two";
     static final String TITLE_3 = "Menu Item Three";
@@ -195,6 +196,7 @@ public class AppMenuItemViewBinderTest {
     static final String TITLE_5 = "Menu Item Five";
     static final String TITLE_6 = "Menu Item Six";
     static final String TITLE_7 = "Menu Item Seven";
+    static final String TITLE_8 = "Menu Item Eight";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
@@ -227,15 +229,7 @@ public class AppMenuItemViewBinderTest {
                             new LayoutViewBuilder(R.layout.title_button_menu_item),
                             AppMenuItemViewBinder::bindTitleButtonItem);
                     mModelListAdapter.registerType(
-                            AppMenuItemType.THREE_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FOUR_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FIVE_BUTTON_ROW,
+                            AppMenuItemType.BUTTON_ROW,
                             new LayoutViewBuilder(R.layout.icon_row_menu_item),
                             AppMenuItemViewBinder::bindIconRowItem);
                 });
@@ -314,16 +308,14 @@ public class AppMenuItemViewBinderTest {
                         .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        int menutype = AppMenuItemType.THREE_BUTTON_ROW;
+        int menutype = AppMenuItemType.BUTTON_ROW;
         createIconMenuItem(subList, subId1, titleCondensed1, icon1);
         createIconMenuItem(subList, subId2, titleCondensed2, icon2);
         createIconMenuItem(subList, subId3, titleCondensed3, icon3);
         if (subId4 != View.NO_ID) {
             createIconMenuItem(subList, subId4, titleCondensed4, icon4);
-            menutype = AppMenuItemType.FOUR_BUTTON_ROW;
             if (subId5 != View.NO_ID) {
                 createIconMenuItem(subList, subId5, titleCondensed5, icon5);
-                menutype = AppMenuItemType.FIVE_BUTTON_ROW;
             }
         }
 
@@ -480,7 +472,7 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void testConvertView_Reused_IconRow() {
+    public void testConvertView_Reused_IconRow_SameButtonCount() {
         Drawable icon =
                 AppCompatResources.getDrawable(
                         mActivity,
@@ -541,38 +533,7 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void testConvertView_NotReused() {
-        createStandardMenuItem(MENU_ID1, TITLE_1);
-        createTitleMenuItem(MENU_ID2, MENU_ID3, TITLE_3, null, MENU_ID4, TITLE_4, true, true);
-
-        Assert.assertEquals(
-                "Wrong item view type for item 1",
-                AppMenuItemType.STANDARD,
-                mModelListAdapter.getItemViewType(0));
-        Assert.assertEquals(
-                "Wrong item view type for item 2",
-                AppMenuItemType.TITLE_BUTTON,
-                mModelListAdapter.getItemViewType(1));
-
-        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
-        View view1 = mModelListAdapter.getView(0, null, parentView);
-        TextView titleView = view1.findViewById(R.id.menu_item_text);
-
-        Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
-
-        View view2 = mModelListAdapter.getView(1, view1, parentView);
-        Assert.assertNotEquals("Standard view should not have been re-used", view1, view2);
-        Assert.assertEquals(
-                "Title for view 1 should have not have been updated", TITLE_1, titleView.getText());
-
-        View view3 = mModelListAdapter.getView(0, view2, parentView);
-        Assert.assertNotEquals("Title button view should not have been re-used", view2, view3);
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void testConvertView_NotReused_IconRow() {
+    public void testConvertView_Reused_IconRow_IncreasingButtonCount() {
         Drawable icon =
                 AppCompatResources.getDrawable(
                         mActivity,
@@ -615,8 +576,89 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
+        Assert.assertEquals(3, countVisibleChildren((ViewGroup) view1));
+
         View view2 = mModelListAdapter.getView(1, view1, parentView);
-        Assert.assertNotEquals("Convert view should not have been re-used", view1, view2);
+        Assert.assertEquals(4, countVisibleChildren((ViewGroup) view2));
+        Assert.assertEquals("Convert view should be re-used", view1, view2);
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testConvertView_Reused_IconRow_DecreasingButtonCount() {
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        createIconRowMenuItem(
+                1, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, icon,
+                MENU_ID7, TITLE_7, icon, MENU_ID8, TITLE_8, icon);
+        createIconRowMenuItem(
+                2,
+                MENU_ID1,
+                TITLE_1,
+                icon,
+                MENU_ID2,
+                TITLE_2,
+                icon,
+                MENU_ID3,
+                TITLE_3,
+                icon,
+                View.NO_ID,
+                null,
+                null,
+                View.NO_ID,
+                null,
+                null);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view1 = mModelListAdapter.getView(0, null, parentView);
+        Assert.assertEquals(5, countVisibleChildren((ViewGroup) view1));
+
+        View view2 = mModelListAdapter.getView(1, view1, parentView);
+        Assert.assertEquals(3, countVisibleChildren((ViewGroup) view2));
+        Assert.assertEquals("Convert view should be re-used", view1, view2);
+    }
+
+    private static int countVisibleChildren(ViewGroup view) {
+        int visibleChildCount = 0;
+        for (int i = 0; i < view.getChildCount(); i++) {
+            if (view.getChildAt(i).getVisibility() == View.VISIBLE) visibleChildCount++;
+        }
+        return visibleChildCount;
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testConvertView_NotReused() {
+        createStandardMenuItem(MENU_ID1, TITLE_1);
+        createTitleMenuItem(MENU_ID2, MENU_ID3, TITLE_3, null, MENU_ID4, TITLE_4, true, true);
+
+        Assert.assertEquals(
+                "Wrong item view type for item 1",
+                AppMenuItemType.STANDARD,
+                mModelListAdapter.getItemViewType(0));
+        Assert.assertEquals(
+                "Wrong item view type for item 2",
+                AppMenuItemType.TITLE_BUTTON,
+                mModelListAdapter.getItemViewType(1));
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view1 = mModelListAdapter.getView(0, null, parentView);
+        TextView titleView = view1.findViewById(R.id.menu_item_text);
+
+        Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
+
+        View view2 = mModelListAdapter.getView(1, view1, parentView);
+        Assert.assertNotEquals("Standard view should not have been re-used", view1, view2);
+        Assert.assertEquals(
+                "Title for view 1 should have not have been updated", TITLE_1, titleView.getText());
+
+        View view3 = mModelListAdapter.getView(0, view2, parentView);
+        Assert.assertNotEquals("Title button view should not have been re-used", view2, view3);
     }
 
     @Test

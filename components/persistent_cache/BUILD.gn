@@ -12,6 +12,7 @@ component("persistent_cache") {
     "backend_params_manager.h",
     "entry.cc",
     "entry.h",
+    "entry_metadata.h",
     "sqlite/sqlite_entry_impl.cc",
     "sqlite/sqlite_entry_impl.h",
   ]

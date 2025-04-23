@@ -25,14 +25,10 @@ class OriginAccessList;
 }  // namespace cors
 
 namespace mojom {
-class CookieAccessObserver;
 class CrossOriginEmbedderPolicyReporter;
-class DevToolsObserver;
 class NetworkContextClient;
 class TrustedURLLoaderHeaderClient;
-class TrustTokenAccessObserver;
 class URLLoaderFactoryParams;
-class URLLoaderNetworkServiceObserver;
 }  // namespace mojom
 
 using RefCountedDeviceBoundSessionAccessObserverRemote = base::RefCountedData<
@@ -45,24 +41,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual bool ShouldRequireIsolationInfo() const = 0;
   virtual const cors::OriginAccessList& GetOriginAccessList() const = 0;
   virtual const mojom::URLLoaderFactoryParams& GetFactoryParams() const = 0;
-  virtual mojom::CookieAccessObserver* GetCookieAccessObserver() const = 0;
-  virtual mojom::TrustTokenAccessObserver* GetTrustTokenAccessObserver()
-      const = 0;
   virtual mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const = 0;
   virtual mojom::DocumentIsolationPolicyReporter* GetDipReporter() const = 0;
-  virtual mojom::DevToolsObserver* GetDevToolsObserver() const = 0;
   virtual mojom::NetworkContextClient* GetNetworkContextClient() const = 0;
   virtual mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
       const = 0;
-  virtual mojom::URLLoaderNetworkServiceObserver*
-  GetURLLoaderNetworkServiceObserver() const = 0;
   virtual net::URLRequestContext* GetUrlRequestContext() const = 0;
   virtual scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const = 0;
   virtual orb::PerFactoryState& GetMutableOrbState() = 0;
   virtual bool DataUseUpdatesEnabled() = 0;
-  virtual mojom::DeviceBoundSessionAccessObserver*
-  GetDeviceBoundSessionAccessObserver() const = 0;
   virtual scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
   GetDeviceBoundSessionAccessObserverSharedRemote() const = 0;
 

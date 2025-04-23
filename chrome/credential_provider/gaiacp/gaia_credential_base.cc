@@ -65,6 +65,7 @@
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -1066,7 +1067,7 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   // startup for all users. When GLS runs, the autostart extension is also
   // launched in the login screen. With --disable-extensions flag, this can be
   // prevented.
-  command_line->AppendSwitch(switches::kDisableExtensions);
+  command_line->AppendSwitch(extensions::switches::kDisableExtensions);
 
   // Get the language selected by the LanguageSelector and pass it onto Chrome.
   // The language will depend on if it is currently a SYSTEM logon (initial

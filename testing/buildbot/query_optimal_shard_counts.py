@@ -304,7 +304,7 @@ def _prune_builders(data):
   for builder_group_name, builder_group in data_copy.items():
     for ci_builder_name, ci_builder in builder_group.items():
       for test_suite_name, test_suite in ci_builder.items():
-        try_builder = test_suite['debug']['try_builder']
+        try_builder = test_suite['try_builder']
         if try_builder not in cq_builders:
           del data[builder_group_name][ci_builder_name][test_suite_name]
       if len(data[builder_group_name][ci_builder_name]) == 0:
@@ -467,6 +467,7 @@ def main(args):
     shard_dict = {
         test_suite: {
             'shards': r['optimal_shard_count'],
+            'try_builder': r['try_builder'],
         },
     }
     if opts.verbose:
@@ -487,8 +488,6 @@ def main(args):
           int(r['shard_count']),
           'simulated_max_shard_duration':
           r['simulated_max_shard_duration'],
-          'try_builder':
-          r['try_builder'],
           'test_overhead_min':
           r['test_overhead_min'],
       }

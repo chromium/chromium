@@ -181,6 +181,10 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
 
   output->notification_resources = std::nullopt;
 
+  output->serialized_metadata =
+      std::map<std::string, std::string>(message.serialized_metadata().begin(),
+                                         message.serialized_metadata().end());
+
   return true;
 }
 
@@ -305,6 +309,9 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
   message.set_has_triggered(input.has_triggered);
 
   message.set_is_shown_by_browser(input.is_shown_by_browser);
+
+  message.mutable_serialized_metadata()->insert(
+      input.serialized_metadata.begin(), input.serialized_metadata.end());
 
   return message.SerializeToString(output);
 }

@@ -1497,8 +1497,8 @@ TEST_F(OmniboxEditModelPopupTest,
       &controller()->autocomplete_controller()->published_result_;
   result->AppendMatches(matches);
 
-  // Sets the popup rich suggestion bitmap for search aggregator match.
-  model()->SetPopupRichSuggestionBitmap(0, bitmap);
+  // Sets the icon bitmap for search aggregator match.
+  model()->SetIconBitmap(GURL("https://aggregator.com/icon.png"), bitmap);
 
   gfx::Image image = model()->GetMatchIcon(search_aggregator_match, 0);
   gfx::test::CheckColors(bitmap.getColor(0, 0),
@@ -1515,13 +1515,6 @@ TEST_F(OmniboxEditModelPopupTest,
 
   // Creates a set of matches.
   ACMatches matches;
-  AutocompleteMatch search_aggregator_match(
-      nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
-  search_aggregator_match.keyword = u"searchaggregator";
-  search_aggregator_match.associated_keyword =
-      std::make_unique<AutocompleteMatch>(search_aggregator_match);
-  search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
-  matches.push_back(search_aggregator_match);
   AutocompleteMatch content_match(nullptr, 1000, false,
                                   AutocompleteMatchType::NAVSUGGEST);
   content_match.icon_url = GURL("https://example.com/icon.png");
@@ -1530,8 +1523,8 @@ TEST_F(OmniboxEditModelPopupTest,
       &controller()->autocomplete_controller()->published_result_;
   result->AppendMatches(matches);
 
-  // Sets the popup rich suggestion bitmap for search aggregator match.
-  model()->SetPopupRichSuggestionBitmap(1, bitmap);
+  // Sets the icon bitmap for content match.
+  model()->SetIconBitmap(GURL("https://example.com/icon.png"), bitmap);
 
   gfx::Image image = model()->GetMatchIcon(content_match, 0);
   gfx::test::CheckColors(bitmap.getColor(0, 0),

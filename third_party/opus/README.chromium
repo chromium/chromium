@@ -1,7 +1,7 @@
 Name: opus
 URL: https://gitlab.xiph.org/xiph/opus
-Version: 8cf872a1
-Revision: 8cf872a186b96085b1bb3a547afd598354ebeb87
+Version: 55513e81
+Revision: 55513e81d8f606bd75d0ff773d2144e5f2a732f5
 License: Opus-Patent-BSD-3-Clause
 License File: src/COPYING
 Security Critical: yes
@@ -15,7 +15,20 @@ encoding/decoding.
 
 Local changes:
 * copy .gitignore from https://git.xiph.org/?p=opus.git;a=tree
-* set 'x' flags: "chmod 750 win32/genversion.bat"
+* set 'x' flags for the following files, e.g. `chmod 750 autogen.bat`
+    * autogen.bat
+    * dnn/download_model.bat
+    * dnn/torch/lpcnet/scripts/*.sh
+    * dnn/torch/osce/stndrd/evaluation/crete_input_data.sh
+    * dnn/training_tf2/decode_rdovae.py
+    * dnn/training_tf2/encode_rdovae.py
+    * dnn/training_tf2/lpcnet.py
+    * dnn/training_tf2/lpcnet_plc.py
+    * dnn/training_tf2/plc_loader.py
+    * dnn/training_tf2/rdovae.py
+    * dnn/training_tf2/test_plc.py
+    * dnn/training_tf2/train_plc.py
+    * dnn/training_tf2/train_rdovae.py
 * remove assertion messages in release builds (see crbug/1053572)
 * add workaround to ignore some int-overflows when fuzzing (see crbug/1146174, crbug/1491812)
 

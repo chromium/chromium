@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "type": "origin", "value": "$1"
+              "type": "origin", "origin": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "type": "origin", "value": "$1"
+              "type": "origin", "origin": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/simple.html",
             "scope": "/",
             "scope_extensions": [{
-              "type": "origin", "value": "$1"
+              "type": "origin", "origin": "$1"
             }],
             "launch_handler": {
               "client_mode": "focus-existing"
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "type": "origin", "value": "$1"
+              "type": "origin", "origin": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsDisabledBrowserTest,
             "start_url": "/",
             "scope": "/",
             "scope_extensions": [{
-              "type": "origin", "value": "$1"
+              "type": "origin", "origin": "$1"
             }]
           })",
           {secondary_origin_.Serialize()}, nullptr),
@@ -481,7 +481,7 @@ constexpr char kTestManifestBody[] = R"({
   }],
   "scope_extensions": [
     {
-      "type": "origin", "value": "https://test.com"
+      "type": "origin", "origin": "https://test.com"
     }
   ]
 })";

@@ -9,12 +9,9 @@
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
-<translation id="1293272072740285747">後でタブを追加できるようにこのグループを保持するか、不要になった場合は削除します。
-
-削除すると、全員が「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
 <translation id="1329584516321524826">たった今更新されました</translation>
 <translation id="1340839264183302272">グループから退出</translation>
-<translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{共有タブグループ「<ph name="TITLE_OF_GROUP" />」（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}other{共有タブグループ「<ph name="TITLE_OF_GROUP" />」（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}}</translation>
 <translation id="1486715732399361704">ここですべてのタブグループを表示できます</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
@@ -49,7 +46,6 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価</translation>
 <translation id="266935134738038806">サイトを見る</translation>
 <translation id="2671423594960767771">グループを共有</translation>
-<translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週間前に更新}other{<ph name="NUM_WEEKS_MANY" /> 週間前に更新}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 時間前に更新}other{<ph name="NUM_HOURS_MANY" /> 時間前に更新}}</translation>
 <translation id="2755485474385016903">変更内容はグループの全員に表示されます</translation>
@@ -69,14 +65,12 @@
 <translation id="3194464645767632461">評価</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{<ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
-<translation id="3547352561153509682"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブ}other{<ph name="MANY_ADDED" /> 個の新しいタブ}}</translation>
 <translation id="3613492231657284463">アクティブでないタブのダイアログを非表示にする</translation>
 <translation id="3619255692378312441">アクセスを管理</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
 <translation id="3810973564298564668">管理</translation>
-<translation id="381219490185664296">タブグループを解除しますか？</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
@@ -85,17 +79,13 @@
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前に作成}other{<ph name="NUM_DAYS_MANY" /> 日前に作成}}</translation>
 <translation id="4076226664360336092">タブグループのリストが画面全体に表示されています</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
-<translation id="4139634748112164403">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4371591986692297148">無効</translation>
-<translation id="4431937619879060901">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前に更新}other{<ph name="NUM_DAYS_MANY" /> 日前に更新}}</translation>
-<translation id="4460014764210899310">グループを解除</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{アクティブでない 1 個のタブを閉じますか？}other{アクティブでない <ph name="TAB_COUNT_MANY" /> 個のタブを閉じますか？}}</translation>
 <translation id="4686942373615810936">作成: たった今</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 日後に閉じる}other{<ph name="DAY_COUNT_MANY" /> 日後に閉じる}}</translation>
-<translation id="4777866634702576038">タブグループを削除しますか？</translation>
 <translation id="4783638485675352219">このデバイスで開いているタブのタイトルと URL をオペレーティング システムと共有する</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>
@@ -108,10 +98,10 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="4908147833782857886">保存済みの <ph name="USER_EMAIL" /> 個のグループ（タブを閉じてグループを削除します）</translation>
 <translation id="492284538114688557">値下げ情報が見つかりました</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{共有タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}other{共有タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}}</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
-<translation id="5094423602314093681">タブとグループを削除しますか？</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5380159289133845234">重複するタブをアーカイブする</translation>
@@ -122,7 +112,6 @@
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
 <translation id="5627941783489838464">タブの更新はありません</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{タブを復元}other{タブを復元}}</translation>
-<translation id="5647702255748985085">グループから退出しますか？</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome からの <ph name="TABS_COUNT_ONE" /> 件のリンク}other{Chrome からの <ph name="TABS_COUNT_MANY" /> 件のリンク}}</translation>
 <translation id="58326064309361797">タブをグループ化するにはドラッグします</translation>
 <translation id="5901630391730855834">黄</translation>
@@ -162,10 +151,8 @@
 <translation id="7326879924029668159">返品に関するポリシーなどを確認</translation>
 <translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」タブグループは使用できなくなりました</translation>
-<translation id="742664698522525515">グループを保持しますか？</translation>
 <translation id="7452985128687107478">タブグループは自動的に保存され、すべてのデバイスで更新されます</translation>
 <translation id="747459581954555080">すべて復元</translation>
-<translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
@@ -194,7 +181,6 @@
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に更新}other{<ph name="NUM_MINS_MANY" /> 分前に更新}}</translation>
 <translation id="8236097722223016103">ブックマークに追加</translation>
-<translation id="8261506727792406068">削除</translation>
 <translation id="8338427544764842461">タブグループはここに保存され、ログインしているすべてのデバイスで更新されます</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{共有タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{共有タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
@@ -202,24 +188,19 @@
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
-<translation id="870736955561925754">タブを閉じてグループを削除しますか？</translation>
 <translation id="8712637175834984815">理解した</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
-<translation id="8804742093141782941">グループを保持</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{新しいウィンドウに移動}other{他のウィンドウに移動}}</translation>
 <translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>
 <translation id="9114502155681725011">タブグループ <ph name="TITLE_OF_GROUP" />、色 <ph name="COLOR_NAME" /> のタブグループ操作メニューを開く</translation>
-<translation id="9169141410816678175">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
-<translation id="9216898458513705996">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
-<translation id="94870150074703282">グループを削除しますか？</translation>
 <translation id="992256792861109788">ピンク</translation>
 </translationbundle>

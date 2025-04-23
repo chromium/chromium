@@ -4,9 +4,11 @@
 
 #include "chrome/browser/android/compositor/layer/group_indicator_layer.h"
 
+#include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_icon_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "ui/android/resources/nine_patch_resource.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
 namespace android {
@@ -20,17 +22,17 @@ scoped_refptr<GroupIndicatorLayer> GroupIndicatorLayer::Create(
 // static
 void GroupIndicatorLayer::SetConstants(int reorder_background_top_margin,
                                        int reorder_background_bottom_margin,
-                                       int reorder_background_padding_start,
-                                       int reorder_background_padding_end,
+                                       int reorder_background_padding_short,
+                                       int reorder_background_padding_long,
                                        int reorder_background_corner_radius) {
   GroupIndicatorLayer::reorder_background_top_margin_ =
       reorder_background_top_margin;
   GroupIndicatorLayer::reorder_background_bottom_margin_ =
       reorder_background_bottom_margin;
-  GroupIndicatorLayer::reorder_background_padding_start_ =
-      reorder_background_padding_start;
-  GroupIndicatorLayer::reorder_background_padding_end_ =
-      reorder_background_padding_end;
+  GroupIndicatorLayer::reorder_background_padding_short_ =
+      reorder_background_padding_short;
+  GroupIndicatorLayer::reorder_background_padding_long_ =
+      reorder_background_padding_long;
   GroupIndicatorLayer::reorder_background_corner_radius_ =
       reorder_background_corner_radius;
 }
@@ -42,8 +44,8 @@ void GroupIndicatorLayer::SetProperties(
     int bubble_tint,
     bool incognito,
     bool foreground,
+    bool collapsed,
     bool show_bubble,
-    bool show_reorder_background,
     float x,
     float y,
     float width,
@@ -55,7 +57,11 @@ void GroupIndicatorLayer::SetProperties(
     float bottom_indicator_height,
     float bubble_padding,
     float bubble_size,
-    float tab_strip_height) {
+    float tab_strip_height,
+    bool is_keyboard_focused,
+    ui::NinePatchResource* keyboard_focus_ring_drawable,
+    int keyboard_focus_ring_offset,
+    int keyboard_focus_ring_width) {
   // Update group indicator properties.
   foreground_ = foreground;
   group_indicator_->SetPosition(gfx::PointF(x, y));
@@ -141,25 +147,30 @@ void GroupIndicatorLayer::SetProperties(
   bottom_outline_->SetBackgroundColor(SkColor4f::FromColor(tint));
 
   // Set reorder background if needed.
-  if (show_reorder_background) {
+  if (foreground) {
     reorder_background_->SetIsDrawable(true);
     reorder_background_->SetBackgroundColor(
         SkColor4f::FromColor(reorder_background_tint));
 
     float reorder_background_x = x;
     float reorder_background_y = reorder_background_top_margin_;
+    float reorder_background_width = collapsed ? width : bottom_indicator_width;
+    float reorder_background_padding_start = reorder_background_padding_short_;
+    float reorder_background_padding_end =
+        collapsed ? reorder_background_padding_short_
+                  : reorder_background_padding_long_;
     if (is_rtl) {
       reorder_background_x -=
-          (bottom_indicator_width + reorder_background_padding_end_ - width);
+          (reorder_background_width + reorder_background_padding_end - width);
     } else {
-      reorder_background_x -= reorder_background_padding_start_;
+      reorder_background_x -= reorder_background_padding_start;
     }
     reorder_background_->SetPosition(
         gfx::PointF(reorder_background_x, reorder_background_y));
 
-    float reorder_background_width = reorder_background_padding_start_ +
-                                     bottom_indicator_width +
-                                     reorder_background_padding_end_;
+    reorder_background_width = reorder_background_padding_start +
+                               reorder_background_width +
+                               reorder_background_padding_end;
     float reorder_background_height = tab_strip_height -
                                       reorder_background_top_margin_ -
                                       reorder_background_bottom_margin_;
@@ -167,6 +178,25 @@ void GroupIndicatorLayer::SetProperties(
         gfx::Size(reorder_background_width, reorder_background_height));
   } else {
     reorder_background_->SetIsDrawable(false);
+  }
+
+  // Show keyboard focus ring if needed.
+  if (is_keyboard_focused) {
+    float offset = keyboard_focus_ring_offset + keyboard_focus_ring_width;
+    keyboard_focus_ring_->SetIsDrawable(true);
+    keyboard_focus_ring_->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+    keyboard_focus_ring_->SetAperture(keyboard_focus_ring_drawable->aperture());
+    keyboard_focus_ring_->SetPosition(gfx::PointF(x - offset, y - offset));
+    keyboard_focus_ring_->SetBounds(
+        gfx::Size(width + offset * 2, height + offset * 2));
+    keyboard_focus_ring_->SetFillCenter(true);
+    keyboard_focus_ring_->SetBorder(
+        keyboard_focus_ring_drawable->Border(keyboard_focus_ring_->bounds()));
+  } else {
+    // Clean up the keyboard focus ring if it was previously showing but
+    // shouldn't be showing now.
+    keyboard_focus_ring_->SetIsDrawable(false);
   }
 }
 
@@ -185,10 +215,12 @@ GroupIndicatorLayer::GroupIndicatorLayer(LayerTitleCache* layer_title_cache)
       group_indicator_(cc::slim::SolidColorLayer::Create()),
       bottom_outline_(cc::slim::SolidColorLayer::Create()),
       notification_bubble_(cc::slim::SolidColorLayer::Create()),
+      keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
       foreground_(false) {
   reorder_background_->SetIsDrawable(false);
   group_indicator_->SetIsDrawable(true);
   bottom_outline_->SetIsDrawable(true);
+  keyboard_focus_ring_->SetIsDrawable(false);
   notification_bubble_->SetIsDrawable(false);
 
   int corner_radius = GroupIndicatorLayer::reorder_background_corner_radius_;
@@ -198,6 +230,7 @@ GroupIndicatorLayer::GroupIndicatorLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(reorder_background_);
   layer_->AddChild(group_indicator_);
   layer_->AddChild(bottom_outline_);
+  layer_->AddChild(keyboard_focus_ring_);
   group_indicator_->AddChild(notification_bubble_);
 }
 

@@ -9,6 +9,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
@@ -36,7 +40,10 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       (override));
   MOCK_METHOD(void,
               SendAccountsRequest,
-              (const GURL&, const std::string&, AccountsRequestCallback),
+              (const url::Origin& idp_origin,
+               const GURL&,
+               const std::string&,
+               AccountsRequestCallback),
               (override));
   MOCK_METHOD(void,
               SendTokenRequest,

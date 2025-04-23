@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -50,6 +51,7 @@
 namespace syncer {
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::DataTypeState;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
@@ -86,10 +88,6 @@ const DeviceInfo::FormFactor kLocalDeviceFormFactor =
 
 MATCHER_P(HasDeviceInfo, expected, "") {
   return arg.device_info().SerializeAsString() == expected.SerializeAsString();
-}
-
-MATCHER_P(EqualsProto, expected, "") {
-  return arg.SerializeAsString() == expected.SerializeAsString();
 }
 
 MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {

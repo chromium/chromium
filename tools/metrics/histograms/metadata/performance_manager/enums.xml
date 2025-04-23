@@ -34,6 +34,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Mixed"/>
 </enum>
 
+<enum name="InputScenarioUpdateReason">
+  <int value="0" label="Key Event"/>
+  <int value="1" label="Tap Event"/>
+  <int value="2" label="Scroll Start Event"/>
+  <int value="3" label="Scroll End Event"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Node Removed"/>
+</enum>
+
 <enum name="LocalSiteCharacteristicsDBInitStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Corruption"/>

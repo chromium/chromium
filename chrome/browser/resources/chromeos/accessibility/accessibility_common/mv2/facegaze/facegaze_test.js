@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['facegaze_test_base.js']);
 
-FaceGazeTest = class extends FaceGazeTestBase {
+FaceGazeMV2Test = class extends FaceGazeTestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
@@ -34,7 +34,8 @@ FaceGazeTest = class extends FaceGazeTestBase {
 };
 
 AX_TEST_F(
-    'FaceGazeTest', 'FacialGesturesInFacialGesturesToMediapipeGestures', () => {
+    'FaceGazeMV2Test', 'FacialGesturesInFacialGesturesToMediapipeGestures',
+    () => {
       // Tests that all new FacialGestures are mapped to
       // MediapipeFacialGestures. FacialGestures are those set by the user,
       // while MediapipeFacialGestures are the raw gestures recognized by
@@ -51,7 +52,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest',
+    'FaceGazeMV2Test',
     'GestureDetectorUpdatesStateAfterToggleGestureInfoForSettingsEvent',
     async function() {
       await this.configureFaceGaze(new Config());
@@ -67,7 +68,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest',
+    'FaceGazeMV2Test',
     'GestureDetectorSendsGestureInfoAfterToggleGestureInfoForSettingsEvent',
     async function() {
       const gestureToMacroName =
@@ -106,7 +107,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest',
+    'FaceGazeMV2Test',
     'GestureDetectorDoesNotSendGestureInfoIfNoToggleGestureInfoForSettingsEvent',
     async function() {
       const gestureToMacroName =
@@ -133,41 +134,44 @@ AX_TEST_F(
           0, this.mockAccessibilityPrivate.getSendGestureInfoToSettingsCount());
     });
 
-AX_TEST_F('FaceGazeTest', 'IntervalReusesForeheadLocation', async function() {
-  const config =
-      new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
-  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+AX_TEST_F(
+    'FaceGazeMV2Test', 'IntervalReusesForeheadLocation', async function() {
+      const config =
+          new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
-  // Manually executing the mouse interval sets the cursor position with the
-  // most recent forehead location.
-  for (let i = 0; i < 3; i++) {
-    this.mockAccessibilityPrivate.clearCursorPosition();
-    this.triggerMouseControllerInterval();
-    this.assertLatestCursorPosition({x: 600, y: 400});
-  }
-});
+      // Manually executing the mouse interval sets the cursor position with the
+      // most recent forehead location.
+      for (let i = 0; i < 3; i++) {
+        this.mockAccessibilityPrivate.clearCursorPosition();
+        this.triggerMouseControllerInterval();
+        this.assertLatestCursorPosition({x: 600, y: 400});
+      }
+    });
 
-AX_TEST_F('FaceGazeTest', 'CursorPositionUpdatedOnInterval', async function() {
-  const config =
-      new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
-  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+AX_TEST_F(
+    'FaceGazeMV2Test', 'CursorPositionUpdatedOnInterval', async function() {
+      const config =
+          new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
-  const result =
-      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.2, 0.4);
-  this.processFaceLandmarkerResult(
-      result, /*triggerMouseControllerInterval=*/ false);
+      const result =
+          new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+              0.2, 0.4);
+      this.processFaceLandmarkerResult(
+          result, /*triggerMouseControllerInterval=*/ false);
 
-  // Cursor position doesn't change on result.
-  this.assertLatestCursorPosition({x: 600, y: 400});
+      // Cursor position doesn't change on result.
+      this.assertLatestCursorPosition({x: 600, y: 400});
 
-  // Cursor position does change after interval fired.
-  this.triggerMouseControllerInterval();
-  const cursorPosition = this.getLatestCursorPosition();
-  assertNotEquals(600, cursorPosition.x);
-  assertNotEquals(400, cursorPosition.y);
-});
+      // Cursor position does change after interval fired.
+      this.triggerMouseControllerInterval();
+      const cursorPosition = this.getLatestCursorPosition();
+      assertNotEquals(600, cursorPosition.x);
+      assertNotEquals(400, cursorPosition.y);
+    });
 
-AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'UpdateMouseLocation', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
@@ -210,7 +214,7 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdatesMousePositionOnlyWhenCursorControlEnabled',
+    'FaceGazeMV2Test', 'UpdatesMousePositionOnlyWhenCursorControlEnabled',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -264,7 +268,7 @@ AX_TEST_F(
 // This test should use the same cursor positions as the previous version,
 // but different forehead locations (with the same offsets).
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationFromDifferentForeheadLocation',
+    'FaceGazeMV2Test', 'UpdateMouseLocationFromDifferentForeheadLocation',
     async function() {
       const config =
           new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
@@ -288,7 +292,8 @@ AX_TEST_F(
 // Tests that left/top offsets in ScreenBounds are respected. This should have
 // the same results as the first test offset by exactly left/top.
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithScreenNotAtZero', async function() {
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithScreenNotAtZero',
+    async function() {
       this.mockAccessibilityPrivate.setDisplayBounds(
           [{left: 100, top: 50, width: 1200, height: 800}]);
 
@@ -313,7 +318,7 @@ AX_TEST_F(
       this.assertLatestCursorPosition({x: 700, y: 450});
     });
 
-AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'UpdateMouseLocationWithBuffer', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(6);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
@@ -349,7 +354,7 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move1', async function() {
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithSpeed1Move1', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -371,7 +376,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move5', async function() {
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithSpeed1Move5', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -391,7 +396,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move20', async function() {
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithSpeed1Move20', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
@@ -411,7 +416,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove1',
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithAccelerationMove1',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -441,7 +446,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove5',
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithAccelerationMove5',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -468,7 +473,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove10',
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithAccelerationMove10',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -501,7 +506,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove20',
+    'FaceGazeMV2Test', 'UpdateMouseLocationWithAccelerationMove20',
     async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
@@ -530,7 +535,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'DetectGesturesAndPerformShortActions', async function() {
+    'FaceGazeMV2Test', 'DetectGesturesAndPerformShortActions',
+    async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -570,7 +576,7 @@ AX_TEST_F(
 
 
 AX_TEST_F(
-    'FaceGazeTest', 'DetectGesturesAndPerformLongActions', async function() {
+    'FaceGazeMV2Test', 'DetectGesturesAndPerformLongActions', async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -623,7 +629,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseMoveFromCursorControlDuringLongClick',
+    'FaceGazeMV2Test', 'SendMouseMoveFromCursorControlDuringLongClick',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
@@ -704,7 +710,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'SendMouseMoveFromUserDuringLongClick', async function() {
+    'FaceGazeMV2Test', 'SendMouseMoveFromUserDuringLongClick',
+    async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -764,7 +771,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffActionsWhileInMiddleOfLongClick', async function() {
+    'FaceGazeMV2Test', 'TurnOffActionsWhileInMiddleOfLongClick',
+    async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -788,7 +796,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'RemoveLongClickActionWhileInMiddleOfLongClick',
+    'FaceGazeMV2Test', 'RemoveLongClickActionWhileInMiddleOfLongClick',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
@@ -815,7 +823,7 @@ AX_TEST_F(
 // The BrowDown gesture is special because it is the combination of two
 // separate facial gestures. This test ensures that the associated action is
 // performed if either of the gestures is detected.
-AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BrowDownGesture', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.BROWS_DOWN, MacroName.RESET_CURSOR);
   const gestureToConfidence = new Map().set(FacialGesture.BROWS_DOWN, 0.6);
@@ -863,7 +871,7 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'DoesNotPerformActionsWhenActionsDisabled',
+    'FaceGazeMV2Test', 'DoesNotPerformActionsWhenActionsDisabled',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -915,7 +923,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'ActionsUseMouseLocationWhenCursorControlDisabled',
+    'FaceGazeMV2Test', 'ActionsUseMouseLocationWhenCursorControlDisabled',
     async function() {
       const gestureToMacroName = new Map().set(
           FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_CLICK_RIGHT);
@@ -944,7 +952,7 @@ AX_TEST_F(
           {pressEvent, releaseEvent, isLeft: false, x: 350, y: 250});
     });
 
-AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'DoesNotRepeatGesturesTooSoon', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1034,7 +1042,7 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
   this.assertNumMouseEvents(4);
 });
 
-AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'DoesNotClickDuringLongClick', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1127,7 +1135,7 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   assertEquals(400, releaseEvent.y);
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'KeyEvents', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.KEY_PRESS_SPACE)
@@ -1308,7 +1316,7 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
 });
 
 // TODO(b/345059065): Test is flaky.
-AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'DISABLED_ClosesCameraStream', async function() {
   await this.getFaceGaze().cameraStreamReadyPromise_;
   let win = chrome.extension.getViews().find(
       view => view.location.href.includes('camera_stream.html'));
@@ -1322,7 +1330,8 @@ AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
 
 // TODO(crbug.com/348603598): Test is flaky.
 AX_TEST_F(
-    'FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function() {
+    'FaceGazeMV2Test', 'DISABLED_ToggleFaceGazeGesturesShort',
+    async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
@@ -1378,7 +1387,7 @@ AX_TEST_F(
       this.assertNumMouseEvents(2);
     });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'ToggleFaceGazeGesturesLong', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_LONG_CLICK_LEFT)
@@ -1482,7 +1491,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertKeyUp(this.getKeyEvents()[3]);
 });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'ToggleFaceGazeMouseMovement', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -1543,7 +1552,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
   this.assertLatestCursorPosition({x: 120, y: 720});
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'KeyCombinations', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1592,7 +1601,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
 });
 
-AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'KeyCombinationsRepeat', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1661,7 +1670,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
   assertNullOrUndefined(keyEvents[2].repeat);
 });
 
-AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'VelocityThreshold', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
@@ -1689,7 +1698,7 @@ AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
   this.assertLatestCursorPosition({x: 590, y: 406});
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextSimple', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1712,7 +1721,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextMultiple', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -1743,7 +1752,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextKeyCombination', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
@@ -1793,7 +1802,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalGesture',
+    'FaceGazeMV2Test', 'BubbleTextKeyCombinationAdditionalGesture',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -1860,7 +1869,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalState',
+    'FaceGazeMV2Test', 'BubbleTextKeyCombinationAdditionalState',
     async function() {
       const gestureToMacroName =
           new Map()
@@ -1929,7 +1938,7 @@ AX_TEST_F(
           this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'ToggleFaceGazeRecognizedTime', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1971,7 +1980,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
   assertFalse(this.getGestureHandler().paused_);
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextStateMessages', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -1999,7 +2008,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   assertTrue(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextLongClickStateMessage', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2040,7 +2049,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextDictationStateMessage', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2091,7 +2100,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextStateAndActionMessages', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -2146,7 +2155,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   assertFalse(this.getBubbleIsWarning());
 });
 
-AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'TurnOffActionsWhileInScrollMode', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -2177,7 +2186,7 @@ AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'RemoveScrollModeActionWhileInScrollMode',
+    'FaceGazeMV2Test', 'RemoveScrollModeActionWhileInScrollMode',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
@@ -2208,7 +2217,7 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'GesturesDisabledInScrollMode', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE)
@@ -2268,7 +2277,7 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
 
 // Ensures that localization works for all gestures and macros that get
 // displayed in the bubble UI.
-AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BubbleTextLocalization', async function() {
   const gestures = [
     FacialGesture.BROW_INNER_UP,
     FacialGesture.BROWS_DOWN,
@@ -2342,47 +2351,50 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
   }
 });
 
-AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
-  const gestureToMacroName =
-      new Map()
-          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT)
-          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
-  const gestureToConfidence = new Map()
-                                  .set(FacialGesture.BROW_INNER_UP, 0.3)
-                                  .set(FacialGesture.JAW_OPEN, 0.3);
-  const config = new Config()
-                     .withMouseLocation({x: 600, y: 400})
-                     .withBufferSize(1)
-                     .withCursorControlEnabled(false)
-                     .withBindings(gestureToMacroName, gestureToConfidence)
-                     .withRepeatDelayMs(0);
-  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+AX_TEST_F(
+    'FaceGazeMV2Test', 'GesturesDisabledDuringDictation', async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT)
+              .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.BROW_INNER_UP, 0.3)
+                                      .set(FacialGesture.JAW_OPEN, 0.3);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withCursorControlEnabled(false)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withRepeatDelayMs(0);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
-  const gestureHandler = this.getGestureHandler();
+      const gestureHandler = this.getGestureHandler();
 
-  // Make FaceGaze think that Dictation is active.
-  gestureHandler.isDictationActive_ = () => true;
+      // Make FaceGaze think that Dictation is active.
+      gestureHandler.isDictationActive_ = () => true;
 
-  // Ensure the only action allowed is TOGGLE_DICTATION.
-  let result = gestureHandler.detectMacros(
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
-  assertEquals(result.macros.length, 1);
-  assertEquals(result.macros[0].getName(), MacroName.TOGGLE_DICTATION);
+      // Ensure the only action allowed is TOGGLE_DICTATION.
+      let result = gestureHandler.detectMacros(
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
+      assertEquals(result.macros.length, 1);
+      assertEquals(result.macros[0].getName(), MacroName.TOGGLE_DICTATION);
 
-  // Make FaceGaze think that Dictation is inactive.
-  gestureHandler.isDictationActive_ = () => false;
+      // Make FaceGaze think that Dictation is inactive.
+      gestureHandler.isDictationActive_ = () => false;
 
-  // Ensure no restrictions are applied.
-  result = gestureHandler.detectMacros(
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
-  assertEquals(result.macros.length, 2);
-});
+      // Ensure no restrictions are applied.
+      result = gestureHandler.detectMacros(
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
+      assertEquals(result.macros.length, 2);
+    });
 
-AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'BlinkDoesNotTriggerEyeSquint', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT)
@@ -2471,7 +2483,8 @@ AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'InvalidTimeDurationGestureNotDetected', async function() {
+    'FaceGazeMV2Test', 'InvalidTimeDurationGestureNotDetected',
+    async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
@@ -2507,55 +2520,57 @@ AX_TEST_F(
       this.assertNumMouseEvents(0);
     });
 
-AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
-  const gestureToMacroName =
-      new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
-  const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
+AX_TEST_F(
+    'FaceGazeMV2Test', 'ValidTimeDurationGestureDetected', async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
 
-  // Set min duration very short so actions with any duration should be
-  // recognized. It is possible for a gesture to execute so quickly during a
-  // test that the duration appears to be 0 ms, so set the min duration
-  // threshold to -1 to ensure gestures with duration of 0 ms are recognized.
-  const config = new Config()
-                     .withMouseLocation({x: 600, y: 400})
-                     .withBindings(gestureToMacroName, gestureToConfidence)
-                     .withRepeatDelayMs(0)
-                     .withMinDurationMs(-1);
-  await this.configureFaceGaze(config);
+      // Set min duration very short so actions with any duration should be
+      // recognized. It is possible for a gesture to execute so quickly during a
+      // test that the duration appears to be 0 ms, so set the min duration
+      // threshold to -1 to ensure gestures with duration of 0 ms are
+      // recognized.
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withMinDurationMs(-1);
+      await this.configureFaceGaze(config);
 
-  const gestureHandler = this.getGestureHandler();
-  assertEquals(-1, gestureHandler.gestureTimer_.minDurationMs_);
+      const gestureHandler = this.getGestureHandler();
+      assertEquals(-1, gestureHandler.gestureTimer_.minDurationMs_);
 
-  let result =
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
-          .addGestureWithConfidence(
-              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
-  this.processFaceLandmarkerResult(result);
-  assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
-  this.assertNumMouseEvents(0);
+      let result = new MockFaceLandmarkerResult()
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
 
-  // Second landmarker result will give the gesture a duration, which should
-  // trigger the action since the min duration is set to 0.
-  result =
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
-          .addGestureWithConfidence(
-              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
-  this.processFaceLandmarkerResult(result);
-  assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
-  this.assertNumMouseEvents(2);
+      // Second landmarker result will give the gesture a duration, which should
+      // trigger the action since the min duration is set to 0.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
 
-  // Check that the start times are cleared if no gestures are detected at any
-  // confidence levels.
-  result = new MockFaceLandmarkerResult();
-  this.processFaceLandmarkerResult(result);
-  assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
-  this.assertNumMouseEvents(2);
-});
+      // Check that the start times are cleared if no gestures are detected at
+      // any confidence levels.
+      result = new MockFaceLandmarkerResult();
+      this.processFaceLandmarkerResult(result);
+      assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
+    });
 
 AX_TEST_F(
-    'FaceGazeTest', 'ValidTimeDurationGestureDetectedAfterInvalid',
+    'FaceGazeMV2Test', 'ValidTimeDurationGestureDetectedAfterInvalid',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
@@ -2617,7 +2632,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'ValidTimeDurationGestureTriggersActionMultiple',
+    'FaceGazeMV2Test', 'ValidTimeDurationGestureTriggersActionMultiple',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
@@ -2689,7 +2704,7 @@ AX_TEST_F(
       this.assertNumMouseEvents(4);
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseEvents', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'PrecisionClickMouseEvents', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2725,7 +2740,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseEvents', async function() {
       mouseEvents[1].mouseButton);
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'PrecisionClickBubbleText', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2764,7 +2779,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'PrecisionClickMouseMovement', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2799,7 +2814,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffActionsDuringPrecisionClick', async function() {
+    'FaceGazeMV2Test', 'TurnOffActionsDuringPrecisionClick', async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
@@ -2828,7 +2843,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeTest', 'TurnOffCursorControlDuringPrecisionClick',
+    'FaceGazeMV2Test', 'TurnOffCursorControlDuringPrecisionClick',
     async function() {
       const gestureToMacroName =
           new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
@@ -2857,7 +2872,7 @@ AX_TEST_F(
       assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'PrecisionClickAndScrollMode', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
@@ -2904,7 +2919,8 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'OtherGesturesDontStartPrecisionClick', async function() {
+    'FaceGazeMV2Test', 'OtherGesturesDontStartPrecisionClick',
+    async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.RESET_CURSOR)
@@ -2929,7 +2945,7 @@ AX_TEST_F(
       assertFalse(this.getMouseController().isPrecisionActive());
     });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
+AX_TEST_F('FaceGazeMV2Test', 'PrecisionRightClickBubbleText', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
@@ -2968,38 +2984,39 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
-AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {
-  const gestureToMacroName =
-      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
-  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
-  const config = new Config()
-                     .withBindings(gestureToMacroName, gestureToConfidence)
-                     .withRepeatDelayMs(0)
-                     .withPrecisionEnabled(/*speedFactor=*/ 50);
-  await this.configureFaceGaze(config);
+AX_TEST_F(
+    'FaceGazeMV2Test', 'PrecisionRightClickMouseEvents', async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+      const config = new Config()
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withPrecisionEnabled(/*speedFactor=*/ 50);
+      await this.configureFaceGaze(config);
 
-  // Start precision click by performing gesture assigned to right click.
-  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
-      MediapipeFacialGesture.JAW_OPEN, 0.9);
-  this.processFaceLandmarkerResult(result, false);
-  assertTrue(this.getMouseController().isPrecisionActive());
-  // Ensure no mouse events were sent.
-  assertEquals(this.getMouseEvents().length, 0);
+      // Start precision click by performing gesture assigned to right click.
+      let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertTrue(this.getMouseController().isPrecisionActive());
+      // Ensure no mouse events were sent.
+      assertEquals(this.getMouseEvents().length, 0);
 
-  // Perform the gesture again to right-click.
-  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
-      MediapipeFacialGesture.JAW_OPEN, 0.9);
-  this.processFaceLandmarkerResult(result, false);
-  assertFalse(this.getMouseController().isPrecisionActive());
+      // Perform the gesture again to right-click.
+      result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertFalse(this.getMouseController().isPrecisionActive());
 
-  const mouseEvents = this.getMouseEvents();
-  assertEquals(mouseEvents.length, 2);
-  this.assertMousePress(mouseEvents[0]);
-  this.assertMouseRelease(mouseEvents[1]);
-  assertEquals(
-      chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
-      mouseEvents[0].mouseButton);
-  assertEquals(
-      chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
-      mouseEvents[1].mouseButton);
-});
+      const mouseEvents = this.getMouseEvents();
+      assertEquals(mouseEvents.length, 2);
+      this.assertMousePress(mouseEvents[0]);
+      this.assertMouseRelease(mouseEvents[1]);
+      assertEquals(
+          chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
+          mouseEvents[0].mouseButton);
+      assertEquals(
+          chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
+          mouseEvents[1].mouseButton);
+    });

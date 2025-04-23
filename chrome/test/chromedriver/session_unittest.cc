@@ -195,7 +195,7 @@ TEST(Session, OnBidiResponseNoChan) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("goog:channel", std::string("/512") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   std::optional<base::Value> data_parsed =
@@ -251,7 +251,7 @@ TEST(Session, OnBidiResponseUnknownConnection) {
   session.AddBidiConnection(136, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("goog:channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -270,7 +270,7 @@ TEST(Session, OnBidiResponseRemovedConnection) {
                             base::BindRepeating([] {}));
   session.RemoveBidiConnection(1);
   base::Value::Dict payload;
-  payload.Set("goog:channel", std::string("/1") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/1") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -287,7 +287,7 @@ TEST(Session, OnBidiResponseAfterCloseAllConnections) {
                             base::BindRepeating([] {}));
   session.CloseAllConnections();
   base::Value::Dict payload;
-  payload.Set("goog:channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it

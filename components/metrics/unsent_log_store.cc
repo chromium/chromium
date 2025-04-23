@@ -155,12 +155,10 @@ void UnsentLogStore::LogInfo::Init(const std::string& log_data,
   }
 
   hash = base::SHA1HashString(log_data);
-
-  CHECK(ComputeHMACForLog(log_data, signing_key, &signature))
-    << "HMAC signing failed";
+  signature = ComputeHMACForLog(log_data, signing_key);
 
   timestamp = log_timestamp;
-  this->log_metadata = optional_log_metadata;
+  log_metadata = optional_log_metadata;
 }
 
 void UnsentLogStore::LogInfo::Init(const std::string& log_data,
@@ -238,15 +236,13 @@ const LogMetadata UnsentLogStore::staged_log_metadata() const {
 }
 
 // static
-bool UnsentLogStore::ComputeHMACForLog(const std::string& log_data,
-                                       const std::string& signing_key,
-                                       std::string* signature) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const size_t digest_length = hmac.DigestLength();
-  unsigned char* hmac_data = reinterpret_cast<unsigned char*>(
-      base::WriteInto(signature, digest_length + 1));
-  return hmac.Init(signing_key) &&
-         hmac.Sign(log_data, hmac_data, digest_length);
+std::string UnsentLogStore::ComputeHMACForLog(std::string_view log_data,
+                                              std::string_view signing_key) {
+  auto data = base::as_byte_span(log_data);
+  auto key = base::as_byte_span(signing_key);
+  std::array<uint8_t, crypto::hash::kSha256Size> hmac =
+      crypto::hmac::SignSha256(key, data);
+  return std::string(base::as_string_view(hmac));
 }
 
 void UnsentLogStore::StageNextLog() {

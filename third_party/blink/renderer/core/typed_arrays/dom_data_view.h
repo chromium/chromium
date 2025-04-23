@@ -23,9 +23,7 @@ class CORE_EXPORT DOMDataView final : public DOMArrayBufferView {
 
   DOMDataView(DOMArrayBufferBase* dom_array_buffer,
               size_t byte_offset,
-              size_t byte_length)
-      : DOMArrayBufferView(dom_array_buffer, byte_offset),
-        raw_byte_length_(byte_length) {}
+              size_t byte_length);
 
   v8::Local<v8::Value> Wrap(ScriptState*) override;
 

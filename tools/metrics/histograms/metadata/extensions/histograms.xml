@@ -206,7 +206,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2025-06-29">
+    expires_after="2025-10-19">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -256,7 +256,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2025-08-17">
+    units="Extension Count" expires_after="2025-10-19">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -410,7 +410,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2025-08-10">
+    units="count" expires_after="2025-10-12">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -740,7 +740,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV3.GoogleDocsOffline"
-    enum="VerifiedFileType" expires_after="2025-08-01">
+    enum="VerifiedFileType" expires_after="2025-10-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1578,7 +1578,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2025-07-13">
+    expires_after="2025-10-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2375,6 +2375,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ForceInstalledManagementAuthorityTrustworthiness"
+    enum="ManagementAuthorityTrustworthiness" expires_after="2025-10-01">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the higher of two values, trust level for the machine or that of the
+    user profile. The trust level is determined by the management authority,
+    such as local device, non-local, cryptographically verifiable policy source,
+    etc. This histogram is emitted when all the force-installed extensions are
+    ready to use. Recorded for only Windows and Mac.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
     enum="ExtensionDisableReason" expires_after="never">
 <!-- expires-never: Monitoring outcomes of admin installed extensions -->
@@ -2624,7 +2637,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.DidSandboxedComponentExtensionAPICall"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-09-30">
   <owner>wjmaclean@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -2638,7 +2651,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.DidSandboxedExtensionAPICall"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-09-30">
   <owner>wjmaclean@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -2806,7 +2819,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.SynchronousExecutionTime" units="ms"
-    expires_after="2025-08-03">
+    expires_after="2025-10-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3793,7 +3806,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3921,7 +3934,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ManifestVersionPopulationSplit.{ManifestLocation}"
-    enum="ManifestVersionPopulationSplit" expires_after="2025-08-01">
+    enum="ManifestVersionPopulationSplit" expires_after="2025-10-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4083,7 +4096,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MV2Deprecation.MV2ExtensionState.{ManifestLocation}"
-    enum="MV2ExtensionState" expires_after="2025-08-03">
+    enum="MV2ExtensionState" expires_after="2025-10-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4405,6 +4418,26 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Printing.UsesSupportedMargins" enum="Boolean"
+    expires_after="2026-04-01">
+  <owner>nmuggli@google.com</owner>
+  <owner>msisov@igalia.com</owner>
+  <summary>
+    Records whether users of the chrome.printing extension API are using margins
+    values that are supported by the printer.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Printing.UsesSupportedPrintScaling" enum="Boolean"
+    expires_after="2026-04-01">
+  <owner>nmuggli@google.com</owner>
+  <owner>msisov@igalia.com</owner>
+  <summary>
+    Records whether users of the chrome.printing extension API are using print
+    scaling values that are supported by the printer.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts"
     enum="BooleanHasWithheldHosts" expires_after="2023-07-07">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -4473,18 +4506,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     and only if the RuntimeHostPermissions feature is enabled and the extension
     has had host permissions withheld. See also
     Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.SandboxedPageLoad.IsWebAccessibleResource"
-    enum="BooleanVisible" expires_after="2024-11-01">
-  <owner>solomonkinard@google.com</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Logs if the requested extension subresource is a Web Accessible Resource
-    that is &quot;visible&quot; to any requesting origin. Logged for each
-    extension subresource request if the requesting origin is opaque (with
-    precursor origin also being an extension).
   </summary>
 </histogram>
 
@@ -5085,7 +5106,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
-    units="Extension Count" expires_after="2025-08-03">
+    units="Extension Count" expires_after="2025-10-05">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

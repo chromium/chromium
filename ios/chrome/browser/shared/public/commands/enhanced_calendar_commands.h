@@ -5,16 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ENHANCED_CALENDAR_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ENHANCED_CALENDAR_COMMANDS_H_
 
-namespace ios::provider {
-enum class AddToCalendarIntegrationProvider;
-}  // namespace ios::provider
+@class EnhancedCalendarConfiguration;
 
 // Commands to show/hide the Enhanced Calendar bottom sheet.
 @protocol EnhancedCalendarCommands <NSObject>
 
 // Shows the Enhanced Calendar bottom sheet for the current WebState.
-- (void)showEnhancedCalendarBottomSheetWithIntegrationProvider:
-    (ios::provider::AddToCalendarIntegrationProvider)integrationProvider;
+- (void)showEnhancedCalendarWithConfig:
+    (EnhancedCalendarConfiguration*)enhancedCalendarConfig;
 
 // Hides the Enhanced Calendar bottom sheet. Will also cancel any in-flight
 // Enhanced Calendar model requests

@@ -23,26 +23,11 @@ import {SelectShareTargetResult, ShareTargetListenerCallbackRouter, StartDiscove
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {ArraySelector} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_discovery_page.html.js';
-
-/**
- * Converts an unguessable token to a string.
- */
-function tokenToString(token: UnguessableToken): string {
-  return `${token.high.toString()}#${token.low.toString()}`;
-}
-
-/**
- * Compares two unguessable tokens.
- */
-function tokensEqual(a: UnguessableToken, b: UnguessableToken): boolean {
-  return a.high === b.high && a.low === b.low;
-}
 
 /**
  * The pulse animation asset URL.
@@ -195,7 +180,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * @return True if share target found
    */
   selectShareTargetForTesting(shareTarget: ShareTarget): boolean {
-    const token = tokenToString(shareTarget.id);
+    const token = shareTarget.id;
     assert(this.shareTargetMap_);
     if (this.shareTargetMap_.has(token)) {
       this.selectShareTarget_(this.shareTargetMap_.get(token)!);
@@ -308,7 +293,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         (event.currentTarget as NearbyDeviceElement).shareTarget;
     assert(currentShareTarget);
     const currentIndex = this.shareTargets_.findIndex(
-        (target) => tokensEqual(target.id, currentShareTarget.id));
+        (target) => target.id === currentShareTarget.id);
     event.stopPropagation();
     switch (event.code) {
       // Down arrow: bring into focus the next shareTarget in list.
@@ -373,7 +358,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    */
   private isShareTargetSelected_(shareTarget: ShareTarget): boolean {
     return !!this.selectedShareTarget && !!shareTarget &&
-        tokensEqual(this.selectedShareTarget.id, shareTarget.id);
+        this.selectedShareTarget.id === shareTarget.id;
   }
 
   private onShareTargetDiscovered_(shareTarget: ShareTarget) {
@@ -387,16 +372,16 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     }
     this.shareTargets_ =
         this.selfShareTargets_.concat(this.nonSelfShareTargets_);
-    this.shareTargetMap_.set(tokenToString(shareTarget.id), shareTarget);
+    this.shareTargetMap_.set(shareTarget.id, shareTarget);
   }
 
   private updateShareTargetList_(
       shareTargetList: ShareTarget[], shareTargetListString: string,
       shareTarget: ShareTarget) {
     assert(this.shareTargetMap_);
-    if (this.shareTargetMap_.has(tokenToString(shareTarget.id))) {
-      const index = shareTargetList.findIndex(
-          (target) => tokensEqual(target.id, shareTarget.id));
+    if (this.shareTargetMap_.has(shareTarget.id)) {
+      const index =
+          shareTargetList.findIndex((target) => target.id === shareTarget.id);
       assert(index !== -1);
       this.splice(shareTargetListString, index, 1, shareTarget);
       this.updateSelectedShareTarget_(shareTarget.id, shareTarget);
@@ -409,13 +394,13 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     if (shareTarget.forSelfShare) {
       // Remove target from `selfShareTargets_`.
       const index = this.selfShareTargets_.findIndex(
-          (target) => tokensEqual(target.id, shareTarget.id));
+          (target) => target.id === shareTarget.id);
       assert(index !== -1);
       this.splice('selfShareTargets_', index, 1);
     } else {
       // Remove target from `nonSelfShareTargets_`.
       const index = this.nonSelfShareTargets_.findIndex(
-          (target) => tokensEqual(target.id, shareTarget.id));
+          (target) => target.id === shareTarget.id);
       assert(index !== -1);
       this.splice('nonSelfShareTargets_', index, 1);
     }
@@ -425,7 +410,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         this.selfShareTargets_.concat(this.nonSelfShareTargets_));
 
     assert(this.shareTargetMap_);
-    this.shareTargetMap_.delete(tokenToString(shareTarget.id));
+    this.shareTargetMap_.delete(shareTarget.id);
     this.updateSelectedShareTarget_(shareTarget.id, /*shareTarget=*/ null);
   }
 
@@ -479,9 +464,8 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * Updates the selected share target to |shareTarget| if its id matches |id|.
    */
   private updateSelectedShareTarget_(
-      id: UnguessableToken, shareTarget: ShareTarget|null) {
-    if (this.selectedShareTarget &&
-        tokensEqual(this.selectedShareTarget.id, id)) {
+      id: string, shareTarget: ShareTarget|null) {
+    if (this.selectedShareTarget && this.selectedShareTarget.id === id) {
       this.selectedShareTarget = shareTarget;
       const selector =
           this.shadowRoot!.querySelector<ArraySelector>('.selector');

@@ -4,6 +4,7 @@
 """Definitions of builders in the infra bucket."""
 
 load("//lib/builders.star", "builders", "cpu", "os")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 consoles.console_view(
@@ -18,6 +19,8 @@ builders.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
+    shadow_pool = ci.DEFAULT_SHADOW_POOL,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 luci.bucket(
@@ -49,6 +52,22 @@ luci.bucket(
     ],
 )
 
+luci.bucket(
+    name = "infra.shadow",
+    shadows = "infra",
+    constraints = luci.bucket_constraints(
+        pools = [ci.DEFAULT_SHADOW_POOL],
+        service_accounts = [ci.DEFAULT_SHADOW_SERVICE_ACCOUNT],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    dynamic = True,
+)
+
 builders.builder(
     name = "autosharder",
     bucket = "infra",
@@ -70,5 +89,8 @@ builders.builder(
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
         ),
     ],
+    properties = {
+        "target_runtime": 15.0,
+    },
     service_account = "chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com",
 )

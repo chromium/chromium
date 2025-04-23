@@ -23,6 +23,7 @@
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
@@ -147,10 +148,11 @@ void AttemptDebuggerBufferCapture(
   si_info->usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   si_info->mailbox = context->mailbox();
 
-  if (auto* graphite_context = context_state->graphite_context()) {
+  if (auto* graphite_shared_context =
+          context_state->graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_context->asyncRescaleAndReadPixels(
+    graphite_shared_context->asyncRescaleAndReadPixels(
         skimage.get(), dst_info,
         SkIRect::MakeWH(texture_size.width(), texture_size.height()),
         SkSurface::RescaleGamma::kSrc, SkSurface::RescaleMode::kRepeatedLinear,

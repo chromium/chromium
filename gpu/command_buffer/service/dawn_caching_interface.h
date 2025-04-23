@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -39,6 +40,9 @@ class GPU_GLES2_EXPORT DawnCachingBackend
 
   size_t LoadData(const std::string& key, void* value_out, size_t value_size);
   void StoreData(const std::string& key, const void* value, size_t value_size);
+
+  void PurgeMemory(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::ProcessMemoryDump* pmd);
@@ -78,7 +82,7 @@ class GPU_GLES2_EXPORT DawnCachingBackend
   base::flat_set<std::unique_ptr<Entry>> entries_ GUARDED_BY(mutex_);
   base::LinkedList<Entry> lru_ GUARDED_BY(mutex_);
 
-  const size_t max_size_;
+  size_t max_size_ GUARDED_BY(mutex_);
   size_t current_size_ GUARDED_BY(mutex_) = 0;
 };
 
@@ -169,6 +173,9 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   // notifies the GPU process, and the last reference held by the factory is
   // released.
   void ReleaseHandle(const gpu::GpuDiskCacheHandle& handle);
+
+  void PurgeMemory(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

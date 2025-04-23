@@ -46,7 +46,6 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -229,11 +228,6 @@ void Path::Apply(void* info, PathApplierFunction function) const {
   }
 }
 
-Path& Path::Transform(const AffineTransform& xform) {
-  path_.transform(xform.ToSkMatrix());
-  return *this;
-}
-
 float Path::length() const {
   float length = 0;
   SkPathMeasure measure(path_, false);
@@ -306,10 +300,6 @@ PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
   return {gfx::SkPointToPointF(path_.getPoint(0)), 0};
 }
 
-void Path::Clear() {
-  path_.reset();
-}
-
 bool Path::IsEmpty() const {
   return path_.isEmpty();
 }
@@ -320,115 +310,6 @@ bool Path::IsClosed() const {
 
 bool Path::IsLine() const {
   return path_.isLine(nullptr);
-}
-
-void Path::SetIsVolatile(bool is_volatile) {
-  path_.setIsVolatile(is_volatile);
-}
-
-std::optional<gfx::PointF> Path::CurrentPoint() const {
-  SkPoint point;
-  if (path_.getLastPt(&point)) {
-    return gfx::SkPointToPointF(point);
-  }
-  return std::nullopt;
-}
-
-void Path::MoveTo(const gfx::PointF& point) {
-  path_.moveTo(gfx::PointFToSkPoint(point));
-}
-
-void Path::AddLineTo(const gfx::PointF& point) {
-  path_.lineTo(gfx::PointFToSkPoint(point));
-}
-
-void Path::AddQuadCurveTo(const gfx::PointF& cp, const gfx::PointF& ep) {
-  path_.quadTo(gfx::PointFToSkPoint(cp), gfx::PointFToSkPoint(ep));
-}
-
-void Path::AddBezierCurveTo(const gfx::PointF& p1,
-                            const gfx::PointF& p2,
-                            const gfx::PointF& ep) {
-  path_.cubicTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2),
-                gfx::PointFToSkPoint(ep));
-}
-
-void Path::AddArcTo(const gfx::PointF& p1,
-                    const gfx::PointF& p2,
-                    float radius) {
-  path_.arcTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2), radius);
-}
-
-void Path::CloseSubpath() {
-  path_.close();
-}
-
-void Path::AddEllipse(const gfx::PointF& c,
-                      float radius_x,
-                      float radius_y,
-                      float start_angle,
-                      float end_angle) {
-  DCHECK(EllipseIsRenderable(start_angle, end_angle));
-  DCHECK_GE(start_angle, 0);
-  DCHECK_LT(start_angle, kTwoPiFloat);
-
-  const SkRect oval = SkRect::MakeLTRB(c.x() - radius_x, c.y() - radius_y,
-                                       c.x() + radius_x, c.y() + radius_y);
-
-  const float start_degrees = Rad2deg(start_angle);
-  const float sweep_degrees = Rad2deg(end_angle - start_angle);
-
-  // We can't use SkPath::addOval(), because addOval() makes a new sub-path.
-  // addOval() calls moveTo() and close() internally.
-
-  // Use 180, not 360, because SkPath::arcTo(oval, angle, 360, false) draws
-  // nothing.
-  // TODO(fmalita): we should fix that in Skia.
-  if (WebCoreFloatNearlyEqual(std::abs(sweep_degrees), 360)) {
-    // incReserve() results in a single allocation instead of multiple as is
-    // done by multiple calls to arcTo().
-    path_.incReserve(10, 5, 4);
-    // SkPath::arcTo can't handle the sweepAngle that is equal to or greater
-    // than 2Pi.
-    const float sweep180 = std::copysign(180, sweep_degrees);
-    path_.arcTo(oval, start_degrees, sweep180, false);
-    path_.arcTo(oval, start_degrees + sweep180, sweep180, false);
-    return;
-  }
-
-  path_.arcTo(oval, start_degrees, sweep_degrees, false);
-}
-
-void Path::AddArc(const gfx::PointF& p,
-                  float radius,
-                  float start_angle,
-                  float end_angle) {
-  AddEllipse(p, radius, radius, start_angle, end_angle);
-}
-
-void Path::AddEllipse(const gfx::PointF& p,
-                      float radius_x,
-                      float radius_y,
-                      float rotation,
-                      float start_angle,
-                      float end_angle) {
-  DCHECK(EllipseIsRenderable(start_angle, end_angle));
-  DCHECK_GE(start_angle, 0);
-  DCHECK_LT(start_angle, kTwoPiFloat);
-
-  if (!rotation) {
-    AddEllipse(p, radius_x, radius_y, start_angle, end_angle);
-    return;
-  }
-
-  // Add an arc after the relevant transform.
-  AffineTransform ellipse_transform =
-      AffineTransform::Translation(p.x(), p.y()).RotateRadians(rotation);
-  DCHECK(ellipse_transform.IsInvertible());
-  AffineTransform inverse_ellipse_transform = ellipse_transform.Inverse();
-  Transform(inverse_ellipse_transform);
-  AddEllipse(gfx::PointF(), radius_x, radius_y, start_angle, end_angle);
-  Transform(ellipse_transform);
 }
 
 Path Path::MakeRect(const gfx::RectF& rect) {
@@ -452,14 +333,6 @@ Path Path::MakeEllipse(const gfx::PointF& center,
                        float radius_x,
                        float radius_y) {
   return PathBuilder().AddEllipse(center, radius_x, radius_y).Finalize();
-}
-
-void Path::AddPath(const Path& src, const AffineTransform& transform) {
-  path_.addPath(src.GetSkPath(), transform.ToSkMatrix());
-}
-
-void Path::Translate(const gfx::Vector2dF& offset) {
-  path_.offset(offset.x(), offset.y());
 }
 
 bool EllipseIsRenderable(float start_angle, float end_angle) {

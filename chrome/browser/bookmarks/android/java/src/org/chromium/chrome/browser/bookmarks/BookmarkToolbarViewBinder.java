@@ -76,6 +76,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD) {
             bookmarkToolbar.setSelectionShowMarkUnread(
                     model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+        } else if (key == BookmarkToolbarProperties.NEXT_FOCUSABLE_VIEW) {
+            bookmarkToolbar.setNextFocusableView(
+                    model.get(BookmarkToolbarProperties.NEXT_FOCUSABLE_VIEW));
         }
     }
 }

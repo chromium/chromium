@@ -36,8 +36,6 @@ class FaviconBrowserAgent final : public BrowserUserData<FaviconBrowserAgent>,
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
       session_restoration_service_observation_{this};
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_BROWSER_AGENT_H_

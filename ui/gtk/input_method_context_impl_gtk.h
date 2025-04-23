@@ -14,8 +14,9 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/gfx/geometry/rect.h"
 
-using GtkIMContext = struct _GtkIMContext;
 using GdkWindow = struct _GdkWindow;
+using GtkIMContext = struct _GtkIMContext;
+using GtkWidget = struct _GtkWidget;
 
 namespace gtk {
 
@@ -55,9 +56,6 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void OnPreeditEnd(GtkIMContext* context);
   void OnPreeditStart(GtkIMContext* context);
 
-  // Only used on GTK3.
-  void SetContextClientWindow(GdkWindow* window, GtkIMContext* gtk_context);
-
   // Returns the IMContext depending on the currently connected input field
   // type.
   GtkIMContext* GetIMContext();
@@ -69,18 +67,16 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;
 
   // IME's input GTK context.
-  raw_ptr<GtkIMContext> gtk_context_ = nullptr;
-  raw_ptr<GtkIMContext> gtk_simple_context_ = nullptr;
-
-  // Only used on GTK3.
-  gpointer gdk_last_set_client_window_ = nullptr;
-  gpointer gdk_last_set_client_window_for_simple_ = nullptr;
+  ScopedGObject<GtkIMContext> gtk_context_ = nullptr;
+  ScopedGObject<GtkIMContext> gtk_simple_context_ = nullptr;
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   // Effective only on non-simple context.
   gfx::Rect last_caret_bounds_;
 
   std::vector<ScopedGSignal> signals_;
+
+  static GtkWidget* dummy_window_;
 };
 
 }  // namespace gtk

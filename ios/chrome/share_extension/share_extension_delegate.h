@@ -22,6 +22,8 @@
     (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapSearchInIncognitoShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet;
+- (void)shareExtensionSheetWillDisappear:
+    (ShareExtensionSheet*)shareExtensionSheet;
 
 @end
 

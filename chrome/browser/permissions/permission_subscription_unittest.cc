@@ -14,6 +14,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -62,7 +63,10 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
                              PermissionStatus expected) {
     EXPECT_EQ(expected,
               GetPermissionController()
-                  ->GetPermissionResultForOriginWithoutContext(type, url_, url_)
+                  ->GetPermissionResultForOriginWithoutContext(
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(type),
+                      url_, url_)
                   .status);
   }
 
@@ -92,7 +96,9 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
     return GetPermissionController()->GetPermissionStatusForCurrentDocument(
-        permission, render_frame_host);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_frame_host);
   }
 
   const GURL url() const { return url_.GetURL(); }

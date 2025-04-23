@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -39,6 +40,7 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
@@ -114,14 +116,25 @@ size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
 
 void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
     const SyncedBookmarkTracker& tracker) {
-  size_t num_unsynced_entities = 0;
-  for (const auto* entity : tracker.GetAllEntities()) {
-    if (entity->IsUnsynced()) {
-      num_unsynced_entities++;
-    }
-  }
-  syncer::SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-      syncer::BOOKMARKS, num_unsynced_entities);
+  syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+      syncer::UnsyncedDataRecordingEvent::kOnModelReady,
+      {{syncer::BOOKMARKS, tracker.GetUnsyncedDataCount()}});
+}
+
+// Gaia-ID-related metrics should not be recorded on mobile platforms, where
+// Sync-the-feature is no longer a thing (excluding edge cases pending
+// migration). On desktop, use `wipe_model_upon_sync_disabled_behavior` as
+// a workaround to distinguish transport mode from full-sync mode, as
+// metrics should only be recorded for the latter.
+bool ShouldRecordPreviouslySyncingGaiaIdMetrics(
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+  return wipe_model_upon_sync_disabled_behavior ==
+         syncer::WipeModelUponSyncDisabledBehavior::kNever;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -595,8 +608,13 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
         bookmark_model_, bookmark_model_observer_.get());
 
     bookmark_model_->EnsurePermanentNodesExist();
-    BookmarkModelMerger model_merger(std::move(updates), bookmark_model_,
-                                     favicon_service_, bookmark_tracker_.get());
+    BookmarkModelMerger model_merger(
+        std::move(updates), bookmark_model_, favicon_service_,
+        bookmark_tracker_.get(),
+        ShouldRecordPreviouslySyncingGaiaIdMetrics(
+            wipe_model_upon_sync_disabled_behavior_)
+            ? activation_request_.previously_syncing_gaia_id_info
+            : syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified);
     model_merger.Merge();
   }
 
@@ -637,10 +655,10 @@ void BookmarkDataTypeProcessor::StartTrackingMetadata() {
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
 }
 
-void BookmarkDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(bookmark_tracker_ &&
-                          bookmark_tracker_->HasLocalChanges());
+void BookmarkDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(
+      bookmark_tracker_ ? bookmark_tracker_->GetUnsyncedDataCount() : 0);
 }
 
 void BookmarkDataTypeProcessor::GetAllNodesForDebugging(

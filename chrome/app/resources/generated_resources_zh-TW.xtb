@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全金鑰</translation>
 <translation id="1028700151766901954">原因：LBS 預設保存在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
-<translation id="1028823395684328817">如要繼續使用 Google 帳戶中的密碼和其他資訊，請驗證身分</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1029526375103058355">點按</translation>
@@ -264,6 +263,7 @@
 <translation id="1174073918202301297">已新增捷徑</translation>
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則你的連線都安全無虞</translation>
 <translation id="1175131936083782305">管理員已停用這項功能。</translation>
+<translation id="1175277108283187866">造訪網站或在網址列中開始搜尋</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1175914831232945926">數字</translation>
@@ -457,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可以編輯下列檔案</translation>
 <translation id="130174306655812048">試著詢問「Ok Google，這是什麼歌？」</translation>
 <translation id="1302227299132585524">允許 Apple 事件的 JavaScript</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> 群組 - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML 格式的書籤檔案</translation>
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
@@ -480,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">系統會將你登出所有網站，包含已開啟的分頁</translation>
 <translation id="1313705515580255288">系統會將你的書籤、歷史記錄和其他設定與你的 Google 帳戶同步處理。</translation>
-<translation id="1315184295353569363">取消儲存群組</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316248800168909509">無法連線到 <ph name="DEVICE" />，請再試一次。</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
@@ -540,7 +538,6 @@
 <translation id="1362829980946830670">你可以繼續執行前一個工作階段，並持續運作目前的工作階段。</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
-<translation id="1363772878823415675">授權 <ph name="SPECIFIC_NAME" /> 存取 USB 裝置。</translation>
 <translation id="136378536198524553">節能模式已開啟</translation>
 <translation id="136522805455656552">為了維護裝置安全，建議你只執行及安裝來自可信任來源和開發人員的軟體。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">挑眉</translation>
@@ -817,7 +814,6 @@
 <translation id="1558671750917454373">繼續投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1561331397460162942">系統服務和具有位置存取權的應用程式、網站將可存取位置資訊</translation>
 <translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
-<translation id="1563137369682381456">到期日</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -1251,6 +1247,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />進行註冊前，你必須清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你也可以完全關閉 TPM 裝置。系統仍會透過軟體加密功能安全儲存你的資料，但會停用硬體支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />只要重新啟動並進入系統 BIOS/UEFI 設定，即可變更 TPM 設定。操作步驟會因裝置型號而有所不同。如需更多資訊，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 說明文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">正在與這個分頁共用「<ph name="TAB_NAME" />」</translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置...</translation>
@@ -2560,6 +2557,7 @@
 <translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
+<translation id="2744221223678373668">共用</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
@@ -2752,6 +2750,7 @@
 <translation id="2878889940310164513">新增行動網路...</translation>
 <translation id="288042212351694283">存取你的 Universal 2nd Factor 裝置</translation>
 <translation id="2881076733170862447">當你點選擴充功能時</translation>
+<translation id="2882530630263790933">音訊和影片</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並進行重設</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連線能力等等</translation>
 <translation id="2885129935310217435">已有名稱相同的按鈕，請選擇其他名稱。</translation>
@@ -3052,7 +3051,6 @@
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上傳這項資料的原因：</translation>
 <translation id="3103512663951238230">Alt + 滑鼠左鍵</translation>
-<translation id="3104763887980088552">活動記錄</translation>
 <translation id="3104948640446684649">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">上次更新失敗</translation>
 <translation id="3105796011181310544">要改回 Google 嗎？</translation>
@@ -3464,7 +3462,6 @@
 <translation id="3420501302812554910">必須重設內部安全金鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。</translation>
-<translation id="3421835120203732951">新增設定檔</translation>
 <translation id="3422989558057853751">這是最後一個選取的項目，取消選取後就會結束選取模式</translation>
 <translation id="3423111258700187173">在「<ph name="FOLDER_TITLE" />」中找到的結果</translation>
 <translation id="3423226218833787854">進一步瞭解這項 AI 功能</translation>
@@ -4543,6 +4540,7 @@
 <translation id="4139326893730851150">韌體更新</translation>
 <translation id="4142052906269098341">用你的手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">瞭解 AI 如何塑造使用體驗，並協助你選擇適當的隱私權設定</translation>
+<translation id="4143754025452944766">你也可以選擇從這部裝置上移除帳戶擴充功能。</translation>
 <translation id="4146026355784316281">一律使用系統檢視器開啟</translation>
 <translation id="4146785383423576110">重設與清理</translation>
 <translation id="4147099377280085053">選取點字表</translation>
@@ -4706,7 +4704,6 @@
 <translation id="4268025649754414643">金鑰編密</translation>
 <translation id="4268516942564021145">您的帳戶無法使用這項設定。</translation>
 <translation id="4270393598798225102">第 <ph name="NUMBER" /> 版</translation>
-<translation id="4274604968379621964">儲存群組</translation>
 <translation id="4274667386947315930">登入資料</translation>
 <translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
 <translation id="4275291496240508082">啟動音效</translation>
@@ -5704,7 +5701,7 @@
 <translation id="4980805016576257426">這個擴充功能含有惡意軟體。</translation>
 <translation id="4983159853748980742">系統未分享你的密碼。請檢查網際網路連線，並確定你已登入 Chrome，然後再試一次。</translation>
 <translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
-<translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4986728572522335985">這項操作將刪除這個安全金鑰上的所有資料，包括 PIN 碼</translation>
 <translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -5844,9 +5841,7 @@
 <translation id="5087864757604726239">返回</translation>
 <translation id="5088427648965532275">Passpoint 供應商</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
-<translation id="5089763948477033443">側邊面板大小調整控點</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
-<translation id="5090981554736747495">授權 Linux 應用程式存取 USB 裝置。</translation>
 <translation id="5091636240353511739">顯示 PIN 碼</translation>
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -5981,6 +5976,7 @@
 <translation id="5186381005592669696">自訂支援應用程式的顯示語言</translation>
 <translation id="5186788525428341874">你可以在所有裝置上使用這個密碼金鑰快速登入。系統會將密碼金鑰儲存到 <ph name="ACCOUNT_NAME" /> 的 Google 密碼管理工具。</translation>
 <translation id="5187641678926990264">將頁面安裝為應用程式(&amp;I)...</translation>
+<translation id="5187671830619031922">將分頁新增到分割檢視畫面</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">共用者：<ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
@@ -6168,7 +6164,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5320135788267874712">新的裝置名稱</translation>
-<translation id="5320261549977878764">取消儲存群組</translation>
 <translation id="532247166573571973">無法連上伺服器，請稍後再試。</translation>
 <translation id="5323328004379641163">自訂 Chrome 和這個網頁的外觀</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
@@ -6327,6 +6322,7 @@
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗現在的寬度為 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格現在的寬度為 <ph name="PANE_SIZE_PERCENT" />。</translation>
+<translation id="5438060324827306856">尋找擴充功能(&amp;E)</translation>
 <translation id="5440425659852470030">關閉側邊面板</translation>
 <translation id="544083962418256601">建立捷徑...</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網頁應用程式</translation>
@@ -6556,7 +6552,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
 <translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
-<translation id="560919433407466404">授權 Parallels Desktop 存取 USB 裝置。</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
@@ -6796,7 +6791,6 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
-<translation id="5795422263272161110">並排顯示</translation>
 <translation id="5796485699458186843">新無痕分頁</translation>
 <translation id="5796956053441619942">不支援遠端裝置中的網址</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
@@ -6951,7 +6945,6 @@
 <translation id="5901069264981746702">你的指紋資料會安全地儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">切換至目前擷取的分頁</translation>
 <translation id="5901494423252125310">印表機的蓋子處於開啟狀態</translation>
-<translation id="5901526412306322179">活動記錄</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5902892210366342391">在無痕模式下前往不安全的網站前發出警告</translation>
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -7435,6 +7428,7 @@
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6249200942125593849">管理無障礙功能</translation>
 <translation id="6250186368828697007">分享螢幕畫面時會隱藏詳細資料</translation>
+<translation id="6250887692313997958">選擇要新增到分割檢視畫面的分頁</translation>
 <translation id="6251870443722440887">GDI 控制代碼</translation>
 <translation id="6251924700383757765">隱私權政策</translation>
 <translation id="625369703868467034">網路健康狀態</translation>
@@ -8086,6 +8080,7 @@
 <translation id="6728528977475057549">末四碼為 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">請輸入你的使用者名稱</translation>
 <translation id="6729280095610283088">明亮的北極光照射在森林上空。</translation>
+<translation id="6729493062119577923">共用分頁群組活動</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6732956960067639542">請改為開啟新的 Chrome 瀏覽器工作階段。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -8628,7 +8623,6 @@
 <translation id="7109543803214225826">已移除捷徑</translation>
 <translation id="7110388475787189534">瞭解如何自動整理分頁</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
-<translation id="7110684627876015299">未命名的群組 - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">為這個視窗命名</translation>
 <translation id="7113502843173351041">存取你的電子郵件地址</translation>
 <translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
@@ -8999,7 +8993,6 @@
 <translation id="7387107590792462040">正在安裝，請稍候</translation>
 <translation id="7387273928653486359">可以接受</translation>
 <translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
-<translation id="7388209873137778229">只顯示支援的裝置。</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
@@ -9233,7 +9226,6 @@
 <translation id="7552846755917812628">嘗試按照下列提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">請輸入您的密碼</translation>
-<translation id="7554342082838376298">自動變更密碼</translation>
 <translation id="755472745191515939">管理員已禁止使用這種語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶，請輸入您的密碼。</translation>
@@ -9318,7 +9310,6 @@
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
 <translation id="7622966771025050155">切換至已擷取的分頁</translation>
 <translation id="7624337243375417909">大寫鎖定模式已關閉</translation>
-<translation id="7625025537587898155">新增設定檔</translation>
 <translation id="7625568159987162309">查看各網站的權限及儲存的資料</translation>
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
@@ -10508,7 +10499,6 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">你可以使用 PIN 碼將裝置解鎖。</translation>
-<translation id="8426111352542548860">儲存群組</translation>
 <translation id="8427213022735114808">語音輸入功能會將你的語音資料傳送給 Google，讓你使用自己的語音在任何文字欄位中輸入內容。</translation>
 <translation id="8427292751741042100">嵌入任何主機</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -10684,7 +10674,6 @@
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="8555444629041783356">自動更新日落時刻表</translation>
-<translation id="855604308879080518">允許 Android 應用程式在這台 Chromebook 上存取 USB 裝置。每次你插入 USB 裝置時，系統皆會要求權限。個別 Android 應用程式會要求額外權限。</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557100046150195444">使用 Touch ID 以繼續操作</translation>
 <translation id="8557856025359704738">下次下載日期為 <ph name="NEXT_DATE_DOWNLOAD" />。</translation>
@@ -11083,6 +11072,7 @@
 <translation id="8827125715368568315">已封鎖：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
 <translation id="8828933418460119530">DNS 名稱</translation>
+<translation id="8829979393064090868">將分頁新增到分割檢視畫面</translation>
 <translation id="883062543841130884">替代項目</translation>
 <translation id="8830779999439981481">正在重新啟動以套用更新</translation>
 <translation id="8830796635868321089">無法以目前的 Proxy 設定啟動更新檢查，請調整 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
@@ -11208,7 +11198,6 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">是，我同意</translation>
-<translation id="8917980324687233736">並排顯示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式...</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>
@@ -11271,6 +11260,7 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8964927371396953727">請驗證身分，才能將密碼儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的密碼</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
+<translation id="8967403839792635452">正在開發擴充功能嗎？歡迎參閱 Chrome 擴充功能開發人員說明文件，隨時掌握<ph name="BEGIN_LINK" />最新資訊<ph name="END_LINK" />。</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8967548289042494261">移除「<ph name="VM_NAME" />」</translation>
 <translation id="8968527460726243404">Chrome 作業系統映像檔寫入工具</translation>
@@ -11394,7 +11384,6 @@
 <translation id="9036484080057916082">憑證簽署的時間戳記清單</translation>
 <translation id="9037054491984310631">已連線至名為「<ph name="DEVICE" />」的藍牙裝置</translation>
 <translation id="9037640663275993951">不允許使用裝置</translation>
-<translation id="9037706442425692248">允許 Android 應用程式在這台 Chromebook 上存取 USB 裝置</translation>
 <translation id="9037818663270399707">你的連線有部分網路流量不屬於私人連線</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9038489124413477075">未命名的資料夾</translation>
@@ -11509,6 +11498,7 @@
 <translation id="9113240369465613386">僅限奇數頁</translation>
 <translation id="9113469270512809735">顯示/隱藏最近關閉的項目</translation>
 <translation id="9113529408970052045">當網站上的文字方塊可填入簡短內容時，「幫我寫」功能會自動開啟</translation>
+<translation id="9114210796909453187">完成分割檢視畫面</translation>
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
 <translation id="9116366756388192417">選擇主題</translation>
@@ -11735,7 +11725,6 @@
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，你好</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
-<translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">一般</translation>

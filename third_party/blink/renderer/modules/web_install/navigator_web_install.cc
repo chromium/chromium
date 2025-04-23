@@ -29,15 +29,21 @@ const char kInvalidManifestIdErrorDetails[] = "Invalid manifest id";
 void OnInstallResponse(ScriptPromiseResolver<WebInstallResult>* resolver,
                        mojom::blink::WebInstallServiceResult result,
                        const KURL& manifest_id) {
-  if (result != mojom::blink::WebInstallServiceResult::kSuccess) {
-    resolver->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
-    return;
+  switch (result) {
+    case mojom::blink::WebInstallServiceResult::kAbortError:
+      resolver->Reject(
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+      break;
+    case mojom::blink::WebInstallServiceResult::kDataError:
+      resolver->Reject(
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError));
+      break;
+    case mojom::blink::WebInstallServiceResult::kSuccess:
+      WebInstallResult* blink_result = WebInstallResult::Create();
+      blink_result->setManifestId(manifest_id.GetString());
+      resolver->Resolve(std::move(blink_result));
+      break;
   }
-
-  WebInstallResult* blink_result = WebInstallResult::Create();
-  blink_result->setManifestId(manifest_id.GetString());
-  resolver->Resolve(std::move(blink_result));
 }
 
 NavigatorWebInstall::NavigatorWebInstall(Navigator& navigator)

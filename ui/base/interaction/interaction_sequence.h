@@ -529,6 +529,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // Returns whether the current step uses ContextMode::kAny.
   bool IsCurrentStepInAnyContextForTesting() const;
 
+  // Returns whether the current step is using "immediate" execution mode.
+  bool IsCurrentStepImmediateForTesting() const;
+
   // Explicitly fails the sequence.
   void FailForTesting();
 

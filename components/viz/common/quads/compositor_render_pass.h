@@ -72,7 +72,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const std::optional<gfx::RRectF>& backdrop_filter_bounds,
+              const std::optional<SkPath>& backdrop_filter_bounds,
               SubtreeCaptureId capture_id,
               gfx::Size subtree_capture_size,
               ViewTransitionElementResourceId resource_id,

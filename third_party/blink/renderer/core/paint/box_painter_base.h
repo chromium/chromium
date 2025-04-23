@@ -26,9 +26,9 @@ namespace blink {
 class BackgroundImageGeometry;
 class BoxBackgroundPaintContext;
 class ComputedStyle;
+class ContouredRect;
 class Document;
 class FillLayer;
-class FloatRoundedRect;
 class GraphicsContext;
 class ImageResourceObserver;
 class LayoutBox;
@@ -173,7 +173,7 @@ class BoxPainterBase {
       PaintFlags paint_flags) const = 0;
   static void PaintInsetBoxShadow(
       const PaintInfo&,
-      const FloatRoundedRect&,
+      const ContouredRect&,
       const ComputedStyle&,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 

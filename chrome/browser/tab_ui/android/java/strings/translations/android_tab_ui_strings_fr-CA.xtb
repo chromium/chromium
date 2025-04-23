@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fr-CA">
+<translation id="1293272072740285747">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.
+
+Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="TITLE_OF_GROUP" /> » et il sera supprimé de tous les appareils.</translation>
+<translation id="1340839264183302272">Quitter le groupe</translation>
+<translation id="1419023007528516122">Cette action supprimera définitivement le groupe de votre appareil</translation>
+<translation id="1501480321619201731">Supprimer le groupe</translation>
+<translation id="2677748264148917807">Quitter</translation>
+<translation id="3547352561153509682">Cela supprimera le groupe de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Dissocier le groupe d'onglets?</translation>
+<translation id="4139634748112164403">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé</translation>
+<translation id="4431937619879060901">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils</translation>
+<translation id="4460014764210899310">Dégrouper</translation>
+<translation id="4777866634702576038">Supprimer le groupe d'onglets?</translation>
+<translation id="5094423602314093681">Retirer des onglets et supprimer un groupe?</translation>
+<translation id="5647702255748985085">Quitter le groupe?</translation>
+<translation id="742664698522525515">Conserver le groupe?</translation>
+<translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
+<translation id="8261506727792406068">Supprimer</translation>
+<translation id="870736955561925754">Fermer l'onglet et supprimer le groupe?</translation>
+<translation id="8804742093141782941">Conserver le groupe</translation>
+<translation id="9169141410816678175">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et celui-ci sera supprimé de tous les appareils</translation>
+<translation id="9216898458513705996">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Supprimer le groupe?</translation>
+</translationbundle>

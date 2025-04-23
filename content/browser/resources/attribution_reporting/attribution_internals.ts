@@ -434,6 +434,8 @@ class Report {
             status.replacedByHigherPriorityReport}`,
         false,
       ];
+    } else if (status.expired !== undefined) {
+      return ['Expired', false];
     } else if (status.prohibitedByBrowserPolicy !== undefined) {
       return ['Prohibited by browser policy', false];
     } else if (status.failedToAssemble !== undefined) {

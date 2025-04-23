@@ -365,10 +365,6 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  will_process_response_count_++;
-  base::UmaHistogramCounts100(
-      "SafeBrowsing.BrowserThrottle.WillProcessResponseCount",
-      will_process_response_count_);
 
   if (blocked_) {
     // OnCompleteCheck() has set |blocked_| to true and called

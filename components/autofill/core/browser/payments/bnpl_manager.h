@@ -16,7 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
@@ -32,14 +32,14 @@ struct BnplFetchVcnResponseDetails;
 struct BnplFetchUrlResponseDetails;
 struct BnplIssuerContext;
 
-// Owned by PaymentsAutofillClient. There is one instance of this class per Web
-// Contents. This class manages the flow for BNPL to complete a payment
+// Owned by BrowserAutofillManager. There is one instance of this class per
+// frame. This class manages the flow for BNPL to complete a payment
 // transaction.
 class BnplManager {
  public:
   using OnBnplVcnFetchedCallback = base::OnceCallback<void(const CreditCard&)>;
 
-  explicit BnplManager(AutofillClient* autofill_client);
+  explicit BnplManager(BrowserAutofillManager* browser_autofill_manager);
   BnplManager(const BnplManager& other) = delete;
   BnplManager& operator=(const BnplManager& other) = delete;
   virtual ~BnplManager();
@@ -54,6 +54,9 @@ class BnplManager {
   // micros). `on_bnpl_vcn_fetched_callback` is the callback that should be run
   // if the flow is completed successfully, to fill the form with the VCN that
   // will facilitate the BNPL transaction.
+  //
+  // TODO(crbug.com/409358161): Rename `InitBnplFlow` to
+  // `OnDidAcceptBnplSuggestion`.
   virtual void InitBnplFlow(
       uint64_t final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
@@ -78,10 +81,6 @@ class BnplManager {
   // that the manager can update suggestions for buy-now-pay-later.
   virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount);
-
-  // Returns if user has seen a BNPL suggestion before and if the BNPL
-  // feature is enabled. Does not check for user's locale.
-  bool ShouldShowBnplSettings() const;
 
  private:
   friend class BnplManagerTestApi;
@@ -238,16 +237,16 @@ class BnplManager {
   // uneligible + unlinked.
   std::vector<BnplIssuerContext> GetSortedBnplIssuerContext();
 
-  PaymentsAutofillClient& payments_autofill_client() {
-    return *autofill_client_->GetPaymentsAutofillClient();
-  }
-
   const PaymentsAutofillClient& payments_autofill_client() const {
     return const_cast<BnplManager*>(this)->payments_autofill_client();
   }
 
-  // The associated autofill client.
-  const raw_ref<AutofillClient> autofill_client_;
+  PaymentsAutofillClient& payments_autofill_client() {
+    return *browser_autofill_manager_->client().GetPaymentsAutofillClient();
+  }
+
+  // The associated browser autofill manager.
+  const raw_ref<BrowserAutofillManager> browser_autofill_manager_;
 
   // The state for the ongoing flow. Only present if there is a flow currently
   // ongoing. Set when a flow is initiated, and reset upon flow completion.

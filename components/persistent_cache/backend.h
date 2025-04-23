@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/entry_metadata.h"
 
 namespace persistent_cache {
 
@@ -37,6 +38,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   virtual std::unique_ptr<Entry> Find(std::string_view key) = 0;
 
   // Used to add an entry containing `content` and associated with `key`.
+  // Metadata associated with the entry can be provided in `metadata` or the
+  // object can be default initialized to signify no metadata.
   //
   // This call will never report failure and `content` is expected (but not
   // guaranteed) to be resident upon return.
@@ -46,7 +49,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   //
   // Thread-safe.
   virtual void Insert(std::string_view key,
-                      base::span<const uint8_t> content) = 0;
+                      base::span<const uint8_t> content,
+                      EntryMetadata metadata) = 0;
 
  protected:
   Backend();

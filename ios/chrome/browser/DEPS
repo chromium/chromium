@@ -176,6 +176,7 @@ include_rules = [
   "-ios/chrome/browser",
   "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/policy/model",
 
   # Shared dependencies.
   "+ios/chrome/browser/shared/coordinator",

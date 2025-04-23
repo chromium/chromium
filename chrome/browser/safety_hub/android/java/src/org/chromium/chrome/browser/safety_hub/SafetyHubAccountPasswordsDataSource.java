@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safety_hub;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -27,7 +28,7 @@ public class SafetyHubAccountPasswordsDataSource
                 PasswordStoreBridge.PasswordStoreObserver,
                 SigninManager.SignInStateObserver {
     interface Observer {
-        void stateChanged(@ModuleType int moduleType);
+        void accountPasswordsStateChanged(@ModuleType int moduleType);
     }
 
     /**
@@ -64,13 +65,14 @@ public class SafetyHubAccountPasswordsDataSource
     private final SafetyHubFetchService mSafetyHubFetchService;
     private final SigninManager mSigninManager;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final ObserverList<Observer> mObservers;
 
     @Nullable private PasswordStoreBridge mPasswordStoreBridge;
-    private Observer mObserver;
 
     private int mCompromisedPasswordCount;
     private int mWeakPasswordCount;
     private int mReusedPasswordCount;
+    private @ModuleType int mModuleType;
 
     SafetyHubAccountPasswordsDataSource(
             SafetyHubModuleDelegate moduleDelegate,
@@ -83,6 +85,7 @@ public class SafetyHubAccountPasswordsDataSource
         mModuleDelegate = moduleDelegate;
         mProfile = profile;
         mSigninManager = signinManager;
+        mObservers = new ObserverList<>();
     }
 
     public void setUp() {
@@ -101,17 +104,23 @@ public class SafetyHubAccountPasswordsDataSource
         updateCompromisedPasswordCount();
         updateReusedPasswordCount();
         updateWeakPasswordCount();
-        if (mObserver != null) {
-            mObserver.stateChanged(getModuleType());
+        mModuleType = calculateModuleType();
+
+        for (Observer observer : mObservers) {
+            observer.accountPasswordsStateChanged(mModuleType);
         }
     }
 
-    public void setObserver(Observer observer) {
-        mObserver = observer;
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
     }
 
-    // Returns the password module type according to the application state.
-    private @ModuleType int getModuleType() {
+    public @ModuleType int getModuleType() {
+        return mModuleType;
+    }
+
+    // Calculates the password module type according to the application state.
+    private @ModuleType int calculateModuleType() {
         boolean isWeakAndReusedFeatureEnabled =
                 ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled();
 
@@ -203,7 +212,7 @@ public class SafetyHubAccountPasswordsDataSource
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
         }
-        mObserver = null;
+        mObservers.clear();
     }
 
     @Override

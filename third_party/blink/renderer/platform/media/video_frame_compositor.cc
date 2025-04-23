@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/base/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -74,11 +72,7 @@ void VideoFrameCompositor::SetIsSurfaceVisible(
     bool is_visible,
     base::WaitableEvent* done_event) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  // TODO(394137303): Re-enable SetIsSurfaceVisible(false) in TreesInViz
-  // once the visibility callback is wired.
-  static const bool trees_in_viz_mode =
-      base::FeatureList::IsEnabled(features::kTreesInViz);
-  submitter_->SetIsSurfaceVisible(is_visible || trees_in_viz_mode);
+  submitter_->SetIsSurfaceVisible(is_visible);
   if (done_event)
     done_event->Signal();
 }

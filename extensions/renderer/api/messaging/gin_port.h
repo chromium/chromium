@@ -82,10 +82,10 @@ class GinPort final : public gin::Wrappable<GinPort> {
   const PortId& port_id() const { return port_id_; }
   const std::string& name() const { return name_; }
 
-  bool is_closed_for_testing() const { return state_ == kDisconnected; }
+  bool is_closed_for_testing() const { return state_ == State::kDisconnected; }
 
  private:
-  enum State {
+  enum class State {
     kActive,        // The port is currently active.
     kDisconnected,  // The port was disconnected by calling port.disconnect().
     kInvalidated,   // The associated v8::Context has been invalidated.
@@ -128,7 +128,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   void ThrowError(v8::Isolate* isolate, std::string_view error);
 
   // The current state of the port.
-  State state_ = kActive;
+  State state_ = State::kActive;
 
   // The associated port id.
   const PortId port_id_;

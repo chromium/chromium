@@ -47,6 +47,16 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   const RangeBoundary* exitRangeStart(ExecutionContext* execution_context);
   const RangeBoundary* exitRangeEnd(ExecutionContext* execution_context);
 
+  void setRangeBoundariesForTest(RangeBoundary* start,
+                                 RangeBoundary* exit,
+                                 RangeBoundary* exit_start,
+                                 RangeBoundary* exit_end) {
+    range_start_ = start;
+    range_end_ = exit;
+    exit_range_start_ = exit_start;
+    exit_range_end_ = exit_end;
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_);
     visitor->Trace(range_start_);
@@ -77,6 +87,23 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
     };
   }
 
+  // Structure representing the scroll offsets (in px) corresponding to the
+  // boundaries of the trigger (default) range and the exit range;
+  struct TriggerBoundaries {
+    // The start offset of the trigger/default range.
+    double start;
+    // The end offset of the trigger/default range.
+    double end;
+    // The start offset of the exit range.
+    double exit_start;
+    // The end offset of the exit range.
+    double exit_end;
+  };
+
+  TriggerBoundaries ComputeTriggerBoundaries(Element& timeline_source,
+                                             const ScrollTimeline& timeline);
+
+ private:
   // It's possible we're in a range that would normally action
   // the animation but, e.g. because `animation-play-state` was 'paused'
   // when we initially entered the range (and updated |state_|) and has now
@@ -85,7 +112,6 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   // the the animation in these cases.
   void ProcessPendingPlayStateUpdate(Animation* animation);
 
- private:
   Member<AnimationTimeline> timeline_;
   Type type_;
   Member<const RangeBoundary> range_start_;

@@ -45,7 +45,7 @@ build_webui("build") {
     "demos/cr_tree/cr_tree_demo.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "demos/buttons/buttons_demo.html.ts",

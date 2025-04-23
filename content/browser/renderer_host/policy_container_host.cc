@@ -12,6 +12,8 @@
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -145,19 +147,18 @@ PolicyContainerPolicies::PolicyContainerPolicies(
 PolicyContainerPolicies::PolicyContainerPolicies(
     const blink::mojom::PolicyContainerPolicies& policies,
     bool is_web_secure_context)
-    : referrer_policy(policies.referrer_policy),
-      ip_address_space(policies.ip_address_space),
-      is_web_secure_context(is_web_secure_context),
-      content_security_policies(
-          mojo::Clone(policies.content_security_policies)),
-      cross_origin_embedder_policy(policies.cross_origin_embedder_policy),
-      sandbox_flags(policies.sandbox_flags),
-      is_credentialless(policies.is_credentialless),
-      can_navigate_top_without_user_gesture(
-          policies.can_navigate_top_without_user_gesture),
-      allow_cross_origin_isolation(policies.allow_cross_origin_isolation),
-      cross_origin_isolation_enabled_by_dip(
-          policies.cross_origin_isolation_enabled_by_dip) {}
+    : PolicyContainerPolicies(policies.referrer_policy,
+                              policies.ip_address_space,
+                              is_web_secure_context,
+                              mojo::Clone(policies.content_security_policies),
+                              network::CrossOriginOpenerPolicy(),
+                              policies.cross_origin_embedder_policy,
+                              network::DocumentIsolationPolicy(),
+                              policies.sandbox_flags,
+                              policies.is_credentialless,
+                              policies.can_navigate_top_without_user_gesture,
+                              policies.allow_cross_origin_isolation,
+                              policies.cross_origin_isolation_enabled_by_dip) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
     const GURL& url,

@@ -68,6 +68,21 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
 // promo, or for the profile if there is no account available.
 void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                             Profile* profile);
+
+class SyncPromoIdentityPillManager {
+ public:
+  SyncPromoIdentityPillManager();
+  // Used only for testing.
+  SyncPromoIdentityPillManager(int max_shown_count, int max_used_count);
+
+  bool ShouldShowPromo(Profile& profile) const;
+  void RecordPromoShown(Profile& profile);
+  void RecordPromoUsed(Profile& profile);
+
+ private:
+  const int max_shown_count_ = 0;
+  const int max_used_count_ = 0;
+};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

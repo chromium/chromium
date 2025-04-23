@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Werwe kan vir jou ligging vra</translation>
 <translation id="3658847490588580244">Onderste blad van verstekblaaier</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> werf in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="RWS_MEMBERS_COUNT" /> werwe in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
+<translation id="3670480940339182416">Werwe kan die V8-optimeerder gebruik</translation>
 <translation id="3676777756440746804">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="3697164069658504920">Wanneer dit aan is, kan werwe vra om USB-toestelle te gebruik. Wanneer dit af is, kan werwe nie USB-toestelle gebruik nie.</translation>
+<translation id="3703430731944883733">Bestuur jou stroom</translation>
 <translation id="3707034683772193706">’n Werf wat jy besoek, kan ’n klein hoeveelheid inligting met Chrome deel, hoofsaaklik om te bekragtig dat jy nie ’n bot is nie</translation>
 <translation id="3708684582558000260">Moenie geslote werwe toelaat om data klaar te stuur of te ontvang nie</translation>
 <translation id="3709818294139939629">Werf se toegang tot lêer verwyder</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Vra voor werwe toegelaat word om inligting op NFC-toestelle te sien en te verander (aanbeveel)</translation>
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
 <translation id="421742575134139848">Werwe kan dalk klank speel om oudio vir musiek, video’s en ander media te verskaf</translation>
+<translation id="4217710972110098902">Gekoppel aan ’n reekspoort</translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nadat jy 'n werf verlaat het, kan dit aanhou sinkroniseer om take soos oplaai van foto's of stuur van kletsboodskappe te voltooi</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Om <ph name="APP_NAME" /> toegang tot jou mikrofoon te gee, moet jy mikrofoon ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
+<translation id="4578289292431526768">Kom ons begin</translation>
 <translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="461356340001513807">Jy kan by webwerwe aanmeld met die rekening wat jy by ’n identiteitdiens het</translation>
 <translation id="4635969503923889910">Moenie werwe toelaat om NFC-toestelle te gebruik nie</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">Kamera is afgeskakel in Android-instellings</translation>
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
+<translation id="571222594670061844">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys</translation>
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
+<translation id="5743425052258407233">Kry jou geskiedenis op al jou toestelle sodat jy maklik kan voortgaan waar jy opgehou het</translation>
 <translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> word geblokkeer</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5876056640971328065">Onderbreek video</translation>
 <translation id="5877248419911025165">Vou alle versoeke in</translation>
+<translation id="5878945009165002849">Blokkeer aanmeldporboodskappe van identiteitsdienste af</translation>
 <translation id="5884085660368669834">Werfvoorkeur</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
 <translation id="5908617755156109052">Moenie werwe toelaat om ’n 3D-kaart van jou omgewing te skep of jou kameraposisie na te spoor nie</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Werwe kan vra om kennisgewings te stuur</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6320088164292336938">Vibreer</translation>
-<translation id="6344622098450209924">Nasporing-beskerming</translation>
 <translation id="6367753977865761591">Blokkeer aanmelding deur derde partye vir ’n spesifieke werf.</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="640163077447496506">Verval vandag</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>
+<translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
 <translation id="8492822722330266509">Werwe kan opspringers stuur en herleidings gebruik</translation>

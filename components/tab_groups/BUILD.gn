@@ -37,7 +37,20 @@ if (is_android) {
   }
 
   android_library("tab_groups_java") {
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    resources_package = "org.chromium.components.tab_groups"
+    sources = [ "android/java/src/org/chromium/components/tab_groups/TabGroupColorPickerUtils.java" ]
+    deps = [
+      ":java_resources",
+      "//components/browser_ui/styles/android:java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_java",
+    ]
     srcjar_deps = [ ":java_enums" ]
+  }
+
+  android_resources("java_resources") {
+    sources = [ "android/java/res/values/colors.xml" ]
   }
 }

@@ -43,7 +43,7 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
-#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
+#include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
@@ -180,10 +180,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
-      std::unique_ptr<
-          testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>
-          connection = std::make_unique<
-              testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>();
+      auto connection = std::make_unique<testing::NiceMock<
+          trusted_vault::MockTrustedVaultThrottlingConnection>>();
       ON_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                testing::_, testing::_, testing::_))
           .WillByDefault(

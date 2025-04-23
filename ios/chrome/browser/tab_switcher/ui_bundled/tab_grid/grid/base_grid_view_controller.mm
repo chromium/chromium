@@ -1667,9 +1667,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
 
-  UIViewController* facePile =
-      [self.gridProvider facePileViewControllerForItem:groupItemIdentifier];
-  [cell setFacePileViewController:facePile parentViewController:self];
+  cell.facePile = [self.gridProvider facePileViewForItem:groupItemIdentifier];
 
   if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:groupItemIdentifier]) {

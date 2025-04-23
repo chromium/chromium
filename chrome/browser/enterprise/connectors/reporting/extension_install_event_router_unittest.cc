@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -28,21 +29,15 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace enterprise_connectors {
+
+namespace {
+
+using base::test::EqualsProto;
 using ::testing::_;
 using ::testing::ByRef;
 using ::testing::Eq;
 using ::testing::Return;
-
-MATCHER_P(EqualsProto, message, "") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
-
-namespace enterprise_connectors {
-
-namespace {
 
 constexpr char kFakeExtensionId[] = "fake-extension-id";
 constexpr char kFakeExtensionName[] = "Foo extension";

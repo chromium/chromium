@@ -239,20 +239,20 @@ abstract class Task {
  * rendering is done.
  */
 class RenderTask extends Task {
-  declare protected node: DomIf;
-
   exec() {
-    const routePath = this.node.getAttribute('route-path')!;
+    const domIfNode = this.node as DomIf;
+
+    const routePath = domIfNode.getAttribute('route-path')!;
 
     const content = DomIf._contentForTemplate(
-        this.node.firstElementChild as HTMLTemplateElement);
+        domIfNode.firstElementChild as HTMLTemplateElement);
     const subpageTemplate = content!.querySelector('settings-subpage')!;
     subpageTemplate.setAttribute('route-path', routePath);
-    assert(!this.node.if);
-    this.node.if = true;
+    assert(!domIfNode.if);
+    domIfNode.if = true;
 
     return new Promise<void>(resolve => {
-      const parent = this.node.parentNode!;
+      const parent = domIfNode.parentNode!;
       microTask.run(() => {
         const renderedNode =
             parent.querySelector('[route-path="' + routePath + '"]');
@@ -276,8 +276,6 @@ class SearchAndHighlightTask extends Task {
 }
 
 class TopLevelSearchTask extends Task {
-  declare protected node: HTMLElement;
-
   exec() {
     const shouldSearch = this.request.regExp !== null;
     this.setSectionsVisibility_(!shouldSearch);
@@ -290,7 +288,8 @@ class TopLevelSearchTask extends Task {
   }
 
   private setSectionsVisibility_(visible: boolean) {
-    const sections = this.node.querySelectorAll('settings-section');
+    const sections =
+        (this.node as HTMLElement).querySelectorAll('settings-section');
 
     for (let i = 0; i < sections.length; i++) {
       sections[i].hiddenBySearch = !visible;

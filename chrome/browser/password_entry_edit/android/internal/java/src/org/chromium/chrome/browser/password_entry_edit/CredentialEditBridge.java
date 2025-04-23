@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.UiDismissalHandler;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -21,11 +24,12 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
  * Class mediating the communication between the credential edit UI and the C++ part responsible for
  * saving the changes.
  */
+@NullMarked
 class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelegate {
-    private static CredentialEditBridge sCredentialEditBridge;
+    private static @Nullable CredentialEditBridge sCredentialEditBridge;
 
     private long mNativeCredentialEditBridge;
-    private CredentialEditCoordinator mCoordinator;
+    private @MonotonicNonNull CredentialEditCoordinator mCoordinator;
 
     static @Nullable CredentialEditBridge get() {
         return sCredentialEditBridge;
@@ -77,6 +81,7 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
             @JniType("std::u16string") String password,
             @JniType("std::u16string") String displayFederationOrigin,
             boolean isInsecureCredential) {
+        assumeNonNull(mCoordinator);
         mCoordinator.setCredential(
                 displayUrlOrAppName,
                 username,
@@ -87,6 +92,7 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
     @CalledByNative
     void setExistingUsernames(String[] existingUsernames) {
+        assumeNonNull(mCoordinator);
         mCoordinator.setExistingUsernames(existingUsernames);
     }
 

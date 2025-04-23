@@ -31,9 +31,12 @@ MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
 MirroringGpuFactoriesFactory& MirroringGpuFactoriesFactory::operator=(
     MirroringGpuFactoriesFactory&&) = default;
 MirroringGpuFactoriesFactory::~MirroringGpuFactoriesFactory() {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
   if (instance_) {
     DestroyInstance();
   }
+  context_provider_->RemoveObserver(this);
+  context_provider_ = nullptr;
 }
 
 media::GpuVideoAcceleratorFactories&

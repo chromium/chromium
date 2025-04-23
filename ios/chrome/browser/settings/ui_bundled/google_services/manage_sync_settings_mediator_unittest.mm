@@ -158,6 +158,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
 // for a signed in account along with manage accounts items.
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckSignOutSectionItemsForSignedInAccount) {
+  feature_list_.InitAndDisableFeature(kIOSManageAccountStorage);
   CreateManageSyncSettingsMediator();
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 

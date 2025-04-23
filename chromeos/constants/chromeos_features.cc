@@ -80,9 +80,6 @@ BASE_FEATURE(kDisableSystemBlur,
              "DisableSystemBlur",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the desk profiles feature.
-BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
 // improve perceived performance of web browsing within the ChromeOS user
@@ -356,6 +353,12 @@ BASE_FEATURE(kFileSystemProviderContentCache,
              "FileSystemProviderContentCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables hiding apps disabled by SystemFeaturesDisableList policy by default
+// in user sessions.
+BASE_FEATURE(kSystemFeaturesDisableListHidden,
+             "SystemFeaturesDisableListHidden",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
@@ -398,10 +401,6 @@ bool IsDataMigrationEnabled() {
   return base::FeatureList::IsEnabled(kDataMigration);
 }
 
-bool IsDeskProfilesEnabled() {
-  return base::FeatureList::IsEnabled(kDeskProfiles);
-}
-
 bool IsEssentialSearchEnabled() {
   return base::FeatureList::IsEnabled(kEssentialSearch);
 }
@@ -417,6 +416,10 @@ bool IsFileSystemProviderContentCacheEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+}
+
+bool IsSystemFeaturesDisableListHiddenEnabled() {
+  return base::FeatureList::IsEnabled(kSystemFeaturesDisableListHidden);
 }
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {

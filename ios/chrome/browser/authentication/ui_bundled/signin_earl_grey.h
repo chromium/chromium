@@ -19,7 +19,6 @@
 namespace signin {
 enum class ConsentLevel;
 }
-
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
@@ -94,7 +93,8 @@ class GURL;
 
 // Signs in with the fake identity and access point Settings.
 // Adds the fake-identity to the identity manager if necessary.
-// Converts the personal profile into a managed one.
+// If separate profiles for managed accounts are enabled, converts the personal
+// profile into a managed one.
 // Only intended for tests requiring sign-in but not covering the sign-in UI
 // behavior to speed up and simplify those tests.
 // Will bypass the usual verifications before signin and other
@@ -107,9 +107,6 @@ class GURL;
 // Calls `[self signinWithFakeIdentity:identity]` and then waits for sync
 // transport state to become active.
 - (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity;
-
-// Signs in with `identity` without history sync consent.
-- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
@@ -127,6 +124,10 @@ class GURL;
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Induces a GREYAssert if the user is not signed in with `expectedEmail`.
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail;
+
+// TODO(crbug.com/40066949): DO NOT USE! To be removed once internal references
+// are gone.
 - (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
                               consent:(signin::ConsentLevel)consent;
 
@@ -148,11 +149,22 @@ class GURL;
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;
 
+// Closes the managed account sign-in confirmation dialog when necessary, if
+// `fakeIdentity` is a managed account. That dialog may be shown on signing in
+// if User Policy is enabled.
+- (void)closeManagedAccountSignInDialogIfAny:(FakeSystemIdentity*)fakeIdentity;
+
 // Returns whether the feature to put each managed account into its own separate
 // profile is enabled. This depends on the `kSeparateProfilesForManagedAccounts`
 // feature flag, plus some additional conditions which can't be directly checked
 // in the test app.
 - (BOOL)areSeparateProfilesForManagedAccountsEnabled;
+
+// Returns whether the account particle disc on the NTP should open the account
+// menu. This depends on the `kSeparateProfilesForManagedAccounts` and
+// `kIdentityDiscAccountMenu` feature flags, plus some additional conditions
+// which can't be directly checked in the test app.
+- (BOOL)isIdentityDiscAccountMenuEnabled;
 
 @end
 

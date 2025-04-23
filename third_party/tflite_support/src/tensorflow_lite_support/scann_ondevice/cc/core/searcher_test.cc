@@ -22,10 +22,9 @@ limitations under the License.
 
 #include <glog/logging.h>
 #include "absl/synchronization/mutex.h"  // from @com_google_absl
-#include "Eigen/Core"  // from @eigen
+#include "Eigen/Core"  // from @eigen_archive
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/proto2.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
@@ -362,7 +361,7 @@ TEST_P(SearcherTest, AsymmetricHashNonSimd) {
   EXPECT_NEAR(5.79, extracted[2].first, kEps);
 }
 
-#if defined(__ARM_NEON__) || defined(__SSE__)
+#if defined(__ARM_NEON) || defined(__SSE__)
 TEST_P(SearcherTest, AsymmetricHashSimdFloat32x4) {
   MatrixXf query(5, 6);
   query << 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0,
@@ -414,7 +413,7 @@ TEST_P(SearcherTest, AsymmetricHashSimdFloat32x4) {
 }
 #endif
 
-#if defined(__ARM_NEON__) || defined(__SSE__)
+#if defined(__ARM_NEON) || defined(__SSE__)
 TEST_P(SearcherTest, AsymmetricHashSimdInt16x8) {
   MatrixXf query(5, 11);
   query << 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0,
@@ -496,7 +495,7 @@ TEST_P(SearcherTest, AsymmetricHashSimdInt16x8) {
 }
 #endif
 
-#if defined(__ARM_NEON__) || defined(__SSE__)
+#if defined(__ARM_NEON) || defined(__SSE__)
 TEST_P(SearcherTest, AsymmetricHashMiniBatchedSimdFail) {
   std::shared_ptr<Matrix8u> database(new Matrix8u(2, 9));
   *database << 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2;

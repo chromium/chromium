@@ -30,7 +30,7 @@ interface Translator {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIAvailability> availability(TranslatorCreateCoreOptions options);
+  static Promise<Availability> availability(TranslatorCreateCoreOptions options);
 
   [
     MeasureAs=Translator_Create,

@@ -56,8 +56,6 @@ class TailoredSecurityTabHelper
   void ShowInfoBar(
       safe_browsing::TailoredSecurityServiceMessageState message_state);
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   // Reference to the TailoredSecurityService for the BrowserState.
   raw_ptr<safe_browsing::TailoredSecurityService> service_;
 

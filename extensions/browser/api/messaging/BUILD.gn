@@ -40,6 +40,7 @@ source_set("messaging") {
   deps = [
     "//components/back_forward_cache",
     "//content/public/common",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common:common_constants",
     "//extensions/common:mojom_shared",
     "//extensions/common:mojom_shared_cpp_sources",

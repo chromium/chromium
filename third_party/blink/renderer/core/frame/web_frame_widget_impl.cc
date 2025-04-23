@@ -1856,7 +1856,13 @@ bool WebFrameWidgetImpl::ShouldAckSyntheticInputImmediately() {
 }
 
 void WebFrameWidgetImpl::UpdateVisualProperties(
-    const VisualProperties& visual_properties) {
+    const VisualProperties& properties) {
+  VisualProperties visual_properties(properties);
+  if (browser_controls_top_height_override_) {
+    visual_properties.browser_controls_params.top_controls_height =
+        *browser_controls_top_height_override_;
+  }
+
   SetZoomInternal(visual_properties.zoom_level,
                   visual_properties.css_zoom_factor);
 
@@ -2428,6 +2434,7 @@ void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
         // The local root is responsible for propagating to its connected tree
         // of Frame descendants.
         local_frame->SetLayoutZoomFactor(layout_zoom_factor);
+        local_frame->SetCssZoomFactor(css_zoom_factor_);
       }
     }
   }
@@ -5383,6 +5390,11 @@ void WebFrameWidgetImpl::DispatchNonBlockingEventForTesting(
       ->DispatchEventOnInputThreadForTesting(
           std::move(event),
           mojom::blink::WidgetInputHandler::DispatchEventCallback());
+}
+
+void WebFrameWidgetImpl::SetBrowserControlsTopHeightOverride(
+    std::optional<float> height) {
+  browser_controls_top_height_override_ = height;
 }
 
 }  // namespace blink

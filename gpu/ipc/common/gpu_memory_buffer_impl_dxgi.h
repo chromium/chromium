@@ -17,6 +17,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/gpu_export.h"
@@ -73,6 +74,9 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   // to MappableSI. It is currently not used until the media capture code is
   // converted to MappableSI.
   void SetUsePreMappedMemory(bool use_premapped_memory) override;
+
+  gfx::GpuMemoryBufferHandle CloneHandleWithRegion(
+      base::UnsafeSharedMemoryRegion region) const;
 
   HANDLE GetHandle() const;
   const gfx::DXGIHandleToken& GetToken() const;

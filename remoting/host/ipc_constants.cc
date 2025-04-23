@@ -91,6 +91,8 @@ GetChromotingHostServicesServerName() {
               // None of the core Windows processes runs as the host owner so we
               // can't just put username in the path. This is fine since the
               // named pipe is accessible by all authenticated users.
+              // On Mac, the channel is managed by the AgentProcessBroker, which
+              // runs as root, so we can't put the username in the path either.
               kChromotingHostServicesIpcName
 #endif
                   ));

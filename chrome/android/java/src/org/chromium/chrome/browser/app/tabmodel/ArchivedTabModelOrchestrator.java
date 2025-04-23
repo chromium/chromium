@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
@@ -45,8 +47,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -62,6 +65,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
     public static final String ARCHIVED_TAB_SELECTOR_UNIQUE_TAG = "archived";
+    // Time delay on running declutter passes to allow the local sync db and remote sync service to
+    // synchronize, ensuring local {@link SavedTabGroup}s have the most up-to-date information.
+    public static final long LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY = 5000;
 
     /** Observer for the ArchivedTabModelOrchestrator class. */
     public interface Observer {
@@ -270,7 +276,19 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mActivityTabModelOrchestrators.add(orchestrator);
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
                 && mTabArchiveSettings.getArchiveEnabled()) {
-            doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
+            // To account for the local tab group sync database synchronizing with the sync service
+            // on startup, a delay must be included when initiating a declutter pass that involves
+            // archiving tab groups. Unfortunately, there is no particular synchronization step that
+            // can be waited on, so the indicated delay is the best that can be done.
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+                // TODO(crbug.com/410035913): Find a better step to wait on rather than a set delay.
+                PostTask.postDelayedTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator)),
+                        LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY);
+            } else {
+                doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
+            }
         } else {
             rescueArchivedTabs(orchestrator);
         }
@@ -489,6 +507,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
         mTabArchiver =
                 new TabArchiverImpl(
                         mTabModelSelector
@@ -496,7 +516,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                                 .getTabGroupModelFilter(/* isIncognito= */ false),
                         mArchivedTabCreator,
                         mTabArchiveSettings,
-                        System::currentTimeMillis);
+                        System::currentTimeMillis,
+                        tabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
     }
 

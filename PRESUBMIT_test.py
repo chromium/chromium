@@ -3017,19 +3017,17 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('third_party/blink/problematic/file.cc',
                      ['GetInterfaceProvider()']),
             MockFile('some/cpp/ok/file.cc', ['using std::string;']),
-            MockFile('some/cpp/problematic/file2.cc',
-                     ['set_owned_by_client()']),
             MockFile('some/cpp/nocheck/file.cc',
                      ['using namespace std;  // nocheck']),
             MockFile('some/cpp/comment/file.cc',
                      ['  // A comment about `using namespace std;`']),
-            MockFile('some/cpp/problematic/file3.cc', [
+            MockFile('some/cpp/problematic/file2.cc', [
                 'params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET'
             ]),
-            MockFile('some/cpp/problematic/file4.cc', [
+            MockFile('some/cpp/problematic/file3.cc', [
                 'params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET'
             ]),
-            MockFile('some/cpp/problematic/file5.cc', [
+            MockFile('some/cpp/problematic/file4.cc', [
                 'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
             ]),
             MockFile('allowed_ranges_usage.cc', ['std::ranges::begin(vec)']),
@@ -3051,7 +3049,6 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
         self.assertTrue('some/cpp/problematic/file3.cc' in results[0].message)
         self.assertTrue('some/cpp/problematic/file4.cc' in results[0].message)
-        self.assertTrue('some/cpp/problematic/file5.cc' in results[0].message)
         self.assertFalse('some/cpp/nocheck/file.cc' in results[0].message)
         self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
         self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
@@ -4198,6 +4195,29 @@ class TranslationExpectationsTest(unittest.TestCase):
             grd_files)
         self.assertEqual(0, len(warnings))
 
+    # Tests that the list of files passed to the presubmit does not
+    # contain duplicate basenames.
+    def testExpectationsSuccess(self):
+        # Mock input file list needs a grd or grdp file in order to run the
+        # presubmit. The file itself doesn't matter.
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
+        ]
+        # List of all grd files in the repo.
+        grd_files = [
+            'dir1/test.grd', 'unlisted.grd', 'not_translated.grd',
+            'internal.grd', 'dir2/test.grd'
+        ]
+        warnings = PRESUBMIT.CheckTranslationExpectations(
+            input_api, MockOutputApi(), self.REPO_ROOT, self.EXPECTATIONS,
+            grd_files)
+        self.assertEqual(1, len(warnings))
+        self.assertTrue(
+            ("Multiple string files have the same basename. "
+             "This will result in missing translations. "
+             "Files: dir1/test.grd, dir2/test.grd") in warnings[0].message)
+
     # Tests that the presubmit warns when a file is listed in expectations, but
     # does not actually exist.
     def testExpectationsMissingFile(self):
@@ -5194,7 +5214,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(2, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
         self.assertIn('FourMissing.java', results[0].items[1])
@@ -5211,7 +5231,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 
@@ -5227,7 +5247,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 

@@ -55,12 +55,16 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
                                        const GURL& default_rendition_uri,
                                        uint64_t rendition_unique_id);
 
-  // Returns the set of renditions that belong to this group with the media
-  // track object that can be exposed to the web.
-  const base::flat_map<MediaTrack::Id, RenditionTrack>& GetRenditionMapping()
-      const {
-    return renditions_map_;
-  }
+  // Given a rendition track, try to find the track in this group which best
+  // matches it's characteristics. If the provided rendition is a member of
+  // this group, it will be returned. If nullopt is provided, then return any
+  // "most preferential" rendition.
+  const std::optional<RenditionTrack> MostSimilar(
+      const std::optional<RenditionTrack>& to) const;
+
+  // Look up a rendition with a matching track id.
+  const std::optional<RenditionTrack> GetRenditionById(
+      const MediaTrack::Id& id) const;
 
   // Returns the id of this rendition group.
   const std::string& GetId() const { return id_; }
@@ -69,9 +73,12 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // appeared in the manifest.
   const std::list<Rendition>& GetRenditions() const { return renditions_; }
 
+  const std::vector<MediaTrack>& GetTracks() const { return tracks_; }
+
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
-  // If no such rendition was in this group, returns `nullptr`;
-  const Rendition* GetDefaultRendition() const { return default_rendition_; }
+  const std::optional<RenditionTrack> GetDefaultRendition() const {
+    return default_rendition_;
+  }
 
  private:
   friend base::RefCounted<RenditionGroup>;
@@ -84,10 +91,15 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // pointer stability.
   std::list<Rendition> renditions_;
 
+  // The list of media tracks associated with our renditions.
+  std::vector<MediaTrack> tracks_;
+
   base::flat_map<MediaTrack::Id, RenditionTrack> renditions_map_;
 
-  // Default rendition, `nullptr` if none.
-  raw_ptr<const Rendition> default_rendition_ = nullptr;
+  // If one of the renditions in this group has the tag DEFAULT=YES, it is set
+  // here, and should be chosen by `MostSimilar` when a nullopt parameter is
+  // provided.
+  std::optional<RenditionTrack> default_rendition_;
 };
 
 }  // namespace media::hls

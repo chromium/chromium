@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,9 +16,11 @@
 #ifndef CRYPTO_EC_GROUP_H_
 #define CRYPTO_EC_GROUP_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
@@ -41,9 +43,9 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
 
   // Constructs a new ECGroup object for the given named curve id.
   // See openssl header obj_mac.h for the available built-in curves.
-  // Use a well-known prime curve such as NID_secp224r1 recommended by NIST.
-  // Returns INTERNAL error code if there is a failure in crypto operations.
-  // Security: this function is secure only for prime order curves.
+  // Use a well-known prime curve such as NID_X9_62_prime256v1 recommended by
+  // NIST. Returns INTERNAL error code if there is a failure in crypto
+  // operations. Security: this function is secure only for prime order curves.
   // (All supported curves in BoringSSL have prime order.)
   static StatusOr<ECGroup> Create(int curve_id, Context* context);
 
@@ -63,15 +65,22 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   // Security: The number of operations required to hash a string depends on the
   // string, which could lead to a timing attack.
   // Security: This function is only secure for curves of prime order.
-  StatusOr<ECPoint> GetPointByHashingToCurveSha256(const std::string& m) const;
+  StatusOr<ECPoint> GetPointByHashingToCurveSha256(absl::string_view m) const;
+  StatusOr<ECPoint> GetPointByHashingToCurveSha384(absl::string_view m) const;
+  StatusOr<ECPoint> GetPointByHashingToCurveSha512(absl::string_view m) const;
+  StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(absl::string_view m,
+                                                   absl::string_view dst) const;
 
-  // Hashes m to a point on the elliptic curve y^2 = x^3 + ax + b over a
-  // prime field using SHA512.
-  // Returns an INVALID_ARGUMENT error code if an error occurs.
-  //
-  // Security: The number of operations required to hash a string depends on the
-  // string, which could lead to a timing attack.
-  StatusOr<ECPoint> GetPointByHashingToCurveSha512(const std::string& m) const;
+  // Pad the given message until it is a valid point on the curve. Padding is
+  // achieved by left-shifting m by padding_bits_count bits, and appending
+  // successive integers till a curve point is found.
+  StatusOr<ECPoint> GetPointByPaddingX(const BigNum& m,
+                                       size_t padding_bit_count) const;
+
+  // Recover the original message from a point that was derived by message
+  // padding using GetPointByPaddingX.
+  StatusOr<BigNum> RecoverXFromPaddedPoint(const ECPoint& point,
+                                           size_t padding_bit_count) const;
 
   // Returns y^2 for the given x. The returned value is computed as x^3 + ax + b
   // mod p, where a and b are the parameters of the curve.
@@ -89,7 +98,12 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   // Returns an INTERNAL error code if creating the point fails.
   // Returns an INVALID_ARGUMENT error code if the created point is not in this
   // group or if it is the point at infinity.
-  StatusOr<ECPoint> CreateECPoint(const std::string& bytes) const;
+  StatusOr<ECPoint> CreateECPoint(absl::string_view bytes) const;
+
+  // Creates an ECPoint object with the given x, y affine coordinates.
+  // Returns an INVALID_ARGUMENT error code if the point (x, y) is not in this
+  // group or if it is the point at infinity.
+  StatusOr<ECPoint> CreateECPoint(const BigNum& x, const BigNum& y) const;
 
   // The parameters describing an elliptic curve given by the equation
   // y^2 = x^3 + a * x + b over a prime field Fp.
@@ -105,17 +119,15 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   // Returns the cofactor.
   const BigNum& GetCofactor() const { return cofactor_; }
 
+  // Returns the curve id.
+  int GetCurveId() const { return EC_GROUP_get_curve_name(group_.get()); }
+
   // Creates an ECPoint which is the identity.
   StatusOr<ECPoint> GetPointAtInfinity() const;
 
  private:
   ECGroup(Context* context, ECGroupPtr group, BigNum order, BigNum cofactor,
           CurveParams curve_params, BigNum p_minus_one_over_two);
-
-  // Creates an ECPoint object with the given x, y affine coordinates.
-  // Returns an INVALID_ARGUMENT error code if the point (x, y) is not in this
-  // group or if it is the point at infinity.
-  StatusOr<ECPoint> CreateECPoint(const BigNum& x, const BigNum& y) const;
 
   // Returns true if q is a quadratic residue modulo curve_params_.p_.
   bool IsSquare(const BigNum& q) const;

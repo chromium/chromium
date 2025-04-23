@@ -43,6 +43,8 @@
 @types/offscreencanvas/index.d.ts
 @types/trusted-types
 @types/trusted-types/*.d.ts
+@types/trusted-types/lib
+@types/trusted-types/lib/index.d.ts
 @types/w3c-image-capture
 @types/w3c-image-capture/*.d.ts
 @types/webrtc

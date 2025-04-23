@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -439,11 +440,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
         mMediator.onKeyboardInsetChanged(180);
         assertFalse(
                 "The chin should not be visible as the keyboard is showing.", mModel.get(CAN_SHOW));
+        assertEquals(LayerVisibility.HIDDEN, mMediator.getLayerVisibility());
 
         mMediator.keyboardVisibilityChanged(false);
         assertTrue(
                 "The chin should be visible as the keyboard is no longer showing.",
                 mModel.get(CAN_SHOW));
+        assertEquals(LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
     }
 
     private void onToEdgeChange(

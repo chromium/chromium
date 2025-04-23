@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -35,6 +36,7 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
     case ReportScheduler::kTriggerManual:
     case ReportScheduler::kTriggerUpdate:
     case ReportScheduler::kTriggerNewVersion:
+    case ReportScheduler::kTriggerSecurity:
       return true;
     case ReportScheduler::kTriggerNone:
       return false;
@@ -81,6 +83,8 @@ ReportScheduler::ReportScheduler(CreateParams params)
       base::BindRepeating(&ReportScheduler::GenerateAndUploadReport,
                           weak_ptr_factory_.GetWeakPtr()));
   RegisterPrefObserver();
+
+  delegate_->OnInitializationCompleted();
 }
 
 ReportScheduler::~ReportScheduler() = default;
@@ -245,16 +249,31 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 
   active_trigger_ = trigger;
-  ReportType report_type = TriggerToReportType(trigger);
+  ReportType report_type = TriggerToReportType(active_trigger_);
+  SecuritySignalsMode signals_mode = SecuritySignalsMode::kNoSignals;
+  if (report_type == ReportType::kProfileReport) {
+    signals_mode = delegate_->AreSecurityReportsEnabled()
+                       ? (active_trigger_ == ReportScheduler::kTriggerSecurity
+                              ? SecuritySignalsMode::kSignalsOnly
+                              : SecuritySignalsMode::kSignalsAttached)
+                       : SecuritySignalsMode::kNoSignals;
+  }
+
+  active_report_generation_config_ = ReportGenerationConfig(
+      report_type, signals_mode, delegate_->UseCookiesInUploads());
+
   if (report_type == ReportType::kProfileReport) {
     DCHECK(profile_request_generator_);
-    profile_request_generator_->Generate(base::BindOnce(
-        &ReportScheduler::OnReportGenerated, base::Unretained(this)));
+    profile_request_generator_->Generate(
+        active_report_generation_config_,
+        base::BindOnce(&ReportScheduler::OnReportGenerated,
+                       base::Unretained(this)));
   } else {
     DCHECK(report_generator_);
     report_generator_->Generate(
-        report_type, base::BindOnce(&ReportScheduler::OnReportGenerated,
-                                    base::Unretained(this)));
+        active_report_generation_config_.report_type,
+        base::BindOnce(&ReportScheduler::OnReportGenerated,
+                       base::Unretained(this)));
   }
 }
 
@@ -275,8 +294,9 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
   RecordUploadTrigger(active_trigger_);
+
   report_uploader_->SetRequestAndUpload(
-      TriggerToReportType(active_trigger_), std::move(requests),
+      active_report_generation_config_, std::move(requests),
       base::BindOnce(&ReportScheduler::OnReportUploaded,
                      base::Unretained(this)));
 }
@@ -323,6 +343,18 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
     if (pending_triggers_ & kTriggerManual)
       pending_triggers_ -= kTriggerManual;
   }
+
+  if (active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer ||
+      active_trigger_ == kTriggerSecurity) {
+    delegate_->OnSecuritySignalsUploaded();
+
+    // A full report includes security signals already, we don't need another
+    // security signals only report until the timer runs out again.
+    if (pending_triggers_ & kTriggerSecurity) {
+      pending_triggers_ -= kTriggerSecurity;
+    }
+  }
+
   active_trigger_ = kTriggerNone;
   RunPendingTriggers();
 }
@@ -344,10 +376,21 @@ void ReportScheduler::RunPendingTriggers() {
     // Manual-triggered reports also contains all data.
     trigger = kTriggerManual;
     pending_triggers_ = 0;
+  } else if ((pending_triggers_ & kTriggerSecurity) != 0) {
+    trigger = kTriggerSecurity;
+    pending_triggers_ -= kTriggerSecurity;
   } else {
-    trigger = (pending_triggers_ & kTriggerUpdate) != 0 ? kTriggerUpdate
-                                                        : kTriggerNewVersion;
-    pending_triggers_ = 0;
+    // Update and NewVersion triggers lead to the same report content being
+    // uploaded.
+    if ((pending_triggers_ & kTriggerUpdate) != 0) {
+      trigger = kTriggerUpdate;
+      pending_triggers_ -= kTriggerUpdate;
+    }
+
+    if ((pending_triggers_ & kTriggerNewVersion) != 0) {
+      trigger = kTriggerNewVersion;
+      pending_triggers_ -= kTriggerNewVersion;
+    }
   }
 
   GenerateAndUploadReport(trigger);
@@ -365,7 +408,8 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kExtensionRequest = 4,          // Deprecated.
     kExtensionRequestRealTime = 5,  // Deprecated.
     kManual = 6,
-    kMaxValue = kManual
+    kSecurity = 7,
+    kMaxValue = kSecurity
   } sample = Sample::kNone;
   switch (trigger) {
     case kTriggerNone:
@@ -381,6 +425,9 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
       break;
     case kTriggerNewVersion:
       sample = Sample::kNewVersion;
+      break;
+    case kTriggerSecurity:
+      sample = Sample::kSecurity;
       break;
   }
   base::UmaHistogramEnumeration("Enterprise.CloudReportingUploadTrigger",
@@ -399,6 +446,9 @@ ReportType ReportScheduler::TriggerToReportType(
       return ReportType::kBrowserVersion;
     case ReportScheduler::kTriggerNewVersion:
       return ReportType::kBrowserVersion;
+    case ReportScheduler::kTriggerSecurity:
+      // Security triggers are not supported at the browser-level yet.
+      return ReportType::kProfileReport;
   }
 }
 

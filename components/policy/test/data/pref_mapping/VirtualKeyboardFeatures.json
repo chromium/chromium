@@ -5,6 +5,16 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "settings.a11y.virtual_keyboard_features": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "Simple value (three features are enabled while others are disabled).",
         "policies": {
           "VirtualKeyboardFeatures": {
             "auto_complete_enabled": true,

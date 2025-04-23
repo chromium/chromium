@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsCustomTabLauncher.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",

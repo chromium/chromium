@@ -109,7 +109,7 @@ public class Journeys {
         PageStation currentPage = startingPage;
         for (int i = 0; i < numTabs; i++) {
             PageStation previousPage = currentPage;
-            Tab previousTab = previousPage.getLoadedTab();
+            Tab previousTab = previousPage.loadedTabElement.get();
             currentPage =
                     isIncognito
                             ? currentPage.openNewIncognitoTabFast()
@@ -117,8 +117,7 @@ public class Journeys {
             currentPage = currentPage.loadPageProgrammatically(url, pageStationFactory.get());
             boolean tryToFixThumbnail = false;
             try {
-                Condition.runAndWaitFor(
-                        null,
+                Condition.waitFor(
                         TabThumbnailCondition.etc1(tabModelSelector, previousTab),
                         TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             } catch (TravelException e) {
@@ -133,13 +132,12 @@ public class Journeys {
                         i,
                         previousTab.getId());
 
-                Tab tabToComeBackTo = currentPage.getLoadedTab();
+                Tab tabToComeBackTo = currentPage.loadedTabElement.get();
                 PageStation previousPageAgain =
                         currentPage.selectTabFast(previousTab, PageStation::newGenericBuilder);
                 currentPage = previousPageAgain.selectTabFast(tabToComeBackTo, pageStationFactory);
 
-                Condition.runAndWaitFor(
-                        null,
+                Condition.waitFor(
                         TabThumbnailCondition.etc1(tabModelSelector, previousTab),
                         TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             }
@@ -155,7 +153,7 @@ public class Journeys {
      */
     public static TabSwitcherGroupCardFacility mergeAllTabsToNewGroup(
             TabSwitcherStation tabSwitcher) {
-        TabModel tabModel = tabSwitcher.getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel tabModel = tabSwitcher.tabModelSelectorElement.get().getCurrentModel();
         List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
         return mergeTabsToNewGroup(tabSwitcher, tabs);
     }
@@ -171,7 +169,7 @@ public class Journeys {
     public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
             TabSwitcherStation tabSwitcher, List<Tab> tabs) {
         assert !tabs.isEmpty();
-        TabModel currentModel = tabSwitcher.getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel currentModel = tabSwitcher.tabModelSelectorElement.get().getCurrentModel();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
 
         TabBinList tabBinList = TabBinningUtil.binTabsByCard(currentModel);

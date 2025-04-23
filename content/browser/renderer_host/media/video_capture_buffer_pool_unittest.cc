@@ -364,11 +364,8 @@ gfx::GpuMemoryBufferHandle CreateHandle(ID3D11Device* d3d11_device) {
       &texture_handle);
   EXPECT_HRESULT_SUCCEEDED(hr);
 
-  gfx::GpuMemoryBufferHandle result;
-  result.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  result.set_dxgi_handle(
+  return gfx::GpuMemoryBufferHandle(
       gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
-  return result;
 }
 
 }  // namespace

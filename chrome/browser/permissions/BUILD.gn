@@ -181,6 +181,20 @@ proto_library("permissions_proto") {
   sources = [ "crowd_deny.proto" ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "system/mock_platform_handle.cc",
+    "system/mock_platform_handle.h",
+  ]
+
+  deps = [
+    ":permissions",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -197,13 +211,12 @@ source_set("unit_tests") {
     "permissions_ai_handler_unittest.cc",
     "prediction_based_permission_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
-    "system/mock_platform_handle.cc",
-    "system/mock_platform_handle.h",
   ]
 
   deps = [
     ":permissions",
     ":permissions_proto",
+    ":test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/permissions/system",

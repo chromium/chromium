@@ -335,7 +335,7 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
       WTF::BindOnce(&ServiceWorkerGlobalScope::DidFetchClassicScript,
                     WrapWeakPersistent(this),
                     WrapPersistent(classic_script_loader), stack_id),
-      RejectCoepUnsafeNone(false), {});
+      {});
 }
 
 void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
@@ -345,10 +345,8 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
     std::unique_ptr<PolicyContainer> policy_container,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-    network::mojom::CredentialsMode credentials_mode,
-    RejectCoepUnsafeNone reject_coep_unsafe_none) {
+    network::mojom::CredentialsMode credentials_mode) {
   DCHECK(IsContextThread());
-  DCHECK(!reject_coep_unsafe_none);
 
   // policy_container_host could be null for registration restored from old DB
   if (policy_container)

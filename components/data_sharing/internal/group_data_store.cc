@@ -129,9 +129,10 @@ GroupDataStore::~GroupDataStore() {
           std::move(group_entity_data_), std::move(shutdown_callback_)));
 }
 
-void GroupDataStore::StoreGroupData(const VersionToken& version_token,
-                                    const base::Time& last_updated_timestamp,
-                                    const GroupData& group_data) {
+void GroupDataStore::StoreGroupData(
+    const VersionToken& version_token,
+    const base::Time& last_updated_timestamp,
+    const data_sharing_pb::GroupData& group_data_proto) {
   CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
 
   // TODO(crbug.com/301390275): support batching StoreGroupData() (by setting
@@ -141,9 +142,8 @@ void GroupDataStore::StoreGroupData(const VersionToken& version_token,
       version_token.value());
   entity.mutable_metadata()->set_last_updated_timestamp_millis_since_unix_epoch(
       last_updated_timestamp.InMillisecondsSinceUnixEpoch());
-  *entity.mutable_data() = GroupDataToProto(group_data);
-  group_entity_data_->UpdateData(group_data.group_token.group_id.value(),
-                                 entity);
+  *entity.mutable_data() = group_data_proto;
+  group_entity_data_->UpdateData(group_data_proto.group_id(), entity);
 }
 
 void GroupDataStore::DeleteGroups(const std::vector<GroupId>& groups_ids) {

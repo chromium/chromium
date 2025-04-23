@@ -6,6 +6,7 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <optional>
 #include <string_view>
@@ -159,10 +160,13 @@ template <class Char>
 bool DoIsStringASCII(const Char* characters, size_t length) {
   // Bitmasks to detect non ASCII characters for character sizes of 8, 16 and 32
   // bits.
-  constexpr MachineWord NonASCIIMasks[] = {
-      0, MachineWord(0x8080808080808080ULL), MachineWord(0xFF80FF80FF80FF80ULL),
-      0, MachineWord(0xFFFFFF80FFFFFF80ULL),
-  };
+  constexpr auto NonASCIIMasks = std::to_array<MachineWord>({
+      0,
+      MachineWord(0x8080808080808080ULL),
+      MachineWord(0xFF80FF80FF80FF80ULL),
+      0,
+      MachineWord(0xFFFFFF80FFFFFF80ULL),
+  });
 
   if (!length) {
     return true;

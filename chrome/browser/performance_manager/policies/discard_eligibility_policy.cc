@@ -91,6 +91,9 @@ void DiscardEligibilityPolicy::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
+// NOTE: This is used by ProcessRankPolicyAndroid. If you add a new condition to
+// this, you need to add an observer callback to ProcessRankPolicyAndroid as
+// well.
 CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
     const PageNode* page_node,
     DiscardReason discard_reason,

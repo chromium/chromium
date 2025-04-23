@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.UiUtils;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Dialog for confirming that user want to download a dangerous file, using the default model dialog
  * from ModalDialogManager.
  */
+@NullMarked
 public class DangerousDownloadDialog {
     /**
      * Events related to the dangerous download dialog, used for UMA reporting.

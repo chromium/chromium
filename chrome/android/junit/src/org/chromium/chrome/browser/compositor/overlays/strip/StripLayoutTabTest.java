@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -67,7 +67,7 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint(true, false));
 
         // Normal inactive tab color.
-        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
+        expectedColor = SemanticColorUtils.getDefaultBgColor(mContext);
         assertEquals(
                 "Folio inactive tab containers should be Surface-0.",
                 expectedColor,

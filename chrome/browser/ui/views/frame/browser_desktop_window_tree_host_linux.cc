@@ -36,13 +36,13 @@
 
 namespace {
 
-#if defined(USE_DBUS_MENU)
-bool CreateGlobalMenuBar() {
+#if BUILDFLAG(USE_DBUS)
+bool ShouldCreateGlobalMenuBar() {
   return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
+      ->GetPlatformRuntimeProperties()
       .supports_global_application_menus;
 }
-#endif  // defined(USE_DBUS_MENU)
+#endif
 
 std::unordered_set<std::string>& SentStartupIds() {
   static base::NoDestructor<std::unordered_set<std::string>> sent_startup_ids;
@@ -294,12 +294,12 @@ void BrowserDesktopWindowTreeHostLinux::Init(
     const views::Widget::InitParams& params) {
   DesktopWindowTreeHostLinux::Init(std::move(params));
 
-#if defined(USE_DBUS_MENU)
-  // We have now created our backing X11 window.  We now need to (possibly)
+#if BUILDFLAG(USE_DBUS)
+  // We have now created our backing window. We now need to (possibly)
   // alert the desktop environment that there's a menu bar attached to it.
-  if (CreateGlobalMenuBar()) {
-    dbus_appmenu_ =
-        std::make_unique<DbusAppmenu>(browser_view_, GetAcceleratedWidget());
+  if (ShouldCreateGlobalMenuBar()) {
+    dbus_appmenu_ = std::make_unique<DbusAppmenu>(
+        browser_view_, platform_window(), GetAcceleratedWidget());
   }
 #endif
 }
@@ -311,7 +311,7 @@ void BrowserDesktopWindowTreeHostLinux::OnWidgetInitDone() {
 }
 
 void BrowserDesktopWindowTreeHostLinux::CloseNow() {
-#if defined(USE_DBUS_MENU)
+#if BUILDFLAG(USE_DBUS)
   dbus_appmenu_.reset();
 #endif
   DesktopWindowTreeHostLinux::CloseNow();

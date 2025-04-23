@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItemWithEllipsizedAtEnd;
 
 import android.content.Context;
@@ -12,11 +13,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -30,6 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The manager class which handles showing the context menu on modules. */
+@NullMarked
 public class HomeModulesContextMenuManager {
     /**
      * Types of context menu items which are shown when long pressing a module. Only two default
@@ -53,14 +55,14 @@ public class HomeModulesContextMenuManager {
         int NUM_ENTRIES = 2;
     }
 
-    private ModuleDelegate mModuleDelegate;
+    private @Nullable ModuleDelegate mModuleDelegate;
 
-    @Nullable private AnchoredPopupWindow mPopupWindow;
+    private @Nullable AnchoredPopupWindow mPopupWindow;
 
     /**
      * @param moduleDelegate The instance of magic stack {@link ModuleDelegate}.
      */
-    public HomeModulesContextMenuManager(@NonNull ModuleDelegate moduleDelegate) {
+    public HomeModulesContextMenuManager(ModuleDelegate moduleDelegate) {
         mModuleDelegate = moduleDelegate;
     }
 
@@ -74,7 +76,7 @@ public class HomeModulesContextMenuManager {
      * @param view The magic stack module view that is long clicked to show the context menu.
      * @param moduleProvider The instance of magic stack {@link ModuleDelegate}.
      */
-    public void displayMenu(@NonNull View view, @NonNull ModuleProvider moduleProvider) {
+    public void displayMenu(View view, ModuleProvider moduleProvider) {
         if (mModuleDelegate == null) return;
 
         ListMenu menu =
@@ -97,11 +99,11 @@ public class HomeModulesContextMenuManager {
     }
 
     @VisibleForTesting
-    BasicListMenu getListMenu(
-            @NonNull View view,
-            @NonNull ModuleProvider moduleProvider,
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Runnable dismissPopupWindowRunnable) {
+    @Nullable BasicListMenu getListMenu(
+            View view,
+            ModuleProvider moduleProvider,
+            ModuleDelegate moduleDelegate,
+            Runnable dismissPopupWindowRunnable) {
         boolean hasItems = false;
 
         ModelList itemList = new ModelList();
@@ -165,7 +167,7 @@ public class HomeModulesContextMenuManager {
      * @param view The magic stack module view that is long clicked to show the context menu.
      */
     @VisibleForTesting
-    Rect getAnchorRectangle(@NonNull View view) {
+    Rect getAnchorRectangle(View view) {
         int[] coordinates = new int[2];
         view.getLocationOnScreen(coordinates);
 
@@ -178,13 +180,15 @@ public class HomeModulesContextMenuManager {
     }
 
     @VisibleForTesting
-    void showContextMenu(@NonNull ListMenu menu, @NonNull View view) {
+    void showContextMenu(ListMenu menu, View view) {
         final View contentView = menu.getContentView();
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
 
+        assumeNonNull(mPopupWindow);
+        AnchoredPopupWindow popupWindow = mPopupWindow;
         AnchoredPopupWindow.LayoutObserver layoutObserver =
                 (positionBelow, x, y, width, height, rect) ->
-                        mPopupWindow.setAnimationStyle(
+                        popupWindow.setAnimationStyle(
                                 positionBelow
                                         ? R.style.StartIconMenuAnim
                                         : R.style.StartIconMenuAnimBottom);
@@ -209,7 +213,7 @@ public class HomeModulesContextMenuManager {
 
     /** Returns whether to show a context menu item. */
     @VisibleForTesting
-    boolean shouldShowItem(@ContextMenuItemId int itemId, @NonNull ModuleProvider moduleProvider) {
+    boolean shouldShowItem(@ContextMenuItemId int itemId, ModuleProvider moduleProvider) {
         if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS
                 || itemId == ContextMenuItemId.HIDE_MODULE) {
             return true;
@@ -223,8 +227,7 @@ public class HomeModulesContextMenuManager {
      *
      * @param id The id of the context menu item.
      */
-    private int getResourceIdForMenuItem(
-            @ContextMenuItemId int id, @NonNull ModuleProvider moduleProvider) {
+    private int getResourceIdForMenuItem(@ContextMenuItemId int id, ModuleProvider moduleProvider) {
         if (id == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS) {
             return R.string.home_modules_context_menu_customize;
         }
@@ -237,7 +240,7 @@ public class HomeModulesContextMenuManager {
      *
      * @param moduleProvider The module on which the context menu is shown.
      */
-    private void notifyContextMenuShown(@NonNull ModuleProvider moduleProvider) {
+    private void notifyContextMenuShown(ModuleProvider moduleProvider) {
         moduleProvider.onContextMenuCreated();
         HomeModulesMetricsUtils.recordContextMenuShown(moduleProvider.getModuleType());
     }
@@ -250,7 +253,7 @@ public class HomeModulesContextMenuManager {
         mPopupWindow = null;
     }
 
-    public void setPopupWindowForTesting(@NonNull AnchoredPopupWindow window) {
+    public void setPopupWindowForTesting(AnchoredPopupWindow window) {
         AnchoredPopupWindow oldWindow = mPopupWindow;
         mPopupWindow = window;
         ResettersForTesting.register(() -> mPopupWindow = oldWindow);

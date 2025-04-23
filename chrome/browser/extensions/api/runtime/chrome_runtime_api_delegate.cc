@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/browser/warning_service.h"
@@ -148,17 +149,13 @@ void ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(
 void ChromeRuntimeAPIDelegate::AddUpdateObserver(
     extensions::UpdateObserver* observer) {
   registered_for_updates_ = true;
-  ExtensionSystem::Get(browser_context_)
-      ->extension_service()
-      ->AddUpdateObserver(observer);
+  ExtensionUpdater::Get(browser_context_)->AddObserver(observer);
 }
 
 void ChromeRuntimeAPIDelegate::RemoveUpdateObserver(
     extensions::UpdateObserver* observer) {
   if (registered_for_updates_) {
-    ExtensionSystem::Get(browser_context_)
-        ->extension_service()
-        ->RemoveUpdateObserver(observer);
+    ExtensionUpdater::Get(browser_context_)->RemoveObserver(observer);
   }
 }
 
@@ -196,9 +193,8 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
                            reload_info.second);
   reload_info.first = now;
 
-  extensions::ExtensionService* service =
-      ExtensionSystem::Get(browser_context_)->extension_service();
-
+  extensions::ExtensionRegistrar* registrar =
+      extensions::ExtensionRegistrar::Get(browser_context_);
   if (reload_info.second >= fast_reload_count) {
     // Unloading an extension clears all warnings, so first terminate the
     // extension, and then add the warning. Since this is called from an
@@ -207,8 +203,8 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     // post both tasks.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&extensions::ExtensionService::TerminateExtension,
-                       service->AsExtensionServiceWeakPtr(), extension_id));
+        base::BindOnce(&extensions::ExtensionRegistrar::TerminateExtension,
+                       registrar->GetWeakPtr(), extension_id));
     extensions::WarningSet warnings;
     warnings.insert(
         extensions::Warning::CreateReloadTooFrequentWarning(extension_id));
@@ -225,8 +221,8 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     // if the extension has already been reloaded; so instead we post a task.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&extensions::ExtensionService::ReloadExtension,
-                       service->AsExtensionServiceWeakPtr(), extension_id));
+        base::BindOnce(&extensions::ExtensionRegistrar::ReloadExtension,
+                       registrar->GetWeakPtr(), extension_id));
   }
 }
 

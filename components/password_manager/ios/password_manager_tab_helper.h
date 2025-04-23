@@ -46,8 +46,6 @@ class PasswordManagerTabHelper
 
   // The current PasswordFormHelper for the associated web state.
   __weak PasswordFormHelper* password_form_helper_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace password_manager

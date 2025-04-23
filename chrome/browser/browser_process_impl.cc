@@ -1448,10 +1448,13 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
     }
     if (base::FeatureList::IsEnabled(
             features::kUseFreedesktopSecretKeyProvider)) {
+      const auto password_store =
+          cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
       // Use a higher priority than the SecretPortalKeyProvider.
       providers.emplace_back(
           /*precedence=*/15u,
           std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+              password_store,
               base::FeatureList::IsEnabled(
                   features::kUseFreedesktopSecretKeyProviderForEncryption),
               l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));

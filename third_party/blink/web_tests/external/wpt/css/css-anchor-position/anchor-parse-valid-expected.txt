@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['top'] = "calc((anchor(--foo top) + anchor(--bar bottom)) / 2)" should set the property value
-  assert_equals: serialization should be canonical expected "calc(0.5 * (anchor(--foo top) + anchor(--bar bottom)))" but got "calc((anchor(--foo top) + anchor(--bar bottom)) / 2)"
-Harness: the test ran to completion.
-

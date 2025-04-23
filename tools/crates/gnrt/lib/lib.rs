@@ -5,6 +5,7 @@
 #![forbid(unsafe_op_in_unsafe_fn)]
 #![forbid(unsafe_code)]
 
+pub mod condition;
 pub mod config;
 pub mod crates;
 pub mod deps;

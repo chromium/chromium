@@ -25,6 +25,19 @@ source_set("breakpad_utils") {
 }
 
 if (is_linux && enable_chromoting_crashpad) {
+  source_set("crashpad_db_mgr") {
+    sources = [
+      "crashpad_database_manager.cc",
+      "crashpad_database_manager.h",
+    ]
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//remoting/base",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/util",
+    ]
+  }
   source_set("crashpad") {
     sources = [
       "crash_reporting.cc",
@@ -35,6 +48,7 @@ if (is_linux && enable_chromoting_crashpad) {
     ]
     configs += [ "//remoting/build/config:host_implementation" ]
     deps = [
+      ":crashpad_db_mgr",
       "//base",
       "//remoting/base",
       "//remoting/base:logging",

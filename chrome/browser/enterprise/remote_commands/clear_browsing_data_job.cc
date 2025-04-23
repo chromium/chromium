@@ -75,7 +75,7 @@ enterprise_management::RemoteCommand_Type ClearBrowsingDataJob::GetType()
 bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
   VLOG_POLICY(2, REMOTE_COMMANDS)
-      << "ClearBrowsingDataJob::ParseCommandPayload " << command_payload;
+      << "Clear browsing data command payload: " << command_payload;
   std::optional<base::Value::Dict> root =
       base::JSONReader::ReadDict(command_payload);
   if (!root)
@@ -93,8 +93,6 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
 }
 
 void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {
-  VLOG_POLICY(2, REMOTE_COMMANDS)
-      << "ClearBrowsingDataJob::Run " << clear_cache_ << " " << clear_cookies_;
   uint64_t types = 0;
   if (clear_cache_)
     types |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
@@ -117,6 +115,10 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {
   result_callback_ = std::move(result_callback);
 
   if (types == 0) {
+    LOG_POLICY(WARNING, REMOTE_COMMANDS)
+        << "Clear browsing data command has not specified any "
+           "data types. Please double check the payload to "
+           "make sure everything is set as required.";
     // There's nothing to clear, invoke the callback with success result and be
     // done.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

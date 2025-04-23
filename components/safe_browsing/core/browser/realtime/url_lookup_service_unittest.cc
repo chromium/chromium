@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
@@ -190,14 +191,19 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   bool CanSendRTSampleRequest() {
     return rt_service_->CanSendRTSampleRequest();
   }
-  std::unique_ptr<RTLookupRequest> FillRequestProto(
+
+  std::unique_ptr<RTLookupRequest> StartFillingRequestProto(
       const GURL& url,
       bool is_sampled_report,
       std::optional<internal::ReferringAppInfo> referring_app_info =
           std::nullopt) {
-    return rt_service_->FillRequestProto(
-        url, is_sampled_report, SessionID::InvalidValue(), referring_app_info);
+    base::test::TestFuture<std::unique_ptr<RTLookupRequest>> future;
+    rt_service_->StartFillingRequestProto(
+        url, is_sampled_report, SessionID::InvalidValue(), referring_app_info,
+        future.GetCallback());
+    return future.Take();
   }
+
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
       const GURL& url) {
     return rt_service_->GetCachedRealTimeUrlVerdict(url);
@@ -378,10 +384,12 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
 };
 
-TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
+TEST_F(RealTimeUrlLookupServiceTest, StartFillingRequestProto) {
   GURL url("http://example.com/");
   for (size_t i = 0; i < 2; i++) {
-    auto result = FillRequestProto(url, /*is_sampled_report=*/i % 2 == 0);
+    auto result =
+        StartFillingRequestProto(url, /*is_sampled_report=*/i % 2 == 0);
+    ASSERT_TRUE(result);
     EXPECT_EQ(url, result->url());
     if (i % 2 == 0) {
       EXPECT_EQ(/* sampled report */ 2, result->report_type());
@@ -461,7 +469,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillReferringAppInfo) {
           test_case.is_enhanced_protection,
           test_case.has_referring_webapk_start_url, is_sampled_report));
       auto result =
-          FillRequestProto(url, is_sampled_report, referring_app_info);
+          StartFillingRequestProto(url, is_sampled_report, referring_app_info);
       EXPECT_EQ(result->has_referring_app_info(),
                 test_case.expect_has_referring_app_info);
       if (result->has_referring_app_info()) {
@@ -502,7 +510,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
 
   cache_manager_->SetPageLoadTokenForTesting(
       url, CreatePageLoadToken("url_page_load_token"));
-  auto request = FillRequestProto(url, /*is_sampled_report=*/false);
+  auto request = StartFillingRequestProto(url, /*is_sampled_report=*/false);
   ASSERT_EQ(1, request->population().page_load_tokens_size());
   // The token should be re-generated for the mainframe URL.
   EXPECT_NE("url_page_load_token",

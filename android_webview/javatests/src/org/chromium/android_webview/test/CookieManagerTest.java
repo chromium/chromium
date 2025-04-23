@@ -1649,6 +1649,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @DisabledTest(message = "crbug.com/410745515")
     public void testAcceptFileSchemeCookies() throws Throwable {
         mCookieManager.setAcceptFileSchemeCookies(true);
         Assert.assertTrue(

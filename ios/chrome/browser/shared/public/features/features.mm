@@ -41,7 +41,7 @@ SegmentedDefaultBrowserExperimentTypeEnabled() {
 }
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad,
-             "kIOSKeyboardAccessoryUpgradeForIPad",
+             "IOSKeyboardAccessoryUpgradeForIPad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu,
@@ -439,6 +439,10 @@ BASE_FEATURE(kIOSChooseFromDrive,
              "IOSChooseFromDrive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSChooseFromDriveSimulatedClick,
+             "IOSChooseFromDriveSimulatedClick",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -789,7 +793,7 @@ bool IsKeyboardAccessoryUpgradeEnabled() {
 }
 
 bool IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled() {
-  return IsKeyboardAccessoryUpgradeEnabled() &&
+  return (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
          base::FeatureList::IsEnabled(
              kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
 }
@@ -1151,6 +1155,14 @@ bool IOSPasskeysM2Enabled() {
   return base::FeatureList::IsEnabled(kIOSPasskeysM2);
 }
 
+BASE_FEATURE(kIOSPushNotificationMultiProfile,
+             "IOSPushNotificationMultiProfile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSMultiProfilePushNotificationHandlingEnabled() {
+  return base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
+}
+
 const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";
 const char kFullscreenTransitionDefaultSpeed[] =
     "MediumFullscreenTransitionSpeed";
@@ -1191,6 +1203,10 @@ BASE_FEATURE(kNewShareExtension,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIPHAblation, "IPHAblation", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayDisableIPHPanGesture,
+             "LensOverlayDisableIPHPanGesture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIPHAblationEnabled() {
   return base::FeatureList::IsEnabled(kIPHAblation);
@@ -1344,4 +1360,10 @@ BASE_FEATURE(kContainedTabGroup,
 
 bool IsContainedTabGroupEnabled() {
   return base::FeatureList::IsEnabled(kContainedTabGroup);
+}
+
+BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBestOfAppFREEnabled() {
+  return base::FeatureList::IsEnabled(kBestOfAppFRE);
 }

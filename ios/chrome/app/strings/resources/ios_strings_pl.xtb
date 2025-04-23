@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Kopiuj obraz</translation>
 <translation id="1612754831519568745">Bezpieczne przeglądanie jest obecnie wyłączone. Uzyskaj ochronę przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami.</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1622195983844804153">Dotychczasowe dane przeglądania nie zostaną przeniesione na konto służbowe. Nadal możesz z nich korzystać, jeśli się wylogujesz lub dodasz konto osobiste.</translation>
 <translation id="1622717322707146952">Wybierz „Dodaj do Kalendarza Google” lub „Dodaj do Kalendarza Apple”.</translation>
 <translation id="1629162218487290695">Potwierdź swoją tożsamość…</translation>
 <translation id="1636234353664774105">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji</translation>
@@ -481,6 +480,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
+<translation id="297667759942911166">Współpraca w grupach kart</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
 <translation id="2989805286512600854">Otwórz w nowej karcie</translation>
 <translation id="2996291259634659425">Utwórz hasło wielowyrazowe</translation>
@@ -1127,6 +1127,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="573974402615125334">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, zsynchronizuj historię i karty</translation>
 <translation id="5740123193752401435">Wyszukaj karty…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> – powiadomienia włączone</translation>
+<translation id="5745598824054949526">Nie znaleziono tekstu</translation>
 <translation id="574762237186762643">Wydarzenia</translation>
 <translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
 <translation id="5753021559215751319">Zapisz hasło</translation>
@@ -1290,6 +1291,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
 <translation id="6416807286621280684">Śledzenie przesyłek i aktualne informacje o dostawie.</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
+<translation id="6421038304268477484">Przetłumaczony tekst</translation>
 <translation id="6429213933892582367">Otwórz Opcje haseł</translation>
 <translation id="6434591244308415567">Wystąpił błąd. Spróbuj ponownie później.</translation>
 <translation id="6435307030888827407">Nie chcę się logować</translation>
@@ -1312,7 +1314,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
 <translation id="647867789226964031">Zmień hasła</translation>
 <translation id="6494931198667773526">Zakończenie</translation>
-<translation id="6495521251906266731">Wybierz, co chcesz zrobić z dotychczasowymi danymi przeglądania na tym urządzeniu, np. z hasłami czy historią.</translation>
 <translation id="6503077044568424649">Najczęstsze</translation>
 <translation id="6503763061813913607">Powiadomienia o kontroli zabezpieczeń</translation>
 <translation id="6505334220040167806">Zwiń grupę kart.</translation>
@@ -1857,6 +1858,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8697136149718343437">Przenieś pasek adresu na dół</translation>
 <translation id="8703372953981978786">Ten link nie działa</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8706806585855470492">Będziesz mieć możliwość udostępniania grup kart, dołączania do nich i używania ich do współpracy</translation>
 <translation id="8709409604518538305">Karty zostały zamknięte</translation>
 <translation id="8712534545803964353">Znajdź na stronie…</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -1968,6 +1970,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9097506547406246598">Nie udało się zrezygnować z obserwowania. Coś poszło nie tak.</translation>
 <translation id="9098541895599151034">Usunąć hasła (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Za każdym razem pytaj, którego konta używać</translation>
+<translation id="9099821309562615674">Zadbaj o to, aby tłumaczony tekst był wyraźny i mieścił się w kadrze.</translation>
 <translation id="9100610230175265781">Wymagane jest hasło wielowyrazowe</translation>
 <translation id="91023216973987714">Formy płatności</translation>
 <translation id="9106655997975673326">Z urządzenia „<ph name="SOURCE_DEVICE" />”</translation>

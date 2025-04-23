@@ -46,6 +46,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -127,11 +128,18 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*trust_token_helper=*/nullptr,
         /*shared_dictionary_manager=*/nullptr,
         /*shared_dictionary_checker=*/nullptr,
-        /*cookie_observer=*/mojo::NullRemote(),
-        /*trust_token_observer=*/mojo::NullRemote(),
-        /*url_loader_network_observer=*/mojo::NullRemote(),
-        /*devtools_observer=*/mojo::NullRemote(),
-        /*device_bound_session_observer=*/mojo::NullRemote(),
+        /*cookie_observer=*/
+        network::ObserverWrapper<network::mojom::CookieAccessObserver>(),
+        /*trust_token_observer=*/
+        network::ObserverWrapper<network::mojom::TrustTokenAccessObserver>(),
+        /*url_loader_network_observer=*/
+        network::ObserverWrapper<
+            network::mojom::URLLoaderNetworkServiceObserver>(),
+        /*devtools_observer=*/
+        network::ObserverWrapper<network::mojom::DevToolsObserver>(),
+        /*device_bound_session_observer=*/
+        network::ObserverWrapper<
+            network::mojom::DeviceBoundSessionAccessObserver>(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         /*shared_storage_writable=*/false);
   }

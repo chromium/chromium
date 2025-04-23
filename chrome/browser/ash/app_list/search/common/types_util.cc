@@ -139,8 +139,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "OS_SETTINGS";
     case ash::SearchResultType::PLUGIN_VM_APP:
       return "PLUGIN_VM_APP";
-    case ash::SearchResultType::LACROS:
-      return "LACROS";
+    case ash::SearchResultType::LACROS_DEPRECATED:
+      return "LACROS_DEPRECATED";
     case ash::SearchResultType::REMOTE_APP:
       return "REMOTE_APP";
     case ash::SearchResultType::BOREALIS_APP:

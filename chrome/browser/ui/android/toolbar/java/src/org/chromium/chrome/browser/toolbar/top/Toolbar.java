@@ -95,4 +95,14 @@ public interface Toolbar {
      * surface's toolbar is showing.
      */
     boolean isBrowsingModeToolbarVisible();
+
+    /**
+     * Removes the location bar view from the toolbar (if it exists) and returns it. If there is no
+     * location bar, returns null. The appearance/behavior of the toolbar is not well-defined after
+     * this has been done, so it should only be used in cases where the toolbar is not visible.
+     */
+    View removeLocationBarView();
+
+    /** Add the location bar view back to the toolbar. */
+    void restoreLocationBarView();
 }

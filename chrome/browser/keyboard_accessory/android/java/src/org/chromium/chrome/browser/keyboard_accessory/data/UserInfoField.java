@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 
 import java.util.Objects;
@@ -17,6 +17,7 @@ import java.util.Objects;
  * Represents an item (either selectable or not) presented on the UI, such as the username or a
  * credit card number.
  */
+@NullMarked
 public final class UserInfoField {
     private final @AccessorySuggestionType int mSuggestionType;
     private final String mDisplayText;
@@ -26,7 +27,7 @@ public final class UserInfoField {
     private final int mIconId;
     private final boolean mIsObfuscated;
     // The callback is {@code null} if the field is not selectable.
-    @Nullable private final Callback<UserInfoField> mCallback;
+    private final @Nullable Callback<UserInfoField> mCallback;
 
     /**
      * @param suggestionType The type of suggestion displayed to the user.
@@ -126,7 +127,7 @@ public final class UserInfoField {
         private String mId = "";
         private int mIconId;
         private boolean mIsObfuscated;
-        @Nullable private Callback<UserInfoField> mCallback;
+        private @Nullable Callback<UserInfoField> mCallback;
 
         public Builder setSuggestionType(@AccessorySuggestionType int suggestionType) {
             this.mSuggestionType = suggestionType;

@@ -30,6 +30,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Third" summary="The third process to be ended."/>
 </variants>
 
+<variants name="Tabs">
+  <variant name="All" summary="The elapsed time in the 'All tasks' tab."/>
+  <variant name="Browser"
+      summary="The elapsed time in the 'Browser tab' (Win/Mac/Linux only)."/>
+  <variant name="System"
+      summary="The elapsed time in the 'System tab' (ChromeOS only)."/>
+  <variant name="TabsAndExtensions"
+      summary="The elapsed time in the 'Tabs and extensions' tab."/>
+</variants>
+
 <histogram name="TaskManager.Closed.ElapsedTime" units="ms"
     expires_after="2025-10-03">
   <owner>mwoj@google.com</owner>
@@ -37,6 +47,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     How long the Task Manager stayed opened for before it was closed.
   </summary>
+</histogram>
+
+<histogram name="TaskManager.Closed.{Tab}.ElapsedTime" units="ms"
+    expires_after="2026-04-11">
+  <owner>mwoj@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    How long the user stayed on a particular tab. This metric gets recorded
+    whenever the Task Manager is closed.
+  </summary>
+  <token key="Tab" variants="Tabs"/>
 </histogram>
 
 <histogram name="TaskManager.Opened" enum="StartAction"

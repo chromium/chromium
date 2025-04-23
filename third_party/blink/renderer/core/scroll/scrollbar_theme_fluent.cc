@@ -253,7 +253,7 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
 }
 
 bool ScrollbarThemeFluent::UsesNinePatchTrackAndButtonsResource() const {
-  return RuntimeEnabledFeatures::FluentScrollbarUsesNinePatchTrackEnabled();
+  return true;
 }
 
 }  // namespace blink

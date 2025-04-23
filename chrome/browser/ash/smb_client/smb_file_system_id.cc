@@ -82,12 +82,15 @@ bool IsKerberosChromadFileSystemId(const std::string& file_system_id) {
 std::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id) {
   const std::vector<std::string> components = GetComponents(file_system_id);
-  if (components.size() < 3 ||
-      !base::StartsWith(components[2], kUserPrefix,
-                        base::CompareCase::SENSITIVE)) {
-    return {};
+  if (components.size() < 3) {
+    return std::nullopt;
   }
-  return components[2].substr(strlen(kUserPrefix));
+  std::optional<std::string_view> remainder = base::RemovePrefix(
+      components[2], kUserPrefix, base::CompareCase::SENSITIVE);
+  if (!remainder) {
+    return std::nullopt;
+  }
+  return std::string(*remainder);
 }
 
 }  // namespace ash::smb_client

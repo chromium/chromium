@@ -70,12 +70,12 @@ public final class FullscreenSigninPromoLauncher {
 
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
-        if (BuildInfo.getInstance().isAutomotive) {
-            return false;
-        }
-
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
             return true;
+        }
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            return false;
         }
 
         final int lastPromoMajorVersion = prefManager.getSigninPromoLastShownVersion();

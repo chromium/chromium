@@ -667,12 +667,30 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
+  const auto [start_padding, end_padding] = buffer->discard_padding();
+
+  // Save the timestamp of the first non-discarded frame, to calculate duration
+  // below. Only the first buffer should have discard padding.
+  if (last_packet_timestamp_ == kNoTimestamp) {
+    // Some packets marked for total discard have their `start_padding` set to
+    // kInfiniteDuration. If that's the case, don't propagate this value here,
+    // limit it to the duration.
+    const auto start_time_adjustment =
+        start_padding == kInfiniteDuration ? buffer->duration() : start_padding;
+    first_valid_frame_timestamp_ = buffer->timestamp() + start_time_adjustment;
+  }
+
   last_packet_timestamp_ = buffer->timestamp();
   last_packet_duration_ = buffer->duration();
 
-  const base::TimeDelta new_duration = last_packet_timestamp_;
-  if (new_duration > duration_ || duration_ == kNoTimestamp)
+  // Check if `buffer` contains only padding.
+  const bool is_padding = buffer->duration() == start_padding + end_padding;
+
+  const base::TimeDelta new_duration =
+      last_packet_timestamp_ - first_valid_frame_timestamp_;
+  if ((!is_padding && new_duration > duration_) || duration_ == kNoTimestamp) {
     duration_ = new_duration;
+  }
 
   buffer_queue_.Push(std::move(buffer));
   SatisfyPendingRead();
@@ -1958,8 +1976,7 @@ bool FFmpegDemuxer::StreamsHaveAvailableCapacity() {
 bool FFmpegDemuxer::IsMaxMemoryUsageReached() const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  size_t memory_left =
-      GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kFFmpegDemuxer);
+  size_t memory_left = GetDemuxerMemoryLimit(DemuxerType::kFFmpegDemuxer);
   for (const auto& stream : streams_) {
     if (!stream)
       continue;

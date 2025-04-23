@@ -12,6 +12,8 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,11 +154,11 @@ TEST_F(GLEXTWindowRectanglesTest, BasicState) {
     return;
   }
 
-  GLint box_exp[12] = {};
+  std::array<GLint, 12> box_exp = {};
   for (int i = 0; i < 12; ++i) {
     box_exp[i] = i;
   }
-  glWindowRectanglesEXT(GL_INCLUSIVE_EXT, 3, box_exp);
+  glWindowRectanglesEXT(GL_INCLUSIVE_EXT, 3, box_exp.data());
   ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   {
@@ -172,7 +174,7 @@ TEST_F(GLEXTWindowRectanglesTest, BasicState) {
     EXPECT_EQ(3, num);
   }
   {
-    GLint box[12] = {};
+    std::array<GLint, 12> box = {};
     for (int i = 0; i < 12; ++i) {
       box[i] = -1;
     }
@@ -344,8 +346,8 @@ TEST_F(GLEXTWindowRectanglesTest, TextureClearStateClearAndRestore) {
   // Check the texture is initialized
   {
     constexpr size_t PIXELS_SIZE = 4 * 32 * 32;
-    uint8_t pixels[PIXELS_SIZE];
-    glReadPixels(0, 0, 32, 32, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    std::array<uint8_t, PIXELS_SIZE> pixels;
+    glReadPixels(0, 0, 32, 32, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
     ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
     for (size_t i = 0; i < PIXELS_SIZE; ++i) {
       EXPECT_NEAR(0, pixels[i], 2);

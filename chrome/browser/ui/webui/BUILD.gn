@@ -45,6 +45,13 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/webui/new_tab_footer",
+      "//chrome/browser/ui/webui/privacy_sandbox",
+    ]
+  }
+
   if (safe_browsing_mode != 0) {
     deps += [ "//chrome/browser/ui/webui/safe_browsing" ]
   }

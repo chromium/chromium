@@ -610,9 +610,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="The header label of Tracking Protection page.">
-        Tracking Protection
-      </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
         Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
@@ -1241,6 +1238,21 @@
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the default browser bottom sheet has fully opened.">
         Default browser bottom sheet opened at full height
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_TITLE" desc="Title of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Browse across devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_DESCRIPTION" desc="Description of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Get your history on all your devices, so you can easily pick up where you left off
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_TURN_ON" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Turn on
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_LETS_GO" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Let’s go
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_CONTINUE" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Continue
+      </message>
 
       <!-- Safety Hub Magic Stack strings -->
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
@@ -1285,11 +1297,8 @@
       <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
         Quickly get to what matters to you
       </message>
-      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTING_TITLE" desc="Open setting page for feed section customization when clicked">
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
         Discover feed
-      </message>
-      <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
-        On
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the new tab page customization main bottom sheet.">
         Customize your new tab page bottom sheet
@@ -1299,6 +1308,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes closing the new tab page customization main bottom sheet">
         Customize your new tab page bottom sheet closed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
+        Manage your feed
       </message>
 
       <!-- What's New page strings -->

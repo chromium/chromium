@@ -86,6 +86,9 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   // settings of the cloned object will match this one.
   std::unique_ptr<OnDeviceContext> Clone();
 
+  // Sets the priority of the underlying session.
+  void SetPriority(on_device_model::mojom::Priority priority);
+
  private:
   void AddContext();
 
@@ -96,6 +99,8 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   ModelBasedCapabilityKey feature_;
   mojo::Remote<on_device_model::mojom::Session> session_;
   on_device_model::mojom::InputPtr input_;
+  on_device_model::mojom::Priority priority_ =
+      on_device_model::mojom::Priority::kForeground;
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 

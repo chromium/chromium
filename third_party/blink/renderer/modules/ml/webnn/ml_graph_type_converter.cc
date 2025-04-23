@@ -361,16 +361,6 @@ OperationPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewSoftplus(std::move(softplus_mojo));
 }
 
-webnn::mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
-    blink::V8MLInputOperandLayout::Enum type) {
-  switch (type) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      return webnn::mojom::InputOperandLayout::kChannelsFirst;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      return webnn::mojom::InputOperandLayout::kChannelsLast;
-  }
-}
-
 webnn::InputOperandLayout BlinkInputOperandLayoutToNative(
     blink::V8MLInputOperandLayout::Enum type) {
   switch (type) {
@@ -1127,19 +1117,41 @@ OperationPtr CreateLayerNormalizationOperation(
       std::move(layer_normalization_mojo));
 }
 
-OperationPtr CreateInstanceNormalizationOperation(
+void SerializeInstanceNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* instance_normalization) {
+    const webnn::ContextProperties& context_properties,
+    const MLOperator* instance_normalization,
+    blink_mojom::GraphInfo* graph_info) {
   auto instance_normalization_mojo =
       webnn::mojom::blink::InstanceNormalization::New();
-  instance_normalization_mojo->input_operand_id =
-      GetOperatorInputId(instance_normalization, operand_to_id_map, 0);
-  instance_normalization_mojo->output_operand_id =
-      GetOperatorOutputId(instance_normalization, operand_to_id_map);
+  const MLOperand* input_operand = instance_normalization->Inputs()[0];
+  const MLOperand* output_operand = instance_normalization->Outputs()[0];
+  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
 
   const auto* options = static_cast<const MLInstanceNormalizationOptions*>(
       instance_normalization->Options());
   CHECK(options);
+  const std::optional<base::span<const uint32_t>> input_permutation =
+      GetInputOperandPermutation(options->layout().AsEnum(),
+                                 context_properties);
+  if (input_permutation.has_value()) {
+    instance_normalization_mojo->input_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, input_operand,
+        *input_permutation, graph_info, options->label());
+
+    output_operand_id = InsertTemporaryOperand(
+        operand_to_id_map,
+        *webnn::OperandDescriptor::Create(
+            context_properties, output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation),
+            options->label().Utf8()),
+        graph_info);
+  } else {
+    instance_normalization_mojo->input_operand_id =
+        operand_to_id_map.at(input_operand);
+  }
+  instance_normalization_mojo->output_operand_id = output_operand_id;
+
   if (options->hasScale()) {
     instance_normalization_mojo->scale_operand_id =
         operand_to_id_map.at(options->scale());
@@ -1148,13 +1160,26 @@ OperationPtr CreateInstanceNormalizationOperation(
     instance_normalization_mojo->bias_operand_id =
         operand_to_id_map.at(options->bias());
   }
-  instance_normalization_mojo->layout =
-      BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
   instance_normalization_mojo->epsilon = options->epsilon();
   instance_normalization_mojo->label = options->label();
 
-  return webnn::mojom::blink::Operation::NewInstanceNormalization(
-      std::move(instance_normalization_mojo));
+  graph_info->operations.push_back(
+      blink_mojom::Operation::NewInstanceNormalization(
+          std::move(instance_normalization_mojo)));
+
+  const std::optional<base::span<const uint32_t>> output_permutation =
+      GetOutputOperandPermutation(options->layout().AsEnum(),
+                                  context_properties);
+  if (output_permutation) {
+    auto output_transpose = blink_mojom::Transpose::New();
+    output_transpose->input_operand_id = output_operand_id;
+    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
+    output_transpose->permutation = Vector<uint32_t>(*output_permutation);
+    output_transpose->label = options->label();
+
+    graph_info->operations.push_back(
+        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
+  }
 }
 
 OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
@@ -1884,8 +1909,8 @@ std::optional<String> SerializeMojoOperation(
           CreateHardSwishOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kInstanceNormalization:
-      graph_info->operations.push_back(
-          CreateInstanceNormalizationOperation(operand_to_id_map, op));
+      SerializeInstanceNormalizationOperation(
+          operand_to_id_map, context_properties, op, graph_info);
       break;
     case blink_mojom::Operation::Tag::kLayerNormalization:
       graph_info->operations.push_back(

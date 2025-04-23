@@ -6,15 +6,12 @@
 
 #include "base/check.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
-#include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#endif
+#include "extensions/browser/pending_extension_manager_factory.h"
 
 using content::BrowserContext;
 
@@ -39,8 +36,8 @@ ExtensionErrorControllerFactory::ExtensionErrorControllerFactory()
           "ExtensionErrorController",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -49,14 +46,7 @@ ExtensionErrorControllerFactory::ExtensionErrorControllerFactory()
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(PendingExtensionManagerFactory::GetInstance());
-  // TODO(crbug.com/394876083): `ExtensionSystem` is used by
-  // `ExtensionErrorController` to access `management_policy()`. Since
-  // `ManagementPolicy` is not supported on desktop android yet,
-  // `ExtensionSystem` is not used on desktop android. Port the following code
-  // when policy management is supported.
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(ChromeExtensionSystemFactory::GetInstance());
-#endif
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 ExtensionErrorControllerFactory::~ExtensionErrorControllerFactory() = default;

@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for SmartStickyMode.
  */
-ChromeVoxSmartStickyModeTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2SmartStickyModeTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -42,7 +42,7 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'PossibleRangeTypes', async function() {
+    'ChromeVoxMV2SmartStickyModeTest', 'PossibleRangeTypes', async function() {
       const root = await this.runWithLoadedTree(this.relationsDoc);
       const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
 
@@ -69,7 +69,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'UserPressesStickyModeCommand',
+    'ChromeVoxMV2SmartStickyModeTest', 'UserPressesStickyModeCommand',
     async function() {
       const root = await this.runWithLoadedTree(this.relationsDoc);
       const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
@@ -110,7 +110,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeJumpCommands',
+    'ChromeVoxMV2SmartStickyModeTest', 'SmartStickyModeJumpCommands',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(`
@@ -148,7 +148,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeEarcons', async function() {
+    'ChromeVoxMV2SmartStickyModeTest', 'SmartStickyModeEarcons',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(`
     <p>start</p>
@@ -170,25 +171,26 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+AX_TEST_F(
+    'ChromeVoxMV2SmartStickyModeTest', 'ContinuousRead', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <p>start</p>
     <input type="text"></input>
     <button>end</button>
   `;
-  const root = await this.runWithLoadedTree(site);
-  // Fake the read from here/continuous read state.
-  ChromeVoxState.instance.isReadingContinuously = true;
-  mockFeedback.call(doCmd('toggleStickyMode'))
-      .expectSpeech('Sticky mode enabled')
-      .call(doCmd('nextObject'))
-      .expectNextSpeechUtteranceIsNot('Sticky mode disabled')
-      .expectSpeech('Edit text')
-      .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
-      .call(doCmd('nextObject'))
-      .expectNextSpeechUtteranceIsNot('Sticky mode enabled')
-      .expectSpeech('Button')
-      .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()));
-  await mockFeedback.replay();
-});
+      const root = await this.runWithLoadedTree(site);
+      // Fake the read from here/continuous read state.
+      ChromeVoxState.instance.isReadingContinuously = true;
+      mockFeedback.call(doCmd('toggleStickyMode'))
+          .expectSpeech('Sticky mode enabled')
+          .call(doCmd('nextObject'))
+          .expectNextSpeechUtteranceIsNot('Sticky mode disabled')
+          .expectSpeech('Edit text')
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
+          .call(doCmd('nextObject'))
+          .expectNextSpeechUtteranceIsNot('Sticky mode enabled')
+          .expectSpeech('Button')
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()));
+      await mockFeedback.replay();
+    });

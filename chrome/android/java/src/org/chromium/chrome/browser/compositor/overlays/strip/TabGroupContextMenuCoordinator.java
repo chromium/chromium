@@ -31,13 +31,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
@@ -566,6 +566,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         .with(
                                 ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
                                 R.dimen.list_menu_item_horizontal_padding);
+        if (mTabModelSupplier.get().isIncognitoBranded()) {
+            builder.with(
+                    ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
+        }
         return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 

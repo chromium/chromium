@@ -132,11 +132,29 @@ public class ChromeColors {
     }
 
     /**
+     * Get the default background color based on the incognito status.
+     *
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito When true, returns the baseline dark tint color; otherwise returns
+     *     adaptive background color res.
+     * @return The {@link ColorRes} for the background.
+     */
+    public static @ColorInt int getDefaultBgColor(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(R.color.default_bg_color_dark);
+        }
+        return SemanticColorUtils.getDefaultBgColor(context);
+    }
+
+    /**
      * Calculates the surface color using theme colors.
+     *
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
      * @param elevationDimen The dimen to look up the elevation level with.
      * @return the {@link ColorInt} for the background of a surface view.
+     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
      */
+    @Deprecated
     public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
         float elevation = context.getResources().getDimension(elevationDimen);
         return getSurfaceColor(context, elevation);
@@ -144,11 +162,14 @@ public class ChromeColors {
 
     /**
      * Calculates the surface color using theme colors.
+     *
      * @param context The {@link Context} used to retrieve attrs and colors.
      * @param elevation The elevation in px.
      * @return the {@link ColorInt} for the background of a surface view.
+     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
      */
-    public static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
+    @Deprecated
+    private static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
         ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
@@ -164,4 +185,11 @@ public class ChromeColors {
         return SemanticColorUtils.getColorSurfaceContainerHighest(context);
     }
     // LINT.ThenChange(//components/browser_ui/widget/android/java/res/drawable/drag_handlebar.xml)
+
+    /** {@return The {@link ColorInt} keyboard focus ring color} */
+    public static @ColorInt int getKeyboardFocusRingColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.baseline_neutral_90)
+                : SemanticColorUtils.getDefaultControlColorActive(context);
+    }
 }

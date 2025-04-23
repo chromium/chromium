@@ -36,7 +36,7 @@ class TestFontAccessPermissionManager : public MockPermissionManager {
       override;
 
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
 

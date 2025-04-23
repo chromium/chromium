@@ -1046,6 +1046,17 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
+// Changing the value of the combobox should trigger a kTextChanged event.
+TEST_F(ComboboxTest, SetValueAccessibilityEvents) {
+  InitCombobox(nullptr);
+  std::u16string value = u"hello world";
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+  combobox()->GetViewAccessibility().SetValue(value);
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+  EXPECT_EQ(value, combobox()->GetViewAccessibility().GetValue());
+}
+
 // Regression test for crbug.com/1264288.
 // Should fail in ASan build before the fix.
 TEST_F(ComboboxTest, NoCrashWhenComboboxOutlivesModel) {

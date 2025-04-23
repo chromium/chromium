@@ -666,7 +666,8 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     possible_usernames_.Clear();
   }
 
-  if (form_may_be_submitted) {
+  if (form_may_be_submitted ||
+      !on_successful_submission_closure_.IsCancelled()) {
     std::unique_ptr<PasswordFormManager> submitted_manager =
         password_form_cache_.MoveOwnedSubmittedManager();
     if (submitted_manager) {
@@ -789,46 +790,53 @@ void PasswordManager::OnDynamicFormSubmission(
   submitted_manager->UpdateSubmissionIndicatorEvent(event);
 
   if (IsAutomaticSavePromptAvailable()) {
-    OnLoginSuccessful();
+    ScheduleOnLoginsSuccessful();
   }
 }
 
 void PasswordManager::OnPasswordFormCleared(
     PasswordManagerDriver* driver,
     const autofill::FormData& form_data) {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
+  auto logger = GetLoggerIfAvailable(client_);
+  if (logger) {
     logger->LogMessage(Logger::STRING_ON_PASSWORD_FORM_CLEARED);
   }
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
-  if (!manager || !IsAutomaticSavePromptAvailable(manager) ||
-      !manager->HasLikelyChangeOrResetFormSubmitted()) {
+  if (!manager || !IsAutomaticSavePromptAvailable(manager)) {
     return;
   }
-  // If a password form was cleared, login is successful.
-  if (!form_data.renderer_id().is_null()) {
-    manager->UpdateSubmissionIndicatorEvent(
-        SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 
+  auto relevant_field_cleared = [&form_data](FieldRendererId field) {
+    // Return immediately if the whole form was cleared.
+    if (!form_data.renderer_id().is_null()) {
+      return true;
+    }
+    auto it = std::ranges::find(form_data.fields(), field,
+                                &autofill::FormFieldData::renderer_id);
+    return it != form_data.fields().end() && it->value().empty();
+  };
+
+  if (manager->HasLikelyChangeOrResetFormSubmitted()) {
+    if (relevant_field_cleared(
+            manager->GetSubmittedForm()->new_password_element_renderer_id)) {
+      manager->UpdateSubmissionIndicatorEvent(
+          SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 #if BUILDFLAG(IS_ANDROID)
-    SignalFormSubmissionIfEligibleForSaving(manager, client_);
+      SignalFormSubmissionIfEligibleForSaving(manager, client_);
 #endif
-    OnLoginSuccessful();
+      ScheduleOnLoginsSuccessful();
+    }
     return;
   }
-  // If password fields outside the <form> tag were cleared, it should be
-  // verified that fields are relevant.
-  FieldRendererId new_password_field_id =
-      manager->GetSubmittedForm()->new_password_element_renderer_id;
-  auto it = std::ranges::find(form_data.fields(), new_password_field_id,
-                              &autofill::FormFieldData::renderer_id);
-  if (it != form_data.fields().end() && it->value().empty()) {
-    manager->UpdateSubmissionIndicatorEvent(
-        SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
-#if BUILDFLAG(IS_ANDROID)
-    SignalFormSubmissionIfEligibleForSaving(manager, client_);
-#endif
-    OnLoginSuccessful();
+
+  // If it's neither change or reset form it must be a sign-in or a sign-up
+  // form. Check if login should be considered failed in this case.
+  if (relevant_field_cleared(
+          manager->GetSubmittedForm()->password_element_renderer_id) &&
+      base::FeatureList::IsEnabled(
+          features::kFailedLoginDetectionBasedOnFormClearEvent)) {
+    OnLoginFailed(logger.get());
   }
 }
 
@@ -842,7 +850,7 @@ void PasswordManager::OnSubframeFormSubmission(PasswordManagerDriver* driver,
   ProvisionallySaveForm(form_data, driver, false);
 
   if (IsAutomaticSavePromptAvailable()) {
-    OnLoginSuccessful();
+    ScheduleOnLoginsSuccessful();
   }
 }
 #endif  // BUILDFLAG(IS_IOS)
@@ -1168,11 +1176,6 @@ void PasswordManager::UpdateStateOnUserInput(
   OnInformAboutUserInput(driver, *observed_form);
 
   // Notify PasswordManager about potential username fields for UFF.
-
-  if (!base::FeatureList::IsEnabled(features::kIosDetectUsernameInUff)) {
-    return;
-  }
-
   // Get the field that corresponds to `field_id`.
   auto it = std::ranges::find(observed_form->fields(), field_id,
                               &autofill::FormFieldData::renderer_id);
@@ -1435,7 +1438,23 @@ void PasswordManager::OnPasswordFormsRendered(
   // automatically save the login data. We prompt when the user hasn't
   // already given consent, either through previously accepting the infobar
   // or by having the browser generate the password.
-  OnLoginSuccessful();
+  ScheduleOnLoginsSuccessful();
+}
+
+void PasswordManager::ScheduleOnLoginsSuccessful() {
+  if (!base::FeatureList::IsEnabled(features::kPostponeOnLoginSuccessful)) {
+    OnLoginSuccessful();
+    return;
+  }
+  if (!on_successful_submission_closure_.IsCancelled()) {
+    // If successful submission already scheduled, no need to do anything.
+    return;
+  }
+  on_successful_submission_closure_.Reset(base::BindOnce(
+      &PasswordManager::OnLoginSuccessful, weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, on_successful_submission_closure_.callback(),
+      kDelayBeforeSuccessfulLogin);
 }
 
 void PasswordManager::OnLoginSuccessful() {
@@ -1446,9 +1465,13 @@ void PasswordManager::OnLoginSuccessful() {
   }
 
   PasswordFormManager* submitted_manager = GetSubmittedManager();
-  CHECK(submitted_manager);
+
+  if (!submitted_manager || !submitted_manager->GetSubmittedForm()) {
+    logger->LogMessage(Logger::STRING_NO_SUBMITTED_MANAGER_AVAILABLE);
+    return;
+  }
+
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
-  CHECK(submitted_form);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
@@ -1571,6 +1594,7 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
   if (logger) {
     logger->LogMessage(Logger::STRING_DECISION_DROP);
   }
+  on_successful_submission_closure_.Cancel();
 
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   DCHECK(submitted_manager);
@@ -1885,7 +1909,7 @@ bool PasswordManager::DetectPotentialSubmission(
   // If the manager was set to be submitted, either prior to this function call
   // or on provisional save above, consider submission successful.
   if (IsAutomaticSavePromptAvailable(form_manager)) {
-    OnLoginSuccessful();
+    ScheduleOnLoginsSuccessful();
     return true;
   }
   return false;

@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/check.h"
@@ -113,7 +114,7 @@ class FixedSizeCache {
   // kept as a separate array.)
   //
   // The lower bit is always set to 1 for a non-empty value.
-  uint8_t prefilter_[cache_size]{0};
+  std::array<uint8_t, cache_size> prefilter_ = {0};
 
   HeapVector<std::pair<Key, Value>> cache_;
 };

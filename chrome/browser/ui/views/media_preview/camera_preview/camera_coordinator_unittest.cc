@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
@@ -43,7 +44,8 @@ media_preview_metrics::Context GetMetricsContext() {
   // Camera coordinator is expected to narrow preview type to kCamera.
   // This is verified in ExpectHistogramTotalDevices() below.
   return {media_preview_metrics::UiLocation::kPermissionPrompt,
-          media_preview_metrics::PreviewType::kCameraAndMic};
+          media_preview_metrics::PreviewType::kCameraAndMic,
+          media_preview_metrics::PromptType::kCombined, nullptr};
 }
 
 MATCHER_P(HasItems, items, "") {

@@ -38,7 +38,6 @@
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/test/base/chrome_test_suite.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/sampling_profiler/thread_profiler.h"
@@ -80,6 +79,12 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
 
 // static
 int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
@@ -174,7 +179,6 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
   return chrome_content_utility_client_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
@@ -185,13 +189,18 @@ std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
         chrome_content_browser_client_->startup_data()
             ->chrome_feature_list_creator();
     PrefService* const local_state = chrome_feature_list_creator->local_state();
+#if BUILDFLAG(IS_ANDROID)
+    if (auto* test_instance = AndroidBrowserTest::GetCurrent()) {
+      test_instance->SetUpLocalStatePrefService(local_state);
+    }
+#else
     if (auto* test_instance = InProcessBrowserTest::GetCurrent()) {
       test_instance->SetUpLocalStatePrefService(local_state);
     }
+#endif
   }
   return result;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {

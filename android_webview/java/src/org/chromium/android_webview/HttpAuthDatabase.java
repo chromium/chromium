@@ -12,29 +12,34 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 /**
  * This database is used to support WebView's setHttpAuthUsernamePassword and
  * getHttpAuthUsernamePassword methods, and WebViewDatabase's clearHttpAuthUsernamePassword and
  * hasHttpAuthUsernamePassword methods.
  *
- * While this class is intended to be used as a singleton, this property is not enforced in this
+ * <p>While this class is intended to be used as a singleton, this property is not enforced in this
  * layer, primarily for ease of testing. To line up with the classic implementation and behavior,
  * there is no specific handling and reporting when SQL errors occur.
  *
- * Note on thread-safety: As per the classic implementation, most API functions have thread safety
- * provided by the underlying SQLiteDatabase instance. The exception is database opening: this
- * is handled in the dedicated background thread, which also provides a performance gain
- * if triggered early on (e.g. as a side effect of CookieSyncManager.createInstance() call),
+ * <p>Note on thread-safety: As per the classic implementation, most API functions have thread
+ * safety provided by the underlying SQLiteDatabase instance. The exception is database opening:
+ * this is handled in the dedicated background thread, which also provides a performance gain if
+ * triggered early on (e.g. as a side effect of CookieSyncManager.createInstance() call),
  * sufficiently in advance of the first blocking usage of the API.
  */
 @Lifetime.Profile
+@NullMarked
 public class HttpAuthDatabase {
     private static final String LOGTAG = "HttpAuthDatabase";
 
     private static final int DATABASE_VERSION = 1;
 
-    private SQLiteDatabase mDatabase;
+    private @Nullable SQLiteDatabase mDatabase;
 
     private static final String ID_COL = "_id";
 
@@ -130,6 +135,7 @@ public class HttpAuthDatabase {
         }
     }
 
+    @RequiresNonNull("mDatabase")
     private void createTable() {
         mDatabase.execSQL(
                 "CREATE TABLE "
@@ -160,6 +166,7 @@ public class HttpAuthDatabase {
      *
      * @return true if the database was initialized, false otherwise
      */
+    @EnsuresNonNullIf("mDatabase")
     private boolean waitForInit() {
         synchronized (mInitializedLock) {
             while (!mInitialized) {
@@ -183,7 +190,7 @@ public class HttpAuthDatabase {
      * @param password the password
      */
     public void setHttpAuthUsernamePassword(
-            String host, String realm, String username, String password) {
+            @Nullable String host, @Nullable String realm, String username, String password) {
         if (host == null || realm == null || !waitForInit()) {
             return;
         }
@@ -203,10 +210,11 @@ public class HttpAuthDatabase {
      *
      * @param host the host the password applies to
      * @param realm the realm the password applies to
-     * @return a String[] if found where String[0] is username (which can be null) and
-     *         String[1] is password.  Null is returned if it can't find anything.
+     * @return a String[] if found where String[0] is username (which can be null) and String[1] is
+     *     password. Null is returned if it can't find anything.
      */
-    public String[] getHttpAuthUsernamePassword(String host, String realm) {
+    public String @Nullable [] getHttpAuthUsernamePassword(
+            @Nullable String host, @Nullable String realm) {
         if (host == null || realm == null || !waitForInit()) {
             return null;
         }

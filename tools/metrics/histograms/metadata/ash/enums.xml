@@ -256,6 +256,16 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 
 <!-- LINT.ThenChange(//chromeos/ash/components/boca/babelorca/babel_orca_consumer.h:ReceivingStoppedReason) -->
 
+<!-- LINT.IfChange(BabelOrcaSendingStoppedReason) -->
+
+<enum name="BabelOrcaSendingStoppedReason">
+  <int value="0" label="Class Tools session ended"/>
+  <int value="1" label="Session captions turned off"/>
+  <int value="2" label="Send messages requests error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/boca/babelorca/babel_orca_producer.h:SendingStoppedReason) -->
+
 <!-- LINT.IfChange(BabelOrcaStreamEndReason) -->
 
 <enum name="BabelOrcaStreamEndReason">

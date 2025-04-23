@@ -10,10 +10,11 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_COMMAND_BUFFER_SHARED_H_
 #define GPU_COMMAND_BUFFER_COMMON_COMMAND_BUFFER_SHARED_H_
 
+#include <array>
 #include <atomic>
 
-#include "command_buffer.h"
 #include "base/atomicops.h"
+#include "command_buffer.h"
 
 namespace gpu {
 
@@ -21,19 +22,14 @@ namespace gpu {
 // ensure that the reader gets a consistent copy of what the writer wrote.
 template<typename T>
 class SharedState {
-  T states_[2][2];
+  std::array<std::array<T, 2>, 2> states_;
   base::subtle::Atomic32 reading_;
   base::subtle::Atomic32 latest_;
-  base::subtle::Atomic32 slots_[2];
+  std::array<base::subtle::Atomic32, 2> slots_;
 
-public:
-
+ public:
   void Initialize() {
-    for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 2; ++j) {
-        states_[i][j] = T();
-      }
-    }
+    states_ = {};
     base::subtle::NoBarrier_Store(&reading_, 0);
     base::subtle::NoBarrier_Store(&latest_, 0);
     base::subtle::NoBarrier_Store(&slots_[0], 0);

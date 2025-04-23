@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -998,9 +997,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, AddRemoveAddComponentExtension) {
       RunExtensionTest("keybinding/component", {}, {.load_as_component = true}))
       << message_;
 
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
-      ->component_loader()
+  extensions::ComponentLoader::Get(browser()->profile())
       ->Remove("pkplfbidichfdicaijlchgnapepdginl");
 
   ASSERT_TRUE(

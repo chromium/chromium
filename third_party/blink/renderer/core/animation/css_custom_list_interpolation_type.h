@@ -30,7 +30,7 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
   InterpolationValue PreInterpolationCompositeIfNeeded(
       InterpolationValue value,
@@ -47,6 +47,8 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
       InterpolationValue&& end) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
   // These methods only apply to CSSInterpolationTypes used by standard CSS

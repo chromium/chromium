@@ -19,19 +19,19 @@ class GPUAdapterInfo : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  GPUAdapterInfo(
-      const String& vendor,
-      const String& architecture,
-      uint32_t subgroup_min_size,
-      uint32_t subgroup_max_size,
-      bool isFallbackAdapter,
-      const String& device = String(),
-      const String& description = String(),
-      const String& driver = String(),
-      const String& backend = String(),
-      const String& type = String(),
-      const std::optional<uint32_t> d3d_shader_model = std::nullopt,
-      const std::optional<uint32_t> vk_driver_version = std::nullopt);
+  GPUAdapterInfo(const String& vendor,
+                 const String& architecture,
+                 uint32_t subgroup_min_size,
+                 uint32_t subgroup_max_size,
+                 bool isFallbackAdapter,
+                 const String& device = String(),
+                 const String& description = String(),
+                 const String& driver = String(),
+                 const String& backend = String(),
+                 const String& type = String(),
+                 const std::optional<uint32_t> d3d_shader_model = std::nullopt,
+                 const std::optional<uint32_t> vk_driver_version = std::nullopt,
+                 const String& power_preference = String());
 
   GPUAdapterInfo(const GPUAdapterInfo&) = delete;
   GPUAdapterInfo& operator=(const GPUAdapterInfo&) = delete;
@@ -52,6 +52,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   const HeapVector<Member<GPUMemoryHeapInfo>>& memoryHeaps() const;
   const std::optional<uint32_t>& d3dShaderModel() const;
   const std::optional<uint32_t>& vkDriverVersion() const;
+  const String& powerPreference() const;
   // }}} End of WebIDL binding implementation.
 
   void Trace(Visitor*) const override;
@@ -70,6 +71,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
   std::optional<uint32_t> d3d_shader_model_;
   std::optional<uint32_t> vk_driver_version_;
+  String power_preference_;
 };
 
 }  // namespace blink

@@ -38,7 +38,7 @@ const int64_t kMaxBufferPreload = 50 << 20;  // 50 Mb
 // one Mb into one 32k block.
 // This seems to be the smallest amount of preload we can do without
 // ending up repeatedly closing and re-opening the connection
-// due to read calls after OnBufferingHaveEnough have been called.
+// due to read calls after StopPreloading() have been called.
 const int64_t kMetadataShift = 6;
 
 // Preload this much extra, then stop preloading until we fall below the
@@ -104,11 +104,11 @@ MultiBufferDataSource::ReadOperation::ReadOperation(
       size_(size),
       data_(data),
       callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  DCHECK(callback_);
 }
 
 MultiBufferDataSource::ReadOperation::~ReadOperation() {
-  DCHECK(callback_.is_null());
+  DCHECK(!callback_);
 }
 
 // static
@@ -124,19 +124,8 @@ MultiBufferDataSource::MultiBufferDataSource(
     media::MediaLog* media_log,
     BufferedDataSourceHost* host,
     DownloadingCB downloading_cb)
-    : total_bytes_(kPositionNotSpecified),
-      streaming_(false),
-      loading_(false),
-      failed_(false),
-      render_task_runner_(task_runner),
+    : render_task_runner_(task_runner),
       url_data_(std::move(url_data_arg)),
-      stop_signal_received_(false),
-      media_has_played_(false),
-      single_origin_(true),
-      cancel_on_defer_(false),
-      preload_(AUTO),
-      bitrate_(0),
-      playback_rate_(0.0),
       media_log_(media_log->Clone()),
       host_(host),
       downloading_cb_(std::move(downloading_cb)) {
@@ -144,7 +133,7 @@ MultiBufferDataSource::MultiBufferDataSource(
   DCHECK(host_);
   DCHECK(downloading_cb_);
   DCHECK(render_task_runner_->BelongsToCurrentThread());
-  DCHECK(url_data_.get());
+  DCHECK(url_data_);
   url_data_->Use();
   url_data_->OnRedirect(
       WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
@@ -199,7 +188,7 @@ void MultiBufferDataSource::CreateResourceLoader_Locked(
 void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   DCHECK(init_cb);
-  DCHECK(!reader_.get());
+  DCHECK(!reader_);
 
   init_cb_ = std::move(init_cb);
 
@@ -340,7 +329,7 @@ void MultiBufferDataSource::OnMediaPlaybackRateChanged(double playback_rate) {
 void MultiBufferDataSource::OnMediaIsPlaying() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
-  // Always clear this since it can be set by OnBufferingHaveEnough() calls at
+  // Always clear this since it can be set by StopPreloading() calls at
   // any point in time.
   cancel_on_defer_ = false;
 
@@ -392,22 +381,23 @@ void MultiBufferDataSource::SetBitrate(int bitrate) {
                           weak_factory_.GetWeakPtr(), bitrate));
 }
 
-void MultiBufferDataSource::OnBufferingHaveEnough(bool always_cancel) {
+void MultiBufferDataSource::StopPreloading() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
-  if (reader_ && (always_cancel || (preload_ == METADATA &&
-                                    !media_has_played_ && !IsStreaming()))) {
-    cancel_on_defer_ = true;
-    if (!loading_) {
-      base::AutoLock auto_lock(lock_);
-      if (read_op_) {
-        // We can't destroy the reader if a read operation is pending.
-        // UpdateLoadingState_Locked will take care of it after the
-        // operation is done.
-        return;
-      }
-      // Already locked, no need to use SetReader().
-      reader_.reset(nullptr);
+  if (!reader_) {
+    return;
+  }
+
+  cancel_on_defer_ = true;
+  if (!loading_) {
+    base::AutoLock auto_lock(lock_);
+    if (read_op_) {
+      // We can't destroy the reader if a read operation is pending.
+      // UpdateLoadingState_Locked will take care of it after the
+      // operation is done.
+      return;
     }
+    // Already locked, no need to use SetReader().
+    reader_.reset();
   }
 }
 
@@ -624,7 +614,7 @@ void MultiBufferDataSource::StartCallback() {
 
   if (!init_cb_) {
     // Can't call SetReader(nullptr) since we are holding the lock.
-    reader_.reset(nullptr);
+    reader_.reset();
     return;
   }
 
@@ -644,7 +634,7 @@ void MultiBufferDataSource::StartCallback() {
     media_log_->SetProperty<media::MediaLogProperty::kIsStreaming>(streaming_);
   } else {
     // Can't call SetReader(nullptr) since we are holding the lock.
-    reader_.reset(nullptr);
+    reader_.reset();
   }
 
   if (success) {
@@ -712,7 +702,7 @@ void MultiBufferDataSource::UpdateLoadingState_Locked(bool force_loading) {
         return;
       }
       // Already locked, no need to use SetReader().
-      reader_.reset(nullptr);
+      reader_.reset();
     }
 
     loading_ = loading;

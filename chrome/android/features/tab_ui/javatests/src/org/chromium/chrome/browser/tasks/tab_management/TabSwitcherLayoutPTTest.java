@@ -65,6 +65,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -259,9 +260,9 @@ public class TabSwitcherLayoutPTTest {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         // Make sure all thumbnails are there before switching tabs.
         RegularTabSwitcherStation tabSwitcher = enterRegularHTSWithThumbnailChecking(secondPage);
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
@@ -417,9 +418,9 @@ public class TabSwitcherLayoutPTTest {
                         "Android.TabGroupParity.TabGroupCreationDialogResultAction", 1);
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -454,9 +455,9 @@ public class TabSwitcherLayoutPTTest {
                         .build();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs and edit group fields
@@ -484,9 +485,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -513,9 +514,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -544,9 +545,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -558,8 +559,7 @@ public class TabSwitcherLayoutPTTest {
         dialog = dialog.pressDoneWithInvalidTitle();
 
         // Verify that the action was blocked
-        onView(NewTabGroupDialogFacility.DIALOG.getViewMatcher())
-                .check(matches(isCompletelyDisplayed()));
+        dialog.dialogElement.check(matches(isCompletelyDisplayed()));
         dialog.pressBack();
 
         // Assert that the expected fields are correct
@@ -579,9 +579,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -608,9 +608,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -688,8 +688,11 @@ public class TabSwitcherLayoutPTTest {
 
                             assertEquals(
                                     ColorStateList.valueOf(
-                                            ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                                    mCtaTestRule.getActivity(), color, false)),
+                                            TabGroupColorPickerUtils
+                                                    .getTabGroupColorPickerItemColor(
+                                                            mCtaTestRule.getActivity(),
+                                                            color,
+                                                            false)),
                                     drawable.getColor());
                         });
     }

@@ -738,6 +738,14 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
           HTMLSelectElement::SelectParserRelaxationEnabled(
               tree_.CurrentNode())) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+          bool parent_select = IsA<HTMLSelectElement>(tree_.CurrentNode());
+          if (parent_select) {
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kInputParsedParentSelect);
+          } else {
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kInputParsedAncestorSelect);
+          }
           ProcessFakeEndTag(HTMLTag::kSelect);
         }
       }

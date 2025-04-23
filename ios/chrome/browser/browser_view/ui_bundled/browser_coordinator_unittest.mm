@@ -9,6 +9,7 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -134,6 +135,7 @@ class BrowserCoordinatorTest : public PlatformTest {
         browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
     SyncErrorBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent* enabler =
         WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());

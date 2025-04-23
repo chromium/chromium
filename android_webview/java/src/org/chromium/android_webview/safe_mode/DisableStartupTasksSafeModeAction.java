@@ -4,17 +4,16 @@
 
 package org.chromium.android_webview.safe_mode;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
+import org.chromium.build.annotations.NullMarked;
 
 /** A {@link SafeModeAction} to disable the experiment to run WebView startup asynchronously. */
+@NullMarked
 public class DisableStartupTasksSafeModeAction implements SafeModeAction {
     private static boolean sDisableStartupTasksLogic;
 
     @Override
-    @NonNull
     public String getId() {
         // This ID should not be changed or reused.
         return SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC;

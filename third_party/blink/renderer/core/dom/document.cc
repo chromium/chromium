@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_ready_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_import_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
@@ -392,6 +393,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
@@ -1354,13 +1356,14 @@ ProcessingInstruction* Document::createProcessingInstruction(
   if (!IsValidName(target)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "The target provided ('" + target + "') is not a valid name.");
+        WTF::StrCat(
+            {"The target provided ('", target, "') is not a valid name."}));
     return nullptr;
   }
   if (data.Contains("?>")) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "The data provided ('" + data + "') contains '?>'.");
+        WTF::StrCat({"The data provided ('", data, "') contains '?>'."}));
     return nullptr;
   }
   if (IsA<HTMLDocument>(this)) {
@@ -1375,7 +1378,49 @@ Text* Document::CreateEditingTextNode(const String& text) {
 }
 
 Node* Document::importNode(Node* imported_node,
+                           ImportNodeOptions* options,
+                           ExceptionState& exception_state) {
+  DCHECK(options);
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+
+  // The spec[1] says:
+  // 1. Let subtree be false.
+  // ...4. If options is a boolean, then set subtree to options .
+  // ...5.1 Set subtree to the negation of options [" selfOnly "].
+  //
+  // However, due to the overloads we know `ImportNodeOptions` to be
+  // an object, but `selfOnly` may not be supplied (in which case it
+  // will be false). Because we take the _negation_ of selfOnly, this
+  // means when it is not supplied subtree will be true. So another
+  // way to write the spec could be:
+  //
+  // 1. Let subtree be true
+  // ...5.1 Set subtree to the negation of options [" selfOnly "].
+  //
+  // [1]:
+  // https://whatpr.org/dom/1341/eaf2ac7...2ff2920.html#dom-document-importnode
+  bool subtree = true;
+  if (options->hasSelfOnly()) {
+    subtree = !options->selfOnly();
+  }
+
+  CustomElementRegistry* registry = nullptr;
+  if (options->hasCustomElementRegistry()) {
+    registry = options->customElementRegistry();
+  }
+
+  return importNode(imported_node, subtree, registry, exception_state);
+}
+
+Node* Document::importNode(Node* imported_node,
                            bool deep,
+                           ExceptionState& exception_state) {
+  return importNode(imported_node, deep, nullptr, exception_state);
+}
+
+Node* Document::importNode(Node* imported_node,
+                           bool deep,
+                           CustomElementRegistry* registry,
                            ExceptionState& exception_state) {
   // https://dom.spec.whatwg.org/#dom-document-importnode
 
@@ -1411,10 +1456,10 @@ Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
 
   switch (source->getNodeType()) {
     case kDocumentNode:
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        "The node provided is of type '" +
-                                            source->nodeName() +
-                                            "', which may not be adopted.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          WTF::StrCat({"The node provided is of type '", source->nodeName(),
+                       "', which may not be adopted."}));
       return nullptr;
     case kAttributeNode: {
       auto* attr = To<Attr>(source);
@@ -1462,6 +1507,11 @@ Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
   AdoptIfNeeded(*source);
 
   return source;
+}
+
+CustomElementRegistry* Document::customElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  return dom_window_ ? dom_window_->customElements() : nullptr;
 }
 
 bool Document::HasValidNamespaceForElements(const QualifiedName& q_name) {
@@ -3747,8 +3797,8 @@ void Document::setBody(HTMLElement* prp_new_body,
       !IsA<HTMLFrameSetElement>(*new_body)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
-        "The new body element is of type '" + new_body->tagName() +
-            "'. It must be either a 'BODY' or 'FRAMESET' element.");
+        WTF::StrCat({"The new body element is of type '", new_body->tagName(),
+                     "'. It must be either a 'BODY' or 'FRAMESET' element."}));
     return;
   }
 
@@ -4874,8 +4924,8 @@ void Document::MaybeHandleHttpRefresh(const String& content,
       refresh_url_string.empty() ? Url() : CompleteURL(refresh_url_string);
 
   if (refresh_url.ProtocolIsJavaScript()) {
-    String message =
-        "Refused to refresh " + url_.ElidedString() + " to a javascript: URL";
+    String message = WTF::StrCat(
+        {"Refused to refresh ", url_.ElidedString(), " to a javascript: URL"});
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         message));
@@ -5055,8 +5105,9 @@ bool Document::CanAcceptChild(const Node* new_child,
       case kTextNode:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            "Nodes of type '" + child.nodeName() +
-                "' may not be inserted inside nodes of type '#document'.");
+            WTF::StrCat(
+                {"Nodes of type '", child.nodeName(),
+                 "' may not be inserted inside nodes of type '#document'."}));
         return false;
       case kCommentNode:
       case kProcessingInstructionNode:
@@ -6190,7 +6241,8 @@ Event* Document::createEvent(ScriptState* script_state,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,
-      "The provided event type ('" + event_type + "') is invalid.");
+      WTF::StrCat(
+          {"The provided event type ('", event_type, "') is invalid."}));
   return nullptr;
 }
 
@@ -6409,9 +6461,9 @@ void Document::setDomain(const String& raw_domain,
 
   if (SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
           dom_window_->GetSecurityOrigin()->Protocol())) {
-    exception_state.ThrowSecurityError(
-        "Assignment is forbidden for the '" +
-        dom_window_->GetSecurityOrigin()->Protocol() + "' scheme.");
+    exception_state.ThrowSecurityError(WTF::StrCat(
+        {"Assignment is forbidden for the '",
+         dom_window_->GetSecurityOrigin()->Protocol(), "' scheme."}));
     return;
   }
 
@@ -6419,14 +6471,14 @@ void Document::setDomain(const String& raw_domain,
   String new_domain = SecurityOrigin::CanonicalizeHost(
       raw_domain, dom_window_->GetSecurityOrigin()->Protocol(), &success);
   if (!success) {
-    exception_state.ThrowSecurityError("'" + raw_domain +
-                                       "' could not be parsed properly.");
+    exception_state.ThrowSecurityError(
+        WTF::StrCat({"'", raw_domain, "' could not be parsed properly."}));
     return;
   }
 
   if (new_domain.empty()) {
-    exception_state.ThrowSecurityError("'" + new_domain +
-                                       "' is an empty domain.");
+    exception_state.ThrowSecurityError(
+        WTF::StrCat({"'", new_domain, "' is an empty domain."}));
     return;
   }
 
@@ -6438,15 +6490,15 @@ void Document::setDomain(const String& raw_domain,
   network::cors::OriginAccessEntry::MatchResult result =
       access_entry.MatchesOrigin(*dom_window_->GetSecurityOrigin());
   if (result == network::cors::OriginAccessEntry::kDoesNotMatchOrigin) {
-    exception_state.ThrowSecurityError(
-        "'" + new_domain + "' is not a suffix of '" + domain() + "'.");
+    exception_state.ThrowSecurityError(WTF::StrCat(
+        {"'", new_domain, "' is not a suffix of '", domain(), "'."}));
     return;
   }
 
   if (result ==
       network::cors::OriginAccessEntry::kMatchesOriginButIsPublicSuffix) {
-    exception_state.ThrowSecurityError("'" + new_domain +
-                                       "' is a top-level domain.");
+    exception_state.ThrowSecurityError(
+        WTF::StrCat({"'", new_domain, "' is a top-level domain."}));
     return;
   }
 

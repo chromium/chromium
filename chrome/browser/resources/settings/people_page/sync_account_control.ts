@@ -142,21 +142,21 @@ export class SettingsSyncAccountControlElement extends
     ];
   }
 
-  syncStatus: SyncStatus;
-  promoLabelWithAccount: string;
-  promoLabelWithNoAccount: string;
-  promoSecondaryLabelWithAccount: string;
-  promoSecondaryLabelWithNoAccount: string;
-  private syncing_: boolean;
-  private storedAccounts_: StoredAccount[];
-  private profileAvatarURL_: string;
-  private shownAccount_: StoredAccount|null;
-  embeddedInSubpage: boolean;
-  hideButtons: boolean;
-  hideBanner: boolean;
-  private shouldShowAvatarRow_: boolean;
-  private subLabel_: string;
-  private showSetupButtons_: boolean;
+  declare syncStatus: SyncStatus;
+  declare promoLabelWithAccount: string;
+  declare promoLabelWithNoAccount: string;
+  declare promoSecondaryLabelWithAccount: string;
+  declare promoSecondaryLabelWithNoAccount: string;
+  declare private syncing_: boolean;
+  declare private storedAccounts_: StoredAccount[];
+  declare private profileAvatarURL_: string;
+  declare private shownAccount_: StoredAccount|null;
+  declare embeddedInSubpage: boolean;
+  declare hideButtons: boolean;
+  declare hideBanner: boolean;
+  declare private shouldShowAvatarRow_: boolean;
+  declare private subLabel_: string;
+  declare private showSetupButtons_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 

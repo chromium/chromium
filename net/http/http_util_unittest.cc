@@ -138,19 +138,31 @@ TEST(HttpUtilTest, IsSafeHeader) {
 TEST(HttpUtilTest, HeadersIterator) {
   std::string headers = "foo: 1\t\r\nbar: hello world\r\nbaz: 3 \r\n";
 
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
+  HttpUtil::HeadersIterator it(headers, "\r\n");
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("foo"), it.name());
-  EXPECT_EQ(std::string("1"), it.values());
+  EXPECT_EQ("foo", it.name());
+  EXPECT_EQ("1", it.values());
+  EXPECT_EQ(0u, it.name_begin());
+  EXPECT_EQ(3u, it.name_end());
+  EXPECT_EQ(5u, it.values_begin());
+  EXPECT_EQ(6u, it.values_end());
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("bar"), it.name());
-  EXPECT_EQ(std::string("hello world"), it.values());
+  EXPECT_EQ("bar", it.name());
+  EXPECT_EQ("hello world", it.values());
+  EXPECT_EQ(9u, it.name_begin());
+  EXPECT_EQ(12u, it.name_end());
+  EXPECT_EQ(14u, it.values_begin());
+  EXPECT_EQ(25u, it.values_end());
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("baz"), it.name());
-  EXPECT_EQ(std::string("3"), it.values());
+  EXPECT_EQ("baz", it.name());
+  EXPECT_EQ("3", it.values());
+  EXPECT_EQ(27u, it.name_begin());
+  EXPECT_EQ(30u, it.name_end());
+  EXPECT_EQ(32u, it.values_begin());
+  EXPECT_EQ(33u, it.values_end());
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -158,15 +170,23 @@ TEST(HttpUtilTest, HeadersIterator) {
 TEST(HttpUtilTest, HeadersIterator_MalformedLine) {
   std::string headers = "foo: 1\n: 2\n3\nbar: 4";
 
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\n");
+  HttpUtil::HeadersIterator it(headers, "\n");
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("foo"), it.name());
-  EXPECT_EQ(std::string("1"), it.values());
+  EXPECT_EQ("foo", it.name());
+  EXPECT_EQ("1", it.values());
+  EXPECT_EQ(0u, it.name_begin());
+  EXPECT_EQ(3u, it.name_end());
+  EXPECT_EQ(5u, it.values_begin());
+  EXPECT_EQ(6u, it.values_end());
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("bar"), it.name());
-  EXPECT_EQ(std::string("4"), it.values());
+  EXPECT_EQ("bar", it.name());
+  EXPECT_EQ("4", it.values());
+  EXPECT_EQ(13u, it.name_begin());
+  EXPECT_EQ(16u, it.name_end());
+  EXPECT_EQ(18u, it.values_begin());
+  EXPECT_EQ(19u, it.values_end());
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -174,7 +194,7 @@ TEST(HttpUtilTest, HeadersIterator_MalformedLine) {
 TEST(HttpUtilTest, HeadersIterator_MalformedName) {
   std::string headers = "[ignore me] /: 3\r\n";
 
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
+  HttpUtil::HeadersIterator it(headers, "\r\n");
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -182,38 +202,17 @@ TEST(HttpUtilTest, HeadersIterator_MalformedName) {
 TEST(HttpUtilTest, HeadersIterator_MalformedNameFollowedByValidLine) {
   std::string headers = "[ignore me] /: 3\r\nbar: 4\n";
 
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
+  HttpUtil::HeadersIterator it(headers, "\r\n");
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ(std::string("bar"), it.name());
-  EXPECT_EQ(std::string("4"), it.values());
+  EXPECT_EQ("bar", it.name());
+  EXPECT_EQ("4", it.values());
+  EXPECT_EQ(18u, it.name_begin());
+  EXPECT_EQ(21u, it.name_end());
+  EXPECT_EQ(23u, it.values_begin());
+  EXPECT_EQ(24u, it.values_end());
 
   EXPECT_FALSE(it.GetNext());
-}
-
-TEST(HttpUtilTest, HeadersIterator_AdvanceTo) {
-  std::string headers = "foo: 1\r\n: 2\r\n3\r\nbar: 4";
-
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
-  EXPECT_TRUE(it.AdvanceTo("foo"));
-  EXPECT_EQ("foo", it.name());
-  EXPECT_TRUE(it.AdvanceTo("bar"));
-  EXPECT_EQ("bar", it.name());
-  EXPECT_FALSE(it.AdvanceTo("blat"));
-  EXPECT_FALSE(it.GetNext());  // should be at end of headers
-}
-
-TEST(HttpUtilTest, HeadersIterator_Reset) {
-  std::string headers = "foo: 1\r\n: 2\r\n3\r\nbar: 4";
-  HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
-  // Search past "foo".
-  EXPECT_TRUE(it.AdvanceTo("bar"));
-  // Now try advancing to "foo".  This time it should fail since the iterator
-  // position is past it.
-  EXPECT_FALSE(it.AdvanceTo("foo"));
-  it.Reset();
-  // Now that we reset the iterator position, we should find 'foo'
-  EXPECT_TRUE(it.AdvanceTo("foo"));
 }
 
 TEST(HttpUtilTest, ValuesIterator) {
@@ -224,12 +223,18 @@ TEST(HttpUtilTest, ValuesIterator) {
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("must-revalidate", it.value());
+  EXPECT_EQ(1, it.value_begin());
+  EXPECT_EQ(16, it.value_end());
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("no-cache=\"foo, bar\"", it.value());
+  EXPECT_EQ(20, it.value_begin());
+  EXPECT_EQ(39, it.value_end());
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("private", it.value());
+  EXPECT_EQ(42, it.value_begin());
+  EXPECT_EQ(49, it.value_end());
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -240,27 +245,41 @@ TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
   HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("foopy", it.value());
+  EXPECT_EQ(2, it.value_begin());
+  EXPECT_EQ(7, it.value_end());
   EXPECT_FALSE(it.GetNext());
 
   HttpUtil::ValuesIterator it_with_empty_values(values, ',',
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(0, it_with_empty_values.value_begin());
+  EXPECT_EQ(0, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("foopy", it_with_empty_values.value());
+  EXPECT_EQ(2, it_with_empty_values.value_begin());
+  EXPECT_EQ(7, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(12, it_with_empty_values.value_begin());
+  EXPECT_EQ(12, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(13, it_with_empty_values.value_begin());
+  EXPECT_EQ(13, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(14, it_with_empty_values.value_begin());
+  EXPECT_EQ(14, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(15, it_with_empty_values.value_begin());
+  EXPECT_EQ(15, it_with_empty_values.value_end());
 
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
@@ -275,6 +294,8 @@ TEST(HttpUtilTest, ValuesIterator_Blanks) {
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(3, it_with_empty_values.value_begin());
+  EXPECT_EQ(3, it_with_empty_values.value_end());
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
 
@@ -1636,6 +1657,52 @@ TEST(HttpUtilTest, IsLWS) {
 
   EXPECT_TRUE(HttpUtil::IsLWS('\t'));
   EXPECT_TRUE(HttpUtil::IsLWS(' '));
+}
+
+TEST(HttpUtilTest, TrimLWS) {
+  const struct {
+    std::string_view input;
+    // Input/expected values when calling the TrimLWS() size_t overload.
+    size_t begin_offset;
+    size_t end_offset;
+    size_t expected_begin_offset;
+    size_t expected_end_offset;
+  } kTestCases[] = {
+      /*{"", 0, 0, 0, 0},
+      {" a ", 0, 3, 1, 2},
+      {"\ta\t", 0, 3, 1, 2},
+      {" a ", 1, 2, 1, 2},
+      {" a ", 1, 3, 1, 2},
+      {" a ", 0, 2, 1, 2},
+      {" a ", 0, 1, 1, 1},
+      {" a ", 2, 3, 3, 3},
+      {" \x01z\xFF ", 0, 5, 1, 4},
+      {" a b ", 0, 5, 1, 4},
+      {"\ra\n", 0, 3, 0, 3},*/
+      {" \t a \t b\t \t", 0, 11, 3, 8},
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.input);
+
+    // Test the TrimLWS() overload that uses size_ts as inputs/outputs.
+    size_t begin_offset = test.begin_offset;
+    size_t end_offset = test.end_offset;
+    HttpUtil::TrimLWS(test.input, begin_offset, end_offset);
+    EXPECT_EQ(test.expected_begin_offset, begin_offset);
+    EXPECT_EQ(test.expected_end_offset, end_offset);
+    EXPECT_EQ(test.expected_begin_offset, begin_offset);
+    EXPECT_EQ(test.expected_end_offset, end_offset);
+
+    // Test the TrimLWS() overload that provides a string_view as the
+    // output.
+    std::string_view input = test.input.substr(
+        test.begin_offset, test.end_offset - test.begin_offset);
+    std::string_view expected = test.input.substr(
+        test.expected_begin_offset,
+        test.expected_end_offset - test.expected_begin_offset);
+    EXPECT_EQ(HttpUtil::TrimLWS(input), expected);
+  }
 }
 
 TEST(HttpUtilTest, IsControlChar) {

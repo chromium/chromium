@@ -21,6 +21,8 @@ namespace {
 std::vector<std::string> GetFixedModuleList() {
 #if BUILDFLAG(IS_IOS)
   return {};
+#elif BUILDFLAG(IS_ANDROID)
+  return {kPriceChange, kSingleTab, kSafetyHub, kAuxiliarySearch};
 #else
   return {
       kPriceChange, kSingleTab, kSafetyHub, kAuxiliarySearch, kTabResumption

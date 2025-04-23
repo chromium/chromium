@@ -39,7 +39,8 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -60,8 +61,8 @@ public class CustomTabExternalNavigationTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mTestAppActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTestAppActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** A dummy activity that claims to handle "customtab://customtabtest". */
     public static class DummyActivityForSpecialScheme extends Activity {
@@ -138,7 +139,7 @@ public class CustomTabExternalNavigationTest {
     }
 
     private void launchAuthTab(String url) throws TimeoutException {
-        mTestAppActivityTestRule.startMainActivityOnBlankPage();
+        mTestAppActivityTestRule.startOnBlankPage();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 CustomTabsIntentTestUtils.createCustomTabIntent(context, url, false, builder -> {})

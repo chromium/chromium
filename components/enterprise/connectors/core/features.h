@@ -16,6 +16,9 @@ BASE_DECLARE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid);
 // `kEnterpriseSecurityEventReportingOnAndroid` is not enabled.
 BASE_DECLARE_FEATURE(kEnterpriseUrlFilteringEventReportingOnAndroid);
 
+// Controls whether the realtime events reporting is enabled on iOS.
+BASE_DECLARE_FEATURE(kEnterpriseRealtimeEventReportingOnIOS);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

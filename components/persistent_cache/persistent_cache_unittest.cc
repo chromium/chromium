@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mock/mock_backend_impl.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
@@ -66,13 +67,13 @@ TEST_F(PersistentCacheMockedBackendTest, CacheFindCallsBackendFind) {
 
 TEST_F(PersistentCacheMockedBackendTest, CacheInsertCallsBackendInsert) {
   CreateCache(true);
-  EXPECT_CALL(*GetBackend(), Insert(kKey, _));
+  EXPECT_CALL(*GetBackend(), Insert(kKey, _, _));
   cache_->Insert(kKey, base::byte_span_from_cstring("1"));
 }
 
 TEST_F(PersistentCacheMockedBackendTest,
        FailedBackendInitializationMeansNoFurtherCalls) {
-  EXPECT_CALL(*backend_, Insert(kKey, _)).Times(0);
+  EXPECT_CALL(*backend_, Insert(kKey, _, _)).Times(0);
   EXPECT_CALL(*backend_, Find(kKey)).Times(0);
 
   CreateCache(false);
@@ -158,6 +159,30 @@ TEST_P(PersistentCacheTest, OverwritingChangesValue) {
   cache->Insert(kKey, base::byte_span_from_cstring("2"));
   EXPECT_EQ(cache->Find(kKey)->GetContentSpan(),
             base::byte_span_from_cstring("2"));
+}
+
+TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
+  EntryMetadata metadata{.input_signature =
+                             base::Time::Now().InMillisecondsSinceUnixEpoch()};
+
+  auto cache = OpenCache();
+  cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata);
+
+  EXPECT_EQ(cache->Find(kKey)->GetMetadata().input_signature,
+            metadata.input_signature);
+}
+
+TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {
+  EntryMetadata metadata{.input_signature =
+                             base::Time::Now().InMillisecondsSinceUnixEpoch()};
+
+  auto cache = OpenCache();
+  cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata);
+  EXPECT_EQ(cache->Find(kKey)->GetMetadata().input_signature,
+            metadata.input_signature);
+
+  cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{});
+  EXPECT_EQ(cache->Find(kKey)->GetMetadata().input_signature, 0);
 }
 
 TEST_P(PersistentCacheTest, MultipleEphemeralCachesAreIndependent) {

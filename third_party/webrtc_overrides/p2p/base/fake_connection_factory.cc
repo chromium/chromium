@@ -29,9 +29,9 @@ FakeConnectionFactory::FakeConnectionFactory(webrtc::TaskQueueBase* thread,
     : readyEvent_(readyEvent),
       sf_(std::make_unique<blink::FakeSocketFactory>()),
       allocator_(
-          std::make_unique<cricket::FakePortAllocator>(WebRtcEnvironment(),
-                                                       sf_.get(),
-                                                       thread)) {}
+          std::make_unique<webrtc::FakePortAllocator>(WebRtcEnvironment(),
+                                                      sf_.get(),
+                                                      thread)) {}
 
 void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
   if (sessions_.size() > 0) {
@@ -46,7 +46,7 @@ void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
   sessions_.push_back(std::move(session));
 }
 
-cricket::Connection* FakeConnectionFactory::CreateConnection(
+webrtc::Connection* FakeConnectionFactory::CreateConnection(
     webrtc::IceCandidateType type,
     std::string_view remote_ip,
     int remote_port,
@@ -54,39 +54,39 @@ cricket::Connection* FakeConnectionFactory::CreateConnection(
   if (ports_.size() == 0) {
     return nullptr;
   }
-  cricket::Candidate remote =
+  webrtc::Candidate remote =
       CreateUdpCandidate(type, remote_ip, remote_port, priority);
-  cricket::Connection* conn = nullptr;
+  webrtc::Connection* conn = nullptr;
   for (auto port : ports_) {
     if (port->SupportsProtocol(remote.protocol())) {
       conn = port->GetConnection(remote.address());
       if (!conn) {
         conn = port->CreateConnection(remote,
-                                      cricket::PortInterface::ORIGIN_MESSAGE);
+                                      webrtc::PortInterface::ORIGIN_MESSAGE);
       }
     }
   }
   return conn;
 }
 
-void FakeConnectionFactory::OnPortReady(cricket::PortAllocatorSession* session,
-                                        cricket::PortInterface* port) {
+void FakeConnectionFactory::OnPortReady(webrtc::PortAllocatorSession* session,
+                                        webrtc::PortInterface* port) {
   ports_.push_back(port);
   if (!readyEvent_->IsSignaled()) {
     readyEvent_->Signal();
   }
 }
 
-cricket::Candidate FakeConnectionFactory::CreateUdpCandidate(
+webrtc::Candidate FakeConnectionFactory::CreateUdpCandidate(
     webrtc::IceCandidateType type,
     std::string_view ip,
     int port,
     int priority,
     std::string_view ufrag) {
-  cricket::Candidate c;
-  c.set_address(rtc::SocketAddress(ip.data(), port));
-  c.set_component(::cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
-  c.set_protocol(::cricket::UDP_PROTOCOL_NAME);
+  webrtc::Candidate c;
+  c.set_address(webrtc::SocketAddress(ip.data(), port));
+  c.set_component(::webrtc::ICE_CANDIDATE_COMPONENT_DEFAULT);
+  c.set_protocol(::webrtc::UDP_PROTOCOL_NAME);
   c.set_priority(priority);
   c.set_username(ufrag.data());
   c.set_type(type);

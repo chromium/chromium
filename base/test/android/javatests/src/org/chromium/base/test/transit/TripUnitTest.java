@@ -12,6 +12,7 @@ import android.app.Activity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
@@ -20,6 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Unit Tests for {@link Trip}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TripUnitTest {
+
+    private static final String TAG = "TripUnitTest";
 
     public static class NestedFactoryStation extends Station<Activity> {
         public final Condition mOuterCondition;
@@ -37,7 +40,7 @@ public class TripUnitTest {
         @Override
         public void declareElements(Elements.Builder elements) {
             super.declareElements(elements);
-            elements.declareLogicalElement(
+            elements.declareElement(
                     LogicalElement.instrumentationThreadLogicalElement(
                             "LogicalElement 1, always True", () -> Condition.fulfilled()));
             elements.declareEnterCondition(
@@ -50,7 +53,7 @@ public class TripUnitTest {
             elements.declareElementFactory(
                     mOuterCondition,
                     (nestedElements) -> {
-                        nestedElements.declareLogicalElement(
+                        nestedElements.declareElement(
                                 LogicalElement.instrumentationThreadLogicalElement(
                                         "LogicalElement 2, always True",
                                         () -> Condition.fulfilled()));
@@ -66,7 +69,7 @@ public class TripUnitTest {
                         nestedElements.declareElementFactory(
                                 mInnerCondition,
                                 (nestedNestedElements) -> {
-                                    nestedNestedElements.declareLogicalElement(
+                                    nestedNestedElements.declareElement(
                                             LogicalElement.instrumentationThreadLogicalElement(
                                                     "LogicalElement 3, always True",
                                                     () -> Condition.fulfilled()));
@@ -137,6 +140,7 @@ public class TripUnitTest {
                 new Thread.UncaughtExceptionHandler() {
                     @Override
                     public void uncaughtException(Thread thread, Throwable ex) {
+                        Log.e(TAG, "uncaughtException ", ex);
                         maybeException.set(ex);
                     }
                 });

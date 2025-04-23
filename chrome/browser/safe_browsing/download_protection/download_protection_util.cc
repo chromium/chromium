@@ -392,12 +392,13 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
   std::unique_ptr<ReferrerChain> referrer_chain =
       std::make_unique<ReferrerChain>();
 
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(item.web_contents);
+  SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(item.web_contents.get());
 
   GURL tab_url = item.web_contents->GetVisibleURL();
 
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      GetNavigationObserverManager(item.web_contents)
+      GetNavigationObserverManager(item.web_contents.get())
           ->IdentifyReferrerChainByHostingPage(
               item.frame_url, tab_url, item.outermost_main_frame_id, tab_id,
               item.has_user_gesture, user_gesture_limit, referrer_chain.get());
@@ -417,7 +418,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                  CountOfRecentNavigationsToAppend(
                                      profile, profile->GetPrefs(), result)
                            : 0u;
-  GetNavigationObserverManager(item.web_contents)
+  GetNavigationObserverManager(item.web_contents.get())
       ->AppendRecentNavigations(recent_navigations_to_collect,
                                 referrer_chain.get());
 

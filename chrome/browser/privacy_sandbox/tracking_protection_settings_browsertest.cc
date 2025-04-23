@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
   histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", false,
                                        1);
   histogram_tester_.ExpectUniqueSample(
-      "Settings.FingerprintingProtection.Enabled", false, 1);
+      "Settings.FingerprintingProtection.Enabled", true, 1);
 }
 
 class TrackingProtectionSettingsForEnterpriseBrowserTest

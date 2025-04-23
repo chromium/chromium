@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <style name="HeaderButton">
+        <item name="android:background">@drawable/default_icon_background</item>
+        <item name="android:layout_width">@dimen/header_button_width</item>
+        <item name="android:layout_height">@dimen/header_button_height</item>
+        <item name="android:scaleType">center</item>
+    </style>
+</resources>

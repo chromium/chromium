@@ -34,7 +34,6 @@
 #include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
@@ -53,6 +52,10 @@ struct sqlite3_stmt;
 namespace base::trace_event {
 class ProcessMemoryDump;
 }  // namespace base::trace_event
+
+namespace perfetto {
+class NamedTrack;
+}
 
 namespace perfetto::protos::pbzero {
 class ChromeSqlDiagnostics;

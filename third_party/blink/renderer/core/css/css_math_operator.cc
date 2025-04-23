@@ -56,6 +56,12 @@ StringView ToString(CSSMathOperator op) {
       return "hypot";
     case CSSMathOperator::kAbs:
       return "abs";
+    case CSSMathOperator::kLog:
+      return "log";
+    case CSSMathOperator::kExp:
+      return "exp";
+    case CSSMathOperator::kSqrt:
+      return "sqrt";
     case CSSMathOperator::kSign:
       return "sign";
     case CSSMathOperator::kProgress:
@@ -68,7 +74,22 @@ StringView ToString(CSSMathOperator op) {
       return "container-progress";
     case CSSMathOperator::kPow:
       return "pow";
+    case CSSMathOperator::kSin:
+      return "sin";
+    case CSSMathOperator::kCos:
+      return "cos";
+    case CSSMathOperator::kTan:
+      return "tan";
+    case CSSMathOperator::kAsin:
+      return "asin";
+    case CSSMathOperator::kAcos:
+      return "acos";
+    case CSSMathOperator::kAtan:
+      return "atan";
+    case CSSMathOperator::kAtan2:
+      return "atan2";
     case CSSMathOperator::kInvalid:
+    case CSSMathOperator::kInvert:
       NOTREACHED();
   }
 }

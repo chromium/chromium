@@ -68,4 +68,8 @@ found in the LICENSE file.
         <attr name="menuPositionedAtStart" format="boolean" />
         <attr name="menuPositionedAtEnd" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="TextViewWithClickableSpans">
+        <attr name="spanBackgroundStrokeColor" format="color"/>
+    </declare-styleable>
 </resources>

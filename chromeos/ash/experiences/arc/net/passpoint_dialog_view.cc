@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/experiences/arc/compat_mode/overlay_dialog.h"

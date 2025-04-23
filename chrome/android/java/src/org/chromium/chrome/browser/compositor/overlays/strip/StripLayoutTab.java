@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -94,20 +96,6 @@ public class StripLayoutTab extends StripLayoutView {
                 }
             };
 
-    /** A property for animations to use for changing the trailingMargin of the tab. */
-    public static final FloatProperty<StripLayoutTab> TRAILING_MARGIN =
-            new FloatProperty<>("trailingMargin") {
-                @Override
-                public void setValue(StripLayoutTab object, float value) {
-                    object.setTrailingMargin(value);
-                }
-
-                @Override
-                public Float get(StripLayoutTab object) {
-                    return object.getTrailingMargin();
-                }
-            };
-
     /** A property for animations to use for changing the opacity of the tab. */
     public static final FloatProperty<StripLayoutTab> OPACITY =
             new FloatProperty<>("opacity") {
@@ -134,7 +122,6 @@ public class StripLayoutTab extends StripLayoutView {
     // Strip Tab Offset Constants
     protected static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
-    protected static final float FOLIO_FOOT_LENGTH_DP = 16.f;
 
     // Visibility Constants.
     private static final float FAVICON_WIDTH = 16.f;
@@ -168,9 +155,6 @@ public class StripLayoutTab extends StripLayoutView {
     // For avoiding unnecessary accessibility description updates.
     private Optional<String> mCachedA11yDescriptionTitle = Optional.empty();
     private @StringRes int mCachedA11yTabstripIdentifierResId;
-
-    // Ideal intermediate parameters
-    private float mTrailingMargin;
 
     // Startup parameters
     private boolean mIsPlaceholder;
@@ -697,27 +681,10 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * This is used to help calculate the tab's position and is not used for rendering.
-     *
-     * @param trailingMargin The trailing margin of the tab (used for margins around tab groups when
-     *     reordering, etc.).
-     */
-    public void setTrailingMargin(float trailingMargin) {
-        mTrailingMargin = trailingMargin;
-    }
-
-    /**
-     * This is used to help calculate the tab's position and is not used for rendering.
-     * @return The trailing margin of the tab.
-     */
-    public float getTrailingMargin() {
-        return mTrailingMargin;
-    }
-
-    /**
      * This is used to determine if the tab is a placeholder or not. If it is a placeholder, it will
      * show as an empty tab on the tab strip (without tab contents, such as title & favicon,
      * generated).
+     *
      * @param isPlaceholder Whether or not the tab is a placeholder used on startup.
      */
     public void setIsPlaceholder(boolean isPlaceholder) {
@@ -797,6 +764,16 @@ public class StripLayoutTab extends StripLayoutView {
                 Math.round(getDrawY() * dpToPx),
                 Math.round((getDrawX() + getWidth()) * dpToPx),
                 Math.round((getDrawY() + getHeight()) * dpToPx));
+    }
+
+    /** {@return The keyboard focus ring's offset (how far it is inside the tab outline) in DP} */
+    public int getKeyboardFocusRingOffset() {
+        return TabUiThemeUtil.getFocusRingOffset(mContext);
+    }
+
+    /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
+    public int getLineWidth() {
+        return TabUiThemeUtil.getLineWidth(mContext);
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.

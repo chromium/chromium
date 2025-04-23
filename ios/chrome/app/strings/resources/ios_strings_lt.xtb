@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Kopijuoti vaizdą</translation>
 <translation id="1612754831519568745">Saugus naršymas šiuo metu išjungtas. Gaukite apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių.</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1622195983844804153">Esami naršymo duomenys nebus perkelti į darbo paskyrą. Vis tiek galite juos pasiekti atsijungę arba pridėję asmeninę paskyrą.</translation>
 <translation id="1622717322707146952">Pasirinkite „Pridėti prie „Google“ kalendoriaus“ arba „Pridėti prie „Apple Calendar“.</translation>
 <translation id="1629162218487290695">Patvirtinkite savo tapatybę…</translation>
 <translation id="1636234353664774105">Gaukite nuoseklias nuorodas į kelionės tikslą naudodami navigacijos funkciją</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">Įkelti iš naujo</translation>
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
+<translation id="202070562065520783">Paaiškink tai man</translation>
 <translation id="2021670401941426298">Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="20485545164632846">naujas elementas</translation>
@@ -282,6 +282,7 @@
 <translation id="2119636449201577317">Atidaryti…</translation>
 <translation id="2120553909046681540">Organizacija išjungė privatų naršymą.</translation>
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="2139692631842690197">Prisijungus prie valdomos paskyros galima atskirti su organizacija susijusį naršymą, pvz., skirtukus, slaptažodžius ir istoriją.</translation>
 <translation id="2139867232736819575">Ieškoti nukopijuoto teksto</translation>
 <translation id="2147127444698817042">Pasiekiama tik „iPhone“</translation>
 <translation id="2148799636999124959">Sparčiai prisijunkite prie svetainių ir programų naudodami išsaugotus slaptažodžius.</translation>
@@ -480,6 +481,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2952278131021475699">„Lens“ fotoaparato paieška</translation>
 <translation id="2962516096219646456">Peržiūrėti visus automatinio pildymo duomenis</translation>
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
+<translation id="297667759942911166">Bendradarbiavimas skirtukų grupėse</translation>
 <translation id="2989523299700148168">Neseniai lankyta</translation>
 <translation id="2989805286512600854">Atidaryti naujame skirtuke</translation>
 <translation id="2996291259634659425">Kurkite slaptafrazę</translation>
@@ -510,6 +512,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="310900540163454140">Ištrinti „<ph name="WEBSITE" />“ slaptažodį?</translation>
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3119874402040566234">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
+<translation id="3119915634508614502">Esami naršymo duomenys nebus perkelti į darbo paskyrą. Vis tiek galėsite juos naudoti atsijungę nuo valdomos paskyros.</translation>
 <translation id="3124568093781685165">Bendrinkite slaptažodžius su šeimos nariais</translation>
 <translation id="3130863904455712965">Istorija ir daugiau</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
@@ -525,6 +528,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3167868116600277716">„Discover“ sklaidos kanalas</translation>
 <translation id="3169472444629675720">Atradimas</translation>
 <translation id="3174662312949010067">Be to, išsaugotus slaptažodžius galite naudoti kituose įrenginiuose.</translation>
+<translation id="3177338796769255211">Prisijunkite, kad visuose įrenginiuose gautumėte žymes ir kt.</translation>
 <translation id="3181954750937456830">Saugus naršymas (apsaugo jus ir jūsų įrenginį nuo pavojingų svetainių)</translation>
 <translation id="3190736958609431397">Nebestebėti</translation>
 <translation id="3208260410153224535">Organizacija išjungė prisijungimą. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
@@ -1125,6 +1129,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="573974402615125334">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, sinchronizuokite istoriją ir skirtukus</translation>
 <translation id="5740123193752401435">Ieškokite skirtukų…</translation>
 <translation id="5744274077973758795">„<ph name="FEATURE_NAME" />“ pranešimai įjungti</translation>
+<translation id="5745598824054949526">Teksto nerasta</translation>
 <translation id="574762237186762643">Įvykiai</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5753021559215751319">Išsaugoti slaptažodį</translation>
@@ -1286,8 +1291,10 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6410005280995367944">Kitų programų slaptažodžiai</translation>
 <translation id="6410390304316730527">Saugaus naršymo funkcija apsaugo jus nuo atakų vykdytojų, kurie gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti kenkėjišką programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefono numerius ar kredito kortelių duomenis). Jei ją išjungsite, būkite atsargūs naršydami nežinomose ar nepatikimose svetainėse.</translation>
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
+<translation id="6415646765510136">Pasirinkite, ką norite daryti su esamais naršymo duomenimis šiame įrenginyje.</translation>
 <translation id="6416807286621280684">Stebimi siuntiniai ir pristatymo atnaujinimai.</translation>
 <translation id="6418346271604475326">Ruošiamas PDF</translation>
+<translation id="6421038304268477484">Išverstas tekstas</translation>
 <translation id="6429213933892582367">Atidarykite slaptažodžio parinktis</translation>
 <translation id="6434591244308415567">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="6435307030888827407">Likti atsijungus</translation>
@@ -1310,7 +1317,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="6476800141292307438">Puslapis verčiamas į <ph name="LANGUAGE" />. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="647867789226964031">Slaptažodžių keitimas</translation>
 <translation id="6494931198667773526">Baigiasi</translation>
-<translation id="6495521251906266731">Pasirinkite, ką norite daryti su esamais naršymo duomenimis šiame įrenginyje, pvz., slaptažodžiais, istorija ir kt.</translation>
 <translation id="6503077044568424649">Dažniausiai lankomi</translation>
 <translation id="6503763061813913607">Saugos patikros pranešimai</translation>
 <translation id="6505334220040167806">Sutraukti skirtukų grupę.</translation>
@@ -1855,6 +1861,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8697136149718343437">Perkelti adreso juostą į apačią</translation>
 <translation id="8703372953981978786">Ši nuoroda neveikia</translation>
 <translation id="8706253136355675497">Temperatūra</translation>
+<translation id="8706806585855470492">Galėsite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse</translation>
 <translation id="8709409604518538305">Skirtukai buvo uždaryti</translation>
 <translation id="8712534545803964353">Rasti puslapyje…</translation>
 <translation id="8712637175834984815">Supratau</translation>
@@ -1966,6 +1973,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9097506547406246598">Negalima nebestebėti. Kažkas nepavyko.</translation>
 <translation id="9098541895599151034">Ištrinti slaptažodžius (iš viso: <ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Kaskart klausti, kurią paskyrą naudoti</translation>
+<translation id="9099821309562615674">Įsitikinkite, kad norimas išversti tekstas aiškiai matomas ir yra kadre.</translation>
 <translation id="9100610230175265781">Būtina slaptafrazė</translation>
 <translation id="91023216973987714">Mokėjimo metodai</translation>
 <translation id="9106655997975673326">Iš „<ph name="SOURCE_DEVICE" />“</translation>

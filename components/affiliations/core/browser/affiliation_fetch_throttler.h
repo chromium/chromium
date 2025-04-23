@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/backoff_entry.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {
@@ -30,7 +31,7 @@ class AffiliationFetchThrottlerDelegate;
 //
 // This class manages only the scheduling of the requests. It is up to the
 // consumer (the AffiliationBackend) to actually assemble and send the requests,
-// to report back about their success or failure, and to retry them if desired.
+// to report back with their status, and to retry them if desired.
 // The process goes like this:
 //   1.) The consumer calls SignalNetworkRequestNeeded().
 //   2.) Once appropriate, OnCanSendNetworkRequest() is called on the delegate.
@@ -44,11 +45,18 @@ class AffiliationFetchThrottlerDelegate;
 // as if another request was needed right away.
 //
 // Essentially, this class implements exponential backoff in case of network and
-// server errors with the additional constraint that no requests will be issued
-// in the first place while there is known to be no network connectivity. This
-// prevents the exponential backoff delay from growing huge during long offline
-// periods, so that requests will not be held back for too long after
-// connectivity is restored.
+// server errors with 2 additional constraints:
+// 1. No requests will be issued in the first place without network
+// connectivity. This prevents the exponential backoff delay from growing huge
+// during long offline periods, so that requests will not be held back for too
+// long after connectivity is restored.
+// 2. When a request fails in a way that indicates an immediate retry won't
+// succeed (e.g., the server returns a 429 status), throttler will significantly
+// increase the delay before allowing the next request. This is needed to
+// prevent overwhelming the server, especially during potential outages.
+// However, since the requested facet is already displayed in the Password
+// Manager UI, Affiliation Backend must still eventually retrieve the server's
+// response to ensure the UI information is accurate.
 class AffiliationFetchThrottler
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
@@ -78,8 +86,11 @@ class AffiliationFetchThrottler
   virtual void SignalNetworkRequestNeeded();
 
   // Informs the back-off logic that the in-flight network request has been
-  // completed, either with |success| or not.
-  virtual void InformOfNetworkRequestComplete(bool success);
+  // completed. This will decide if the response code is a retryable error or
+  // not and apply a long delay on non-retryable errors.
+  virtual void InformOfNetworkRequestComplete(
+      bool success,
+      std::optional<net::HttpStatusCode> http_status_code);
 
   // Returns whether there is internet connection or not.
   virtual bool HasInternetConnection() const;
@@ -89,6 +100,8 @@ class AffiliationFetchThrottler
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AffiliationFetchThrottlerTest, FailedRequests);
+  FRIEND_TEST_ALL_PREFIXES(AffiliationFetchThrottlerTest,
+                           NonRetryableFailedRequestsSetLongDelay);
   FRIEND_TEST_ALL_PREFIXES(AffiliationFetchThrottlerTest,
                            GracePeriodAfterConnectivityIsRestored);
   FRIEND_TEST_ALL_PREFIXES(AffiliationFetchThrottlerTest,
@@ -115,6 +128,10 @@ class AffiliationFetchThrottler
   // Minimum delay before sending the first request once network connectivity is
   // restored. The fuzzing factor in |kBackoffParameters.jitter_factor| applies.
   static const int64_t kGracePeriodAfterReconnectMs;
+
+  // Minimum delay set after receiving a non-retryable error from Affiliation
+  // Server.
+  static const int64_t kBackoffAfterNonRetryableErrorHours;
 
   // Ensures that OnBackoffDelayExpiredCallback() is scheduled to be called back
   // once the |exponential_backoff_| delay expires.

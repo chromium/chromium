@@ -102,6 +102,12 @@ class CONTENT_EXPORT StorageInterestGroups
 class CONTENT_EXPORT InterestGroupCachingStorage {
  public:
   static constexpr base::TimeDelta kMinimumCacheHoldTime = base::Seconds(10);
+
+  // The most the entry will be kept in the cache, even if people keep using
+  // it. (Only effective if clickiness is on, since that requires this for
+  // some degree of freshness).
+  static constexpr base::TimeDelta kMaximumCacheHoldTime = base::Seconds(120);
+
   struct CONTENT_EXPORT CachedOriginsInfo {
     CachedOriginsInfo();
     explicit CachedOriginsInfo(const blink::InterestGroup& group);
@@ -228,6 +234,16 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Records a view or a click event. Aggregate time bucketed view and click
   // information is provided to bidder's browsing signals in generateBid().
   void RecordViewClick(network::AdAuctionEventRecord event_record);
+
+  // Invokes `callback` with whether the database has a record of click/view
+  // events for given combination of provider & eligible origins.
+  //
+  // nullopt is passed in in case of an error.
+  void CheckViewClickInfoInDbForTesting(
+      url::Origin provider_origin,
+      url::Origin eligible_origin,
+      base::OnceCallback<void(std::optional<bool>)> callback);
+
   // Records a K-anonymity update for an interest group. If
   // `replace_existing_values` is true, this update will store the new
   // `update_time` and `positive_hashed_values`, replacing the interest
@@ -295,6 +311,7 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      bool user_initiated_deletion,
       base::OnceClosure callback);
   // Clear out all interest group storage including k-anonymity store.
   void DeleteAllInterestGroupData(base::OnceClosure callback);
@@ -372,7 +389,8 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
   // Start a timer that holds a reference to `groups` so that it stays in memory
   // for a minimum amount of time (kMinimumCacheHoldTime). If such a timer
-  // already exists, restart it.
+  // already exists, restart it. Staying in memory is relevant because
+  // `cached_interest_groups_` contains weak pointers.
   void StartTimerForInterestGroupHold(
       const url::Origin& owner,
       scoped_refptr<StorageInterestGroups> groups);

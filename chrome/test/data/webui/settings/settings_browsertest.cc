@@ -40,12 +40,16 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
-#if !BUILDFLAG(IS_CHROMEOS)
-         toast_features::kToastRefinements
+        {
+#if BUILDFLAG(ENABLE_GLIC)
+            features::kGlic, features::kTabstripComboButton,
 #endif
-        },
-        {});
+#if !BUILDFLAG(IS_CHROMEOS)
+            toast_features::kToastRefinements,
+#endif
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
+            privacy_sandbox::kFingerprintingProtectionUx},
+        /*disabled_features=*/{});
     set_test_loader_host(chrome::kChromeUISettingsHost);
   }
 
@@ -253,6 +257,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, IdleLoad) {
   RunTest("settings/idle_load_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, IncognitoTrackingProtectionsPageTest) {
+  RunTest("settings/incognito_tracking_protections_page_test.js",
+          "runMochaSuite('IncognitoTrackingProtectionsPageTest')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, ImportDataDialog) {
   RunTest("settings/import_data_dialog_test.js", "mocha.run()");
@@ -350,18 +359,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-class SettingsGlicPageTest : public SettingsBrowserTest {
- public:
-  SettingsGlicPageTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicSettingsPage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSettingsPage) {
   RunTest("settings/glic_page_test.js", "mocha.run()");
 }
 #endif
@@ -541,10 +539,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Slider) {
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
   RunTest("settings/smart_card_readers_page_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReaderOriginEntry) {
-  RunTest("settings/smart_card_reader_origin_entry_test.js", "mocha.run()");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -750,10 +744,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettings')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ActSettings) {
-  RunTest("settings/cookies_page_test.js", "runMochaSuite('ActSettings')");
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
@@ -982,7 +972,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
       "runMochaSuite('CompletionFragmentAiSettingsInPrivacyGuideDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsFragment) {
+// TODO(crbug.com/410848707): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AdTopicsFragment DISABLED_AdTopicsFragment
+#else
+#define MAYBE_AdTopicsFragment AdTopicsFragment
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_AdTopicsFragment) {
   RunTest("settings/privacy_guide_ad_topics_fragment_test.js",
           "runMochaSuite('AdTopicsFragment')");
 }
@@ -1042,6 +1038,8 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             features::kDbdRevampDesktop,
             features::kEnableCertManagementUIV2,
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
+            permissions::features::kPermissionSiteSettingsRadioButton,
+            privacy_sandbox::kFingerprintingProtectionUx,
         },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -1063,9 +1061,18 @@ class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
+ protected:
+  SettingsPrivacyPageTestNoTestingConfig() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kAutomaticFullscreenContentSetting,
+            permissions::features::kPermissionSiteSettingsRadioButton,
+        },
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutomaticFullscreenContentSetting};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the content settings page for Web Printing is not shown by
@@ -1104,9 +1111,10 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       IncognitoTrackingProtectionsSubpage) {
   RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('TrackingProtectionSubpage')");
+          "runMochaSuite('IncognitoTrackingProtectionsSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, AllSitesSubpage) {
@@ -1152,6 +1160,40 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        DeleteBrowsingDataRevampDisabled) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('DeleteBrowsingDataRevampDisabled')");
+}
+
+class SettingsNotificationsPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      permissions::features::kPermissionSiteSettingsRadioButton};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest, NotificationsPage) {
+  RunTest("settings/notifications_page_test.js",
+          "runMochaSuite('NotificationsPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
+                       NotificationsPageWithNestedRadioButton) {
+  RunTest("settings/notifications_page_test.js",
+          "runMochaSuite('NotificationsPageWithNestedRadioButton')");
+}
+
+class SettingsGeolocationPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      permissions::features::kPermissionSiteSettingsRadioButton};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest, GeolocationPage) {
+  RunTest("settings/geolocation_page_test.js",
+          "runMochaSuite('GeolocationPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest,
+                       GeolocationPageWithNestedRadioButton) {
+  RunTest("settings/geolocation_page_test.js",
+          "runMochaSuite('GeolocationPageWithNestedRadioButton')");
 }
 
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {};
@@ -1326,8 +1368,6 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kEnableCertManagementUIV2,
-            safe_browsing::kEsbAiStringUpdate,
-            safe_browsing::kPasswordLeakToggleMove,
         },
         {});
   }
@@ -1352,7 +1392,8 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
 
 // TODO(crbug/338155508): Enable this flaky test. This is flaky on Linux debug
 // build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/409069315): Re-enable this test on Mac.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG) || BUILDFLAG(IS_MAC)
 #define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
 #else
 #define MAYBE_SafeBrowsing SafeBrowsing

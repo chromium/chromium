@@ -267,7 +267,13 @@ class PageLiveStateDataImpl
   }
   void set_updated_title_or_favicon_in_background(bool updated) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (updated_title_or_favicon_in_background_ == updated) {
+      return;
+    }
     updated_title_or_favicon_in_background_ = updated;
+    for (auto& obs : observers_) {
+      obs.OnUpdatedTitleOrFaviconInBackgroundChanged(page_node_);
+    }
   }
 
  private:
@@ -680,8 +686,5 @@ PageLiveStateDecorator::Data::GetOrCreateForPageNode(
 
 PageLiveStateObserver::PageLiveStateObserver() = default;
 PageLiveStateObserver::~PageLiveStateObserver() = default;
-
-PageLiveStateObserverDefaultImpl::PageLiveStateObserverDefaultImpl() = default;
-PageLiveStateObserverDefaultImpl::~PageLiveStateObserverDefaultImpl() = default;
 
 }  // namespace performance_manager

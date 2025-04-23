@@ -54,7 +54,6 @@ class SyncedWindowDelegateBrowserAgent
 
  private:
   friend class BrowserUserData<SyncedWindowDelegateBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
 

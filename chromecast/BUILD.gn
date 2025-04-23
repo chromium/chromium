@@ -11,6 +11,7 @@ import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
 import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
 
@@ -660,8 +661,7 @@ if (is_android) {
     target_sdk_version = 33
 
     shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
-    srcjar_deps =
-        [ "//chromecast/android:libcast_browser_android__jni_registration" ]
+    srcjar_deps = [ ":cast_browser_jni_registration" ]
 
     deps = [
       ":cast_browser_apk_assets",
@@ -680,6 +680,14 @@ if (is_android) {
     product_config_java_packages = [ "org.chromium.chromecast.shell" ]
   }
 
+  generate_jni_registration("cast_browser_jni_registration") {
+    java_targets = [ "//chromecast:cast_browser_apk" ]
+
+    # This flags allows '*ForTest* JNI APIs to be included in the GEN_JNI
+    # registration, thus allowing dependency checker to pass.
+    include_testonly = true
+  }
+
   # Must use java_library target, so that all the symbols from the generated
   # srcjars are packaged into it and not removed. For example, GEN_JNI.class
   # is explicitly added to excluded patterns in android_library rule.
@@ -692,13 +700,15 @@ if (is_android) {
       ":cast_browser_apk__compile_resources",
       ":cast_browser_apk__native_libraries",
       ":cast_browser_apk_org.chromium.chromecast.shell__product_config_srcjar",
-      "//chromecast/android:libcast_browser_android__jni_registration",
+      ":cast_browser_jni_registration",
     ]
   }
 
   dist_aar("cast_browser_dist_aar") {
     android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
+
     native_libraries = [ "$root_build_dir/libcast_browser_android.so" ]
+
     deps = [
       ":cast_browser_apk_assets",
       ":cast_browser_generated_java",
@@ -710,7 +720,9 @@ if (is_android) {
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//third_party/jni_zero:jni_zero_java",
     ]
+
     output = "$root_build_dir/apks/cast_browser.aar"
+
     jar_excluded_patterns = [
       "META-INF/*",
       "android/*",
@@ -722,6 +734,7 @@ if (is_android) {
       "kotlin/*",
       "kotlinx/*",
     ]
+
     resource_excluded_patterns = [
       "*/third_party/android_deps/*",
       "*/third_party/java_src/*",

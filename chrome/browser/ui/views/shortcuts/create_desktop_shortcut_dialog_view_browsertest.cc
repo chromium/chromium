@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
-  ShowUi(base::EmptyString());
+  ShowUi(std::string());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);

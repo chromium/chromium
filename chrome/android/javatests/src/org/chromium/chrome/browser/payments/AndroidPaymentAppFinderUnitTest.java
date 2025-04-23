@@ -53,6 +53,7 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
+import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -543,14 +544,22 @@ public class AndroidPaymentAppFinderUnitTest {
                              ArgumentMatchers.eq(1)))
                 .thenReturn(new String[] {"https://bobpay.test", "basic-card"});
 
-        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                             ArgumentMatchers.argThat(new IntentArgumentMatcher(
-                                     new Intent(AndroidPaymentAppFinder.ACTION_IS_READY_TO_PAY)))))
+        Mockito.when(
+                        mPackageManagerDelegate.getServicesThatCanRespondToIntent(
+                                ArgumentMatchers.argThat(
+                                        new IntentArgumentMatcher(
+                                                new Intent(
+                                                        WebPaymentIntentHelper
+                                                                .ACTION_IS_READY_TO_PAY)))))
                 .thenReturn(createService("IsReadyToWebPay"));
 
-        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                             ArgumentMatchers.argThat(new IntentArgumentMatcher(new Intent(
-                                     AndroidPaymentAppFinder.ACTION_UPDATE_PAYMENT_DETAILS)))))
+        Mockito.when(
+                        mPackageManagerDelegate.getServicesThatCanRespondToIntent(
+                                ArgumentMatchers.argThat(
+                                        new IntentArgumentMatcher(
+                                                new Intent(
+                                                        WebPaymentIntentHelper
+                                                                .ACTION_UPDATE_PAYMENT_DETAILS)))))
                 .thenReturn(createService("PaymentDetailsUpdate"));
 
         PackageInfo bobPayPackageInfo = new PackageInfo();

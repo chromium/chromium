@@ -12,9 +12,12 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Version;

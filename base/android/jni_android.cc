@@ -20,7 +20,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JniAndroid_jni.h"
+#include "base/jni_android_jni/JniAndroid_jni.h"
 
 namespace base {
 namespace android {

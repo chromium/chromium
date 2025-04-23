@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -16,10 +17,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
-#endif
 
 namespace extensions {
 
@@ -221,18 +218,15 @@ bool ExtensionAllowlist::ShouldDisplayWarning(
   if (!warnings_enabled_)
     return false;  // No warnings should be shown.
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Do not display warnings for extensions explicitly allowed by policy
   // (forced, recommenced and allowed extensions).
   // TODO(jeffcyr): Policy allowed extensions should also be exempted from auto
   // disable.
-  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
   ExtensionManagement* settings =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   if (settings->IsInstallationExplicitlyAllowed(extension_id)) {
     return false;  // Extension explicitly allowed.
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (GetExtensionAllowlistState(extension_id) != ALLOWLIST_NOT_ALLOWLISTED)
     return false;  // Extension is allowlisted.

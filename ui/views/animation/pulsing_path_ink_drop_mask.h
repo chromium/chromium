@@ -32,6 +32,7 @@ class VIEWS_EXPORT PulsingPathInkDropMask
   const raw_ptr<views::View> layer_container_;
   const SkPath path_;
   const SkRect initial_rect_;
+  const double throb_inset_;
 
   gfx::ThrobAnimation throb_animation_;
 };

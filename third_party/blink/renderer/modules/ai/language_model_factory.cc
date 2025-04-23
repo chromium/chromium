@@ -16,8 +16,8 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
@@ -28,11 +28,11 @@
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
-#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/language_model.h"
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
@@ -203,26 +203,25 @@ void LanguageModelFactory::Trace(Visitor* visitor) const {
 }
 
 void LanguageModelFactory::OnCanCreateLanguageModelComplete(
-    ScriptPromiseResolver<V8AIAvailability>* resolver,
+    ScriptPromiseResolver<V8Availability>* resolver,
     mojom::blink::ModelAvailabilityCheckResult check_result) {
-  AIAvailability availability = HandleModelAvailabilityCheckResult(
+  Availability availability = HandleModelAvailabilityCheckResult(
       GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
       check_result);
-  resolver->Resolve(AIAvailabilityToV8(availability));
+  resolver->Resolve(AvailabilityToV8(availability));
 }
 
-ScriptPromise<V8AIAvailability> LanguageModelFactory::availability(
+ScriptPromise<V8Availability> LanguageModelFactory::availability(
     ScriptState* script_state,
     const LanguageModelCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AIAvailability>();
+    return ScriptPromise<V8Availability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   auto promise = resolver->Promise();
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
@@ -238,7 +237,7 @@ ScriptPromise<V8AIAvailability> LanguageModelFactory::availability(
 
   auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
   if (!sampling_params_or_exception.has_value()) {
-    resolver->Resolve(AIAvailabilityToV8(AIAvailability::kUnavailable));
+    resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
     return promise;
   }
   sampling_params = std::move(sampling_params_or_exception.value());

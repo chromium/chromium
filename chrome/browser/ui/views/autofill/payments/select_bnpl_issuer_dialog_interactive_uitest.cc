@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
@@ -17,6 +19,9 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill::payments {
+
+using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
+using ::autofill::autofill_metrics::SupportedBnplIssuer;
 
 namespace {
 constexpr char kSuppressedScreenshotError[] =
@@ -88,6 +93,25 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, InvokeUi) {
           Screenshot(views::DialogClientView::kTopViewId,
                      /*screenshot_name=*/"select_bnpl_issuer_dialog",
                      /*baseline_cl=*/"6397923")));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       InvokeUi_BnplSelectionDialogShownLogged) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               kBnplZipIssuerId,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)}),
+      InSameContext(Steps(Check([&histogram_tester]() {
+        return histogram_tester.GetBucketCount(
+                   "Autofill.Bnpl.SelectionDialogShown",
+                   /*sample=*/true) == 1;
+      }))));
 }
 
 // Ensures the throbber is shown after selecting an eligible BNPL issuer.
@@ -205,6 +229,60 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, EscKeyPress) {
           SendAccelerator(views::DialogClientView::kTopViewId,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
           WaitForHide(views::DialogClientView::kTopViewId)));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       IssuerSelectedLogged) {
+  base::HistogramTester histogram_tester;
+  std::string enabled_bnpl_issuer_hover_button_name =
+      "Enabled BNPL Issuer hover button";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               kBnplZipIssuerId,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)}),
+      InSameContext(Steps(
+          NameViewRelative(SelectBnplIssuerDialog::kBnplIssuerView,
+                           enabled_bnpl_issuer_hover_button_name,
+                           [](views::View* hover_button_container) {
+                             return hover_button_container->children()[0].get();
+                           }),
+          PressButton(enabled_bnpl_issuer_hover_button_name),
+          WaitForShow(SelectBnplIssuerDialog::kThrobberId))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogResult",
+      SelectBnplIssuerDialogResult::kIssuerSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogIssuerSelected",
+      SupportedBnplIssuer::kAffirm, /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       CancelEventLogged) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               kBnplZipIssuerId,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)}),
+      InSameContext(
+          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
+                WaitForHide(views::DialogClientView::kTopViewId))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogResult",
+      SelectBnplIssuerDialogResult::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill::payments

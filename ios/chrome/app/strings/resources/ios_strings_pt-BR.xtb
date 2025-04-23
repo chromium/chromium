@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Copiar imagem</translation>
 <translation id="1612754831519568745">A Navegação segura está desativada. Ative para se proteger contra sites, extensões e downloads perigosos.</translation>
 <translation id="1620510694547887537">Câmera</translation>
-<translation id="1622195983844804153">Os dados de navegação atuais não serão transferidos para sua conta de trabalho. Você ainda pode acessar o app ao sair ou adicionar uma conta pessoal.</translation>
 <translation id="1622717322707146952">Selecione "Adicionar ao Google Agenda" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1629162218487290695">Confirme que é você…</translation>
 <translation id="1636234353664774105">Confira rotas para seu destino usando o recurso de navegação guiada</translation>
@@ -261,6 +260,7 @@
 <translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para acessar as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="201759455285471444">Abrir grupo de guias.</translation>
+<translation id="202070562065520783">Explique isso</translation>
 <translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="2044394949148788042">Abrir a grade de guias</translation>
 <translation id="20485545164632846">novo item</translation>
@@ -480,6 +480,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
+<translation id="297667759942911166">Colaborar em grupos de guias</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="2996291259634659425">Criar senha longa</translation>
@@ -525,6 +526,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3167868116600277716">Feed do Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Você também pode usar as senhas salvas em outros dispositivos.</translation>
+<translation id="3177338796769255211">Faça login para ter acesso a favoritos e muito mais em todos os seus dispositivos</translation>
 <translation id="3181954750937456830">Navegação segura: protege você e seu dispositivo de sites perigosos</translation>
 <translation id="3190736958609431397">Não acompanhar</translation>
 <translation id="3208260410153224535">Sua organização desativou o processo de login. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
@@ -662,7 +664,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
-<translation id="3885587018298784481">Entrar em um grupo familiar</translation>
+<translation id="3885587018298784481">Entre em um grupo familiar</translation>
 <translation id="3888863481921783344">Essa informação vai ser usada para mostrar possíveis convidados para seu evento.</translation>
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
@@ -1125,6 +1127,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
 <translation id="5740123193752401435">Pesquisar guias…</translation>
 <translation id="5744274077973758795">Notificações de <ph name="FEATURE_NAME" /> ativadas</translation>
+<translation id="5745598824054949526">Nenhum texto encontrado</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continue com esta guia</translation>
 <translation id="5753021559215751319">Salvar senha</translation>
@@ -1288,6 +1291,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
 <translation id="6416807286621280684">Atualizações de entrega e rastreamento de pacotes.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421038304268477484">Texto traduzido</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
 <translation id="6434591244308415567">Ocorreu um erro. Tente novamente mais tarde.</translation>
 <translation id="6435307030888827407">Continuar sem fazer login</translation>
@@ -1310,7 +1314,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
 <translation id="647867789226964031">Mudar suas senhas</translation>
 <translation id="6494931198667773526">Fim</translation>
-<translation id="6495521251906266731">Escolha o que fazer com os dados de navegação neste dispositivo, como senhas, histórico e muito mais.</translation>
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
 <translation id="6505334220040167806">Fechar grupo de guias.</translation>
@@ -1355,7 +1358,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6634432609054530164">Sua organização desativou o modo de navegação anônima</translation>
 <translation id="6638511529934826365">Aplicar zoom no texto…</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
-<translation id="6641465290890659327">Compartilhar uma cópia da sua senha</translation>
+<translation id="6641465290890659327">Compartilhe uma cópia da sua senha</translation>
 <translation id="6642362222295953972">Mudar para guia existente</translation>
 <translation id="6644512095122093795">Oferecer para salvar senhas</translation>
 <translation id="664573288952458293">Grade de guias comuns</translation>
@@ -1855,6 +1858,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8697136149718343437">Mover barra de endereço para baixo</translation>
 <translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8706806585855470492">Você poderá compartilhar, participar e colaborar em grupos de guias</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>
 <translation id="8712534545803964353">Localizar na página…</translation>
 <translation id="8712637175834984815">Entendi</translation>
@@ -1966,6 +1970,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9097506547406246598">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="9098541895599151034">Excluir <ph name="NUMBER_OF_ACCOUNTS" /> senhas?</translation>
 <translation id="9099233023029360602">Sempre perguntar qual conta usar</translation>
+<translation id="9099821309562615674">Confira se o texto que você está traduzindo está nítido e enquadrado.</translation>
 <translation id="9100610230175265781">Senha necessária</translation>
 <translation id="91023216973987714">Formas de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
@@ -2003,7 +2008,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
-<translation id="961856697154696964">Excluir dados de naveg.</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="966593914872420832">Pesquisa por voz</translation>
 <translation id="968653181266955408">Receber notificações de conteúdo</translation>

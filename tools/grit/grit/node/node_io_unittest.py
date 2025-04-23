@@ -174,6 +174,80 @@ class FileNodeUnittest(unittest.TestCase):
     grd.RunGatherers()
     self.assertEqual([], _GetAllCliques(grd))
 
+  def testGenderOutput(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
+            base_dir=".">
+        <outputs>
+          <output filename="resource.h" type="rc_header" />
+          <output filename="en/generated_resources.rc" type="rc_all"
+                  lang="en" />
+          <output filename="translation_en.pak" type="data_package"
+                  lang="en" />
+          <output filename="java/res/values-en/translation.xml" type="android"
+                  lang="en" />
+        </outputs>
+        <release seq="3">
+          <messages>
+            <message name="ID_HELLO">Hello!</message>
+          </messages>
+        </release>
+      </grit>'''
+    grd = grd_reader.Parse(io.StringIO(xml),
+                           util.PathFromRoot('grit/testdata'),
+                           translate_genders=True)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+
+    expected_files = [
+        {
+            'filename': 'resource.h',
+            'gender': None
+        },
+        {
+            'filename': 'en/generated_resources.rc',
+            'gender': None
+        },
+        {
+            'filename': 'translation_en_OTHER.pak',
+            'gender': 'OTHER'
+        },
+        {
+            'filename': 'translation_en_MASCULINE.pak',
+            'gender': 'MASCULINE'
+        },
+        {
+            'filename': 'translation_en_FEMININE.pak',
+            'gender': 'FEMININE'
+        },
+        {
+            'filename': 'translation_en_NEUTER.pak',
+            'gender': 'NEUTER'
+        },
+        {
+            'filename': 'java/res/values-en-OTHER/translation.xml',
+            'gender': 'OTHER'
+        },
+        {
+            'filename': 'java/res/values-en-MASCULINE/translation.xml',
+            'gender': 'MASCULINE'
+        },
+        {
+            'filename': 'java/res/values-en-FEMININE/translation.xml',
+            'gender': 'FEMININE'
+        },
+        {
+            'filename': 'java/res/values-en-NEUTER/translation.xml',
+            'gender': 'NEUTER'
+        },
+    ]
+
+    for (expected_file, actual_file) in zip(expected_files,
+                                            grd.GetOutputFiles()):
+      self.assertEqual(expected_file['filename'],
+                       actual_file.GetOutputFilename())
+      self.assertEqual(expected_file['gender'], actual_file.GetGender())
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] importNode should clone using the specified scoped regsitry
+  assert_true: expected true got false
+[FAIL] importNode should preserve null-ness of custom element registry
+  assert_equals: expected "HTMLElement" but got "GlobalSomeElement"
+[FAIL] importNode should clone a shadow host with a declarative shadow DOM using the global registry by default
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] importNode should clone a shadow host with a declarative shadow DOM using a specified scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] importNode should clone an element originating from a scoped registry using another scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] importNode should clone a template content using the global registry by default
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] importNode should clone a template content using a specified scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] importNode should clone a template content with a nested template element using a scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

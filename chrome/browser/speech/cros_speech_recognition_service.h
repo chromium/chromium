@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -27,6 +28,8 @@ class PendingSharedURLLoaderFactory;
 
 namespace speech {
 
+class CrosSpeechRecognitionRecognizerImpl;
+
 // Provides a Mojo endpoint in the browser for the CROS system. This uses ML
 // Service, so is actually executing a little more in the
 // browser then regular chrome.
@@ -35,6 +38,16 @@ class CrosSpeechRecognitionService
       public media::mojom::AudioSourceSpeechRecognitionContext,
       public media::mojom::SpeechRecognitionContext {
  public:
+  using CreateCrosSpeechRecognitionRecognizerCb = base::RepeatingCallback<
+      std::unique_ptr<CrosSpeechRecognitionRecognizerImpl>(
+          mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+              client,
+          media::mojom::SpeechRecognitionOptionsPtr options,
+          const base::FilePath& binary_path,
+          const base::flat_map<std::string, base::FilePath>& config_paths,
+          const std::string& primary_language_name,
+          const bool mask_offensive_words)>;
+
   explicit CrosSpeechRecognitionService(content::BrowserContext* context);
   CrosSpeechRecognitionService(const CrosSpeechRecognitionService&) = delete;
   CrosSpeechRecognitionService& operator=(const SpeechRecognitionService&) =
@@ -76,6 +89,9 @@ class CrosSpeechRecognitionService
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
 
+  void SetCreateCrosSpeechRecognitionRecognizerCbForTesting(
+      CreateCrosSpeechRecognitionRecognizerCb callback);
+
  private:
   void CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
@@ -99,6 +115,8 @@ class CrosSpeechRecognitionService
       audio_source_speech_recognition_contexts_;
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
+  CreateCrosSpeechRecognitionRecognizerCb
+      cros_speech_recognition_recognizer_cb_;
   base::WeakPtrFactory<CrosSpeechRecognitionService> weak_factory_{this};
 };
 

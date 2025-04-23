@@ -5,13 +5,14 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_GLIC_GLIC_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_GLIC_GLIC_API_H_
 
-#include <string>
+#import <UIKit/UIKit.h>
+
+#import <string>
 
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "services/network/public/cpp/resource_request.h"
 
-namespace ios {
-namespace provider {
+namespace ios::provider {
 
 // Creates request body data using a prompt and page context.
 std::string CreateRequestBody(
@@ -21,7 +22,9 @@ std::string CreateRequestBody(
 // Creates resource request for loading glic.
 std::unique_ptr<network::ResourceRequest> CreateResourceRequest();
 
-}  // namespace provider
-}  // namespace ios
+// Starts the overlay experience on a given view controller.
+void StartOverlay(UIViewController* base_view_controller);
+
+}  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_GLIC_GLIC_API_H_

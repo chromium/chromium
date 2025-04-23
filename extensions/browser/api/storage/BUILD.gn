@@ -64,6 +64,7 @@ source_set("storage") {
     "//components/value_store",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
   ]

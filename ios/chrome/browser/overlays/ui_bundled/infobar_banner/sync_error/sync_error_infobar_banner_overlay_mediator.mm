@@ -56,6 +56,15 @@
   [self dismissOverlay];
 }
 
+- (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
+  SyncErrorInfoBarDelegate* delegate = self.syncErrorDelegate;
+  if (delegate && !userInitiated) {
+    // Notify `delegate` that infobar was dismissed by its timeout.
+    delegate->InfoBarDismissedByTimeout();
+  }
+  [super dismissInfobarBannerForUserInteraction:userInitiated];
+}
+
 @end
 
 @implementation SyncErrorInfobarBannerOverlayMediator (ConsumerSupport)

@@ -4,6 +4,11 @@
 
 import("//build/config/zip.gni")
 import("//remoting/build/config/remoting_build.gni")
+import("//remoting/host/installer/credits.gni")
+
+remoting_credits("credits") {
+  gn_target = "//remoting/host/installer/mac:remoting_me2me_host_archive"
+}
 
 action("remoting_me2me_host_archive") {
   _installer_mac_files = [
@@ -51,6 +56,7 @@ action("remoting_me2me_host_archive") {
            "remoting_host_uninstaller.app",
            "remoting/com.google.chrome.remote_desktop.json",
            "remoting/com.google.chrome.remote_assistance.json",
+           "remoting/com.google.chrome.remote_webauthn.json",
            "remoting/com.google.chrome.remote_desktop-firefox.json",
            "remoting/com.google.chrome.remote_assistance-firefox.json",
            "--generated-files-dst",
@@ -60,8 +66,14 @@ action("remoting_me2me_host_archive") {
            "Applications/$host_uninstaller_name.app",
            "Config/com.google.chrome.remote_desktop.json",
            "Config/com.google.chrome.remote_assistance.json",
+           "Config/com.google.chrome.remote_webauthn.json",
            "Config/Firefox/com.google.chrome.remote_desktop.json",
            "Config/Firefox/com.google.chrome.remote_assistance.json",
+           "--removed-files",
+
+           # These icudtl.dat files will be symlinked to the one in the parent bundle by remoting_postflight.sh.
+           "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/Resources/icudtl.dat",
+           "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/Resources/icudtl.dat",
            "--defs",
            "VERSION=$chrome_version_full",
            "VERSION_SHORT=$chrome_version_major.$chrome_version_minor.$chrome_version_build",

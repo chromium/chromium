@@ -151,11 +151,6 @@ void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
   bundle_->SetNeedsBeginFrame(sink_id, needs_begin_frame);
 }
 
-void VideoFrameSinkBundle::SetWantsBeginFrameAcks(uint32_t sink_id) {
-  // These messages are not sent often, so we don't bother batching them.
-  bundle_->SetWantsBeginFrameAcks(sink_id);
-}
-
 void VideoFrameSinkBundle::SubmitCompositorFrame(
     uint32_t sink_id,
     const viz::LocalSurfaceId& local_surface_id,
@@ -235,7 +230,7 @@ void VideoFrameSinkBundle::FlushNotifications(
     if (it == clients_.end())
       continue;
     it->value->OnBeginFrame(std::move(entry->args), std::move(entry->details),
-                            entry->frame_ack, std::move(entry->resources));
+                            std::move(entry->resources));
   }
   defer_submissions_ = false;
 

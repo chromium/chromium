@@ -9,8 +9,13 @@ export class TestFaceGazeSubpageBrowserProxy extends TestBrowserProxy implements
     FaceGazeSubpageBrowserProxy {
   constructor() {
     super([
+      'requestEnableFaceGaze',
       'toggleGestureInfoForSettings',
     ]);
+  }
+
+  requestEnableFaceGaze(enable: boolean): void {
+    this.methodCalled('requestEnableFaceGaze', [enable]);
   }
 
   toggleGestureInfoForSettings(enabled: boolean): void {

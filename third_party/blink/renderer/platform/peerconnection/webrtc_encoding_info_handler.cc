@@ -39,7 +39,7 @@ WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler()
 
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
-    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory)
+    webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory)
     : video_encoder_factory_(std::move(video_encoder_factory)),
       audio_encoder_factory_(std::move(audio_encoder_factory)) {
   std::vector<webrtc::AudioCodecSpec> supported_audio_specs =

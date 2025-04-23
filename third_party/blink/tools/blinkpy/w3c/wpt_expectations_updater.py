@@ -173,6 +173,15 @@ class WPTExpectationsUpdater:
 
         tests_to_rebaseline, results = self._fetch_results_for_update(
             build_to_status)
+
+        # Some builders run duplicated test suites with some slight difference.
+        # E.g. both linux-rel and linux-blink-rel runs headless_shell_wpt_tests
+        # but with DCHECK on/off respectively. Merge the results first before
+        # processing.
+        # PASS results are already filtered so will not be merged. This will be
+        # fine if we will not update baseline for it.
+        results = self._merge_results(results)
+
         # TODO(crbug.com/1475013): Decide how to organize Android expectations.
         results_by_path = defaultdict(list)
         for suite_results in results:
@@ -192,6 +201,19 @@ class WPTExpectationsUpdater:
                     results_by_path[path], path).items():
                 exp_lines_dict[test].extend(lines)
         return sorted(tests_to_rebaseline), exp_lines_dict
+
+    def _merge_results(self,
+                       results: List[WebTestResults]) -> List[WebTestResults]:
+        results_dict = {}
+        for suite_results in results:
+            port = self._port_for_build_step(suite_results.builder_name,
+                                             suite_results.step_name())
+            key = (port.name(), suite_results.step_name())
+            if key in results_dict:
+                results_dict[key].merge_results(suite_results)
+            else:
+                results_dict[key] = suite_results
+        return list(results_dict.values())
 
     def _update_order(self, path: str) -> int:
         # Update generic expectations first.
@@ -231,9 +253,14 @@ class WPTExpectationsUpdater:
                 else:
                     completed_results.append(suite_results)
 
-        final_results.extend(
-            self.fill_missing_results(results, completed_results)
-            for results in missing_results)
+        for results in missing_results:
+            # Missing results should only get failed test results from
+            # the SAME step in its counter part.
+            final_results.append(
+                self.fill_missing_results(results, [
+                    r for r in completed_results
+                    if r.step_name() == results.step_name()
+                ]))
         final_results.extend(completed_results)
         return tests_to_rebaseline, final_results
 

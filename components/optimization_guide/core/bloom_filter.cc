@@ -15,7 +15,7 @@ namespace optimization_guide {
 
 namespace {
 
-uint64_t MurmurHash3(const std::string& str, uint32_t seed) {
+uint64_t MurmurHash3(std::string_view str, uint32_t seed) {
   // Uses MurmurHash3 in coordination with server as it is a fast hashing
   // function with compatible public client and private server implementations.
   // DO NOT CHANGE this hashing function without coordination and migration
@@ -48,7 +48,7 @@ BloomFilter::BloomFilter(uint32_t num_hash_functions,
 
 BloomFilter::~BloomFilter() = default;
 
-bool BloomFilter::Contains(const std::string& str) const {
+bool BloomFilter::Contains(std::string_view str) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (size_t i = 0; i < num_hash_functions_; ++i) {
     uint64_t n = MurmurHash3(str, i) % num_bits_;

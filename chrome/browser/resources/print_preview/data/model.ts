@@ -17,6 +17,7 @@ import {DestinationOrigin, PrinterType} from './destination.js';
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
+import {Observable} from './observable.js';
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';
 
@@ -521,7 +522,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       settings: {
         type: Object,
         notify: true,
-        value: () => createSettings(),
       },
 
       settingsManaged: {
@@ -550,7 +550,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     return [
       'updateSettingsFromDestination_(destination.capabilities)',
       'updateSettingsAvailabilityFromDocumentSettings_(' +
-          'documentSettings.isModifiable, documentSettings.isFromArc,' +
+          'documentSettings.isModifiable,' +
           'documentSettings.allPagesHaveCustomSize,' +
           'documentSettings.allPagesHaveCustomOrientation,' +
           'documentSettings.hasSelection)',
@@ -568,10 +568,17 @@ export class PrintPreviewModelElement extends PolymerElement {
   declare pageSize: Size;
   declare maxSheets: number;
 
+  observable: Observable<Settings>;
   private initialized_: boolean = false;
   private stickySettings_: SerializedSettings|null = null;
   private policySettings_: PolicySettings|null = null;
   private lastDestinationCapabilities_: Cdd|null = null;
+
+  constructor() {
+    super();
+    this.observable = new Observable<Settings>(createSettings());
+    this.settings = this.observable.getProxy();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -586,6 +593,8 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     instance = null;
     whenReadyResolver = new PromiseResolver();
+
+    this.observable.removeAllObservers();
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -594,7 +603,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   getSetting(settingName: keyof Settings): Setting {
-    const setting = (this.get(settingName, this.settings) as Setting);
+    const setting = this.observable.getTarget()[settingName];
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
   }
@@ -760,8 +769,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     const knownSizeToSaveAsPdf = isSaveAsPDF &&
         (!this.documentSettings.isModifiable ||
          this.documentSettings.allPagesHaveCustomSize);
-    const scalingAvailable =
-        !knownSizeToSaveAsPdf && !this.documentSettings.isFromArc;
+    const scalingAvailable = !knownSizeToSaveAsPdf;
     this.setSettingPath_('scaling.available', scalingAvailable);
     this.setSettingPath_(
         'scalingType.available',
@@ -784,8 +792,8 @@ export class PrintPreviewModelElement extends PolymerElement {
             caps.media_type.option.length > 1);
     this.setSettingPath_(
         'dpi.available',
-        !this.documentSettings.isFromArc && !!caps && !!caps.dpi &&
-            !!caps.dpi.option && caps.dpi.option.length > 1);
+        !!caps && !!caps.dpi && !!caps.dpi.option &&
+            caps.dpi.option.length > 1);
     this.setSettingPath_('layout.available', this.isLayoutAvailable_(caps));
   }
 
@@ -795,27 +803,18 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     this.setSettingPath_(
-        'pagesPerSheet.available', !this.documentSettings.isFromArc);
+        'margins.available', this.documentSettings.isModifiable);
     this.setSettingPath_(
-        'margins.available',
-        !this.documentSettings.isFromArc && this.documentSettings.isModifiable);
+        'customMargins.available', this.documentSettings.isModifiable);
     this.setSettingPath_(
-        'customMargins.available',
-        !this.documentSettings.isFromArc && this.documentSettings.isModifiable);
-    this.setSettingPath_(
-        'cssBackground.available',
-        !this.documentSettings.isFromArc && this.documentSettings.isModifiable);
+        'cssBackground.available', this.documentSettings.isModifiable);
     this.setSettingPath_(
         'selectionOnly.available',
-        !this.documentSettings.isFromArc &&
-            this.documentSettings.isModifiable &&
+        this.documentSettings.isModifiable &&
             this.documentSettings.hasSelection);
     this.setSettingPath_(
-        'headerFooter.available',
-        !this.documentSettings.isFromArc && this.isHeaderFooterAvailable_());
-    this.setSettingPath_(
-        'rasterize.available',
-        !this.documentSettings.isFromArc && this.isRasterizeAvailable_());
+        'headerFooter.available', this.isHeaderFooterAvailable_());
+    this.setSettingPath_('rasterize.available', this.isRasterizeAvailable_());
     this.setSettingPath_(
         'otherOptions.available',
         this.settings.cssBackground.available ||
@@ -901,8 +900,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
   private isLayoutAvailable_(caps: CddCapabilities|null): boolean {
     if (!caps || !caps.page_orientation || !caps.page_orientation.option ||
-        (!this.documentSettings.isModifiable &&
-         !this.documentSettings.isFromArc) ||
+        !this.documentSettings.isModifiable ||
         this.documentSettings.allPagesHaveCustomOrientation) {
       return false;
     }

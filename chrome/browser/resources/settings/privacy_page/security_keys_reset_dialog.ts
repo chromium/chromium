@@ -78,10 +78,10 @@ export class SettingsSecurityKeysResetDialogElement extends
     };
   }
 
-  private errorCode_: number;
-  private complete_: boolean;
-  private shown_: ResetDialogPage;
-  private title_: string;
+  declare private errorCode_: number;
+  declare private complete_: boolean;
+  declare private shown_: ResetDialogPage;
+  declare private title_: string;
   private browserProxy_: SecurityKeysResetBrowserProxy =
       SecurityKeysResetBrowserProxyImpl.getInstance();
 

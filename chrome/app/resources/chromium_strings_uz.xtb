@@ -76,6 +76,7 @@
 <translation id="2018879682492276940">Oʻrnatilmadi. Qayta urining.</translation>
 <translation id="2020032459870799438">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chromium hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Kerak boʻlsa, Chromium tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
+<translation id="2054039611381840095">Chromium yangilanishlari macOS 12 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 11.</translation>
 <translation id="2086476982681781442">Chromium bu yuklamani blokladi, chunki fayl aldamchi va qurilmangizga kutilmagan oʻzgarishlar kiritishi mumkin</translation>
 <translation id="2088953378266246249">Chromium negiz sertifikatlarini qanday boshqarishi haqida axborot</translation>
 <translation id="2099452623287920103">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Ularni Chromiumda yana ishlatish uchun hisobingizga kiring.</translation>
@@ -283,7 +284,6 @@
 <translation id="4888717733111232871">Chromium‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
 <translation id="4893347770495441059">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="4918844574251943176">Rasmdan nusxa olindi</translation>
-<translation id="4942295735032723435">Chromium yangilanishlari macOS 11 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium orqa fon rejimida ishlamoqda.</translation>
 <translation id="494490797786467921">Chromium tizimiga kirish oynasini yopish uchun bosing</translation>
 <translation id="4950660488495335294">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Doʻstlar va oila uchun profillar yarating yoki ish va hordiqni ajrating.</translation>

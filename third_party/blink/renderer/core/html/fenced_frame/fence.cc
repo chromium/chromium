@@ -386,12 +386,10 @@ void Fence::reportPrivateAggregationEvent(const String& event,
                                           ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
       !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
-           .Get() ||
-      !blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
            .Get()) {
     exception_state.ThrowSecurityError(
-        "FLEDGE extensions must be enabled to use reportEvent() for private "
-        "aggregation events.");
+        "Private Aggregation in Protected Audience must be enabled to use "
+        "reportEvent() for private aggregation events.");
     return;
   }
   if (!DomWindow()) {

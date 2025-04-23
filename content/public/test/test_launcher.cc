@@ -387,19 +387,30 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
       command_line->HasSwitch(base::kGTestHelpFlag)) {
     g_params = &params;
 #if !BUILDFLAG(IS_ANDROID)
-    // The call to RunTestSuite() below bypasses TestLauncher, which creates
-    // a temporary directory that is used as the user-data-dir. Create a
-    // temporary directory now so that the test doesn't use the users home
-    // directory as it's data dir.
     base::ScopedTempDir tmp_dir;
     const std::string user_data_dir_switch =
         launcher_delegate->GetUserDataDirectoryCommandLineSwitch();
-    if (!user_data_dir_switch.empty() &&
-        !command_line->HasSwitch(user_data_dir_switch)) {
-      CHECK(tmp_dir.CreateUniqueTempDir());
-      command_line->AppendSwitchPath(user_data_dir_switch, tmp_dir.GetPath());
+
+    if (!user_data_dir_switch.empty()) {
+#if GTEST_HAS_DEATH_TEST
+      // Ensure death test child processes don't reuse the user data dir of
+      // their parent process.
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              "gtest_internal_run_death_test")) {
+        command_line->RemoveSwitch(user_data_dir_switch);
+      }
+#endif  // GTEST_HAS_DEATH_TEST
+
+      // The call to RunTestSuite() below bypasses TestLauncher, which creates
+      // a temporary directory that is used as the user-data-dir. Create a
+      // temporary directory now so that the test doesn't use the users home
+      // directory as it's data dir.
+      if (!command_line->HasSwitch(user_data_dir_switch)) {
+        CHECK(tmp_dir.CreateUniqueTempDir());
+        command_line->AppendSwitchPath(user_data_dir_switch, tmp_dir.GetPath());
+      }
     }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
     return launcher_delegate->RunTestSuite(argc, argv);
   }
 

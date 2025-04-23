@@ -59,7 +59,7 @@ ApiKeyCache& InitializeApiKeyCacheInstance() {
   // is not feasible to check that `g_api_key_cache_instance` is null in
   // tests.
   if (g_api_key_cache_instance) {
-    CHECK_IS_TEST(base::NotFatalUntil::M133);
+    CHECK_IS_TEST();
   }
   return GetApiKeyCacheInstance();
 }

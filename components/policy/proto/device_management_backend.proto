@@ -373,7 +373,10 @@ message DeviceRegisterRequest {
   // enrollment process.
   optional string oidc_profile_enrollment_state = 22;
 
-  // Next id: 23.
+  // Information from the device's SMBIOS.
+  optional SmbiosInfo smbios_info = 23;
+
+  // Next id: 24.
 }
 
 // Identification of a device used during its registration.
@@ -561,6 +564,8 @@ message BrowserDeviceIdentifier {
   optional string computer_name = 1;
   // Device serial number (definition depending on the platform).
   optional string serial_number = 2;
+  // Hostname of the device. This field contains PII.
+  optional string host_name = 4;
 }
 
 message PolicyFetchRequest {
@@ -2271,6 +2276,9 @@ message ChromeUserProfileInfo {
   // Only one policy type which is google/chrome/machine-level-user uploads
   // timestamp currently. More details in b/132973694
   repeated PolicyFetchTimestamp policy_fetched_timestamps = 9;
+
+  // Profile level security signals.
+  optional ProfileSignalsReport profile_signals_report = 13;
 }
 
 // Report browser level status.
@@ -2305,6 +2313,73 @@ message BrowserReport {
   optional bool is_extended_stable_channel = 9 [default = false];
 }
 
+// Report profile level security signals.
+message ProfileSignalsReport {
+  // A boolean indicating whether Chrome's built-in DNS client is used.
+  // If not, the OS DNS client is used instead.
+  optional bool built_in_dns_client_enabled = 1;
+
+  // A boolean indicating whether access to the Chrome Remote Desktop
+  // application is blocked via a policy.
+  optional bool chrome_remote_desktop_app_blocked = 2;
+
+  enum PasswordProtectionTrigger {
+    PASSWORD_PROTECTION_OFF = 0;
+    PASSWORD_REUSE = 1;
+    PHISHING_REUSE = 2;
+    POLICY_UNSET = 3;
+  }
+
+  // A enum indicating the current setting of the Password Protection Warning
+  // feature.
+  optional PasswordProtectionTrigger password_protection_warning_trigger = 3;
+
+  // A string contains the domain that manages the current profile.
+  optional string profile_enrollment_domain = 4;
+
+  enum RealtimeUrlCheckMode {
+    DISABLED = 0;
+    ENABLED_MAIN_FRAME = 1;
+  }
+
+  // A enum indicating whether Enterprise-grade (i.e. custom) unsafe URL
+  // scanning is enabled.
+  optional RealtimeUrlCheckMode realtime_url_check_mode = 5;
+
+  enum SafeBrowsingLevel {
+    NO_SAFE_BROWSING = 0;
+    STANDARD_PROTECTION = 1;
+    ENHANCED_PROTECTION = 2;
+  }
+
+  // A enum indicating  the Safe Browsing Protection Level.
+  optional SafeBrowsingLevel safe_browsing_protection_level = 6;
+
+  // A boolean indicating whether the Site Isolation (a.k.a Site Per Process)
+  // setting is enabled.
+  optional bool site_isolation_enabled = 7;
+}
+
+// Anti virus product information.
+message AntiVirusProduct {
+  enum AntiVirusProductState {
+    ON = 0;
+    OFF = 1;
+    SNOOZED = 2;
+    EXPIRED = 3;
+  }
+
+  optional string display_name = 1;
+  optional string product_id = 2;
+  optional AntiVirusProductState state = 3;
+}
+
+enum SettingValue {
+  UNKNOWN = 0;
+  DISABLED = 1;
+  ENABLED = 2;
+}
+
 // Report Operating system related information.
 message OSReport {
   // A string contains OS name.
@@ -2327,6 +2402,52 @@ message OSReport {
   }
 
   optional VersionType version_type = 4;
+
+  // A string contains the domain that manages this device.
+  optional string device_enrollment_domain = 5;
+
+  // A string contains the name of the device's manufacturer.
+  optional string device_manufacturer = 6;
+
+  // A string contains the name of the device's model.
+  optional string device_model = 7;
+
+  // An enum that represents the encryption state of the disk.
+  optional SettingValue disk_encryption = 8;
+
+  // Strings that list the MAC addresses of the device. This field contains PII.
+  repeated string mac_addresses = 9;
+
+  // An enum that represents the state of the OS level firewall.
+  optional SettingValue os_firewall = 10;
+
+  // An enum that represents the state of the Screen Lock password protection.
+  optional SettingValue screen_lock_secured = 11;
+
+  // Strings that list the addresses of all OS level DNS servers configured in
+  // the device's network settings.
+  repeated string system_dns_servers = 12;
+
+  // List of enums that represents anti virus product info. Windows only.
+  repeated AntiVirusProduct antivirus_info = 13;
+
+  // A string contains the ID of installed hotfix system updates. Windows only.
+  optional string hotfixes = 14;
+
+  // The machine GUID of the device, Windows only. This field contains PII.
+  optional string machine_guid = 15;
+
+  // An enum that indicates whether the device's startup software has its Secure
+  // Boot feature enabled. Windows only.
+  optional SettingValue secure_boot_mode = 16;
+
+  // A string contains the Windows domain that the current machine has joined.
+  // Windows only.
+  optional string windows_machine_domain = 17;
+
+  // A string contains the Windows domain that the current OS user has joined.
+  // Windows only.
+  optional string windows_user_domain = 18;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.
@@ -2391,6 +2512,19 @@ message ChromeProfileReportRequest {
 
   // Basic OS information
   optional OSReport os_report = 2;
+
+  // Device identifier for helping identify non-Chrome OS devices.
+  optional BrowserDeviceIdentifier browser_device_identifier = 3;
+
+  enum ReportType {
+    UNKNOWN = 0;
+    PROFILE_REPORT = 1;
+    PROFILE_SIGNALS = 2;
+    PROFILE_REPORT_WITH_SIGNALS = 3;
+  }
+
+  // The type of report that is being sent.
+  optional ReportType report_type = 4;
 }
 
 // A validation issue from validating a policy value that was contained in

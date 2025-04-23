@@ -76,6 +76,23 @@ int GetTouchCount(ui_controls::MouseButton button) {
 
 }  // namespace
 
+InteractionTestUtilMouse::GestureParams::GestureParams() = default;
+InteractionTestUtilMouse::GestureParams::GestureParams(
+    gfx::NativeWindow window_hint_,
+    bool force_async_)
+    : window_hint(window_hint_), force_async(force_async_) {}
+InteractionTestUtilMouse::GestureParams::GestureParams(const GestureParams&) =
+    default;
+InteractionTestUtilMouse::GestureParams&
+InteractionTestUtilMouse::GestureParams::operator=(const GestureParams&) =
+    default;
+InteractionTestUtilMouse::GestureParams::GestureParams(
+    GestureParams&&) noexcept = default;
+InteractionTestUtilMouse::GestureParams&
+InteractionTestUtilMouse::GestureParams::operator=(GestureParams&&) noexcept =
+    default;
+InteractionTestUtilMouse::GestureParams::~GestureParams() = default;
+
 #if defined(USE_AURA)
 
 // Ends any drag currently in progress or that starts during this object's
@@ -255,10 +272,9 @@ void InteractionTestUtilMouse::CancelDragNow() {
 
 bool InteractionTestUtilMouse::SendButtonPress(
     const MouseButtonGesture& gesture,
-    gfx::NativeWindow window_hint,
-    bool sync,
+    const GestureParams& params,
     base::OnceClosure on_complete) {
-  if (sync) {
+  if (!params.force_async) {
 #if TOUCH_INPUT_SUPPORTED
     if (touch_mode_) {
       return ui_controls::SendTouchEventsNotifyWhenDone(
@@ -269,7 +285,7 @@ bool InteractionTestUtilMouse::SendButtonPress(
 #endif  // TOUCH_INPUT_SUPPORTED
     return ui_controls::SendMouseEventsNotifyWhenDone(
         gesture.first, gesture.second, std::move(on_complete),
-        ui_controls::kNoAccelerator, window_hint);
+        ui_controls::kNoAccelerator, params.window_hint);
   }
 
 #if TOUCH_INPUT_SUPPORTED
@@ -303,14 +319,13 @@ bool InteractionTestUtilMouse::SendButtonPress(
             ui_controls::kNoAccelerator, window_hint));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture,
-      window_hint));
+      params.window_hint));
 
   return true;
 }
 
 bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
-                                        gfx::NativeWindow window_hint,
-                                        bool sync,
+                                        const GestureParams& params,
                                         base::OnceClosure on_complete) {
 #if TOUCH_INPUT_SUPPORTED
   if (touch_mode_) {
@@ -325,7 +340,7 @@ bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
     CHECK_EQ(1U, buttons_down_.size());
   }
 #endif  // TOUCH_INPUT_SUPPORTED
-  if (sync) {
+  if (!params.force_async) {
 #if TOUCH_INPUT_SUPPORTED
     if (touch_mode_) {
       return ui_controls::SendTouchEventsNotifyWhenDone(
@@ -334,7 +349,7 @@ bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
     }
 #endif  // TOUCH_INPUT_SUPPORTED
     return ui_controls::SendMouseMoveNotifyWhenDone(
-        gesture.x(), gesture.y(), std::move(on_complete), window_hint);
+        gesture.x(), gesture.y(), std::move(on_complete), params.window_hint);
   }
 
 #if TOUCH_INPUT_SUPPORTED
@@ -366,7 +381,7 @@ bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
             gesture.x(), gesture.y(), std::move(on_complete), window_hint));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture,
-      window_hint));
+      params.window_hint));
 
   return true;
 }
@@ -390,9 +405,8 @@ bool InteractionTestUtilMouse::GetTouchMode() const {
   return touch_mode_;
 }
 
-bool InteractionTestUtilMouse::PerformGesturesImpl(
-    MouseGestures gestures,
-    gfx::NativeWindow window_hint) {
+bool InteractionTestUtilMouse::PerformGesturesImpl(const GestureParams& params,
+                                                   MouseGestures gestures) {
   CHECK(!gestures.empty());
   CHECK(!performing_gestures_);
   base::AutoReset<bool> performing_gestures(&performing_gestures_, true);
@@ -402,11 +416,6 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
       break;
     }
 
-    bool force_async = false;
-#if BUILDFLAG(IS_MAC)
-    force_async = base::Contains(buttons_down_, ui_controls::RIGHT);
-#endif
-
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     if (MouseButtonGesture* const button =
             std::get_if<MouseButtonGesture>(&gesture)) {
@@ -414,7 +423,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
         case ui_controls::UP: {
           CHECK(buttons_down_.erase(button->first));
           base::OnceClosure on_complete =
-              force_async ? base::DoNothing() : run_loop.QuitClosure();
+              params.force_async ? base::DoNothing() : run_loop.QuitClosure();
           if (ShouldCancelDrag()) {
             // This will bail out of any nested drag-drop run loop, allowing
             // the code to proceed even if the drag somehow starts while the
@@ -427,12 +436,11 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
 #if defined(USE_AURA)
           dragging_ = false;
 #endif
-          if (!SendButtonPress(*button, window_hint, !force_async,
-                               std::move(on_complete))) {
+          if (!SendButtonPress(*button, params, std::move(on_complete))) {
             LOG(ERROR) << "Mouse button " << button->first << " up failed.";
             return false;
           }
-          if (!force_async) {
+          if (!params.force_async) {
             run_loop.Run();
           }
           break;
@@ -445,32 +453,29 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
 #endif
           CHECK(buttons_down_.insert(button->first).second);
 #if BUILDFLAG(IS_MAC)
-          if (!force_async && button->first == ui_controls::RIGHT) {
-            force_async = true;
+          if (!params.force_async && button->first == ui_controls::RIGHT) {
             LOG(WARNING)
-                << "InteractionTestUtilMouse::PerformGestures(): "
+                << "InteractionTestUtilMouse::PerformGestures() - "
                    "Important note:\n"
                 << "Because right-clicking on Mac typically results in a "
-                   "context menu, and because context menus on Mac are native "
-                   "and take over the main message loop, mouse events from "
-                   "here until release of the right mouse button will be sent "
-                   "asynchronously to avoid a hang.\n"
-                << "Furthermore, your test will likely still hang unless you "
-                   "explicitly find and close the context menu. There is (as "
-                   "of the time this warning was written) no general way to do "
-                   "this because it requires access to the menu runner, which "
-                   "is not always publicly exposed.";
+                   "context menu, and because some (but not all) context menus "
+                   "on Mac are native and take over the main message loop, "
+                   "right-clicking could cause the test to hang.\n"
+                << "If you notice your test hangs on Mac, use "
+                   "MayInvolveNativeContextMenu() and minimize the number of "
+                   "test "
+                   "steps performed while the context menu is open.";
           }
 #endif
           CancelDragNow();
-          if (!SendButtonPress(
-                  *button, window_hint, !force_async,
-                  force_async ? base::DoNothing() : run_loop.QuitClosure())) {
+          if (!SendButtonPress(*button, params,
+                               params.force_async ? base::DoNothing()
+                                                  : run_loop.QuitClosure())) {
             LOG(ERROR) << "Mouse button " << button->first << " down failed.";
             return false;
           }
 
-          if (!force_async) {
+          if (!params.force_async) {
             run_loop.Run();
           }
           break;
@@ -483,13 +488,14 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
         dragging_ = true;
       }
 #endif
-      if (!SendMove(move, window_hint, !force_async,
-                    force_async ? base::DoNothing() : run_loop.QuitClosure())) {
+      if (!SendMove(move, params,
+                    params.force_async ? base::DoNothing()
+                                       : run_loop.QuitClosure())) {
         LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
         return false;
       }
 
-      if (!force_async) {
+      if (!params.force_async) {
         run_loop.Run();
       }
     }

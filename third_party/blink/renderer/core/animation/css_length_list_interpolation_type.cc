@@ -107,7 +107,7 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSLengthListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList())
     return nullptr;

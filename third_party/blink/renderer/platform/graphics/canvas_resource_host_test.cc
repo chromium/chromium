@@ -37,7 +37,7 @@ TEST(CanvasResourceHostTest, ReleaseLostTransferableResource) {
   InitializeSharedGpuContextGLES2(context.get());
 
   auto host = std::make_unique<FakeCanvasResourceHost>(gfx::Size(100, 100));
-  host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  host->GetOrCreateCanvasResourceProvider();
   host->GetOrCreateCcLayerIfNeeded();
 
   // Prepare a TransferableResource, then report the resource as lost.
@@ -60,7 +60,7 @@ TEST(CanvasResourceHostTest, ReleaseLostTransferableResourceWithLostContext) {
   InitializeSharedGpuContextGLES2(context.get());
 
   auto host = std::make_unique<FakeCanvasResourceHost>(gfx::Size(100, 100));
-  host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  host->GetOrCreateCanvasResourceProvider();
   host->GetOrCreateCcLayerIfNeeded();
 
   viz::TransferableResource resource;
@@ -87,7 +87,7 @@ TEST(CanvasResourceHostTest, ReleaseResourcesAfterHostDestroyed) {
   InitializeSharedGpuContextGLES2(context.get());
 
   auto host = std::make_unique<FakeCanvasResourceHost>(gfx::Size(100, 100));
-  host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  host->GetOrCreateCanvasResourceProvider();
   host->GetOrCreateCcLayerIfNeeded();
 
   viz::TransferableResource resource;

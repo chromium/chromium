@@ -4,6 +4,12 @@
 /lit/LICENSE
 /@lit/reactive-element/LICENSE
 
+# Lit package.json files.
+/lit-element/package.json
+/lit-html/package.json
+/lit/package.json
+/@lit/reactive-element/package.json
+
 # Lit JS files.
 /lit-element/LICENSE
 /lit-element/lit-element.js

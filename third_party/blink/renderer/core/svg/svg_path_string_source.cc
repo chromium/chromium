@@ -133,10 +133,10 @@ SVGPathStringSource::SVGPathStringSource(StringView source)
   DCHECK(!source.IsNull());
 
   if (is_8bit_source_) {
-    current_.character8_ = source.Characters8();
+    current_.character8_ = UNSAFE_TODO(source.Characters8());
     end_.character8_ = UNSAFE_TODO(current_.character8_ + source.length());
   } else {
-    current_.character16_ = source.Characters16();
+    current_.character16_ = UNSAFE_TODO(source.Characters16());
     end_.character16_ = UNSAFE_TODO(current_.character16_ + source.length());
   }
   EatWhitespace();
@@ -153,9 +153,9 @@ void SVGPathStringSource::EatWhitespace() {
 void SVGPathStringSource::SetErrorMark(SVGParseStatus status) {
   if (error_.Status() != SVGParseStatus::kNoError)
     return;
-  size_t locus = is_8bit_source_
-                     ? current_.character8_ - source_.Characters8()
-                     : current_.character16_ - source_.Characters16();
+  size_t locus = UNSAFE_TODO(
+      is_8bit_source_ ? current_.character8_ - source_.Characters8()
+                      : current_.character16_ - source_.Characters16());
   error_ = SVGParsingError(status, locus);
 }
 

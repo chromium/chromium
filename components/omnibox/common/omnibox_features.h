@@ -48,18 +48,12 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 // Related, kMaxZeroSuggestMatches.
 
-// Contextual zero-prefix (aka zero-suggest). There are suggestions based on the
-// user's current URL. Fullfillment of these suggestions is delegated to Lens
-// since Lens provides additional logic for contextualizing the results to the
-// current page, by using more than the URL, i.e. the page content.
-BASE_DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
-
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderKorean);
 BASE_DECLARE_FEATURE(kOnDeviceTailModel);
-BASE_DECLARE_FEATURE(kDisableOnDeviceTailEnglishModel);
+BASE_DECLARE_FEATURE(kOnDeviceTailEnableEnglishModel);
 
 // Provider-specific - These features change the behavior of specific providers.
 // TODO(crbug.com/40179316): Clean up feature flag used in staged roll-out of
@@ -122,7 +116,6 @@ BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 // Site search/Keyword mode related features.
 BASE_DECLARE_FEATURE(kStarterPackExpansion);
 BASE_DECLARE_FEATURE(kStarterPackIPH);
-BASE_DECLARE_FEATURE(kStarterPackPage);
 
 // Search and Suggest requests and params.
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
@@ -148,6 +141,7 @@ BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 BASE_DECLARE_FEATURE(kAndroidHubSearch);
 // Delay focusTab to prioritize navigation (https://crbug.com/374852568).
 BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
+BASE_DECLARE_FEATURE(kAndroidHubSearchTabGroups);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // `ShortcutsProvider` features.

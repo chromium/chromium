@@ -27,6 +27,7 @@ items:
 owners:
 - katie@chromium.org
 - chromeos-a11y-eng@google.com
+- file://ash/accessibility/OWNERS
 schema:
   type: boolean
 supported_on:

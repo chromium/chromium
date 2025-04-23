@@ -53,6 +53,7 @@ bool IsAddressType(FieldType type) {
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kStandaloneCvcField:
     case FieldTypeGroup::kAutofillAi:
+    case FieldTypeGroup::kLoyaltyCard:
       return false;
   }
   NOTREACHED();

@@ -176,12 +176,12 @@ export class MiddleSlotPromoElement extends CrLitElement {
     };
   }
 
-  protected mobilePromoEnabled_: boolean =
+  protected accessor mobilePromoEnabled_: boolean =
       loadTimeData.getBoolean('mobilePromoEnabled');
-  protected shownMiddleSlotPromoId_: string;
-  private hasDefaultPromo_: boolean|null = null;
-  private hasMobilePromoContent_: boolean|null = null;
-  private promo_: Promo;
+  protected accessor shownMiddleSlotPromoId_: string;
+  private accessor hasDefaultPromo_: boolean|null = null;
+  private accessor hasMobilePromoContent_: boolean|null = null;
+  private accessor promo_: Promo;
 
   private blocklistedMiddleSlotPromoId_: string;
   private eventTracker_: EventTracker = new EventTracker();

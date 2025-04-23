@@ -8,10 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_keyboard_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
 
+@protocol AutocompleteSuggestionGroup;
 @protocol CarouselItemMenuProvider;
 @protocol FaviconRetriever;
 class LargeIconCache;
@@ -19,8 +20,8 @@ namespace favicon {
 class LargeIconService;
 }
 @class LayoutGuideCenter;
+@protocol OmniboxPopupMutator;
 @protocol ImageRetriever;
-@protocol PopupMatchPreviewDelegate;
 
 /// View controller used to display a list of omnibox autocomplete matches in
 /// the omnibox popup. It implements up/down arrow handling to highlight
@@ -29,16 +30,14 @@ class LargeIconService;
 /// arrows, so when the omnibox is the first responder, this view controller
 /// cannot receive these events. Hence the delegation.
 @interface OmniboxPopupViewController
-    : UIViewController <AutocompleteResultConsumer,
+    : UIViewController <OmniboxPopupConsumer,
                         CarouselItemConsumer,
                         ContentProviding,
                         OmniboxKeyboardDelegate,
                         UIScrollViewDelegate>
 
 @property(nonatomic, assign) BOOL incognito;
-@property(nonatomic, weak) id<AutocompleteResultConsumerDelegate> delegate;
-@property(nonatomic, weak) id<AutocompleteResultDataSource> dataSource;
-@property(nonatomic, weak) id<PopupMatchPreviewDelegate> matchPreviewDelegate;
+@property(nonatomic, weak) id<OmniboxPopupMutator> mutator;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 @property(nonatomic, assign) favicon::LargeIconService* largeIconService;

@@ -8,6 +8,9 @@
 #include <string>
 
 #include "chrome/browser/extensions/pack_extension_job.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class CommandLine;

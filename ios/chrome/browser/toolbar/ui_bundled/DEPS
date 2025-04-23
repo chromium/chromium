@@ -17,6 +17,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h",
   "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/overlays/model/public",

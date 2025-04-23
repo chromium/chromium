@@ -123,6 +123,7 @@ source_set("browser") {
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
     "//components/optimization_guide/core:features",
+    "//components/optimization_guide/public/mojom",
     "//components/os_crypt/sync",
     "//components/payments/content/icon",
     "//components/payments/mojom",
@@ -137,7 +138,7 @@ source_set("browser") {
     "//components/services/storage/public/mojom",
     "//components/sqlite_proto",
     "//components/system_media_controls",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/ui_devtools",
     "//components/ukm",
     "//components/ukm/debug:util",
@@ -1380,6 +1381,7 @@ source_set("browser") {
     "media/capture/desktop_capture_device_uma_types.h",
     "media/capture/desktop_streams_registry_impl.cc",
     "media/capture/desktop_streams_registry_impl.h",
+    "permissions/permission_descriptor_util.cc",
 
     # TODO(crbug.com/202736352): This is built even if enable_screen_capture is
     # false. Consider better separation of the screen capture and the other
@@ -2352,8 +2354,6 @@ source_set("browser") {
     "web_contents/web_contents_view_child_frame.h",
     "web_contents/web_contents_view_drag_security_info.cc",
     "web_contents/web_contents_view_drag_security_info.h",
-    "web_database/web_database_host_impl.cc",
-    "web_database/web_database_host_impl.h",
     "web_exposed_isolation_info.cc",
     "web_exposed_isolation_info.h",
     "web_package/prefetched_signed_exchange_cache.cc",
@@ -2734,11 +2734,16 @@ source_set("browser") {
 
   if (is_apple) {
     sources += [
-      "child_process_task_port_provider_mac.cc",
-      "child_process_task_port_provider_mac.h",
       "font_access/font_enumeration_data_source_mac.h",
       "font_access/font_enumeration_data_source_mac.mm",
     ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [
+        "child_process_task_port_provider_mac.cc",
+        "child_process_task_port_provider_mac.h",
+      ]
+    }
   }
 
   if (is_mac) {
@@ -2845,17 +2850,6 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
-      "date_time_chooser/ios/date_time_chooser_coordinator.h",
-      "date_time_chooser/ios/date_time_chooser_coordinator.mm",
-      "date_time_chooser/ios/date_time_chooser_delegate.h",
-      "date_time_chooser/ios/date_time_chooser_ios.h",
-      "date_time_chooser/ios/date_time_chooser_ios.mm",
-      "date_time_chooser/ios/date_time_chooser_mediator.h",
-      "date_time_chooser/ios/date_time_chooser_mediator.mm",
-      "date_time_chooser/ios/date_time_chooser_util.h",
-      "date_time_chooser/ios/date_time_chooser_util.mm",
-      "date_time_chooser/ios/date_time_chooser_view_controller.h",
-      "date_time_chooser/ios/date_time_chooser_view_controller.mm",
       "devtools/protocol/native_input_event_builder_ios.mm",
       "renderer_host/begin_frame_source_ios.h",
       "renderer_host/begin_frame_source_ios.mm",
@@ -2869,8 +2863,6 @@ source_set("browser") {
       "renderer_host/popup_menu_helper_ios.mm",
       "renderer_host/render_widget_host_view_ios.h",
       "renderer_host/render_widget_host_view_ios.mm",
-      "renderer_host/render_widget_host_view_ios_uiview.h",
-      "renderer_host/render_widget_host_view_ios_uiview.mm",
       "renderer_host/web_menu_runner_ios.h",
       "renderer_host/web_menu_runner_ios.mm",
       "speech/tts_ios.mm",
@@ -2878,14 +2870,31 @@ source_set("browser") {
       "web_contents/web_contents_view_ios.mm",
     ]
 
-    if (target_platform != "tvos") {
-      sources += [ "child_process_launcher_helper_ios.mm" ]
+    if (target_platform == "iphoneos") {
+      sources += [
+        "child_process_launcher_helper_ios.mm",
+        "date_time_chooser/ios/date_time_chooser_coordinator.h",
+        "date_time_chooser/ios/date_time_chooser_coordinator.mm",
+        "date_time_chooser/ios/date_time_chooser_delegate.h",
+        "date_time_chooser/ios/date_time_chooser_ios.h",
+        "date_time_chooser/ios/date_time_chooser_ios.mm",
+        "date_time_chooser/ios/date_time_chooser_mediator.h",
+        "date_time_chooser/ios/date_time_chooser_mediator.mm",
+        "date_time_chooser/ios/date_time_chooser_util.h",
+        "date_time_chooser/ios/date_time_chooser_util.mm",
+        "date_time_chooser/ios/date_time_chooser_view_controller.h",
+        "date_time_chooser/ios/date_time_chooser_view_controller.mm",
+        "renderer_host/render_widget_host_view_ios_uiview.h",
+        "renderer_host/render_widget_host_view_ios_uiview.mm",
+      ]
       frameworks += [ "BrowserEngineKit.framework" ]
     } else {
       sources += [
         "child_process_launcher_helper_tvos.mm",
         "renderer_host/render_widget_host_view_tvos.h",
         "renderer_host/render_widget_host_view_tvos.mm",
+        "renderer_host/render_widget_host_view_tvos_uiview.h",
+        "renderer_host/render_widget_host_view_tvos_uiview.mm",
       ]
     }
 
@@ -3235,6 +3244,7 @@ source_set("browser") {
       "android/browser_context_handle.cc",
       "android/browser_startup_controller.cc",
       "android/browser_startup_controller.h",
+      "android/child_process_importance.cc",
       "android/client_data_json_android.cc",
       "android/content_feature_map.cc",
       "android/content_startup_flags.cc",
@@ -3334,12 +3344,6 @@ source_set("browser") {
       "font_unique_name_lookup/font_unique_name_lookup_service.h",
       "media/android/browser_gpu_video_accelerator_factories.cc",
       "media/android/browser_gpu_video_accelerator_factories.h",
-      "media/android/media_player_renderer.cc",
-      "media/android/media_player_renderer.h",
-      "media/android/media_player_renderer_web_contents_observer.cc",
-      "media/android/media_player_renderer_web_contents_observer.h",
-      "media/android/media_resource_getter_impl.cc",
-      "media/android/media_resource_getter_impl.h",
       "media/key_system_support_android.cc",
       "media/key_system_support_android.h",
       "media/session/audio_focus_delegate_android.cc",

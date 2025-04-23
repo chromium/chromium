@@ -122,15 +122,13 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 GpuRasterBufferProvider::GpuRasterBufferProvider(
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    const RasterCapabilities& raster_caps,
+    bool is_overlay_candidate,
     const gfx::Size& max_tile_size,
-    bool unpremultiply_and_dither_low_bit_depth_tiles,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      tile_format_(raster_caps.tile_format),
-      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_overlay_candidate_(is_overlay_candidate),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -176,16 +174,6 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
 
 void GpuRasterBufferProvider::Flush() {
   compositor_context_provider_->ContextSupport()->FlushPendingWork();
-}
-
-viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
-  return tile_format_;
-}
-
-bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
-  // 4444 tiles on low end devices.
-  return true;
 }
 
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
@@ -400,10 +388,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
-
-  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
-  // 4444 tiles on low end devices (further history on
-  // https://crbug.com/789153).
 }
 
 }  // namespace cc

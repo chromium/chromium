@@ -165,8 +165,9 @@ void AdsBlockedMessageDelegate::ShowDialog(bool should_post_dialog) {
 
   // Ads blocked dialog factory method can return nullptr when web_contents()
   // is not attached to a window. See crbug.com/1049090 for details.
-  if (!ads_blocked_dialog_)
+  if (!ads_blocked_dialog_) {
     return;
+  }
   ads_blocked_dialog_->Show(should_post_dialog);
 }
 

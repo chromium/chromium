@@ -10,12 +10,16 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("network_service") {
   sources = [
+    "accept_ch_frame_interceptor.cc",
+    "accept_ch_frame_interceptor.h",
     "ad_heuristic_cookie_overrides.cc",
     "ad_heuristic_cookie_overrides.h",
     "chunked_data_pipe_upload_data_stream.cc",
     "chunked_data_pipe_upload_data_stream.h",
     "conditional_cache_deletion_helper.cc",
     "conditional_cache_deletion_helper.h",
+    "connection_change_observer.cc",
+    "connection_change_observer.h",
     "cookie_access_delegate_impl.cc",
     "cookie_access_delegate_impl.h",
     "cookie_manager.cc",
@@ -46,6 +50,8 @@ component("network_service") {
     "disk_cache/mojo_backend_file_operations_factory.h",
     "dns_config_change_manager.cc",
     "dns_config_change_manager.h",
+    "file_opener_for_upload.cc",
+    "file_opener_for_upload.h",
     "host_resolver.cc",
     "host_resolver.h",
     "host_resolver_mdns_listener.cc",
@@ -87,6 +93,7 @@ component("network_service") {
     "network_service_proxy_delegate.h",
     "oblivious_http_request_handler.cc",
     "oblivious_http_request_handler.h",
+    "observer_wrapper.h",
     "orb/orb_api.cc",
     "orb/orb_impl.cc",
     "orb/orb_impl.h",
@@ -108,6 +115,8 @@ component("network_service") {
     "prefetch_url_loader_client.h",
     "private_network_access_checker.cc",
     "private_network_access_checker.h",
+    "private_network_access_url_loader_interceptor.cc",
+    "private_network_access_url_loader_interceptor.h",
     "proxy_auto_config_library.cc",
     "proxy_auto_config_library.h",
     "proxy_config_service_mojo.cc",
@@ -416,6 +425,7 @@ source_set("tests") {
 
   sources = [
     "chunked_data_pipe_upload_data_stream_unittest.cc",
+    "connection_change_observer_unittest.cc",
     "cookie_access_delegate_impl_unittest.cc",
     "cookie_manager_unittest.cc",
     "cookie_settings_unittest.cc",

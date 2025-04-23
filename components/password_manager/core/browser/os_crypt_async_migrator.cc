@@ -26,11 +26,7 @@ OSCryptAsyncMigrator::OSCryptAsyncMigrator(
 OSCryptAsyncMigrator::~OSCryptAsyncMigrator() = default;
 
 bool OSCryptAsyncMigrator::NeedsCleaning() {
-  // Phase 1 of OSCryptMigration has to be enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kUseAsyncOsCryptInLoginDatabase)) {
-    return false;
-  }
+  // Phase 1 of OSCryptMigration is enabled by default since M133.
   // Phase 2 of OSCryptMigration has to be enabled.
   if (!base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod)) {
     return false;

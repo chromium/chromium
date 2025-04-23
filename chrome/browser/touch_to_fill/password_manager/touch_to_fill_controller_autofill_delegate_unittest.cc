@@ -38,7 +38,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
@@ -140,9 +139,6 @@ class TouchToFillControllerAutofillTest
     // By default, disable biometric authentication.
     ON_CALL(client(), IsReauthBeforeFillingRequired)
         .WillByDefault(Return(false));
-
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kBiometricTouchToFill);
   }
 
   std::unique_ptr<MockPasswordCredentialFiller> CreateMockFiller() {
@@ -219,10 +215,6 @@ class TouchToFillControllerAutofillTest
     return *visibility_controller_;
   }
 
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_feature_list_;
-  }
-
   const password_manager::PasswordForm* form_to_fill() {
     return &form_to_fill_;
   }
@@ -263,7 +255,8 @@ class TouchToFillControllerAutofillTest
       password_manager::MockKeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kBiometricTouchToFill};
   raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
@@ -326,44 +319,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Dont_Submit) {
                                       std::u16string(u"p4ssw0rd"), _))
       .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/false));
 
-  EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
-
-  touch_to_fill_controller().OnCredentialSelected(credentials[0]);
-}
-
-TEST_F(TouchToFillControllerAutofillTest,
-       ShowFillAndShowPasswordMigrationWarning) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  UiCredential credentials[] = {
-      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
-  auto filler_to_pass = CreateMockFiller();
-
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           ElementsAreArray(std::vector<PasskeyCredential>()),
-                           TouchToFillView::kNone));
-  Show(credentials, {},
-       MakeTouchToFillControllerDelegate(
-           autofill::mojom::SubmissionReadinessState::kTwoFields,
-           std::move(filler_to_pass), form_to_fill(),
-           form_to_fill()->password_element_renderer_id,
-           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
-       /*cred_man_delegate=*/nullptr);
-
-  EXPECT_CALL(*last_mock_filler(),
-              FillUsernameAndPassword(std::u16string(u"alice"),
-                                      std::u16string(u"p4ssw0rd"), _))
-      .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/false));
-  EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(false));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);

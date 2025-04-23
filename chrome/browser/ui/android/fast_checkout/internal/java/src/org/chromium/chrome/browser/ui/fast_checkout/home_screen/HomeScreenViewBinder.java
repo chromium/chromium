@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
@@ -33,6 +34,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * updates are pulled from the {@link FastCheckoutProperties} when a notification of an update is
  * received.
  */
+@NullMarked
 public class HomeScreenViewBinder {
     static class ViewHolder {
         final Context mContext;

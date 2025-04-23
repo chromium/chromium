@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -398,6 +399,9 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
         WebAudioSinkDescriptor::AudioSinkType::kAudible) {
       const media::OutputDeviceStatus output_device_status =
           platform_destination_->MaybeCreateSinkAndGetStatus();
+      UMA_HISTOGRAM_ENUMERATION(
+          "WebAudio.AudioDestination.OutputDeviceStatus", output_device_status,
+          media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_MAX + 1);
       if (output_device_status ==
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
         if (auto* execution_context = Context()->GetExecutionContext()) {
@@ -496,6 +500,9 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   // the `platform_destination_` with the pending_platform_destination.
   media::OutputDeviceStatus status =
       pending_platform_destination->MaybeCreateSinkAndGetStatus();
+  UMA_HISTOGRAM_ENUMERATION(
+      "WebAudio.AudioDestination.OutputDeviceStatus", status,
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_MAX + 1);
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
     const bool was_playing = platform_destination_->IsPlaying();
     StopPlatformDestination();

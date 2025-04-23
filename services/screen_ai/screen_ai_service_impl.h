@@ -128,9 +128,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       const SkBitmap& image);
 
   void OcrReceiverDisconnected();
-
-  // Calls `ShutDownIfNoClients` after a short delay.
-  void CheckIdleStateAfterDelay();
+  void MceReceiverDisconnected();
 
   // Returns a boolean pointer that should be set to true, when the task is
   // finished. If it's not done before the timer goes off, it is assumed that
@@ -140,7 +138,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // Last time the feature is used. A null value means never, it is set when the
   // feature is initialized, and each time it is used.
   base::TimeTicks ocr_last_used_;
-  base::TimeTicks main_content_extraction_last_used_;
+  base::TimeTicks mce_last_used_;
 
   std::unique_ptr<base::RepeatingTimer> idle_checking_timer_;
 

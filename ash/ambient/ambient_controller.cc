@@ -177,15 +177,6 @@ bool IsAmbientModeEnabled() {
   return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
 }
 
-class AmbientWidgetDelegate : public views::WidgetDelegate {
- public:
-  AmbientWidgetDelegate() {
-    SetCanFullscreen(true);
-    SetCanMaximize(true);
-    SetOwnedByWidget(true);
-  }
-};
-
 void RecordManagedScreensaverEnabledPref() {
   if (PrefService* pref_service = GetActivePrefService();
       pref_service &&
@@ -197,6 +188,15 @@ void RecordManagedScreensaverEnabledPref() {
 }
 
 }  // namespace
+
+class AmbientWidgetDelegate : public views::WidgetDelegate {
+ public:
+  AmbientWidgetDelegate() {
+    SetCanFullscreen(true);
+    SetCanMaximize(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
+  }
+};
 
 // static
 void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {

@@ -31,14 +31,6 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * querying from any thread.
      */
     public boolean isAdvancedProtectionRequestedByOs() {
-        return !hasJavascriptOptimizerPermission();
-    }
-
-    /**
-     * Returns whether the operating system has granted permission to enable javascript optimizers.
-     * Implementations must allow querying from any thread.
-     */
-    public boolean hasJavascriptOptimizerPermission() {
         return false;
     }
 
@@ -57,7 +49,7 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * @param primaryButtonAction The action to run when the message-UI primary-button is clicked.
      */
     public @Nullable PropertyModel buildAdvancedProtectionMessagePropertyModel(
-            Context context, Runnable primaryButtonAction) {
+            Context context, @Nullable Runnable primaryButtonAction) {
         return null;
     }
 }

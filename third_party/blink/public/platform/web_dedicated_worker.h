@@ -18,7 +18,6 @@ namespace blink {
 
 struct WorkerMainScriptLoadParameters;
 
-// PlzDedicatedWorker:
 // WebDedicatedWorker is the interface to access blink::DedicatedWorker from
 // content::DedicatedWorkerHostFactoryClient.
 class WebDedicatedWorker {

@@ -13,7 +13,7 @@
 #include "base/token.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

@@ -12,12 +12,34 @@
   <div class="content-wrapper">
     <img id="icon" src="images/enterprise_icon.svg">
     <div id="managed-info" class="hidden">
-      <div id="main-message">$i18n{managementMessage}</div>
-      <div id="secondary-message">$i18n{managedInfo}
-        <a id="learn-more-link" target="_blank" href=$i18n{learnMoreURL}>$i18n{learnMore}</a>
+      <div id="main-message" class="heading">$i18n{managementMessage}</div>
+      <div id="secondary-message" class="description-text">$i18n{managedInfo}
+        <a id="learn-more-link" target="_blank" href="$i18n{learnMoreURL}">$i18n{learnMore}</a>
+      </div>
+
+      <div id="connectors-info" class="hidden">
+          <div id="connectors-section-title" class="heading" >$i18n{connectorsSectionTitle}</div>
+
+          <div id="connectors-section-description" class="description-text">
+            $i18n{connectorsDescription}
+          </div>
+
+          <div id="security-event-section" class="event-section hidden">
+            <div class="event-title heading" >$i18n{securityEventTitle}</div>
+            <div class="description-text">
+              $i18n{securityEventData}
+            </div>
+          </div>
+
+          <div id="page-visit-event-section" class="event-section hidden">
+            <div class="event-title heading">$i18n{pageVisitEventTitle}</div>
+            <div class="description-text">
+              $i18n{pageVisitEventData}
+            </div>
+          </div>
       </div>
     </div>
-    <div id="unmanaged-info" class="hidden">$i18n{unmanagedInfo}</div>
+    <div id="unmanaged-info" class="hidden heading">$i18n{unmanagedInfo}</div>
   </div>
 </body>
 </html>

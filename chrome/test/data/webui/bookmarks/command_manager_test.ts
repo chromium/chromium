@@ -366,10 +366,12 @@ suite('<bookmarks-command-manager>', function() {
     store.data.selection.items = items;
     assertFalse(commandManager.canExecute(Command.EDIT, items));
     assertFalse(commandManager.canExecute(Command.DELETE, items));
+    assertFalse(commandManager.canExecute(Command.CUT, items));
 
     items = new Set(['4']);
     assertFalse(commandManager.canExecute(Command.EDIT, items));
     assertFalse(commandManager.canExecute(Command.DELETE, items));
+    assertFalse(commandManager.canExecute(Command.CUT, items));
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
     await microtasksFinished();

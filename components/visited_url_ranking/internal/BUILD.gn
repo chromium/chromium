@@ -63,6 +63,7 @@ static_library("internal_url_grouping") {
   visibility = [
     ":*",
     "//chrome/browser",
+    "//chrome/browser/prefs:impl",
   ]
   sources = [
     "url_grouping/group_suggestions_manager.cc",
@@ -80,8 +81,10 @@ static_library("internal_url_grouping") {
   ]
   deps = [
     "//base",
+    "//components/prefs:prefs",
     "//components/segmentation_platform/public",
     "//components/visited_url_ranking/public",
+    "//ui/base:base",
   ]
 
   if (is_android) {
@@ -93,6 +96,7 @@ static_library("internal_url_grouping") {
     deps += [
       ":jni_headers",
       "//components/visited_url_ranking/public:jni_headers",
+      "//url:url",
     ]
   }
 }
@@ -153,6 +157,7 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/history/core/browser",
+    "//components/prefs:test_support",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
@@ -193,6 +198,8 @@ if (is_android) {
       "//build/android:build_java",
       "//components/visited_url_ranking/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
     ]
   }
 

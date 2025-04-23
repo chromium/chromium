@@ -344,7 +344,7 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
 void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     RetrieveCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (!response) {
     std::move(callback).Run(base::unexpected("Failed GetProxyConfig request"));
     return;

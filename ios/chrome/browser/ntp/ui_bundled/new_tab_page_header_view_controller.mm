@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bubble/public/in_product_help_type.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -71,6 +73,9 @@ const CGFloat kPillVerticalPadding = 11;
 // Multiplier for applying margins on multiple sides
 const CGFloat kMarginMultiplier = 2;
 
+// The maximum point size of the font for the Identity Disc button.
+const CGFloat kIdentityDiscMaxFontSize = 24;
+
 }  // namespace
 
 @interface NewTabPageHeaderViewController () <
@@ -97,10 +102,12 @@ const CGFloat kMarginMultiplier = 2;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
-@property(nonatomic, assign) BOOL logoFetched;
 
 // Whether the Google logo or doodle is being shown.
 @property(nonatomic, assign) BOOL logoIsShowing;
+
+// Whether or not the user is signed in.
+@property(nonatomic, assign) BOOL isSignedIn;
 
 @end
 
@@ -110,10 +117,10 @@ const CGFloat kMarginMultiplier = 2;
   BOOL _hasAccountError;
   // Constraint for the identity disc button width.
   NSLayoutConstraint* _identityDiscWidthConstraint;
+  // Constraint for the identity disc button height.
+  NSLayoutConstraint* _identityDiscHeightConstraint;
   // Trailing Anchor for the identity disc button.
   NSLayoutConstraint* _identityDiscTrailingConstraint;
-  // Whether or not the user is signed in
-  BOOL _isSignedIn;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -349,6 +356,8 @@ const CGFloat kMarginMultiplier = 2;
   if (!IsSignInButtonNoAvatarEnabled()) {
     DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
   }
+
+  [self maybeShowSwitchAccountsIPH];
 }
 
 - (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
@@ -370,14 +379,6 @@ const CGFloat kMarginMultiplier = 2;
 
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
   self.headerView.tabGroupIndicatorView = view;
-}
-
-- (void)setUserSignedIn:(BOOL)signedIn {
-  _isSignedIn = signedIn;
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscConstraints];
-    [self updateIdentityDiscState];
-  }
 }
 
 #pragma mark - FakeboxButtonsSnapshotProvider
@@ -517,9 +518,13 @@ const CGFloat kMarginMultiplier = 2;
   }
   [self.headerView setIdentityDiscView:self.identityDiscButton];
 
+  [self.layoutGuideCenter referenceView:self.identityDiscButton
+                              underName:kNTPIdentityDiscButtonGuide];
+
   _identityDiscWidthConstraint =
       [self.identityDiscButton.widthAnchor constraintEqualToConstant:0];
-
+  _identityDiscHeightConstraint =
+      [self.identityDiscButton.heightAnchor constraintEqualToConstant:0];
   _identityDiscTrailingConstraint = [self.identityDiscButton.trailingAnchor
       constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide.trailingAnchor
                      constant:0];
@@ -564,50 +569,41 @@ const CGFloat kMarginMultiplier = 2;
   DCHECK(self.identityDiscImage);
   DCHECK(self.identityDiscAccessibilityLabel);
 
-  if (!IsSignInButtonNoAvatarEnabled() || _isSignedIn) {
-    [self.identityDiscButton setTitle:nil forState:UIControlStateNormal];
-    [self.identityDiscButton setTitleColor:nil forState:UIControlStateNormal];
-    [self.identityDiscButton setAttributedTitle:nil
-                                       forState:UIControlStateNormal];
-    [self.identityDiscButton setImage:self.identityDiscImage
-                             forState:UIControlStateNormal];
-    self.identityDiscButton.backgroundColor = nil;
-    self.identityDiscButton.imageView.layer.cornerRadius =
-        self.identityDiscImage.size.width / 2;
-    self.identityDiscButton.imageView.layer.masksToBounds = YES;
-    self.identityDiscButton.layer.cornerRadius =
-        self.identityDiscImage.size.width;
+  UIButton* button = self.identityDiscButton;
+  if (!IsSignInButtonNoAvatarEnabled() || self.isSignedIn) {
+    UIImage* image = self.identityDiscImage;
+    button.configuration = nil;
+    [button setImage:image forState:UIControlStateNormal];
+    button.backgroundColor = nil;
+    button.imageView.layer.cornerRadius = image.size.width / 2;
+    button.imageView.layer.masksToBounds = YES;
+    button.layer.cornerRadius = image.size.width;
   } else {
+    button.layer.cornerRadius = 0;
+    [button setImage:nil forState:UIControlStateNormal];
+    UIButtonConfiguration* config =
+        [UIButtonConfiguration plainButtonConfiguration];
+    config.background.backgroundColor =
+        [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+            colorWithAlphaComponent:0.8];
     NSDictionary* attributes = @{
-      NSFontAttributeName :
-          CreateDynamicFont(UIFontTextStyleCaption1, UIFontWeightSemibold),
+      NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleCaption1,
+                                                      UIFontWeightSemibold,
+                                                      kIdentityDiscMaxFontSize),
       NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     };
-
-    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+    config.attributedTitle = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
             attributes:attributes];
-    CGSize textSize = [attributedTitle size];
-    CGFloat buttonWidth = textSize.width + (kPillHorizontalPadding * 2);
-    CGFloat buttonHeight = textSize.height + (kPillVerticalPadding * 2);
-
-    [self.identityDiscButton setAttributedTitle:attributedTitle
-                                       forState:UIControlStateNormal];
-    self.identityDiscButton.backgroundColor =
-        [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
-    [self.identityDiscButton setImage:nil forState:UIControlStateNormal];
-    self.identityDiscButton.layer.cornerRadius = buttonHeight * 0.5;
-
-    [self.identityDiscButton.widthAnchor constraintEqualToConstant:buttonWidth]
-        .active = YES;
-    [self.identityDiscButton.heightAnchor
-        constraintEqualToConstant:buttonHeight]
-        .active = YES;
+    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    config.contentInsets = NSDirectionalEdgeInsetsMake(
+        kPillVerticalPadding, kPillHorizontalPadding, kPillVerticalPadding,
+        kPillHorizontalPadding);
+    button.configuration = config;
   }
 
-  self.identityDiscButton.accessibilityLabel =
-      self.identityDiscAccessibilityLabel;
-  self.identityDiscButton.clipsToBounds = YES;
+  button.accessibilityLabel = self.identityDiscAccessibilityLabel;
+  button.clipsToBounds = YES;
 }
 
 - (void)openLens {
@@ -752,6 +748,18 @@ const CGFloat kMarginMultiplier = 2;
       std::max(1 - [self.headerView searchFieldProgressForOffset:offset], 0.0);
 }
 
+- (void)maybeShowSwitchAccountsIPH {
+  if (!_isSignedIn) {
+    return;
+  }
+
+  // Note: BubblePresenter will take care to only show the bubble if the page is
+  // scrolled to the top.
+  [self.helpHandler
+      presentInProductHelpWithType:
+          InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc];
+}
+
 #pragma mark - UIIndirectScribbleInteractionDelegate
 
 - (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
@@ -863,6 +871,8 @@ const CGFloat kMarginMultiplier = 2;
   self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
       kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
 
+  self.isSignedIn = NO;
+
   self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
 
@@ -882,6 +892,8 @@ const CGFloat kMarginMultiplier = 2;
   DCHECK(email);
 
   self.identityDiscImage = image;
+
+  self.isSignedIn = YES;
 
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
@@ -929,11 +941,25 @@ const CGFloat kMarginMultiplier = 2;
 
 #pragma mark - Private
 
+- (void)setIsSignedIn:(BOOL)isSignedIn {
+  BOOL wasSignedIn = _isSignedIn;
+  _isSignedIn = isSignedIn;
+  if (wasSignedIn != _isSignedIn) {
+    [self updateIdentityDiscConstraints];
+    // `self.identityDiscButton` should not be updated if the view has not been
+    // created or initialized yet.
+    if (self.identityDiscButton && self.identityDiscImage &&
+        self.identityDiscAccessibilityLabel) {
+      [self updateIdentityDiscState];
+    }
+  }
+}
+
 // Activates or deactivates the identity disc constraints based on sign-in
 // state.
 - (void)updateIdentityDiscConstraints {
   BOOL showSignInButtonWithoutAvatar =
-      IsSignInButtonNoAvatarEnabled() && !_isSignedIn;
+      IsSignInButtonNoAvatarEnabled() && !self.isSignedIn;
 
   CGFloat dimension = ntp_home::kIdentityAvatarDimension +
                       kMarginMultiplier * ntp_home::kHeaderIconMargin;
@@ -948,8 +974,10 @@ const CGFloat kMarginMultiplier = 2;
   }
 
   _identityDiscWidthConstraint.constant = dimension;
-  _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
+  _identityDiscHeightConstraint.constant = dimension;
   _identityDiscWidthConstraint.active = !showSignInButtonWithoutAvatar;
+  _identityDiscHeightConstraint.active = !showSignInButtonWithoutAvatar;
+  _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
 }
 
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name

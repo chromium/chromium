@@ -233,3 +233,71 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionRepromptCount) {
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id2), 0);
 }
+
+TEST_F(SigninPrefsTest, SyncPromoIdentityPillShownCount) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 2);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 2);
+}
+
+TEST_F(SigninPrefsTest, SyncPromoIdentityPillUsedCount) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 2);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 2);
+}
+
+TEST_F(SigninPrefsTest, BookmarkBatchUploadPromo) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  auto initial_bookmark_batch_upload_info1 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_1);
+  EXPECT_EQ(initial_bookmark_batch_upload_info1.first, 0);
+  EXPECT_FALSE(initial_bookmark_batch_upload_info1.second.has_value());
+
+  base::Time reference = base::Time::Now();
+  signin_prefs().IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+      gaia_id_1);
+  auto bookmark_batch_upload_info =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_1);
+  EXPECT_EQ(bookmark_batch_upload_info.first, 1);
+  ASSERT_TRUE(bookmark_batch_upload_info.second.has_value());
+  EXPECT_GT(bookmark_batch_upload_info.second.value(), reference);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  auto initial_bookmark_batch_upload_info2 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_2);
+  EXPECT_EQ(initial_bookmark_batch_upload_info2.first, 0);
+  EXPECT_FALSE(initial_bookmark_batch_upload_info2.second.has_value());
+
+  base::Time reference2 = base::Time::Now();
+  signin_prefs().IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+      gaia_id_2);
+  auto bookmark_batch_upload_info2 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_2);
+  EXPECT_EQ(bookmark_batch_upload_info2.first, 1);
+  ASSERT_TRUE(bookmark_batch_upload_info2.second.has_value());
+  EXPECT_GT(bookmark_batch_upload_info2.second.value(), reference2);
+}

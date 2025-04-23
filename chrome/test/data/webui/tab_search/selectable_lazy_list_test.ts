@@ -46,7 +46,7 @@ class TestApp extends CrLitElement {
     </selectable-lazy-list>`;
   }
 
-  private maxHeight_: number = SAMPLE_AVAIL_HEIGHT;
+  private accessor maxHeight_: number = SAMPLE_AVAIL_HEIGHT;
 }
 
 customElements.define('test-app', TestApp);

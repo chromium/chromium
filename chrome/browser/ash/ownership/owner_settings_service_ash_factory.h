@@ -23,7 +23,6 @@ namespace ash {
 
 class DeviceSettingsService;
 class OwnerSettingsServiceAsh;
-class StubCrosSettingsProvider;
 
 class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
  public:
@@ -39,9 +38,6 @@ class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
 
   static void SetDeviceSettingsServiceForTesting(
       DeviceSettingsService* device_settings_service);
-
-  static void SetStubCrosSettingsProviderForTesting(
-      StubCrosSettingsProvider* stub_cros_settings_provider);
 
   scoped_refptr<ownership::OwnerKeyUtil> GetOwnerKeyUtil();
 

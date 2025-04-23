@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_ENTRY_POINT_H_
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_ENTRY_POINT_H_
 
-#include <string_view>
+#include "ui/base/page_transition_types.h"
 
 namespace collaboration {
 
@@ -44,9 +44,35 @@ enum class CollaborationServiceShareOrManageEntryPoint {
   kTabGroupItemMenuShare = 8,
   kAndroidShareSheetExtra = 9,
   kDialogToolbarButton = 10,
-  kMaxValue = kDialogToolbarButton,
+  kiOSTabGroupIndicatorShare = 11,
+  kiOSTabGroupIndicatorManage = 12,
+  kiOSTabGridShare = 13,
+  kiOSTabGridManage = 14,
+  kiOSTabStripShare = 15,
+  kiOSTabStripManage = 16,
+  kiOSTabGroupViewShare = 17,
+  kiOSTabGroupViewManage = 18,
+  kDesktopGroupEditorShareOrManageButton = 19,
+  kDesktopNotification = 20,
+  kDesktopRecentActivity = 21,
+  kMaxValue = kDesktopRecentActivity,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
+
+// Types of entry point to start a leave or delete collaboration flow.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(CollaborationServiceLeaveOrDeleteEntryPoint)
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.collaboration)
+enum class CollaborationServiceLeaveOrDeleteEntryPoint {
+  kUnknown = 0,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceLeaveOrDeleteEntryPoint)
+
+CollaborationServiceJoinEntryPoint GetEntryPointFromPageTransition(
+    ui::PageTransition transition_type);
 
 }  // namespace collaboration
 

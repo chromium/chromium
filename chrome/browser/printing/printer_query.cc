@@ -46,13 +46,13 @@ namespace printing {
 
 namespace {
 
-PrintingContext::ProcessBehavior GetPrintingContextProcessBehavior() {
+PrintingContext::OutOfProcessBehavior GetPrintingContextOutOfProcessBehavior() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (ShouldPrintJobOop()) {
-    return PrintingContext::ProcessBehavior::kOopEnabledSkipSystemCalls;
+    return PrintingContext::OutOfProcessBehavior::kEnabledSkipSystemCalls;
   }
 #endif
-  return PrintingContext::ProcessBehavior::kOopDisabled;
+  return PrintingContext::OutOfProcessBehavior::kDisabled;
 }
 
 class PrintingContextDelegate : public PrintingContext::Delegate {
@@ -121,7 +121,7 @@ PrinterQuery::PrinterQuery(content::GlobalRenderFrameHostId rfh_id)
           std::make_unique<PrintingContextDelegate>(rfh_id)),
       printing_context_(
           PrintingContext::Create(printing_context_delegate_.get(),
-                                  GetPrintingContextProcessBehavior())),
+                                  GetPrintingContextOutOfProcessBehavior())),
       rfh_id_(rfh_id),
       cookie_(PrintSettings::NewCookie()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -298,7 +298,7 @@ void PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
   // so, it doesn't need a RFH, so just default initialize the RFH id.
   PrintingContextDelegate delegate((content::GlobalRenderFrameHostId()));
   std::unique_ptr<PrintingContext> print_context = PrintingContext::Create(
-      &delegate, PrintingContext::ProcessBehavior::kOopDisabled);
+      &delegate, PrintingContext::OutOfProcessBehavior::kDisabled);
   print_context->SetPrintSettings(print_settings);
   print_context->SetDefaultPrintableAreaForVirtualPrinters();
   print_settings = print_context->settings();

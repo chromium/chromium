@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
@@ -162,7 +163,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     };
     page_action_container_ =
         AddChildView(std::make_unique<page_actions::PageActionContainerView>(
-            page_action_items, page_action_params));
+            page_action_items, page_actions::PageActionPropertiesProvider(),
+            page_action_params));
     views::SetHitTestComponent(page_action_container_,
                                static_cast<int>(HTCLIENT));
   }

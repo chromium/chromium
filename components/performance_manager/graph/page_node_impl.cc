@@ -11,17 +11,50 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
+#include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
+
+namespace {
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
+// Creates a collapsible global track to hold all PageNode tracing tracks.
+const perfetto::NamedTrack CreatePageGroupTrack() {
+  perfetto::NamedTrack track("PageNodes", 0, perfetto::Track::Global(0));
+  if (perfetto::Tracing::IsInitialized()) {
+    // Because the track doesn't get any events of its own it must manually
+    // emit the track descriptor. SetTrackDescriptor may crash in unit tests
+    // where tracing isn't initialized.
+    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+  }
+  return track;
+}
+
+// Creates a tracing track for the PageNode identified by `token`.
+const perfetto::NamedTrack CreatePageNodeTrack(
+    const base::UnguessableToken& token) {
+  static const perfetto::NamedTrack page_group_track = CreatePageGroupTrack();
+  return perfetto::NamedTrack("PageNode", base::UnguessableTokenHash()(token),
+                              page_group_track);
+}
+
+}  // namespace
 
 PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                            const std::string& browser_context_id,
@@ -29,6 +62,7 @@ PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                            PagePropertyFlags initial_properties,
                            base::TimeTicks visibility_change_time)
     : web_contents_(std::move(web_contents)),
+      tracing_track_(CreatePageNodeTrack(page_token_.value())),
       visibility_change_time_(visibility_change_time),
       main_frame_url_(visible_url),
       browser_context_id_(browser_context_id),
@@ -53,6 +87,8 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(nullptr, embedder_frame_node_);
+  // Close any open trace events.
+  EmitLoadingTraceEvent(LoadingState::kLoadingNotStarted);
 }
 
 const std::string& PageNodeImpl::GetBrowserContextID() const {
@@ -237,6 +273,12 @@ void PageNodeImpl::AddFrame(base::PassKey<FrameNodeImpl>,
   ++frame_node_count_;
   if (frame_node->parent_frame_node() == nullptr) {
     main_frame_nodes_.insert(frame_node);
+    auto* rfh = frame_node->GetRenderFrameHostProxy().Get();
+    if (rfh) {
+      TRACE_EVENT_INSTANT(
+          "loading", "MainFrameAdded", tracing_track_,
+          perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameHost, *rfh);
+    }
   }
 }
 
@@ -251,11 +293,18 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
   if (frame_node->parent_frame_node() == nullptr) {
     size_t removed = main_frame_nodes_.erase(frame_node);
     DCHECK_EQ(1u, removed);
+    auto* rfh = frame_node->GetRenderFrameHostProxy().Get();
+    if (rfh) {
+      TRACE_EVENT_INSTANT(
+          "loading", "MainFrameRemoved", tracing_track_,
+          perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameHost, *rfh);
+    }
   }
 }
 
 void PageNodeImpl::SetLoadingState(LoadingState loading_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EmitLoadingTraceEvent(loading_state);
   loading_state_.SetAndMaybeNotify(this, loading_state);
 }
 
@@ -338,6 +387,7 @@ void PageNodeImpl::SetMainFrameRestoredState(
     blink::mojom::PermissionStatus notification_permission_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(main_frame_url_.value().is_empty());
+  EmitMainFrameUrlChangedEvent(url);
   main_frame_url_.SetAndMaybeNotify(this, url);
   notification_permission_status_.SetAndMaybeNotify(
       this, notification_permission_status);
@@ -359,6 +409,9 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
   navigation_committed_time_ = navigation_committed_time;
   navigation_id_ = navigation_id;
   contents_mime_type_ = contents_mime_type;
+  if (url != main_frame_url_.value()) {
+    EmitMainFrameUrlChangedEvent(url, navigation_id);
+  }
   main_frame_url_.SetAndMaybeNotify(this, url);
   notification_permission_status_.SetAndMaybeNotify(
       this, notification_permission_status);
@@ -570,6 +623,34 @@ void PageNodeImpl::SetHasFreezingOriginTrialOptOut(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_freezing_origin_trial_opt_out_.SetAndMaybeNotify(
       this, has_freezing_origin_trial_opt_out);
+}
+
+void PageNodeImpl::EmitMainFrameUrlChangedEvent(
+    const GURL& url,
+    std::optional<int64_t> navigation_id) const {
+  TRACE_EVENT_INSTANT("loading", "MainFrameUrlChanged", tracing_track_,
+                      [&](perfetto::EventContext& ctx) {
+                        perfetto::protos::pbzero::PageLoad* page_load =
+                            ctx.event<ChromeTrackEvent>()->set_page_load();
+                        page_load->set_url(url.possibly_invalid_spec());
+                        if (navigation_id.has_value()) {
+                          page_load->set_navigation_id(navigation_id.value());
+                        }
+                      });
+}
+
+void PageNodeImpl::EmitLoadingTraceEvent(LoadingState loading_state) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool was_loading =
+      loading_state_.value() != LoadingState::kLoadingNotStarted &&
+      loading_state_.value() != LoadingState::kLoadedIdle;
+  bool is_loading = loading_state != LoadingState::kLoadingNotStarted &&
+                    loading_state != LoadingState::kLoadedIdle;
+  if (is_loading && !was_loading) {
+    TRACE_EVENT_BEGIN("loading", "PageNode Loading", tracing_track_);
+  } else if (was_loading && !is_loading) {
+    TRACE_EVENT_END("loading", tracing_track_);
+  }
 }
 
 }  // namespace performance_manager

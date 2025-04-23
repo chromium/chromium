@@ -143,7 +143,7 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   void Shutdown() override;
 
   // extensions::UpdateObserver overrides:
-  void OnAppUpdateAvailable(const Extension* extension) override;
+  void OnAppUpdateAvailable(const Extension& extension) override;
   void OnChromeUpdateAvailable() override;
 
   // ProcessManagerObserver implementation:

@@ -12,7 +12,6 @@
 #include "base/win/registry.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/installer.h"
-#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -145,16 +144,6 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
 Installer::Result MakeInstallerResult(
     std::optional<InstallerOutcome> installer_outcome,
     int exit_code);
-
-// Create a pipe intended for piping installer output to the parent process.
-HRESULT CreateInstallerOutputPipe(ScopedKernelHANDLE& read_handle,
-                                  ScopedKernelHANDLE& write_handle);
-
-// Read all buffered installer output from a pipe read handle and appends it to
-// the provided output string returning immediately if no data is available.
-// Returns true if the read succeeded; otherwise, false.
-bool ReadAndAppendInstallerOutput(const ScopedKernelHANDLE& read_handle,
-                                  std::string& output);
 
 }  // namespace updater
 

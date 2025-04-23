@@ -952,7 +952,7 @@ TEST_P(SupervisedUserExtensionTest, UnistallingRevokesParentApproval) {
 
   // Uninstall the extension.
   std::u16string error;
-  service()->UninstallExtension(
+  registrar()->UninstallExtension(
       extension_id, UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_FALSE(profile()
                    ->GetPrefs()

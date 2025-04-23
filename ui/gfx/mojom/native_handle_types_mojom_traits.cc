@@ -233,7 +233,7 @@ bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
   switch (data.tag()) {
     case Tag::kSharedMemoryHandle:
       handle->type = gfx::SHARED_MEMORY_BUFFER;
-      return data.ReadSharedMemoryHandle(&handle->region());
+      return data.ReadSharedMemoryHandle(&handle->region_);
 #if BUILDFLAG(IS_APPLE)
     case Tag::kMachPort:
       handle->type = gfx::IO_SURFACE_BUFFER;
@@ -259,7 +259,7 @@ bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
 #if BUILDFLAG(IS_WIN)
     case Tag::kDxgiHandle:
       handle->type = gfx::DXGI_SHARED_HANDLE;
-      return data.ReadDxgiHandle(&handle->dxgi_handle());
+      return data.ReadDxgiHandle(&handle->dxgi_handle_);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_ANDROID)
     case Tag::kAndroidHardwareBufferHandle:

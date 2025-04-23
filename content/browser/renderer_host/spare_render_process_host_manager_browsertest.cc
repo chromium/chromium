@@ -145,6 +145,17 @@ MATCHER(RenderProcessHostIsReady, "") {
   return arg->IsReady();
 }
 
+// The test verifies that HasSpareRenderer() correctly returns
+// whether there is an available spare renderer.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest, HasSpareRenderer) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  EXPECT_FALSE(spare_manager.HasSpareRenderer());
+  spare_manager.WarmupSpare(browser_context());
+  EXPECT_TRUE(spare_manager.HasSpareRenderer());
+  spare_manager.CleanupSparesForTesting();
+  EXPECT_FALSE(spare_manager.HasSpareRenderer());
+}
+
 // This test verifies the creation of a deferred spare renderer. It checks two
 // conditions:
 //  1. A spare renderer is created successfully under standard conditions.
@@ -904,6 +915,47 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       "ForCOOP",
       true, 1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+class AndroidSpareRendererProcessHostManagerTest
+    : public SpareRenderProcessHostManagerTest {
+ public:
+  AndroidSpareRendererProcessHostManagerTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAndroidWarmUpSpareRendererWithTimeout,
+        {
+            {features::kAndroidSpareRendererKillWhenBackgrounded.name, "true"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
+                       KillSpareRendererWhenAppBackgrounded) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  // Notify a foreground state to start the test as foreground.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::ApplicationState::
+          APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  spare_manager.WarmupSpare(browser_context);
+  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* rph = spare_manager.GetSpares().back();
+
+  // Send backgrounded event
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::ApplicationState::
+          APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  RenderProcessHostWatcher process_watcher(
+      rph, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  process_watcher.Wait();
+  EXPECT_TRUE(spare_manager.GetSpares().empty());
+}
+#endif
 
 class ExtraSpareRenderProcessHostManagerTest
     : public SpareRenderProcessHostManagerTest {

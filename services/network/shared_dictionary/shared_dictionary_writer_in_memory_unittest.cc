@@ -48,7 +48,7 @@ TEST(SharedDictionaryWriterInMemory, SimpleWrite) {
                 EXPECT_EQ(GetHash(kTestData), hash);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData.c_str(), kTestData.size());
+  writer->Append(base::as_byte_span(kTestData));
   writer->Finish();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -70,8 +70,8 @@ TEST(SharedDictionaryWriterInMemory, MultipleWrite) {
                 EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData1.c_str(), kTestData1.size());
-  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Append(base::as_byte_span(kTestData1));
+  writer->Append(base::as_byte_span(kTestData2));
   writer->Finish();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -104,7 +104,7 @@ TEST(SharedDictionaryWriterInMemory, AbortedAfterWrite) {
                           result);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData.c_str(), kTestData.size());
+  writer->Append(base::as_byte_span(kTestData));
   writer.reset();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -142,13 +142,13 @@ TEST(SharedDictionaryWriterInMemory, ErrorSizeExceedsLimit) {
             result);
         finish_callback_called = true;
       }));
-  writer->Append(kTestData1.c_str(), kTestData1.size());
+  writer->Append(base::as_byte_span(kTestData1));
   EXPECT_FALSE(finish_callback_called);
-  writer->Append("x", 1);
+  writer->Append(std::to_array<uint8_t>({'x'}));
   EXPECT_TRUE(finish_callback_called);
 
   // Test that calling Append() and Finish() doesn't cause unexpected crash.
-  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Append(base::as_byte_span(kTestData2));
   writer->Finish();
 }
 

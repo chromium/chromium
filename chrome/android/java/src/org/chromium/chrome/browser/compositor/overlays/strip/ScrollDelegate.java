@@ -129,9 +129,7 @@ public class ScrollDelegate {
         }
 
         for (int i = 0; i < stripViews.length; i++) {
-            if (stripViews[i] instanceof StripLayoutTab tab) {
-                totalViewWidth += tab.getTrailingMargin();
-            }
+            totalViewWidth += stripViews[i].getTrailingMargin();
         }
 
         // 3. Correct fencepost error in totalViewWidth;

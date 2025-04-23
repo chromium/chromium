@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -82,7 +83,10 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
       ->RequestPermissionFromCurrentDocument(
           render_frame_host,
           content::PermissionRequestDescription(
-              blink::PermissionType::VIDEO_CAPTURE, request_data.user_gesture),
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::VIDEO_CAPTURE),
+              request_data.user_gesture),
           base::BindOnce(&CallbackWrapper, std::move(callback)));
 }
 

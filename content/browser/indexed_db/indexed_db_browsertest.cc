@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -68,7 +63,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -77,7 +71,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using storage::DatabaseUtil;
 using storage::QuotaManager;
 using storage::mojom::FailClass;
 using storage::mojom::FailMethod;
@@ -186,7 +179,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetIndexedDBControl()
-        .BindTestInterface(std::move(receiver));
+        .BindTestInterfaceForTesting(std::move(receiver));
   }
 
   void SetQuota(int per_host_quota_kilobytes) {
@@ -259,17 +252,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
       count++;
     }
     return count;
-  }
-
-  // Synchronously writes to the IndexedDB database at the given storage_key.
-  void WriteToIndexedDB(const storage::BucketLocator& bucket_locator,
-                        std::string key,
-                        std::string value) {
-    auto control_test = GetControlTest();
-    base::RunLoop loop;
-    control_test->WriteToIndexedDBForTesting(
-        bucket_locator, std::move(key), std::move(value), loop.QuitClosure());
-    loop.Run();
   }
 
   storage::QuotaErrorOr<storage::BucketInfo> GetOrCreateBucket(
@@ -513,72 +495,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, SchedulingPriority) {
     control_test->GetSchedulingPriorityForTesting(update_priority);
     return false;
   }));
-}
-
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
-  const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
-
-  // Create the database.
-  SimpleTest(database_open_url);
-  // -10, little endian.
-  std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-
-  // Find the bucket that was created.
-  ASSERT_OK_AND_ASSIGN(
-      const auto bucket_info,
-      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(database_open_url)))));
-  const auto bucket_locator = bucket_info.ToBucketLocator();
-
-  auto control_test = GetControlTest();
-  base::RunLoop loop;
-  std::string key;
-  control_test->GetDatabaseKeysForTesting(
-      base::BindLambdaForTesting([&](const std::string& schema_version_key,
-                                     const std::string& data_version_key) {
-        key = schema_version_key;
-        loop.Quit();
-      }));
-  loop.Run();
-
-  WriteToIndexedDB(bucket_locator, key, value);
-  // Crash the tab to ensure no old navigations are picked up.
-  CrashTab(shell()->web_contents());
-  SimpleTest(GetTestUrl("indexeddb", "open_bad_db.html"));
-}
-
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
-  const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
-
-  // Create the database.
-  SimpleTest(database_open_url);
-  // -10, little endian.
-  std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-
-  // Find the bucket that was created.
-  ASSERT_OK_AND_ASSIGN(
-      const auto bucket_info,
-      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(database_open_url)))));
-  const auto bucket_locator = bucket_info.ToBucketLocator();
-
-  auto control_test = GetControlTest();
-  base::RunLoop loop;
-  std::string key;
-  control_test->GetDatabaseKeysForTesting(
-      base::BindLambdaForTesting([&](const std::string& schema_version_key,
-                                     const std::string& data_version_key) {
-        key = data_version_key;
-        loop.Quit();
-      }));
-  loop.Run();
-
-  WriteToIndexedDB(bucket_locator, key, value);
-  // Crash the tab to ensure no old navigations are picked up.
-  CrashTab(shell()->web_contents());
-  SimpleTest(GetTestUrl("indexeddb", "open_bad_db.html"));
 }
 
 class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
@@ -1041,7 +957,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     // The less ideal temporary solution is to only run these tests on
     // non-Windows.
     base::RunLoop loop;
-    control_test->CompactBackingStoreForTesting(
+    control_test->FlushBackingStoreForTesting(
         bucket_locator, base::BindLambdaForTesting([&]() {
           control_test->GetFilePathForTesting(
               bucket_locator,

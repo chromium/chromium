@@ -46,8 +46,6 @@ class ITunesUrlsHandlerTabHelper
   void HandleITunesUrl(const GURL& url);
 
   __weak id<WebContentCommands> web_content_handler_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_

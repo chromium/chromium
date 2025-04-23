@@ -11,8 +11,6 @@ source_set("actions") {
     "omnibox_popup_actions_row_content_view.h",
     "omnibox_popup_actions_row_content_view.mm",
     "omnibox_popup_actions_row_delegate.h",
-    "suggest_action.h",
-    "suggest_action.mm",
   ]
   deps = [
     "//components/omnibox/browser",
@@ -21,7 +19,6 @@ source_set("actions") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_icon",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row",

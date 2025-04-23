@@ -45,6 +45,8 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   bool CanGoBack() const;
   /// Go back to the previous navigation.
   void GoBack();
+  /// Clears the current navigation stacks.
+  void ClearNavigations();
 
   // web::WebStateObserver methods.
   void DidStartNavigation(web::WebState* web_state,

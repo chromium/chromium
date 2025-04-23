@@ -13,13 +13,16 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -47,9 +50,11 @@ DevToolsWindowTesting::~DevToolsWindowTesting() {
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Needed for Chrome_DevToolsADBThread to shut down gracefully in tests.
   ChromeDevToolsManagerDelegate::GetInstance()
       ->ResetAndroidDeviceManagerForTesting();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -157,6 +162,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       is_docked);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
     Browser* browser,
@@ -164,6 +170,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
   return OpenDevToolsWindowSync(
       browser->tab_strip_model()->GetActiveWebContents(), is_docked);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
@@ -191,7 +198,11 @@ void DevToolsWindowTesting::CloseDevToolsWindow(
   if (window->is_docked_) {
     window->CloseWindow();
   } else {
+#if BUILDFLAG(IS_ANDROID)
+    window->main_web_contents_->Close();
+#else
     window->browser_->window()->Close();
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

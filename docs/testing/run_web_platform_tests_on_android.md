@@ -98,11 +98,12 @@ are followed.
 
 ### Running Tests in CQ/CI
 
-The builder `android-chrome-13-x64-wpt-android-specific` and
-`android-webview-13-x64-wpt-android-specific` builders run tests specified by
-the [`android.filter`](/third_party/blink/web_tests/TestLists/android.filter)
-file, which tests Android-specific behaviors. Developers can add additional
-tests to the list when necessary. A resource request might be
+To test Android-specific behaviors, the
+`android-chrome-13-x64-wpt-android-specific` and
+`android-webview-13-x64-wpt-android-specific` builders run the tests in
+[`android.filter`](/third_party/blink/web_tests/TestLists/android.filter) and
+[`webview.filter`](/third_party/blink/web_tests/TestLists/webview.filter) respectively. Developers can add additional
+tests to the lists when necessary. A resource request might be
 needed depending on the case. See [below](#Run-more-tests-with-Chrome-Android-or-WebView)
 for details.
 
@@ -112,7 +113,7 @@ between suites that target different `//content` embedders:
 Suite Name | Browser Under Test | Harness | Tests Run
 --- | --- | --- | ---
 `android_chrome_wpt_tests` | `chrome_android` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
-`android_webview_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
+`android_webview_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`webview.filter`](#running-tests-in-cqci).
 
 ## Test expectations and Baselines
 
@@ -148,8 +149,7 @@ is deployed.
 
 Please make sure there is no unexpected failures on the related steps before using
 the bot estimator, as the bot will retry those tests and that will increase the
-total test time. For tests not intended to run with a target, e.g. WebView, you
-can skip the tests by adding "Skip" test expectations to [MobileTestExpectations](/third_party/blink/web_tests/MobileTestExpectations).
+total test time.
 
 ## Known Issues
 

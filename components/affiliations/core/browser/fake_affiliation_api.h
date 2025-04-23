@@ -31,9 +31,9 @@ class FakeAffiliationAPI {
   // Returns whether or not there is at least one pending fetch.
   bool HasPendingRequest();
 
-  // Returns the list of facet URIs being looked up by the next pending fetch;
-  // or an empty list if there are no pending fetches.
-  std::vector<FacetURI> GetNextRequestedFacets();
+  // Returns AffiliationFetcher for the next pending fetch;
+  // or nullptr if there are no pending fetches.
+  FakeAffiliationFetcher* GetNextAffiliationFetcher();
 
   // Calculates the response to, and completes the next pending fetch, if any,
   // with success.
@@ -41,9 +41,6 @@ class FakeAffiliationAPI {
 
   // Completes the next pending fetch, if any, with failure.
   void FailNextRequest();
-
-  // Ignores the next pending request, if any, without completing it.
-  void IgnoreNextRequest();
 
   // Sets the fetcher factory through which the affiliation fetchers are
   // accessed.

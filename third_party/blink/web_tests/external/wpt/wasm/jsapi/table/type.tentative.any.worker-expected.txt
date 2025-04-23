@@ -8,3 +8,4 @@ This is a testharness.js-based test.
 [FAIL] Non-zero maximum
   WebAssembly.Table(): Descriptor property 'element' must be a WebAssembly reference type
 Harness: the test ran to completion.
+

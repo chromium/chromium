@@ -5,10 +5,8 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 
 #include "base/path_service.h"
-#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -20,8 +18,6 @@ namespace ash {
 namespace {
 
 DeviceSettingsService* g_device_settings_service_for_testing_ = nullptr;
-
-StubCrosSettingsProvider* g_stub_cros_settings_provider_for_testing_ = nullptr;
 
 DeviceSettingsService* GetDeviceSettingsService() {
   if (g_device_settings_service_for_testing_)
@@ -60,12 +56,6 @@ void OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(
   g_device_settings_service_for_testing_ = device_settings_service;
 }
 
-// static
-void OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting(
-    StubCrosSettingsProvider* stub_cros_settings_provider) {
-  g_stub_cros_settings_provider_for_testing_ = stub_cros_settings_provider;
-}
-
 scoped_refptr<ownership::OwnerKeyUtil>
 OwnerSettingsServiceAshFactory::GetOwnerKeyUtil() {
   if (owner_key_util_.get())
@@ -92,18 +82,9 @@ bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
 std::unique_ptr<KeyedService>
 OwnerSettingsServiceAshFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
-  // user as the owner, and write settings directly to the stubbed provider.
-  // This is done using the FakeOwnerSettingsService.
-  if (g_stub_cros_settings_provider_for_testing_ != nullptr) {
-    return std::make_unique<FakeOwnerSettingsService>(
-        g_stub_cros_settings_provider_for_testing_, profile,
-        GetInstance()->GetOwnerKeyUtil());
-  }
-
   return std::make_unique<OwnerSettingsServiceAsh>(
-      GetDeviceSettingsService(), profile, GetInstance()->GetOwnerKeyUtil());
+      GetDeviceSettingsService(), Profile::FromBrowserContext(context),
+      GetInstance()->GetOwnerKeyUtil());
 }
 
 }  // namespace ash

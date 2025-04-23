@@ -25,7 +25,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -33,7 +32,6 @@
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -42,7 +40,6 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
@@ -868,20 +865,14 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLocalStateEnterprisePasswordHashes)) {
-    ASSERT_EQ(1u, profile->GetPrefs()
-                      ->GetList(password_manager::prefs::kPasswordHashDataList)
-                      .size());
-    ASSERT_EQ(1u,
-              g_browser_process->local_state()
-                  ->GetList(password_manager::prefs::kLocalPasswordHashDataList)
-                  .size());
-  } else {
-    ASSERT_EQ(2u, profile->GetPrefs()
-                      ->GetList(password_manager::prefs::kPasswordHashDataList)
-                      .size());
-  }
+
+  ASSERT_EQ(1u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
+  ASSERT_EQ(1u,
+            g_browser_process->local_state()
+                ->GetList(password_manager::prefs::kLocalPasswordHashDataList)
+                .size());
 
   // Turn off trigger
   profile->GetPrefs()->SetInteger(

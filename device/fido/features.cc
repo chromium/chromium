@@ -7,6 +7,15 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
+namespace {
+
+// Default maximum number of immediate requests allowed per origin (eTLD+1).
+constexpr int kDefaultMaxRequests = 10;
+// Default time window (in seconds) for the immediate request rate limit.
+constexpr int kDefaultWindowSeconds = 60;
+
+}  // namespace
+
 namespace device {
 
 // Flags defined in this file should have a comment above them that either
@@ -124,7 +133,12 @@ BASE_FEATURE(kDigitalCredentialsHybridLinking,
 // Default enabled in M136. Remove in or after M139.
 BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Disabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAttestation,
@@ -160,5 +174,22 @@ BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
 BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
              "WebAuthenticationSignalApiHidePasskeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables rate limiting of immediate requests based on eTLD+1.
+BASE_FEATURE(kWebAuthnImmediateRequestRateLimit,
+             "WebAuthnImmediateRequestRateLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kWebAuthnImmediateRequestRateLimitMaxRequests,
+                   &kWebAuthnImmediateRequestRateLimit,
+                   "max_requests",
+                   kDefaultMaxRequests);
+
+BASE_FEATURE_PARAM(int,
+                   kWebAuthnImmediateRequestRateLimitWindowSeconds,
+                   &kWebAuthnImmediateRequestRateLimit,
+                   "window_seconds",
+                   kDefaultWindowSeconds);
 
 }  // namespace device

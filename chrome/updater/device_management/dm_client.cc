@@ -123,7 +123,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
 
   using Callback =
       base::OnceCallback<void(DMClient::RequestResult result,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
 
   DMFetch(std::unique_ptr<DMClient::Configurator> config,
           scoped_refptr<device_management_storage::DMStorage> storage);
@@ -158,7 +158,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
   // Callback functions for the URLFetcher.
   void OnRequestStarted(int response_code, int64_t content_length);
   void OnRequestProgress(int64_t current);
-  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+  void OnRequestComplete(std::optional<std::string> response_body,
                          int net_error,
                          const std::string& header_etag,
                          const std::string& header_x_cup_server_proof,
@@ -248,7 +248,7 @@ void DMFetch::PostRequest(const std::string& request_type,
     VLOG(1) << "DM request not sent: " << result;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), result,
-                                  std::make_unique<std::string>()));
+                                  std::optional<std::string>()));
     return;
   }
   network_fetcher_->PostRequest(
@@ -271,7 +271,7 @@ void DMFetch::OnRequestProgress(int64_t current) {
   VLOG(3) << "DM request progress made, current bytes: " << current;
 }
 
-void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
+void DMFetch::OnRequestComplete(std::optional<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& header_x_cup_server_proof,
@@ -307,7 +307,7 @@ void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
 void OnDMRegisterRequestComplete(scoped_refptr<DMFetch> dm_fetch,
                                  DMClient::RegisterCallback callback,
                                  DMClient::RequestResult result,
-                                 std::unique_ptr<std::string> response_body) {
+                                 std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   if (result == DMClient::RequestResult::kSuccess) {
     const std::string dm_token =
@@ -332,7 +332,7 @@ void OnDMPolicyFetchRequestComplete(
     DMClient::PolicyFetchCallback callback,
     std::unique_ptr<device_management_storage::CachedPolicyInfo> cached_info,
     DMClient::RequestResult result,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   std::vector<PolicyValidationResult> validation_results;
   scoped_refptr<device_management_storage::DMStorage> storage =
@@ -364,7 +364,7 @@ void OnDMPolicyValidationReportRequestComplete(
     scoped_refptr<DMFetch> dm_fetch,
     DMClient::PolicyValidationReportCallback callback,
     DMClient::RequestResult result,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -37,7 +38,7 @@ class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();
 
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension.get());
     return extension;
   }
 
@@ -45,6 +46,10 @@ class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
     extension_service()->DisableExtension(
         extension_id,
         extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+  }
+
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(browser()->profile());
   }
 
   extensions::ExtensionService* extension_service() {

@@ -100,7 +100,7 @@ cr-page-selector > .mwb-list-item:focus {
   background-color: transparent;
 }
 
-.mwb-list-item[compact] {
+.mwb-list-item[size=compact] {
   height: 32px;
   padding: 0 12px 0 var(--mwb-list-item-horizontal-margin);
 }

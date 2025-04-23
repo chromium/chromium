@@ -497,7 +497,7 @@ bool VotesUploader::UploadPasswordVote(
     }
     if (autofill_type != autofill::ACCOUNT_CREATION_PASSWORD) {
       if (generation_popup_was_shown_) {
-        AddGeneratedVote(&form_structure);
+        AddGeneratedVote(form_structure, options);
       }
       if (username_change_state_ == UsernameChangeState::kChangedToKnownValue) {
         SetFieldType(form_to_upload.username_element_renderer_id,
@@ -540,7 +540,7 @@ bool VotesUploader::UploadPasswordVote(
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogFormStructure(Logger::STRING_PASSWORD_FORM_VOTE, form_structure,
-                            password_attributes);
+                            options, password_attributes);
   }
 
   return SendUploadRequest(form_structure, options, password_attributes,
@@ -596,7 +596,7 @@ void VotesUploader::UploadFirstLoginVotes(
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogFormStructure(Logger::STRING_FIRSTUSE_FORM_VOTE, form_structure,
-                            std::nullopt);
+                            options, std::nullopt);
   }
 
   SendUploadRequest(form_structure, options,
@@ -717,8 +717,9 @@ void VotesUploader::AddForgotPasswordVoteData(
   forgot_password_vote_data_[vote_data.renderer_id] = vote_data;
 }
 
-void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
-  DCHECK(form_structure);
+void VotesUploader::AddGeneratedVote(
+    FormStructure& form_structure,
+    autofill::EncodeUploadRequestOptions& options) {
   DCHECK(generation_popup_was_shown_);
 
   if (!generation_element_) {
@@ -746,12 +747,13 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
     type = AutofillUploadContents::Field::IGNORED_GENERATION_POPUP;
   }
 
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    AutofillField* field = form_structure->field(i);
-    if (field->renderer_id() == generation_element_) {
-      field->set_generation_type(type);
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    AutofillField& field = *form_structure.field(i);
+    if (field.renderer_id() == generation_element_) {
+      options.fields[field.global_id()].generation_type = type;
       if (has_generated_password_) {
-        field->set_generated_password_changed(generated_password_changed_);
+        options.fields[field.global_id()].generated_password_changed =
+            generated_password_changed_;
         UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.GeneratedPasswordWasEdited",
                               generated_password_changed_);
       }
@@ -1097,7 +1099,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
     if (password_manager_util::IsLoggingActive(client_)) {
       BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
       logger.LogFormStructure(Logger::STRING_USERNAME_FIRST_FLOW_VOTE,
-                              *form_to_upload, std::nullopt);
+                              *form_to_upload, options, std::nullopt);
     }
 
     if (SendUploadRequest(*form_to_upload, options,

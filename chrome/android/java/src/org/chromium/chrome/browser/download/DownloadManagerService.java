@@ -706,7 +706,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
             intent.putExtra(
                     CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
-                    ChromeFeatureList.sCCTEphemeralMediaViewerExperiment.isEnabled());
+                    ChromeFeatureList.sCctEphemeralMediaViewerExperiment.isEnabled());
             return intent;
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);

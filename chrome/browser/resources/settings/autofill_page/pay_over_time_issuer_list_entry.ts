@@ -34,7 +34,7 @@ export class SettingsPayOverTimeIssuerListEntryElement extends PolymerElement {
     };
   }
 
-  payOverTimeIssuer: chrome.autofillPrivate.PayOverTimeIssuerEntry;
+  declare payOverTimeIssuer: chrome.autofillPrivate.PayOverTimeIssuerEntry;
 
   /**
    * When the provided `imageSrc` points toward an issuer's default logo art,
@@ -43,10 +43,17 @@ export class SettingsPayOverTimeIssuerListEntryElement extends PolymerElement {
    * `imageSrc`.
    */
   private getIssuerImage_(imageSrc: string): string {
-    if (imageSrc.startsWith('chrome://theme')) {
-      return `${imageSrc} 1x, ${imageSrc}@2x 2x`;
-    }
-    return imageSrc;
+    return imageSrc.startsWith('chrome://theme') ?
+        this.getScaledSrcSet_(imageSrc) :
+        imageSrc;
+  }
+
+  /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
   }
 
   private onRemoteEditClick_() {

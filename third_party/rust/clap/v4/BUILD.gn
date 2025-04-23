@@ -151,7 +151,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "4.5.35"
+  cargo_pkg_version = "4.5.36"
   cargo_pkg_name = "clap"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   library_configs -= [ "//build/config/coverage:default_coverage" ]

@@ -31,7 +31,7 @@ class InfobarOverlayRequestConfig
   InfobarOverlayType overlay_type() const { return overlay_type_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(InfobarOverlayRequestConfig);
+  friend class OverlayUserData<InfobarOverlayRequestConfig>;
   explicit InfobarOverlayRequestConfig(InfoBarIOS* infobar,
                                        InfobarOverlayType overlay_type,
                                        bool is_high_priority);

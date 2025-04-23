@@ -15,10 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegate.DomainVisitsData;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
@@ -27,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** The {@View} binder class for the quick delete MVC. */
+@NullMarked
 class QuickDeleteViewBinder {
     public static void bind(PropertyModel model, View quickDeleteView, PropertyKey propertyKey) {
         if (QuickDeleteProperties.DOMAIN_VISITED_DATA == propertyKey) {
@@ -61,7 +62,7 @@ class QuickDeleteViewBinder {
         }
     }
 
-    private static void disableTabsRow(@NonNull Context context, @NonNull View quickDeleteView) {
+    private static void disableTabsRow(Context context, View quickDeleteView) {
         ViewGroup tabsRow = quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
         TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
         TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
@@ -80,15 +81,14 @@ class QuickDeleteViewBinder {
         icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    private static void updateSearchHistoryVisibility(
-            @NonNull View quickDeleteView, boolean isVisible) {
+    private static void updateSearchHistoryVisibility(View quickDeleteView, boolean isVisible) {
         TextViewWithClickableSpans searchHistoryTextView =
                 quickDeleteView.findViewById(R.id.search_history_disambiguation);
         searchHistoryTextView.setVisibility(isVisible ? VISIBLE : GONE);
     }
 
     private static void updateBrowsingHistorySubtitleVisibility(
-            @NonNull View quickDeleteView, boolean isVisible) {
+            View quickDeleteView, boolean isVisible) {
         ViewGroup quickDeleteHistoryRow =
                 quickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView subtitle =
@@ -97,7 +97,7 @@ class QuickDeleteViewBinder {
     }
 
     private static void updateBrowsingHistoryRowIfPending(
-            @NonNull Context context, @NonNull View quickDeleteView, boolean isPending) {
+            Context context, View quickDeleteView, boolean isPending) {
         if (!isPending) return;
         ViewGroup quickDeleteHistoryRow =
                 quickDeleteView.findViewById(R.id.quick_delete_history_row);
@@ -109,9 +109,9 @@ class QuickDeleteViewBinder {
     }
 
     private static void updateBrowsingHistoryRow(
-            @NonNull Context context,
-            @NonNull View quickDeleteView,
-            @NonNull DomainVisitsData domainVisitsData,
+            Context context,
+            View quickDeleteView,
+            DomainVisitsData domainVisitsData,
             @TimePeriod int timePeriod) {
         String browsingHistoryRowTitleTemplate = null;
         int domainsCount = domainVisitsData.mDomainsCount;
@@ -157,10 +157,7 @@ class QuickDeleteViewBinder {
     }
 
     private static void updateClosedTabsCount(
-            @NonNull Context context,
-            @NonNull View quickDeleteView,
-            int tabsCount,
-            @TimePeriod int timePeriod) {
+            Context context, View quickDeleteView, int tabsCount, @TimePeriod int timePeriod) {
         ViewGroup tabsRow = quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
         TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
 

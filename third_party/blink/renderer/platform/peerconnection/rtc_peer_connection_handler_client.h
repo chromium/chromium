@@ -49,7 +49,7 @@ class RTCRtpTransceiverPlatform;
 class RTCSessionDescriptionPlatform;
 
 struct PLATFORM_EXPORT WebRTCSctpTransportSnapshot {
-  rtc::scoped_refptr<webrtc::SctpTransportInterface> transport;
+  webrtc::scoped_refptr<webrtc::SctpTransportInterface> transport;
   webrtc::SctpTransportInformation sctp_transport_state =
       webrtc::SctpTransportInformation(webrtc::SctpTransportState::kNew);
   webrtc::DtlsTransportInformation dtls_transport_state =
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient
       bool is_remote_description_or_rollback) = 0;
   virtual void DidModifySctpTransport(WebRTCSctpTransportSnapshot) = 0;
   virtual void DidAddRemoteDataChannel(
-      rtc::scoped_refptr<webrtc::DataChannelInterface>) = 0;
+      webrtc::scoped_refptr<webrtc::DataChannelInterface>) = 0;
   virtual void DidNoteInterestingUsage(int usage_pattern) = 0;
   virtual void UnregisterPeerConnectionHandler() = 0;
   virtual void ClosePeerConnection();

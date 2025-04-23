@@ -9,8 +9,9 @@
 namespace tree_fixing {
 
 AXTreeFixingOptimizationGuideService::AXTreeFixingOptimizationGuideService(
+    HeadingsIdentificationDelegate& delegate,
     Profile* profile)
-    : profile_(profile) {
+    : headings_identification_delegate_(delegate), profile_(profile) {
   CHECK(profile_);
   Initialize();
 }

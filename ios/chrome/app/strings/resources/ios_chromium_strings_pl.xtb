@@ -156,7 +156,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="4790638144988730920">Nadal korzystaj z danych Chromium na koncie Google.</translation>
 <translation id="4828317641996116749">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="4856138222358683580">Działania w Chromium</translation>
-<translation id="4863800915967098115">Gdy się zalogujesz, Twoje konto zostanie dodane do Chromium i będzie przeznaczone do przeglądania stron związanych z pracą.</translation>
 <translation id="4904452304169763785">Alerty dotyczące wszelkich problemów z prywatnością i bezpieczeństwem, które wykrywa Chromium.</translation>
 <translation id="4962295957157529683">Dokończ czynności rozpoczęte w innym otwartym oknie Chromium.</translation>
 <translation id="4985291216379576555">Tryb offline. Chromium nie może sprawdzić dostępności aktualizacji.</translation>
@@ -211,6 +210,7 @@ Pamiętaj, że:
 <translation id="593808800391107017">Otrzymuj alerty o problemach związanych z prywatnością i bezpieczeństwem, które automatycznie wykrywa Chromium.</translation>
 <translation id="5951593919357934226">Wykorzystaj maksymalnie potencjał Chromium.</translation>
 <translation id="5985254578475526217">Aby otrzymywać powiadomienia z Chromium, włącz je w ustawieniach iOS.</translation>
+<translation id="6041226255405329731">Zaloguj się w Chromium, aby udostępniać grupy kart i do nich dołączać oraz wspólnie pracować nad pomysłami</translation>
 <translation id="6104024151682120539">Otwórz w Chromium</translation>
 <translation id="61109258320235597">Aby móc zapisywać dane z Chromium na koncie Google i ich używać, wpisz hasło wielowyrazowe.</translation>
 <translation id="6132149203299792222">Zaloguj się na konto Google, aby synchronizować swoje hasła, zakładki i inne dane.</translation>

@@ -17,6 +17,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
 
@@ -105,6 +106,15 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
          gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnGraphite);
 
   backends_.erase(handle);
+}
+
+void DawnCachingInterfaceFactory::PurgeMemory(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  for (auto& [key, backend] : backends_) {
+    CHECK(std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key) ||
+          std::holds_alternative<GpuDiskCacheDawnWebGPUHandle>(key));
+    backend->PurgeMemory(memory_pressure_level);
+  }
 }
 
 bool DawnCachingInterfaceFactory::OnMemoryDump(
@@ -244,6 +254,17 @@ void DawnCachingBackend::StoreData(const std::string& key,
 
   auto [it, inserted] = entries_.insert(std::move(entry));
   DCHECK(inserted);
+}
+
+void DawnCachingBackend::PurgeMemory(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  base::AutoLock lock(mutex_);
+  size_t new_limit = gpu::UpdateShaderCacheSizeOnMemoryPressure(
+      max_size_, memory_pressure_level);
+  // Evict the least recently used entries until we reach the `new_limit`
+  while (current_size_ > new_limit) {
+    EvictEntry(lru_.head()->value());
+  }
 }
 
 void DawnCachingBackend::OnMemoryDump(

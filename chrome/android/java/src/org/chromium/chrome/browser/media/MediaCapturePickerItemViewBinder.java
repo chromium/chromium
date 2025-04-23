@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,8 +23,7 @@ public class MediaCapturePickerItemViewBinder {
         } else if (MediaCapturePickerItemProperties.SELECTED == propertyKey) {
             if (model.get(MediaCapturePickerItemProperties.SELECTED)) {
                 view.setBackgroundColor(
-                        ChromeColors.getSurfaceColor(
-                                view.getContext(), R.dimen.default_elevation_4));
+                        SemanticColorUtils.getColorSurfaceContainerHigh(view.getContext()));
             } else {
                 view.setBackgroundResource(android.R.color.transparent);
             }

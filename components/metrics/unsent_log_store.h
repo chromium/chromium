@@ -198,12 +198,11 @@ class UnsentLogStore : public LogStore {
     return logs_event_manager_;
   }
 
-  // Computes the HMAC for |log_data| using the |signing_key| and returns a bool
-  // indicating whether the signing succeeded. The returned HMAC is written to
-  // the |signature|.
-  static bool ComputeHMACForLog(const std::string& log_data,
-                                const std::string& signing_key,
-                                std::string* signature);
+  // Computes the HMAC for |log_data| using the |signing_key| and returns the
+  // resulting HMAC. Too-short keys (including empty keys) are padded; too-long
+  // keys are hashed to the right length.
+  static std::string ComputeHMACForLog(std::string_view log_data,
+                                       std::string_view key);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnsentLogStoreTest, UnsentLogMetadataMetrics);

@@ -12,7 +12,6 @@ py_library(
     srcs = [
         "metadata_writer.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -29,7 +28,6 @@ py_library(
     srcs = [
         "metadata_info.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":writer_utils",
@@ -43,7 +41,6 @@ py_library(
     srcs = [
         "writer_utils.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         "//tensorflow_lite_support/metadata:metadata_schema_py",
@@ -56,7 +53,6 @@ py_library(
     srcs = [
         "image_classifier.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -71,7 +67,6 @@ py_library(
     srcs = [
         "object_detector.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -89,7 +84,6 @@ py_library(
     srcs = [
         "image_segmenter.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -104,7 +98,6 @@ py_library(
     srcs = [
         "nl_classifier.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -118,7 +111,6 @@ py_library(
     srcs = [
         "audio_classifier.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",
@@ -132,7 +124,6 @@ py_library(
     srcs = [
         "bert_nl_classifier.py",
     ],
-    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":metadata_info",

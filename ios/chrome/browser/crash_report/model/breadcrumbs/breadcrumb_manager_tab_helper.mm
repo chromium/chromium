@@ -183,5 +183,3 @@ void BreadcrumbManagerTabHelper::OnScrollEvent(const std::string& event) {
     LogEvent(event);
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelper)

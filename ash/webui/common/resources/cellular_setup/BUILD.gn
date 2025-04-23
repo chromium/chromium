@@ -37,7 +37,7 @@ build_webui("build") {
     "psim_flow_ui.ts",
     "setup_loading_page.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "cellular_setup_delegate.ts",
     "cellular_types.ts",
     "esim_manager_listener_mixin.ts",

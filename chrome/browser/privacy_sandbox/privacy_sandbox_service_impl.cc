@@ -22,9 +22,12 @@
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -43,8 +46,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
@@ -66,6 +67,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -78,12 +80,18 @@ namespace {
 
 using PromptAction = ::PrivacySandboxService::PromptAction;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
+using NoticeSurfaceType = ::privacy_sandbox::SurfaceType;
 using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
 using FakeNoticePromptSuppressionReason =
     ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
 using PrimaryAccountUserGroups =
     ::PrivacySandboxService::PrimaryAccountUserGroups;
-using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
+using ::privacy_sandbox::NoticeId;
+using ::privacy_sandbox::PrivacySandboxNoticeServiceInterface;
+using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
+
+using enum PrivacySandboxService::PromptAction;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
@@ -245,91 +253,65 @@ void RecordProtectedAudienceJoiningTopFrameDisplayedHistogram(bool value) {
       "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", value);
 }
 
-constexpr std::string_view GetTopicsConsentNoticeName(
-    SurfaceType surface_type) {
+// TODO(crbug.com/409386887) consolidate the surfaceType enums
+NoticeSurfaceType ToNoticeSurfaceType(SurfaceType surface_type) {
   switch (surface_type) {
-    case SurfaceType::kDesktop: {
-      return privacy_sandbox::kTopicsConsentModal;
-    }
-    case SurfaceType::kBrApp: {
-      return privacy_sandbox::kTopicsConsentModalClankBrApp;
-    }
-    case SurfaceType::kAGACCT: {
-      return privacy_sandbox::kTopicsConsentModalClankCCT;
-    }
+    case SurfaceType::kDesktop:
+      return NoticeSurfaceType::kDesktopNewTab;
+    case SurfaceType::kBrApp:
+      return NoticeSurfaceType::kClankBrApp;
+    case SurfaceType::kAGACCT:
+      return NoticeSurfaceType::kClankCustomTab;
   }
 }
 
-constexpr std::string_view GetProtectedAudienceMeasurementNoticeName(
-    SurfaceType surface_type) {
-  switch (surface_type) {
-    case SurfaceType::kDesktop: {
-      return privacy_sandbox::kProtectedAudienceMeasurementNoticeModal;
-    }
-    case SurfaceType::kBrApp: {
-      return privacy_sandbox::
-          kProtectedAudienceMeasurementNoticeModalClankBrApp;
-    }
-    case SurfaceType::kAGACCT: {
-      return privacy_sandbox::kProtectedAudienceMeasurementNoticeModalClankCCT;
-    }
-  }
-}
-
-constexpr std::string_view GetThreeAdsAPIsNoticeName(SurfaceType surface_type) {
-  switch (surface_type) {
-    case SurfaceType::kDesktop: {
-      return privacy_sandbox::kThreeAdsAPIsNoticeModal;
-    }
-    case SurfaceType::kBrApp: {
-      return privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp;
-    }
-    case SurfaceType::kAGACCT: {
-      return privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT;
-    }
-  }
-}
-
-constexpr std::string_view GetMeasurementNoticeName(SurfaceType surface_type) {
-  switch (surface_type) {
-    case SurfaceType::kDesktop: {
-      return privacy_sandbox::kMeasurementNoticeModal;
-    }
-    case SurfaceType::kBrApp: {
-      return privacy_sandbox::kMeasurementNoticeModalClankBrApp;
-    }
-    case SurfaceType::kAGACCT: {
-      return privacy_sandbox::kMeasurementNoticeModalClankCCT;
-    }
-  }
-}
-
-std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
-  std::string_view empty_view;
+PrivacySandboxNoticeEvent ActionToEvent(PromptAction action) {
   switch (action) {
-    case PromptAction::kConsentShown:
-    case PromptAction::kConsentAccepted:
-    case PromptAction::kConsentDeclined:
-    case PromptAction::kConsentMoreInfoOpened:
-      return GetTopicsConsentNoticeName(surface_type);
-    case PromptAction::kRestrictedNoticeShown:
-    case PromptAction::kRestrictedNoticeAcknowledge:
-    case PromptAction::kRestrictedNoticeOpenSettings:
-      return GetMeasurementNoticeName(surface_type);
-    case PromptAction::kNoticeShown:
-    case PromptAction::kNoticeAcknowledge:
-    case PromptAction::kNoticeOpenSettings:
-    case PromptAction::kNoticeMoreInfoOpened:
-      return privacy_sandbox::IsConsentRequired()
-                 ? GetProtectedAudienceMeasurementNoticeName(surface_type)
-                 : GetThreeAdsAPIsNoticeName(surface_type);
-    // Ads API UX Enhancements
-    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
-    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened:
-      return GetProtectedAudienceMeasurementNoticeName(surface_type);
+    case kNoticeShown:
+    case kConsentShown:
+    case kRestrictedNoticeShown:
+      return PrivacySandboxNoticeEvent::kShown;
+    case kConsentAccepted:
+      return PrivacySandboxNoticeEvent::kOptIn;
+    case kConsentDeclined:
+      return PrivacySandboxNoticeEvent::kOptOut;
+    case kRestrictedNoticeAcknowledge:
+    case kNoticeAcknowledge:
+      return PrivacySandboxNoticeEvent::kAck;
+    case kRestrictedNoticeOpenSettings:
+    case kNoticeOpenSettings:
+      return PrivacySandboxNoticeEvent::kSettings;
     default:
-      return empty_view;
+      NOTREACHED();
   }
+}
+
+std::optional<std::pair<PrivacySandboxNotice, PrivacySandboxNoticeEvent>>
+ExtractNoticeInfo(PromptAction action) {
+  std::optional<PrivacySandboxNotice> notice = std::nullopt;
+  switch (action) {
+    case kConsentShown:
+    case kConsentAccepted:
+    case kConsentDeclined:
+      notice = PrivacySandboxNotice::kTopicsConsentNotice;
+      break;
+    case kRestrictedNoticeShown:
+    case kRestrictedNoticeAcknowledge:
+    case kRestrictedNoticeOpenSettings:
+      notice = PrivacySandboxNotice::kMeasurementNotice;
+      break;
+    case kNoticeShown:
+    case kNoticeAcknowledge:
+    case kNoticeOpenSettings:
+      notice = privacy_sandbox::IsConsentRequired()
+                   ? PrivacySandboxNotice::kProtectedAudienceMeasurementNotice
+                   : PrivacySandboxNotice::kThreeAdsApisNotice;
+      break;
+    default:
+      return std::nullopt;
+  }
+  CHECK(notice.has_value());
+  return std::pair{*notice, ActionToEvent(action)};
 }
 
 void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
@@ -516,9 +498,12 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
-  // Create notice storage
-  notice_storage_ =
-      std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+  static constexpr int kFakeTaxonomyVersion = 1;
+  fake_current_topics_ = {{browsing_topics::Topic(1), kFakeTaxonomyVersion},
+                          {browsing_topics::Topic(2), kFakeTaxonomyVersion}};
+  fake_blocked_topics_ = {{browsing_topics::Topic(3), kFakeTaxonomyVersion},
+                          {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
+
 // Create queue manager
 #if !BUILDFLAG(IS_ANDROID)
   queue_manager_ =
@@ -529,7 +514,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
-  CHECK(notice_storage_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(queue_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -934,100 +918,40 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
   }
 }
 
-void UpdateNoticeStorage(
-    PromptAction action,
-    privacy_sandbox::PrivacySandboxNoticeStorage* notice_storage,
-    PrefService* pref_service,
-    SurfaceType surface_type) {
+void MaybeUpdateNoticeService(Profile* profile,
+                              PromptAction action,
+                              SurfaceType surface_type) {
   if (!base::FeatureList::IsEnabled(
           privacy_sandbox::kPsDualWritePrefsToNoticeStorage)) {
     return;
   }
 
-  // Set correct notice names, ready to receive and log PromptActions. Update
-  // GetNoticeName when adding more entries to the switch statement.
-  std::string_view notice_name = GetNoticeName(action, surface_type);
-
-  switch (action) {
-    // Topics notices (only shown for EEA, consent option)
-    case PromptAction::kConsentShown: {
-      notice_storage->SetNoticeShown(pref_service, notice_name,
-                                     base::Time::Now());
-      break;
-    }
-    case PromptAction::kConsentAccepted: {
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kOptIn,
-                                           base::Time::Now());
-      break;
-    }
-    case PromptAction::kConsentDeclined: {
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kOptOut,
-                                           base::Time::Now());
-      break;
-    }
-    case PromptAction::kConsentMoreInfoOpened: {
-      break;
-    }
-    // EEA and ROW notices
-    case PromptAction::kNoticeShown: {
-      notice_storage->SetNoticeShown(pref_service, notice_name,
-                                     base::Time::Now());
-      break;
-    }
-    case PromptAction::kNoticeAcknowledge: {
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kAck,
-                                           base::Time::Now());
-      break;
-    }
-    case PromptAction::kNoticeOpenSettings: {
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kSettings,
-                                           base::Time::Now());
-      break;
-    }
-    case PromptAction::kNoticeMoreInfoOpened:
-      // Ads API UX Enhancements
-    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
-    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened: {
-      break;
-    }
-    // Restricted notices
-    case PromptAction::kRestrictedNoticeShown: {
-      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
-      notice_storage->SetNoticeShown(pref_service, notice_name,
-                                     base::Time::Now());
-      break;
-    }
-    case PromptAction::kRestrictedNoticeAcknowledge: {
-      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kAck,
-                                           base::Time::Now());
-      break;
-    }
-    case PromptAction::kRestrictedNoticeOpenSettings: {
-      DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
-      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           PrivacySandboxNoticeEvent::kSettings,
-                                           base::Time::Now());
-      break;
-    }
-    default:
-      break;
+  PrivacySandboxNoticeServiceInterface* notice_service =
+      PrivacySandboxNoticeServiceFactory::GetForProfile(profile);
+  if (!notice_service) {
+    return;
   }
+
+  auto notice_info = ExtractNoticeInfo(action);
+  if (!notice_info.has_value()) {
+    return;
+  }
+
+  // TODO(crbug.com/409386887) Remove dependency on the NoticeService here.
+  // This requires having the views on clank and webui go through the
+  // NoticeService directly.
+  auto [notice, event] = notice_info.value();
+
+  notice_service->EventOccurred({notice, ToNoticeSurfaceType(surface_type)},
+                                event);
 }
 
 void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
                                                      SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
-  UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get(),
-                      surface_type);
+  MaybeUpdateNoticeService(profile_, action, surface_type);
 
-  if (PromptAction::kNoticeAcknowledge == action ||
-      PromptAction::kNoticeOpenSettings == action) {
+  if (kNoticeAcknowledge == action || kNoticeOpenSettings == action) {
     if (privacy_sandbox::IsConsentRequired()) {
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
                                 true);
@@ -1053,22 +977,22 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
     MaybeCloseOpenPrompts();
 #endif  // !BUILDFLAG(IS_ANDROID)
     // Consent-related PromptActions refer to to Topics Notice Consent
-  } else if (PromptAction::kConsentAccepted == action) {
+  } else if (kConsentAccepted == action) {
     DCHECK(privacy_sandbox::IsConsentRequired());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, true);
-  } else if (PromptAction::kConsentDeclined == action) {
+  } else if (kConsentDeclined == action) {
     DCHECK(privacy_sandbox::IsConsentRequired());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
-  } else if (PromptAction::kRestrictedNoticeAcknowledge == action ||
-             PromptAction::kRestrictedNoticeOpenSettings == action) {
+  } else if (kRestrictedNoticeAcknowledge == action ||
+             kRestrictedNoticeOpenSettings == action) {
     CHECK(privacy_sandbox::IsRestrictedNoticeRequired());
     pref_service_->SetBoolean(
         prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, true);
@@ -1081,18 +1005,21 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void PrivacySandboxServiceImpl::PromptOpenedForBrowser(Browser* browser,
-                                                       views::Widget* widget) {
+void PrivacySandboxServiceImpl::PromptOpenedForBrowser(
+    BrowserWindowInterface* browser,
+    views::Widget* widget) {
   DCHECK(!browsers_to_open_prompts_.count(browser));
   browsers_to_open_prompts_[browser] = widget;
 }
 
-void PrivacySandboxServiceImpl::PromptClosedForBrowser(Browser* browser) {
+void PrivacySandboxServiceImpl::PromptClosedForBrowser(
+    BrowserWindowInterface* browser) {
   DCHECK(browsers_to_open_prompts_.count(browser));
   browsers_to_open_prompts_.erase(browser);
 }
 
-bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(Browser* browser) {
+bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(
+    BrowserWindowInterface* browser) {
   return browsers_to_open_prompts_.count(browser);
 }
 
@@ -1511,14 +1438,6 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   RecordFirstPartySetsStateHistogram(rws_status);
 
   RecordPrivacySandbox4StartupMetrics();
-
-  // TODO(crbug.com/333406690): After migration, move this portion to the
-  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
-  // and emit ALL startup histograms instead of just Topics consent related
-  // histograms.
-  for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
-    notice_storage_->RecordHistogramsOnStartup(pref_service_, notice_name);
-  }
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(
@@ -1801,61 +1720,61 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
 std::string GetPromptActionHistogramSuffix(PromptAction action) {
   switch (action) {
     // Notice Actions
-    case PromptAction::kNoticeShown:
+    case kNoticeShown:
       return "Notice.Shown";
-    case PromptAction::kNoticeOpenSettings:
+    case kNoticeOpenSettings:
       return "Notice.OpenedSettings";
-    case PromptAction::kNoticeAcknowledge:
+    case kNoticeAcknowledge:
       return "Notice.Acknowledged";
-    case PromptAction::kNoticeDismiss:
+    case kNoticeDismiss:
       return "Notice.Dismissed";
-    case PromptAction::kNoticeClosedNoInteraction:
+    case kNoticeClosedNoInteraction:
       return "Notice.ClosedNoInteraction";
-    case PromptAction::kNoticeLearnMore:
+    case kNoticeLearnMore:
       return "Notice.LearnMore";
-    case PromptAction::kNoticeMoreInfoOpened:
+    case kNoticeMoreInfoOpened:
       return "Notice.LearnMoreExpanded";
-    case PromptAction::kNoticeMoreInfoClosed:
+    case kNoticeMoreInfoClosed:
       return "Notice.LearnMoreClosed";
-    case PromptAction::kNoticeMoreButtonClicked:
+    case kNoticeMoreButtonClicked:
       return "Notice.MoreButtonClicked";
-    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
+    case kNoticeSiteSuggestedAdsMoreInfoOpened:
       return "Notice.SiteSuggestedAdsLearnMoreExpanded";
-    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoClosed:
+    case kNoticeSiteSuggestedAdsMoreInfoClosed:
       return "Notice.SiteSuggestedAdsLearnMoreClosed";
-    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened:
+    case kNoticeAdsMeasurementMoreInfoOpened:
       return "Notice.AdsMeasurementLearnMoreExpanded";
-    case PromptAction::kNoticeAdsMeasurementMoreInfoClosed:
+    case kNoticeAdsMeasurementMoreInfoClosed:
       return "Notice.AdsMeasurementLearnMoreClosed";
 
     // Consent Actions
-    case PromptAction::kConsentShown:
+    case kConsentShown:
       return "Consent.Shown";
-    case PromptAction::kConsentAccepted:
+    case kConsentAccepted:
       return "Consent.Accepted";
-    case PromptAction::kConsentDeclined:
+    case kConsentDeclined:
       return "Consent.Declined";
-    case PromptAction::kConsentMoreInfoOpened:
+    case kConsentMoreInfoOpened:
       return "Consent.LearnMoreExpanded";
-    case PromptAction::kConsentMoreInfoClosed:
+    case kConsentMoreInfoClosed:
       return "Consent.LearnMoreClosed";
-    case PromptAction::kConsentClosedNoDecision:
+    case kConsentClosedNoDecision:
       return "Consent.ClosedNoInteraction";
-    case PromptAction::kConsentMoreButtonClicked:
+    case kConsentMoreButtonClicked:
       return "Consent.MoreButtonClicked";
-    case PromptAction::kPrivacyPolicyLinkClicked:
+    case kPrivacyPolicyLinkClicked:
       return "Consent.PrivacyPolicyLinkClicked";
 
     // Restricted Notice Actions
-    case PromptAction::kRestrictedNoticeAcknowledge:
+    case kRestrictedNoticeAcknowledge:
       return "RestrictedNotice.Acknowledged";
-    case PromptAction::kRestrictedNoticeOpenSettings:
+    case kRestrictedNoticeOpenSettings:
       return "RestrictedNotice.OpenedSettings";
-    case PromptAction::kRestrictedNoticeShown:
+    case kRestrictedNoticeShown:
       return "RestrictedNotice.Shown";
-    case PromptAction::kRestrictedNoticeClosedNoInteraction:
+    case kRestrictedNoticeClosedNoInteraction:
       return "RestrictedNotice.ClosedNoInteraction";
-    case PromptAction::kRestrictedNoticeMoreButtonClicked:
+    case kRestrictedNoticeMoreButtonClicked:
       return "RestrictedNotice.MoreButtonClicked";
   }
 }

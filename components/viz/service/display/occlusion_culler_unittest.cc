@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace viz {
 namespace {
@@ -196,8 +197,8 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
   bd_render_pass->SetAll(
       AggregatedRenderPassId{2}, bd_filter_rect, gfx::Rect(), gfx::Transform(),
       cc::FilterOperations(), backdrop_filters,
-      gfx::RRectF(gfx::RectF(bd_filter_rect), 0), gfx::ContentColorUsage::kSRGB,
-      false, false, false, false);
+      SkPath::Rect(gfx::RectToSkRect(bd_filter_rect)),
+      gfx::ContentColorUsage::kSRGB, false, false, false, false);
 
   // Add quads to root render pass
   for (int i = 0; i < 3; i++) {
@@ -3961,10 +3962,6 @@ TEST_F(OcclusionCullerTest, DontSplitOverlayTextureQuad) {
 }
 
 TEST_F(OcclusionCullerTest, SplitNonOverlayTextureQuad) {
-  if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
-    GTEST_SKIP();
-  }
-
   RendererSettings::OcclusionCullerSettings settings;
   settings.minimum_fragments_reduced = 0;
 

@@ -32,7 +32,7 @@ class OnTaskPodController {
   virtual void ReloadCurrentPage() = 0;
 
   // Attempts to show or hide the tab strip.
-  virtual void ToggleTabStripVisibility(bool show) = 0;
+  virtual void ToggleTabStripVisibility(bool show, bool user_action) = 0;
 
   // Notifies pod widget when the app is paused or unpaused.
   virtual void OnPauseModeChanged(bool paused) = 0;

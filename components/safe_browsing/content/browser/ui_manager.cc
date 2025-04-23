@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
@@ -297,48 +298,6 @@ void SafeBrowsingUIManager::CreateAllowlistForTesting(
   EnsureAllowlistCreated(web_contents);
 }
 
-// static
-std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
-    safe_browsing::SBThreatType threat_type) {
-  using enum SBThreatType;
-
-  switch (threat_type) {
-    case SB_THREAT_TYPE_URL_PHISHING:
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-      return "SOCIAL_ENGINEERING";
-    case SB_THREAT_TYPE_URL_MALWARE:
-      return "MALWARE";
-    case SB_THREAT_TYPE_URL_UNWANTED:
-      return "UNWANTED_SOFTWARE";
-    case SB_THREAT_TYPE_BILLING:
-      return "THREAT_TYPE_UNSPECIFIED";
-    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
-      return "MANAGED_POLICY_WARN";
-    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-      return "MANAGED_POLICY_BLOCK";
-    case SB_THREAT_TYPE_UNUSED:
-    case SB_THREAT_TYPE_SAFE:
-    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
-    case SB_THREAT_TYPE_EXTENSION:
-    case SB_THREAT_TYPE_API_ABUSE:
-    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case SB_THREAT_TYPE_CSD_ALLOWLIST:
-    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_AD_SAMPLE:
-    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
-    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-    case SB_THREAT_TYPE_APK_DOWNLOAD:
-    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      NOTREACHED();
-  }
-  return std::string();
-}
 void SafeBrowsingUIManager::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observer_list_.AddObserver(observer);

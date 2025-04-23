@@ -74,6 +74,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -135,7 +136,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -220,8 +220,8 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -6495,9 +6495,8 @@ AutotestPrivateRemoveComponentExtensionFunction::Run() {
           args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(browser_context())->extension_service();
-  extension_service->component_loader()->Remove(params->extension_id);
+  extensions::ComponentLoader::Get(browser_context())
+      ->Remove(params->extension_id);
 
   return RespondNow(NoArguments());
 }

@@ -1028,7 +1028,9 @@ by a child template that "extends" this file.
             tools:ignore="ExportedService">
             <intent-filter>
               <action android:name="android.support.customtabs.action.CustomTabsService" />
+              <category android:name="androidx.browser.auth.category.AuthTab"/>
               <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
+              <category android:name="androidx.browser.customtabs.category.EphemeralBrowsing"/>
               <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
               <category android:name="androidx.browser.customtabs.category.SetNetwork"/>
               <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>

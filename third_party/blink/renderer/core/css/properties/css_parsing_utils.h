@@ -354,7 +354,8 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream&,
 CSSValue* ConsumeAnimationDelay(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream&,
                                 const CSSParserContext&,
-                                double default_offset_percent);
+                                double default_offset_percent,
+                                bool allow_auto);
 
 bool ConsumeAnimationShorthand(
     const StylePropertyShorthand&,
@@ -523,7 +524,7 @@ bool ConsumeGridTemplateShorthand(bool important,
                                   const CSSValue*& template_columns,
                                   const CSSValue*& template_areas);
 
-CSSValue* ConsumeMasonrySlack(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream&,
                                      const CSSParserContext&);

@@ -4,6 +4,8 @@
 
 package org.chromium.components.data_sharing;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -102,11 +104,12 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @Override
     public GURL getDataSharingUrl(GroupData groupData) {
+        GroupToken groupToken = groupData.groupToken;
         return DataSharingServiceImplJni.get()
                 .getDataSharingUrl(
                         mNativePtr,
-                        groupData.groupToken.collaborationId,
-                        groupData.groupToken.accessToken);
+                        groupToken.collaborationId,
+                        assumeNonNull(groupToken.accessToken));
     }
 
     @Override
@@ -129,7 +132,10 @@ public class DataSharingServiceImpl implements DataSharingService {
         }
         DataSharingServiceImplJni.get()
                 .getSharedEntitiesPreview(
-                        mNativePtr, groupToken.collaborationId, groupToken.accessToken, callback);
+                        mNativePtr,
+                        groupToken.collaborationId,
+                        assumeNonNull(groupToken.accessToken),
+                        callback);
     }
 
     @Override
@@ -142,9 +148,17 @@ public class DataSharingServiceImpl implements DataSharingService {
         return mLogger;
     }
 
+    /* Sets a test preview data to return for all preview requests. */
+    public void setSharedEntitiesPreviewForTesting(String groupId) {
+        DataSharingServiceImplJni.get().setSharedEntitiesPreviewForTesting(mNativePtr, groupId);
+    }
+
     private static @Nullable SharedDataPreviewOrFailureOutcome sSharedEntitiesPreviewForTesting;
 
-    /** Sets a test preview data to return for all preview requests. */
+    /**
+     * TODO(ssid): Deprecate this method. Sets a test preview data to return for all preview
+     * requests.
+     */
     public static void setSharedEntitiesPreviewForTesting(
             SharedDataPreviewOrFailureOutcome preview) {
         sSharedEntitiesPreviewForTesting = preview;
@@ -154,7 +168,8 @@ public class DataSharingServiceImpl implements DataSharingService {
     /** Static utility to get the data sharing URL for testing. */
     public static GURL getDataSharingUrlForTesting(GroupToken groupToken) {
         return DataSharingServiceImplJni.get()
-                .getDataSharingUrlForTesting(groupToken.groupId, groupToken.accessToken);
+                .getDataSharingUrlForTesting(
+                        groupToken.groupId, assumeNonNull(groupToken.accessToken));
     }
 
     @CalledByNative
@@ -219,5 +234,8 @@ public class DataSharingServiceImpl implements DataSharingService {
         void log(long nativeDataSharingServiceAndroid, int source, String message);
 
         GURL getDataSharingUrlForTesting(String groupId, String accessToken);
+
+        void setSharedEntitiesPreviewForTesting(
+                long nativeDataSharingServiceAndroid, String groupId);
     }
 }

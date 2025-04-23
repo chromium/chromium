@@ -12,9 +12,7 @@ namespace push_notification_prefs {
 const char kSendTabLastOpenTimestamp[] = "ios.sendtab.last_opened_timestamp";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  if (IsNotificationCollisionManagementEnabled()) {
     registry->RegisterTimePref(kSendTabLastOpenTimestamp, base::Time());
-  }
 }
 
 }  // namespace push_notification_prefs

@@ -4,7 +4,6 @@
 
 #include "remoting/host/mojo_caller_security_checker.h"
 
-#include <array>
 #include <memory>
 
 #include "base/containers/fixed_flat_set.h"
@@ -14,20 +13,16 @@
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "remoting/host/base/process_util.h"
 
 #if BUILDFLAG(IS_MAC)
-#include <Security/Security.h>
+#include <array>
+#include <string_view>
 
-#include "base/apple/osstatus_logging.h"
-#include "base/apple/scoped_cftyperef.h"
-#include "base/mac/code_signature.h"
-#include "base/strings/stringprintf.h"
 #include "remoting/host/mac/constants_mac.h"
-#include "remoting/host/version.h"
+#include "remoting/host/mac/trust_util.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -50,6 +45,13 @@ constexpr auto kAllowedCallerProgramNames =
         L"remote_webauthn.exe",
         L"remote_security_key.exe",
     });
+#elif BUILDFLAG(IS_MAC)
+// Can't use constexpr here since `kBundleId` is not a constexpr.
+// remoting_me2me_host is the bundle executable, so its identifier is the bundle
+// identifier. For other binaries, the identifier is just the name of the
+// binary.
+static const auto kAllowedIdentifiers =
+    std::to_array<const std::string_view>({kBundleId, "remote_webauthn"});
 #endif
 
 }  // namespace
@@ -57,47 +59,7 @@ constexpr auto kAllowedCallerProgramNames =
 bool IsTrustedMojoEndpoint(
     const named_mojo_ipc_server::ConnectionInfo& caller) {
 #if BUILDFLAG(IS_MAC)
-
-#if defined(OFFICIAL_BUILD)
-  std::string requirement_string = base::StringPrintf(
-      // Certificate was issued by Apple
-      "anchor apple generic and "
-      // It's Google's certificate
-      "certificate leaf[subject.OU] = \"%s\" and "
-      // See:
-      // https://developer.apple.com/documentation/technotes/tn3127-inside-code-signing-requirements#Xcode-designated-requirement-for-Developer-ID-code
-      "certificate 1[field.1.2.840.113635.100.6.2.6] and "
-      "certificate leaf[field.1.2.840.113635.100.6.1.13] and "
-      // For Chrome Remote Desktop
-      "identifier \"%s\"",
-      MAC_TEAM_ID, kBundleId);
-  base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;
-  OSStatus status = SecRequirementCreateWithString(
-      base::SysUTF8ToCFStringRef(requirement_string).get(), kSecCSDefaultFlags,
-      requirement.InitializeInto());
-  if (status != errSecSuccess) {
-    OSSTATUS_LOG(ERROR, status)
-        << "Failed to create security requirement for string: "
-        << requirement_string;
-    return false;
-  }
-  status = base::mac::ProcessIsSignedAndFulfillsRequirement(caller.audit_token,
-                                                            requirement.get());
-  if (status == errSecSuccess) {
-    return true;
-  }
-  if (status == errSecCSReqFailed) {
-    OSSTATUS_LOG(ERROR, status) << "Security requirement unsatisfied";
-  } else {
-    OSSTATUS_LOG(ERROR, status)
-        << "Unknown error occurred when verifying security requirements";
-  }
-  return false;
-#else
-  // Skip codesign verification to allow for local development.
-  return true;
-#endif
-
+  return IsProcessTrusted(caller.audit_token, kAllowedIdentifiers);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   // TODO: yuweih - see if it's possible to move away from PID-based security

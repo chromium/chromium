@@ -54,6 +54,7 @@ static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 void WebIDLInProcessFuzzer::SetUpOnMainThread() {
+  InProcessFuzzer::SetUpOnMainThread();
   embedded_https_test_server().RegisterRequestHandler(
       base::BindRepeating(&HandleRequest));
   ASSERT_TRUE(embedded_https_test_server().Start());

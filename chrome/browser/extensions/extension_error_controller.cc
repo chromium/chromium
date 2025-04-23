@@ -5,17 +5,17 @@
 #include "chrome/browser/extensions/extension_error_controller.h"
 
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_error_ui_android.h"
 #else
 #include "chrome/browser/extensions/extension_error_ui_desktop.h"
-#include "extensions/browser/management_policy.h"
 #endif
 
 namespace extensions {
@@ -127,12 +127,8 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
       blocklisted_extensions_.Insert(*iter);
   }
 
-  // TODO(crbug.com/394876083): Policy management is not supported on desktop
-  // android yet. Port the following code when policy management is supported.
-#if !BUILDFLAG(IS_ANDROID)
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   ManagementPolicy* management_policy = system->management_policy();
-#endif
 
   PendingExtensionManager* pending_extension_manager =
       PendingExtensionManager::Get(browser_context_);
@@ -151,9 +147,6 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
     if (pending_extension_manager->IsIdPending(extension->id()))
       continue;
 
-    // TODO(crbug.com/394876083): Policy management is not supported on desktop
-    // android yet. Port the following code when policy management is supported.
-#if !BUILDFLAG(IS_ANDROID)
     // Extensions disabled by policy. Note: this no longer includes blocklisted
     // extensions. We use similar triggering logic for the dialog, but the
     // strings will be different.
@@ -161,7 +154,6 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
         !prefs->IsBlocklistedExtensionAcknowledged(extension->id())) {
       blocklisted_extensions_.Insert(extension);
     }
-#endif
   }
 }
 

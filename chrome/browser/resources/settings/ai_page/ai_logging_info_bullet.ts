@@ -41,7 +41,7 @@ export class SettingsAiLoggingInfoBullet extends
     };
   }
 
-  private label_: string;
+  declare private label_: string;
 
   private isLoggingDisabledByPolicy_(): boolean {
     return this.pref?.value ===

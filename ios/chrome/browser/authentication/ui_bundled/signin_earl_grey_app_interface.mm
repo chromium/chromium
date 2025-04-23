@@ -101,11 +101,11 @@
   return info.gaia.ToNSString();
 }
 
-+ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {
++ (NSString*)primaryAccountEmail {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
-          consentLevel);
+          signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(info.email);
 }
@@ -142,34 +142,23 @@
     // For convenience, add the identity, if it was not added yet.
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  authenticationService->SignIn(identity,
-                                signin_metrics::AccessPoint::kSettings);
+  chrome_test_util::SignIn(identity);
 }
 
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK(IsIdentityManaged(identity).value_or(NO));
   if (![self isIdentityAdded:identity]) {
     // For convenience, add the identity, if it was not added yet.
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
 
-  GetApplicationContext()
-      ->GetAccountProfileMapper()
-      ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
+  }
 
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  authenticationService->SignIn(identity,
-                                signin_metrics::AccessPoint::kSettings);
-}
-
-+ (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
   chrome_test_util::SignIn(identity);
 }
 
@@ -229,6 +218,10 @@
 
 + (BOOL)areSeparateProfilesForManagedAccountsEnabled {
   return AreSeparateProfilesForManagedAccountsEnabled();
+}
+
++ (BOOL)isIdentityDiscAccountMenuEnabled {
+  return IsIdentityDiscAccountMenuEnabled();
 }
 
 @end

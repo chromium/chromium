@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 // Feature flag to enable in-product help for swipe action on the Feed.
 BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 
+// Feature flag to handle feed eligibility and state in the new Discover
+// eligibility service instead of the new tab page mediator.
+BASE_DECLARE_FEATURE(kUseFeedEligibilityService);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -144,5 +148,9 @@ bool IdentityDiscAccountMenuEnabledWithSettings();
 
 // Returns the enabled variation of feature kFeedSwipeInProductHelp.
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
+
+// YES if the feed visibility is handled by the eligibility service instead of
+// the new tab page mediator.
+bool UseFeedEligibilityService();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

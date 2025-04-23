@@ -95,10 +95,12 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 
 wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
     const wgpu::Device& device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+    bool requires_dawn_signal_fence) {
   wgpu::SharedTextureMemory shared_texture_memory;
   SharedTextureMemoryD3D11Texture2DDescriptor texture2d_desc;
   texture2d_desc.texture = texture;
+  texture2d_desc.requiresEndAccessFence = requires_dawn_signal_fence;
 
   wgpu::SharedTextureMemoryDescriptor desc;
   desc.nextInChain = &texture2d_desc;

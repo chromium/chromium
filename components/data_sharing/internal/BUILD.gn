@@ -19,8 +19,11 @@ static_library("internal") {
   ]
 
   sources = [
+    "android/fake_preview_server_proxy.cc",
+    "android/fake_preview_server_proxy.h",
     "avatar_fetcher.cc",
     "avatar_fetcher.h",
+    "client_version_info.h",
     "collaboration_group_sync_bridge.cc",
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
@@ -142,6 +145,7 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("internal_java") {
     visibility = [
+      ":*",
       "//chrome/android:chrome_all_java",
       "//chrome/android/javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
       "//components:*",
@@ -165,6 +169,7 @@ if (is_android) {
       "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]

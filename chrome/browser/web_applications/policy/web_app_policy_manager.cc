@@ -99,6 +99,9 @@ bool IsForceUnregistrationPolicyEnabled() {
       web_app::kDesktopPWAsForceUnregisterOSIntegration);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr std::string_view kDisabled = "disabled";
+#endif
 }  // namespace
 
 namespace web_app {
@@ -781,7 +784,7 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
   }
   pref_change_registrar_.Add(
       ash::prefs::kClassManagementToolsAvailabilitySetting,
-      base::BindRepeating(&WebAppPolicyManager::OnDisableModePolicyChanged,
+      base::BindRepeating(&WebAppPolicyManager::OnDisableListPolicyChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   // Make sure we get the right disabled mode in case it was changed before
   // policy registration.
@@ -804,6 +807,12 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (ash::features::IsGraduationEnabled() &&
       !ash::graduation::IsEligibleForGraduation(pref_service_)) {
     disabled_system_apps_.insert(ash::SystemWebAppType::GRADUATION);
+  }
+
+  if (!ash::features::IsBocaEnabled() &&
+      pref_service_->GetString(
+          ash::prefs::kClassManagementToolsAvailabilitySetting) == kDisabled) {
+    disabled_system_apps_.insert(ash::SystemWebAppType::BOCA);
   }
 
   PrefService* const local_state = g_browser_process->local_state();

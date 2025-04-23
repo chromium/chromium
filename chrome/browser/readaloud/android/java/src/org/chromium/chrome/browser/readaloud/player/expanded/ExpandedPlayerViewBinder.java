@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -63,6 +65,13 @@ public class ExpandedPlayerViewBinder {
                                 model.get(PlayerProperties.PREVIEWING_VOICE_ID),
                                 model.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
             }
+        } else if (key == PlayerProperties.PLAYBACK_MODE) {
+            content.setPlaybackMode(
+                    PlaybackMode.fromValue(model.get(PlayerProperties.PLAYBACK_MODE)));
+        } else if (key == PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED) {
+            content.setPlaybackModeSelectionEnabled(
+                    PlaybackModeSelectionEnablementStatus.fromValue(
+                            model.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED)));
         }
     }
 }

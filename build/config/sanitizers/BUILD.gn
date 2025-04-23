@@ -86,35 +86,8 @@ assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
 if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
-  if (is_mac || (is_ios && target_environment == "catalyst")) {
-    if (is_asan) {
-      _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
-    } else {
-      assert(is_ubsan_any)
-      _clang_rt_dso_path = "darwin/libclang_rt.ubsan_osx_dynamic.dylib"
-    }
-  } else if (is_ios) {
-    if (is_asan) {
-      if (target_environment == "simulator") {
-        _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
-      } else {
-        _clang_rt_dso_path = "darwin/libclang_rt.asan_ios_dynamic.dylib"
-      }
-    } else {
-      assert(is_ubsan_any)
-      _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
-    }
-  } else if (is_win && current_cpu == "x64") {
-    if (is_asan) {
-      _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
-    } else {
-      assert(is_ubsan_any)
-      _clang_rt_dso_path = "windows/clang_rt.ubsan_dynamic-x86_64.dll"
-    }
-  }
-
   _clang_rt_dso_full_path =
-      "$clang_base_path/lib/clang/$clang_version/lib/$_clang_rt_dso_path"
+      "$clang_base_path/lib/clang/$clang_version/lib/$clang_rt_dso_path"
 
   if (!is_ios) {
     copy("copy_sanitizer_runtime") {
@@ -289,13 +262,16 @@ config("default_sanitizer_ldflags") {
     ldflags = []
     if (is_asan) {
       assert(current_cpu == "x64", "WinASan unsupported architecture")
-      libs = [ "clang_rt.asan_dynamic-x86_64.lib" ]
+      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib/windows"
+      libs = [ "$_clang_lib_dir/clang_rt.asan_dynamic-x86_64.lib" ]
       if (is_component_build) {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
+        libs += [ "$_clang_lib_dir/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
       } else {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
+        libs += [ "$_clang_lib_dir/clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
       }
     }
     if (use_libfuzzer) {

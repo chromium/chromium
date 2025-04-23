@@ -9,12 +9,19 @@
 
 ReminderNotificationClient::ReminderNotificationClient(
     ProfileManagerIOS* profile_manager)
-    : PushNotificationClient(PushNotificationClientId::kReminders) {
+    : PushNotificationClient(PushNotificationClientId::kReminders,
+                             PushNotificationClientScope::kPerProfile) {
   CHECK(profile_manager);
   profile_manager_observation_.Observe(profile_manager);
 }
 
 ReminderNotificationClient::~ReminderNotificationClient() = default;
+
+bool ReminderNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  // TODO(crbug.com/390432325): Handle reminder notification interactions.
+  return false;
+}
 
 bool ReminderNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {

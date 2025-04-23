@@ -75,7 +75,10 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
   if (should_skip_notification_warning) {
     // If the `origin` is on the high confidence allowlist or was allowlisted by
     // the user, then display the notification before checking the model.
-    std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
+    std::move(model_verdict_callback)
+        .Run(/*is_suspicious=*/false,
+             NotificationContentDetectionModel::GetSerializedMetadata(
+                 did_match_allowlist, is_allowlisted_by_user, std::nullopt));
     // The model check should happen at a sampled rate for notifications from
     // allowlisted sites for collecting metrics. This rate is defined by the
     // `kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate` feature
@@ -86,14 +89,19 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
                 .Get()) {
       return;
     }
+    // Perform inference with model on `notification_contents` for metrics.
+    // Since `model_verdict_callback` was already run above, use `DoNothing()`
+    // as the callback.
+    notification_content_detection_model_->Execute(
+        notification_data, origin, is_allowlisted_by_user, did_match_allowlist,
+        base::DoNothing());
+    return;
   }
-  // Perform inference with model on `notification_contents`. If the origin is
-  // on our allowlist or allowed by the user, use `DoNothing()` as the model
-  // verdict callback, since the notification has already been displayed.
+  // Perform inference with model on `notification_contents`, passing
+  // `model_verdict_callback` to be called when the model is finished running.
   notification_content_detection_model_->Execute(
       notification_data, origin, is_allowlisted_by_user, did_match_allowlist,
-      should_skip_notification_warning ? base::DoNothing()
-                                       : std::move(model_verdict_callback));
+      std::move(model_verdict_callback));
 }
 
 }  // namespace safe_browsing

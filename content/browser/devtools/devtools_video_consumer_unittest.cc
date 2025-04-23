@@ -70,6 +70,8 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     min_period_ = min_period;
     MockSetMinSizeChangePeriod(min_period_);
   }
+  MOCK_METHOD2(SetAnimationFpsLockIn,
+               void(bool enabled, float majority_damaged_pixel_min_ratio));
   MOCK_METHOD1(MockSetMinSizeChangePeriod, void(base::TimeDelta min_period));
   void SetResolutionConstraints(const gfx::Size& min_frame_size,
                                 const gfx::Size& max_frame_size,

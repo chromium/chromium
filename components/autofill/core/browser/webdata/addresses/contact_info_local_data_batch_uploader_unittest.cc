@@ -146,6 +146,9 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest, LocalCompleteProfilesOnly) {
 
 TEST_F(ContactInfoLocalDataBatchUploaderTest,
        LocalWithEligibleCountryProfilesOnly) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillEnableAccountStorageForIneligibleCountries);
   // These profiles are local profiles by default.
   AutofillProfile eligible_profile = test::GetFullProfile();
   AddressCountryCode ineligible_country_code("IR");
@@ -256,6 +259,9 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
 
 TEST_F(ContactInfoLocalDataBatchUploaderTest,
        MigrateWithProfilesIdsWithIneligibleCountryProfile) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillEnableAccountStorageForIneligibleCountries);
   // These profiles are local profiles by default.
   AutofillProfile eligible_profile = test::GetFullProfile();
   AddressCountryCode ineligible_country_code("IR");

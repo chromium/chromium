@@ -133,7 +133,8 @@ class CORE_EXPORT InlineItemSegments {
    public:
     Iterator(unsigned start_offset,
              unsigned end_offset,
-             const InlineItemSegment* segment);
+             base::span<const InlineItemSegment> span,
+             unsigned segment_index);
 
     bool IsDone() const { return range_.start == end_offset_; }
 
@@ -147,7 +148,8 @@ class CORE_EXPORT InlineItemSegments {
 
    private:
     RunSegmenter::RunSegmenterRange range_;
-    const InlineItemSegment* segment_;
+    base::raw_span<const InlineItemSegment> span_;
+    unsigned segment_index_;
     unsigned start_offset_;
     unsigned end_offset_;
   };
@@ -187,13 +189,18 @@ class CORE_EXPORT InlineItemSegments {
   Vector<unsigned> items_to_segments_;
 };
 
-inline InlineItemSegments::Iterator::Iterator(unsigned start_offset,
-                                              unsigned end_offset,
-                                              const InlineItemSegment* segment)
-    : segment_(segment), start_offset_(start_offset), end_offset_(end_offset) {
+inline InlineItemSegments::Iterator::Iterator(
+    unsigned start_offset,
+    unsigned end_offset,
+    base::span<const InlineItemSegment> span,
+    unsigned segment_index)
+    : span_(span),
+      segment_index_(segment_index),
+      start_offset_(start_offset),
+      end_offset_(end_offset) {
   DCHECK_LT(start_offset, end_offset);
-  DCHECK_LT(start_offset, segment->EndOffset());
-  range_ = segment->ToRunSegmenterRange(start_offset_, end_offset_);
+  DCHECK_LT(start_offset, span[segment_index].EndOffset());
+  range_ = span[segment_index].ToRunSegmenterRange(start_offset_, end_offset_);
 }
 
 inline void InlineItemSegments::Iterator::operator++() {
@@ -203,9 +210,9 @@ inline void InlineItemSegments::Iterator::operator++() {
     return;
   }
   start_offset_ = range_.end;
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  UNSAFE_TODO(++segment_);
-  range_ = segment_->ToRunSegmenterRange(start_offset_, end_offset_);
+  ++segment_index_;
+  range_ =
+      span_[segment_index_].ToRunSegmenterRange(start_offset_, end_offset_);
 }
 
 }  // namespace blink

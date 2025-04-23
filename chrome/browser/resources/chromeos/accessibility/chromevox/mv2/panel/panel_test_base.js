@@ -8,7 +8,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Base class for Panel tests.
  */
-ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
+ChromeVoxMV2PanelTestBase = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

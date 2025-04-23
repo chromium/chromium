@@ -37,7 +37,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
       ->CreateAndRegisterEntry(window_registry);
 
   // Add bookmarks.
-  BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
+  browser->browser_window_features()
+      ->bookmarks_side_panel_coordinator()
       ->CreateAndRegisterEntry(window_registry);
 
   // Add history clusters.

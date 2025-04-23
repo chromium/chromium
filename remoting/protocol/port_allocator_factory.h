@@ -18,7 +18,7 @@ struct NetworkSettings;
 class SessionOptionsProvider;
 class TransportContext;
 
-// Factory class used for creating cricket::PortAllocator that is used
+// Factory class used for creating webrtc::PortAllocator that is used
 // to allocate ICE candidates.
 class PortAllocatorFactory {
  public:
@@ -28,7 +28,7 @@ class PortAllocatorFactory {
     CreatePortAllocatorResult();
     CreatePortAllocatorResult(CreatePortAllocatorResult&&);
     ~CreatePortAllocatorResult();
-    std::unique_ptr<cricket::PortAllocator> allocator;
+    std::unique_ptr<webrtc::PortAllocator> allocator;
     ApplyNetworkSettingsCallback apply_network_settings;
   };
 

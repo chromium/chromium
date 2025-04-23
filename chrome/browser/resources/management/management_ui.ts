@@ -111,6 +111,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
       eolAdminMessage_: {type: String},
       eolMessage_: {type: String},
       showMonitoredNetworkPrivacyDisclosure_: {type: Boolean},
+      showWindowsNoticeForDeskSync_: {type: Boolean},
+      showCookiesNoticeForDeskSync_: {type: Boolean},
       // </if>
 
       subtitle_: {type: String},
@@ -142,6 +144,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
   protected accessor eolAdminMessage_: string = '';
   protected accessor eolMessage_: string = '';
   protected accessor showMonitoredNetworkPrivacyDisclosure_: boolean = false;
+  protected accessor showWindowsNoticeForDeskSync_: boolean = false;
+  protected accessor showCookiesNoticeForDeskSync_: boolean = false;
   // </if>
 
   protected accessor subtitle_: string = '';
@@ -303,6 +307,14 @@ export class ManagementUiElement extends ManagementUiElementBase {
         pluginVmDataCollectionEnabled => {
           this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
         });
+  }
+
+  /**
+   * @return Whether Desk sync section should be shown.
+   */
+  protected showDeskSyncSection_(): boolean {
+    return this.showWindowsNoticeForDeskSync_ ||
+        this.showCookiesNoticeForDeskSync_;
   }
 
   /**
@@ -474,6 +486,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
       this.eolMessage_ = data.eolMessage;
       this.showMonitoredNetworkPrivacyDisclosure_ =
           data.showMonitoredNetworkPrivacyDisclosure;
+      this.showWindowsNoticeForDeskSync_ = data.showWindowsNoticeForDeskSync;
+      this.showCookiesNoticeForDeskSync_ = data.showCookiesNoticeForDeskSync;
       try {
         // Sanitizing the message could throw an error if it contains non
         // supported markup.

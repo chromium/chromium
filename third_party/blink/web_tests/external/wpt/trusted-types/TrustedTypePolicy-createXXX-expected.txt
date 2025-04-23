@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] TestPolicyTrustedHTML4 (TrustedHTML: callback_to_capture_this(s) {\n      return String(this);\n    })
+  assert_equals: expected "null" but got "undefined"
+[FAIL] TestPolicyTrustedScript4 (TrustedScript: callback_to_capture_this(s) {\n      return String(this);\n    })
+  assert_equals: expected "null" but got "undefined"
+[FAIL] TestPolicyTrustedScriptURL4 (TrustedScriptURL: callback_to_capture_this(s) {\n      return String(this);\n    })
+  assert_equals: expected "null" but got "undefined"
+Harness: the test ran to completion.
+

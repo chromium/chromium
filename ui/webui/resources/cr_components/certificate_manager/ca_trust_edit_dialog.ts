@@ -53,9 +53,9 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
     };
   }
 
-  model: CertificateSubnode|NewCertificateSubNode;
-  private trustInfo_: CaTrustInfo|null;
-  private explanationText_: string;
+  declare model: CertificateSubnode|NewCertificateSubNode;
+  declare private trustInfo_: CaTrustInfo|null;
+  declare private explanationText_: string;
   private browserProxy_: CertificatesBrowserProxy|null = null;
 
   override ready() {

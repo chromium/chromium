@@ -15,13 +15,14 @@
 
 namespace base {
 
+struct Cases {
+  std::string input;
+  std::string output;
+};
+
 // Make sure our ID hashes are the same as what we see on the server side.
 TEST(MetricsHashesTest, HashMetricName) {
   // The cases must match those in //tools/metrics/ukm/codegen_test.py.
-  struct Cases {
-    std::string input;
-    std::string output;
-  };
   static const auto cases = std::to_array<Cases>({
       {"Back", "0x0557fa923dcee4d0"},
       {"NewTab", "0x290eb683f96572f1"},
@@ -37,10 +38,6 @@ TEST(MetricsHashesTest, HashMetricName) {
 
 TEST(MetricsHashesTest, HashMetricNameAs32Bits) {
   // The cases must match those in //tools/metrics/ukm/codegen_test.py.
-  struct Cases {
-    std::string input;
-    std::string output;
-  };
   static const auto cases = std::to_array<Cases>({
       {"Back", "0x0557fa92"},
       {"NewTab", "0x290eb683"},
@@ -50,6 +47,21 @@ TEST(MetricsHashesTest, HashMetricNameAs32Bits) {
   for (const auto& i : cases) {
     uint32_t hash = HashMetricNameAs32Bits(i.input);
     std::string hash_hex = base::StringPrintf("0x%08" PRIx32, hash);
+    EXPECT_EQ(i.output, hash_hex);
+  }
+}
+
+TEST(MetricsHashesTest, ParseMetricHashTo32Bits) {
+  static const auto cases = std::to_array<Cases>({
+    {"Back", "0x0557fa92"},
+    {"NewTab", "0x290eb683"},
+    {"Forward", "0x67d2f674"},
+});
+
+  for (const auto& i : cases) {
+    uint64_t hash_64 = HashMetricName(i.input);
+    uint32_t hash_32 = ParseMetricHashTo32Bits(hash_64);
+    std::string hash_hex = base::StringPrintf("0x%08" PRIx32, hash_32);
     EXPECT_EQ(i.output, hash_hex);
   }
 }

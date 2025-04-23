@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("borealis_motd") {
+  sources = [
+    "borealis_motd_dialog.cc",
+    "borealis_motd_dialog.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/web_dialogs:web_dialogs",
+    "//ui/webui:webui",
+  ]
+
+  deps = [ "//chrome/browser/resources/chromeos/borealis_motd:resources" ]
+}

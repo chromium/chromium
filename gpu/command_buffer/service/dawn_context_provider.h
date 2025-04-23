@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -26,10 +27,6 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #endif
-
-namespace skgpu::graphite {
-class Context;
-}  // namespace skgpu::graphite
 
 namespace gpu {
 
@@ -85,9 +82,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& context_options);
 
-  skgpu::graphite::Context* GetGraphiteContext() const {
-    return graphite_context_.get();
-  }
+  GraphiteSharedContext* GetGraphiteSharedContext() const;
 
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
@@ -102,7 +97,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       scoped_refptr<DawnSharedContext> dawn_shared_context);
 
   scoped_refptr<DawnSharedContext> dawn_shared_context_;
-  std::unique_ptr<skgpu::graphite::Context> graphite_context_;
+  std::unique_ptr<gpu::GraphiteSharedContext> graphite_shared_context_;
 };
 
 }  // namespace gpu

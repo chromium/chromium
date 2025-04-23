@@ -6,6 +6,7 @@ module extensions.mojom;
 
 import "extensions/common/mojom/api_permission_id.mojom";
 import "extensions/common/mojom/channel.mojom";
+import "extensions/common/mojom/extension_id.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/manifest.mojom";
@@ -61,7 +62,7 @@ struct ExtensionLoadedParams {
 // Settings for a given user script world.
 struct UserScriptWorldInfo {
   // The corresponding extension ID.
-  string extension_id;
+  ExtensionId extension_id;
 
   // The ID of the world to configure. If omitted, configures the default
   // user script world.
@@ -81,7 +82,7 @@ interface Renderer {
   // Marks an extension as 'active' in an extension process. 'Active' extensions
   // have more privileges than other extension content that might end up running
   // in the process (e.g. because of iframes or content scripts).
-  ActivateExtension(string extension_id);
+  ActivateExtension(ExtensionId extension_id);
 
   // Tells the renderer whether or not activity logging is enabled. This is only
   // sent if logging is or was previously enabled; not being enabled is assumed
@@ -92,22 +93,22 @@ interface Renderer {
   LoadExtensions(array<ExtensionLoadedParams> params);
 
   // Notifies the renderer that an extension was unloaded in the browser.
-  UnloadExtension(string extension_id);
+  UnloadExtension(ExtensionId extension_id);
 
   // Tells the page to dispatch the suspend event. If we complete a round of
   // ShouldSuspend Mojo method and the reply without the lazy background page
   // becoming active again, we are ready to unload.
-  SuspendExtension(string extension_id) => ();
+  SuspendExtension(ExtensionId extension_id) => ();
 
   // Cancels suspending the extension.
-  CancelSuspendExtension(string extension_id);
+  CancelSuspendExtension(ExtensionId extension_id);
 
   // Informs the renderer whether or not the developer mode is enabled.
   SetDeveloperMode(bool developer_mode_only);
 
   // Informs the renderer whether the userScripts API has been allowed for the
   // extension.
-  SetUserScriptsAllowed(string extension_id, bool allowed);
+  SetUserScriptsAllowed(ExtensionId extension_id, bool allowed);
 
   // Informs the renderer what channel (dev, beta, stable, etc) and user session
   // type is running.
@@ -122,14 +123,14 @@ interface Renderer {
 
   // Updates the scripting allowlist for extensions in the render process. This
   // is only used for testing.
-  SetScriptingAllowlist(array<string> extension_ids);
+  SetScriptingAllowlist(array<ExtensionId> extension_ids);
 
   // Updates the user script worlds accordiging to `infos`.
   UpdateUserScriptWorlds(array<UserScriptWorldInfo> infos);
 
   // Clears configurations associated with the given `extension_id` and
   // `world_id`.
-  ClearUserScriptWorldConfig(string extension_id,
+  ClearUserScriptWorldConfig(ExtensionId extension_id,
                              string? world_id);
 
   // Asks the lazy background page if it is ready to be suspended and replies
@@ -144,7 +145,7 @@ interface Renderer {
   TransferBlobs() => ();
 
   // Tells the renderer to update an extension's permission set.
-  UpdatePermissions(string extension_id,
+  UpdatePermissions(ExtensionId extension_id,
                     PermissionSet active_permissions,
                     PermissionSet withheld_permissions,
                     URLPatternSet policy_blocked_hosts,
@@ -162,7 +163,7 @@ interface Renderer {
         URLPatternSet user_allowed_hosts);
 
   // Tells the render view about new tab-specific permissions for an extension.
-  UpdateTabSpecificPermissions(string extension_id,
+  UpdateTabSpecificPermissions(ExtensionId extension_id,
                                URLPatternSet new_hosts,
                                int32 tab_id,
                                bool update_origin_allowlist);
@@ -176,7 +177,7 @@ interface Renderer {
 
   // Tells the render view to clear tab-specific permissions for some
   // extensions.
-  ClearTabSpecificPermissions(array<string> extension_ids,
+  ClearTabSpecificPermissions(array<ExtensionId> extension_ids,
                               int32 tab_id,
                               bool update_origin_allowlist);
 

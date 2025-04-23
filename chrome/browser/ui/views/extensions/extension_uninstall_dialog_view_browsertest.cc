@@ -172,9 +172,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
                        ExtensionUninstalledWhileDialogIsActive) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
-  extensions::ExtensionService* const service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   extensions::ExtensionRegistrar::Get(browser()->profile())
       ->AddExtension(extension.get());
 
@@ -191,8 +188,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   // Wait for the icon to load and dialog to display.
   base::RunLoop().RunUntilIdle();
 
-  service->UninstallExtension(
-      extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->UninstallExtension(extension->id(),
+                           extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   run_loop.Run();
   // The dialog should be closed with an appropriate error.

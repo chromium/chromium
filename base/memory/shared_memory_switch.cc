@@ -12,6 +12,7 @@
 #include "base/memory/platform_shared_memory_handle.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notimplemented.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
@@ -104,7 +105,7 @@ std::string Serialize(HandleType shmem_handle,
                       size_t shmem_size,
                       [[maybe_unused]] bool is_read_only,
 #if BUILDFLAG(IS_APPLE)
-                      MachPortsForRendezvous::key_type rendezvous_key,
+                      SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
                       GlobalDescriptors::Key descriptor_key,
                       ScopedFD& descriptor_to_share,
@@ -140,10 +141,12 @@ std::string Serialize(HandleType shmem_handle,
   StrAppend(&serialized, {NumberToString(win::HandleToUint32(shmem_handle)),
                           (launch_options->elevated ? ",p," : ",i,")});
 #elif BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_IOS_TVOS)
   // In the receiving child, the handle is looked up using the rendezvous key.
   launch_options->mach_ports_for_rendezvous.emplace(
       rendezvous_key, MachRendezvousPort(std::move(shmem_handle)));
   StrAppend(&serialized, {NumberToString(rendezvous_key), ",r,"});
+#endif
 #elif BUILDFLAG(IS_FUCHSIA)
   // The handle is passed via the handles to transfer launch options. The child
   // will use the returned handle_id to lookup the handle. Ownership of the
@@ -250,6 +253,11 @@ expected<PlatformSharedMemoryRegion, SharedMemoryError> Deserialize(
   } else {
     scoped_handle = *std::move(handle_or_error);
   }
+#elif BUILDFLAG(IS_IOS_TVOS)
+  // Create an empty handle to prevent a build failure when returning a writable
+  // shared memory region at the end of the function.
+  apple::ScopedMachSendRight scoped_handle;
+  TVOS_NOT_YET_IMPLEMENTED();
 #elif BUILDFLAG(IS_APPLE)
   DCHECK_EQ(tokens[1], "r");
   auto* rendezvous = MachPortRendezvousClient::GetInstance();
@@ -312,7 +320,7 @@ template <typename RegionType>
 void AddToLaunchParametersImpl(std::string_view switch_name,
                                const RegionType& memory_region,
 #if BUILDFLAG(IS_APPLE)
-                               MachPortsForRendezvous::key_type rendezvous_key,
+                               SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
                                GlobalDescriptors::Key descriptor_key,
                                ScopedFD& out_descriptor_to_share,
@@ -349,7 +357,7 @@ void AddToLaunchParameters(
     std::string_view switch_name,
     const ReadOnlySharedMemoryRegion& read_only_memory_region,
 #if BUILDFLAG(IS_APPLE)
-    MachPortsForRendezvous::key_type rendezvous_key,
+    SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
     GlobalDescriptors::Key descriptor_key,
     ScopedFD& out_descriptor_to_share,
@@ -368,7 +376,7 @@ void AddToLaunchParameters(
 void AddToLaunchParameters(std::string_view switch_name,
                            const UnsafeSharedMemoryRegion& unsafe_memory_region,
 #if BUILDFLAG(IS_APPLE)
-                           MachPortsForRendezvous::key_type rendezvous_key,
+                           SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
                            GlobalDescriptors::Key descriptor_key,
                            ScopedFD& out_descriptor_to_share,

@@ -21,27 +21,19 @@
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
-#include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
-#include "chrome/test/supervised_user/supervision_mixin.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/allowlist_state.h"
@@ -56,6 +48,19 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
+#include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
@@ -72,8 +77,7 @@ constexpr char kExtensionId[] = "enfkhcelefdadlmkffamgdlgplcionje";
 
 class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
  public:
-  WebstoreInstallListener()
-      : received_failure_(false), received_success_(false), waiting_(false) {}
+  WebstoreInstallListener() = default;
 
   void OnExtensionInstallSuccess(const std::string& id) override {
     received_success_ = true;
@@ -116,9 +120,9 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
   }
 
  private:
-  bool received_failure_;
-  bool received_success_;
-  bool waiting_;
+  bool received_failure_ = false;
+  bool received_success_ = false;
+  bool waiting_ = false;
   WebstoreInstaller::FailureReason last_failure_reason_;
   std::string id_;
   std::string error_;
@@ -180,10 +184,6 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
 
     GURL page_url = GetTestServerURL(page);
     return OpenTestURL(page_url);
-  }
-
-  ExtensionService* service() {
-    return ExtensionSystem::Get(browser()->profile())->extension_service();
   }
 
  private:
@@ -274,20 +274,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   ASSERT_TRUE(RunInstallTest("begin_install.html", "extension.crx"));
 
   std::unique_ptr<InstallApproval> approval =
-      WebstorePrivateApi::PopApprovalForTesting(browser()->profile(), appId);
+      WebstorePrivateApi::PopApprovalForTesting(profile(), appId);
   EXPECT_EQ(appId, approval->extension_id);
   EXPECT_TRUE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_EQ("2", approval->authuser);
-  EXPECT_EQ(browser()->profile(), approval->profile);
+  EXPECT_EQ(profile(), approval->profile);
 
-  approval = WebstorePrivateApi::PopApprovalForTesting(browser()->profile(),
-                                                       kExtensionId);
+  approval = WebstorePrivateApi::PopApprovalForTesting(profile(), kExtensionId);
   EXPECT_EQ(kExtensionId, approval->extension_id);
   EXPECT_FALSE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_TRUE(approval->authuser.empty());
-  EXPECT_EQ(browser()->profile(), approval->profile);
+  EXPECT_EQ(profile(), approval->profile);
 }
 
 // Tests that themes are installed without an install prompt.
@@ -304,6 +303,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallTheme) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
   ASSERT_TRUE(RunInstallTest("empty.html", "empty.crx"));
 }
+
+// TODO(crbug.com/410616937): Support supervised user install controls on
+// desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
 static constexpr char kTestAppVersion[] = "0.1";
@@ -695,7 +698,9 @@ INSTANTIATE_TEST_SUITE_P(
                  : "ManagedByExtensionsToggle";
     });
 
-class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+class ExtensionWebstoreGetWebGLStatusTest : public PlatformBrowserTest {
  protected:
   void RunTest(bool webgl_allowed) {
     // If Gpu access is disallowed then WebGL will not be available.
@@ -708,8 +713,9 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
     static const char kWebGLStatusBlocked[] = "webgl_blocked";
     scoped_refptr<WebstorePrivateGetWebGLStatusFunction> function =
         new WebstorePrivateGetWebGLStatusFunction();
+    Profile* profile = chrome_test_utils::GetProfile(this);
     std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-        function.get(), kEmptyArgs, browser()->profile());
+        function.get(), kEmptyArgs, profile);
     ASSERT_TRUE(result);
     EXPECT_EQ(base::Value::Type::STRING, result->type());
     EXPECT_TRUE(result->is_string());
@@ -785,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
 // opted out of SafeBrowsing.
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
                        GetReferrerChainForNonSafeBrowsingUser) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = profile()->GetPrefs();
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kSafeBrowsingEnabled));
   // Disable SafeBrowsing.
   pref_service->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -804,6 +810,10 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
         {});
   }
 
+  ExtensionAllowlist* GetAllowlist() {
+    return ExtensionAllowlist::Get(profile());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -811,43 +821,39 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingNotAllowlisted) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_service()->allowlist()->GetExtensionAllowlistState(
-                kExtensionId));
+            GetAllowlist()->GetExtensionAllowlistState(kExtensionId));
   EXPECT_EQ(
       ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_service()->allowlist()->GetExtensionAllowlistAcknowledgeState(
-          kExtensionId));
+      GetAllowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingAllowlisted) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
 
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_service()->allowlist()->GetExtensionAllowlistState(
-                kExtensionId));
+            GetAllowlist()->GetExtensionAllowlistState(kExtensionId));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        StandardSafeBrowsingNotAllowlisted) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_service()->allowlist()->GetExtensionAllowlistState(
-                kExtensionId));
+            GetAllowlist()->GetExtensionAllowlistState(kExtensionId));
 }
 
 }  // namespace extensions

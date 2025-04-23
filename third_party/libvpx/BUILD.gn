@@ -31,7 +31,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm"
   }
 } else if (current_cpu == "arm64") {
-  if (is_win || is_chromeos || is_mac) {
+  if (is_win || is_chromeos || is_mac || is_ios) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
     # os_category).
@@ -560,7 +560,7 @@ static_library("libvpx") {
       public_deps = [ ":libvpx_arm_headers" ]
     }
   } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win || is_mac) {
+    if (is_chromeos || is_win || is_mac || is_ios) {
       sources = libvpx_srcs_arm64_highbd
       public_deps = [ ":libvpx_arm64_highbd_headers" ]
     } else {

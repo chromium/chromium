@@ -189,14 +189,7 @@ class WTF_EXPORT StringView {
 
   bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
 
-  bool IsLowerASCII() const {
-    if (StringImpl* impl = SharedImpl())
-      return impl->IsLowerASCII();
-    if (Is8Bit())
-      return WTF::IsLowerASCII(Characters8(), length());
-    return WTF::IsLowerASCII(Characters16(), length());
-  }
-
+  bool IsLowerASCII() const;
   bool ContainsOnlyASCIIOrEmpty() const;
 
   bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
@@ -206,16 +199,18 @@ class WTF_EXPORT StringView {
   UChar operator[](unsigned i) const {
     SECURITY_DCHECK(i < length());
     if (Is8Bit())
-      return Characters8()[i];
-    return Characters16()[i];
+      return static_cast<const LChar*>(bytes_)[i];
+    return static_cast<const UChar*>(bytes_)[i];
   }
 
-  const LChar* Characters8() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
     DCHECK(Is8Bit());
     return static_cast<const LChar*>(bytes_);
   }
 
-  const UChar* Characters16() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
     DCHECK(!Is8Bit());
     return static_cast<const UChar*>(bytes_);
   }
@@ -228,6 +223,11 @@ class WTF_EXPORT StringView {
   base::span<const UChar> Span16() const {
     DCHECK(!Is8Bit());
     return {static_cast<const UChar*>(bytes_), length_};
+  }
+
+  base::span<const uint16_t> SpanUint16() const {
+    DCHECK(!Is8Bit());
+    return {static_cast<const uint16_t*>(bytes_), length_};
   }
 
   // Returns the Unicode code point starting at the specified offset of this

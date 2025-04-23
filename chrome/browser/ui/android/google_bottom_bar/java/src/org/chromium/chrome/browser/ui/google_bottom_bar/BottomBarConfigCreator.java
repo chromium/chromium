@@ -12,10 +12,11 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
+@NullMarked
 public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
 
@@ -229,7 +231,7 @@ public class BottomBarConfigCreator {
 
         for (CustomButtonParams params : customButtonParams) {
             Integer buttonId = getButtonId(params.getId());
-            if (buttonId == id) {
+            if (buttonId != null && buttonId == id) {
                 return getButtonConfigFromCustomButtonParams(mContext, buttonId, params);
             }
         }
@@ -505,7 +507,7 @@ public class BottomBarConfigCreator {
      *       <li>If an error occurs during processing: Returns null.
      *     </ul>
      */
-    private Integer getSpotlightButtonFromParams(
+    private @Nullable Integer getSpotlightButtonFromParams(
             List<Integer> encodedLayoutList,
             @GoogleBottomBarVariantLayoutType int variantLayoutType) {
         if (variantLayoutType == SINGLE_DECKER) {
@@ -537,8 +539,7 @@ public class BottomBarConfigCreator {
         }
     }
 
-    @Nullable
-    private static @ButtonId Integer createSpotlight(int code) {
+    private static @Nullable @ButtonId Integer createSpotlight(int code) {
         return code != 0 ? code : null;
     }
 
@@ -586,7 +587,7 @@ public class BottomBarConfigCreator {
         return result;
     }
 
-    private static @ButtonId Integer getButtonId(int customButtonParamId) {
+    private static @ButtonId @Nullable Integer getButtonId(int customButtonParamId) {
         return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 

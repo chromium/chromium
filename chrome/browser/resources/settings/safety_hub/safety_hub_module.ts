@@ -108,17 +108,17 @@ export class SettingsSafetyHubModuleElement extends
     };
   }
 
-  sites: SiteInfo[];
-  animated: boolean;
-  header: string;
-  subheader: string|TrustedHTML;
-  headerIcon: string;
-  headerIconColor: string;
-  buttonIcon: string;
-  buttonAriaLabelId: string;
-  buttonTooltipText: string;
-  moreButtonAriaLabelId: string;
-  moreActionVisible: boolean;
+  declare sites: SiteInfo[];
+  declare animated: boolean;
+  declare header: string;
+  declare subheader: string|TrustedHTML;
+  declare headerIcon: string;
+  declare headerIconColor: string;
+  declare buttonIcon: string;
+  declare buttonAriaLabelId: string;
+  declare buttonTooltipText: string;
+  declare moreButtonAriaLabelId: string;
+  declare moreActionVisible: boolean;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
 

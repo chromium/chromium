@@ -75,11 +75,14 @@ def initialize_globals(import_channel: str):
 
   global additional_args
   additional_args = {
-      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen_headers':
-      [('export_include_dirs', {
-          "net/third_party/quiche/src",
-      })],
-      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers':
+      # TODO: operating on the final module names means we have to use short
+      # names which are less readable. Find a better way.
+      f'{MODULE_PREFIX}39ea1a33_quiche_net_quic_test_tools_proto_gen_h': [
+          ('export_include_dirs', {
+              "net/third_party/quiche/src",
+          })
+      ],
+      f'{MODULE_PREFIX}39ea1a33_quiche_net_quic_test_tools_proto_gen__testing_h':
       [('export_include_dirs', {
           "net/third_party/quiche/src",
       })],
@@ -195,7 +198,17 @@ def initialize_globals(import_channel: str):
           ('errorprone', ('javacflags', {
               "-Xep:ReturnValueIgnored:WARN",
           }))
-      ]
+      ],
+      f'{MODULE_PREFIX}third_party_perfetto_gn_gen_buildflags': [
+          ('export_include_dirs', {
+              "third_party/perfetto/build_config/",
+          })
+      ],
+      f'{MODULE_PREFIX}third_party_perfetto_gn_gen_buildflags__testing': [
+          ('export_include_dirs', {
+              "third_party/perfetto/build_config/",
+          })
+      ],
       # end export_include_dir.
   }
 
@@ -993,9 +1006,18 @@ class Blueprint:
     return ret
 
 
-def label_to_module_name(label):
+def label_to_module_name(label, short=False):
   """Turn a GN label (e.g., //:perfetto_tests) into a module name."""
   module = re.sub(r'^//:?', '', label)
+
+  if short:
+    # We want the module name to be short, but we still need it to be unique and
+    # somewhat readable. To do this we replace just the path by a short hash.
+    parts = module.rsplit('/', maxsplit=1)
+    if len(parts) > 1 and len(parts[0]) > 10:
+      module = hashlib.sha256(
+          parts[0].encode('utf-8')).hexdigest()[:8] + '_' + parts[1]
+
   module = re.sub(r'[^a-zA-Z0-9_]', '_', module)
 
   if not module.startswith(MODULE_PREFIX):
@@ -1184,7 +1206,7 @@ def create_rust_cxx_modules(_, target):
   return (header_genrule, cc_genrule)
 
 
-def create_proto_modules(blueprint, gn, target):
+def create_proto_modules(blueprint, gn, target, is_test_target):
   """Generate genrules for a proto GN target.
 
     GN actions are used to dynamically generate files during the build. The
@@ -1209,23 +1231,63 @@ def create_proto_modules(blueprint, gn, target):
     # them, so let's just ignore them to avoid the unnecessary complexity.
     return ()
 
-  original_args = target.args
+  # TODO: proto modules being treated as "special snowflakes" instead of just
+  # like any other action is doing more harm than good - it's weirdly
+  # inconsistent and we end up missing out on concepts like cross-arch merging
+  # and the action sanitizer arg handling framework. We should rewrite this
+  # proto logic to be similar to how we handle any other GN action.
 
-  def get_value_arg(arg_name):
-    arg_count = original_args.count(arg_name)
-    if arg_count == 0:
-      return None
-    assert arg_count == 1, (arg_name, target.name)
-    value_index = original_args.index(arg_name) + 1
-    assert (value_index < len(original_args)), (arg_name, target.name)
-    return original_args[value_index]
+  # Retrieves the value of one of the command line arguments on the GN action,
+  # or None if not found. The value is filtered through `sanitize()` if
+  # provided. This function asserts that the sanitized value is the same across
+  # all archs.
+  def get_value_arg(arg_name, sanitize=None):
+    arch_values = set()
+    for arch in target.arch.values():
+      args = arch.args
+      if not args:
+        continue
+      arg_count = args.count(arg_name)
+      if arg_count == 0:
+        arch_values.add(None)
+        continue
+      assert arg_count == 1, (arg_name, target.name, arch_name)
+      value_index = args.index(arg_name) + 1
+      assert (value_index < len(args)), (arg_name, target.name, arch_name)
+      arch_value = args[value_index]
+      if sanitize is not None:
+        arch_value = sanitize(arch_value)
+      arch_values.add(arch_value)
+    assert len(arch_values) == 1, (target.name, arg_name, arch_values)
+    (single_value, ) = arch_values
+    return single_value
 
-  protoc_module_name = get_protoc_module_name(gn)
-  tools = {protoc_module_name}
-  cpp_out_dir = get_value_arg('--cc-out-dir')
+  protoc_module_name = get_protoc_module_name(gn) + (gn_utils.TESTING_SUFFIX
+                                                     if is_test_target else '')
+  # Bring in any executable binary dependencies. Typically these would be protoc
+  # plugins (more on plugins below).
+  tools = {protoc_module_name} | {
+      dep_module.name
+      for dep_modules in (create_modules_from_target(
+          blueprint, gn, dep, target.type, is_test_target)
+                          for dep in target.deps)
+      for dep_module in dep_modules if dep_module.type.endswith('_binary')
+  }
+  plugin = get_value_arg("--plugin")
+  cpp_out_dir = get_value_arg(
+      '--cc-out-dir' if plugin is None else '--plugin-out-dir',
+      # Depending on the arch, sometimes the out dir starts with "gen/", sometimes
+      # it starts with "clang_x64/gen/". We need to remove that prefix.
+      sanitize=lambda value: re.sub('^([^/]+/)?gen/', '', value))
   assert cpp_out_dir is not None, target.name
-  cpp_out_dir = cpp_out_dir.removeprefix('gen/')
-  target_module_name = label_to_module_name(target.name)
+  absolute_cpp_out_dir = f'$(genDir)/{cpp_out_dir}/'
+  # We need to keep these module names short because the modules end up in
+  # `generated_headers` which propagate throughout the build graph. If the names
+  # are too long we can easily end up with long lists of generated headers with
+  # long names, which in turn trigger "argument list too long" errors due to the
+  # sheer size of `-I` include dir parameter lists being passed to the C++
+  # compiler.
+  target_module_name = label_to_module_name(target.name, short=True)
 
   # In GN builds the proto path is always relative to the output directory
   # (out/tmp.xxx).
@@ -1251,8 +1313,7 @@ def create_proto_modules(blueprint, gn, target):
   blueprint.add_module(source_module)
   source_module.srcs.update(sources)
 
-  header_module = Module('cc_genrule', source_module_name + '_headers',
-                         target.name)
+  header_module = Module('cc_genrule', source_module_name + '_h', target.name)
   blueprint.add_module(header_module)
   header_module.srcs = set(source_module.srcs)
 
@@ -1269,9 +1330,33 @@ def create_proto_modules(blueprint, gn, target):
   source_module.genrule_headers.add(header_module.name)
 
   source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
-  cmd += [f'--cpp_out=lite=true:$(genDir)/{cpp_out_dir}/']
+  cmd += [f'--cpp_out=lite=true:{absolute_cpp_out_dir}']
 
   cmd += absolute_sources
+
+  # protoc supports "plugins", which are executable binaries it can call into
+  # to customize code generation. In Chromium this feature is seldom used, but
+  # there is one notable exception: Perfetto, which uses custom plugins all
+  # over the place ("protozero", etc.).
+  #
+  # Another thing to keep in mind is the form of the plugin command line
+  # options is a bit different between protoc and
+  # //tools/protoc_wrapper/protoc_wrapper.py (which is what the GN action
+  # calls), which is why we have to rearrange the args somewhat.
+  # TODO: one could argue that it may be more robust to have the genrule call
+  # protoc_wrapper.py instead of bypassing it and calling protoc directly.
+  if plugin is not None:
+    # The path to the plugin executable is quite different in AOSP vs. Chromium.
+    # In AOSP, we assume the plugin is the only tool dependency (besides protoc
+    # itself) and deduce the path from there.
+    plugin_modules = tools - {protoc_module_name}
+    assert len(plugin_modules) == 1, target.name
+    (plugin_module, ) = plugin_modules
+    cmd += [f"--plugin=protoc-gen-plugin=$(location {plugin_module})"]
+  plugin_options = get_value_arg("--plugin-options")
+  if plugin_options is not None:
+    cmd += [f"--plugin_out={plugin_options}:{absolute_cpp_out_dir}"]
+
   source_module.cmd = cmd
   header_module.cmd = source_module.cmd
   source_module.tools = tools
@@ -1576,6 +1661,13 @@ class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
   def _sanitize_args(self):
     self._set_value_arg('--gen-dir', '.')
     self._set_value_arg('--output', '$(out)')
+    super()._sanitize_args()
+
+
+class PerfettoWriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
+
+  def _sanitize_args(self):
+    self._set_value_arg('--out', '$(out)')
     super()._sanitize_args()
 
 
@@ -1947,6 +2039,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
     # PartitionAlloc has forked the same write_buildflag_header.py script from
     # Chromium to break its dependency on //build.
     return WriteBuildFlagHeaderSanitizer(target, arch)
+  if target.script == "//third_party/perfetto/gn/write_buildflag_header.py":
+    return PerfettoWriteBuildFlagHeaderSanitizer(target, arch)
   if target.script == "//base/write_build_date_header.py":
     return WriteBuildDateHeaderSanitizer(target, arch)
   if target.script == "//build/util/version.py":
@@ -2446,7 +2540,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == 'shared_library':
     modules = (Module('cc_library_shared', bp_module_name, gn_target_name), )
   elif target.type == 'proto_library':
-    modules = create_proto_modules(blueprint, gn, target)
+    modules = create_proto_modules(blueprint, gn, target, is_test_target)
     if modules is None:
       return ()
   elif target.type == "rust_bindgen":

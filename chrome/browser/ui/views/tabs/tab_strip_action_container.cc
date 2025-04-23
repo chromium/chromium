@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,14 +34,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -208,16 +208,15 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 
 TabStripActionContainer::TabStripActionContainer(
     TabStripController* tab_strip_controller,
-    View* locked_expansion_view,
     tabs::TabDeclutterController* tab_declutter_controller,
     tabs::GlicNudgeController* glic_nudge_controller)
     : AnimationDelegateViews(this),
-      locked_expansion_view_(locked_expansion_view),
+      locked_expansion_view_(this),
       tab_declutter_controller_(tab_declutter_controller),
       glic_nudge_controller_(glic_nudge_controller),
       tab_strip_controller_(tab_strip_controller) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
-      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
+      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view_,
                                                     gfx::Insets()),
       this);
 
@@ -278,9 +277,11 @@ TabStripActionContainer::TabStripActionContainer(
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   auto* const layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  layout_manager->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 TabStripActionContainer::~TabStripActionContainer() {
@@ -349,6 +350,8 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
+                              base::Unretained(this)),
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
                               base::Unretained(this)),
           glic::GlicVectorIconManager::GetVectorIcon(
               IDR_GLIC_BUTTON_VECTOR_ICON),
@@ -438,13 +441,27 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
+  glic_button_->SetText(std::u16string());
 }
 
 void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* profile = tab_strip_controller_->GetProfile();
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  glic_service->window_controller().fre_controller()->MaybePreconnect();
+  glic_service->PrepareForOpen();
+}
+
+void TabStripActionContainer::OnGlicButtonMouseDown() {
+  Profile* profile = tab_strip_controller_->GetProfile();
+  if (!glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+    // Do not do this optimization if user has not consented to GLIC.
+    return;
+  }
+  // This prefetches the results and allows the underlying implementation to
+  // cache the results for future calls. Which is why the callback does nothing.
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  glic_service->FetchZeroStateSuggestions(false, base::DoNothing());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -452,14 +469,16 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 #if BUILDFLAG(ENABLE_GLIC)
 
   CHECK(glic_button_);
-  glic_button_->SetText(base::UTF8ToUTF16(label));
   if (!label.empty()) {
     glic_nudge_controller_->OnNudgeActivity(
         tabs::GlicNudgeActivity::kNudgeShown);
+    glic_button_->SetText(base::UTF8ToUTF16(label));
     ShowTabStripNudge(glic_button_);
   } else {
     HideTabStripNudge(glic_button_);
+    glic_button_->SetText(base::UTF8ToUTF16(label));
   }
+
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)

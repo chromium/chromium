@@ -40,10 +40,6 @@ void ShellDelegate::ShouldExitFullscreenBeforeLock(
   std::move(callback).Run(false);
 }
 
-DeskProfilesDelegate* ShellDelegate::GetDeskProfilesDelegate() {
-  return nullptr;
-}
-
 bool ShellDelegate::IsNoFirstRunSwitchOn() const {
   return false;
 }

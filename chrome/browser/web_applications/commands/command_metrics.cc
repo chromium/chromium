@@ -60,20 +60,19 @@ void RecordInstallMetrics(InstallCommand command,
                     ToVariantString(app_type), ".ResultCode"}),
       result);
 
-  base::UmaHistogramEnumeration("WebApp.InstallCommand.Surface", source,
-                                webapps::WebappInstallSource::COUNT);
+  base::UmaHistogramEnumeration("WebApp.InstallCommand.Surface", source);
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"WebApp.InstallCommand", ToVariantString(command), ".Surface"}),
-      source, webapps::WebappInstallSource::COUNT);
+      source);
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"WebApp.InstallCommand", ToVariantString(app_type), ".Surface"}),
-      source, webapps::WebappInstallSource::COUNT);
+      source);
   base::UmaHistogramEnumeration(
       base::StrCat({"WebApp.InstallCommand", ToVariantString(command),
                     ToVariantString(app_type), ".Surface"}),
-      source, webapps::WebappInstallSource::COUNT);
+      source);
 }
 
 }  // namespace web_app

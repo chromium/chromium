@@ -15,19 +15,22 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Installs AR DFM and ArCore runtimes. */
 @JNINamespace("webxr")
+@NullMarked
 public class ArCoreInstallUtils {
     /**
-     * Helper class to store a reference to the ArCoreInstallUtils instance and activity
-     * that requested an install of ArCore, and await that activity being resumed.
+     * Helper class to store a reference to the ArCoreInstallUtils instance and activity that
+     * requested an install of ArCore, and await that activity being resumed.
      */
     private static class InstallRequest implements ActivityLifecycleCallbacks {
-        private ArCoreInstallUtils mInstallInstance;
+        private @Nullable ArCoreInstallUtils mInstallInstance;
         private ImmutableWeakReference<Activity> mWeakActivity;
         private ImmutableWeakReference<Application> mWeakApplication;
 
@@ -63,7 +66,8 @@ public class ArCoreInstallUtils {
         // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
         // we only really care about onActivityResumed for our purposes.
         @Override
-        public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {}
+        public void onActivityCreated(
+                final Activity activity, @Nullable Bundle savedInstanceState) {}
 
         @Override
         public void onActivityDestroyed(Activity activity) {}
@@ -87,11 +91,11 @@ public class ArCoreInstallUtils {
 
     // This tracks the relevant information of the instance that requested installation of ARCore.
     // Should be non-null only if there is a pending request to install ARCore.
-    private static InstallRequest sInstallRequest;
+    private static @Nullable InstallRequest sInstallRequest;
 
     // Cached ArCoreShim instance - valid only after AR module was installed and
     // getArCoreShimInstance() was called.
-    private static ArCoreShim sArCoreInstance;
+    private static @Nullable ArCoreShim sArCoreInstance;
 
     private static ArCoreShim getArCoreShimInstance() {
         if (sArCoreInstance != null) return sArCoreInstance;
@@ -148,7 +152,7 @@ public class ArCoreInstallUtils {
         return availability != ArCoreAvailability.SUPPORTED_INSTALLED;
     }
 
-    private Activity getActivity(final WebContents webContents) {
+    private @Nullable Activity getActivity(final WebContents webContents) {
         if (webContents == null) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;

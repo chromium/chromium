@@ -183,13 +183,16 @@ void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
                                                     FormGlobalId form,
                                                     FieldTypeSource source) {
   CHECK_EQ(&manager, this);
-  if (source != FieldTypeSource::kAutofillServer) {
-    return;
-  }
-
-  forms_with_server_predictions_.insert(form);
-  if (auto* provider = GetAutofillProvider()) {
-    provider->OnServerPredictionsAvailable(*this, form);
+  switch (source) {
+    case FieldTypeSource::kAutofillAiModel:
+    case FieldTypeSource::kAutofillServer:
+      forms_with_server_predictions_.insert(form);
+      if (auto* provider = GetAutofillProvider()) {
+        provider->OnServerPredictionsAvailable(*this, form);
+      }
+      break;
+    case FieldTypeSource::kHeuristicsOrAutocomplete:
+      break;
   }
 }
 

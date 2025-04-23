@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/services/printing/pdf_nup_converter.h"
 
 #include <string>
@@ -47,7 +42,7 @@ void RunCallbackWithConversionResult(Callback callback,
     return;
   }
 
-  memcpy(region_mapping.mapping.memory(), buffer.data(), buffer.size());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(buffer);
   std::move(callback).Run(mojom::PdfNupConverter::Status::SUCCESS,
                           std::move(region_mapping.region));
 }

@@ -28,6 +28,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -295,10 +296,6 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
     WelcomeView::kScreenId,
     NetworkScreenView::kScreenId,
     UpdateView::kScreenId,
-    EnrollmentScreenView::kScreenId,
-    AutoEnrollmentCheckScreenView::kScreenId,
-    UserCreationView::kScreenId,
-    AddChildScreenView::kScreenId,
     ConsumerUpdateScreenView::kScreenId,
 };
 
@@ -2042,10 +2039,11 @@ void WizardController::SkipToLoginForTesting() {
 
 void WizardController::OnScreenExit(OobeScreenId screen,
                                     const std::string& exit_reason) {
-  VLOG(1) << "Wizard screen " << screen
-          << " exited with reason: " << exit_reason << " during setup type: "
-          << SetupTypeToString(
-                 wizard_context_->knowledge_factor_setup.auth_setup_flow);
+  SYSLOG(INFO) << "(LOGIN) Wizard screen " << screen
+               << " exited with reason: " << exit_reason
+               << " during setup type: "
+               << SetupTypeToString(
+                      wizard_context_->knowledge_factor_setup.auth_setup_flow);
   // Do not perform checks and record stats for the skipped screen.
   if (exit_reason == BaseScreen::kNotApplicable) {
     return;

@@ -29,7 +29,7 @@ build_webui("build") {
     "system_mode.svg",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "customize_color_scheme_mode.html.ts",
     "customize_color_scheme_mode.ts",

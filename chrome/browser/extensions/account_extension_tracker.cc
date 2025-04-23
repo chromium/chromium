@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -26,6 +25,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
@@ -166,9 +166,6 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
-      ExtensionService* extension_service =
-          ExtensionSystem::Get(profile_)->extension_service();
-
       const ExtensionSet extensions =
           extension_registry->GenerateInstalledExtensionsSet();
 
@@ -179,9 +176,9 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
         if (uninstall_account_extensions_on_signout_ &&
             GetAccountExtensionType(extension->id()) ==
                 AccountExtensionType::kAccountInstalledSignedIn) {
-          extension_service->UninstallExtension(extension->id(),
-                                                UNINSTALL_REASON_USER_INITIATED,
-                                                /*error=*/nullptr);
+          ExtensionRegistrar::Get(profile_)->UninstallExtension(
+              extension->id(), UNINSTALL_REASON_USER_INITIATED,
+              /*error=*/nullptr);
         } else {
           SetAccountExtensionType(extension->id(),
                                   AccountExtensionType::kLocal);

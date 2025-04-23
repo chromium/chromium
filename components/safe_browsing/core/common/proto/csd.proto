@@ -181,6 +181,9 @@ message IntelligentScanInfo {
     EMPTY_TEXT = 1;
     // Allowlisted by high confidence allowlist.
     ALLOWLISTED = 2;
+    // The on device model is unavailable, which can be from a few reasons such
+    // as device incapability or not enough space on disk.
+    ON_DEVICE_MODEL_UNAVAILABLE = 3;
   }
   optional NoInfoReason no_info_reason = 3;
 }
@@ -1416,6 +1419,13 @@ message ClientIncidentReport {
       optional Type type = 3 [default = UNKNOWN];
     }
 
+    message ServiceWorkerRegistrationIncident {
+      // The service worker's scope url.
+      optional string scope_url = 1;
+      // The URLs used to import scripts by the service worker.
+      repeated string import_script_url = 2;
+    }
+
     optional int64 incident_time_msec = 1;
     optional TrackedPreferenceIncident tracked_preference = 2;
     optional BinaryIntegrityIncident binary_integrity = 3;
@@ -1424,6 +1434,11 @@ message ClientIncidentReport {
     optional ResourceRequestIncident resource_request = 7;
     // Note: skip tag 8 because it was previously used.
     reserved 8;
+    // A ServiceWorkerRegistrationIncident is created for every service
+    // worker on a ESB profile that sends notifications and has imported
+    // scripts from a origin that is different from its scope URL. The
+    // report is created and emitted from the Notification Telemetry Service.
+    optional ServiceWorkerRegistrationIncident notification_import_script = 9;
   }
 
   repeated IncidentData incident = 1;

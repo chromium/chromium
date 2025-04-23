@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Sivustot voivat pyytää sijaintiasi</translation>
 <translation id="3658847490588580244">Oletusselainsyöte</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="RWS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
+<translation id="3670480940339182416">Sivustot voivat käyttää V8-optimoijaa</translation>
 <translation id="3676777756440746804">Sivustoja estetään pyytämästä lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="3697164069658504920">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää USB-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää USB-laitteita.</translation>
+<translation id="3703430731944883733">Ylläpidä fiidiä</translation>
 <translation id="3707034683772193706">Avaamasi sivusto voi tallentaa pienen määrän tietoja Chromeen tarkistaakseen, ettet ole botti</translation>
 <translation id="3708684582558000260">Älä salli suljettujen sivustojen suorittaa datan lähettämistä tai vastaanottamista loppuun</translation>
 <translation id="3709818294139939629">Sivustolla ei pääse tiedostoon</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
 <translation id="421742575134139848">Sivustoilla voidaan toistaa ääntä musiikin, videoiden tai muun median yhteydessä</translation>
+<translation id="4217710972110098902">Yhdistetty sarjaporttiin</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
@@ -282,6 +285,7 @@
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
+<translation id="4578289292431526768">Aloitetaan</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="461356340001513807">Sallii sinun kirjautua verkkosivustoille identiteettipalvelun tilillä</translation>
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
@@ -366,8 +370,10 @@
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita</translation>
 <translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
+<translation id="5743425052258407233">Historia löytyy kaikilta laitteilta, joten voit helposti jatkaa siitä, mihin jäit</translation>
 <translation id="5750869797196646528">Käsien seuranta</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
@@ -380,6 +386,7 @@
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5876056640971328065">Keskeytä video</translation>
 <translation id="5877248419911025165">Tiivistä kaikki pyynnöt</translation>
+<translation id="5878945009165002849">Estä henkilöllisyyspalveluiden sisäänkirjautumiskehotteet</translation>
 <translation id="5884085660368669834">Sivustotoivomus</translation>
 <translation id="5887687176710214216">Avattu viimeksi eilen</translation>
 <translation id="5908617755156109052">Älä salli sivustojen luoda 3D-karttaa ympäristöstäsi tai seurata kameran asentoa</translation>
@@ -417,7 +424,6 @@
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
-<translation id="6344622098450209924">Seurannan esto</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="640163077447496506">Vanhenee tänään</translation>
@@ -577,6 +583,7 @@
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on vanhentunut. Asenna sovellus uudelleen.</translation>
+<translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
 <translation id="8492822722330266509">Sivustot saavat lähettää ponnahdusikkunoita ja uudelleenohjata</translation>

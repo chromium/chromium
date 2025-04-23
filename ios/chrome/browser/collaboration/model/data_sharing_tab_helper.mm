@@ -1,0 +1,78 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/collaboration/model/data_sharing_tab_helper.h"
+
+#import "base/check.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
+
+DataSharingTabHelper::DataSharingTabHelper(web::WebState* web_state)
+    : web::WebStatePolicyDecider(web_state) {}
+
+DataSharingTabHelper::~DataSharingTabHelper() = default;
+
+void DataSharingTabHelper::ShouldAllowRequest(
+    NSURLRequest* request,
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  web::WebState* current_web_state = web_state();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(current_web_state->GetBrowserState());
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+
+  GURL url = net::GURLWithNSURL(request.URL);
+  if (collaboration_service &&
+      collaboration_service->ShouldInterceptNavigationForShareURL(url)) {
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+
+    std::set<Browser*> regular_browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+    Browser* current_browser = nullptr;
+    if (regular_browsers.size() == 1) {
+      current_browser = *regular_browsers.begin();
+    } else {
+      for (Browser* browser : regular_browsers) {
+        if (browser->GetWebStateList()->GetIndexOfWebState(current_web_state) !=
+            WebStateList::kInvalidIndex) {
+          current_browser = browser;
+          break;
+        }
+      }
+    }
+
+    CHECK(current_browser, base::NotFatalUntil::M138);
+
+    // TODO(crbug.com/409825122): Avoid calling
+    // HandleShareURLNavigationIntercepted for some navigation cases.
+    auto context =
+        std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
+            current_browser);
+    collaboration_service->HandleShareURLNavigationIntercepted(
+        url, std::move(context),
+        collaboration::GetEntryPointFromPageTransition(
+            request_info.transition_type));
+    std::move(callback).Run(PolicyDecision::Cancel());
+
+    // Close the tab if the url interception ends with an empty page.
+    const GURL& last_committed_url = web_state()->GetLastCommittedURL();
+    if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
+        last_committed_url.is_empty()) {
+      web_state()->CloseWebState();
+    }
+    return;
+  }
+
+  std::move(callback).Run(PolicyDecision::Allow());
+}

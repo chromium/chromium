@@ -6,6 +6,8 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_GROUPING_TAB_EVENT_TRACKER_H_
 
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "ui/base/page_transition_types.h"
+
 namespace visited_url_ranking {
 
 class TabEventTracker {
@@ -16,6 +18,9 @@ class TabEventTracker {
   TabEventTracker(const TabEventTracker&) = delete;
   TabEventTracker& operator=(const TabEventTracker&) = delete;
 
+  // The action taken by the user in response to the suggestion.
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.components.visited_url_ranking.url_grouping)
   // The reason for a tab to be selected. This value is platform specific. Extra
   // enums to be added for each platform.
   enum class TabSelectionType {
@@ -41,6 +46,7 @@ class TabEventTracker {
   // Called when a tab is selected. Should be called at initialization time with
   // the active tab at startup.
   virtual void DidSelectTab(int tab_id,
+                            const GURL& url,
                             TabSelectionType tab_selection_type,
                             int last_tab_id) = 0;
 
@@ -56,8 +62,9 @@ class TabEventTracker {
   // Called when a tab is moved in the window.
   virtual void DidMoveTab(int tab_id, int new_index, int current_index) = 0;
 
-  // Called when page load finishes on any candidate tab.
-  virtual void OnPageLoadFinished(int tab_id) = 0;
+  // Called when user-initiated page navigation finishes on any candidate tab.
+  virtual void OnDidFinishNavigation(int tab_id,
+                                     ui::PageTransition page_transition) = 0;
 
   // Called when users enter tab switcher.
   virtual void DidEnterTabSwitcher() = 0;

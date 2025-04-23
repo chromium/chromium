@@ -53,12 +53,13 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
                            GURL url,
                            std::u16string username,
                            std::u16string password) override;
+  void OnError(LeakDetectionError error) override;
 
   // Initiates the showing of the leak detection notification. It is called by
   // `helper_` after `in_stores` and `is_reused`
   // were determined asynchronously. `all_urls_with_leaked_credentials` contains
   // all the URLs on which the leaked username/password pair is used.
-  void OnShowLeakDetectionNotification(
+  LeakedPasswordDetails PrepareLeakDetails(
       PasswordForm::Store in_stores,
       IsReused is_reused,
       GURL url,
@@ -66,7 +67,8 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
       std::u16string password,
       std::vector<GURL> all_urls_with_leaked_credentials);
 
-  void OnError(LeakDetectionError error) override;
+  // Notifies `client_` about leaked credentials.
+  void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
 
   raw_ptr<PasswordManagerClient> client_;
   // The factory that creates objects for performing a leak check up.
@@ -82,6 +84,8 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // Helper class to asynchronously determine `CredentialLeakType` for leaked
   // credentials.
   std::unique_ptr<LeakDetectionDelegateHelper> helper_;
+
+  base::WeakPtrFactory<LeakDetectionDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

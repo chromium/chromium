@@ -44,7 +44,6 @@ class PolicyWatcherBrowserAgent
 
  private:
   friend class BrowserUserData<PolicyWatcherBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit PolicyWatcherBrowserAgent(Browser* browser);
 

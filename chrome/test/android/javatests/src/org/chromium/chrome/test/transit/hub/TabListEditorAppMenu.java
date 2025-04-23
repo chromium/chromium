@@ -90,7 +90,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(dialog, softKeyboard),
-                itemOnScreen.clickTrigger());
+                itemOnScreen.viewElement.clickTrigger());
         return dialog;
     }
 
@@ -120,7 +120,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(card, undoSnackbar),
-                itemOnScreen.clickTrigger());
+                itemOnScreen.viewElement.clickTrigger());
         return Pair.create(card, undoSnackbar);
     }
 
@@ -136,16 +136,13 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
 
     public Void doCloseTabs(ItemOnScreenFacility<Void> itemOnScreen) {
         TabModel tabModel =
-                mHostStation
-                        .getTabModelSelectorSupplier()
-                        .get()
-                        .getModel(mHostStation.isIncognito());
+                mHostStation.tabModelSelectorElement.get().getModel(mHostStation.isIncognito());
         Condition tabCountDecreased =
                 new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
         mHostStation.exitFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 Transition.conditionOption(tabCountDecreased),
-                itemOnScreen.clickTrigger());
+                itemOnScreen.viewElement.clickTrigger());
 
         return null;
     }

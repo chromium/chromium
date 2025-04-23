@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -707,9 +708,9 @@ class MockSyntheticPointerTouchActionTarget
   }
 
  private:
-  gfx::PointF positions_[kTouchPointersLength];
-  int indexes_[kTouchPointersLength];
-  WebTouchPoint::State states_[kTouchPointersLength];
+  std::array<gfx::PointF, kTouchPointersLength> positions_;
+  std::array<int, kTouchPointersLength> indexes_;
+  std::array<WebTouchPoint::State, kTouchPointersLength> states_;
 };
 
 class MockSyntheticPointerMouseActionTarget

@@ -13,9 +13,9 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_builder.h"
 
 namespace extensions {
@@ -67,7 +67,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
       const std::string& id,
       mojom::ManifestLocation location) {
     scoped_refptr<const Extension> fake_app = CreateExtension(id, location);
-    service()->AddExtension(fake_app.get());
+    registrar()->AddExtension(fake_app.get());
     return fake_app;
   }
 
@@ -121,7 +121,7 @@ TEST_F(ExtensionMigratorTest, HasPreviouslyForceInstalledNew) {
   InitWithExistingProfile();
   scoped_refptr<const Extension> extension =
       AddExtension(kNewId, mojom::ManifestLocation::kExternalPolicyDownload);
-  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
   external_provider_manager()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   // A previously-force-installed-extension should not be persisted by the

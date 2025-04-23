@@ -55,6 +55,7 @@ class AIContextObserver : public ContextLifecycleObserver {
   ScriptPromiseResolver<V8SessionObjectType>* GetResolver() {
     return resolver_;
   }
+  AbortSignal* GetAbortSignal() { return abort_signal_; }
 
   void Cleanup() {
     ResetReceiver();

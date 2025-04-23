@@ -461,8 +461,9 @@ void PrintDialogGtk::ShowDialog(
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
 #if DCHECK_IS_ON()
-  bool oop_printing = context_->process_behavior() !=
-                      printing::PrintingContext::ProcessBehavior::kOopDisabled;
+  bool oop_printing =
+      context_->out_of_process_behavior() !=
+      printing::PrintingContext::OutOfProcessBehavior::kDisabled;
 
   // For in-browser printing, this runs on the print worker thread, so it does
   // not block the UI thread.  For OOP it runs on the service document task

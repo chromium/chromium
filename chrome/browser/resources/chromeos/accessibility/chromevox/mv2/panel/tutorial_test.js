@@ -9,7 +9,7 @@ GEN_INCLUDE(['../testing/mock_feedback.js']);
 /**
  * Test fixture for the interactive tutorial.
  */
-ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
+ChromeVoxMV2TutorialTest = class extends ChromeVoxMV2PanelTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -84,7 +84,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
 };
 
 // TODO(crbug.com/40941587): Flaky on ChromeOS.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_BasicTest', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'DISABLED_BasicTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -114,43 +114,45 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_BasicTest', async function() {
 // main menu.
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonSetTest', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(this.simpleDoc);
-  await this.launchAndWaitForTutorial();
-  const tutorial = this.getTutorial();
-  mockFeedback.expectSpeech('ChromeVox tutorial')
-      .call(doCmd('nextObject'))
-      .expectSpeech('Quick orientation')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
-      .expectSpeech(
-          'Press Search + Right Arrow, or Search + Left Arrow to browse ' +
-          'lessons for this topic')
-      .call(doCmd('nextObject'))
-      .expectSpeech('Welcome to ChromeVox!')
-      .call(() => {
-        // Call from the tutorial directly, instead of navigating to and
-        // clicking on the main menu button.
-        tutorial.showMainMenu_();
-      })
-      .expectSpeech('ChromeVox tutorial')
-      .call(doCmd('nextObject'))
-      .expectSpeech('Quick orientation')
-      .call(doCmd('nextObject'))
-      .expectSpeech('Essential keys', 'Link')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
-      .call(doCmd('nextObject'))
-      .expectSpeech('On, Off, and Stop');
-  await mockFeedback.replay();
-});
+AX_TEST_F(
+    'ChromeVoxMV2TutorialTest', 'DISABLED_LessonSetTest', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.simpleDoc);
+      await this.launchAndWaitForTutorial();
+      const tutorial = this.getTutorial();
+      mockFeedback.expectSpeech('ChromeVox tutorial')
+          .call(doCmd('nextObject'))
+          .expectSpeech('Quick orientation')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
+          .expectSpeech(
+              'Press Search + Right Arrow, or Search + Left Arrow to browse ' +
+              'lessons for this topic')
+          .call(doCmd('nextObject'))
+          .expectSpeech('Welcome to ChromeVox!')
+          .call(() => {
+            // Call from the tutorial directly, instead of navigating to and
+            // clicking on the main menu button.
+            tutorial.showMainMenu_();
+          })
+          .expectSpeech('ChromeVox tutorial')
+          .call(doCmd('nextObject'))
+          .expectSpeech('Quick orientation')
+          .call(doCmd('nextObject'))
+          .expectSpeech('Essential keys', 'Link')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+          .call(doCmd('nextObject'))
+          .expectSpeech('On, Off, and Stop');
+      await mockFeedback.replay();
+    });
 
 // Tests that a static lesson does not show the 'Practice area' button.
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_NoPracticeAreaTest', async function() {
+    'ChromeVoxMV2TutorialTest', 'DISABLED_NoPracticeAreaTest',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -178,7 +180,8 @@ AX_TEST_F(
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_HasPracticeAreaTest', async function() {
+    'ChromeVoxMV2TutorialTest', 'DISABLED_HasPracticeAreaTest',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -206,7 +209,7 @@ AX_TEST_F(
 // Afterward, general hints will be given about using ChromeVox. Lastly,
 // we will give a hint for exiting the tutorial.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
+    'ChromeVoxMV2TutorialTest', 'GeneralNudgesTest', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -236,7 +239,7 @@ AX_TEST_F(
 // can have different nudge messages; this test confirms that nudges given in
 // the practice area differ from those given in the general tutorial context.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest',
+    'ChromeVoxMV2TutorialTest', 'DISABLED_PracticeAreaNudgesTest',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
@@ -273,22 +276,23 @@ AX_TEST_F(
 
 // Tests that the tutorial closes when the 'Exit tutorial' button is clicked.
 // TODO(crbug.com/1332510): Failing on ChromeOS.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_ExitButtonTest', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(this.simpleDoc);
-  await this.launchAndWaitForTutorial();
-  const tutorial = this.getTutorial();
-  mockFeedback.expectSpeech('ChromeVox tutorial')
-      .call(doCmd('previousButton'))
-      .expectSpeech('Exit tutorial')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('Some web content');
-  await mockFeedback.replay();
-});
+AX_TEST_F(
+    'ChromeVoxMV2TutorialTest', 'DISABLED_ExitButtonTest', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.simpleDoc);
+      await this.launchAndWaitForTutorial();
+      const tutorial = this.getTutorial();
+      mockFeedback.expectSpeech('ChromeVox tutorial')
+          .call(doCmd('previousButton'))
+          .expectSpeech('Exit tutorial')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech('Some web content');
+      await mockFeedback.replay();
+    });
 
 // Tests that the tutorial closes when Escape is pressed.
 // TODO(crbug.com/1332510): Failing on ChromeOS.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EscapeTest', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'DISABLED_EscapeTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -309,36 +313,37 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EscapeTest', async function() {
 // Tests that the main menu button navigates the user to the main menu screen.
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_MainMenuButton', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(this.simpleDoc);
-  await this.launchAndWaitForTutorial();
-  const tutorial = this.getTutorial();
-  mockFeedback.expectSpeech('ChromeVox tutorial')
-      .call(this.assertActiveScreen.bind(this, 'main_menu'))
-      .call(doCmd('nextObject'))
-      .expectSpeech('Quick orientation')
-      .call(doCmd('nextObject'))
-      .expectSpeech('Essential keys')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
-      .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
-      .call(doCmd('previousButton'))
-      .expectSpeech('Exit tutorial')
-      .call(doCmd('previousButton'))
-      .expectSpeech('Main menu')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('ChromeVox tutorial')
-      .call(this.assertActiveScreen.bind(this, 'main_menu'));
-  await mockFeedback.replay();
-});
+AX_TEST_F(
+    'ChromeVoxMV2TutorialTest', 'DISABLED_MainMenuButton', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.simpleDoc);
+      await this.launchAndWaitForTutorial();
+      const tutorial = this.getTutorial();
+      mockFeedback.expectSpeech('ChromeVox tutorial')
+          .call(this.assertActiveScreen.bind(this, 'main_menu'))
+          .call(doCmd('nextObject'))
+          .expectSpeech('Quick orientation')
+          .call(doCmd('nextObject'))
+          .expectSpeech('Essential keys')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+          .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
+          .call(doCmd('previousButton'))
+          .expectSpeech('Exit tutorial')
+          .call(doCmd('previousButton'))
+          .expectSpeech('Main menu')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech('ChromeVox tutorial')
+          .call(this.assertActiveScreen.bind(this, 'main_menu'));
+      await mockFeedback.replay();
+    });
 
 // Tests that the all lessons button navigates the user to the lesson menu
 // screen.
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_AllLessonsButton', async function() {
+    'ChromeVoxMV2TutorialTest', 'DISABLED_AllLessonsButton', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -371,7 +376,8 @@ AX_TEST_F(
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_NextPreviousButtons', async function() {
+    'ChromeVoxMV2TutorialTest', 'DISABLED_NextPreviousButtons',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -398,7 +404,7 @@ AX_TEST_F(
     });
 
 // Tests that the title of an interactive lesson is read when shown.
-AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'AutoReadTitle', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -424,7 +430,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
 // Tests that we read a hint for navigating a lesson when it is shown.
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'DISABLED_LessonHint', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -447,7 +453,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
 });
 
 // Tests for correct speech and earcons on the earcons lesson.
-AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'EarconLesson', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -481,7 +487,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_QuickOrientationLessonTest',
+    'ChromeVoxMV2TutorialTest', 'DISABLED_QuickOrientationLessonTest',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
@@ -547,7 +553,7 @@ AX_TEST_F(
     });
 
 // Tests that tutorial nudges are restarted whenever the current range changes.
-AX_TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'RestartNudges', async function() {
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
   const tutorial = this.getTutorial();
@@ -571,7 +577,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
 });
 
 // Tests that the tutorial closes and ChromeVox navigates to a resource link.
-AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'ResourcesTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -595,7 +601,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
 
 // Tests that choosing a curriculum with only 1 lesson automatically opens the
 // lesson.
-AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'OnlyLessonTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -630,7 +636,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
 // Tests that interactive mode and ForcedActionPath are properly set when
 // showing different screens in the tutorial.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
+    'ChromeVoxMV2TutorialTest', 'StartStopInteractiveMode', async function() {
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
       const tutorial = this.getTutorial();
@@ -686,7 +692,7 @@ AX_TEST_F(
 
 // Tests that gestures can be used in the tutorial to navigate.
 // TODO(crbug.com/1332510): Failing on ChromeOS.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_Gestures', async function() {
+AX_TEST_F('ChromeVoxMV2TutorialTest', 'DISABLED_Gestures', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -708,7 +714,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_Gestures', async function() {
 // TODO(crbug.com/1193799): fix ax node errors causing console spew and
 // breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_TouchOrientation', async function() {
+    'ChromeVoxMV2TutorialTest', 'DISABLED_TouchOrientation', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -742,7 +748,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
+    'ChromeVoxMV2TutorialTest', 'GeneralTouchNudges', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();

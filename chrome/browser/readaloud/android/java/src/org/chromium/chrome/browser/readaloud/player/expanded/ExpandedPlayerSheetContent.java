@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -47,6 +49,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final SeekBar mSeekBar;
     private final ScrollView mScrollView;
     private final LinearLayout mPlayerControls;
+    private ImageView mModeSelectorButton;
+    private boolean mIsModeActive;
     private View mContentView;
     // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
@@ -94,6 +98,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
+        mModeSelectorButton = mContentView.findViewById(R.id.readaloud_mode_selector);
+        mModeSelectorButton.setSelected(mIsModeActive);
 
         View publisherButton = mContentView.findViewById(R.id.readaloud_player_publisher_button);
         publisherButton.addOnLayoutChangeListener(
@@ -164,6 +170,27 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mBottomSheetController.hideContent(this, /* animate= */ true);
     }
 
+    void setPlaybackMode(PlaybackMode playbackMode) {
+      TextView chromeNowPlaying = mContentView.findViewById(R.id.chrome_now_playing_text);
+      if (playbackMode == PlaybackMode.OVERVIEW) {
+            mIsModeActive = true;
+            mModeSelectorButton.setSelected(true);
+            chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
+        } else {
+            mIsModeActive = false;
+            mModeSelectorButton.setSelected(false);
+            chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing));
+        }
+    }
+
+    void setPlaybackModeSelectionEnabled(PlaybackModeSelectionEnablementStatus status) {
+        if (status == PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED) {
+          mModeSelectorButton.setVisibility(View.VISIBLE);
+        } else {
+          mModeSelectorButton.setVisibility(View.GONE);
+        }
+    }
+
     void setTitle(String title) {
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title)).setText(title);
     }
@@ -199,6 +226,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
         setOnClickListener(R.id.readaloud_playback_speed, this::showSpeedMenu);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
+        setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
@@ -246,6 +274,17 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     @Nullable
     OptionsMenuSheetContent getOptionsMenu() {
         return mOptionsMenu;
+    }
+
+    private void onPlaybackModeChangeClick(InteractionHandler interactionHandler) {
+        mIsModeActive = !mIsModeActive;
+        mModeSelectorButton.setSelected(mIsModeActive);
+
+        if (mIsModeActive) {
+            interactionHandler.onPlaybackModeChanged(PlaybackMode.OVERVIEW);
+        } else {
+            interactionHandler.onPlaybackModeChanged(PlaybackMode.CLASSIC);
+        }
     }
 
     public void showOptionsMenu() {

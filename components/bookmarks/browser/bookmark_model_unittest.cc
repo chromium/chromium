@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <set>
 #include <string>
@@ -80,10 +81,11 @@ using testing::WithArg;
 // a new folder/bookmark or updating a title of a folder/bookmark.
 // Note that whitespace characters are all replaced with spaces, but spaces are
 // not collapsed or trimmed.
-constexpr struct {
+struct UrlWhitespaceTestCases {
   std::string_view input_title;
   std::string_view expected_title;
-} kUrlWhitespaceTestCases[] = {
+};
+constexpr auto kUrlWhitespaceTestCases = std::to_array<UrlWhitespaceTestCases>({
     {"foobar", "foobar"},
     // Newlines.
     {"foo\nbar", "foo bar"},
@@ -105,36 +107,38 @@ constexpr struct {
     {"  foo\tbar\n", "  foo bar "},
     {"\t foo \t  bar  \t", "  foo    bar   "},
     {"\n foo\r\n\tbar\n \t", "  foo   bar   "},
-};
+});
 
 // Test cases used to test the removal of extra whitespace when adding
 // a new folder/bookmark or updating a title of a folder/bookmark.
-constexpr struct {
+struct TitleWhitespaceTestCases {
   std::string_view input_title;
   std::string_view expected_title;
-} kTitleWhitespaceTestCases[] = {
-    {"foobar", "foobar"},
-    // Newlines.
-    {"foo\nbar", "foo bar"},
-    {"foo\n\nbar", "foo  bar"},
-    {"foo\n\n\nbar", "foo   bar"},
-    {"foo\r\nbar", "foo  bar"},
-    {"foo\r\n\r\nbar", "foo    bar"},
-    {"\nfoo\nbar\n", " foo bar "},
-    // Spaces.
-    {"foo  bar", "foo  bar"},
-    {" foo bar ", " foo bar "},
-    {"  foo  bar  ", "  foo  bar  "},
-    // Tabs.
-    {"\tfoo\tbar\t", " foo bar "},
-    {"\tfoo bar\t", " foo bar "},
-    // Mixed cases.
-    {"\tfoo\nbar\t", " foo bar "},
-    {"\tfoo\r\nbar\t", " foo  bar "},
-    {"  foo\tbar\n", "  foo bar "},
-    {"\t foo \t  bar  \t", "  foo    bar   "},
-    {"\n foo\r\n\tbar\n \t", "  foo   bar   "},
 };
+constexpr auto kTitleWhitespaceTestCases =
+    std::to_array<TitleWhitespaceTestCases>({
+        {"foobar", "foobar"},
+        // Newlines.
+        {"foo\nbar", "foo bar"},
+        {"foo\n\nbar", "foo  bar"},
+        {"foo\n\n\nbar", "foo   bar"},
+        {"foo\r\nbar", "foo  bar"},
+        {"foo\r\n\r\nbar", "foo    bar"},
+        {"\nfoo\nbar\n", " foo bar "},
+        // Spaces.
+        {"foo  bar", "foo  bar"},
+        {" foo bar ", " foo bar "},
+        {"  foo  bar  ", "  foo  bar  "},
+        // Tabs.
+        {"\tfoo\tbar\t", " foo bar "},
+        {"\tfoo bar\t", " foo bar "},
+        // Mixed cases.
+        {"\tfoo\nbar\t", " foo bar "},
+        {"\tfoo\r\nbar\t", " foo  bar "},
+        {"  foo\tbar\n", "  foo bar "},
+        {"\t foo \t  bar  \t", "  foo    bar   "},
+        {"\n foo\r\n\tbar\n \t", "  foo   bar   "},
+    });
 
 // TestBookmarkClient that also has basic support for undoing removals.
 class TestBookmarkClientWithUndo : public TestBookmarkClient {
@@ -169,7 +173,7 @@ class TestBookmarkClientWithUndo : public TestBookmarkClient {
   }
 
  private:
-  raw_ptr<const BookmarkNode, DanglingUntriaged> parent_ = nullptr;
+  raw_ptr<const BookmarkNode> parent_ = nullptr;
   size_t index_ = 0;
   std::unique_ptr<BookmarkNode> last_removed_node_;
 };

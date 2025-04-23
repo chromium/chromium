@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenation_minikin.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
@@ -92,23 +88,25 @@ StringView HyphenationMinikin::WordToHyphenate(
     const StringView& text,
     unsigned* num_leading_chars_out) {
   if (text.Is8Bit()) {
-    const LChar* begin = text.Characters8();
-    const LChar* end = begin + text.length();
+    const LChar* begin = UNSAFE_TODO(text.Characters8());
+    const LChar* end = UNSAFE_TODO(begin + text.length());
     while (begin != end && ShouldSkipLeadingChar(*begin))
-      ++begin;
-    while (begin != end && ShouldSkipTrailingChar(end[-1]))
-      --end;
-    *num_leading_chars_out = static_cast<unsigned>(begin - text.Characters8());
+      UNSAFE_TODO(++begin);
+    while (begin != end && ShouldSkipTrailingChar(UNSAFE_TODO(end[-1]))) {
+      UNSAFE_TODO(--end);
+    }
+    *num_leading_chars_out =
+        UNSAFE_TODO(static_cast<unsigned>(begin - text.Characters8()));
     CHECK_GE(end, begin);
-    return StringView(base::span(begin, end));
+    return StringView(UNSAFE_TODO(base::span(begin, end)));
   }
-  const UChar* begin = text.Characters16();
+  const UChar* begin = UNSAFE_TODO(text.Characters16());
   int index = 0;
   int len = text.length();
   while (index < len) {
     int next_index = index;
     UChar32 c;
-    U16_NEXT(begin, next_index, len, c);
+    UNSAFE_TODO(U16_NEXT(begin, next_index, len, c));
     if (!ShouldSkipLeadingChar(c))
       break;
     index = next_index;
@@ -116,7 +114,7 @@ StringView HyphenationMinikin::WordToHyphenate(
   while (index < len) {
     int prev_len = len;
     UChar32 c;
-    U16_PREV(begin, index, prev_len, c);
+    UNSAFE_TODO(U16_PREV(begin, index, prev_len, c));
     if (!ShouldSkipTrailingChar(c))
       break;
     len = prev_len;
@@ -133,13 +131,10 @@ Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
     text16_bit.Ensure16Bit();
-    hyphenator_->hyphenate(
-        &result, reinterpret_cast<const uint16_t*>(text16_bit.Characters16()),
-        text16_bit.length());
+    hyphenator_->hyphenate(&result, text16_bit.SpanUint16().data(),
+                           text16_bit.length());
   } else {
-    hyphenator_->hyphenate(
-        &result, reinterpret_cast<const uint16_t*>(text.Characters16()),
-        text.length());
+    hyphenator_->hyphenate(&result, text.SpanUint16().data(), text.length());
   }
   return result;
 }

@@ -306,8 +306,6 @@ class CONTENT_EXPORT FedCmMetrics {
       std::optional<bool> idp_signin_status,
       IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
 
-  void SetSessionID(int session_id);
-
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
   // mismatch flow or active flow with users whose login status is "logged-out".
@@ -458,8 +456,7 @@ class CONTENT_EXPORT FedCmMetrics {
       FedCmDisconnectStatus status,
       std::optional<base::TimeDelta> duration,
       const FedCmRequesterFrameType& requester_frame_type,
-      const GURL& provider_url,
-      int disconnect_session_id);
+      const GURL& provider_url);
 
   // Records the status of opening the continue_on dialog.
   void RecordContinueOnPopupStatus(FedCmContinueOnPopupStatus status);
@@ -511,10 +508,19 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the count of identity providers in the request
   void RecordIdentityProvidersCount(int count);
 
-  int session_id() { return session_id_; }
-
  private:
   ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
+  ukm::builders::Blink_FedCm* GetOrCreateFedCmBuilder();
+  ukm::builders::Blink_FedCmIdp* GetOrCreateFedCmIdpBuilder(
+      const GURL& provider);
+
+  // Builder to log the Blink.FedCm UKM event.
+  std::unique_ptr<ukm::builders::Blink_FedCm> fedcm_builder_;
+
+  // Map of provider's config URL to its builder to log the Blink.FedCmIdp UKM
+  // event.
+  std::map<GURL, std::unique_ptr<ukm::builders::Blink_FedCmIdp>>
+      provider_to_fedcm_idp_builder_;
 
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
@@ -523,10 +529,17 @@ class CONTENT_EXPORT FedCmMetrics {
   // provider's config URL to its UKM SourceId.
   std::map<GURL, ukm::SourceId> provider_source_ids_;
 
-  // The session ID associated to the FedCM token request for which this object
-  // is recording metrics. Each FedCM call gets a random integer session id,
-  // which helps group UKM events by the session id.
-  int session_id_ = -1;
+  // Map of provider's config URL to its number of accounts request sent.
+  std::map<GURL, int> accounts_request_sent_;
+
+  // Map of provider's config URL to its number of accounts dialogs shown.
+  std::map<GURL, int> accounts_dialog_shown_;
+
+  // Map of provider's config URL to its number of mismatch dialogs shown.
+  std::map<GURL, int> mismatch_dialog_shown_;
+
+  // Whether |RecordRequestTokenStatus| has been called.
+  bool has_recorded_request_token_status_{false};
 };
 
 // The following metric is recorded for UMA and UKM, but does not require an
@@ -534,7 +547,7 @@ class CONTENT_EXPORT FedCmMetrics {
 // call from the given RenderFrameHost.
 void RecordPreventSilentAccess(
     const FedCmRequesterFrameType& requester_frame_type,
-    int session_id);
+    int source_id);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.

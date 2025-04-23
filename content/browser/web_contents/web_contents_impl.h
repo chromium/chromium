@@ -119,6 +119,10 @@ namespace input {
 class RenderWidgetHostInputEventRouter;
 }  // namespace input
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -312,10 +316,6 @@ class CONTENT_EXPORT WebContentsImpl
     return delegated_ink_point_renderer_.is_bound();
   }
 
-  // Adds the given accessibility mode to the current accessibility mode
-  // bitmap.
-  void AddAccessibilityModeForTesting(ui::AXMode mode);
-
   // Sets the zoom level for frames associated with this WebContents.
   void UpdateZoom();
 
@@ -361,10 +361,6 @@ class CONTENT_EXPORT WebContentsImpl
   // first commit.
   // TODO(crbug.com/40165695): Rename to HasAccessedInitialMainDocument
   bool HasAccessedInitialDocument();
-
-#if BUILDFLAG(IS_ANDROID)
-  void SetPrimaryMainFrameImportance(ChildProcessImportance importance);
-#endif
 
   // Returns the human-readable name for title in Media Controls.
   // If the returned value is an empty string, it means that there is no
@@ -630,6 +626,9 @@ class CONTENT_EXPORT WebContentsImpl
   void ActivateNearestFindResult(float x, float y) override;
   void RequestFindMatchRects(int current_version) override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
+  ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() override;
+  void SetPrimaryMainFrameImportance(
+      ChildProcessImportance importance) override;
 #endif
   bool HasRecentInteraction() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
@@ -948,10 +947,14 @@ class CONTENT_EXPORT WebContentsImpl
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   gfx::NativeWindow GetOwnerNativeWindow() override;
 
-  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
+  media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo()
       const override;
+  void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request,
+      RenderFrameHostImpl* initiator_rfh) override;
 
-  // RenderViewHostDelegate ----------------------------------------------------
+  // RenderViewHostDelegate
+  // ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
   void RenderViewReady(RenderViewHost* render_view_host) override;
   void RenderViewTerminated(RenderViewHost* render_view_host,
@@ -1000,6 +1003,7 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,

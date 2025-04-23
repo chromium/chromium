@@ -532,12 +532,14 @@ void SessionServiceBase::OnGotSessionCommands(
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
   SessionID active_window_id = SessionID::InvalidValue();
   std::string platform_session_id;
+  std::set<SessionID> discarded_window_ids;
 
   sessions::RestoreSessionFromCommands(commands, &valid_windows,
-                                       &active_window_id, &platform_session_id);
+                                       &active_window_id, &platform_session_id,
+                                       &discarded_window_ids);
   RemoveUnusedRestoreWindows(&valid_windows);
 
-  InitializePlatformSessionIfNeeded(platform_session_id);
+  InitializePlatformSessionIfNeeded(platform_session_id, discarded_window_ids);
 
   std::move(callback).Run(std::move(valid_windows), active_window_id,
                           read_error);
@@ -820,7 +822,8 @@ void SessionServiceBase::SetSavingEnabled(bool enabled) {
 }
 
 std::optional<std::string> SessionServiceBase::GetPlatformSessionId() {
-  InitializePlatformSessionIfNeeded(/*restored_platform_session_id=*/{});
+  InitializePlatformSessionIfNeeded(/*restored_platform_session_id=*/{},
+                                    /*discarded_window_ids=*/{});
   return platform_session_id_;
 }
 
@@ -831,7 +834,8 @@ void SessionServiceBase::SetPlatformSessionIdForTesting(const std::string& id) {
 }
 
 void SessionServiceBase::InitializePlatformSessionIfNeeded(
-    const std::string& restored_platform_session_id) {
+    const std::string& restored_platform_session_id,
+    const std::set<SessionID>& discarded_window_ids) {
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
   if (!platform->GetPlatformRuntimeProperties().supports_session_management ||
@@ -853,8 +857,15 @@ void SessionServiceBase::InitializePlatformSessionIfNeeded(
   if (actual_platform_session_id.has_value()) {
     DVLOG(1) << "Successfully initialized platform session."
              << " session_service=" << this
-             << " session_id=" << actual_platform_session_id.value();
+             << " session_id=" << actual_platform_session_id.value()
+             << " discarded_windows=" << discarded_window_ids.size();
     platform_session_id_ = std::move(actual_platform_session_id);
+
+    for (const SessionID& session_id : discarded_window_ids) {
+      session_manager->RemoveWindow(platform_session_id_.value(),
+                                    session_id.id());
+    }
+
     ScheduleCommand(sessions::CreateSetPlatformSessionIdCommand(
         platform_session_id_.value()));
   }

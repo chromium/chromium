@@ -333,21 +333,8 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
       annotated_page_data->annotated_page_content =
           mojo_base::ProtoWrapper(annotated_page_content_result_->proto);
 
-      auto metadata_mojom = mojom::PageMetadata::New();
-      // TODO(gklassen): Move the definition of AIPageContentMetadata into
-      // a mojom to remove the need for conversion.
-      for (const auto& frame_metadata :
-           annotated_page_content_result_->metadata.frame_metadata) {
-        auto frame_metadata_mojom = mojom::FrameMetadata::New();
-        frame_metadata_mojom->url = frame_metadata.url;
-        for (const auto& meta_tag : frame_metadata.meta_tags) {
-          frame_metadata_mojom->meta_tags.push_back(
-              mojom::MetaTag::New(meta_tag.name, meta_tag.content));
-        }
-        metadata_mojom->frame_metadata.push_back(
-            std::move(frame_metadata_mojom));
-      }
-      annotated_page_data->metadata = std::move(metadata_mojom);
+      annotated_page_data->metadata =
+          std::move(annotated_page_content_result_->metadata);
 
       tab_context->annotated_page_data = std::move(annotated_page_data);
     }

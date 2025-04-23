@@ -60,7 +60,6 @@ bool AndroidSmsAppManagerImpl::PwaDelegate::TransferItemAttributes(
 
 bool AndroidSmsAppManagerImpl::PwaDelegate::IsAppRegistryReady(
     Profile* profile) {
-  // |provider| will be nullptr if Lacros web apps are enabled.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return false;
@@ -71,7 +70,6 @@ bool AndroidSmsAppManagerImpl::PwaDelegate::IsAppRegistryReady(
 void AndroidSmsAppManagerImpl::PwaDelegate::ExecuteOnAppRegistryReady(
     Profile* profile,
     base::OnceClosure task) {
-  // |provider| will be nullptr if Lacros web apps are enabled.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return;

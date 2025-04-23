@@ -292,7 +292,7 @@ using signin_metrics::PromoAction;
                             view:itemView
         forceSnackbarOverToolbar:NO
                       withSource:metricSignOut
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];
                       }];
   _signoutCoordinator.delegate = self;

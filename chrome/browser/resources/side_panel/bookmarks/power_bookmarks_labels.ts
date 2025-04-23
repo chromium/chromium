@@ -26,19 +26,27 @@ export class PowerBookmarksLabelsElement extends PolymerElement {
 
   static get properties() {
     return {
-      disabled: Boolean,
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
       labels: {
         type: Array,
         computed: 'computeLabels(trackedProductInfos.*)',
         notify: true,
       },
-      trackedProductInfos: Object,
+      trackedProductInfos: {
+        type: Object,
+        value: () => {
+          return {};
+        },
+      },
     };
   }
 
-  disabled: boolean = false;
-  labels: Label[] = [];
-  trackedProductInfos: {[key: string]: BookmarkProductInfo} = {};
+  declare disabled: boolean;
+  declare labels: Label[];
+  declare trackedProductInfos: {[key: string]: BookmarkProductInfo};
 
   private computeLabels() {
     const labels: Label[] = [];

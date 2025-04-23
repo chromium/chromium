@@ -153,6 +153,10 @@ class BackgroundTracingManagerImpl
   CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr>
   GetAllPresetScenarios() const;
 
+  std::vector<std::string> OverwritePresetScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering);
+
   // Returns the list of scenario hashes that are currently enabled. These are
   // either all preset scenarios or all field scenarios.
   CONTENT_EXPORT std::vector<std::string> GetEnabledScenarios() const;
@@ -235,6 +239,10 @@ class BackgroundTracingManagerImpl
   bool RequestActivateScenario();
   void DisableScenarios();
   void AddMetadataGeneratorFunction();
+  std::vector<std::string> AddPresetScenariosImpl(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering,
+      bool overwrite_conflicts);
 
   // Named triggers
   bool DoEmitNamedTrigger(const std::string& trigger_name,

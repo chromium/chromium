@@ -26,12 +26,14 @@ class CSSCustomTransformFunctionInterpolationType
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
   InterpolationValue PreInterpolationCompositeIfNeeded(
@@ -39,6 +41,10 @@ class CSSCustomTransformFunctionInterpolationType
       const InterpolationValue& underlying,
       EffectModel::CompositeOperation,
       ConversionCheckers&) const final;
+
+  InterpolationValue MaybeConvertTransformFunction(
+      const CSSValue&,
+      const CSSToLengthConversionData&) const;
 
   // These methods only apply to CSSInterpolationTypes used by standard CSS
   // properties.

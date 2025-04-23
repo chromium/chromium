@@ -234,15 +234,18 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   double elevation[render_quantum_frames_expected];
   float total_gain[render_quantum_frames_expected];
 
-  position_x_->CalculateSampleAccurateValues(panner_x, frames_to_process);
-  position_y_->CalculateSampleAccurateValues(panner_y, frames_to_process);
-  position_z_->CalculateSampleAccurateValues(panner_z, frames_to_process);
-  orientation_x_->CalculateSampleAccurateValues(orientation_x,
-                                                frames_to_process);
-  orientation_y_->CalculateSampleAccurateValues(orientation_y,
-                                                frames_to_process);
-  orientation_z_->CalculateSampleAccurateValues(orientation_z,
-                                                frames_to_process);
+  position_x_->CalculateSampleAccurateValues(
+      base::span(panner_x).first(frames_to_process));
+  position_y_->CalculateSampleAccurateValues(
+      base::span(panner_y).first(frames_to_process));
+  position_z_->CalculateSampleAccurateValues(
+      base::span(panner_z).first(frames_to_process));
+  orientation_x_->CalculateSampleAccurateValues(
+      base::span(orientation_x).first(frames_to_process));
+  orientation_y_->CalculateSampleAccurateValues(
+      base::span(orientation_y).first(frames_to_process));
+  orientation_z_->CalculateSampleAccurateValues(
+      base::span(orientation_z).first(frames_to_process));
 
   const float* listener_x = listener_handler_->GetPositionXValues(
       render_quantum_frames);
@@ -306,12 +309,18 @@ void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 
   DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
-  position_x_->CalculateSampleAccurateValues(values, frames_to_process);
-  position_y_->CalculateSampleAccurateValues(values, frames_to_process);
-  position_z_->CalculateSampleAccurateValues(values, frames_to_process);
-  orientation_x_->CalculateSampleAccurateValues(values, frames_to_process);
-  orientation_y_->CalculateSampleAccurateValues(values, frames_to_process);
-  orientation_z_->CalculateSampleAccurateValues(values, frames_to_process);
+  position_x_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  position_y_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  position_z_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  orientation_x_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  orientation_y_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  orientation_z_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 void PannerHandler::Initialize() {

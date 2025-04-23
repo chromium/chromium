@@ -173,41 +173,35 @@ class RasterBufferProviderTest
 
   // Overridden from testing::Test:
   void SetUp() override {
-    RasterCapabilities raster_caps;
-    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
-
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 context_provider_->SharedImageInterface(),
-                raster_caps.tile_format,
                 /*is_software=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
             kMaxBytesPerCopyOperation, false, kMaxStagingBuffers,
-            raster_caps.tile_format, raster_caps.tile_overlay_candidate);
+            /*is_overlay_candidate=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             context_provider_.get(), worker_context_provider_.get(),
-            raster_caps, gfx::Size(), true, pending_raster_queries_.get(), 1);
+            /*is_overlay_candidate=*/false, gfx::Size(),
+            pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 layer_tree_frame_sink_.get()->shared_image_interface(),
-                raster_caps.tile_format, /*is_software=*/true);
+                /*is_software=*/true);
         break;
     }
 
@@ -257,8 +251,8 @@ class RasterBufferProviderTest
   }
 
   ResourcePool::InUsePoolResource AllocateResource(const gfx::Size& size) {
-    auto format = raster_buffer_provider_->GetFormat();
-    return pool_->AcquireResource(size, format, gfx::ColorSpace());
+    return pool_->AcquireResource(size, viz::SinglePlaneFormat::kRGBA_8888,
+                                  gfx::ColorSpace());
   }
 
   void AppendTask(unsigned id,

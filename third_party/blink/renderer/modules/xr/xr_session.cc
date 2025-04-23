@@ -233,6 +233,20 @@ V8XRDepthDataFormat::Enum DepthDataFormatToEnum(
   NOTREACHED();
 }
 
+std::optional<V8XRDepthType::Enum> DepthTypeToEnum(
+    std::optional<device::mojom::XRDepthType> maybe_type) {
+  if (!maybe_type) {
+    return std::nullopt;
+  }
+  switch (*maybe_type) {
+    case device::mojom::XRDepthType::kRaw:
+      return V8XRDepthType::Enum::kRaw;
+    case device::mojom::XRDepthType::kSmooth:
+      return V8XRDepthType::Enum::kSmooth;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 #define DCHECK_HIT_TEST_SOURCES()                                         \
@@ -414,6 +428,7 @@ XRSession::XRSession(
     auto* depth_config = device_config_->depth_configuration.get();
     depth_usage_ = DepthUsageToEnum(depth_config->depth_usage);
     depth_data_format_ = DepthDataFormatToEnum(depth_config->depth_data_format);
+    depth_type_ = DepthTypeToEnum(depth_config->depth_type);
   }
 }
 
@@ -562,6 +577,21 @@ std::optional<V8XRDepthDataFormat> XRSession::depthDataFormat(
   }
 
   return V8XRDepthDataFormat(depth_data_format_);
+}
+
+std::optional<V8XRDepthType> XRSession::depthType(
+    ExceptionState& exception_state) {
+  if (!device_config_->depth_configuration) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return std::nullopt;
+  }
+
+  if (!depth_type_) {
+    return std::nullopt;
+  }
+
+  return V8XRDepthType(*depth_type_);
 }
 
 void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {

@@ -186,8 +186,7 @@ void DeleteBookmarkFolders(BookmarkModel* model,
 // If there are no user bookmarks for url, a bookmark is created.
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const GURL& url,
-                                       const std::u16string& title,
-                                       const BookmarkNode* parent = nullptr);
+                                       const std::u16string& title);
 
 // Removes all bookmarks for the given `url`.
 void RemoveAllBookmarks(BookmarkModel* model,

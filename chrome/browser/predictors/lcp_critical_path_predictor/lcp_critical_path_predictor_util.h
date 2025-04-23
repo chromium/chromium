@@ -108,7 +108,9 @@ struct LcppDataInputs {
   // data of the LCP candidate that won.
   //
   // a locator of the LCP element.
-  std::string lcp_element_locator;
+  std::optional<std::string> lcp_element_locator;
+  std::optional<std::string> lcp_element_locator_image;
+
   // async script urls of the latest LCP candidate element.
   std::vector<GURL> lcp_influencer_scripts;
   std::vector<GURL> preconnect_origins;
@@ -140,6 +142,9 @@ struct LcppDataInputs {
   // URLs of preloaded but not actually used resources.
   std::vector<GURL> unused_preload_resources;
 };
+
+const std::optional<std::string>& GetLcpElementLocatorForCriticalPathPredictor(
+    const LcppDataInputs& inputs);
 
 bool UpdateLcppStatWithLcppDataInputs(const LoadingPredictorConfig& config,
                                       const LcppDataInputs& inputs,

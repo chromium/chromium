@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -95,7 +96,15 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, ShouldDisplayManagedUiSupervised) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShouldDisplayManagedUiSupervised \
+  DISABLED_ShouldDisplayManagedUiSupervised
+#else
+#define MAYBE_ShouldDisplayManagedUiSupervised ShouldDisplayManagedUiSupervised
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_ShouldDisplayManagedUiSupervised) {
   TestingProfile::Builder builder;
   builder.SetIsSupervisedProfile();
   std::unique_ptr<TestingProfile> profile = builder.Build();
@@ -106,7 +115,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, ShouldDisplayManagedUiSupervised) {
 
 // On ChromeOS we don't display the management UI for enterprise or supervised
 // users.
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelEnterprise) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetDeviceManagedUiHelpLabelEnterprise \
+  DISABLED_GetDeviceManagedUiHelpLabelEnterprise
+#else
+#define MAYBE_GetDeviceManagedUiHelpLabelEnterprise \
+  GetDeviceManagedUiHelpLabelEnterprise
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetDeviceManagedUiHelpLabelEnterprise) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();
   policy::ScopedManagementServiceOverrideForTesting browser_management(
@@ -167,7 +186,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelEnterprise) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelSupervised) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetDeviceManagedUiHelpLabelSupervised \
+  DISABLED_GetDeviceManagedUiHelpLabelSupervised
+#else
+#define MAYBE_GetDeviceManagedUiHelpLabelSupervised \
+  GetDeviceManagedUiHelpLabelSupervised
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetDeviceManagedUiHelpLabelSupervised) {
   // Simulate a supervised profile.
   TestingProfile::Builder builder;
   builder.SetIsSupervisedProfile();
@@ -183,7 +212,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelSupervised) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelNotManaged) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetDeviceManagedUiHelpLabelNotManaged \
+  DISABLED_GetDeviceManagedUiHelpLabelNotManaged
+#else
+#define MAYBE_GetDeviceManagedUiHelpLabelNotManaged \
+  GetDeviceManagedUiHelpLabelNotManaged
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetDeviceManagedUiHelpLabelNotManaged) {
   // Simulate a non managed profile.
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
@@ -229,7 +268,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconEnterprise) {
             GetManagedUiIcon(profile_supervised.get()).name);
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiIconSupervised DISABLED_GetManagedUiIconSupervised
+#else
+#define MAYBE_GetManagedUiIconSupervised GetManagedUiIconSupervised
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiIconSupervised) {
   // Simulate a supervised profile.
   TestingProfile::Builder builder;
   builder.SetIsSupervisedProfile();
@@ -282,7 +328,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkNotManaged) {
   EXPECT_EQ(GURL(), GetManagedUiUrl(profile.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiMenuItemLabelEnterprise \
+  DISABLED_GetManagedUiMenuItemLabelEnterprise
+#else
+#define MAYBE_GetManagedUiMenuItemLabelEnterprise \
+  GetManagedUiMenuItemLabelEnterprise
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetManagedUiMenuItemLabelEnterprise) {
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 
@@ -431,7 +487,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiMenuItemTooltipEnterprise \
+  DISABLED_GetManagedUiMenuItemTooltipEnterprise
+#else
+#define MAYBE_GetManagedUiMenuItemTooltipEnterprise \
+  GetManagedUiMenuItemTooltipEnterprise
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetManagedUiMenuItemTooltipEnterprise) {
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 
@@ -574,7 +640,17 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelSupervised) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiMenuItemLabelSupervised \
+  DISABLED_GetManagedUiMenuItemLabelSupervised
+#else
+#define MAYBE_GetManagedUiMenuItemLabelSupervised \
+  GetManagedUiMenuItemLabelSupervised
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest,
+                       MAYBE_GetManagedUiMenuItemLabelSupervised) {
   if (!ExpectManagedUiForSupervisedUsers()) {
     return;
   }
@@ -589,7 +665,15 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelSupervised) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconEnterprise) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiWebUIIconEnterprise \
+  DISABLED_GetManagedUiWebUIIconEnterprise
+#else
+#define MAYBE_GetManagedUiWebUIIconEnterprise GetManagedUiWebUIIconEnterprise
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiWebUIIconEnterprise) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();
   policy::ScopedManagementServiceOverrideForTesting browser_management(
@@ -629,7 +713,15 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiWebUILabelEnterprise \
+  DISABLED_GetManagedUiWebUILabelEnterprise
+#else
+#define MAYBE_GetManagedUiWebUILabelEnterprise GetManagedUiWebUILabelEnterprise
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiWebUILabelEnterprise) {
   TestingProfile::Builder builder;
   builder.SetProfileName("foo");
   auto profile = builder.Build();
@@ -815,7 +907,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagementPageSubtitle DISABLED_GetManagementPageSubtitle
+#else
+#define MAYBE_GetManagementPageSubtitle GetManagementPageSubtitle
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagementPageSubtitle) {
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 
@@ -973,7 +1072,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagementBubbleTitle DISABLED_GetManagementBubbleTitle
+#else
+#define MAYBE_GetManagementBubbleTitle GetManagementBubbleTitle
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagementBubbleTitle) {
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 

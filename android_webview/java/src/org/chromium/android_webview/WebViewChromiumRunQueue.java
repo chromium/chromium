@@ -8,6 +8,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  * start running tasks until WebView has been initialized properly.
  */
 @Lifetime.Singleton
+@NullMarked
 public class WebViewChromiumRunQueue {
     private final Queue<Runnable> mQueue = new ConcurrentLinkedQueue<Runnable>();
     private volatile boolean mChromiumStarted;
@@ -32,11 +34,7 @@ public class WebViewChromiumRunQueue {
     public void addTask(Runnable task) {
         mQueue.add(task);
         if (mChromiumStarted) {
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        drainQueue();
-                    });
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, this::drainQueue);
         }
     }
 
@@ -79,10 +77,6 @@ public class WebViewChromiumRunQueue {
     }
 
     private void drainQueue() {
-        if (mQueue == null || mQueue.isEmpty()) {
-            return;
-        }
-
         Runnable task = mQueue.poll();
         while (task != null) {
             task.run();

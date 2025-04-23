@@ -18,16 +18,12 @@ bool IsPolicyTestingEnabled(PrefService* pref_service,
   }
 
   if (channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEV ||
       channel == version_info::Channel::DEFAULT) {
     return true;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_IOS)
-  if (channel == version_info::Channel::DEV) {
-    return true;
-  }
-#endif
-
+// Enable on iOS Beta because Canary and Dev are not easily accessible.
 #if BUILDFLAG(IS_IOS)
   if (channel == version_info::Channel::BETA) {
     return true;

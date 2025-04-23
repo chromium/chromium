@@ -50,10 +50,10 @@ void FakeWebrtcConnection::OnWebrtcTransportIncomingDataChannel(
     std::unique_ptr<protocol::MessagePipe> pipe) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportMediaStreamAdded(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportMediaStreamRemoved(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportRouteChanged(
     const protocol::TransportRoute& route) {}

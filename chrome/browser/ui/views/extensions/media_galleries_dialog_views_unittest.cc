@@ -74,7 +74,8 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
     views::Widget::InitParams params =
         ChromeViewsTestBase::CreateParams(ownership, type);
     params.delegate = dialog.release();
-    params.delegate->SetOwnedByWidget(true);
+    params.delegate->SetOwnedByWidget(
+        views::WidgetDelegate::OwnedByWidgetPassKey());
     return params;
   }
 

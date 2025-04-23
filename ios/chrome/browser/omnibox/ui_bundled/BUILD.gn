@@ -3,12 +3,7 @@
 # found in the LICENSE file.
 
 source_set("ui_bundled") {
-  sources = [
-    "omnibox_controller_delegate.h",
-    "omnibox_focus_delegate.h",
-    "web_location_bar.cc",
-    "web_location_bar.h",
-  ]
+  sources = [ "omnibox_focus_delegate.h" ]
   deps = [
     "//base",
     "//components/omnibox/browser",
@@ -18,41 +13,14 @@ source_set("ui_bundled") {
 }
 
 source_set("omnibox_popup_shared") {
-  sources = [
-    "omnibox_constants.h",
-    "omnibox_constants.mm",
-    "omnibox_keyboard_delegate.h",
-  ]
-}
-
-# This util file must be separate from the below
-# omnibox_util file because it is used in showcase. This
-# means that its dependencies should be limited, avoiding
-# components code.
-source_set("omnibox_suggestion_icon_util") {
-  sources = [
-    "omnibox_suggestion_icon_util.h",
-    "omnibox_suggestion_icon_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:buildflags",
-  ]
+  sources = [ "omnibox_keyboard_delegate.h" ]
 }
 
 # See the comment above on omnibox_suggestion_icon_util
 # for why these two targets are separated.
 source_set("omnibox_util") {
-  sources = [
-    "omnibox_metrics_helper.h",
-    "omnibox_metrics_helper.mm",
-    "omnibox_text_field_delegate.h",
-    "omnibox_util.h",
-    "omnibox_util.mm",
-  ]
+  sources = [ "omnibox_text_field_delegate.h" ]
   deps = [
-    ":omnibox_suggestion_icon_util",
     "//base",
     "//components/omnibox/browser",
     "//components/safe_browsing/core/common:common",
@@ -62,22 +30,13 @@ source_set("omnibox_util") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//third_party/omnibox_proto",
   ]
-  public_deps = [
-    ":omnibox_icon_type_constants",
-    "//ios/chrome/app/theme",
-  ]
+  public_deps = [ "//ios/chrome/app/theme" ]
 }
 
 # This target can also be used on EG2 tests, so it should only contain constants
 source_set("omnibox_icon_type_constants") {
-  sources = [
-    "omnibox_icon_type.h",
-    "omnibox_icon_type.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/symbols",
-  ]
+  sources = [ "omnibox_icon_type.h" ]
+  deps = [ "//ios/chrome/browser/omnibox/public:constants" ]
 }
 
 # Build target allowed while moving files from ui_bundled to other folders.
@@ -93,24 +52,15 @@ source_set("model_interface") {
     ":omnibox_util",
     "//base",
     "//components/omnibox/browser",
-    "//components/omnibox/browser:location_bar",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
   ]
 }
 
 source_set("omnibox_internal") {
   sources = [
-    "chrome_omnibox_client_ios.h",
-    "chrome_omnibox_client_ios.mm",
-    "fake_suggestions_database.cc",
-    "fake_suggestions_database.h",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
-    "omnibox_coordinator.h",
-    "omnibox_coordinator.mm",
-    "omnibox_mediator.h",
-    "omnibox_mediator.mm",
     "omnibox_mutator.h",
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",
@@ -122,14 +72,11 @@ source_set("omnibox_internal") {
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
     "text_field_view_containing.h",
-    "web_location_bar_impl.h",
-    "web_location_bar_impl.mm",
     "zero_suggest_prefetch_helper.h",
     "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
     ":omnibox_popup_shared",
-    ":omnibox_suggestion_icon_util",
     ":omnibox_util",
     ":ui_bundled",
     "//base",
@@ -160,6 +107,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
@@ -205,7 +153,6 @@ source_set("omnibox_internal") {
   ]
   public_deps = [
     ":model_interface",
-    ":omnibox_icon_type_constants",
     "//components/omnibox/browser",
   ]
   frameworks = [
@@ -217,34 +164,15 @@ source_set("omnibox_internal") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_web_location_bar.cc",
-    "test_web_location_bar.h",
-  ]
-  deps = [
-    ":ui_bundled",
-    "//base",
-    "//components/omnibox/browser:location_bar",
-    "//ios/web/public",
-    "//url",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chrome_omnibox_client_ios_unittest.mm",
-    "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_unittest.mm",
     "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [
     ":omnibox_internal",
     ":resources_unit_tests",
-    ":test_support",
     ":ui_bundled",
     "//base",
     "//base/test:test_support",
@@ -264,6 +192,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_conversions",
     "//ios/chrome/test:block_cleanup_test",
     "//ios/testing:nserror_support",
     "//ios/web/common:uikit",

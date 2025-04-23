@@ -10,7 +10,7 @@ build_webui("build") {
     "predictors.css",
     "predictors.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "autocomplete_action_predictor.ts",
     "predictors.ts",
     "resource_prefetch_predictor.ts",

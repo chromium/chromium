@@ -88,7 +88,8 @@ class ReadAloudAppModel {
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
   // where this isn't needed.
-  void InitAXPositionWithNode(ui::AXNode* ax_node);
+  void InitAXPositionWithNode(ui::AXNode* ax_node,
+                              const ui::AXTreeID& active_tree_id);
 
   void ResetGranularityIndex();
 
@@ -203,7 +204,8 @@ class ReadAloudAppModel {
       int start_index,
       int end_index,
       a11y::ReadAloudCurrentGranularity& current_granularity,
-      bool is_docs);
+      bool is_docs,
+      bool is_pdf);
 
   // Returns if we should end text traversal from the current position, due
   // to reaching the end of content or reaching a point, such as a paragraph,
@@ -347,6 +349,7 @@ class ReadAloudAppModel {
       processed_granularities_on_current_page_;
 
   const ui::AXMovementOptions sentence_movement_options_;
+  ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
 
   base::WeakPtrFactory<ReadAloudAppModel> weak_ptr_factory_{this};
 };

@@ -76,8 +76,6 @@ bool IsFollowSourceFromMenu(FollowSource source) {
 
 }  // namespace
 
-BROWSER_USER_DATA_KEY_IMPL(FollowBrowserAgent)
-
 FollowBrowserAgent::~FollowBrowserAgent() = default;
 
 bool FollowBrowserAgent::IsWebSiteFollowed(WebPageURLs* web_page_urls) {

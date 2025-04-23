@@ -108,11 +108,16 @@ void DynamicsCompressorHandler::ProcessOnlyAudioParams(
 
   float values[render_quantum_frames_expected];
 
-  threshold_->CalculateSampleAccurateValues(values, frames_to_process);
-  knee_->CalculateSampleAccurateValues(values, frames_to_process);
-  ratio_->CalculateSampleAccurateValues(values, frames_to_process);
-  attack_->CalculateSampleAccurateValues(values, frames_to_process);
-  release_->CalculateSampleAccurateValues(values, frames_to_process);
+  threshold_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  knee_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  ratio_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  attack_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  release_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 void DynamicsCompressorHandler::Initialize() {

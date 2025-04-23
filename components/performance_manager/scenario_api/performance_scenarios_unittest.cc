@@ -37,6 +37,10 @@ std::ostream& operator<<(std::ostream& os, InputScenario input_scenario) {
       return os << "NoInput";
     case InputScenario::kTyping:
       return os << "TypingInput";
+    case InputScenario::kTap:
+      return os << "Tap";
+    case InputScenario::kScroll:
+      return os << "Scroll";
   }
 }
 
@@ -168,9 +172,13 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest, EmptyScenarioPattern) {
                              kEmptyScenarioPattern));
   EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kTyping,
                              kEmptyScenarioPattern));
+  EXPECT_TRUE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kEmptyScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                             kEmptyScenarioPattern));
 }
 
-TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, NoInputScenarioPattern) {
   // kNoInput matches the pattern, loading scenarios are ignored.
   static ScenarioPattern kInputScenarioPattern{
       .input = {InputScenario::kNoInput},
@@ -179,6 +187,26 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
                              kInputScenarioPattern));
   EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kTyping,
                               kInputScenarioPattern));
+  EXPECT_FALSE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kInputScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                              kInputScenarioPattern));
+}
+
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
+  // All except kNoInput matches the pattern, loading scenarios are ignored.
+  static ScenarioPattern kInputScenarioPattern{
+      .input = {InputScenario::kTyping, InputScenario::kTap,
+                InputScenario::kScroll},
+  };
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kNoInput,
+                              kInputScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kTyping,
+                             kInputScenarioPattern));
+  EXPECT_TRUE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kInputScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                             kInputScenarioPattern));
 }
 
 TEST_P(PerformanceScenariosAllInputScenariosTest, LoadingScenarioPattern) {
@@ -244,6 +272,50 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest,
        DefaultIdleScenariosWithInput) {
   EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kTyping,
                               kDefaultIdleScenarios));
+}
+
+// Ensure that all values of LoadingScenario are ordered correctly.
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, LoadingScenarioOrdering) {
+  // When adding a new scenario to this switch, make sure that everything
+  // comparing less than the new scenario is less performance-sensitive.
+  switch (GetParam()) {
+    case LoadingScenario::kFocusedPageLoading:
+      EXPECT_LT(LoadingScenario::kVisiblePageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kVisiblePageLoading:
+      EXPECT_LT(LoadingScenario::kBackgroundPageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kBackgroundPageLoading:
+      EXPECT_LT(LoadingScenario::kNoPageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kNoPageLoading:
+      // This is the lowest priority scenario.
+      break;
+  }
+}
+
+// Ensure that all values of InputScenario are ordered correctly.
+TEST_P(PerformanceScenariosAllInputScenariosTest, InputScenarioOrdering) {
+  // When adding a new scenario to this switch, make sure that everything
+  // comparing less than the new scenario is less performance-sensitive.
+  switch (GetParam()) {
+    case InputScenario::kScroll:
+      // Scrolling is the most performance-sensitive because scroll jank is
+      // very obvious to the user.
+      EXPECT_LT(InputScenario::kTap, GetParam());
+      [[fallthrough]];
+    case InputScenario::kTap:
+      // Tap is more performance-sensitive than typing because there's a tactile
+      // link: users expect immediate screen feedback when touching the screen.
+      EXPECT_LT(InputScenario::kTyping, GetParam());
+      [[fallthrough]];
+    case InputScenario::kTyping:
+      EXPECT_LT(InputScenario::kNoInput, GetParam());
+      [[fallthrough]];
+    case InputScenario::kNoInput:
+      // This is the lowest priority scenario.
+      break;
+  }
 }
 
 }  // namespace

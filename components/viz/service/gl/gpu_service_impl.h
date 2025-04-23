@@ -436,6 +436,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       gpu::Scheduler* scheduler,
       base::WaitableEvent* shutdown_event);
 
+  friend class MockGpuServiceImpl;
+  GpuServiceImpl();
+
   // Private helper methods to create objects needed by this class during init.
   gpu::SyncPointManager* CreateSyncPointManager();
   // supports_overlays is only queried when using Ozone.

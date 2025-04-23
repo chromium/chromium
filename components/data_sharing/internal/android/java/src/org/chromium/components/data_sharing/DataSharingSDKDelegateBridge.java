@@ -4,6 +4,8 @@
 
 package org.chromium.components.data_sharing;
 
+import androidx.annotation.Nullable;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.jni_zero.CalledByNative;
@@ -36,9 +38,14 @@ public class DataSharingSDKDelegateBridge {
 
     private DataSharingSDKDelegate mSDKDelegateImpl;
 
+    private static @Nullable DataSharingSDKDelegate sSDKDelegateForTesting;
+
     @CalledByNative
     private static DataSharingSDKDelegateBridge create(
             long unused_nativePtr, DataSharingSDKDelegate delegate) {
+        if (sSDKDelegateForTesting != null) {
+            return new DataSharingSDKDelegateBridge(sSDKDelegateForTesting);
+        }
         return new DataSharingSDKDelegateBridge(delegate);
     }
 
@@ -275,6 +282,11 @@ public class DataSharingSDKDelegateBridge {
         DataSharingSDKDelegate old = mSDKDelegateImpl;
         ResettersForTesting.register(() -> mSDKDelegateImpl = old);
         mSDKDelegateImpl = delegate;
+    }
+
+    /* Set a delegate for testing, to be used by bridge when creating. */
+    public static void setForTesting(DataSharingSDKDelegate delegate) {
+        sSDKDelegateForTesting = delegate;
     }
 
     @NativeMethods

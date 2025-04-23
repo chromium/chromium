@@ -60,8 +60,6 @@ class RepostFormTabHelper : public web::WebStateUserData<RepostFormTabHelper>,
   bool is_presenting_dialog_ = false;
 
   base::WeakPtrFactory<RepostFormTabHelper> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_REPOST_FORM_TAB_HELPER_H_

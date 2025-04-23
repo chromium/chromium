@@ -245,6 +245,7 @@ All changes to this list should go through Blink's feature review process: http:
     interest-target-show-delay
     interpolate-size
     isolation
+    item-tolerance
     justify-content
     justify-items
     justify-self
@@ -279,7 +280,6 @@ All changes to this list should go through Blink's feature review process: http:
     masonry-auto-tracks
     masonry-direction
     masonry-fill
-    masonry-slack
     masonry-template-tracks
     masonry-track-end
     masonry-track-start

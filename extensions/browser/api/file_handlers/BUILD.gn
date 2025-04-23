@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("file_handlers") {
   sources = [
@@ -35,6 +35,7 @@ source_set("file_handlers") {
     "//components/services/app_service",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//net",
     "//storage/browser",
     "//storage/common",

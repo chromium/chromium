@@ -15,6 +15,7 @@
     "attributeName",
     "attributeType",
     "autofocus",
+    "async",
     "azimuth",
     "baseFrequency",
     "baseline-shift",

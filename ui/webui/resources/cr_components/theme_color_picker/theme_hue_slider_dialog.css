@@ -19,19 +19,20 @@ dialog {
   color: var(--color-theme-color-picker-hue-slider-dialog-foreground,
       var(--cr-fallback-color-on-surface));
   height: 137px;
-  isolation: isolate;
   overflow: hidden;
   margin: 0;
-  padding: 20px;
-  position: absolute;
+  padding: 0;
   width: 296px;
-  z-index: 999;
 }
 
 @media (forced-colors: active) {
   dialog {
     border: solid 1px Highlight;
   }
+}
+
+#contentsWrapper {
+  padding: 20px;
 }
 
 #header {

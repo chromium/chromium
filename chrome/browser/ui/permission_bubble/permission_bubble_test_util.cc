@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 
+#include "components/permissions/permission_request.h"
 #include "url/gurl.h"
 
 TestPermissionBubbleViewDelegate::TestPermissionBubbleViewDelegate() = default;

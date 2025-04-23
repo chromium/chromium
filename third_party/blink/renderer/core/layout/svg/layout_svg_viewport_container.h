@@ -48,9 +48,17 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
     NOT_DESTROYED();
     return local_to_parent_transform_;
   }
+
+  AffineTransform LocalSVGTransform() const override {
+    NOT_DESTROYED();
+    return local_transform_;
+  }
+
   gfx::RectF ViewBoxRect() const;
 
   void IntersectChildren(HitTestResult&, const HitTestLocation&) const;
+
+  AffineTransform ComputeViewboxTransform() const;
 
  private:
   bool IsSVGViewportContainer() const final {
@@ -72,6 +80,9 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   gfx::RectF viewport_;
   mutable AffineTransform local_to_parent_transform_;
+  // TODO: Inherit `LayoutSVGViewportContainer` from
+  // `LayoutSVGTransformableContainer so we can remove this member.
+  mutable AffineTransform local_transform_;
 };
 
 template <>

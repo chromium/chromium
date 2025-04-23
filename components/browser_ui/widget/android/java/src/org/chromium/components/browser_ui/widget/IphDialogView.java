@@ -4,7 +4,7 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -118,7 +118,7 @@ public class IphDialogView extends LinearLayout {
      *
      * @param rootView The root view of the IPH dialog. Will be used to update the IPH view layout.
      */
-    public void setRootView(View rootView) {
+    public void setRootView(@Nullable View rootView) {
         mRootView = rootView;
     }
 
@@ -140,7 +140,7 @@ public class IphDialogView extends LinearLayout {
 
     /** Update the IPH view layout based on the current size of the root view. */
     public void updateLayout() {
-        assumeNonNull(mRootView);
+        assertNonNull(mRootView);
         int rootViewHeight = mRootView.getHeight();
         if (mParentViewHeight == rootViewHeight) return;
         mParentViewHeight = rootViewHeight;

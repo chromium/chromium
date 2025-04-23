@@ -22,9 +22,12 @@ public class TabbedMismatchedIndicesHandler implements MismatchedIndicesHandler 
             "Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta";
 
     private final LongSupplier mOnCreateTimestampMsSupplier;
+    private final boolean mSkipIndexReassignment;
 
-    public TabbedMismatchedIndicesHandler(LongSupplier onCreateTimestampMsSupplier) {
+    public TabbedMismatchedIndicesHandler(
+            LongSupplier onCreateTimestampMsSupplier, boolean skipIndexReassignment) {
         mOnCreateTimestampMsSupplier = onCreateTimestampMsSupplier;
+        mSkipIndexReassignment = skipIndexReassignment;
     }
 
     @Override
@@ -74,5 +77,10 @@ public class TabbedMismatchedIndicesHandler implements MismatchedIndicesHandler 
             activityAtRequestedIndex.finish();
         }
         return true;
+    }
+
+    @Override
+    public boolean skipIndexReassignment() {
+        return mSkipIndexReassignment;
     }
 }

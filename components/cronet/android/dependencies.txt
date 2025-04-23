@@ -8,6 +8,7 @@
 //base/third_party/double_conversion
 //base/third_party/icu
 //base/third_party/superfasthash
+//base/tracing/protos
 //base/version_info/android
 //build
 //build/android
@@ -18,7 +19,6 @@
 //build/rust/chromium_prelude
 //build/rust/std
 //build/rust/std/rules
-//build/win
 //buildtools/third_party/libc++
 //buildtools/third_party/libc++abi
 //buildtools/third_party/libunwind
@@ -53,6 +53,7 @@
 //third_party/boringssl
 //third_party/boringssl/src/third_party/fiat
 //third_party/brotli
+//third_party/compiler-rt
 //third_party/cpu_features
 //third_party/icu
 //third_party/ijar
@@ -62,6 +63,7 @@
 //third_party/llvm-libc
 //third_party/metrics_proto
 //third_party/modp_b64
+//third_party/perfetto
 //third_party/protobuf
 //third_party/rust
 //third_party/simdutf

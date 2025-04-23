@@ -20,7 +20,7 @@ class AudioStub;
 class WebrtcAudioSinkAdapter : public webrtc::AudioTrackSinkInterface {
  public:
   WebrtcAudioSinkAdapter(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
       base::WeakPtr<AudioStub> audio_stub);
   ~WebrtcAudioSinkAdapter() override;
 
@@ -33,8 +33,8 @@ class WebrtcAudioSinkAdapter : public webrtc::AudioTrackSinkInterface {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<AudioStub> audio_stub_;
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track_;
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
+  webrtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track_;
 };
 
 }  // namespace remoting::protocol

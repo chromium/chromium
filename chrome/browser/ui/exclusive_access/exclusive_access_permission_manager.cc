@@ -10,6 +10,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -111,7 +112,9 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
   requests.waiting_responses += requests.pending.size();
   for (PermissionRequest& request : requests.pending) {
     content::PermissionRequestDescription description(
-        request.type, web_contents->HasRecentInteraction());
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(request.type),
+        web_contents->HasRecentInteraction());
     GetPermissionController(web_contents.get())
         ->RequestPermissionsFromCurrentDocument(
             rfh, std::move(description),

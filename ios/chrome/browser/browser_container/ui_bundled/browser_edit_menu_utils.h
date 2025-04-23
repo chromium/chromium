@@ -11,7 +11,9 @@ namespace edit_menu {
 
 // Adds an element at the end of the Chrome menu.
 // Chrome menu is added between format menu and lookup menu.
-void AddElementToChromeMenu(id<UIMenuBuilder> builder, UIMenuElement* element);
+void AddElementToChromeMenu(id<UIMenuBuilder> builder,
+                            UIMenuElement* element,
+                            BOOL is_primary_menu);
 
 }  // namespace edit_menu
 

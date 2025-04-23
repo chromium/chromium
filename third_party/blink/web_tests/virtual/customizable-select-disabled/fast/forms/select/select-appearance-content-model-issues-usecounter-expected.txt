@@ -1,0 +1,11 @@
+CONSOLE WARNING: A label tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A legend tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A div tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A legend tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+This is a testharness.js-based test.
+[FAIL] UseCounter should count when the content model of customizable <select> has not been followed.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

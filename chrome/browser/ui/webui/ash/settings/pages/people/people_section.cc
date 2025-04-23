@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -478,7 +479,8 @@ PeopleSection::PeopleSection(Profile* profile,
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {
   // No search tags are registered if in guest mode.
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   if (IsGuestModeActive(user)) {
     return;
   }

@@ -15,7 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
-import {createExtensionInfo} from './test_util.js';
+import {createExtensionInfo, testVisible} from './test_util.js';
 
 suite('ExtensionManagerUnitTest', function() {
   let manager: ExtensionsManagerElement;
@@ -437,4 +437,33 @@ suite('ExtensionManagerUnitTest', function() {
         await microtasksFinished();
         assertEquals(ExtensionState.ENABLED, getExtension(0).state);
       });
+
+  test('CheckDrawerSitePermissionsVisibility', async function() {
+    manager.$.toolbar.narrow = true;
+    const toolbar = manager.$.toolbar.$.toolbar;
+    await microtasksFinished();
+
+    const menuButton =
+        toolbar.shadowRoot.querySelector<HTMLElement>('#menuButton');
+    assertTrue(!!menuButton);
+    menuButton.click();
+
+    await eventToPromise('cr-drawer-opened', manager);
+    const drawer = manager.shadowRoot.querySelector('cr-drawer');
+    assertTrue(!!drawer);
+
+    const sidebar = drawer.querySelector('extensions-sidebar');
+    assertTrue(!!sidebar);
+
+    manager.enableEnhancedSiteControls = false;
+    await microtasksFinished();
+    testVisible(sidebar, '#sectionsSitePermissions', false);
+
+    manager.enableEnhancedSiteControls = true;
+    await microtasksFinished();
+    testVisible(sidebar, '#sectionsSitePermissions', true);
+
+    manager.$.toolbar.narrow = false;
+    await eventToPromise('close', drawer);
+  });
 });

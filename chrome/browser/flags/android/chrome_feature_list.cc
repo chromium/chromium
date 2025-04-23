@@ -37,6 +37,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
@@ -99,7 +100,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnablePaymentSettingsCardPromoAndScanCard,
     &autofill::features::kAutofillThirdPartyModeContentProvider,
     &autofill::features::kAutofillEnableSecurityTouchEventFilteringAndroid,
-    &autofill::features::kAutofillEnableVerveCardSupport,
     &autofill::features::kAutofillVirtualViewStructureAndroid,
     &autofill::features::kAutofillDeepLinkAutofillOptions,
     &autofill::features::kAutofillEnableCvcStorageAndFilling,
@@ -121,9 +121,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
+    &data_controls::kEnableClipboardDataControlsAndroid,
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,
     &data_sharing::features::kDataSharingNonProductionEnvironment,
+    &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kSmartSuggestionForLargeDownloads,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
@@ -150,6 +152,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSafetyHubFollowup,
     &features::kSafetyHubLocalPasswordsModule,
     &features::kSafetyHubMagicStack,
+    &features::kSafetyHubUnifiedPasswordsModule,
     &features::kSafetyHubWeakAndReusedPasswords,
     &features::kTaskManagerClank,
     &features::kQuietNotificationPrompts,
@@ -188,9 +191,13 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidDumpOnScrollWithoutResource,
     &kAndroidElegantTextHeight,
     &kAndroidKeyboardA11y,
+    &kAndroidMetaClickHistoryNavigation,
+    &kAndroidNativePagesInNewTab,
     &kAndroidNoVisibleHintForDifferentTLD,
+    &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
+    &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutter,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
     &kAndroidTabDeclutterArchiveDuplicateTabs,
@@ -237,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTGoogleBottomBarVariantLayouts,
     &kCCTOpenInBrowserButtonIfAllowedByEmbedder,
     &kCCTOpenInBrowserButtonIfEnabledByEmbedder,
+    &kCCTPredictiveBackGesture,
     &kCCTPrewarmTab,
     &kCCTReportParallelRequestStatus,
     &kCCTReportPrerenderEvents,
@@ -279,7 +287,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
+    &kGridTabSwitcherSurfaceColorUpdate,
     &kGroupNewTabWithParent,
+    &kHeadlessTabModel,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
     &kLegacyTabStateDeprecation,
@@ -288,6 +298,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLensOnQuickActionSearchWidget,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
+    &kMiniOriginBar,
     &kMostVisitedTilesCustomization,
     &kMostVisitedTilesReselect,
     &kMultiInstanceApplicationStatusCleanup,
@@ -307,6 +318,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
     &kProcessRankPolicyAndroid,
+    &kProtectedTabsAndroid,
     &kPwaRestoreUi,
     &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
@@ -322,7 +334,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloudPlayback,
     &kReadAloudTapToSeek,
     &kReadAloudIPHMenuButtonHighlightCCT,
+    &kReaderModeAutoDistill,
     &kReaderModeDevEntryPoint,
+    &kReaderModeImprovements,
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
@@ -338,6 +352,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCapturesAtGestureEnd,
+    &kSwapNewTabAndNewTabInGroupAndroid,
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
@@ -372,8 +387,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kLoginDbDeprecationAndroid,
     &password_manager::features::kPasswordFormGroupedAffiliations,
-    &password_manager::features::
-        kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
@@ -481,7 +494,7 @@ BASE_FEATURE(kAndroidAppIntegration,
 
 BASE_FEATURE(kAndroidAppIntegrationV2,
              "AndroidAppIntegrationV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource,
              "AndroidAppIntegrationMultiDataSource",
@@ -493,7 +506,7 @@ BASE_FEATURE(kNewTabPageCustomization,
 
 BASE_FEATURE(kAndroidAppIntegrationWithFavicon,
              "AndroidAppIntegrationWithFavicon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppearanceSettings,
              "AndroidAppearanceSettings",
@@ -519,13 +532,25 @@ BASE_FEATURE(kAndroidKeyboardA11y,
              "AndroidKeyboardA11y",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidMetaClickHistoryNavigation,
+             "AndroidMetaClickHistoryNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidNativePagesInNewTab,
+             "AndroidNativePagesInNewTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
              "AndroidNoVisibleHintForDifferentTLD",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage,
+             "AndroidOmniboxFocusedNewTabPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidOpenPdfInlineBackport,
              "AndroidOpenPdfInlineBackport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidPdfAssistContent,
              "AndroidPdfAssistContent",
@@ -545,7 +570,7 @@ BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveDuplicateTabs,
              "AndroidTabDeclutterArchiveDuplicateTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveTabGroups,
              "AndroidTabDeclutterArchiveTabGroups",
@@ -708,6 +733,10 @@ BASE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder,
              "CCTOpenInBrowserButtonIfEnabledByEmbedder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCCTPredictiveBackGesture,
+             "CCTPredictiveBackGesture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabClosureMethodRefactor,
              "TabClosureMethodRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -843,7 +872,7 @@ BASE_FEATURE(kDrawKeyNativeEdgeToEdge,
 
 BASE_FEATURE(kEdgeToEdgeBottomChin,
              "EdgeToEdgeBottomChin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeEverywhere,
              "EdgeToEdgeEverywhere",
@@ -851,7 +880,7 @@ BASE_FEATURE(kEdgeToEdgeEverywhere,
 
 BASE_FEATURE(kEdgeToEdgeSafeAreaConstraint,
              "EdgeToEdgeSafeAreaConstraint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
@@ -893,9 +922,17 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
              "FullscreenInsetsApiMigrationOnAutomotive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGridTabSwitcherSurfaceColorUpdate,
+             "GridTabSwitcherSurfaceColorUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGroupNewTabWithParent,
              "GroupNewTabWithParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHeadlessTabModel,
+             "HeadlessTabModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",
@@ -922,6 +959,10 @@ BASE_FEATURE(kMagicStackAndroid,
 // default.
 BASE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition,
              "MayLaunchUrlUsesSeparateStoragePartition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMiniOriginBar,
+             "MiniOriginBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMostVisitedTilesCustomization,
@@ -996,6 +1037,13 @@ BASE_FEATURE(kProcessRankPolicyAndroid,
              "ProcessRankPolicyAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Put a higher memory priority to protected background tabs (e.g. tabs with
+// user edits in forms) to prevent them from being killed by LMKD before any
+// other non-protected tabs.
+BASE_FEATURE(kProtectedTabsAndroid,
+             "ProtectedTabsAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUiAtStartup,
@@ -1004,7 +1052,7 @@ BASE_FEATURE(kPwaRestoreUiAtStartup,
 
 BASE_FEATURE(kHideTabletToolbarDownloadButton,
              "HideTabletToolbarDownloadButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",
@@ -1060,8 +1108,16 @@ BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT,
              "ReadAloudIPHMenuButtonHighlightCCT",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReaderModeAutoDistill,
+             "ReaderModeAutoDistill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReaderModeDevEntryPoint,
              "ReaderModeDevEntryPoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReaderModeImprovements,
+             "ReaderModeImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRecordSuppressionMetrics,
@@ -1110,6 +1166,10 @@ BASE_FEATURE(kSmallerTabStripTitleLimit,
 
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
              "SuppressToolbarCapturesAtGestureEnd",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid,
+             "SwapNewTabAndNewTabInGroupAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupEntryPointsAndroid,

@@ -10,6 +10,7 @@
 #include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "fuchsia_web/webengine/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/display/screen.h"
@@ -45,6 +46,9 @@ void ReceiverSessionClient::SetMojoEndpoints(
 
   // Codecs are set in order of preference for the receiver, i.e. H264 is
   // preferred above VP8 in the below code.
+  if (base::FeatureList::IsEnabled(features::kEnableCastMirroringVP9Decoding)) {
+    video_codecs.push_back(media::VideoCodec::kVP9);
+  }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   video_codecs.push_back(media::VideoCodec::kH264);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

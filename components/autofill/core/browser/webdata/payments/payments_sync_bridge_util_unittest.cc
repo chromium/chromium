@@ -1390,8 +1390,6 @@ class PaymentsSyncBridgeUtilTest_WalletCardMapping
 // Test to verify the correct mapping of CardType to the card network.
 TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
        VerifyCardTypeMappingFromCardNetwork) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableVerveCardSupport);
   auto test_case = GetParam();
 
   syncer::EntityChangeList entity_data;
@@ -1430,8 +1428,6 @@ TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
 // Test to verify the correct mapping of the card network to CardType.
 TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
        VerifyCardNetworkMappingFromCardType) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableVerveCardSupport);
   auto test_case = GetParam();
 
   CreditCard credit_card = test::GetMaskedServerCard();
@@ -1462,68 +1458,6 @@ INSTANTIATE_TEST_SUITE_P(
                               kVerveCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
                               kVisaCard}));
-
-// These two tests verify the same case as
-// `PaymentsSyncBridgeUtilTest_WalletCardMapping` but with the added caveat of
-// checking the Verve conversion values with `kAutofillEnableVerveCardSupport`
-// flag off.
-TEST_F(PaymentsSyncBridgeUtilTest,
-       VerifyCardNetworkMappingFromCardType_ForVerve_WithFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableVerveCardSupport);
-
-  CreditCard credit_card = test::GetMaskedServerCard();
-  credit_card.SetNetworkForMaskedCard(kVerveCard);
-
-  sync_pb::AutofillWalletSpecifics wallet_specifics;
-  SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
-
-  // With the flag off, the card type is UNKNOWN instead of VERVE.
-  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::UNKNOWN,
-            wallet_specifics.mutable_masked_card()->type());
-}
-
-TEST_F(PaymentsSyncBridgeUtilTest,
-       VerifyCardTypeMappingFromCardNetwork_ForVerve_WithFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableVerveCardSupport);
-
-  syncer::EntityChangeList entity_data;
-  // Add a credit card.
-  std::string credit_card_id = "credit_card_1";
-  // Add the first card. No nickname is set.
-  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
-      CreateAutofillWalletSpecificsForCard(
-          /*client_tag=*/credit_card_id,
-          /*billing_address_id=*/"1");
-  wallet_specifics_card.mutable_masked_card()->set_type(
-      sync_pb::WalletMaskedCreditCard::VERVE);
-
-  entity_data.push_back(EntityChange::CreateAdd(
-      credit_card_id,
-      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
-
-  std::vector<CreditCard> wallet_cards;
-  std::vector<Iban> wallet_ibans;
-  std::vector<PaymentsCustomerData> customer_data;
-  std::vector<CreditCardCloudTokenData> cloud_token_data;
-  std::vector<BankAccount> bank_accounts;
-  std::vector<CreditCardBenefit> benefits;
-  std::vector<sync_pb::PaymentInstrument> payment_instruments;
-  std::vector<sync_pb::PaymentInstrumentCreationOption>
-      payment_instrument_creation_options;
-  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments,
-                                  payment_instrument_creation_options);
-
-  ASSERT_EQ(1U, wallet_cards.size());
-  // With the flag off, the card network is `kGenericCard` instead of
-  // `kVerveCard`.
-  EXPECT_EQ(kGenericCard, wallet_cards.front().network());
-}
 
 TEST_F(PaymentsSyncBridgeUtilTest,
        AreAnyPaymentInstrumentsDifferent_ReturnFalseForSameData) {

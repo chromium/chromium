@@ -21,11 +21,6 @@ var NetworkDebugUIBrowserTest = class extends testing.Test {
   get isAsync() {
     return true;
   }
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kWifiDirect']};
-    ;
-  }
 
   get extraLibraries() {
     return [

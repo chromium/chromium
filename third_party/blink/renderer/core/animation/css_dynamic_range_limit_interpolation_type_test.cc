@@ -75,9 +75,12 @@ TEST_F(CSSDynamicRangeLimitInterpolationTypeTest, MaybeConvertValue) {
   CSSValue* value =
       MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kStandard);
 
+  StyleResolverState dummy_state(GetDocument(),
+                                 *GetDocument().documentElement());
+
   InterpolationValue result =
       dynamic_range_limit_interpolation_type->MaybeConvertValue(
-          *value, nullptr, conversion_checkers);
+          *value, dummy_state, conversion_checkers);
 
   const InterpolableDynamicRangeLimit* interpolable_limit =
       To<InterpolableDynamicRangeLimit>(result.interpolable_value.Get());

@@ -135,8 +135,6 @@ void SourceUrlRecorderWebStateObserver::MaybeRecordUrl(
   ukm_recorder->RecordNavigation(source_id, navigation_data);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(SourceUrlRecorderWebStateObserver)
-
 }  // namespace internal
 
 void InitializeSourceUrlRecorderForWebState(web::WebState* web_state) {

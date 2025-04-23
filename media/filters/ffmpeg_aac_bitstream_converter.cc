@@ -176,7 +176,7 @@ FFmpegAACBitstreamConverter::FFmpegAACBitstreamConverter(
 FFmpegAACBitstreamConverter::~FFmpegAACBitstreamConverter() = default;
 
 bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
-  if (packet == NULL || !packet->data) {
+  if (packet == nullptr || !packet->data) {
     return false;
   }
 

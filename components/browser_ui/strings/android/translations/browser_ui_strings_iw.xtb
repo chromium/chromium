@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3658847490588580244">גיליון תחתון של דפדפן ברירת המחדל</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{אתר אחד (<ph name="RWS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>
+<translation id="3670480940339182416">‏אתרים יכולים להשתמש בכלי האופטימיזציה של V8</translation>
 <translation id="3676777756440746804">לאתרים אין אפשרות לבקש ממך הרשאה להשתמש במידע שנשמר עליך</translation>
 <translation id="3697164069658504920">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש בהתקני USB. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בהתקני USB.</translation>
+<translation id="3703430731944883733">ניהול הפיד</translation>
 <translation id="3707034683772193706">‏אתר כלשהו שמבקרים בו יכול לשמור כמות נתונים קטנה ב-Chrome, בעיקר כדי לאמת שלא מדובר בבוט.</translation>
 <translation id="3708684582558000260">לא לאפשר לאתרים סגורים לסיים שליחה או קבלה של נתונים</translation>
 <translation id="3709818294139939629">הוסרה הגישה של האתר לקובץ</translation>
@@ -257,6 +259,7 @@
 <translation id="4194328954146351878">‏הצגת שאלה לפני מתן הרשאה לאתרים לראות ולשנות מידע במכשירי NFC (מומלץ).</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
 <translation id="421742575134139848">אתרים יכולים להפעיל סאונד כדי להשמיע מוזיקה או אודיו של סרטונים, או מדיה מסוגים אחרים</translation>
+<translation id="4217710972110098902">מחובר ליציאה טורית</translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4274673989874969668">לאחר יציאה מאתרים, ייתכן שפעולות סנכרון שלהם ימשיכו כדי להשלים משימות, כמו העלאת תמונות או שליחת הודעות צ'אט</translation>
@@ -283,6 +286,7 @@
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
 <translation id="4570913071927164677">פרטים</translation>
+<translation id="4578289292431526768">קדימה, נתחיל</translation>
 <translation id="4598549027014564149">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים, גם לא באתרים קשורים. פעילות הגלישה לא משמשת לפעולות כמו התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="461356340001513807">אפשרות להיכנס לאתרים באמצעות החשבון שלך בשירות זהות מסוים</translation>
 <translation id="4635969503923889910">‏אתרים לא יכולים להשתמש במכשירי NFC</translation>
@@ -367,8 +371,10 @@
 <translation id="5690795753582697420">‏המצלמה מושבתת בהגדרות Android</translation>
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
 <translation id="5706552988683188916">‏הפעולה הזו מוחקת קובצי cookie ונתונים אחרים מאתרים ב-<ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
 <translation id="5723967018671998714">‏קובצי cookie של צד שלישי חסומים במצב אנונימי</translation>
 <translation id="5740126560802162366">לאתרים יש הרשאה לשמור נתונים במכשיר שלך</translation>
+<translation id="5743425052258407233">ההיסטוריה שלך תופיע בכל המכשירים, אז יהיה לך קל להמשיך מהמקום שבו הפסקת</translation>
 <translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>
 <translation id="5771720122942595109">חסומה: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">הרשאות</translation>
@@ -381,6 +387,7 @@
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5876056640971328065">השהיית הסרטון</translation>
 <translation id="5877248419911025165">כיווץ כל הבקשות</translation>
+<translation id="5878945009165002849">חסימה של בקשות כניסה משירותי זיהוי</translation>
 <translation id="5884085660368669834">ההעדפה לאתר</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
 <translation id="5908617755156109052">אתרים לא יכולים ליצור מפה בתלת-ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
@@ -418,7 +425,6 @@
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
-<translation id="6344622098450209924">חסימת מעקב</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="640163077447496506">התוקף יפוג היום</translation>
@@ -578,6 +584,7 @@
 <translation id="8447861592752582886">שלילת הרשאות מכשיר</translation>
 <translation id="8471525937465764768">‏אתרים מתחברים בדרך כלל להתקני USB כדי לתמוך בתכונות כמו הדפסת מסמכים או שמירה בהתקן אחסון</translation>
 <translation id="8473055640493819707">האפליקציה <ph name="APP_NAME" /> לא מעודכנת. צריך להתקין אותה מחדש.</translation>
+<translation id="847433688444405067">גלישה בכמה מכשירים</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="848952951823693243">תמיד תוצג בקשה לגרסת האתר לנייד</translation>
 <translation id="8492822722330266509">אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות</translation>

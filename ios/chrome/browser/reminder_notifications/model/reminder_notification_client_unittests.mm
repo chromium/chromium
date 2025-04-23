@@ -7,6 +7,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_builder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -26,6 +27,7 @@ class ReminderNotificationClientTest : public PlatformTest {
     client_ = std::make_unique<ReminderNotificationClient>(&profile_manager_);
   }
 
+  base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<ReminderNotificationClient> client_;

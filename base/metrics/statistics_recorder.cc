@@ -235,8 +235,12 @@ std::vector<const BucketRanges*> StatisticsRecorder::GetBucketRanges() {
 
 // static
 HistogramBase* StatisticsRecorder::FindHistogram(std::string_view name) {
-  uint64_t hash = HashMetricName(name);
+  return FindHistogram(HashMetricName(name), name);
+}
 
+HistogramBase* StatisticsRecorder::FindHistogram(uint64_t hash,
+                                                 std::string_view name) {
+  DCHECK_EQ(hash, HashMetricName(name)) << "Hash does not match name.";
   // This must be called *before* the lock is acquired below because it may call
   // back into StatisticsRecorder to register histograms. Those called methods
   // will acquire the lock at that time.

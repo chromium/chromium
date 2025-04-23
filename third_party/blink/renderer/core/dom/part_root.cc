@@ -20,6 +20,9 @@
 
 namespace blink {
 
+PartRoot::PartRoot()
+    : cached_ordered_parts_(MakeGarbageCollected<PartList>()) {}
+
 void PartRoot::Trace(Visitor* visitor) const {
   visitor->Trace(cached_ordered_parts_);
 }
@@ -29,8 +32,8 @@ void PartRoot::AddPart(Part& new_part) {
   if (cached_parts_list_dirty_) {
     return;
   }
-  DCHECK(!base::Contains(cached_ordered_parts_, &new_part));
-  cached_ordered_parts_.push_back(&new_part);
+  DCHECK(!base::Contains(*cached_ordered_parts_, &new_part));
+  cached_ordered_parts_->push_back(&new_part);
 }
 
 // If we're removing the first Part in the cached part list, then just remove
@@ -96,7 +99,7 @@ void PartRoot::CloneParts(const Node& source_node,
 
 void PartRoot::SwapPartsList(PartRoot& other) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  cached_ordered_parts_.swap(other.cached_ordered_parts_);
+  cached_ordered_parts_->swap(*other.cached_ordered_parts_);
   std::swap(cached_parts_list_dirty_, other.cached_parts_list_dirty_);
 }
 
@@ -116,7 +119,7 @@ void PartRoot::SwapPartsList(PartRoot& other) {
 void PartRoot::RebuildPartsList() {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   DCHECK(cached_parts_list_dirty_);
-  cached_ordered_parts_.clear();
+  cached_ordered_parts_->clear();
   // Then traverse the tree under the root container and add parts in the order
   // they're found in the tree, and for the same Node, in the order they were
   // constructed.
@@ -169,8 +172,8 @@ void PartRoot::RebuildPartsList() {
         if (part->NodeToSortBy() != node) {
           continue;
         }
-        DCHECK(!base::Contains(cached_ordered_parts_, part));
-        cached_ordered_parts_.push_back(part);
+        DCHECK(!base::Contains(*cached_ordered_parts_, part));
+        cached_ordered_parts_->push_back(part);
       }
     }
     node = next_node;
@@ -269,7 +272,7 @@ const PartRoot::PartNodeList& PartRoot::getChildNodePartNodes() {
 
 const PartRoot::PartList& PartRoot::getParts() {
   if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    DCHECK(cached_ordered_parts_.empty());
+    DCHECK(cached_ordered_parts_->empty());
     DCHECK(!cached_parts_list_dirty_);
     auto* parts = MakeGarbageCollected<PartRoot::PartList>();
     BuildPartsList(*this, parts, nullptr, nullptr);
@@ -280,23 +283,23 @@ const PartRoot::PartList& PartRoot::getParts() {
   } else {
     // Remove invalid cached parts.
     bool remove_invalid = false;
-    for (auto& part : cached_ordered_parts_) {
+    for (auto& part : *cached_ordered_parts_) {
       if (!part->IsValid()) {
         remove_invalid = true;
         break;
       }
     }
     if (remove_invalid) {
-      PartRoot::PartList new_list;
-      for (auto& part : cached_ordered_parts_) {
+      HeapVector<Member<Part>, 20> new_list;
+      for (auto& part : *cached_ordered_parts_) {
         if (part->IsValid()) {
           new_list.push_back(part);
         }
       }
-      cached_ordered_parts_.swap(new_list);
+      cached_ordered_parts_->swap(new_list);
     }
   }
-  return cached_ordered_parts_;
+  return *cached_ordered_parts_;
 }
 
 // static

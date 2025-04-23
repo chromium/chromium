@@ -174,8 +174,12 @@ ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
   target->AddObserver(this);
   WindowState::Get(target)->AddObserver(this);
 
-  if (IsResize())
+  if (IsMove()) {
+    target->NotifyMoveLoopStarted();
+  }
+  if (IsResize()) {
     target->NotifyResizeLoopStarted();
+  }
 
   if (grab_capture && !target->HasCapture()) {
     grabbed_capture_ = true;
@@ -189,8 +193,14 @@ ToplevelWindowEventHandler::ScopedWindowResizer::~ScopedWindowResizer() {
   WindowState::Get(target)->RemoveObserver(this);
   if (grabbed_capture_)
     target->ReleaseCapture();
-  if (!window_destroying_ && IsResize())
-    target->NotifyResizeLoopEnded();
+  if (!window_destroying_) {
+    if (IsMove()) {
+      target->NotifyMoveLoopEnded();
+    }
+    if (IsResize()) {
+      target->NotifyResizeLoopEnded();
+    }
+  }
 }
 
 bool ToplevelWindowEventHandler::ScopedWindowResizer::IsMove() const {

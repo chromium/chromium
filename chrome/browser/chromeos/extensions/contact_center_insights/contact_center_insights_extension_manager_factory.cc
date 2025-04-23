@@ -8,10 +8,9 @@
 
 #include "base/check.h"
 #include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "extensions/browser/extension_system.h"
 
 namespace chromeos {
 
@@ -37,8 +36,6 @@ ContactCenterInsightsExtensionManagerFactory::
           "ContactCenterInsightsExtensionManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -52,9 +49,7 @@ std::unique_ptr<KeyedService> ContactCenterInsightsExtensionManagerFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   auto* const profile = Profile::FromBrowserContext(context);
-  auto* const component_loader = ::extensions::ExtensionSystem::Get(profile)
-                                     ->extension_service()
-                                     ->component_loader();
+  auto* const component_loader = ::extensions::ComponentLoader::Get(profile);
   return std::make_unique<ContactCenterInsightsExtensionManager>(
       component_loader, profile,
       std::make_unique<ContactCenterInsightsExtensionManager::Delegate>());

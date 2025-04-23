@@ -160,6 +160,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       /*require_dns_https_alpn=*/false, kCertVerifyFlags, GURL(kUrl),
       env.net_log, &net_error_details,
       MultiplexedSessionCreationInitiator::kUnknown,
+      /*management_config=*/std::nullopt,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

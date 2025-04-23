@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-generate_jni("gwp_asan_headers") {
+generate_jni("gwp_asan_jni") {
   sources = [ "org/chromium/components/gwp_asan/GwpAsanFeatureMap.java" ]
 }
 
@@ -18,7 +18,7 @@ java_cpp_features("java_features_srcjar") {
 
 android_library("gwp_asan_java") {
   srcjar_deps = [
-    ":gwp_asan_headers",
+    ":gwp_asan_jni",
     ":java_features_srcjar",
   ]
   deps = [

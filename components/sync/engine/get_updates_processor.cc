@@ -20,6 +20,7 @@
 #include "components/sync/engine/events/get_updates_response_event.h"
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/syncer_error.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -368,9 +369,23 @@ void GetUpdatesProcessor::ApplyUpdates(
     if (gu_types.Has(type)) {
       update_handler->ApplyUpdates(status_controller, /*cycle_done=*/true);
     }
+  }
 
-    if (data_types_with_failure.Has(type)) {
-      update_handler->RecordDownloadFailure();
+  RecordDownloadFailure(
+      data_types_with_failure,
+      UpdateHandler::NudgedUpdateResult::kDownloadPartialFailure);
+}
+
+void GetUpdatesProcessor::RecordDownloadFailure(
+    const DataTypeSet& gu_types,
+    UpdateHandler::NudgedUpdateResult failure_result) {
+  if (gu_types.empty()) {
+    return;
+  }
+
+  for (const auto& [type, update_handler] : *update_handler_map_) {
+    if (gu_types.Has(type)) {
+      update_handler->RecordDownloadFailure(failure_result);
     }
   }
 }

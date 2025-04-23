@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/content_client.h"
@@ -367,7 +368,9 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   std::erase_if(origins, [controller](const GURL& origin) {
     auto permission = controller
                           ->GetPermissionResultForOriginWithoutContext(
-                              blink::PermissionType::NOTIFICATIONS,
+                              content::PermissionDescriptorUtil::
+                                  CreatePermissionDescriptorForPermissionType(
+                                      blink::PermissionType::NOTIFICATIONS),
                               url::Origin::Create(origin))
                           .status;
     return permission == blink::mojom::PermissionStatus::GRANTED;
@@ -670,6 +673,76 @@ void PlatformNotificationContextImpl::DoReDisplayNotifications(
 
   GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
       ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), display_count));
+}
+
+void PlatformNotificationContextImpl::WriteNotificationMetadata(
+    const std::string& notification_id,
+    const GURL& origin,
+    const std::string& metadata_key,
+    const std::string& metadata_value,
+    WriteResourcesResultCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  InitializeDatabase(base::BindOnce(
+      &PlatformNotificationContextImpl::DoWriteNotificationMetadata, this,
+      notification_id, origin, metadata_key, metadata_value,
+      std::move(callback)));
+}
+
+void PlatformNotificationContextImpl::DoWriteNotificationMetadata(
+    const std::string& notification_id,
+    const GURL& origin,
+    const std::string& metadata_key,
+    const std::string& metadata_value,
+    WriteResourcesResultCallback callback,
+    bool initialized) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!initialized) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false));
+    return;
+  }
+
+  NotificationDatabase::Status status = NotificationDatabase::STATUS_OK;
+  NotificationDatabaseData notification_data;
+  status = database_->ReadNotificationData(notification_id, origin,
+                                           &notification_data);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Notifications.Database.WriteNotificationMetadataReadResult", status,
+      NotificationDatabase::STATUS_COUNT);
+
+  if (status == NotificationDatabase::STATUS_ERROR_NOT_FOUND) {
+    // This should be false because if the notification is not found in the
+    // database, then the metadata will not be useful.
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false));
+    return;
+  }
+  if (status == NotificationDatabase::STATUS_OK) {
+    // Update notification metadata for database storage.
+    notification_data.serialized_metadata[metadata_key] = metadata_value;
+    status = database_->WriteNotificationData(origin, notification_data);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Notifications.Database.WriteNotificationMetadataUpdateResult", status,
+        NotificationDatabase::STATUS_COUNT);
+
+    if (status == NotificationDatabase::STATUS_OK) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), /* success= */ true));
+      return;
+    }
+  }
+
+  // Blow away the database if reading data failed due to corruption.
+  if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED) {
+    DestroyDatabase();
+  }
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false));
 }
 
 void PlatformNotificationContextImpl::ReadNotificationResources(

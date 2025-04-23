@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
@@ -29,6 +30,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::babelorca {
+namespace {
+
+constexpr char kSendingStoppedReasonUma[] =
+    "Ash.Boca.Babelorca.SendingStoppedReason";
+
+}  // namespace
 
 // static
 std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
@@ -65,20 +72,28 @@ BabelOrcaProducer::BabelOrcaProducer(
 
 BabelOrcaProducer::~BabelOrcaProducer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "[BabelOrca] stop recognition in dtor";
   StopRecognition();
 }
 
 void BabelOrcaProducer::OnSessionStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "[BabelOrca] session started";
   in_session_ = true;
 }
 
 void BabelOrcaProducer::OnSessionEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_session_ && session_captions_enabled_) {
+    base::UmaHistogramEnumeration(kSendingStoppedReasonUma,
+                                  SendingStoppedReason::kSessionEnded);
+  }
+  VLOG(1) << "[BabelOrca] session ended";
   in_session_ = false;
   session_captions_enabled_ = false;
   rate_limited_sender_.reset();
   if (!local_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] local captions disabled, stop recognition";
     StopRecognition();
   }
 }
@@ -87,30 +102,42 @@ void BabelOrcaProducer::OnSessionCaptionConfigUpdated(
     bool session_captions_enabled,
     bool translations_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_session_ && session_captions_enabled_ && !session_captions_enabled) {
+    base::UmaHistogramEnumeration(
+        kSendingStoppedReasonUma,
+        SendingStoppedReason::kSessionCaptionTurnedOff);
+  }
   if (!in_session_) {
-    LOG(ERROR) << "Session caption config event called out of session.";
+    LOG(ERROR)
+        << "[BabelOrca] Session caption config event called out of session.";
     return;
   }
   // Producer currently does not process translations. If the captions enabled
   // state hasn't changed, return fast.
   if (session_captions_enabled_ == session_captions_enabled) {
+    VLOG(1) << "[BabelOrca] session captions already "
+            << session_captions_enabled_;
     return;
   }
 
   session_captions_enabled_ = session_captions_enabled;
   if (!session_captions_enabled_ && !local_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] all disabled, stop recognition";
     StopRecognition();
     return;
   }
   if (!session_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] session captions disabled, reset sender";
     rate_limited_sender_.reset();
     return;
   }
 
   if (request_data_provider_->tachyon_token().has_value()) {
+    VLOG(1) << "[BabelOrca] already has tachyon token, init sending";
     InitSending(/*signed_in=*/true);
     return;
   }
+  VLOG(1) << "[BabelOrca] signin to tachyon";
   request_data_provider_->SigninToTachyonAndRespond(base::BindOnce(
       &BabelOrcaProducer::InitSending, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -120,23 +147,29 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_captions_enabled_ = local_captions_enabled;
   if (!session_captions_enabled_ && !local_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] all disabled, stop recognition";
     StopRecognition();
     return;
   }
   if (!local_captions_enabled_) {
     // Close the bubble.
+    VLOG(1) << "[BabelOrca] local captions disabled, close bubble";
     caption_controller_->StopLiveCaption();
     return;
   } else {
     // Ensure bubble creation.
+    VLOG(1) << "[BabelOrca] local captions enabled, ensure bubble creation";
     caption_controller_->StartLiveCaption();
   }
   // If session captions enabled and sender is initialized, this means that
   // recognition already started and observation is set.
   if (session_captions_enabled_ && rate_limited_sender_) {
+    VLOG(1) << "[BabelOrca] recognition already started by session captions";
     return;
   }
 
+  VLOG(1)
+      << "[BabelOrca] observe and start speech recognition for local captions";
   speech_recognizer_->ObserveSpeechRecognition(
       base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -149,12 +182,13 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!signed_in) {
     // TODO(crbug.com//373692250): report error.
-    LOG(ERROR) << "Failed to signin to Tachyon";
+    LOG(ERROR) << "[BabelOrca] Failed to signin to Tachyon";
     return;
   }
   // Check if session caption was disabled before request is completed or
   // session ended. Session ended will set `session_captions_enabled_` to false.
   if (!session_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] session caption disabled, do not init sending";
     return;
   }
   auto sender = std::make_unique<TranscriptSenderImpl>(
@@ -166,8 +200,11 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   // If local captions enabled, this means that recognition already started and
   // observation is set.
   if (local_captions_enabled_) {
+    VLOG(1) << "[BabelOrca] recognition already started by local captions";
     return;
   }
+  VLOG(1) << "[BabelOrca] observe and start speech recognition for session "
+             "captions";
   speech_recognizer_->ObserveSpeechRecognition(
       base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -207,10 +244,16 @@ void BabelOrcaProducer::OnLanguageIdentificationEvent(
 void BabelOrcaProducer::OnSendFailed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/373692250): report error.
-  LOG(ERROR) << "Transcript send permanently failed";
+  base::UmaHistogramEnumeration(
+      kSendingStoppedReasonUma,
+      SendingStoppedReason::kTachyonSendMessagesError);
+  LOG(ERROR) << "[BabelOrca] Transcript send permanently failed";
   session_captions_enabled_ = false;
   rate_limited_sender_.reset();
   if (!local_captions_enabled_) {
+    VLOG(1)
+        << "[BabelOrca] stop recognition on send failure and local captions "
+           "disabled";
     StopRecognition();
   }
 }

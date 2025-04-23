@@ -11,6 +11,7 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator.h"
@@ -89,7 +90,7 @@ using base::UserMetricsAction;
       initWithConsumer:self.feedTopSectionViewController
        identityManager:identityManager
            authService:authenticationService
-           isIncognito:profile->IsOffTheRecord()
+             incognito:profile->IsOffTheRecord()
            prefService:profile->GetPrefs()];
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
@@ -102,15 +103,17 @@ using base::UserMetricsAction;
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-         initWithIdentityManager:identityManager
-           accountManagerService:accountManagerService
-                     authService:AuthenticationServiceFactory::GetForProfile(
-                                     profile)
-                     prefService:profile->GetPrefs()
-                     syncService:syncService
-                     accessPoint:signin_metrics::AccessPoint::kNtpFeedTopPromo
-                 signinPresenter:self
-        accountSettingsPresenter:nil];
+                  initWithIdentityManager:identityManager
+                    accountManagerService:accountManagerService
+                              authService:AuthenticationServiceFactory::
+                                              GetForProfile(profile)
+                              prefService:profile->GetPrefs()
+                              syncService:syncService
+                              accessPoint:signin_metrics::AccessPoint::
+                                              kNtpFeedTopPromo
+                          signinPresenter:self
+                 accountSettingsPresenter:nil
+        changeProfileContinuationProvider:DoNothingContinuationProvider()];
 
     self.signinPromoMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;

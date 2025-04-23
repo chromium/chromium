@@ -33,7 +33,7 @@ public class BottomSheetListContainerView extends LinearLayout {
         for (int i = 0; i < types.size(); i++) {
             Integer type = types.get(i);
             BottomSheetListItemView listItemView = (BottomSheetListItemView) createListItemView();
-
+            listItemView.setId(delegate.getListItemId(type));
             listItemView.setTitle(delegate.getListItemTitle(type, mContext));
             listItemView.setSubtitle(delegate.getListItemSubtitle(type, mContext));
             listItemView.setBackground(NtpCustomizationUtils.getBackground(types.size(), i));

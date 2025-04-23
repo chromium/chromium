@@ -59,7 +59,6 @@ public class SigninCheckerTest {
                     return TestAccounts.CHILD_ACCOUNT.equals(
                             mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertEquals(
                 2,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
@@ -93,7 +92,7 @@ public class SigninCheckerTest {
                 1,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -127,7 +126,7 @@ public class SigninCheckerTest {
                 0,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }

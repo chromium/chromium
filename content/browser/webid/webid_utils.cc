@@ -4,7 +4,6 @@
 
 #include "content/browser/webid/webid_utils.h"
 
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
@@ -452,10 +451,6 @@ bool IsFedCmAuthzEnabled() {
 
 FederatedAuthRequestPageData* GetPageData(Page& page) {
   return FederatedAuthRequestPageData::GetOrCreateForPage(page);
-}
-
-int GetNewSessionID() {
-  return base::RandInt(1, 1 << 30);
 }
 
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,

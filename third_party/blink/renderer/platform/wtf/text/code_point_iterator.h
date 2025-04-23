@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/stack_allocated.h"
+#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace WTF {
@@ -46,8 +47,8 @@ class CodePointIterator {
     return CodePointIterator(
         string.Is8Bit(),
         string.Is8Bit()
-            ? static_cast<const void*>(string.Characters8() + string.length())
-            : static_cast<const void*>(string.Characters16() + string.length()),
+            ? static_cast<const void*>(base::to_address(string.Span8().end()))
+            : static_cast<const void*>(base::to_address(string.Span16().end())),
         0);
   }
 

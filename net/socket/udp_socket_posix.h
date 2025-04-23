@@ -261,6 +261,16 @@ class NET_EXPORT UDPSocketPosix {
   // Sets iOS Network Service Type for option SO_NET_SERVICE_TYPE.
   int SetIOSNetworkServiceType(int ios_network_service_type);
 
+  // Register a socket and a QUIC UDP payload that can close a QUIC connection
+  // to the Android system server.
+  // When the app loses network access, the system server destroys the
+  // registered socket and sends the registered UDP payload to the server.
+  void RegisterQuicConnectionClosePayload(base::span<uint8_t> payload);
+
+  // Unregister the socket and its associated UDP payload that were
+  // previously registered by RegisterQuicConnectionClosePayload
+  void UnregisterQuicConnectionClosePayload();
+
   // Takes ownership of `socket`, which should be a socket descriptor opened
   // with the specified address family. The socket should only be created but
   // not bound or connected to an address.

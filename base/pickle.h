@@ -71,6 +71,9 @@ class BASE_EXPORT PickleIterator {
   // mutated). Do not keep the pointer around!
   [[nodiscard]] bool ReadBytes(const char** data, size_t length);
 
+  // Similar, but using span for convenience.
+  [[nodiscard]] std::optional<span<const uint8_t>> ReadBytes(size_t length);
+
   // A version of ReadInt() that checks for the result not being negative. Use
   // it for reading the object sizes.
   [[nodiscard]] bool ReadLength(size_t* result) {

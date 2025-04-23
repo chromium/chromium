@@ -80,7 +80,7 @@ void FakeCookieStore::FlushStore(base::OnceClosure callback) {
 }
 
 void FakeCookieStore::SetCookieableSchemes(
-    const std::vector<std::string>& schemes,
+    std::vector<std::string> schemes,
     SetCookieableSchemesCallback callback) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }

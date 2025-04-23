@@ -527,6 +527,7 @@ static_library("url_constants") {
 
   public_deps = [
     ":buildflags",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/signin/public/base:signin_buildflags",

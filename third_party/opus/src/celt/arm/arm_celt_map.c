@@ -40,7 +40,8 @@ opus_val32 (*const CELT_INNER_PROD_IMPL[OPUS_ARCHMASK+1])(const opus_val16 *x, c
   celt_inner_prod_c,   /* ARMv4 */
   celt_inner_prod_c,   /* EDSP */
   celt_inner_prod_c,   /* Media */
-  celt_inner_prod_neon /* NEON */
+  celt_inner_prod_neon,/* NEON */
+  celt_inner_prod_neon /* DOTPROD */
 };
 
 void (*const DUAL_INNER_PROD_IMPL[OPUS_ARCHMASK+1])(const opus_val16 *x, const opus_val16 *y01, const opus_val16 *y02,
@@ -48,7 +49,8 @@ void (*const DUAL_INNER_PROD_IMPL[OPUS_ARCHMASK+1])(const opus_val16 *x, const o
   dual_inner_prod_c,   /* ARMv4 */
   dual_inner_prod_c,   /* EDSP */
   dual_inner_prod_c,   /* Media */
-  dual_inner_prod_neon /* NEON */
+  dual_inner_prod_neon,/* NEON */
+  dual_inner_prod_neon /* DOTPROD */
 };
 # endif
 
@@ -61,7 +63,8 @@ opus_val32 (*const CELT_PITCH_XCORR_IMPL[OPUS_ARCHMASK+1])(const opus_val16 *,
   celt_pitch_xcorr_c,               /* ARMv4 */
   MAY_HAVE_EDSP(celt_pitch_xcorr),  /* EDSP */
   MAY_HAVE_MEDIA(celt_pitch_xcorr), /* Media */
-  MAY_HAVE_NEON(celt_pitch_xcorr)   /* NEON */
+  MAY_HAVE_NEON(celt_pitch_xcorr),  /* NEON */
+  MAY_HAVE_NEON(celt_pitch_xcorr)   /* DOTPROD */
 };
 
 #  endif
@@ -72,7 +75,8 @@ void (*const CELT_PITCH_XCORR_IMPL[OPUS_ARCHMASK+1])(const opus_val16 *,
   celt_pitch_xcorr_c,              /* ARMv4 */
   celt_pitch_xcorr_c,              /* EDSP */
   celt_pitch_xcorr_c,              /* Media */
-  celt_pitch_xcorr_float_neon      /* Neon */
+  celt_pitch_xcorr_float_neon,     /* Neon */
+  celt_pitch_xcorr_float_neon      /* DOTPROD */
 };
 #  endif
 # endif /* FIXED_POINT */
@@ -90,6 +94,7 @@ void (*const XCORR_KERNEL_IMPL[OPUS_ARCHMASK + 1])(
   xcorr_kernel_c,                /* EDSP */
   xcorr_kernel_c,                /* Media */
   xcorr_kernel_neon_fixed,       /* Neon */
+  xcorr_kernel_neon_fixed        /* DOTPROD */
 };
 
 #endif
@@ -101,14 +106,16 @@ int (*const OPUS_FFT_ALLOC_ARCH_IMPL[OPUS_ARCHMASK+1])(kiss_fft_state *st) = {
    opus_fft_alloc_arch_c,        /* ARMv4 */
    opus_fft_alloc_arch_c,        /* EDSP */
    opus_fft_alloc_arch_c,        /* Media */
-   opus_fft_alloc_arm_neon       /* Neon with NE10 library support */
+   opus_fft_alloc_arm_neon,      /* Neon with NE10 library support */
+   opus_fft_alloc_arm_neon       /* DOTPROD with NE10 library support */
 };
 
 void (*const OPUS_FFT_FREE_ARCH_IMPL[OPUS_ARCHMASK+1])(kiss_fft_state *st) = {
    opus_fft_free_arch_c,         /* ARMv4 */
    opus_fft_free_arch_c,         /* EDSP */
    opus_fft_free_arch_c,         /* Media */
-   opus_fft_free_arm_neon        /* Neon with NE10 */
+   opus_fft_free_arm_neon,       /* Neon with NE10 */
+   opus_fft_free_arm_neon        /* DOTPROD with NE10 */
 };
 #   endif /* CUSTOM_MODES */
 
@@ -118,7 +125,8 @@ void (*const OPUS_FFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
    opus_fft_c,                   /* ARMv4 */
    opus_fft_c,                   /* EDSP */
    opus_fft_c,                   /* Media */
-   opus_fft_neon                 /* Neon with NE10 */
+   opus_fft_neon,                /* Neon with NE10 */
+   opus_fft_neon                 /* DOTPROD with NE10 */
 };
 
 void (*const OPUS_IFFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
@@ -127,7 +135,8 @@ void (*const OPUS_IFFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
    opus_ifft_c,                   /* ARMv4 */
    opus_ifft_c,                   /* EDSP */
    opus_ifft_c,                   /* Media */
-   opus_ifft_neon                 /* Neon with NE10 */
+   opus_ifft_neon,                /* Neon with NE10 */
+   opus_ifft_neon                 /* DOTPROD with NE10 */
 };
 
 void (*const CLT_MDCT_FORWARD_IMPL[OPUS_ARCHMASK+1])(const mdct_lookup *l,
@@ -139,7 +148,8 @@ void (*const CLT_MDCT_FORWARD_IMPL[OPUS_ARCHMASK+1])(const mdct_lookup *l,
    clt_mdct_forward_c,           /* ARMv4 */
    clt_mdct_forward_c,           /* EDSP */
    clt_mdct_forward_c,           /* Media */
-   clt_mdct_forward_neon         /* Neon with NE10 */
+   clt_mdct_forward_neon,        /* Neon with NE10 */
+   clt_mdct_forward_neon         /* DOTPROD with NE10 */
 };
 
 void (*const CLT_MDCT_BACKWARD_IMPL[OPUS_ARCHMASK+1])(const mdct_lookup *l,
@@ -151,7 +161,8 @@ void (*const CLT_MDCT_BACKWARD_IMPL[OPUS_ARCHMASK+1])(const mdct_lookup *l,
    clt_mdct_backward_c,           /* ARMv4 */
    clt_mdct_backward_c,           /* EDSP */
    clt_mdct_backward_c,           /* Media */
-   clt_mdct_backward_neon         /* Neon with NE10 */
+   clt_mdct_backward_neon,        /* Neon with NE10 */
+   clt_mdct_backward_neon         /* DOTPROD with NE10 */
 };
 
 #  endif /* HAVE_ARM_NE10 */

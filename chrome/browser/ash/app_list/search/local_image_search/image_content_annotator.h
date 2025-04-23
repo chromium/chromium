@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_IMAGE_CONTENT_ANNOTATOR_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_IMAGE_CONTENT_ANNOTATOR_H_
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -18,7 +20,9 @@ namespace app_list {
 
 class ImageContentAnnotator {
  public:
-  ImageContentAnnotator();
+  using IcaDisconnectedCallback = base::RepeatingCallback<void()>;
+
+  explicit ImageContentAnnotator(IcaDisconnectedCallback callback);
   ~ImageContentAnnotator();
   ImageContentAnnotator(const ImageContentAnnotator&) = delete;
   ImageContentAnnotator& operator=(const ImageContentAnnotator&) = delete;
@@ -39,6 +43,8 @@ class ImageContentAnnotator {
  private:
   void ConnectToImageAnnotator();
 
+  void OnIcaDisconnected();
+
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;
   mojo::Remote<chromeos::machine_learning::mojom::ImageContentAnnotator>
@@ -47,7 +53,14 @@ class ImageContentAnnotator {
   bool ica_dlc_initialized_ = false;
   int num_retries_passed_ = 0;
 
+  // Called when the `image_content_annotator_` is disconnected.
+  IcaDisconnectedCallback ica_disconnected_callback_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<ImageContentAnnotator> weak_ptr_factory_{this};
 };
 }  // namespace app_list
 

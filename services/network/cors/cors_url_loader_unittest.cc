@@ -2446,7 +2446,7 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
                 /*factory_overrides=*/net::CookieSettingOverrides(),
                 /*devtools_overrides=*/net::CookieSettingOverrides(), request,
                 /*emit_metrics=*/false),
-            request.permissions_policy);
+            /*cookie_partition_key=*/std::nullopt, request.permissions_policy);
   }
 
   ResourceRequest CreateNoCorsResourceRequest(

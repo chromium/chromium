@@ -4421,7 +4421,38 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DuplicateContentDisposition) {
             downloads[0]->GetTargetFilePath().BaseName().value());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadContentTest,
+// Test fixture for forcing RendererSideContentDecoding feature.
+class DownloadContentRendererSideContentDecodingTest
+    : public DownloadContentTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DownloadContentRendererSideContentDecodingTest() {
+    if (GetParam()) {
+      features_.InitWithFeatures(
+          {network::features::kRendererSideContentDecoding}, {});
+    } else {
+      features_.InitWithFeatures(
+          {}, {network::features::kRendererSideContentDecoding});
+    }
+  }
+  ~DownloadContentRendererSideContentDecodingTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "FeatureEnabled" : "FeatureDisabled";
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DownloadContentRendererSideContentDecodingTest,
+    ::testing::Bool(),
+    &DownloadContentRendererSideContentDecodingTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(DownloadContentRendererSideContentDecodingTest,
                        CompressedResponseWithContentDisposition) {
   // gzip-content-with-content-disposition.gz is served with Content-Disposition
   // headers, and `Content-Encoding: gzip`.
@@ -4448,43 +4479,53 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   }
 }
 
-// Test fixture for forcing RendererSideContentDecoding feature.
-class DownloadContentRendererSideContentDecodingTest
+// Test fixture for forcing RendererSideContentDecoding feature failure.
+class DownloadContentRendererSideContentDecodingFailureTest
     : public DownloadContentTest {
  public:
-  DownloadContentRendererSideContentDecodingTest() = default;
-  ~DownloadContentRendererSideContentDecodingTest() override = default;
+  DownloadContentRendererSideContentDecodingFailureTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{network::features::kRendererSideContentDecoding,
+          {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
+        {});
+  }
+  ~DownloadContentRendererSideContentDecodingFailureTest() override = default;
+
+ protected:
+  class FinishNavigationObserver : public WebContentsObserver {
+   public:
+    FinishNavigationObserver(WebContents* contents,
+                             base::OnceClosure done_closure)
+        : WebContentsObserver(contents),
+          done_closure_(std::move(done_closure)) {}
+    void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+      error_code_ = navigation_handle->GetNetErrorCode();
+      std::move(done_closure_).Run();
+    }
+    const std::optional<net::Error>& error_code() const { return error_code_; }
+
+   private:
+    base::OnceClosure done_closure_;
+    std::optional<net::Error> error_code_;
+  };
 
  private:
-  base::test::ScopedFeatureList features_ = base::test::ScopedFeatureList(
-      {network::features::kRendererSideContentDecoding});
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    DownloadContentRendererSideContentDecodingTest,
+    DownloadContentRendererSideContentDecodingFailureTest,
     CompressedResponseWithContentDispositionInsufficientResources) {
-  // Forces the ContentDecodingInterceptor to simulate a failure when attempting
-  // to create its internal Mojo data pipe.
-  network::ContentDecodingInterceptor::
-      SetForceMojoCreateDataPipeFailureForTesting(true);
-
-  auto observer = std::make_unique<DownloadCreateObserver>(
-      DownloadManagerForShell(shell()));
+  base::RunLoop run_loop;
+  FinishNavigationObserver finish_navigation_observer(shell()->web_contents(),
+                                                      run_loop.QuitClosure());
   // gzip-content-with-content-disposition.gz is served with Content-Disposition
   // headers, and `Content-Encoding: gzip`.
   EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
       shell(), embedded_test_server()->GetURL(
                    "/download/gzip-content-with-content-disposition.gz")));
-  download::DownloadItem* download = observer->WaitForFinished();
-  WaitForInterrupt(download);
-
-  // Verify that the download interruption reason is NETWORK_FAILED.
-  EXPECT_EQ(download->GetLastReason(),
-            download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
-
-  // Reset the test hook to false to ensure it doesn't affect subsequent tests.
-  network::ContentDecodingInterceptor::
-      SetForceMojoCreateDataPipeFailureForTesting(false);
+  run_loop.Run();
+  EXPECT_THAT(finish_navigation_observer.error_code(), net::ERR_ABORTED);
 }
 
 // Test that the network isolation key is populated for:

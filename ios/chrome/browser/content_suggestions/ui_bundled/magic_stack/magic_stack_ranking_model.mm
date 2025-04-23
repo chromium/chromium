@@ -75,6 +75,27 @@
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 #import "ui/base/device_form_factor.h"
 
+namespace {
+
+// Move ShopCard to front of Magic Stack. Not used in production, only
+// for testing impression limiits. ShopCards are only shown for a maximum
+// of 3 impressions and an impression only counts if the card is at the
+// front of the Magic Stack.
+BOOL PromoteShopCardToFrontOfStack() {
+  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) &&
+         commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+}
+
+BOOL PromoteTabResumptionShopCardToFrontOfStack() {
+  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) &&
+         commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+}
+
+}  // namespace
+
 using segmentation_platform::TipIdentifier;
 using segmentation_platform::TipIdentifierForOutputLabel;
 using segmentation_platform::home_modules::AddressBarPositionEphemeralModule;
@@ -763,6 +784,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 - (NSArray<MagicStackModule*>*)latestMagicStackConfigRank {
   NSMutableArray<MagicStackModule*>* magicStackOrder = [NSMutableArray array];
+  if (PromoteShopCardToFrontOfStack() && _shopCardMediator &&
+      _shopCardMediator.shopCardItemToShow) {
+    [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
+  }
+
   // Always add Set Up List at the front.
   if ([_setUpListMediator shouldShowSetUpList]) {
     [magicStackOrder addObjectsFromArray:[_setUpListMediator setUpListConfigs]];
@@ -827,7 +853,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         if (ShouldHideIrrelevantModules() && [magicStackOrder count] > 1) {
           break;
         }
-        [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
+        if (PromoteTabResumptionShopCardToFrontOfStack()) {
+          [magicStackOrder insertObject:_tabResumptionMediator.itemConfig
+                                atIndex:0];
+        } else {
+          [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
+        }
         break;
       case ContentSuggestionsModuleType::kSafetyCheck: {
         // Handles adding Safety Check to Magic Stack. Disables/hides if:
@@ -874,7 +905,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         [magicStackOrder addObject:_shortcutsMediator.shortcutsConfig];
         break;
       case ContentSuggestionsModuleType::kShopCard:
-        if (_shopCardMediator && _shopCardMediator.shopCardItemToShow) {
+        if (!PromoteShopCardToFrontOfStack() && _shopCardMediator &&
+            _shopCardMediator.shopCardItemToShow) {
           [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
         }
         break;

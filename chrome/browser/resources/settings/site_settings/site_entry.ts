@@ -159,18 +159,18 @@ export class SiteEntryElement extends SiteEntryElementBase {
     ];
   }
 
-  siteGroup: SiteGroup;
-  private displayName_: string;
-  private cookieString_: string;
-  private rwsMembershipLabel_: string;
-  isRwsFiltered: boolean;
-  listIndex: number;
-  private overallUsageString_: string;
-  private originUsages_: string[];
-  private cookiesNum_: string[];
-  sortMethod?: SortMethod;
-  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
-  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
+  declare siteGroup: SiteGroup;
+  declare private displayName_: string;
+  declare private cookieString_: string;
+  declare private rwsMembershipLabel_: string;
+  declare isRwsFiltered: boolean;
+  declare listIndex: number;
+  declare private overallUsageString_: string;
+  declare private originUsages_: string[];
+  declare private cookiesNum_: string[];
+  declare sortMethod?: SortMethod;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();

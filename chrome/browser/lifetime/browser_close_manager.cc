@@ -38,45 +38,6 @@
 
 namespace {
 
-// Make a copy of the BrowserList and watch for any calls to AddBrowser or
-// RemoveBrowser. This class allows a safe iteration over the list assuming
-// that removing some Browser instance may remove another pending Browser
-// instance.
-class BrowserListIterator : public BrowserListObserver {
- public:
-  BrowserListIterator()
-      : browsers_(BrowserList::GetInstance()->begin(),
-                  BrowserList::GetInstance()->end()) {
-    BrowserList::GetInstance()->AddObserver(this);
-  }
-  BrowserListIterator(const BrowserListIterator&) = delete;
-  BrowserListIterator(BrowserListIterator&&) = delete;
-  ~BrowserListIterator() override {
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
-
-  void OnBrowserAdded(Browser* browser) override {
-    browsers_.push_back(browser);
-  }
-  void OnBrowserRemoved(Browser* browser) override {
-    auto it = std::ranges::find(browsers_.begin(), browsers_.end(), browser);
-    if (it != browsers_.end()) {
-      browsers_.erase(it);
-    }
-  }
-  bool IsEmpty() const { return browsers_.empty(); }
-
-  Browser* Pop() {
-    Browser* browser = browsers_.front();
-    browsers_.erase(browsers_.begin());
-    DCHECK(base::Contains(*BrowserList::GetInstance(), browser));
-    return browser;
-  }
-
- private:
-  BrowserList::BrowserVector browsers_;
-};
-
 // Navigates a browser window for |profile|, creating one if necessary, to the
 // downloads page if there are downloads in progress for |profile|.
 void ShowInProgressDownloads(Profile* profile) {
@@ -220,14 +181,9 @@ void BrowserCloseManager::CloseBrowsers() {
   }
 #endif
 
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // destroy a Browser during the loop.
-  BrowserListIterator browser_list_copy;
-
-  bool ignore_unload_handlers = browser_shutdown::ShouldIgnoreUnloadHandlers();
-
-  while (!browser_list_copy.IsEmpty()) {
-    Browser* browser = browser_list_copy.Pop();
+  BrowserList::GetInstance()->ForEachCurrentAndNewBrowser([](Browser* browser) {
+    bool ignore_unload_handlers =
+        browser_shutdown::ShouldIgnoreUnloadHandlers();
     browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
     browser->window()->Close();
     if (ignore_unload_handlers) {
@@ -242,7 +198,7 @@ void BrowserCloseManager::CloseBrowsers() {
       // Destroying the browser should have removed it from the browser list.
       DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
     }
-  }
+  });
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   NotificationUIManager* notification_manager =

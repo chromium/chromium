@@ -83,6 +83,7 @@ class CORE_EXPORT DocumentMarkerController final
   void AddCustomHighlightMarker(const EphemeralRange&,
                                 const String& highlight_name,
                                 const Member<Highlight> highlight);
+  void AddGlicMarker(const EphemeralRange&);
 
   void MoveMarkers(const Text& src_node, int length, const Text& dst_node);
 
@@ -204,6 +205,10 @@ class CORE_EXPORT DocumentMarkerController final
                               unsigned old_length,
                               unsigned new_length);
 
+  void StartGlicMarkerAnimation();
+
+  void ContinueGlicMarkerAnimation(base::TimeTicks tick);
+
  private:
   void AddMarkerInternal(
       const EphemeralRange&,
@@ -237,6 +242,13 @@ class CORE_EXPORT DocumentMarkerController final
 
   // Called when a node is removed from a marker map.
   void DidRemoveNodeFromMap(DocumentMarker::MarkerType);
+
+  // Returns a boolean indicating if the last frame is reached.
+  bool UpdateGlicMarkerOpacity(base::TimeDelta duration);
+
+  void InvalidatePaintForGlicMarkers();
+
+  std::optional<base::TimeTicks> glic_marker_animation_start_;
 
   MarkerMaps markers_;
 

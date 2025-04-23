@@ -27,10 +27,10 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 
 import java.util.List;
 
@@ -40,14 +40,14 @@ public class ReorderStrategyTestBase {
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
     protected static final float EPSILON = 0.001f;
     protected static final int INTERACTING_VIEW_ID = 10; // Arbitrary value.
-    protected static final Token GROUP_ID =
-            new Token(/* high= */ 0L, /* low= */ 0L); // Arbitrary value.
+    protected static final Token GROUP_ID1 =
+            new Token(/* high= */ 1L, /* low= */ 1L); // Arbitrary value.
+    protected static final Token GROUP_ID2 =
+            new Token(/* high= */ 2L, /* low= */ 2L); // Arbitrary value.
 
     // Dependencies
     private Activity mActivity;
     @Mock protected ActionConfirmationManager mActionConfirmationManager;
-    @Mock protected ReorderStrategy mTabStrategy;
-    @Mock protected ReorderStrategy mGroupStrategy;
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
@@ -56,6 +56,7 @@ public class ReorderStrategyTestBase {
     @Mock protected TabModel mModel;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
+    @Mock protected Supplier<Long> mLastReorderScrollTimeSupplier;
     @Mock protected TabUngrouper mTabUnGrouper;
     @Spy protected AnimationHost mAnimationHost = new TestAnimationHost();
 
@@ -65,7 +66,6 @@ public class ReorderStrategyTestBase {
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
-    protected StripLayoutGroupTitle mInteractingTabGroupTitle;
     @Mock protected Tab mTabForInteractingView;
 
     protected void setup() {
@@ -74,6 +74,8 @@ public class ReorderStrategyTestBase {
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         when(mModel.getTabById(INTERACTING_VIEW_ID)).thenReturn(mTabForInteractingView);
         when(mTabForInteractingView.getId()).thenReturn(INTERACTING_VIEW_ID);
+        when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
+        when(mLastReorderScrollTimeSupplier.get()).thenReturn(0L);
     }
 
     protected StripLayoutGroupTitle buildGroupTitle(
@@ -91,6 +93,7 @@ public class ReorderStrategyTestBase {
     }
 
     private void setDrawProperties(StripLayoutView view, int x, int width) {
+        view.setIdealX(x);
         view.setDrawX(x);
         view.setDrawY(0);
         view.setHeight(40);

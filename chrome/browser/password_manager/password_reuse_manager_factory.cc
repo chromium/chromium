@@ -19,7 +19,6 @@
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier_impl.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/shared_preferences_delegate.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -83,11 +82,6 @@ PasswordReuseManagerFactory* PasswordReuseManagerFactory::GetInstance() {
 
 password_manager::PasswordReuseManager*
 PasswordReuseManagerFactory::GetForProfile(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled)) {
-    return nullptr;
-  }
-
   return static_cast<password_manager::PasswordReuseManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -95,9 +89,6 @@ PasswordReuseManagerFactory::GetForProfile(Profile* profile) {
 std::unique_ptr<KeyedService>
 PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordReuseDetectionEnabled));
-
   Profile* profile = Profile::FromBrowserContext(context);
 
   password_manager::PasswordStoreInterface* store =

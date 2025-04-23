@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 
@@ -74,6 +75,7 @@ class TestAppListClient : public AppListClient {
   void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) override;
   std::optional<std::string> GetAssistantNewEntryPointName() override;
+  ui::ImageModel GetGeminiIcon() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

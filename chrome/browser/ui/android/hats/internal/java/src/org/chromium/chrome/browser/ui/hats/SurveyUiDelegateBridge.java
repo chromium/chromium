@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageWrapper;
@@ -21,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Glue code between C++ and Java for passing SurveyUiDelegate. */
 @JNINamespace("hats")
+@NullMarked
 class SurveyUiDelegateBridge implements SurveyUiDelegate {
     private final @Nullable SurveyUiDelegate mDelegate;
     private final long mNativePointer;
@@ -28,7 +32,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
     /** Called from C++ to create a new SurveyUiDelegate using a message. */
     @CalledByNative
     @VisibleForTesting
-    static SurveyUiDelegateBridge createFromMessage(
+    static @Nullable SurveyUiDelegateBridge createFromMessage(
             long nativePointer, MessageWrapper messageWrapper, WindowAndroid windowAndroid) {
         if (windowAndroid == null || SurveyClientFactory.getInstance() == null) return null;
 
@@ -59,7 +63,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
     @VisibleForTesting
     private static void populateDefaultValuesForMessageWrapper(
             MessageWrapper input, WindowAndroid windowAndroid) {
-        Resources res = windowAndroid.getContext().get().getResources();
+        Resources res = assumeNonNull(windowAndroid.getContext().get()).getResources();
         PropertyModel model = input.getMessageProperties();
         MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(res, model);
     }
@@ -96,8 +100,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
         SurveyUiDelegateBridgeJni.get().dismiss(mNativePointer);
     }
 
-    @Nullable
-    SurveyUiDelegate getDelegateForTesting() {
+    @Nullable SurveyUiDelegate getDelegateForTesting() {
         return mDelegate;
     }
 

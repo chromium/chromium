@@ -42,17 +42,14 @@ const int kTextBreakDone = -1;
 // to version 4.0 only supports "legacy grapheme clusters".  Use this for
 // general text processing, e.g. string truncation.
 
-class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
+class PLATFORM_EXPORT CharacterBreakIterator final {
   STACK_ALLOCATED();
 
  public:
-  explicit NonSharedCharacterBreakIterator(const StringView&);
-  explicit NonSharedCharacterBreakIterator(base::span<const UChar>);
-  NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
-      delete;
-  NonSharedCharacterBreakIterator& operator=(
-      const NonSharedCharacterBreakIterator&) = delete;
-  ~NonSharedCharacterBreakIterator();
+  explicit CharacterBreakIterator(const StringView&);
+  explicit CharacterBreakIterator(base::span<const UChar>);
+  CharacterBreakIterator(const CharacterBreakIterator&) = delete;
+  CharacterBreakIterator& operator=(const CharacterBreakIterator&) = delete;
 
   int Next();
   int Current();
@@ -64,6 +61,13 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
   bool operator!() const { return !is_8bit_ && !iterator_; }
 
  private:
+  struct PLATFORM_EXPORT ReturnToPool {
+    void operator()(void* ptr) const;
+  };
+  using PooledIterator = std::unique_ptr<icu::BreakIterator, ReturnToPool>;
+  class Pool;
+  FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, PooledCharacterBreakIterator);
+
   void CreateIteratorForBuffer(base::span<const UChar>);
 
   unsigned ClusterLengthStartingAt(unsigned offset) const {
@@ -86,15 +90,15 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
            UNSAFE_TODO(charaters8_[offset - 1]) == '\r';
   }
 
-  bool is_8bit_;
+  bool is_8bit_ = false;
 
   // For 8 bit strings, we implement the iterator ourselves.
-  const LChar* charaters8_;
-  unsigned offset_;
-  unsigned length_;
+  const LChar* charaters8_ = nullptr;
+  unsigned offset_ = 0;
+  unsigned length_ = 0;
 
   // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_;
+  PooledIterator iterator_;
 };
 
 // Counts the number of grapheme clusters. A surrogate pair or a sequence
@@ -106,9 +110,9 @@ PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
 PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);
 
 // Returns a list of graphemes cluster at each character using character break
-// rules.
+// rules. The `graphemes` and `text` must have the same size.
 PLATFORM_EXPORT void GraphemesClusterList(const StringView& text,
-                                          Vector<unsigned>* graphemes);
+                                          base::span<unsigned> graphemes);
 
 }  // namespace blink
 

@@ -34,4 +34,7 @@ declare_args() {
   # Set to true to enable using Crashpad instead of Breakpad.
   # Currently, this is only implemented for linux.
   enable_chromoting_crashpad = true
+
+  # Enable this to build the CLI client for testing.
+  enable_remoting_cli_client = false
 }

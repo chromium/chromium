@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -61,7 +62,8 @@ class MockCookieControlsBubbleCoordinator
  public:
   MOCK_METHOD(void,
               ShowBubble,
-              (content::WebContents * web_contents,
+              (ToolbarButtonProvider * provider,
+               content::WebContents* web_contents,
                content_settings::CookieControlsController* controller),
               (override));
   MOCK_METHOD(CookieControlsBubbleViewImpl*, GetBubble, (), (const, override));
@@ -83,9 +85,7 @@ class CookieControlsIconViewUnitTest
 
     auto icon_view = std::make_unique<CookieControlsIconView>(
         browser(), delegate_, delegate_);
-    auto fake_coordinator =
-        std::make_unique<NiceMock<MockCookieControlsBubbleCoordinator>>();
-    icon_view->SetCoordinatorForTesting(std::move(fake_coordinator));
+    icon_view->SetCoordinatorForTesting(fake_coordinator_);
     view_ = browser_view()->GetLocationBarView()->AddChildView(
         std::move(icon_view));
 
@@ -136,6 +136,8 @@ class CookieControlsIconViewUnitTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  NiceMock<MockCookieControlsBubbleCoordinator> fake_coordinator_;
 
   raw_ptr<LocationBarView> delegate_;
 };

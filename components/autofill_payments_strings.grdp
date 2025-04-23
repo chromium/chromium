@@ -137,11 +137,9 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
     Save card to Google Account?
   </message>
-  <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
       Save card securely?
     </message>
-  </if>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     Save security code?
   </message>
@@ -183,11 +181,9 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to the server. The prompt will be shown on both the Desktop bubble and the Android bottom sheet.">
     To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
   </message>
-  <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
       Pay faster when your card is saved. Card details are encrypted in your Google Account.
     </message>
-  </if>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
       Save
@@ -485,11 +481,11 @@
     </message>
   </if>
   <if expr="is_ios">
-    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL" desc="Label for a toggle that allows users to turn on mandatory authentication when managing credit cards. Title-Cased.">
-      Always verify when using autofill
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL" desc="Label for a toggle that allows users to turn on mandatory authentication when managing credit cards.">
+      Verify it's you to autofill payment methods
     </message>
     <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
-      When turned off, you may be asked occasionally to verify for security purposes
+      For added protection, always use your fingerprint, face, or other screen lock when you pay using autofill
     </message>
     <if expr="_google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
@@ -648,18 +644,11 @@
 
   <!-- Mandatory Reauth related strings - start -->
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    Turn on manual verification?
+    Verify it's you to autofill payment methods?
   </message>
-  <if expr="_google_chrome">
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    If you share this device, Chrome can ask you to verify every time you pay using autofill
+    For added protection, always use your fingerprint, face, or other screen lock when you pay using autofill
   </message>
-  </if>
-  <if expr="not _google_chrome">
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
-    If you share this device, Chromium can ask you to verify every time you pay using autofill
-  </message>
-  </if>
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the mandatory reauth opt-in bubble on Desktop. This bubble prompts users if they would like to enroll in mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
     Enable mandatory re-authentication
   </message>
@@ -749,18 +738,6 @@
       Copied
     </message>
   </if>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card number">
-    Card number
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry date">
-    Expiry date
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry year">
-    Expiry year
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry month">
-    Expiry month
-  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for the virtual card option in the suggestion dropdown bubble.">
       Use your virtual card for added security
   </message>
@@ -1002,7 +979,7 @@
     Virtual card for <ph name="BNPL_ISSUER_NAME">$1<ex>PayLater</ex></ph> filled
   </message>
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The description label shown in body of the Autofill filled card information bubble for the Buy Now Pay Later flow.">
-    When you pay over time, a one-time virtual card number is filled. This number is only for this purchase.
+    When you pay over time, a one-time virtual card number is filled. You can click to copy and paste card details for this purchase.
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL" desc="The OK button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website.">
     Continue
@@ -1227,10 +1204,10 @@
 
   <!-- Mandatory Reauth related strings -->
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_LABEL" desc="Label for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
-    Manually verify every time you pay using autofill
+    Verify it's you to autofill payment methods
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL" desc="Sublabel for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
-    When turned off, you may be asked occasionally to verify for security purposes
+    For added protection, always use your fingerprint, face, or other screen lock when you pay using autofill
   </message>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_MANDATORY_REAUTH_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after opting in mandatory reauth.">

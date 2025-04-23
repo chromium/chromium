@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
+
 int UnsafeIndex();  // Return out of bounds index.
 
 // Regression test. This shouldn't violate assertions.
-// TODO(crbug.com/393402160): This should be spanified but currently is just
-// ignored. Would need to ensure all instantiations have know sizes.
+// TODO(crbug.com/393402160): Need to ensure all instantiations have know sizes.
+//
+// Expected rewrite:
+// template <typename T>
+// void f(base::span<T> t) {
 template <typename T>
-void f(T* t) {
+void f(base::span<T> t) {
   t[UnsafeIndex()] = 0;
 }
 

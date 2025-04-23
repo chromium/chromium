@@ -4,6 +4,8 @@
 
 module remoting.mojom;
 
+import "remoting/host/mojom/remoting_host.mojom";
+
 // Interface for the agent process broker to control the agent process. See
 // documentation on AgentProcessBroker below for more details.
 [EnableIf=is_mac]
@@ -15,6 +17,11 @@ interface AgentProcess {
   // Suspends the agent process. After calling this, the agent will stop sending
   // heartbeats and disconnect from signaling.
   SuspendProcess();
+
+  // Requests the agent process to bind a pending receiver of
+  // RemotingHostControl. This is called only once per process, and the agent
+  // process broker will not pass the bound remote across the process boundary.
+  BindRemotingHostControl(pending_receiver<RemotingHostControl> receiver);
 };
 
 // Interface for brokering the agent processes. CRD hosts are run as Mac launch

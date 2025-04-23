@@ -254,6 +254,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
       browser()
           ->signin_view_controller()
           ->GetModalDialogWebContentsForTesting());
+
+  // Before sending key events, make sure paint-holding does not drop input
+  // events.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(
+      browser()
+          ->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting());
+
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
                                               /*shift=*/false, /*alt=*/false,

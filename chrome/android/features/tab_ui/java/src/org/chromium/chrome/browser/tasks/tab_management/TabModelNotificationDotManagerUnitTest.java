@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.text.TextUtils;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
@@ -53,8 +60,11 @@ import java.util.Optional;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelNotificationDotManagerUnitTest {
     private static final int EXISTING_TAB_ID = 5;
+    private static final int ROOT_ID = 6;
     private static final int NON_EXISTANT_TAB_ID = 7;
+    private static final int TAB_COUNT = 3;
     private static final Token TAB_GROUP_ID = new Token(378L, 4378L);
+    private static final String TITLE = "Vacation";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -73,9 +83,10 @@ public class TabModelNotificationDotManagerUnitTest {
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
+    private final PersistentMessage mDirtyTabMessage = new PersistentMessage();
+    private final PersistentMessage mNonDirtyTabMessage = new PersistentMessage();
+
     private TabModelNotificationDotManager mTabModelNotificationDotManager;
-    private PersistentMessage mDirtyTabMessage = new PersistentMessage();
-    private PersistentMessage mNonDirtyTabMessage = new PersistentMessage();
 
     @Before
     public void setUp() {
@@ -93,10 +104,16 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabGroupIdFromRootId(ROOT_ID)).thenReturn(TAB_GROUP_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
+        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT);
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn(TITLE);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
+        when(mTab.getRootId()).thenReturn(ROOT_ID);
 
-        mTabModelNotificationDotManager = new TabModelNotificationDotManager();
+        Context context = ApplicationProvider.getApplicationContext();
+        mTabModelNotificationDotManager = new TabModelNotificationDotManager(context);
         mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
 
         verify(mMessagingBackendService)
@@ -113,8 +130,9 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Test
     public void testDestroyNoNativeInit() {
+        Context context = ApplicationProvider.getApplicationContext();
         TabModelNotificationDotManager notificationDotManager =
-                new TabModelNotificationDotManager();
+                new TabModelNotificationDotManager(context);
 
         // Verify this doesn't crash if called before native is initialized.
         notificationDotManager.destroy();
@@ -128,10 +146,10 @@ public class TabModelNotificationDotManagerUnitTest {
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         verify(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
     }
 
     @Test
@@ -139,13 +157,13 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         verify(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
     }
 
     @Test
@@ -154,21 +172,21 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
         // Set to visible.
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         createDirtyTabMessageForIds(List.of(NON_EXISTANT_TAB_ID));
 
         // Cannot hide if not dirty message related.
         mPersistentMessageObserverCaptor.getValue().hidePersistentMessage(mNonDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         mPersistentMessageObserverCaptor.getValue().hidePersistentMessage(mDirtyTabMessage);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         // One way latching; hide should only hide it cannot show.
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
         mPersistentMessageObserverCaptor.getValue().hidePersistentMessage(mDirtyTabMessage);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
     }
 
     @Test
@@ -177,15 +195,15 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mNonDirtyTabMessage);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         // One way latching; display should only show it cannot hide.
         createDirtyTabMessageForIds(List.of(NON_EXISTANT_TAB_ID));
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
     }
 
     @Test
@@ -194,15 +212,15 @@ public class TabModelNotificationDotManagerUnitTest {
 
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         createDirtyTabMessageForIds(List.of(NON_EXISTANT_TAB_ID));
         mPersistentMessageObserverCaptor.getValue().hidePersistentMessage(mDirtyTabMessage);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         createDirtyTabMessageForIds(List.of(NON_EXISTANT_TAB_ID, EXISTING_TAB_ID));
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
     }
 
     @Test
@@ -211,7 +229,7 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
     }
 
     @Test
@@ -226,7 +244,7 @@ public class TabModelNotificationDotManagerUnitTest {
                         TabLaunchType.FROM_SYNC_BACKGROUND,
                         TabCreationState.LIVE_IN_BACKGROUND,
                         /* markedForSelection= */ false);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
@@ -237,27 +255,39 @@ public class TabModelNotificationDotManagerUnitTest {
                         TabLaunchType.FROM_SYNC_BACKGROUND,
                         TabCreationState.LIVE_IN_BACKGROUND,
                         /* markedForSelection= */ false);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
         mTabModelObserverCaptor.getValue().tabRemoved(mTab);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
         mTabModelObserverCaptor.getValue().onFinishingTabClosure(mTab);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab);
-        assertTrue(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyShown();
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
         mTabModelObserverCaptor.getValue().willCloseTab(mTab, true);
-        assertFalse(mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get());
+        verifyHidden();
+    }
+
+    @Test
+    public void testFallbackTitle() {
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn(null);
+        initializeBothBackends();
+        createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
+
+        // Set to visible.
+        mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
+
+        verifyShown("3 tabs");
     }
 
     private void initializeBothBackends() {
@@ -286,5 +316,23 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mMessagingBackendService.getMessages(
                         Optional.of(PersistentNotificationType.DIRTY_TAB)))
                 .thenReturn(messages);
+    }
+
+    private void verifyHidden() {
+        TabModelDotInfo tabModelDotInfo =
+                mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get();
+        assertFalse(tabModelDotInfo.showDot);
+        assertTrue(TextUtils.isEmpty(tabModelDotInfo.tabGroupTitle));
+    }
+
+    private void verifyShown() {
+        verifyShown(TITLE);
+    }
+
+    private void verifyShown(String expectedTitle) {
+        TabModelDotInfo tabModelDotInfo =
+                mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get();
+        assertTrue(tabModelDotInfo.showDot);
+        assertEquals(expectedTitle, tabModelDotInfo.tabGroupTitle);
     }
 }

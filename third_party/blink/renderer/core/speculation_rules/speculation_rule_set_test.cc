@@ -236,7 +236,6 @@ class SpeculationRuleSetTest : public ::testing::Test {
   }
 
  private:
-  ScopedPrerender2ForTest enable_prerender2_{true};
   test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> execution_context_;
 };
@@ -998,9 +997,13 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
   }
 }
 
-// Tests that prefetch rules are ignored unless SpeculationRulesPrefetchProxy
-// is enabled.
-TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
+// Tests that prefetch_with_subresources rules are ignored unless
+// SpeculationRulesPrefetchWithSubresources is enabled.
+TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchWithSubresourcesRules) {
+  // Overwrite the feature flag.
+  ScopedSpeculationRulesPrefetchWithSubresourcesForTest
+      enable_prefetch_with_subresources{false};
+
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   const String speculation_script =
@@ -1021,33 +1024,6 @@ TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
   EXPECT_FALSE(std::ranges::any_of(candidates, [](const auto& candidate) {
     return candidate->action ==
            mojom::blink::SpeculationAction::kPrefetchWithSubresources;
-  }));
-}
-
-// Tests that prerender rules are ignored unless Prerender2 is enabled.
-TEST_F(SpeculationRuleSetTest, PrefetchIgnorePrerenderRules) {
-  // Overwrite the kPrerender2 flag.
-  ScopedPrerender2ForTest enable_prerender{false};
-
-  DummyPageHolder page_holder;
-  StubSpeculationHost speculation_host;
-  const String speculation_script =
-      R"({"prefetch": [
-           {"source": "list",
-            "urls": ["https://example.com/foo", "https://example.com/bar"],
-            "requires": ["anonymous-client-ip-when-cross-origin"]}
-         ],
-          "prerender": [
-           {"source": "list", "urls": ["https://example.com/prerender"]}
-         ]
-         })";
-  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
-                                      speculation_script);
-
-  const auto& candidates = speculation_host.candidates();
-  EXPECT_EQ(candidates.size(), 2u);
-  EXPECT_FALSE(std::ranges::any_of(candidates, [](const auto& candidate) {
-    return candidate->action == mojom::blink::SpeculationAction::kPrerender;
   }));
 }
 

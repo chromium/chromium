@@ -32,7 +32,6 @@ class ClosingWebStateObserverBrowserAgent
 
  private:
   friend class BrowserUserData<ClosingWebStateObserverBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ClosingWebStateObserverBrowserAgent(Browser* browser);
 

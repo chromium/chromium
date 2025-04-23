@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -499,7 +500,7 @@ TEST_F(TextureUploadPerfTest, upload) {
 TEST_F(TextureUploadPerfTest, renaming) {
   gfx::Size texture_size(fbo_size_.width() / 2, fbo_size_.height() / 2);
 
-  std::vector<uint8_t> pixels[4];
+  std::array<std::vector<uint8_t>, 4> pixels;
   for (int i = 0; i < 4; ++i) {
     GenerateTextureData(texture_size, 4, i + 1, &pixels[i]);
   }
@@ -507,10 +508,12 @@ TEST_F(TextureUploadPerfTest, renaming) {
   ui::ScopedMakeCurrent smc(gl_context_.get(), surface_.get());
   GenerateVertexBuffer(texture_size);
 
-  gfx::Vector2dF positions[] = {gfx::Vector2dF(0.f, 0.f),
-                                gfx::Vector2dF(1.f, 0.f),
-                                gfx::Vector2dF(0.f, 1.f),
-                                gfx::Vector2dF(1.f, 1.f)};
+  auto positions = std::to_array<gfx::Vector2dF>({
+      gfx::Vector2dF(0.f, 0.f),
+      gfx::Vector2dF(1.f, 0.f),
+      gfx::Vector2dF(0.f, 1.f),
+      gfx::Vector2dF(1.f, 1.f),
+  });
   GLuint texture_id = CreateGLTexture(GL_RGBA, texture_size, true);
 
   MeasurementTimers upload_and_draw_timers(gpu_timing_client_.get());

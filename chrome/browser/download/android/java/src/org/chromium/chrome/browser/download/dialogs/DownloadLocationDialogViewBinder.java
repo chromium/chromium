@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The view binder that connects {@link DownloadLocationCustomView} and
  * {@link DownloadLocationDialogCoordinator} which defines the UI properties.
  */
+@NullMarked
 class DownloadLocationDialogViewBinder {
     static void bind(
             PropertyModel model, DownloadLocationCustomView view, PropertyKey propertyKey) {

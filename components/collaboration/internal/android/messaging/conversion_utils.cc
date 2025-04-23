@@ -75,6 +75,7 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   ScopedJavaLocalRef<jstring> j_sync_tab_id = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_url = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_title = nullptr;
+  ScopedJavaLocalRef<jstring> j_previous_tab_url = nullptr;
   if (attribution.tab_metadata.has_value()) {
     j_local_tab_id =
         tab_groups::ToJavaTabId((*attribution.tab_metadata).local_tab_id);
@@ -85,6 +86,9 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
         env, attribution.tab_metadata->last_known_url);
     j_last_known_tab_title = JavaStringOrNullFromOptionalString(
         env, attribution.tab_metadata->last_known_title);
+
+    j_previous_tab_url = JavaStringOrNullFromOptionalString(
+        env, attribution.tab_metadata->previous_url);
   }
 
   ScopedJavaLocalRef<jobject> j_affected_user = nullptr;
@@ -103,8 +107,9 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
       env, j_id, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
       j_last_known_tab_group_title, j_last_known_tab_group_color,
       j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
-      j_last_known_tab_url, j_affected_user, attribution.affected_user_is_self,
-      j_triggering_user, attribution.triggering_user_is_self);
+      j_last_known_tab_url, j_previous_tab_url, j_affected_user,
+      attribution.affected_user_is_self, j_triggering_user,
+      attribution.triggering_user_is_self);
 }
 
 // Helper method to provide a consistent way to create a PersistentMessage

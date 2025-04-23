@@ -129,8 +129,8 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
                                   "HeadingOffset");
 }
 
-std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
-  WaitForFinalTreeContents(mode);
+std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
+  WaitForFinalTreeContents();
 
   return base::SplitString(DumpTreeAsString(), "\n", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
@@ -748,6 +748,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityComboboxWithRedundantAriaRole) {
   RunHtmlTest(FILE_PATH_LITERAL("combobox-with-redundant-aria-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMultiSelectable) {
+  RunHtmlTest(FILE_PATH_LITERAL("multi-selectable.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1745,9 +1750,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowHeader) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowText) {
-  // RunAriaTestMinusHtmlMode ensures that the correct object attributes are
-  // set even if html mode is not set.
-  RunAriaTestMinusHtmlMode(FILE_PATH_LITERAL("aria-rowtext.html"));
+  RunAriaTest(FILE_PATH_LITERAL("aria-rowtext.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaScrollbar) {
@@ -2073,6 +2076,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityBlockquote) {
 IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
                        AccessibilityOnScreenMode) {
   RunOnScreenTest(FILE_PATH_LITERAL("on-screen-mode.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
+                       ContentLeftOfViewPortForOnScreenMode) {
+  RunOnScreenTest(
+      FILE_PATH_LITERAL("content-left-of-view-port-for-on-screen-mode.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
+                       ContentWith3ViewPortScrollsForOnScreenMode) {
+  RunOnScreenTest(FILE_PATH_LITERAL(
+      "content-with-3-view-port-scrolls-for-on-screen-mode.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -3862,6 +3877,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgG) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTabindexExposeChildren) {
   RunHtmlTest(FILE_PATH_LITERAL("tabindex-expose-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTabindexWithLinkChildren) {
+  RunHtmlTest(FILE_PATH_LITERAL("tabindex-with-link-children.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableRowAdd) {

@@ -337,14 +337,13 @@ TEST(DrawQuadTest, CopyTileDrawQuad) {
   ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
   gfx::Size texture_size(85, 32);
-  bool contents_premultiplied = true;
   bool nearest_neighbor = true;
   bool force_anti_aliasing_off = false;
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(TileDrawQuad, visible_rect, blending, resource_id,
-                  tex_coord_rect, texture_size, contents_premultiplied,
-                  nearest_neighbor, force_anti_aliasing_off);
+                  tex_coord_rect, texture_size, nearest_neighbor,
+                  force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kTiledContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -354,8 +353,7 @@ TEST(DrawQuadTest, CopyTileDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
 
   CREATE_QUAD_ALL(TileDrawQuad, resource_id, tex_coord_rect, texture_size,
-                  contents_premultiplied, nearest_neighbor,
-                  force_anti_aliasing_off);
+                  nearest_neighbor, force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kTiledContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
   EXPECT_EQ(tex_coord_rect, copy_quad->tex_coord_rect);
@@ -503,14 +501,13 @@ TEST_F(DrawQuadIteratorTest, TileDrawQuad) {
   ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
   gfx::Size texture_size(85, 32);
-  bool contents_premultiplied = true;
   bool nearest_neighbor = true;
   bool force_anti_aliasing_off = false;
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(TileDrawQuad, visible_rect, needs_blending, resource_id,
-                  tex_coord_rect, texture_size, contents_premultiplied,
-                  nearest_neighbor, force_anti_aliasing_off);
+                  tex_coord_rect, texture_size, nearest_neighbor,
+                  force_anti_aliasing_off);
   EXPECT_EQ(resource_id, quad_new->resource_id);
 }
 

@@ -1017,6 +1017,172 @@ TEST(StringUtilTest, EndsWith) {
                        base::CompareCase::SENSITIVE));
 }
 
+TEST(StringUtilTest, RemovePrefix) {
+  {
+    std::optional<std::string_view> result;
+
+    result = RemovePrefix("", "");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    result = RemovePrefix("", "", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+
+    EXPECT_FALSE(RemovePrefix("", "xyz"));
+    EXPECT_FALSE(RemovePrefix("", "xyZ", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemovePrefix("xyz", "");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "xyz");
+    result = RemovePrefix("Xyz", "", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "Xyz");
+
+    EXPECT_FALSE(RemovePrefix("abc", "xyz"));
+    EXPECT_FALSE(RemovePrefix("abc", "xyz", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemovePrefix("xyz", "xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    result = RemovePrefix("Xyz", "xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    EXPECT_EQ(result.value(), "");
+
+    EXPECT_FALSE(RemovePrefix("Xyz", "xyZ"));
+
+    result = RemovePrefix("xyz123", "xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "123");
+    result = RemovePrefix("Xyz123", "xyz", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "123");
+  }
+  {
+    std::optional<std::u16string_view> result;
+
+    result = RemovePrefix(u"", u"");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    result = RemovePrefix(u"", u"", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+
+    EXPECT_FALSE(RemovePrefix(u"", u"xyz"));
+    EXPECT_FALSE(RemovePrefix(u"", u"xyZ", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemovePrefix(u"xyz", u"");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"xyz");
+    result = RemovePrefix(u"Xyz", u"", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"Xyz");
+
+    EXPECT_FALSE(RemovePrefix(u"abc", u"xyz"));
+    EXPECT_FALSE(RemovePrefix(u"abc", u"xyz", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemovePrefix(u"xyz", u"xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    result = RemovePrefix(u"Xyz", u"xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    EXPECT_EQ(result.value(), u"");
+
+    EXPECT_FALSE(RemovePrefix(u"Xyz", u"xyZ"));
+
+    result = RemovePrefix(u"xyz123", u"xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"123");
+    result = RemovePrefix(u"Xyz123", u"xyz", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"123");
+  }
+}
+
+TEST(StringUtilTest, RemoveSuffix) {
+  {
+    std::optional<std::string_view> result;
+
+    result = RemoveSuffix("", "");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    result = RemoveSuffix("", "", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+
+    EXPECT_FALSE(RemoveSuffix("", "xyz"));
+    EXPECT_FALSE(RemoveSuffix("", "xyZ", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemoveSuffix("xyz", "");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "xyz");
+    result = RemoveSuffix("Xyz", "", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "Xyz");
+
+    EXPECT_FALSE(RemoveSuffix("abc", "xyz"));
+    EXPECT_FALSE(RemoveSuffix("abc", "xyz", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemoveSuffix("xyz", "xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    result = RemoveSuffix("Xyz", "xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "");
+    EXPECT_EQ(result.value(), "");
+
+    EXPECT_FALSE(RemoveSuffix("Xyz", "xyZ"));
+
+    result = RemoveSuffix("123xyz", "xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "123");
+    result = RemoveSuffix("123Xyz", "xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "123");
+  }
+  {
+    std::optional<std::u16string_view> result;
+
+    result = RemoveSuffix(u"", u"");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    result = RemoveSuffix(u"", u"", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+
+    EXPECT_FALSE(RemoveSuffix(u"", u"xyz"));
+    EXPECT_FALSE(RemoveSuffix(u"", u"xyZ", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemoveSuffix(u"xyz", u"");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"xyz");
+    result = RemoveSuffix(u"Xyz", u"", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"Xyz");
+
+    EXPECT_FALSE(RemoveSuffix(u"abc", u"xyz"));
+    EXPECT_FALSE(RemoveSuffix(u"abc", u"xyz", CompareCase::INSENSITIVE_ASCII));
+
+    result = RemoveSuffix(u"xyz", u"xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    result = RemoveSuffix(u"Xyz", u"xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"");
+    EXPECT_EQ(result.value(), u"");
+
+    EXPECT_FALSE(RemoveSuffix(u"Xyz", u"xyZ"));
+
+    result = RemoveSuffix(u"123xyz", u"xyz");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"123");
+    result = RemoveSuffix(u"123Xyz", u"xyZ", CompareCase::INSENSITIVE_ASCII);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), u"123");
+  }
+}
+
 TEST(StringUtilTest, GetStringFWithOffsets) {
   std::vector<std::u16string> subst;
   subst.push_back(u"1");

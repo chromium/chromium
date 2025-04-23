@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
@@ -126,6 +127,30 @@ bool ExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
       base::BindRepeating(&HaveAllExtensionRenderFrameHostsFinishedLoading,
                           manager),
       &notification_set);
+  return true;
+}
+
+bool ExtensionTestNotificationObserver::WaitForExtensionIdle(
+    const ExtensionId& extension_id) {
+  ProcessManager* manager = ProcessManager::Get(context_);
+  NotificationSet notification_set(manager);
+  WaitForCondition(
+      base::BindRepeating(&util::IsExtensionIdle, extension_id, context_),
+      &notification_set);
+  return true;
+}
+
+bool ExtensionTestNotificationObserver::WaitForExtensionNotIdle(
+    const ExtensionId& extension_id) {
+  ProcessManager* manager = ProcessManager::Get(context_);
+  NotificationSet notification_set(manager);
+  WaitForCondition(base::BindRepeating(
+                       [](const ExtensionId& extension_id,
+                          content::BrowserContext* context) -> bool {
+                         return !util::IsExtensionIdle(extension_id, context);
+                       },
+                       extension_id, context_),
+                   &notification_set);
   return true;
 }
 

@@ -41,8 +41,9 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
@@ -56,7 +57,8 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     private static final long HOURS_IN_MS = 60 * 60 * 1000L;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
@@ -114,7 +116,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeLongSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 10);
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startFromLauncher();
 
         assertEquals(
                 1,
@@ -136,7 +138,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeLongSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 1);
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startFromLauncher();
 
         assertEquals(
                 0,
@@ -161,7 +163,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             prefs.writeLongSync(
                     ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
 
-            mActivityTestRule.startMainActivityFromLauncher();
+            mActivityTestRule.startFromLauncher();
 
             SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
             settingsActivity.finish();
@@ -248,7 +250,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
                 new ComponentName(
                         ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
 
-        mActivityTestRule.startActivityCompletely(intent);
+        mActivityTestRule.getActivityTestRule().startActivityCompletely(intent);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
     }
 }

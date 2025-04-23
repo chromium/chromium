@@ -152,6 +152,7 @@ HttpStreamFactory::JobController::JobController(
       enable_alternative_services_(enable_alternative_services),
       delay_main_job_with_available_spdy_session_(
           delay_main_job_with_available_spdy_session),
+      management_config_(http_request_info.connection_management_config),
       http_request_info_url_(http_request_info.url),
       origin_url_(DuplicateUrlWithHostMappingRules(http_request_info.url)),
       request_info_(http_request_info),
@@ -891,7 +892,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         session_, request_info_, IDLE, proxy_info_, allowed_bad_certs_,
         destination, origin_url_, is_websocket_, enable_ip_based_pooling_,
         net_log_.net_log(), NextProto::kProtoUnknown,
-        quic::ParsedQuicVersion::Unsupported());
+        quic::ParsedQuicVersion::Unsupported(), management_config_);
     // When there is an valid alternative service info, and `preconnect_job`
     // has no existing QUIC session, create a job for the alternative service.
     if (alternative_service_info_.protocol() != NextProto::kProtoUnknown &&
@@ -908,7 +909,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
           allowed_bad_certs_, std::move(alternative_destination), origin_url_,
           is_websocket_, enable_ip_based_pooling_, session_->net_log(),
-          alternative_service_info_.protocol(), quic_version);
+          alternative_service_info_.protocol(), quic_version,
+          management_config_);
     } else {
       main_job_ = std::move(preconnect_job);
 
@@ -917,7 +919,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
             this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
             allowed_bad_certs_, std::move(destination), origin_url_,
             is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
-            NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported());
+            NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
+            management_config_);
       }
     }
     main_job_->Preconnect(num_streams_);
@@ -927,7 +930,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       this, MAIN, session_, request_info_, priority_, proxy_info_,
       allowed_bad_certs_, std::move(destination), origin_url_, is_websocket_,
       enable_ip_based_pooling_, net_log_.net_log(), NextProto::kProtoUnknown,
-      quic::ParsedQuicVersion::Unsupported());
+      quic::ParsedQuicVersion::Unsupported(), management_config_);
 
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
@@ -955,7 +958,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         this, ALTERNATIVE, session_, request_info_, priority_, proxy_info_,
         allowed_bad_certs_, std::move(alternative_destination), origin_url_,
         is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
-        alternative_service_info_.protocol(), quic_version);
+        alternative_service_info_.protocol(), quic_version, management_config_);
   }
 
   if (dns_alpn_h3_job_enabled && !main_job_->using_quic()) {
@@ -966,7 +969,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         this, DNS_ALPN_H3, session_, request_info_, priority_, proxy_info_,
         allowed_bad_certs_, std::move(dns_alpn_h3_destination), origin_url_,
         is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
-        NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported());
+        NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
+        management_config_);
   }
 
   ClearInappropriateJobs();

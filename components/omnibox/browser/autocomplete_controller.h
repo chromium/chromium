@@ -317,6 +317,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
+#if BUILDFLAG(IS_IOS)
+  friend class OmniboxInttestAutocompleteController;
+#endif
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
@@ -336,6 +339,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            SupportedProvider_OngoingNonPrefetch);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            UnsupportedProvider_Prefetch);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupSuggestionGroupHeadersTest,
+                           ShowSuggestionGroupHeadersByPageContext);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitAccessibilityEventsOnButtonFocusHint);

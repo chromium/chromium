@@ -26,6 +26,8 @@ class PaymentsDataManager;
 
 namespace payments {
 
+class MandatoryReauthManager;
+
 // iOS WebView implementation of PaymentsAutofillClient. Owned by the
 // WebViewAutofillClientIOS. Created lazily in the WebViewAutofillClientIOS when
 // it is needed.
@@ -46,7 +48,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
-  void ConfirmSaveCreditCardToCloud(
+  void ShowSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
@@ -65,6 +67,8 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   PaymentsDataManager& GetPaymentsDataManager() final;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
 
  private:
   const raw_ref<autofill::WebViewAutofillClientIOS> client_;
@@ -74,6 +78,8 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
+
+  std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   const raw_ref<web::WebState> web_state_;
 };

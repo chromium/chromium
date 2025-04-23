@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -27,6 +29,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
@@ -51,8 +54,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
-import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSettingProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
@@ -137,6 +140,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -257,7 +261,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
-    private @Nullable BookmarkBarSettingProvider mBookmarkBarSettingProvider;
+    private @Nullable BookmarkBarVisibilityProvider mBookmarkBarVisibilityProvider;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
@@ -638,10 +642,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mInstantMessageDelegateImpl.detachWindow(mWindowAndroid);
         }
 
-        if (mBookmarkBarSettingProvider != null) {
+        if (mBookmarkBarVisibilityProvider != null) {
             destroyBookmarkBarIfNecessary();
-            mBookmarkBarSettingProvider.destroy();
-            mBookmarkBarSettingProvider = null;
+            mBookmarkBarVisibilityProvider.destroy();
+            mBookmarkBarVisibilityProvider = null;
         }
 
         if (mLoadingFullscreenCoordinator != null) {
@@ -674,9 +678,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mContextualSearchManagerSupplier,
                         getBottomSheetController(),
                         mToolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
-                        mManualFillingComponentSupplier
-                                .get()
-                                .getAccessorySheetVisualStateProvider(),
+                        mManualFillingComponentSupplier,
                         mOverviewColorSupplier,
                         mInsetObserver,
                         mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
@@ -888,9 +890,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
         if (BookmarkBarUtils.isFeatureEnabled(mActivity)) {
-            mBookmarkBarSettingProvider =
-                    new BookmarkBarSettingProvider(
-                            mProfileSupplier, /* callback= */ this::updateBookmarkBarIfNecessary);
+            mBookmarkBarVisibilityProvider =
+                    new BookmarkBarVisibilityProvider(
+                            mActivity,
+                            mActivityLifecycleDispatcher,
+                            mProfileSupplier,
+                            /* callback= */ this::updateBookmarkBarIfNecessary);
         }
     }
 
@@ -1415,9 +1420,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private DataSharingTabGroupsDelegate createDataSharingTabGroupsDelegate() {
         return new DataSharingTabGroupsDelegate() {
-
             @Override
-            public void openTabGroupWithTabId(int tabId) {
+            public void openTabGroup(@Nullable Token tabGroupId) {
+                TabGroupModelFilter filter =
+                        mTabModelSelectorSupplier
+                                .get()
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(false);
+                @TabId int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
+                if (rootId == INVALID_TAB_ID) {
+                    // TODO(crbug.com/396019438): Try to switch windows.
+                    return;
+                }
+
                 // Due to crbug.com/396159718 (see also crbug.com/395847973) it was possible to
                 // reach this method without the tab switcher being open. For now this will
                 // remain as a safegaurd against bugs as internally it will noop if the tab switcher
@@ -1427,7 +1442,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManager,
                         /* animate= */ false,
                         () -> {
-                            mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+                            mTabSwitcherSupplier.get().requestOpenTabGroupDialog(rootId);
                         });
             }
 
@@ -1494,6 +1509,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */
     public TabGroupSyncController getTabGroupSyncController() {
         return mTabGroupSyncController;
+    }
+
+    @Override
+    public @Nullable MultiInstanceManager getMultiInstanceManager() {
+        return mMultiInstanceManager;
     }
 
     @Override
@@ -1673,6 +1693,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
+                            mActivityLifecycleDispatcher,
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
@@ -1719,8 +1740,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void updateBookmarkBarIfNecessary(boolean isSettingEnabled) {
-        if (isSettingEnabled) {
+    private void updateBookmarkBarIfNecessary(boolean visible) {
+        if (visible) {
             createBookmarkBarIfNecessary();
         } else {
             destroyBookmarkBarIfNecessary();
@@ -1747,6 +1768,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else if (id == R.id.focus_bookmarks) {
             if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
             return true;
+        } else if (id == R.id.toggle_bookmark_bar) {
+            if (BookmarkBarUtils.isFeatureAllowed(mActivity)) {
+                BookmarkBarUtils.toggleSettingEnabled(mProfileSupplier.get());
+                return true;
+            }
         }
 
         return false;

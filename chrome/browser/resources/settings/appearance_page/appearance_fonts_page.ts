@@ -87,10 +87,10 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
     ];
   }
 
-  prefs: Object;
-  private fontOptions_: DropdownMenuOptionList;
-  private fontSizeRange_: SliderTick[];
-  private minimumFontSizeRange_: SliderTick[];
+  declare prefs: Object;
+  declare private fontOptions_: DropdownMenuOptionList;
+  declare private fontSizeRange_: SliderTick[];
+  declare private minimumFontSizeRange_: SliderTick[];
   private browserProxy_: FontsBrowserProxy =
       FontsBrowserProxyImpl.getInstance();
 

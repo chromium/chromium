@@ -157,22 +157,21 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
 // Test that when parameters appended include:
 // - `extra_diagnostics` string.
-// - `description_template` string with `fingerprint` queried.
-// - `is_query_fingerprint` set true.
+// - `description_template` string with `fingerprint` not queried.
 // - `description_placeholder_text` string.
 // - `category_tag` string.
 // - `page_url` GURL.
-// - `from_settings_search` set true.
+// - `settings_search_do_not_record_metrics` set true.
 IN_PROC_BROWSER_TEST_F(
     ShowFeedbackPageBrowserTest,
-    OsFeedbackAdditionalSettingsSearchWithFingerprintContextAddedToUrl) {
+    OsFeedbackAdditionalSettingsSearchNoFingerprintContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
       browser()->session_id(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
-  const std::string description_template = "Q1: Question one fingerprint?";
+  const std::string description_template = "Q1: Question one?";
   const std::string description_placeholder_text =
       "Thanks for giving feedback on the Camera app";
   const std::string category_tag = "category tag param";
@@ -181,8 +180,6 @@ IN_PROC_BROWSER_TEST_F(
        base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
        "&description_template=",
        base::EscapeQueryParamValue(description_template, /*use_plus=*/false),
-       "&is_query_fingerprint=",
-       base::EscapeQueryParamValue("true", /*use_plus=*/false),
        "&description_placeholder_text=",
        base::EscapeQueryParamValue(description_placeholder_text,
                                    /*use_plus=*/false),
@@ -190,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(
        base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
        "&page_url=",
        base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false),
-       "&from_settings_search=",
-       base::EscapeQueryParamValue("true", /*use_plus=*/false)}));
+       "&settings_search_do_not_record_metrics=",
+       base::EscapeQueryParamValue("true", /*use_plus=*/true)}));
 
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -218,21 +215,23 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that when parameters appended include:
 // - `extra_diagnostics` string.
-// - `description_template` string with `fingerprint` not queried.
+// - `description_template` string with `fingerprint` queried.
 // - `description_placeholder_text` string.
 // - `category_tag` string.
 // - `page_url` GURL.
-// - `from_settings_search` set true.
+// Although the search has been triggered from Settings, `fingerprint` is
+// queried so settings_search_do_not_record_metrics will not be set as we need
+// to record metrics for this case.
 IN_PROC_BROWSER_TEST_F(
     ShowFeedbackPageBrowserTest,
-    OsFeedbackAdditionalSettingsSearchNoFingerprintContextAddedToUrl) {
+    OsFeedbackAdditionalSettingsSearchWithFingerprintContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
       browser()->session_id(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
-  const std::string description_template = "Q1: Question one?";
+  const std::string description_template = "Q1: Question one fingerprint?";
   const std::string description_placeholder_text =
       "Thanks for giving feedback on the Camera app";
   const std::string category_tag = "category tag param";
@@ -247,9 +246,7 @@ IN_PROC_BROWSER_TEST_F(
        "&category_tag=",
        base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
        "&page_url=",
-       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false),
-       "&from_settings_search=",
-       base::EscapeQueryParamValue("true", /*use_plus=*/false)}));
+       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false)}));
 
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();

@@ -144,6 +144,14 @@ class WTF_EXPORT String {
     return impl_->Span16();
   }
 
+  base::span<const uint16_t> SpanUint16() const {
+    if (!impl_) {
+      return {};
+    }
+    DCHECK(!impl_->Is8Bit());
+    return impl_->SpanUint16();
+  }
+
   // This exposes the underlying representation of the string. Use with
   // care. When interpreting the string as a sequence of code units
   // Span8()/Span16() should be used.
@@ -154,14 +162,16 @@ class WTF_EXPORT String {
     return impl_->RawByteSpan();
   }
 
-  const LChar* Characters8() const {
+  // Use Span8() instead.
+  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
     if (!impl_)
       return nullptr;
     DCHECK(impl_->Is8Bit());
     return impl_->Characters8();
   }
 
-  const UChar* Characters16() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
     if (!impl_)
       return nullptr;
     DCHECK(!impl_->Is8Bit());
@@ -185,6 +195,15 @@ class WTF_EXPORT String {
   [[nodiscard]] std::string Utf8(
       Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
+  }
+  // Returns a std::u16string_view pointing this string.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    auto chars = Span16();
+    return std::u16string_view(chars.begin(), chars.end());
   }
 
   UChar operator[](wtf_size_t index) const {

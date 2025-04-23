@@ -80,9 +80,9 @@ export class IncompatibleApplicationItemElement extends
     };
   }
 
-  applicationName: string;
-  actionType: ActionTypes;
-  actionUrl: string;
+  declare applicationName: string;
+  declare actionType: ActionTypes;
+  declare actionUrl: string;
   private browserProxy_: IncompatibleApplicationsBrowserProxy =
       IncompatibleApplicationsBrowserProxyImpl.getInstance();
 

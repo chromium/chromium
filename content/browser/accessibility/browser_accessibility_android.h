@@ -145,6 +145,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // the value is placed. These pieces of content are concatenated for Android.
   std::u16string GetHint() const;
 
+  // This method maps to the Android API "TooltipText" attribute.
+  std::u16string GetTooltipText() const;
+
   std::string GetRoleString() const;
 
   std::u16string GetPaneTitle() const;
@@ -197,6 +200,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int GetMaxScrollX() const;
   int GetMaxScrollY() const;
   bool Scroll(int direction, bool is_page_scroll) const;
+
+  int GetChecked() const;
 
   int GetTextChangeFromIndex() const;
   int GetTextChangeAddedCount() const;

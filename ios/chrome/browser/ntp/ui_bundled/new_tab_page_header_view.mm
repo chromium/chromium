@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -267,14 +267,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Sets the layout constraints for size of Identity Disc and toolbar.
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
-  CGFloat dimension =
-      ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
-  if (IsIdentityDiscAccountMenuEnabled()) {
-    // Add extra margin to show the error badge if any.
-    dimension += ntp_home::kHeaderIconMargin;
-  }
   [NSLayoutConstraint activateConstraints:@[
-    [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];

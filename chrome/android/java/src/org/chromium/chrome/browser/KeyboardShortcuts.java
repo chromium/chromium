@@ -10,8 +10,10 @@ import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,6 +34,8 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** Implements app-level keyboard shortcuts for ChromeTabbedActivity and DocumentActivity. */
@@ -40,6 +44,10 @@ public class KeyboardShortcuts {
     private static final int CTRL = 1 << 31;
     private static final int ALT = 1 << 30;
     private static final int SHIFT = 1 << 29;
+    private static final int NO_MODIFIER = 0;
+    private static final LinkedHashMap<Integer, KeyboardShortcutDefinition>
+            KEYBOARD_SHORTCUT_DEFINITION_MAP = new LinkedHashMap<>();
+    private static final HashMap<Integer, Integer> KEYBOARD_SHORTCUT_SEMANTIC_MAP = new HashMap<>();
 
     private KeyboardShortcuts() {}
 
@@ -55,7 +63,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
         KeyboardShortcutsSemanticMeaning.RELOAD_TAB,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE,
+        KeyboardShortcutsSemanticMeaning.RELOAD_TAB_BYPASSING_CACHE,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB,
@@ -125,7 +133,7 @@ public class KeyboardShortcuts {
 
         // Tab control.
         int RELOAD_TAB = 5;
-        int NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE = 6;
+        int RELOAD_TAB_BYPASSING_CACHE = 6;
         int MOVE_TO_TAB_LEFT = 7;
         int MOVE_TO_TAB_RIGHT = 8;
         int MOVE_TO_SPECIFIC_TAB = 9;
@@ -216,83 +224,16 @@ public class KeyboardShortcuts {
 
     private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
             int keyCodeAndMeta) {
-        switch (keyCodeAndMeta) {
-                // Tab/window creation.
-            case CTRL | SHIFT | KeyEvent.KEYCODE_T:
-                return KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB;
-            case CTRL | KeyEvent.KEYCODE_T:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_N:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO;
-            case CTRL | KeyEvent.KEYCODE_N:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW;
 
-                // Tab control.
-            case CTRL | SHIFT | KeyEvent.KEYCODE_R:
-            case CTRL | KeyEvent.KEYCODE_R:
-            case SHIFT | KeyEvent.KEYCODE_F5:
-            case KeyEvent.KEYCODE_F5:
-            case KeyEvent.KEYCODE_REFRESH:
-                return KeyboardShortcutsSemanticMeaning.RELOAD_TAB;
-            case CTRL | KeyEvent.KEYCODE_F5:
-            case CTRL | KeyEvent.KEYCODE_REFRESH:
-            case SHIFT | KeyEvent.KEYCODE_REFRESH:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
-            case CTRL | KeyEvent.KEYCODE_PAGE_UP:
-            case KeyEvent.KEYCODE_BUTTON_L1:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT;
-            case CTRL | KeyEvent.KEYCODE_TAB:
-            case CTRL | KeyEvent.KEYCODE_PAGE_DOWN:
-            case KeyEvent.KEYCODE_BUTTON_R1:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT;
-            case CTRL | KeyEvent.KEYCODE_1:
-            case CTRL | KeyEvent.KEYCODE_2:
-            case CTRL | KeyEvent.KEYCODE_3:
-            case CTRL | KeyEvent.KEYCODE_4:
-            case CTRL | KeyEvent.KEYCODE_5:
-            case CTRL | KeyEvent.KEYCODE_6:
-            case CTRL | KeyEvent.KEYCODE_7:
-            case CTRL | KeyEvent.KEYCODE_8:
-            case ALT | KeyEvent.KEYCODE_1:
-            case ALT | KeyEvent.KEYCODE_2:
-            case ALT | KeyEvent.KEYCODE_3:
-            case ALT | KeyEvent.KEYCODE_4:
-            case ALT | KeyEvent.KEYCODE_5:
-            case ALT | KeyEvent.KEYCODE_6:
-            case ALT | KeyEvent.KEYCODE_7:
-            case ALT | KeyEvent.KEYCODE_8:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_1:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_2:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_3:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_4:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_5:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_6:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_7:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_8:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_1:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_2:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_3:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_4:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_5:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_6:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_7:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_8:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB;
-            case CTRL | KeyEvent.KEYCODE_9:
-            case ALT | KeyEvent.KEYCODE_9:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_9:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_9:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB;
+        if (KEYBOARD_SHORTCUT_SEMANTIC_MAP.containsKey(keyCodeAndMeta)) {
+            return KEYBOARD_SHORTCUT_SEMANTIC_MAP.get(keyCodeAndMeta);
+        }
+
+        switch (keyCodeAndMeta) {
             case CTRL | SHIFT | KeyEvent.KEYCODE_A:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH;
                 // TODO(crbug.com/402775002): Figure out what shortcut does TOGGLE_MULTITASK_MENU.
 
-                // Closing.
-            case CTRL | KeyEvent.KEYCODE_W:
-            case CTRL | KeyEvent.KEYCODE_F4:
-            case KeyEvent.KEYCODE_BUTTON_B:
-                return KeyboardShortcutsSemanticMeaning.CLOSE_TAB;
             case CTRL | SHIFT | KeyEvent.KEYCODE_W:
             case ALT | KeyEvent.KEYCODE_F4:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW;
@@ -441,6 +382,253 @@ public class KeyboardShortcuts {
         return KeyboardShortcutsSemanticMeaning.UNKNOWN;
     }
 
+    /**
+     * {@code KeyCombo} defines the structure for representing a single combination (keycode +
+     * modifier) for a keyboard shortcut.
+     */
+    @NullMarked
+    private static class KeyCombo {
+        final int mKeyCode;
+        final int mModifier;
+        final int mMetaStateAndKeyCode;
+
+        /**
+         * Constructs a new {@link KeyCombo} object.
+         *
+         * @param keyCode An integer representing the key code of the primary key that triggers the
+         *     shortcut (e.g. "KeyEvent.KEYCODE_K", "KeyEvent.KEYCODE_F5", etc.)
+         * @param modifier An integer representing the modifier keys (e.g., Ctrl, Shift, Alt) held
+         *     down in combination with the keycode.
+         */
+        private KeyCombo(int keyCode, int modifier) {
+            mKeyCode = keyCode;
+            mModifier = modifier;
+            mMetaStateAndKeyCode = (getMetaState(modifier) | keyCode);
+        }
+
+        private int getMetaState(int modifier) {
+            int metaState = 0;
+            if ((modifier & KeyEvent.META_CTRL_ON) != 0) {
+                metaState |= CTRL;
+            }
+            if ((modifier & KeyEvent.META_ALT_ON) != 0) {
+                metaState |= ALT;
+            }
+            if ((modifier & KeyEvent.META_SHIFT_ON) != 0) {
+                metaState |= SHIFT;
+            }
+            return metaState;
+        }
+    }
+
+    /**
+     * {@link KeyboardShortcutDefinition} defines the structure for representing information about a
+     * single keyboard shortcut. This class is intended to hold details such as the trigger key
+     * combination, the action performed by the shortcut, and potentially a docstring and category
+     * for organization.
+     *
+     * <p>Instances of this class are typically used to store and manage the definitions of
+     * available keyboard shortcuts for ChromeTabbedActivity and DocumentActivity.
+     */
+    @NullMarked
+    private static class KeyboardShortcutDefinition {
+
+        private final KeyCombo mPrimaryShortcut;
+        private final @StringRes int mResId;
+        private final @StringRes int mGroupId;
+
+        /**
+         * Constructs a new {@link KeyboardShortcutDefinition} object.
+         *
+         * @param semanticMeaning An integer representing the meaning or purpose of the shortcut.
+         * @param primaryShortcut A KeyCombo object that contains the keycode and modifier for the
+         *     shortcut. This shortcut will be added to the semantic map and the keyboard shortcut
+         *     helper window.
+         * @param resId An integer representing the @StringRes docstring for the shortcut.
+         * @param groupId An integer representing the @StringRes docstring describing the shortcut
+         *     group and associated header for the shortcut (e.g. "Developer shortcuts, Navigation
+         *     shortcuts, etc.").
+         * @param alternateShortcuts An array of KeyCombo objects that contain alternative keycode
+         *     and modifier combinations for the shortcut. These will be added to the semantic map
+         *     but will not be displayed in the keyboard shortcut helper window.
+         */
+        private KeyboardShortcutDefinition(
+                @KeyboardShortcutsSemanticMeaning int semanticMeaning,
+                KeyCombo primaryShortcut,
+                @StringRes int resId,
+                @StringRes int groupId,
+                KeyCombo[] alternateShortcuts) {
+            mPrimaryShortcut = primaryShortcut;
+            mResId = resId;
+            mGroupId = groupId;
+
+            KEYBOARD_SHORTCUT_DEFINITION_MAP.put(primaryShortcut.mMetaStateAndKeyCode, this);
+            KEYBOARD_SHORTCUT_SEMANTIC_MAP.put(
+                    primaryShortcut.mMetaStateAndKeyCode, semanticMeaning);
+
+            // Add alternate combinations to the semantic map, but not to the shortcut helper.
+            for (var alternateShortcut : alternateShortcuts) {
+                KEYBOARD_SHORTCUT_SEMANTIC_MAP.put(
+                        alternateShortcut.mMetaStateAndKeyCode, semanticMeaning);
+            }
+        }
+
+        /**
+         * Build a new instance with no alternate key combinations.
+         *
+         * @param semanticMeaning An integer representing the meaning or purpose of the shortcut.
+         * @param primaryShortcut A KeyCombo object that contains the keycode and modifier for the
+         *     shortcut.
+         * @param resId An integer representing the @StringRes docstring for the shortcut.
+         * @param groupId An integer representing the shortcut group and associated header for the
+         *     shortcut (e.g. "Developer shortcuts, Navigation shortcuts, etc.").
+         */
+        KeyboardShortcutDefinition(
+                @KeyboardShortcutsSemanticMeaning int semanticMeaning,
+                KeyCombo primaryShortcut,
+                @StringRes int resId,
+                @StringRes int groupId) {
+            this(
+                    semanticMeaning,
+                    primaryShortcut,
+                    resId,
+                    groupId,
+                    /* alternateShortcuts= */ new KeyCombo[] {});
+        }
+    }
+
+    // Adds all shortcuts to KEYBOARD_SHORTCUT_DEFINITION_MAP to be referenced by
+    // createShortcutGroup() and KEYBOARD_SHORTCUT_SEMANTIC_MAP to be referenced by onKeyDown().
+    static {
+        // Tab control shortcuts (keyboard_shortcut_tab_group_header).
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
+                new KeyCombo(KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_open_new_window,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_open_new_tab,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_T, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_reopen_new_tab,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
+                new KeyCombo(KeyEvent.KEYCODE_N, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_new_incognito_tab,
+                R.string.keyboard_shortcut_tab_group_header);
+
+        // Reload tabs.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.RELOAD_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_R, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_reload_page,
+                R.string.keyboard_shortcut_tab_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_F5, KeyEvent.META_SHIFT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_F5, NO_MODIFIER),
+                    new KeyCombo(KeyEvent.KEYCODE_REFRESH, NO_MODIFIER)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.RELOAD_TAB_BYPASSING_CACHE,
+                new KeyCombo(KeyEvent.KEYCODE_R, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_reload_no_cache,
+                R.string.keyboard_shortcut_tab_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_F5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_REFRESH, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_REFRESH, KeyEvent.META_SHIFT_ON)
+                });
+
+        // Close tabs.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.CLOSE_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_close_tab,
+                R.string.keyboard_shortcut_tab_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_F4, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_B, NO_MODIFIER),
+                });
+
+        // Navigation shortcuts (keyboard_shortcut_tab_navigation_group_header).
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT,
+                new KeyCombo(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_next_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_R1, NO_MODIFIER)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
+                new KeyCombo(
+                        KeyEvent.KEYCODE_TAB, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_prev_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_PAGE_UP, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_L1, NO_MODIFIER)
+                });
+
+        // Move to specific tab (1-8)
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_specific_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_2, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_3, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_4, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_6, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_7, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_8, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_1, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_2, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_3, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_4, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_5, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_6, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_7, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_8, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_1, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_2, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_3, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_4, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_6, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_7, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_8, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_1, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_2, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_3, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_4, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_5, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_6, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_7, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_8, KeyEvent.META_ALT_ON),
+                });
+
+        // Move to last tab.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_9, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_last_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_9, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_ALT_ON),
+                });
+    }
+
     private static int getMetaState(KeyEvent event) {
         return (event.isCtrlPressed() ? CTRL : 0)
                 | (event.isAltPressed() ? ALT : 0)
@@ -470,7 +658,9 @@ public class KeyboardShortcuts {
             Context context) {
         int keyCode = event.getKeyCode();
         if (!uiInitialized) {
-            if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) return true;
+            if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) {
+                return true;
+            }
             return null;
         }
 
@@ -521,71 +711,40 @@ public class KeyboardShortcuts {
     }
 
     /**
-     * This method should be called when overriding from
-     * {@link android.app.Activity#onProvideKeyboardShortcuts(List, android.view.Menu, int)}
-     * in an activity. It will return a list of the possible shortcuts. If
-     * someone adds a shortcut they also need to add an explanation in the
-     * appropriate group in this method so the user can see it when this method
-     * is called.
+     * This method should be called when overriding from {@link
+     * android.app.Activity#onProvideKeyboardShortcuts(List, android.view.Menu, int)} in an
+     * activity. It will return a list of the possible shortcuts. If someone adds a shortcut they
+     * also need to add an explanation in the appropriate group in this method so the user can see
+     * it when this method is called.
      *
-     * Preventing inlining since this uses APIs only available on Android N, and this causes dex
+     * <p>Preventing inlining since this uses APIs only available on Android N, and this causes dex
      * validation failures on earlier versions if inlined.
      *
-     * @param context We need an activity so we can call the strings from our
-     *            resource.
+     * @param context We need an activity so we can call the strings from our resource.
      * @return a list of shortcuts organized into groups.
      */
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 
-        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>();
+        HashMap<Integer, KeyboardShortcutGroup> shortcutGroupsById = new HashMap<>();
 
-        KeyboardShortcutGroup tabShortcutGroup =
-                new KeyboardShortcutGroup(
-                        context.getString(R.string.keyboard_shortcut_tab_group_header));
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_open_new_tab,
-                KeyEvent.KEYCODE_T,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_open_new_window,
-                KeyEvent.KEYCODE_N,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_reopen_new_tab,
-                KeyEvent.KEYCODE_T,
-                ctrlShift);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_new_incognito_tab,
-                KeyEvent.KEYCODE_N,
-                ctrlShift);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_next_tab,
-                KeyEvent.KEYCODE_TAB,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_prev_tab,
-                KeyEvent.KEYCODE_TAB,
-                ctrlShift);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_close_tab,
-                KeyEvent.KEYCODE_W,
-                KeyEvent.META_CTRL_ON);
-        shortcutGroups.add(tabShortcutGroup);
+        for (KeyboardShortcutDefinition shortcutInfo : KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
+
+            int groupId = shortcutInfo.mGroupId;
+            if (!shortcutGroupsById.containsKey(groupId)) {
+                shortcutGroupsById.put(
+                        groupId, new KeyboardShortcutGroup(context.getString(groupId)));
+            }
+            KeyboardShortcutGroup shortcutGroup = shortcutGroupsById.get(groupId);
+            addShortcut(
+                    context,
+                    shortcutGroup,
+                    shortcutInfo.mResId,
+                    shortcutInfo.mPrimaryShortcut.mKeyCode,
+                    shortcutInfo.mPrimaryShortcut.mModifier);
+        }
+
+        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>(shortcutGroupsById.values());
 
         KeyboardShortcutGroup chromeFeatureShortcutGroup =
                 new KeyboardShortcutGroup(
@@ -639,18 +798,6 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_print_page,
                 KeyEvent.KEYCODE_P,
                 KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                webpageShortcutGroup,
-                R.string.keyboard_shortcut_reload_page,
-                KeyEvent.KEYCODE_R,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                webpageShortcutGroup,
-                R.string.keyboard_shortcut_reload_no_cache,
-                KeyEvent.KEYCODE_R,
-                ctrlShift);
         addShortcut(
                 context,
                 webpageShortcutGroup,
@@ -709,6 +856,17 @@ public class KeyboardShortcuts {
                 new KeyboardShortcutInfo(context.getString(resId), keyCode, keyModifier));
     }
 
+    private static void updateToolbarAfterReloading(
+            ToolbarManager toolbarManager, Tab currentTab, WebContents currentWebContents) {
+        if (toolbarManager != null
+                && currentWebContents != null
+                && currentWebContents.focusLocationBarByDefault()) {
+            toolbarManager.revertLocationBarChanges();
+        } else if (currentTab.getView() != null) {
+            currentTab.getView().requestFocus();
+        }
+    }
+
     /**
      * This should be called from the Activity's onKeyDown() to handle keyboard shortcuts.
      *
@@ -733,9 +891,13 @@ public class KeyboardShortcuts {
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             ToolbarManager toolbarManager) {
         int keyCode = event.getKeyCode();
-        if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) return false;
+        if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) {
+            return false;
+        }
         if (KeyEvent.isGamepadButton(keyCode)) {
-            if (GamepadList.isGamepadAPIActive()) return false;
+            if (GamepadList.isGamepadAPIActive()) {
+                return false;
+            }
         } else if (!event.isCtrlPressed()
                 && !event.isAltPressed()
                 && keyCode != KeyEvent.KEYCODE_F3
@@ -758,7 +920,7 @@ public class KeyboardShortcuts {
         int semanticMeaning = getKeyboardSemanticMeaning(keyCodeAndMeta);
 
         RecordHistogram.recordEnumeratedHistogram(
-                AccessibilityState.isScreenReaderEnabled()
+                AccessibilityState.isKnownScreenReaderEnabled()
                         ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning2"
                         : "Accessibility.Android.KeyboardShortcut.NoScreenReader2",
                 semanticMeaning,
@@ -888,26 +1050,25 @@ public class KeyboardShortcuts {
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
                     if (currentTab != null) {
-                        if ((keyCodeAndMeta & SHIFT) == SHIFT) {
-                            currentTab.reloadIgnoringCache();
-                        } else {
-                            currentTab.reload();
-                        }
-
-                        if (toolbarManager != null
-                                && currentWebContents != null
-                                && currentWebContents.focusLocationBarByDefault()) {
-                            toolbarManager.revertLocationBarChanges();
-                        } else if (currentTab.getView() != null) {
-                            currentTab.getView().requestFocus();
-                        }
+                        currentTab.reload();
+                        updateToolbarAfterReloading(toolbarManager, currentTab, currentWebContents);
+                    }
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.RELOAD_TAB_BYPASSING_CACHE:
+                    if (currentTab != null) {
+                        currentTab.reloadIgnoringCache();
+                        updateToolbarAfterReloading(toolbarManager, currentTab, currentWebContents);
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK:
-                    if (currentTab != null && currentTab.canGoBack()) currentTab.goBack();
+                    if (currentTab != null && currentTab.canGoBack()) {
+                        currentTab.goBack();
+                    }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD:
-                    if (currentTab != null && currentTab.canGoForward()) currentTab.goForward();
+                    if (currentTab != null && currentTab.canGoForward()) {
+                        currentTab.goForward();
+                    }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
@@ -15,22 +16,24 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
+import android.view.Gravity;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.widget.ImageViewCompat;
 import androidx.core.widget.TextViewCompat;
@@ -40,6 +43,9 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
@@ -47,8 +53,8 @@ import org.chromium.ui.animation.AnimationHandler;
 import java.util.List;
 
 /** Toolbar for the Hub. May contain a single or multiple rows, of which this view is the parent. */
+@NullMarked
 public class HubToolbarView extends LinearLayout {
-
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
     private LinearLayout mMenuButtonContainer;
@@ -57,8 +63,8 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
 
-    public Callback<Integer> mToolbarOverviewColorSetter;
-    private OnTabSelectedListener mOnTabSelectedListener;
+    private Callback<Integer> mToolbarOverviewColorSetter;
+    private @Nullable OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private boolean mApplyDelayForSearchBoxAnimation;
     private final AnimationHandler mHubSearchAnimatorHandler;
@@ -88,34 +94,45 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout = findViewById(R.id.search_box);
         mSearchBoxTextView = findViewById(R.id.search_box_text);
         mSearchLoupeView = findViewById(R.id.search_loupe);
+
+        setTouchDelegate(getToolbarActionButtonDelegate());
     }
 
     void setMenuButtonVisible(boolean visible) {
         mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setMenuButtonEnterPressedRunnable(Runnable r) {
-        findViewById(R.id.menu_button_wrapper)
-                .setOnKeyListener(
-                        (View view, int keyCode, KeyEvent event) -> {
-                            if (keyCode == KeyEvent.KEYCODE_ENTER
-                                    && event.getAction() == KeyEvent.ACTION_UP) {
-                                r.run();
-                                return true;
-                            }
-                            return false;
-                        });
-    }
-
     void setActionButton(@Nullable FullButtonData buttonData) {
         ApplyButtonData.apply(buttonData, mActionButton);
         mActionButton.setText(null);
         mActionButton.setCompoundDrawablePadding(0);
+
+        if (ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
+            int paddingLR =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.hub_toolbar_action_button_padding_lr);
+            mActionButton.setPadding(paddingLR, 0, paddingLR, 0);
+
+            int buttonSize =
+                    getResources().getDimensionPixelSize(R.dimen.hub_toolbar_action_button_size);
+            FrameLayout.LayoutParams params =
+                    (FrameLayout.LayoutParams) mActionButton.getLayoutParams();
+            params.leftMargin =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.hub_toolbar_action_button_left_margin);
+            params.width = buttonSize;
+            params.height = buttonSize;
+            params.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
+            mActionButton.setLayoutParams(params);
+
+            mActionButton.setBackgroundResource(R.drawable.new_tab_button_background);
+        }
     }
 
     void setPaneSwitcherButtonData(
             @Nullable List<FullButtonData> buttonDataList, int selectedIndex) {
-        mPaneSwitcher.removeOnTabSelectedListener(mOnTabSelectedListener);
+        // Null can safely be passed here.
+        mPaneSwitcher.removeOnTabSelectedListener(assumeNonNull(mOnTabSelectedListener));
         mPaneSwitcher.removeAllTabs();
 
         if (buttonDataList == null || buttonDataList.size() <= 1) {
@@ -169,6 +186,23 @@ public class HubToolbarView extends LinearLayout {
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
                         this::setBackgroundColor));
 
+        if (ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
+            mixer.registerBlend(
+                    new SingleHubViewColorBlend(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            colorScheme ->
+                                    HubColors.getToolbarActionButtonIconColor(context, colorScheme),
+                            color -> updateActionButtonIconColorInternal(context, color)));
+
+            mixer.registerBlend(
+                    new SingleHubViewColorBlend(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            colorScheme ->
+                                    HubColors.getToolbarActionButtonBackgroundColor(
+                                            context, colorScheme),
+                            this::updateActionButtonColorInternal));
+        }
+
         mixer.registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
@@ -207,7 +241,9 @@ public class HubToolbarView extends LinearLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getIconColor(context, colorScheme),
                         interpolatedColor -> {
-                            updateActionButtonColorInternal(context, interpolatedColor);
+                            if (!ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
+                                updateActionButtonIconColorInternal(context, interpolatedColor);
+                            }
                             ColorStateList menuButtonColor =
                                     ColorStateList.valueOf(interpolatedColor);
                             ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
@@ -253,9 +289,13 @@ public class HubToolbarView extends LinearLayout {
         mPaneSwitcher.setTabIconTint(selectableIconList);
     }
 
-    private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
+    private void updateActionButtonIconColorInternal(Context context, @ColorInt int color) {
         ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
         TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
+    }
+
+    private void updateActionButtonColorInternal(@ColorInt int color) {
+        mActionButton.getBackground().setColorFilter(color, PorterDuff.Mode.SRC);
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {
@@ -319,18 +359,17 @@ public class HubToolbarView extends LinearLayout {
         }
     }
 
-    private View getButtonView(int index) {
-        @Nullable Tab tab = mPaneSwitcher.getTabAt(index);
+    private @Nullable View getButtonView(int index) {
+        Tab tab = mPaneSwitcher.getTabAt(index);
         return tab == null ? null : tab.view;
     }
 
-    private OnTabSelectedListener makeTabSelectedListener(
-            @NonNull List<FullButtonData> buttonDataList) {
+    private OnTabSelectedListener makeTabSelectedListener(List<FullButtonData> buttonDataList) {
         return new OnTabSelectedListener() {
             @Override
             public void onTabSelected(Tab tab) {
                 if (!mBlockTabSelectionCallback) {
-                    buttonDataList.get(tab.getPosition()).getOnPressRunnable().run();
+                    assumeNonNull(buttonDataList.get(tab.getPosition()).getOnPressRunnable()).run();
                 }
             }
 
@@ -375,5 +414,25 @@ public class HubToolbarView extends LinearLayout {
         slideFadeHubSearchBoxAnimator.play(slide).with(fade);
         slideFadeHubSearchBoxAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
         return slideFadeHubSearchBoxAnimator;
+    }
+
+    private TouchDelegate getToolbarActionButtonDelegate() {
+        Rect rect = new Rect();
+        mActionButton.getHitRect(rect);
+
+        int touchSize =
+                mActionButton
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.min_touch_target_size);
+        int halfWidthDelta = Math.max((touchSize - mActionButton.getWidth()) / 2, 0);
+        int halfHeightDelta = Math.max((touchSize - mActionButton.getHeight()) / 2, 0);
+
+        rect.left -= halfWidthDelta;
+        rect.right += halfWidthDelta;
+        rect.top -= halfHeightDelta;
+        rect.bottom += halfHeightDelta;
+
+        return new TouchDelegate(rect, mActionButton);
     }
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/chooser_dialog_view.h"
 
+#include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/device_permissions_dialog_controller.h"
@@ -89,6 +90,12 @@ views::View* ChooserDialogView::GetInitiallyFocusedView() {
 
 void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
+}
+
+DeviceChooserContentView*
+ChooserDialogView::device_chooser_content_view_for_test() const {
+  CHECK_IS_TEST();
+  return device_chooser_content_view_;
 }
 
 BEGIN_METADATA(ChooserDialogView)

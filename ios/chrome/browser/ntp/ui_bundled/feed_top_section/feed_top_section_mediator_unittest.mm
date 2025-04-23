@@ -53,7 +53,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
          identityManager:IdentityManagerFactory::GetForProfile(
                              fake_profile_.get())
              authService:fake_authentication_service_
-             isIncognito:fake_profile_.get()->IsOffTheRecord()
+               incognito:fake_profile_.get()->IsOffTheRecord()
              prefService:fake_pref_service_];
     feed_top_section_view_controller_.feedTopSectionMutator =
         feed_top_section_mediator_;

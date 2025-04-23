@@ -137,14 +137,14 @@ export class SettingsAutofillAiSectionElement extends
     };
   }
 
-  ineligibleUser: boolean;
-  private optedIn_: chrome.settingsPrivate.PrefObject;
-  private activeEntityInstance_: EntityInstance|null;
-  private completeEntityTypesList_: EntityType[];
-  private showAddOrEditEntityInstanceDialog_: boolean;
-  private addOrEditEntityInstanceDialogTitle_: string;
-  private showRemoveEntityInstanceDialog_: boolean;
-  private entityInstances_: EntityInstanceWithLabels[];
+  declare ineligibleUser: boolean;
+  declare private optedIn_: chrome.settingsPrivate.PrefObject;
+  declare private activeEntityInstance_: EntityInstance|null;
+  declare private completeEntityTypesList_: EntityType[];
+  declare private showAddOrEditEntityInstanceDialog_: boolean;
+  declare private addOrEditEntityInstanceDialogTitle_: string;
+  declare private showRemoveEntityInstanceDialog_: boolean;
+  declare private entityInstances_: EntityInstanceWithLabels[];
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -206,8 +206,15 @@ export class SettingsAutofillAiSectionElement extends
             {sensitivity: 'base'});
   }
 
-  private onOptInToggleChange_() {
-    this.entityDataManager_.setOptInStatus(this.$.prefToggle.checked);
+  private async onOptInToggleChange_() {
+    // `setOptInStatus` returns false when the user tries to toggle the opt-in
+    // status when they're ineligible.  This shouldn't happen usually but in
+    // some cases it can happen (see crbug.com/408145195).
+    this.ineligibleUser = !(await this.entityDataManager_.setOptInStatus(
+        this.$.prefToggle.checked));
+    if (this.ineligibleUser) {
+      this.set('optedIn_.value', false);
+    }
   }
 
   /**

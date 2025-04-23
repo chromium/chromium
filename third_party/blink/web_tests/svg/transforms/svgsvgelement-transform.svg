@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
-  <!-- Test that SVGSVGElements are transformable. -->
-  <!-- After webkit.org/b/107394 lands, the expected result will need to be updated. -->
-  <rect width="100" height="100" fill="red" />
-  <svg width="50" height="50" transform="scale(2)">
-    <rect width="50" height="50" fill="green"/>
-  </svg>
-  <text x="0" y="120">This test passes if a green square is visible, and no red.</text>
-</svg>

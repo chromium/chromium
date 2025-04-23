@@ -418,10 +418,6 @@ bool OcclusionCuller::CanSplitDrawQuad(
   }
 
   if (quad->material == DrawQuad::Material::kTextureContent) {
-    if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
-      return false;
-    }
-
     // Exclude possible overlay candidates from quad splitting. See
     // `OverlayCandidateFactory::FromDrawQuad()`.
     if (resource_provider_->IsOverlayCandidate(quad->resource_id)) {

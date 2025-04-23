@@ -116,8 +116,15 @@ class CustomTileEditDelegates {
          */
         void toggleSaveButton(boolean enable);
 
-        /** Sets the focus to the URL input field. */
-        void focusOnUrl();
+        /** Sets the focus to the Name input field. */
+        void focusOnName();
+
+        /**
+         * Sets the focus to the URL input field and optionally select all text.
+         *
+         * @param selectAll Whether to also select all text.
+         */
+        void focusOnUrl(boolean selectAll);
     }
 
     /** Interface to handle interactions from the View. */

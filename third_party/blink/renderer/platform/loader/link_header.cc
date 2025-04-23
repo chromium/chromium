@@ -110,13 +110,14 @@ void LinkHeader::SetValue(LinkParameterName name, const String& value) {
 
 template <typename Iterator>
 LinkHeader::LinkHeader(Iterator begin, Iterator end) : is_valid_(true) {
-  std::string url;
   std::unordered_map<std::string, std::optional<std::string>> params;
-  is_valid_ = link_header_util::ParseLinkHeaderValue(begin, end, &url, &params);
+  std::optional<std::string> url = link_header_util::ParseLinkHeaderValue(
+      std::string_view(begin, end), params);
+  is_valid_ = url.has_value();
   if (!is_valid_)
     return;
 
-  url_ = String(url);
+  url_ = String(*url);
   for (const auto& param : params) {
     LinkParameterName name = ParameterNameFromString(param.first);
     if (!IsExtensionParameter(name) && !param.second)
@@ -138,8 +139,7 @@ LinkHeaderSet::LinkHeaderSet(const String& header) {
     return;
 
   DCHECK(header.Is8Bit()) << "Headers should always be 8 bit";
-  std::string header_string(reinterpret_cast<const char*>(header.Characters8()),
-                            header.length());
+  std::string header_string = header.Latin1();
   for (const auto& value : link_header_util::SplitLinkHeader(header_string))
     header_set_.push_back(LinkHeader(value.first, value.second));
 }

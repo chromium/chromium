@@ -56,7 +56,7 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
   explicit TestBaseWidgetDelegate(ViewEventTestBase* harness)
       : harness_(harness) {
     SetCanResize(true);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
   }
   TestBaseWidgetDelegate(const TestBaseWidgetDelegate&) = delete;
   TestBaseWidgetDelegate& operator=(const TestBaseWidgetDelegate&) = delete;

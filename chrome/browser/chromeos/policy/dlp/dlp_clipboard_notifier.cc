@@ -16,6 +16,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"

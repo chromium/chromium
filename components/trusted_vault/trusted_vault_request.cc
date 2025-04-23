@@ -186,7 +186,7 @@ void TrustedVaultRequest::OnAccessTokenFetched(
 }
 
 void TrustedVaultRequest::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int http_response_code = 0;
 
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
@@ -198,7 +198,11 @@ void TrustedVaultRequest::OnURLLoadComplete(
                                       url_loader_->NetError());
   }
 
-  std::string response_content = response_body ? *response_body : std::string();
+  if (!response_body) {
+    response_body = std::string();
+  }
+  const std::string& response_content = *response_body;
+
   if (http_response_code == 0) {
     backoff_entry_.InformOfRequest(/*succeeded=*/false);
     if (CanRetry()) {

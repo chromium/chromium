@@ -63,6 +63,7 @@ import org.chromium.components.browser_ui.settings.LearnMorePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
@@ -247,6 +248,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             "anti_abuse_things_to_consider_header";
     public static final String ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE =
             "anti_abuse_things_to_consider_section_one";
+    public static final String TOGGLE_DISABLE_REASON_KEY = "toggle_disable_reason";
 
     // Keys for Allowed/Blocked preference groups/headers.
     public static final String ALLOWED_GROUP = "allowed_group";
@@ -311,7 +313,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         @Override
         public boolean isPreferenceClickDisabled(Preference preference) {
-            return mCategory.isToggleDisabled() || super.isPreferenceClickDisabled(preference);
+            return mCategory.shouldDisableToggle() || super.isPreferenceClickDisabled(preference);
         }
     }
 
@@ -831,12 +833,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         ? R.string.website_settings_blocked_group_heading_request_desktop_site
                         : R.string.website_settings_allowed_group_heading_request_desktop_site;
             case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
-                BrowserContextHandle browserContextHandle =
-                        getSiteSettingsDelegate().getBrowserContextHandle();
-                if (WebsitePreferenceBridge.isJavascriptOptimizerOsProvidedSetting(
-                        browserContextHandle, mCategory.getContentSettingsType())) {
-                    return 0;
-                }
                 return isCategoryEnabled()
                         ? R.string.website_settings_add_site_description_javascript_optimizer_block
                         : R.string.website_settings_add_site_description_javascript_optimizer_allow;
@@ -859,6 +855,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        getInfoForOrigins();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -866,8 +869,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             SearchUtils.clearSearch(mSearchItem, getActivity());
             mSearch = null;
         }
-
-        getInfoForOrigins();
     }
 
     // AddExceptionPreference.SiteAddedCallback:
@@ -940,14 +941,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                allowSpecifyingExceptions = true;
-                break;
             case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
-                BrowserContextHandle browserContextHandle =
-                        getSiteSettingsDelegate().getBrowserContextHandle();
-                allowSpecifyingExceptions =
-                        !WebsitePreferenceBridge.isJavascriptOptimizerOsProvidedSetting(
-                                browserContextHandle, ContentSettingsType.JAVASCRIPT_OPTIMIZER);
+                allowSpecifyingExceptions = true;
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
@@ -1338,6 +1333,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             screen.removePreference(mLocationTriStatePref);
         }
 
+        maybeShowReasonToggleDisabled(screen);
+
         if (permissionBlockedByOs) {
             maybeShowOsWarning(screen);
             screen.removePreference(notificationsVibrate);
@@ -1463,7 +1460,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     private void maybeShowOsWarning(PreferenceScreen screen) {
-        if (isBlocked() && !mCategory.shouldShowWarningWhenBlocked()) {
+        if (isBlocked()) {
             return;
         }
 
@@ -1485,6 +1482,27 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             osWarningExtra.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
             screen.addPreference(osWarningExtra);
         }
+    }
+
+    /**
+     * If the toggle is disabled, shows a label with the reason that the toggle is disabled.
+     * Otherwise hides the label.
+     */
+    private void maybeShowReasonToggleDisabled(PreferenceScreen screen) {
+        ChromeBasePreference toggleMessage =
+                getPreferenceScreen().findPreference(TOGGLE_DISABLE_REASON_KEY);
+        if (!mCategory.shouldDisableToggle()) {
+            screen.removePreference(toggleMessage);
+            return;
+        }
+
+        String message = mCategory.getMessageWhyToggleIsDisabled(getContext());
+        if (message == null) {
+            screen.removePreference(toggleMessage);
+            return;
+        }
+        toggleMessage.setTitle(message);
+        toggleMessage.setIcon(mCategory.getDisabledInAndroidIcon(getContext()));
     }
 
     private void configureTriStateCookieToggle(
@@ -1529,7 +1547,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting,
                 descriptionIds,
                 iconIds,
-                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled());
+                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled(),
+                getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 
     private void configureBinaryToggle(ChromeSwitchPreference binaryToggle, int contentType) {
@@ -1821,5 +1840,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
         };
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

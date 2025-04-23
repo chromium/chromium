@@ -222,20 +222,13 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
     // handle this.
     NOTREACHED(base::NotFatalUntil::M138);
   } else {
-    bool is_guest_mode_propagation_allowed =
-        search_engine_choice_service_
-            ->IsProfileEligibleForDseGuestPropagation();
-    if (profile_->IsGuestSession()) {
-      base::UmaHistogramBoolean("Search.SaveGuestModeEligible",
-                                is_guest_mode_propagation_allowed);
-    }
-    if (is_guest_mode_propagation_allowed) {
+    if (search_engine_choice_service_->IsDsePropagationAllowedForGuest()) {
       base::UmaHistogramBoolean("Search.SaveGuestModeSelection",
                                 save_guest_mode_selection);
-    }
-    if (is_guest_mode_propagation_allowed && save_guest_mode_selection) {
-      search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
-          prepopulate_id);
+      if (save_guest_mode_selection) {
+        search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
+            prepopulate_id);
+      }
     }
     template_url_service_->SetUserSelectedDefaultSearchProvider(
         selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);

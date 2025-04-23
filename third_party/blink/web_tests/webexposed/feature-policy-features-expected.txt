@@ -38,6 +38,7 @@ compute-pressure
 cross-origin-isolated
 deferred-fetch
 deferred-fetch-minimal
+device-attributes
 digital-credentials-get
 display-capture
 encrypted-media

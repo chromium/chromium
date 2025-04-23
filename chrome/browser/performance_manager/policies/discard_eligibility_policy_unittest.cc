@@ -237,6 +237,7 @@ TEST_F(DiscardEligibilityPolicyTest,
   EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kDiscardAttempted));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardRecentlyAudiblePage) {
   page_node()->SetIsAudible(true);
   page_node()->SetIsAudible(false);
@@ -255,6 +256,7 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardRecentlyAudiblePage) {
             CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
   EXPECT_TRUE(reasons_vec.empty());
 }
+#endif
 
 TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardNeverAudiblePage) {
   // Ensure that if a page node is created without ever becoming audible, it
@@ -300,7 +302,7 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardNeverAudiblePage) {
   EXPECT_TRUE(reasons_vec.empty());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardRecentlyVisiblePageUnlessExplicitlyRequested) {
   page_node()->SetIsVisible(true);

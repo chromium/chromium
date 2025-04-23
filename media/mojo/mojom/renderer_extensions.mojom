@@ -11,31 +11,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 [EnableIf=is_win]
 import "ui/gfx/mojom/buffer_types.mojom";
-// Extension of the mojo::RendererClient communication layer for HLS and Android
-// software rendering fallback paths.
-// This allows the Browser side to call back into the Renderer side. Concretely,
-// the MediaPlayerRenderer uses these methods to propagate events it raises to
-// the MediaPlayerRendererClient, which lives in the Renderer process.
-interface MediaPlayerRendererClientExtension {
-  // Called when the first time the metadata is updated, and whenever the
-  // metadata changes.
-  OnVideoSizeChange(gfx.mojom.Size size);
-  OnDurationChange(mojo_base.mojom.TimeDelta duration);
-};
-
-// Extension of the mojo::Renderer communication layer for HLS and Android
-// software rendering fallback paths.
-// This allows the Renderer side to call into the Browser side.
-// Concretely, the MediaPlayerRendererClient uses these methods to send commands
-// to MediaPlayerRenderer, which lives in the Browser process.
-interface MediaPlayerRendererExtension {
-  // Registers a new request in the ScopedSurfaceRequestManager, and returns
-  // its token.
-  // Called once, during media::Renderer initialization, as part of
-  // StreamTexture's set-up.
-  InitiateScopedSurfaceRequest()
-      => (mojo_base.mojom.UnguessableToken request_token);
-};
 
 // Extension of the mojo::RendererClient communication layer for media flinging,
 // a.k.a RemotePlayback, when playing media on a remote Cast device.

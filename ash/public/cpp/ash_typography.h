@@ -84,6 +84,9 @@ enum AshTextStyle {
   // Text styling for launcher's search result view.
   STYLE_LAUNCHER,
 
+  // Text styling for alert message.
+  STYLE_ALERT,
+
   ASH_TEXT_STYLE_END
 };
 
@@ -97,6 +100,10 @@ ApplyAshFontStyles(int context,
 // Returns line height if the given `context` is ash typography Returns nullopt
 // if not.
 std::optional<int> ASH_PUBLIC_EXPORT GetLineHeight(int context);
+
+// Returns specific color id if the given `style` has ash typography specific
+// settings. Otherwise, returns nullopt.
+std::optional<ui::ColorId> ASH_PUBLIC_EXPORT GetColorId(int style);
 
 }  // namespace ash
 
