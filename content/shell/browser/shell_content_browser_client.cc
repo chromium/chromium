@@ -23,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -132,7 +133,9 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "components/permissions/bluetooth_delegate_impl.h"
+#if !BUILDFLAG(IS_IOS_TVOS)
 #include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -835,11 +838,16 @@ ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
 
 #if BUILDFLAG(IS_IOS)
 BluetoothDelegate* ShellContentBrowserClient::GetBluetoothDelegate() {
+#if !BUILDFLAG(IS_IOS_TVOS)
   if (!bluetooth_delegate_) {
     bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
         std::make_unique<ShellBluetoothDelegateImplClient>());
   }
   return bluetooth_delegate_.get();
+#else
+  TVOS_NOT_YET_IMPLEMENTED();
+  return nullptr;
+#endif
 }
 #endif
 
