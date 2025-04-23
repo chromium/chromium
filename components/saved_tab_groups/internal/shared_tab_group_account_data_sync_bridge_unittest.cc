@@ -27,6 +27,7 @@ namespace {
 
 using testing::_;
 using testing::DefaultValue;
+using testing::Eq;
 using testing::Invoke;
 using testing::Matcher;
 using testing::Return;
@@ -578,6 +579,64 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
     EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
     EXPECT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time);
   }
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       LocalUpdateOfTimestampGetSentOverToSync) {
+  const CollaborationId kCollaborationId("collaboration");
+  const SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  const base::Uuid& group_id = created_group.saved_guid();
+
+  const SavedTabGroupTab& created_tab = created_group.saved_tabs().front();
+  const base::Uuid& tab_id = created_tab.saved_tab_guid();
+
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  EXPECT_EQ(model().Count(), 1);
+  EXPECT_TRUE(model().Contains(group_id));
+  EXPECT_FALSE(created_tab.last_seen_time_windows_epoch_micros().has_value());
+
+  base::Time last_seen_time1 = base::Time::Now();
+  syncer::EntityChangeList change_list1;
+  change_list1.push_back(CreateAddEntityChange(CreateTabGroupAccountSpecifics(
+      kCollaborationId, created_tab, last_seen_time1)));
+
+  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list1));
+
+  // Get the group and tab after the model has been updated.
+  const SavedTabGroup* group = model().Get(group_id);
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  const std::string storage_key = CreateClientTagForSharedTab(*group, *tab);
+
+  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
+  EXPECT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time1);
+  EXPECT_EQ(GetNumEntriesInStore(), 1u);
+
+  // Update the last seen time locally. The updated timestamp should be sent to
+  // sync.
+  base::Time last_seen_time2 = base::Time::Now() + base::Seconds(42);
+
+  EXPECT_CALL(mock_processor(), Put(Eq(storage_key), _, _)).Times(1);
+  model().UpdateTabLastSeenTime(group_id, tab_id, last_seen_time2,
+                                TriggerSource::LOCAL);
+
+  ASSERT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time2);
+  EXPECT_EQ(GetNumEntriesInStore(), 1u);
+  auto specifics = bridge().GetSpecificsForStorageKey(storage_key);
+  EXPECT_TRUE(specifics.has_value());
+  EXPECT_EQ(
+      last_seen_time2.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+      specifics->shared_tab_details().last_seen_timestamp_windows_epoch());
+
+  // Delete the tab locally. The corresponding sync entry should be deleted.
+  EXPECT_CALL(mock_processor(), Delete(Eq(storage_key), _, _)).Times(1);
+  model().RemoveTabFromGroupLocally(group_id, tab_id);
+  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key));
 }
 
 }  // namespace

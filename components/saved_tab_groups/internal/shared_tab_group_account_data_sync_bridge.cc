@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -78,8 +79,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
     const SavedTabGroupModel& model,
     const SavedTabGroupTab& tab) {
-  CHECK(!tab.last_seen_time_windows_epoch_micros().has_value());
-
   const SavedTabGroup* group = model.Get(tab.saved_group_guid());
   CHECK(group);
 
@@ -362,6 +361,10 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupModelLoaded() {
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
     const base::Uuid& saved_tab_id,
     TriggerSource source) {
+  if (source != TriggerSource::LOCAL) {
+    return;
+  }
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<syncer::EntityData>> new_entities;
@@ -378,7 +381,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
 
   const std::optional<base::Time>& model_last_seen =
       tab->last_seen_time_windows_epoch_micros();
-  if (model_last_seen.has_value()) {
+  if (!model_last_seen.has_value()) {
     // This tab has not been seen by the user. Avoid syncing tabs
     // without a timestamp by skipping this.
     return;
@@ -407,6 +410,32 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
   WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*model_, *tab));
 }
 
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedLocally(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid) {
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(group_guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group() || !tab_guid) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group->GetTab(tab_guid.value());
+  if (tab) {
+    return;
+  }
+
+  // This is an update for a shared tab deletion from local. Remove the
+  // corresponding entity from sync.
+  const std::string storage_key = tab_guid->AsLowercaseString() + "|" +
+                                  group->collaboration_id().value().value();
+  RemoveEntitySpecifics(storage_key);
+}
+
 bool SharedTabGroupAccountDataSyncBridge::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_initialized_;
@@ -417,6 +446,14 @@ bool SharedTabGroupAccountDataSyncBridge::HasSpecificsForTab(
   const SavedTabGroup* group = model_->Get(tab.saved_group_guid());
   CHECK(group);
   return specifics_.contains(CreateClientTagForSharedTab(*group, tab));
+}
+
+std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
+SharedTabGroupAccountDataSyncBridge::GetSpecificsForStorageKey(
+    const std::string& storage_key) const {
+  return specifics_.contains(storage_key)
+             ? std::make_optional<>(specifics_.at(storage_key))
+             : std::nullopt;
 }
 
 void SharedTabGroupAccountDataSyncBridge::OnStoreCreated(
@@ -545,6 +582,24 @@ void SharedTabGroupAccountDataSyncBridge::WriteEntityToSync(
   change_processor()->Put(storage_key, std::move(entity),
                           batch->GetMetadataChangeList());
 
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(
+          &SharedTabGroupAccountDataSyncBridge::OnDataTypeStoreCommit,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SharedTabGroupAccountDataSyncBridge::RemoveEntitySpecifics(
+    const std::string& storage_key) {
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  // Remove the entity from in-memory cache, storage, and sync.
+  specifics_.erase(storage_key);
+  storage_keys_for_missing_tabs_.erase(storage_key);
+  batch->DeleteData(storage_key);
+  change_processor()->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
   store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(
