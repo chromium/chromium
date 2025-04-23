@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_edit_dialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
@@ -20,6 +22,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.List;
@@ -28,14 +32,15 @@ import java.util.List;
  * The view which represents a username label and input control and a password label and input
  * control. The view has the functionality of editing both password and username.
  */
+@NullMarked
 class PasswordEditDialogView extends LinearLayout {
     private AutoCompleteTextView mUsernameView;
     private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mPasswordField;
     private TextInputLayout mPasswordInputLayout;
-    private Callback<String> mUsernameChangedCallback;
-    private Callback<String> mPasswordChangedCallback;
-    private List<String> mUsernames;
+    private @Nullable Callback<String> mUsernameChangedCallback;
+    private @Nullable Callback<String> mPasswordChangedCallback;
+    private @Nullable List<String> mUsernames;
     private TextView mFooterView;
 
     public PasswordEditDialogView(Context context, AttributeSet attrs) {
@@ -88,7 +93,7 @@ class PasswordEditDialogView extends LinearLayout {
     }
 
     public void setPassword(String password) {
-        if (mPasswordField.getText().toString().equals(password)) return;
+        if (assumeNonNull(mPasswordField.getText()).toString().equals(password)) return;
         mPasswordField.setText(password);
     }
 

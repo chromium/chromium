@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
 /** Defines properties for password edit dialog custom view. */
+@NullMarked
 class PasswordEditDialogProperties {
     static final PropertyModel.ReadableObjectPropertyKey<List<String>> USERNAMES =
             new PropertyModel.ReadableObjectPropertyKey<>("usernames");

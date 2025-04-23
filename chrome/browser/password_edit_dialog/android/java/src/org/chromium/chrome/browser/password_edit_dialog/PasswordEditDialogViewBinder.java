@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.password_edit_dialog;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Maps {@link PasswordEditDialogProperties} changes in a {@link PropertyModel}
- * to suitable methods in {@link PasswordEditDialogView}
+ * Maps {@link PasswordEditDialogProperties} changes in a {@link PropertyModel} to suitable methods
+ * in {@link PasswordEditDialogView}
  */
+@NullMarked
 class PasswordEditDialogViewBinder {
     static void bind(
             PropertyModel model, PasswordEditDialogView dialogView, PropertyKey propertyKey) {
