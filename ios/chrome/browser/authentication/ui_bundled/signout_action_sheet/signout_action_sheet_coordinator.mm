@@ -169,9 +169,11 @@ using signin_metrics::SignoutDataLossAlertReason;
     [self allowUserInteraction];
   }
   [self dismissActionSheetCoordinator];
-  [_completionWrapper coordinatorStoppedForScene:nil];
-  _completionWrapper = nil;
   _stopped = YES;
+  SignoutActionSheetCompletionWrapper* completionWrapper = _completionWrapper;
+  _completionWrapper = nil;
+  [completionWrapper coordinatorStoppedForScene:nil];
+  // `self` may be deallocated after `coordinatorStoppedForScene`.
 }
 
 - (void)dealloc {

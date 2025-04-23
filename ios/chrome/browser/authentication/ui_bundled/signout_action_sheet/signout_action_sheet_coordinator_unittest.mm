@@ -126,6 +126,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
           forceSnackbarOverToolbar:NO
                         withSource:metricSignOut
                         completion:^(BOOL success, SceneState* scene_state) {
+                          signout_coordinator_ = nil;
                           completion_callback_.Run(success);
                         }];
     return signout_coordinator_;
