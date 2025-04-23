@@ -138,8 +138,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [fakeIdentity.gaiaID isEqualToString:primaryAccountGaiaID], errorStr);
 }
 
-- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
-                              consent:(signin::ConsentLevel)consent {
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail {
   EG_TEST_HELPER_ASSERT_TRUE(expectedEmail.length, @"Need to give an identity");
 
   // Required to avoid any problem since the following test is not dependant
@@ -148,23 +147,29 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   GREYAssert(WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForActionTimeout,
                  ^bool {
-                   NSString* primaryAccountEmail = [SigninEarlGreyAppInterface
-                       primaryAccountEmailWithConsent:consent];
+                   NSString* primaryAccountEmail =
+                       [SigninEarlGreyAppInterface primaryAccountEmail];
                    return primaryAccountEmail.length > 0;
                  }),
              @"Sign in did not complete.");
   GREYWaitForAppToIdle(@"App failed to idle");
 
   NSString* primaryAccountEmail =
-      [SigninEarlGreyAppInterface primaryAccountEmailWithConsent:consent];
+      [SigninEarlGreyAppInterface primaryAccountEmail];
 
   NSString* errorStr = [NSString
       stringWithFormat:@"Unexpected email of the signed in user [expected = "
-                       @"\"%@\", actual = \"%@\", consent %d]",
-                       expectedEmail, primaryAccountEmail,
-                       static_cast<int>(consent)];
+                       @"\"%@\", actual = \"%@\"]",
+                       expectedEmail, primaryAccountEmail];
   EG_TEST_HELPER_ASSERT_TRUE(
       [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
+}
+
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
+                              consent:(signin::ConsentLevel)consent {
+  GREYAssert(consent == signin::ConsentLevel::kSignin,
+             @"Only ConsentLevel::kSignin is supported");
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:expectedEmail];
 }
 
 - (void)verifySignedOut {

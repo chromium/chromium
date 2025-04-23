@@ -101,11 +101,11 @@
   return info.gaia.ToNSString();
 }
 
-+ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {
++ (NSString*)primaryAccountEmail {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
-          consentLevel);
+          signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(info.email);
 }

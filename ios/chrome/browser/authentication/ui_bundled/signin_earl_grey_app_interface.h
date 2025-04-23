@@ -14,10 +14,6 @@
 @class FakeSystemIdentity;
 @protocol GREYMatcher;
 
-namespace signin {
-enum class ConsentLevel;
-}
-
 namespace syncer {
 enum class UserSelectableType;
 }
@@ -57,9 +53,9 @@ enum class UserSelectableType;
 // If there is no primary account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
 
-// Returns the email of the primary account base on `consentLevel`.
+// Returns the email of the primary account.
 // If there is no signed-in account returns an empty string.
-+ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel;
++ (NSString*)primaryAccountEmail;
 
 // Returns the gaia IDs of all accounts in the current profile.
 + (NSSet<NSString*>*)accountsInProfileGaiaIDs;
