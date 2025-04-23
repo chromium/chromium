@@ -119,6 +119,8 @@ source_set("browser_tests") {
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/on_task:util",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
     "//chromeos/ui/wm",
+    "//ui/base",
   ]
 }

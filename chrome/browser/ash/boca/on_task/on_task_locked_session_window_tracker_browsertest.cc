@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -48,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using ash::boca::OnTaskSystemWebAppManagerImpl;
@@ -1005,11 +1007,12 @@ IN_PROC_BROWSER_TEST_F(
       window_id, /*observers=*/{&window_observer});
 
   // Switch out of boca SWA
-  EXPECT_CALL(window_observer,
-              OnActiveTabChanged(::testing::Eq(kOutsideOfWorkbookTitle)))
+  EXPECT_CALL(
+      window_observer,
+      OnActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS)))
       .Times(1);
 
-  BrowserList::GetInstance()->NotifyBrowserNoLongerActive(boca_app_browser);
+  BrowserList::GetInstance()->SetLastActive(browser());
   testing::Mock::VerifyAndClearExpectations(&window_observer);
 
   // Switch back to Boca SWA

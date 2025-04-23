@@ -409,7 +409,14 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
 }
 
 void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
-  if (browser != browser_ || !browser) {
+  if (!browser || !browser_) {
+    return;
+  }
+  if (browser != browser_) {
+    for (auto& observer : observers_) {
+      observer.OnActiveTabChanged(
+          l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
+    }
     return;
   }
   if (!browser->GetActiveTabInterface() ||
@@ -419,16 +426,6 @@ void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
   for (auto& observer : observers_) {
     observer.OnActiveTabChanged(
         browser->GetActiveTabInterface()->GetContents()->GetTitle());
-  }
-}
-
-void LockedSessionWindowTracker::OnBrowserNoLongerActive(Browser* browser) {
-  if (browser != browser_) {
-    return;
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnActiveTabChanged(std::u16string(kOutsideOfWorkbookTitle));
   }
 }
 

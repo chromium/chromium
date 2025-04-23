@@ -51,7 +51,6 @@ class BocaSessionManager
   using SodaStatus = babelorca::SodaInstaller::InstallationStatus;
 
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
-  inline static constexpr char kHomePageTitle[] = "School Tools Home page";
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
   inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
   inline static constexpr int kDefaultStudentHeartbeatIntervalInSeconds = 30;

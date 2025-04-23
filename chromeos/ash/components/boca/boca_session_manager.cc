@@ -31,8 +31,10 @@
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash::boca {
@@ -285,9 +287,10 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
 
   // TODO: crbug.com/376550427 - Make a permanet fix to provide URL resource for
   // home page, and remove this after that.
-  request->set_active_tab_title(active_tab_title_.empty()
-                                    ? kHomePageTitle
-                                    : base::UTF16ToUTF8(active_tab_title_));
+  request->set_active_tab_title(
+      active_tab_title_.empty()
+          ? l10n_util::GetStringUTF8(IDS_CLASS_TOOLS_HOME_PAGE)
+          : base::UTF16ToUTF8(active_tab_title_));
   session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 
