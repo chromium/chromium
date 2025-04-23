@@ -16,12 +16,10 @@ import android.view.View;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -34,12 +32,10 @@ import java.util.Set;
 
 /** Represents the Most Visited Tiles section in the New Tab Page. */
 public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
-
-    public static final ViewSpec MOST_VISITED_TILES_LAYOUT = viewSpec(withId(R.id.mv_tiles_layout));
-
     private final List<SiteSuggestion> mSiteSuggestions;
     private final Set<Integer> mNonTileIndices;
-    private ArrayList<Item<WebPageStation>> mTiles;
+    public List<Item<WebPageStation>> tileItems;
+    public ViewElement<View> tilesLayoutElement;
 
     /**
      * @param siteSuggestions List of expects the tiles to show.
@@ -57,21 +53,21 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(RegularNewTabPageStation.MOST_VISITED_TILES_CONTAINER);
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
         // tablets.
-        Supplier<View> tilesViewSupplier =
+        tilesLayoutElement =
                 elements.declareView(
-                        MOST_VISITED_TILES_LAYOUT, ViewElement.displayingAtLeastOption(1));
+                        viewSpec(withId(R.id.mv_tiles_layout)),
+                        ViewElement.displayingAtLeastOption(1));
         elements.declareEnterCondition(
-                new ViewHasChildrenCountCondition(tilesViewSupplier, mSiteSuggestions.size()));
+                new ViewHasChildrenCountCondition(tilesLayoutElement, mSiteSuggestions.size()));
         super.declareElements(elements);
     }
 
     @Override
     protected void declareItems(ScrollableFacility<RegularNewTabPageStation>.ItemsBuilder items) {
         int parentIndex = 0;
-        mTiles = new ArrayList<>();
+        ArrayList<Item<WebPageStation>> newTileItems = new ArrayList<>();
         for (int i = 0; i < mSiteSuggestions.size(); i++) {
             while (mNonTileIndices.contains(parentIndex)) {
                 ++parentIndex;
@@ -91,9 +87,10 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
                                                     mHostStation.loadedTabElement.get())
                                             .withExpectedUrlSubstring(siteSuggestion.url.getPath())
                                             .build());
-            mTiles.add(item);
+            newTileItems.add(item);
             ++parentIndex;
         }
+        tileItems = Collections.unmodifiableList(newTileItems);
     }
 
     @Override
@@ -101,12 +98,5 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         // Number of tiles varies depending on screen size and variations, but should always
         // see at least 3 tiles.
         return 3;
-    }
-
-    /** Selects one of the tiles to navigate to that web page, scrolling if needed. */
-    public WebPageStation scrollToAndSelectByIndex(int i) {
-        assert i >= 0 && i < mSiteSuggestions.size();
-
-        return mTiles.get(i).scrollToAndSelect();
     }
 }
