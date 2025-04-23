@@ -100,7 +100,7 @@ public class DeviceLockActivityTest {
                         ContextUtils.getApplicationContext(),
                         "testSelectedAccount",
                         true,
-                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+                        DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mActivityScenario = ActivityScenario.launchActivityForResult(intent);
         mActivityScenario.onActivity(activity -> mDeviceLockActivity = activity);
