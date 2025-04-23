@@ -17604,41 +17604,59 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledLessAggressive_20250326",
+                    "name": "EnabledLessAggressive_20250423",
                     "params": {
+                        "availability": "any",
+                        "event_trigger": "name:performance_intervention_dialog_trigger;comparator:<3;window:1;storage:360",
+                        "event_used": "name:performance_intervention_dialog_used;comparator:any;window:0;storage:360",
+                        "event_weekly_trigger": "name:performance_intervention_dialog_trigger;comparator:<21;window:7;storage:360",
                         "minimum_time_reshow": "1h",
                         "no_acceptance_back_off": "7d",
                         "scale_max_times_per_day": "3",
                         "scale_max_times_per_week": "21",
+                        "session_rate": "any",
                         "window_size": "10"
                     },
                     "enable_features": [
+                        "IPH_PerformanceInterventionDialogFeature",
                         "PerformanceInterventionNotificationImprovements"
                     ]
                 },
                 {
-                    "name": "EnabledMediumAggressive_20250326",
+                    "name": "EnabledMediumAggressive_20250423",
                     "params": {
+                        "availability": "any",
+                        "event_trigger": "name:performance_intervention_dialog_trigger;comparator:<10;window:1;storage:360",
+                        "event_used": "name:performance_intervention_dialog_used;comparator:any;window:0;storage:360",
+                        "event_weekly_trigger": "name:performance_intervention_dialog_trigger;comparator:<70;window:7;storage:360",
                         "minimum_time_reshow": "1h",
                         "no_acceptance_back_off": "7d",
                         "scale_max_times_per_day": "10",
                         "scale_max_times_per_week": "70",
+                        "session_rate": "any",
                         "window_size": "10"
                     },
                     "enable_features": [
+                        "IPH_PerformanceInterventionDialogFeature",
                         "PerformanceInterventionNotificationImprovements"
                     ]
                 },
                 {
-                    "name": "EnabledMoreAggressive_20250326",
+                    "name": "EnabledMoreAggressive_20250423",
                     "params": {
+                        "availability": "any",
+                        "event_trigger": "name:performance_intervention_dialog_trigger;comparator:<24;window:1;storage:360",
+                        "event_used": "name:performance_intervention_dialog_used;comparator:any;window:0;storage:360",
+                        "event_weekly_trigger": "name:performance_intervention_dialog_trigger;comparator:<168;window:7;storage:360",
                         "minimum_time_reshow": "1h",
                         "no_acceptance_back_off": "7d",
                         "scale_max_times_per_day": "24",
                         "scale_max_times_per_week": "168",
+                        "session_rate": "any",
                         "window_size": "10"
                     },
                     "enable_features": [
+                        "IPH_PerformanceInterventionDialogFeature",
                         "PerformanceInterventionNotificationImprovements"
                     ]
                 }
