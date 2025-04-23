@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Handler;
 import android.util.Pair;
 
@@ -12,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.DismissReason;
@@ -19,8 +23,11 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Objects;
+
 /** Abstracts the logic needed to schedule a message using {@link MessageDispatcher} framework. */
 @SuppressWarnings("SynchronizeOnNonFinalField") // Non-final in tests.
+@NullMarked
 public class MerchantTrustMessageScheduler {
     public static final long MESSAGE_ENQUEUE_NO_DELAY = 0;
 
@@ -28,7 +35,7 @@ public class MerchantTrustMessageScheduler {
     private final MerchantTrustMetrics mMetrics;
     private final ObservableSupplier<Tab> mTabSupplier;
     private Handler mEnqueueMessageTimer;
-    private Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
+    private @Nullable Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
     public MerchantTrustMessageScheduler(
             MessageDispatcher messageDispatcher,
@@ -56,7 +63,7 @@ public class MerchantTrustMessageScheduler {
             PropertyModel model,
             MerchantTrustMessageContext messageContext,
             long delayInMillis,
-            Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
+            Callback<@Nullable MerchantTrustMessageContext> messageEnqueuedCallback) {
         schedule(model, 4.0, messageContext, delayInMillis, messageEnqueuedCallback);
     }
 
@@ -66,17 +73,16 @@ public class MerchantTrustMessageScheduler {
             double starRating,
             MerchantTrustMessageContext messageContext,
             long delayInMillis,
-            Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
-        setScheduledMessage(
-                new Pair<MerchantTrustMessageContext, PropertyModel>(messageContext, model));
+            Callback<@Nullable MerchantTrustMessageContext> messageEnqueuedCallback) {
+        setScheduledMessage(new Pair<>(messageContext, model));
         mMetrics.recordMetricsForMessagePrepared();
         mEnqueueMessageTimer.postDelayed(
                 () -> {
                     if (messageContext.isValid()
                             && mTabSupplier.hasValue()
-                            && messageContext
-                                    .getWebContents()
-                                    .equals(mTabSupplier.get().getWebContents())) {
+                            && Objects.equals(
+                                    messageContext.getWebContents(),
+                                    mTabSupplier.get().getWebContents())) {
                         mMetrics.startRecordingMessageImpact(
                                 messageContext.getHostName(), starRating);
                         if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
@@ -86,7 +92,7 @@ public class MerchantTrustMessageScheduler {
                         } else {
                             mMessageDispatcher.enqueueMessage(
                                     model,
-                                    messageContext.getWebContents(),
+                                    assertNonNull(messageContext.getWebContents()),
                                     MessageScopeType.NAVIGATION,
                                     false);
                             mMetrics.recordMetricsForMessageShown();
@@ -99,9 +105,9 @@ public class MerchantTrustMessageScheduler {
                             clearScheduledMessage(
                                     MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID);
                         } else if (mTabSupplier.hasValue()
-                                && !messageContext
-                                        .getWebContents()
-                                        .equals(mTabSupplier.get().getWebContents())) {
+                                && !Objects.equals(
+                                        messageContext.getWebContents(),
+                                        mTabSupplier.get().getWebContents())) {
                             clearScheduledMessage(
                                     MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS);
                         } else {
@@ -113,7 +119,7 @@ public class MerchantTrustMessageScheduler {
     }
 
     /** Returns the currently scheduled message. */
-    MerchantTrustMessageContext getScheduledMessageContext() {
+    @Nullable MerchantTrustMessageContext getScheduledMessageContext() {
         return mScheduledMessage == null ? null : mScheduledMessage.first;
     }
 
@@ -129,7 +135,7 @@ public class MerchantTrustMessageScheduler {
     }
 
     @VisibleForTesting
-    void setScheduledMessage(Pair<MerchantTrustMessageContext, PropertyModel> pair) {
+    void setScheduledMessage(@Nullable Pair<MerchantTrustMessageContext, PropertyModel> pair) {
         synchronized (mEnqueueMessageTimer) {
             mScheduledMessage = pair;
         }

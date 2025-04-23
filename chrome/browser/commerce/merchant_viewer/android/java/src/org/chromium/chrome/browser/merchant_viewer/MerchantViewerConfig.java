@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUi;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageTitleUi;
@@ -13,6 +14,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel
 import java.util.concurrent.TimeUnit;
 
 /** Flag configuration for Merchant Viewer experience. */
+@NullMarked
 public class MerchantViewerConfig {
     private static final String TRUST_SIGNALS_MESSAGE_DELAY_PARAM =
             "trust_signals_message_delay_ms";

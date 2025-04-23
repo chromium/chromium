@@ -85,7 +85,7 @@ public class MerchantTrustMessageContextTest {
 
     @Test
     public void testGetHostName() {
-        assertEquals(null, new MerchantTrustMessageContext(null, mMockWebContents).getHostName());
+        assertEquals("", new MerchantTrustMessageContext(null, mMockWebContents).getHostName());
         assertEquals(
                 "fake_host",
                 new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents)

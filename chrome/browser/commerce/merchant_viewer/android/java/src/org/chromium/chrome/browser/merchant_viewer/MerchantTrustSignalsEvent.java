@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.merchant_viewer;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Represents the information for one merchant trust signal event entry. */
+@NullMarked
 public class MerchantTrustSignalsEvent {
     private final String mKey;
     private final long mTimestamp;

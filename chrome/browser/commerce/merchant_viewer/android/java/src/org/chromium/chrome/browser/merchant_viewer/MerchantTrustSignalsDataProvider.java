@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.merchant_viewer;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.url.GURL;
 
 /** Merchant trust data provider via {@link ShoppingServiceFactory}. */
+@NullMarked
 class MerchantTrustSignalsDataProvider {
     /** Fetches {@link MerchantInfo} based on {@link GURL}. */
-    public void getDataForUrl(Profile profile, GURL url, Callback<MerchantInfo> callback) {
+    public void getDataForUrl(
+            Profile profile, GURL url, Callback<@Nullable MerchantInfo> callback) {
         if (profile == null || profile.isOffTheRecord()) {
             callback.onResult(null);
             return;
@@ -27,7 +31,7 @@ class MerchantTrustSignalsDataProvider {
     }
 
     @VisibleForTesting
-    boolean isValidMerchantTrustSignals(MerchantInfo info) {
+    boolean isValidMerchantTrustSignals(@Nullable MerchantInfo info) {
         return (info != null)
                 && (info.detailsPageUrl != null)
                 && !info.containsSensitiveContent

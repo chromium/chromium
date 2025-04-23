@@ -9,12 +9,13 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -39,7 +40,10 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** Coordinator for managing merchant trust signals experience. */
+@NullMarked
 public class MerchantTrustSignalsCoordinator
         implements PageInfoStoreInfoController.StoreInfoActionHandler,
                 MerchantTrustMessageViewModel.MessageActionsHandler {
@@ -47,18 +51,19 @@ public class MerchantTrustSignalsCoordinator
     public interface OmniboxIconController {
         /**
          * Show the store icon in omnibox.
+         *
          * @param window The {@link WindowAndroid} of the app.
          * @param url The url associated with the just showing {@link MerchantTrustMessageContext}.
          * @param drawable The store icon drawable.
          * @param stringId Resource id of the IPH string.
          * @param canShowIph Whether it is eligible to show IPH when showing the store icon. For
-         *         example, when user swipes the message, we don't want to show the IPH which may be
-         *         annoying.
+         *     example, when user swipes the message, we don't want to show the IPH which may be
+         *     annoying.
          */
         void showStoreIcon(
                 WindowAndroid window,
                 String url,
-                Drawable drawable,
+                @Nullable Drawable drawable,
                 @StringRes int stringId,
                 boolean canShowIph);
     }
@@ -73,7 +78,7 @@ public class MerchantTrustSignalsCoordinator
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
     private final ObservableSupplier<Tab> mTabSupplier;
-    private OmniboxIconController mOmniboxIconController;
+    private @Nullable OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(
@@ -155,7 +160,7 @@ public class MerchantTrustSignalsCoordinator
         if (scheduledMessage != null
                 && scheduledMessage.getHostName() != null
                 && scheduledMessage.getHostName().equals(item.getHostName())
-                && !scheduledMessage.getUrl().equals(item.getUrl())) {
+                && !Objects.equals(scheduledMessage.getUrl(), item.getUrl())) {
             // When user enters PageInfo, we fetch data based on url which is less reliable than the
             // navigation-based one. Thus, to make sure the "Store info" row is visible, we still
             // need to fetch data based on this navigation before showing the message, rather than
@@ -174,7 +179,7 @@ public class MerchantTrustSignalsCoordinator
 
     @VisibleForTesting
     void maybeDisplayMessage(
-            MerchantInfo merchantInfo,
+            @Nullable MerchantInfo merchantInfo,
             MerchantTrustMessageContext item,
             boolean shouldExpediteMessage) {
         if (merchantInfo == null) return;
@@ -241,7 +246,7 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    boolean isOnSecureWebsite(WebContents webContents) {
+    boolean isOnSecureWebsite(@Nullable WebContents webContents) {
         return SecurityStateModel.getSecurityLevelForWebContents(webContents)
                 == ConnectionSecurityLevel.SECURE;
     }
@@ -257,7 +262,7 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    void onMessageEnqueued(MerchantTrustMessageContext messageContext) {
+    void onMessageEnqueued(@Nullable MerchantTrustMessageContext messageContext) {
         if (messageContext == null) {
             return;
         }
@@ -276,7 +281,8 @@ public class MerchantTrustSignalsCoordinator
 
     // MerchantTrustMessageViewModel.MessageActionsHandler implementations.
     @Override
-    public void onMessageDismissed(@DismissReason int dismissReason, String messageAssociatedUrl) {
+    public void onMessageDismissed(
+            @DismissReason int dismissReason, @Nullable String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageDismissed(dismissReason);
         if (dismissReason == DismissReason.TIMER || dismissReason == DismissReason.GESTURE) {
             maybeShowStoreIcon(messageAssociatedUrl, dismissReason == DismissReason.TIMER);
@@ -284,7 +290,8 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @Override
-    public void onMessagePrimaryAction(MerchantInfo merchantInfo, String messageAssociatedUrl) {
+    public void onMessagePrimaryAction(
+            MerchantInfo merchantInfo, @Nullable String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
 
         // TODO(crbug.com/40216480): Pass webContents directly to this method instead of using
@@ -378,7 +385,7 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    PrefService getPrefService() {
+    @Nullable PrefService getPrefService() {
         Profile profile = mProfileSupplier.get();
         if (profile == null || profile.isOffTheRecord()) {
             return null;
@@ -399,7 +406,7 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    Drawable getStoreIconDrawable() {
+    @Nullable Drawable getStoreIconDrawable() {
         return ResourcesCompat.getDrawable(
                 mContext.getResources(), R.drawable.ic_storefront_blue, mContext.getTheme());
     }

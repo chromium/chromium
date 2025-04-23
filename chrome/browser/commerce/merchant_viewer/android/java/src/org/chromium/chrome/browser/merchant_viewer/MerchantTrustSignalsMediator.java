@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 import android.text.TextUtils;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,6 +18,7 @@ import org.chromium.content_public.browser.NavigationHandle;
  * Responsible for detecting candidate events for fetching the merchant trust signal and publishing
  * the merchant trust message.
  */
+@NullMarked
 class MerchantTrustSignalsMediator {
     /** Callback interface to communicate with the owning object. */
     interface MerchantTrustSignalsCallback {
