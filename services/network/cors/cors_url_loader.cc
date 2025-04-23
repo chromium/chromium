@@ -903,7 +903,6 @@ void CorsURLLoader::StartRequest() {
     }
 
     if (request_.credentials_mode == mojom::CredentialsMode::kInclude &&
-        CookieSettings::IsStorageAccessHeadersEnabled() &&
         GetStorageAccessStatus() ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the

@@ -473,13 +473,6 @@ void CookieSettings::AugmentInclusionStatus(
       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
 }
 
-// TODO(crbug.com/366284840): Deprecate this function when moving storage access
-// status out of //net.
-// static
-bool CookieSettings::IsStorageAccessHeadersEnabled() {
-  return base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders);
-}
-
 bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
     const GURL& url,
     const GURL& first_party_url) const {

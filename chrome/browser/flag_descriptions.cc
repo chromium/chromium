@@ -3816,10 +3816,6 @@ const char kStorageAccessApiFollowsSameOriginPolicyDescription[] =
     "Modifies the Storage Access API to follow the Same Origin Policy with "
     "respect to security.";
 
-const char kStorageAccessHeadersName[] = "Storage Access Headers";
-const char kStorageAccessHeadersDescription[] =
-    "Enables HTTP headers related to the Storage Access API.";
-
 const char kStrictOriginIsolationName[] = "Strict-Origin-Isolation";
 const char kStrictOriginIsolationDescription[] =
     "Experimental security mode that strengthens the site isolation policy. "

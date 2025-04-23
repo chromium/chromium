@@ -1602,9 +1602,6 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
   auto determine_storage_access_retry_outcome =
       [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
     using enum cookie_util::ActivateStorageAccessRetryOutcome;
-    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled()) {
-      return kFailureHeaderDisabled;
-    }
     if (!ShouldAddCookieHeader() ||
         request_->storage_access_status() !=
             cookie_util::StorageAccessStatus::kInactive ||

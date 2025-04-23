@@ -13743,7 +13743,6 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(pattern));
-  network_delegate.set_is_storage_access_header_enabled(true);
   if (test.expect_retry) {
     // The network delegate is only consulted for the Storage Access status
     // during a retry; it should claim that storage access is active at that
@@ -13886,7 +13885,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true, false})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13938,7 +13936,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13983,7 +13980,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -14022,7 +14018,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
-  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -14056,37 +14051,6 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_TRUE(d.auth_required_called());
-}
-
-TEST_F(StorageAccessHeaderURLRequestTest, NoRetryWhenDisabled) {
-  set_response_sequence({ResponseKind::kOk});
-
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  auto& network_delegate = *context_builder->set_network_delegate(
-      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false})));
-  network_delegate.set_is_storage_access_header_enabled(false);
-  auto context = context_builder->Build();
-  TestDelegate d;
-  base::HistogramTester histogram_tester;
-
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  req->Start();
-  d.RunUntilComplete();
-
-  // This expects 2 records for 1 request, since it should not have been
-  // retried.
-  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
-              ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
-      /*sample=*/
-      net::cookie_util::ActivateStorageAccessRetryOutcome::
-          kFailureHeaderDisabled,
-      /*expected_bucket_count=*/1);
 }
 
 }  // namespace net

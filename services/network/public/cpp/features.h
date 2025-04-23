@@ -166,10 +166,6 @@ BASE_DECLARE_FEATURE(kTreatNullIPAsPublicAddressSpace);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested);
 
-// Enables the Storage Access Headers semantics.
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kStorageAccessHeaders);
-
 // Should SRI-compliant HTTP Message Signatures be enforced?
 // https://wicg.github.io/signature-based-sri/
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)

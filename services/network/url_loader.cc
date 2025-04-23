@@ -2627,10 +2627,6 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
 
   auto determine_storage_access_load_outcome =
       [&]() -> net::cookie_util::ActivateStorageAccessLoadOutcome {
-    if (!CookieSettings::IsStorageAccessHeadersEnabled()) {
-      return net::cookie_util::ActivateStorageAccessLoadOutcome::
-          kFailureHeaderDisabled;
-    }
     if (!url_request_->storage_access_status().IsSet()) {
       url_request_->set_storage_access_status(
           url_request_->CalculateStorageAccessStatus());

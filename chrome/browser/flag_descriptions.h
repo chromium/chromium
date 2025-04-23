@@ -2184,9 +2184,6 @@ extern const char kSmoothScrollingDescription[];
 extern const char kStorageAccessApiFollowsSameOriginPolicyName[];
 extern const char kStorageAccessApiFollowsSameOriginPolicyDescription[];
 
-extern const char kStorageAccessHeadersName[];
-extern const char kStorageAccessHeadersDescription[];
-
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 

@@ -222,10 +222,6 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
                               GetPermissionsPolicy(request));
 }
 
-bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled() const {
-  return CookieSettings::IsStorageAccessHeadersEnabled();
-}
-
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,

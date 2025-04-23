@@ -398,10 +398,6 @@ BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
              "CloneDevToolsConnectionOnlyIfRequested",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStorageAccessHeaders,
-             "StorageAccessHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSRIMessageSignatureEnforcement,
              "SRIMessageSignatureEnforcement",
              base::FEATURE_DISABLED_BY_DEFAULT);

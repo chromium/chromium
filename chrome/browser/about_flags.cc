@@ -11018,10 +11018,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssMasonryLayoutDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSMasonryLayout)},
 
-    {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
-     flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
-
     {"storage-access-api-follows-same-origin-policy",
      flag_descriptions::kStorageAccessApiFollowsSameOriginPolicyName,
      flag_descriptions::kStorageAccessApiFollowsSameOriginPolicyDescription,
