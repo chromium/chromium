@@ -14,10 +14,10 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -39,8 +39,6 @@ class ExtensionIconLoaderTest : public BrowserWithTestWindowTest {
             extensions::ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
   void OnIconFetched(base::RunLoop* run_loop, const gfx::ImageSkia& icon) {
@@ -50,9 +48,11 @@ class ExtensionIconLoaderTest : public BrowserWithTestWindowTest {
 
   const gfx::ImageSkia& loaded_icon() { return loaded_icon_; }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
+  }
+
  protected:
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
   gfx::ImageSkia loaded_icon_;
 };
 
@@ -71,7 +71,7 @@ TEST_F(ExtensionIconLoaderTest, LoadExtensionWithIcon) {
       extensions::Extension::Create(
           test_file, extensions::mojom::ManifestLocation::kUnpacked,
           valid_value->GetDict(), extensions::Extension::NO_FLAGS, &error);
-  extension_service_->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   extensions::ExtensionIconLoader loader;
 
@@ -95,7 +95,7 @@ TEST_F(ExtensionIconLoaderTest, LoadDefaultAppIcon) {
       extensions::ExtensionBuilder(
           "extension", extensions::ExtensionBuilder::Type::PLATFORM_APP)
           .Build();
-  extension_service_->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   extensions::ExtensionIconLoader loader;
 
@@ -114,7 +114,7 @@ TEST_F(ExtensionIconLoaderTest, LoadDefaultExtensionIcon) {
   // Create an extension with no icon.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension").Build();
-  extension_service_->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   extensions::ExtensionIconLoader loader;
 

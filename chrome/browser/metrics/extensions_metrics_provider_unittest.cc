@@ -34,6 +34,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -498,10 +499,10 @@ TEST_F(ExtensionMetricsProviderInstallsTest,
        TestGettingAllExtensionsInProfile) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   scoped_refptr<const Extension> app =
       ExtensionBuilder("app", ExtensionBuilder::Type::PLATFORM_APP).Build();
-  service()->AddExtension(app.get());
+  registrar()->AddExtension(app);
   service()->DisableExtension(app->id(),
                               extensions::disable_reason::DISABLE_USER_ACTION);
 

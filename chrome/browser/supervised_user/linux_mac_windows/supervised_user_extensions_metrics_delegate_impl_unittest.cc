@@ -20,6 +20,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -117,8 +118,8 @@ TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
   // Install two extensions and disable one of them.
   auto extension1 = MakeExtension("Extension 1");
   auto extension2 = MakeExtension("Extension 2");
-  service()->AddExtension(extension1.get());
-  service()->AddExtension(extension2.get());
+  registrar()->AddExtension(extension1);
+  registrar()->AddExtension(extension2);
   service()->DisableExtension(
       extension1->id(), extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
 
