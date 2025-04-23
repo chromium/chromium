@@ -13,6 +13,7 @@
 #include <string>
 
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -42,7 +43,9 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 // Returns whether Chrome has been started after a device restore. This method
 // needs to be called once before IO is disallowed on UI thread (or
 // `LastDeviceRestoreTimestamp()`).
-signin::Tribool IsFirstSessionAfterDeviceRestore();
+// `completion` is called once all sentinel files are created.
+signin::Tribool IsFirstSessionAfterDeviceRestore(
+    base::OnceClosure completion = base::DoNothing());
 
 // Returns the last device restore timestamp. This method needs to be called
 // once before IO is disallowed on UI thread (or

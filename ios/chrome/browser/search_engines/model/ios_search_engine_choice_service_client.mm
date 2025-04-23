@@ -8,6 +8,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 
 country_codes::CountryId
 IOSSearchEngineChoiceServiceClient::GetVariationsCountry() {
@@ -22,10 +23,12 @@ bool IOSSearchEngineChoiceServiceClient::
 
 bool IOSSearchEngineChoiceServiceClient::
     IsDeviceRestoreDetectedInCurrentSession() {
-  return false;
+  return IsFirstSessionAfterDeviceRestore() == signin::Tribool::kTrue;
 }
 
 bool IOSSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
     const search_engines::ChoiceCompletionMetadata& choice_metadata) {
-  return false;
+  std::optional<base::Time> last_restore_date = LastDeviceRestoreTimestamp();
+  return last_restore_date.has_value() &&
+         (choice_metadata.timestamp < last_restore_date.value());
 }
