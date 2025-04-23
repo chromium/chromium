@@ -2097,4 +2097,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314;
   optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
   optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
+  optional BooleanPolicyProto DeviceUserInitiatedFirmwareUpdatesEnabled = 1356;
 }

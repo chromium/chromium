@@ -1354,6 +1354,7 @@ policies:
   1353: EnterpriseLogoUrlForBrowser
   1354: EnterpriseCustomLabelForBrowser
   1355: DefaultSmartCardConnectSetting
+  1356: DeviceUserInitiatedFirmwareUpdatesEnabled
 
 atomic_groups:
   1: Homepage

@@ -659,6 +659,9 @@ inline constexpr char kDevicePrintingClientNameTemplate[] =
 inline constexpr char kDeviceHindiInscriptLayoutEnabled[] =
     "cros.device.hindi_inscript_layout_enabled";
 
+inline constexpr char kDeviceUserInitiatedFirmwareUpdatesEnabled[] =
+    "cros.device.user_initiated_firmware_updates_enabled";
+
 // A list of strings representing DLC identifiers to be pre downloaded on the
 // device.
 inline constexpr char kDeviceDlcPredownloadList[] =

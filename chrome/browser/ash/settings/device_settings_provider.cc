@@ -115,6 +115,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceScheduledUpdateCheck,
     kDeviceSecondFactorAuthenticationMode,
     kDeviceUnaffiliatedCrostiniAllowed,
+    kDeviceUserInitiatedFirmwareUpdatesEnabled,
     kDeviceWebBasedAttestationAllowedUrls,
     kDeviceWiFiAllowed,
     kDisplayRotationDefault,
@@ -1323,6 +1324,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceHindiInscriptLayoutEnabled,
                                  base::Value(container.enabled()));
+    }
+  }
+
+  if (policy.has_deviceuserinitiatedfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedfirmwareupdatesenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceUserInitiatedFirmwareUpdatesEnabled,
+                                 base::Value(container.value()));
     }
   }
 

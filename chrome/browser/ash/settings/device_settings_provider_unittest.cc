@@ -1369,6 +1369,16 @@ TEST_F(DeviceSettingsProviderTest, DeviceHindiInscriptLayoutEnabled) {
             *provider_->Get(kDeviceHindiInscriptLayoutEnabled));
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
+  em::BooleanPolicyProto* proto =
+      device_policy_->payload()
+          .mutable_deviceuserinitiatedfirmwareupdatesenabled();
+  proto->set_value(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceUserInitiatedFirmwareUpdatesEnabled));
+}
+
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListUnset) {
   // Device setting must be unset if the policy is not set.
   VerifyPolicyValue(kDeviceDlcPredownloadList, nullptr);

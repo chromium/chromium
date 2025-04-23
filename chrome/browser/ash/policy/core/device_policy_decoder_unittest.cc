@@ -615,6 +615,24 @@ TEST_F(DevicePolicyDecoderTest, DeviceHindiInscriptLayoutEnabled) {
       std::move(device_hindi_inscript_layout_enabled_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFirmwareUpdatesEnabled);
+
+  base::Value device_user_initiated_firmware_updates_enabled_value(true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy.mutable_deviceuserinitiatedfirmwareupdatesenabled();
+  proto->set_value(
+      device_user_initiated_firmware_updates_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFirmwareUpdatesEnabled,
+      std::move(device_user_initiated_firmware_updates_enabled_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, DeviceSystemAecEnabled) {
   em::ChromeDeviceSettingsProto device_policy;
 
