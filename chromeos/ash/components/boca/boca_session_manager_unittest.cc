@@ -65,7 +65,7 @@ class MockSessionClientImpl : public SessionClientImpl {
       : SessionClientImpl(std::move(sender)) {}
   MOCK_METHOD(void,
               GetSession,
-              (std::unique_ptr<GetSessionRequest>),
+              (std::unique_ptr<GetSessionRequest>, bool),
               (override));
   MOCK_METHOD(void,
               UpdateStudentActivity,
@@ -295,7 +295,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
     // Start with active session to trigger in-session polling.
     auto session_1 = std::make_unique<::boca::Session>(
         GetInitialSession(session_start_time_));
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
@@ -336,7 +337,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
 };
 
 TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false,
@@ -352,7 +354,8 @@ TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      base::ok(nullptr));
@@ -365,7 +368,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
   auto current_session = std::make_unique<::boca::Session>();
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false, std::move(current_session));
@@ -375,7 +379,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval +
                                     base::Seconds(1));
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false, std::move(current_session));
@@ -389,7 +394,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
 
 TEST_F(BocaSessionManagerTest, DoNotPollIfActiveSessionLoad) {
   auto current_session = std::make_unique<::boca::Session>();
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false, std::move(current_session));
@@ -407,7 +413,8 @@ TEST_F(BocaSessionManagerTest, DoNotPollIfActiveSessionLoad) {
 
 TEST_F(BocaSessionManagerTest, SkipPollingShouldAccountForAsyncInterval) {
   auto current_session = std::make_unique<::boca::Session>();
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false, std::move(current_session));
@@ -416,7 +423,8 @@ TEST_F(BocaSessionManagerTest, SkipPollingShouldAccountForAsyncInterval) {
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
 
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/false, std::move(current_session));
@@ -429,7 +437,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionStateChanged) {
   auto session_2 = std::make_unique<::boca::Session>();
   session_2->set_session_state(::boca::Session::PLANNING);
   session_2->set_session_id(kInitialSessionId);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_2));
@@ -444,7 +453,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionStateChanged) {
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionStateIsTheSame) {
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -464,7 +474,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionMetadataUpdateWhenDurationChange) {
   session_2->set_session_id(kInitialSessionId);
   session_2->mutable_duration()->set_seconds(kInitialSessionDurationInSecs +
                                              60);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_2));
@@ -482,7 +493,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionMetadataUpdateWhenTeacherChange) {
   session_2->set_session_state(::boca::Session::ACTIVE);
   session_2->set_session_id(kInitialSessionId);
   session_2->mutable_teacher()->set_gaia_id("differentId");
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_2));
@@ -515,7 +527,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenLockModeChanged) {
   active_bundle_2->mutable_content_configs()->Add()->set_url("google.com");
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -552,7 +565,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleContentChanged) {
   active_bundle_2->mutable_content_configs()->Add()->set_url("youtube.com");
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -590,7 +604,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleOrderChanged) {
   active_bundle_2->mutable_content_configs()->Add()->set_url("google.com");
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -626,7 +641,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBundledContentNoChange) {
   active_bundle_2->mutable_content_configs()->Add()->set_url("google.com");
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -647,7 +663,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBundledContentNoChange) {
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenCurrentBundleEmpty) {
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -682,7 +699,8 @@ TEST_F(BocaSessionManagerTest,
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -707,7 +725,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionCaptionProducerEvents) {
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
   session->set_tachyon_group_id(kTachyonGroupId);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session));
@@ -741,7 +760,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
   (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -767,7 +787,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionConfigNameNotMatch) {
   (*session_1->mutable_student_group_configs())["unknown"] =
       std::move(session_config);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -798,7 +819,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionRosterUpdated) {
   student_groups_2->set_title(kMainStudentGroupName);
   student_groups_2->mutable_students()->Add()->set_email("dog2@email.com");
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -833,7 +855,8 @@ TEST_F(BocaSessionManagerTest,
   student_groups_2->mutable_students()->Add()->set_email("dog1@email.com");
   student_groups_2->mutable_students()->Add()->set_email("dog2@email.com");
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -854,7 +877,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -869,7 +893,9 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
 
 TEST_F(BocaSessionManagerTest, DISABLED_DoNotPollSessionWhenNoNetwork) {
   ToggleOffline();
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
 
   task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval * 1 +
                                     base::Seconds(1));
@@ -982,7 +1008,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionActivityUpdated) {
   (*status_1.mutable_devices())["device1"] = std::move(device_1);
   (*session_2->mutable_student_statuses())["1"] = std::move(status);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -1017,7 +1044,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
   status.set_state(::boca::StudentStatus::ADDED);
   (*session_2->mutable_student_statuses())["2"] = std::move(status);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -1053,7 +1081,8 @@ TEST_F(BocaSessionManagerTest,
   (*status_1.mutable_devices())["device1"] = std::move(device_1);
   (*session_2->mutable_student_statuses())["1"] = std::move(status_1);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -1099,7 +1128,8 @@ TEST_F(BocaSessionManagerTest,
 
   auto session_2 = std::make_unique<::boca::Session>();
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -1133,7 +1163,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenPreviousSessionEmpty) {
   status.set_state(::boca::StudentStatus::ADDED);
   (*session_1->mutable_student_statuses())["2"] = std::move(status_1);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      nullptr);
@@ -1153,7 +1184,9 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenPreviousSessionEmpty) {
 }
 
 TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(2);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(2);
   // MakeAccountAvailable fires a fresh token ready event.
   identity_test_env().MakeAccountAvailable(kTestUserEmail);
   identity_test_env().SetRefreshTokenForAccount(core_account_id());
@@ -1169,18 +1202,24 @@ TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
   // switch event for the existing user. However, it ignores the event
   // because the active user is not the one that the boca manager is
   // tracking.
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
   auto* user_manager = user_manager::UserManager::Get();
   user_manager->UserLoggedIn(account_id, username_hash);
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
 
   // Account_id mismatch, should not load.
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
   user_manager->SwitchActiveUser(account_id);
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
 
   // Switch back to active user, load again.
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   user_manager->SwitchActiveUser(
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId));
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
@@ -1199,7 +1238,8 @@ TEST_F(BocaSessionManagerTest, DispatchTwoEventsWhenSessionTakeOver) {
   (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));
@@ -1219,7 +1259,8 @@ TEST_F(BocaSessionManagerTest,
   base::HistogramTester histogram_tester;
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      base::ok(nullptr));
@@ -1247,7 +1288,8 @@ TEST_F(BocaSessionManagerTest, RecordMetricsIfNoSessionUpdateFromPolling) {
   base::HistogramTester histogram_tester;
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      std::move(session_1));
@@ -1274,7 +1316,8 @@ TEST_F(BocaSessionManagerTest, RecordMetricsIfInSessionUpdateFromPolling) {
   (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      std::move(session_1));
@@ -1294,7 +1337,8 @@ TEST_F(BocaSessionManagerTest, RecordMetricsIfInSessionUpdateFromPolling) {
 
 TEST_F(BocaSessionManagerTest,
        SessionEndedLocallyWhenTimeUpIfNoNetworkConnection) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillRepeatedly(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/true,
@@ -1319,7 +1363,8 @@ TEST_F(BocaSessionManagerTest,
   session_1->mutable_start_time()->set_seconds(
       session_start_time_.InMillisecondsSinceUnixEpoch() / 1000);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      std::move(session_1));
@@ -1359,7 +1404,8 @@ TEST_F(BocaSessionManagerTest,
   session_1->mutable_start_time()->set_seconds(
       session_start_time_.InMillisecondsSinceUnixEpoch() / 1000);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      std::move(session_1));
@@ -1389,7 +1435,8 @@ TEST_F(BocaSessionManagerTest,
 
 TEST_F(BocaSessionManagerTest,
        SessionEndedProperlyIfResumeNetworkAfterTimeout) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillRepeatedly(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
             /*from_polling=*/true,
@@ -1406,7 +1453,8 @@ TEST_F(BocaSessionManagerTest,
   EXPECT_FALSE(
       boca_session_manager()->session_duration_timer_for_testing().IsRunning());
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      base::ok(nullptr));
@@ -1429,7 +1477,8 @@ TEST_F(BocaSessionManagerTest,
   session_1->mutable_start_time()->set_seconds(
       session_start_time_.InMillisecondsSinceUnixEpoch() / 1000);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
                                                      std::move(session_1));
@@ -1461,7 +1510,9 @@ TEST_F(BocaSessionManagerTest,
 TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
   ::boca::Session session = GetInitialSession(session_start_time_);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_)).Times(0);
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
@@ -1509,7 +1560,8 @@ class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {
     local_state().SetString(prefs::kClassManagementToolsAvailabilitySetting,
                             kTeacher);
     speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
-    EXPECT_CALL(*session_client_impl(), GetSession(_));
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true));
     EXPECT_CALL(*boca_app_client(), GetDeviceId());
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl(), &local_state(), account_id,
@@ -1616,7 +1668,8 @@ class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {
         /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
@@ -1641,7 +1694,9 @@ class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {
 TEST_F(BocaSessionManagerManagedNetworkTest,
        DoNotLoadSessionIfNonManagedNetwork) {
   ToggleIntoNonManagedNetwork();
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
   EXPECT_FALSE(boca_session_manager_->GetCurrentSession());
@@ -1650,10 +1705,14 @@ TEST_F(BocaSessionManagerManagedNetworkTest,
 }
 
 TEST_F(BocaSessionManagerManagedNetworkTest, LoadSessionWhenOnManagedNetwork) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   ToggleIntoManagedNetwork();
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
 
   task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval * 1 +
                                     base::Seconds(1));
@@ -1663,11 +1722,15 @@ TEST_F(BocaSessionManagerManagedNetworkTest, LoadSessionWhenOnManagedNetwork) {
 TEST_F(BocaSessionManagerManagedNetworkTest,
        TriggerReloadWhenSwitchbackToManagedNetwork) {
   ToggleIntoNonManagedNetwork();
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   ToggleIntoManagedNetwork();
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval +
                                     base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
@@ -1685,7 +1748,8 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
           "0"}});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
@@ -1707,7 +1771,9 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
 };
 
 TEST_F(BocaSessionManagerNoPollingTest, DoNotPollWhenPollingIntervalIsZero) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
                                     base::Seconds(1));
   task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval * 1 +
@@ -1766,7 +1832,8 @@ class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
           "10s"}});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
@@ -1787,7 +1854,9 @@ class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
 };
 
 TEST_F(BocaSessionManagerCustomPollingTest, CustomPollingInterval) {
-  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(1);
   task_environment()->FastForwardBy(
       base::Seconds(kOutOfSessionPollingInterval + 1));
 }
@@ -1815,13 +1884,16 @@ class BocaSessionManagerStudentHeartbeatTest
                "0"}}},
         },
         /*disabled_features=*/{});
-    EXPECT_CALL(*session_client_impl(), GetSession(_)).WillOnce([&]() {
-      // The first fetch at construction time will fail due to refresh token
-      // not ready.
-      boca_session_manager_->ParseSessionResponse(
-          /*from_polling=*/false, base::unexpected<google_apis::ApiErrorCode>(
-                                      google_apis::ApiErrorCode::NOT_READY));
-    });
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
+        .WillOnce([&]() {
+          // The first fetch at construction time will fail due to refresh token
+          // not ready.
+          boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        });
     EXPECT_CALL(*boca_app_client(), GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
     const auto account_id =
@@ -2010,13 +2082,16 @@ class BocaSessionManagerStudentHeartbeatCustomPollingTest
                "0"}}},
         },
         /*disabled_features=*/{});
-    EXPECT_CALL(*session_client_impl(), GetSession(_)).WillOnce([&]() {
-      // The first fetch at construction time will fail due to refresh token
-      // not ready.
-      boca_session_manager_->ParseSessionResponse(
-          /*from_polling=*/false, base::unexpected<google_apis::ApiErrorCode>(
-                                      google_apis::ApiErrorCode::NOT_READY));
-    });
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
+        .WillOnce([&]() {
+          // The first fetch at construction time will fail due to refresh token
+          // not ready.
+          boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        });
     EXPECT_CALL(*boca_app_client(), GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
     const auto account_id =
@@ -2078,7 +2153,8 @@ class BocaSessionManagerStudentHeartbeatNoPollingTest
         /*disabled_features=*/{});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to
           // refresh token not ready.
@@ -2148,7 +2224,8 @@ TEST_F(BocaSessionManagerConsumerTest,
   (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
       std::move(session_config_2);
 
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
                                                      std::move(session_1));

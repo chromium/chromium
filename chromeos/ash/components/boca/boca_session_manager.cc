@@ -218,7 +218,8 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr(), from_polling));
   request->set_device_id(BocaAppClient::Get()->GetDeviceId());
-  session_client_impl_->GetSession(std::move(request));
+  session_client_impl_->GetSession(std::move(request),
+                                   /*can_skip_duplicate_request=*/true);
 }
 
 void BocaSessionManager::ParseSessionResponse(

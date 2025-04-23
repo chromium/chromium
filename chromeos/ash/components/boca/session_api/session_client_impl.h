@@ -7,11 +7,17 @@
 
 #include <memory>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/sequence_checker.h"
 #include "student_heartbeat_request.h"
 
 namespace google_apis {
 class RequestSender;
+}
+
+namespace boca {
+class Session;
 }
 
 namespace ash::boca {
@@ -28,6 +34,10 @@ class UpdateSessionConfigRequest;
 
 class SessionClientImpl {
  public:
+  using GetSessionCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<::boca::Session>,
+                     google_apis::ApiErrorCode> result)>;
+
   SessionClientImpl();
   explicit SessionClientImpl(
       std::unique_ptr<google_apis::RequestSender> sender);
@@ -37,7 +47,8 @@ class SessionClientImpl {
 
   virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender();
   virtual void CreateSession(std::unique_ptr<CreateSessionRequest> request);
-  virtual void GetSession(std::unique_ptr<GetSessionRequest> request);
+  virtual void GetSession(std::unique_ptr<GetSessionRequest> request,
+                          bool can_skip_duplicate_request);
   virtual void UploadToken(std::unique_ptr<UploadTokenRequest> request);
   virtual void UpdateSession(std::unique_ptr<UpdateSessionRequest> request);
   virtual void UpdateSessionConfig(
@@ -52,7 +63,17 @@ class SessionClientImpl {
   google_apis::RequestSender* sender() { return sender_.get(); }
 
  private:
+  void OnGetSessionCompleted(GetSessionCallback callback,
+                             base::expected<std::unique_ptr<::boca::Session>,
+                                            google_apis::ApiErrorCode> result);
+
+  SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<google_apis::RequestSender> sender_;
+  base::queue<std::unique_ptr<GetSessionRequest>> pending_get_session_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool has_blocking_get_session_request_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  base::WeakPtrFactory<SessionClientImpl> weak_ptr_factory_{this};
 };
 }  // namespace ash::boca
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_SESSION_API_SESSION_CLIENT_IMPL_H_

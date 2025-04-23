@@ -202,7 +202,7 @@ class MockSessionClientImpl : public SessionClientImpl {
               (override));
   MOCK_METHOD(void,
               GetSession,
-              (std::unique_ptr<GetSessionRequest>),
+              (std::unique_ptr<GetSessionRequest>, bool),
               (override));
   MOCK_METHOD(void,
               UpdateSession,
@@ -395,7 +395,9 @@ class BocaAppPageHandlerTest : public testing::Test {
     ash::AnnotatedAccountId::Set(browser_context_, account_id);
 
     // Create BocaSessionManager mock.
-    EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/true))
+        .Times(1);
     session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(&session_client_impl_);
 
@@ -449,9 +451,11 @@ class BocaAppPageHandlerTest : public testing::Test {
             [current_session](std::unique_ptr<::boca::Session> session, bool) {
               *current_session = *session;
             });
-    EXPECT_CALL(*session_client_impl(), GetSession(_))
+    EXPECT_CALL(*session_client_impl(),
+                GetSession(_, /*can_skip_duplicate_request=*/false))
         .WillOnce(
-            [&response_session](std::unique_ptr<GetSessionRequest> request) {
+            [&response_session](std::unique_ptr<GetSessionRequest> request,
+                                bool can_skip_duplicate_request) {
               auto result = std::make_unique<::boca::Session>(response_session);
               request->callback().Run(std::move(result));
             });
@@ -752,7 +756,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         auto* start_time = session->mutable_start_time();
@@ -886,7 +891,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
@@ -914,7 +920,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
 
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
@@ -939,7 +946,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
 
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke(
           [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
 
@@ -963,7 +971,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(std::make_unique<::boca::Session>());
       })));
@@ -989,7 +998,8 @@ TEST_F(BocaAppPageHandlerTest,
 
   GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
                             future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->set_session_state(::boca::Session::ACTIVE);

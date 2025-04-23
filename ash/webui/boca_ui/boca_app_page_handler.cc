@@ -372,7 +372,9 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
       base::BindOnce(&BocaAppHandler::OnGetSession,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   get_session_request->set_device_id(BocaAppClient::Get()->GetDeviceId());
-  session_client_impl_->GetSession(std::move(get_session_request));
+  // Can't skip because UI is expecting the callback to run as response.
+  session_client_impl_->GetSession(std::move(get_session_request),
+                                   /*can_skip_duplicate_request=*/false);
 }
 
 void BocaAppHandler::EndSession(EndSessionCallback callback) {
