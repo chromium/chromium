@@ -144,6 +144,9 @@ class BanRule:
     # expression that will be matched against the path of the file being checked
     # relative to the root of the source tree.
     excluded_paths: Optional[Sequence[str]] = None
+    # If True, surfaces any violation as a Gerrit comment on the CL after
+    # running the CQ.
+    surface_as_gerrit_lint: Optional[bool] = None
 
 
 _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
@@ -316,6 +319,7 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
           r'^infra/', # This is permitted in infra/ folder.
           r'^tools/', # This is permitted in tools/ folder.
         ],
+        surface_as_gerrit_lint=True,
     ),
 )
 
@@ -2227,6 +2231,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
           r'^infra/', # This is permitted in infra/ folder.
           r'^tools/', # This is permitted in tools/ folder.
         ],
+        surface_as_gerrit_lint=True,
     ),
 )
 
@@ -2996,8 +3001,7 @@ def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
 
 def CheckNoBannedFunctions(input_api, output_api):
     """Make sure that banned functions are not used."""
-    warnings = []
-    errors = []
+    results= []
 
     def IsExcludedFile(affected_file, excluded_paths):
         if not excluded_paths:
@@ -3027,13 +3031,27 @@ def CheckNoBannedFunctions(input_api, output_api):
         if IsExcludedFile(affected_file, ban_rule.excluded_paths):
             return
 
-        problems = _GetMessageForMatchingType(input_api, f, line_num, line,
-                                              ban_rule)
-        if problems:
+        message = _GetMessageForMatchingType(input_api, f, line_num, line,
+                                             ban_rule)
+        if message:
+            result_loc = []
+            if ban_rule.surface_as_gerrit_lint:
+                result_loc.append(output_api.PresubmitResultLocation(
+                    file_path=affected_file.LocalPath(),
+                    start_line=line_num,
+                    end_line=line_num,
+                ))
             if ban_rule.treat_as_error is not None and ban_rule.treat_as_error:
-                errors.extend(problems)
+                results.append(
+                    output_api.PresubmitError('A banned function was used.\n' +
+                                              '\n'.join(message),
+                                              locations=result_loc))
+
             else:
-                warnings.extend(problems)
+                results.append(
+                    output_api.PresubmitPromptWarning('A banned function was used.\n' +
+                                                      '\n'.join(message),
+                                                      locations=result_loc))
 
     file_filter = lambda f: f.LocalPath().endswith(('.java'))
     for f in input_api.AffectedFiles(file_filter=file_filter):
@@ -3096,17 +3114,8 @@ def CheckNoBannedFunctions(input_api, output_api):
             for ban_rule in _BANNED_MOJOM_PATTERNS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
+    return results
 
-    result = []
-    if (warnings):
-        result.append(
-            output_api.PresubmitPromptWarning('Banned functions were used.\n' +
-                                              '\n'.join(warnings)))
-    if (errors):
-        result.append(
-            output_api.PresubmitError('Banned functions were used.\n' +
-                                      '\n'.join(errors)))
-    return result
 
 def _CheckAndroidNoBannedImports(input_api, output_api):
     """Make sure that banned java imports are not used."""
