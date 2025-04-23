@@ -19,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -151,6 +152,16 @@ class GtkPrinterList {
     }
 
     return nullptr;
+  }
+
+  // TODO(crbug.com/411336538): Delete when done diagnosing.
+  std::string GetAllPrinterNames() {
+    std::string result;
+    for (ScopedGObject<GtkPrinter>& printer : printers_) {
+      result += gtk_printer_get_name(printer.get());
+      result += ',';
+    }
+    return result;
   }
 
  private:
@@ -377,7 +388,14 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
 
   auto printer_list = std::make_unique<GtkPrinterList>();
   printer_ = printer_list->GetPrinterWithName(*printer_name);
-  CHECK(printer_);
+  if (!printer_) {
+    // TODO(crbug.com/411336538): Delete the crash keys when done diagnosing.
+    // Then either put CHECK(printer_); back, or properly handle the failure.
+    SCOPED_CRASH_KEY_STRING64("PrintDialogGtk", "printer_name", *printer_name);
+    SCOPED_CRASH_KEY_STRING1024("PrintDialogGtk", "all_printer_names",
+                                printer_list->GetAllPrinterNames());
+    CHECK(false);
+  }
 
   if (!gtk_settings_) {
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
