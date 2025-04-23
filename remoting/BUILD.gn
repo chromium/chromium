@@ -58,6 +58,13 @@ group("remoting_all") {
       deps += [ "//remoting/host:remoting_me2me_host_archive" ]
     }
   }
+
+  if (enable_remoting_cli_client) {
+    deps += [
+      "//remoting/client/cli:remoting_client_main",
+      "//remoting/client/common",
+    ]
+  }
 }
 
 group("test_support") {
