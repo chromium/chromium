@@ -40,8 +40,7 @@ DistillerFactoryImpl::DistillerFactoryImpl(
 
 DistillerFactoryImpl::~DistillerFactoryImpl() = default;
 
-std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistillerForUrl(
-    const GURL& unused) {
+std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistiller() {
   // This default implementation has the same behavior for all URLs.
   std::unique_ptr<DistillerImpl> distiller(new DistillerImpl(
       *distiller_url_fetcher_factory_, dom_distiller_options_));
