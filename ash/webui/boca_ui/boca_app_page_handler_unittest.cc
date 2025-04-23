@@ -1113,7 +1113,7 @@ TEST_F(BocaAppPageHandlerTest, ExtendSessionDurationSucceed) {
   session->set_session_state(::boca::Session::ACTIVE);
 
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(session.get()));
+      .WillRepeatedly(Return(session.get()));
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
@@ -1149,7 +1149,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(&session));
+      .WillRepeatedly(Return(&session));
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -1217,7 +1217,6 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithNonActiveSession) {
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(2)
       .WillRepeatedly(Return(&session));
 
   // Page handler callback.
@@ -1417,126 +1416,128 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
   EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
 }
 
-TEST_F(BocaAppPageHandlerTest,
-       UpdateOnTaskConfigWithPendingCaptionConfigShouldNotOverride) {
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionOnTaskSessionDurationShouldBlock) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
-      .Times(2);
+      .Times(4);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
-  // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
       .Times(1);
 
-  // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-  // API callback.
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
-
-  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
-                               session.session_id(), future.GetCallback());
-
+  std::vector<UpdateSessionCallback> update_session_cb;
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        // Use latest on task cofig value from session.
-        ASSERT_EQ(GetCommonActiveSessionProto()
-                      .student_group_configs()
-                      .at(kMainStudentGroupName)
-                      .on_task_config()
-                      .SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        // Use pending on task config.
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
+      .WillRepeatedly(WithArg<0>(Invoke([&](auto request) {
+        update_session_cb.emplace_back(request->callback());
       })));
   SetSessionCaptionInitializer(/*success=*/true);
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_2.GetCallback());
+                                         base::DoNothing());
+  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                          base::DoNothing());
+  boca_app_handler()->ExtendSessionDuration(base::Minutes(2),
+                                            base::DoNothing());
+  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                         base::DoNothing());
 
-  ASSERT_TRUE(future_1.Wait());
-  EXPECT_FALSE(future_1.Get().has_value());
-
-  ASSERT_TRUE(future_2.Wait());
-  EXPECT_FALSE(future_2.Get().has_value());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(1));
+  std::move(update_session_cb[0]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(2));
+  std::move(update_session_cb[1]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(3));
+  std::move(update_session_cb[2]).Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(update_session_cb, testing::SizeIs(4));
+  std::move(update_session_cb[3]).Run(std::make_unique<::boca::Session>());
 
   // Called on destruction to disable session captions.
   EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
       .Times(1);
 }
 
-TEST_F(BocaAppPageHandlerTest,
-       UpdateCaptionConfigWithPendingOnTaskConfigShouldNotOverride) {
+TEST_F(BocaAppPageHandlerTest, ShouldNotUsePreviousSessionCaptionConfig) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
-  // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
       .Times(1);
-  // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-  // API callback.
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
-  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_2;
-
-  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
-                               session.session_id(), future.GetCallback());
+  std::unique_ptr<UpdateSessionRequest> first_request;
+  std::unique_ptr<UpdateSessionRequest> second_request;
 
   EXPECT_CALL(*session_client_impl(), UpdateSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        // Use latest caption cofig value from session.
-        ASSERT_EQ(GetCommonActiveSessionProto()
-                      .student_group_configs()
-                      .at(kMainStudentGroupName)
-                      .captions_config()
-                      .SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        ASSERT_EQ(session.teacher().gaia_id(), request->teacher().gaia_id());
-        ASSERT_EQ(GetCommonTestUnLockOnTaskConfigProto().SerializeAsString(),
-                  request->on_task_config()->SerializeAsString());
-        // Use pending on task config.
-        ASSERT_EQ(GetCommonCaptionConfigProto().SerializeAsString(),
-                  request->captions_config()->SerializeAsString());
-        request->callback().Run(std::unique_ptr<::boca::Session>());
-      })));
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { first_request = std::move(request); })))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { second_request = std::move(request); })));
+  SetSessionCaptionInitializer(/*success=*/true);
+  // Update caption config.
+  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                          base::DoNothing());
+  ::boca::Session response = GetCommonActiveSessionProto();
+  *response.mutable_student_group_configs()
+       ->at(kMainStudentGroupName)
+       .mutable_captions_config() = *first_request->captions_config();
+  first_request->callback().Run(
+      std::make_unique<::boca::Session>(std::move(response)));
+  // Close current session and start a new one.
+  boca_app_handler()->OnSessionEnded(session.session_id());
+  boca_app_handler()->OnSessionStarted("new-session-id",
+                                       ::boca::UserIdentity());
+  // Update ontask config.
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_1.GetCallback());
+                                         base::DoNothing());
+  second_request->callback().Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(second_request, testing::NotNull());
+  EXPECT_NE(second_request->captions_config()->SerializeAsString(),
+            first_request->captions_config()->SerializeAsString());
+}
+
+TEST_F(BocaAppPageHandlerTest, ShouldNotUsePreviousSessionOnTaskConfig) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(2);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
+      .Times(1);
+
+  std::unique_ptr<UpdateSessionRequest> first_request;
+  std::unique_ptr<UpdateSessionRequest> second_request;
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { first_request = std::move(request); })))
+      .WillOnce(WithArg<0>(
+          Invoke([&](auto request) { second_request = std::move(request); })));
+  // Update ontask config.
+  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                         base::DoNothing());
+  ::boca::Session response = GetCommonActiveSessionProto();
+  *response.mutable_student_group_configs()
+       ->at(kMainStudentGroupName)
+       .mutable_on_task_config() = *first_request->on_task_config();
+  first_request->callback().Run(
+      std::make_unique<::boca::Session>(std::move(response)));
+  // Close current session and start a new one.
+  boca_app_handler()->OnSessionEnded(session.session_id());
+  boca_app_handler()->OnSessionStarted("new-session-id",
+                                       ::boca::UserIdentity());
+  // Update caption config.
   SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_2.GetCallback());
+                                          base::DoNothing());
 
-  ASSERT_TRUE(future_1.Wait());
-  EXPECT_FALSE(future_1.Get().has_value());
-  ASSERT_TRUE(future_2.Wait());
-  EXPECT_FALSE(future_2.Get().has_value());
+  second_request->callback().Run(std::make_unique<::boca::Session>());
+  ASSERT_THAT(second_request, testing::NotNull());
+  EXPECT_NE(second_request->on_task_config()->SerializeAsString(),
+            first_request->on_task_config()->SerializeAsString());
 
   // Called on destruction to disable session captions.
   EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents(_))
