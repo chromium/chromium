@@ -379,7 +379,7 @@ void CloudPolicyInvalidator::OnInvalidationReceived(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   LOG(WARNING) << "Received incoming invalidation: " << invalidation.version();
-  if (!policy_invalidation_handler_.IsCoreConnected()) {
+  if (!policy_invalidation_handler_.IsCoreReady()) {
     LOG(WARNING) << "Core is disconnected, ignoring invalidation.";
     return;
   }
