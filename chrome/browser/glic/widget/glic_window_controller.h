@@ -301,8 +301,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Return the default detached bounds which are just below the tab strip
   // button on the active browser.
-  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser& browser,
-                                                const gfx::Size& target_size);
+  std::optional<gfx::Rect> GetInitialDetachedBoundsFromBrowser(
+      Browser* browser,
+      const gfx::Size& target_size);
 
   // Return the default detached bounds when there is no active browser. The
   // position is relative to the top right of the current display.

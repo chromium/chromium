@@ -137,6 +137,32 @@ display::Display GetDisplayForOpeningDetached() {
   return display::Screen::GetScreen()->GetPrimaryDisplay();
 }
 
+// True if |bounds| is an allowed position the Widget can be shown in.
+bool IsWidgetLocationAllowed(const gfx::Rect& bounds) {
+  const std::vector<display::Display>& displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+
+  // Calculate inset corners to allow part of the widget to be off screen.
+  std::array<gfx::Point, 4> inset_points = {
+      // top-left: Allow 40% on left and |kInitialPositionBuffer| on top.
+      gfx::Point(bounds.x() + bounds.width() * .4,
+                 bounds.y() + kInitialPositionBuffer),
+      // top-right: Allow 40% on right and |kInitialPositionBuffer| on top.
+      gfx::Point(bounds.right() - bounds.width() * .4,
+                 bounds.y() + kInitialPositionBuffer),
+      // bottom-left: Allow 40% on left and 70% on bottom.
+      gfx::Point(bounds.x() + bounds.width() * .4,
+                 bounds.bottom() - bounds.height() * .7),
+      // bottom-right: Allow 40% on right and 70% on bottom.
+      gfx::Point(bounds.right() - bounds.width() * .4,
+                 bounds.bottom() - bounds.height() * .7),
+  };
+
+  // Check that all four points are on an existing display.
+  return std::ranges::all_of(inset_points, [&](gfx::Point p) {
+    return display::FindDisplayContainingPoint(displays, p) != displays.end();
+  });
+}
 }  // namespace
 
 // Helper class for observing mouse and key events from native window.
@@ -768,19 +794,22 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
   if (browser && !AlwaysDetached()) {
     return GetInitialAttachedBounds(*browser);
   }
-
   gfx::Size target_size = GetLastRequestedSizeClamped();
 
-  MaybeResetPreviousPosition(target_size);
+  // Reset previous position if it results in an invalid location.
+  if (previous_position_.has_value() &&
+      !IsWidgetLocationAllowed({previous_position_.value(), target_size})) {
+    previous_position_.reset();
+  }
   // Use the previous position if there is one.
   if (previous_position_.has_value()) {
     return {previous_position_.value(), target_size};
   }
 
-  if (browser) {
-    return GetInitialDetachedBoundsFromBrowser(*browser, target_size);
-  }
-  return GetInitialDetachedBoundsNoBrowser(target_size);
+  std::optional<gfx::Rect> bounds_with_browser =
+      GetInitialDetachedBoundsFromBrowser(browser, target_size);
+  return bounds_with_browser.value_or(
+      GetInitialDetachedBoundsNoBrowser(target_size));
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBoundsNoBrowser(
@@ -815,30 +844,27 @@ gfx::Rect GlicWindowController::GetInitialAttachedBounds(Browser& browser) {
   return glic_window_widget_initial_rect;
 }
 
-gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
-    Browser& browser,
+std::optional<gfx::Rect>
+GlicWindowController::GetInitialDetachedBoundsFromBrowser(
+    Browser* browser,
     const gfx::Size& target_size) {
-  gfx::Rect display_bounds = GetDisplayForOpeningDetached().work_area();
-  gfx::Point origin = display_bounds.top_right();
+  if (!browser) {
+    return std::nullopt;
+  }
 
-  // Open detached relative to the browser.
-  gfx::Rect browser_bounds =
-      browser.GetBrowserView().GetWidget()->GetWindowBoundsInScreen();
-  GlicButton* glic_button = GetGlicButton(browser);
+  // Set the origin so the top right of glic meets the bottom left of the glic
+  // button.
+  GlicButton* glic_button = GetGlicButton(*browser);
   CHECK(glic_button);
   gfx::Rect glic_button_inset_bounds = glic_button->GetBoundsWithInset();
-  // If glic can't fit to the right of the browser,
-  // set the origin so the top right of glic meets the bottom left of the glic
-  // button.
-  if (display_bounds.right() - browser_bounds.right() > target_size.width()) {
-    origin = glic_button_inset_bounds.bottom_right();
-  } else {
-    origin =
-        gfx::Point(glic_button_inset_bounds.x() - target_size.width() -
-                       kInitialPositionBuffer,
-                   glic_button_inset_bounds.bottom() + kInitialPositionBuffer);
-  }
-  return {origin, target_size};
+
+  gfx::Point origin(glic_button_inset_bounds.x() - target_size.width() -
+                        kInitialPositionBuffer,
+                    glic_button_inset_bounds.bottom() + kInitialPositionBuffer);
+  gfx::Rect bounds = {origin, target_size};
+
+  return IsWidgetLocationAllowed(bounds) ? std::make_optional(bounds)
+                                         : std::nullopt;
 }
 
 void GlicWindowController::StartAttachedAnimation(GlicButton* glic_button) {
@@ -1186,35 +1212,6 @@ void GlicWindowController::CloseAndReopenDetached(
 
 void GlicWindowController::SaveWidgetPosition() {
   previous_position_ = GetGlicWidget()->GetWindowBoundsInScreen().origin();
-}
-
-void GlicWindowController::MaybeResetPreviousPosition(
-    const gfx::Size& target_size) {
-  if (!previous_position_.has_value()) {
-    return;
-  }
-
-  const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
-
-  // Reset the saved position if more than 20% of the widget is not visible.
-  constexpr float offset = .2;
-  constexpr float inset[4][2]{
-      {offset, offset},          // top-left inset
-      {1 - offset, offset},      // top-right inset
-      {offset, 1 - offset},      // bottom-left inset
-      {1 - offset, 1 - offset},  // bottom-right inset
-  };
-
-  for (const auto& i : inset) {
-    gfx::Point p = previous_position_.value();
-    p.set_x(p.x() + target_size.width() * i[0]);
-    p.set_y(p.y() + target_size.height() * i[1]);
-    if (display::FindDisplayContainingPoint(displays, p) == displays.end()) {
-      previous_position_.reset();
-      return;
-    }
-  }
 }
 
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
