@@ -13,6 +13,7 @@
 #include <android/hdr_metadata.h>
 #include <dlfcn.h>
 
+#include "base/android/android_info.h"
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
 #include "base/debug/crash_logging.h"
@@ -643,6 +644,12 @@ bool SurfaceControl::SupportsOnCommit() {
              nullptr;
 }
 
+bool SurfaceControl::SupportsFrameRateCompatAtLeast() {
+  return SupportsSetFrameRate() &&
+         base::android::android_info::sdk_int() >=
+             base::android::android_info::SDK_VERSION_BAKLAVA;
+}
+
 bool SurfaceControl::SupportsSetFrameTimeline() {
   return IsSupported() &&
          SurfaceControlMethods::Get().ASurfaceTransaction_setFrameTimelineFn !=
@@ -944,6 +951,15 @@ void SurfaceControl::Transaction::SetFrameRate(
   switch (frame_rate.compatibility) {
     case gfx::SurfaceControlFrameRateCompatibility::kFixedSource:
       compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      break;
+    case gfx::SurfaceControlFrameRateCompatibility::kAtLeast:
+      if (SupportsFrameRateCompatAtLeast()) {
+        // Temporary hard code value until Android B NDK is available.
+        constexpr int8_t ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST = 2u;
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_AT_LEAST;
+      } else {
+        compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      }
       break;
   }
 
