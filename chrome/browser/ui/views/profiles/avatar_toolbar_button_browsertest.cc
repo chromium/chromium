@@ -1809,7 +1809,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
-    : public AvatarToolbarButtonBrowserTest {
+    : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest {
  public:
   AvatarToolbarButtonEnterpriseBadgingBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -1828,7 +1828,8 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
             policy::ManagementServiceFactory::GetForProfile(
                 browser()->profile()),
             policy::EnterpriseManagementAuthority::CLOUD);
-    AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
+    AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest::
+        SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override { scoped_browser_management_.reset(); }
@@ -2035,6 +2036,31 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       GreetingNotShownWhenManagementAccepted) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
+  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // The greeting would only show when the image is loaded. Set the image to
+  // make sure we do not have a false positive later.
+  AddSignedInImage(account_info.account_id);
+
+  // We do not expect a greeting to be shown if user accepted management.
+  EXPECT_EQ(avatar->GetText(), u"Work");
+}
+
+class AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest
+    : public base::test::WithFeatureOverride,
+      public AvatarToolbarButtonEnterpriseBadgingBrowserTest {
+ protected:
+  AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest()
+      : WithFeatureOverride(switches::kEnableHistorySyncOptinExpansionPill) {}
+};
+
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_GreetingShownWhenManagementNotAccepted \
@@ -2045,8 +2071,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 #endif
 // test makes sure the greeting is not shown when the management badge is shown
 // in the profile avatar pill.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       MAYBE_GreetingShownWhenManagementNotAccepted) {
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
+    MAYBE_GreetingShownWhenManagementNotAccepted) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
@@ -2067,29 +2094,18 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   // shown.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-
   avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
-  // Once the name is not shown anymore, we expect no text.
+  if (IsParamFeatureEnabled()) {
+    // The greeting is followed by the history sync opt-in.
+    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  }
+  // Once the name (or sync promo) is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       GreetingNotShownWhenManagementAccepted) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-
-  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-
-  // The greeting would only show when the image is loaded. Set the image to
-  // make sure we do not have a false positive later.
-  AddSignedInImage(account_info.account_id);
-
-  // We do not expect a greeting to be shown if user accepted management.
-  EXPECT_EQ(avatar->GetText(), u"Work");
-}
-
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
@@ -2099,8 +2115,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 #define MAYBE_SignedInWithNewSessionKeepWorkBadge SignedInWithNewSessionKeepWorkBadge
 #endif
 // Tests the flow for a managed sign-in.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
+    MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
   // Sign in.
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   std::u16string name(u"TestName");
@@ -2111,9 +2128,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
   avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  if (IsParamFeatureEnabled()) {
+    // The greeting is followed by the history sync opt-in.
+    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  }
 
-  // Once the name is not shown anymore, we expect no text since management is
-  // not accepted.
+  // Once the name (or sync promo) is not shown anymore, we expect no text since
+  // management is not accepted.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 
   // Management is usually accepted by the time the greeting is finished. The
@@ -2128,8 +2151,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 // Test that the work badge remains upon restart for a user that is managed.
 // Note that we need to unset and reset UserAcceptedAccountManagement due to the
 // management service override.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       MAYBE_SignedInWithNewSessionKeepWorkBadge) {
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
+    MAYBE_SignedInWithNewSessionKeepWorkBadge) {
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
                                                     false);
@@ -2146,6 +2170,43 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   // Previously added image on signin should still be shown in the new session.
   EXPECT_TRUE(IsSignedInImageUsed());
 }
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
+  DISABLED_SyncPromoShownOnInactivityWhenManagementAccepted
+#else
+#define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
+  SyncPromoShownOnInactivityWhenManagementAccepted
+#endif
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
+    MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
+  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // The greeting would only show when the image is loaded. Set the image to
+  // make sure we do not have a false positive later.
+  AddSignedInImage(account_info.account_id);
+  // We do not expect a greeting to be shown if user accepted management.
+  EXPECT_EQ(avatar->GetText(), u"Work");
+  // Simulate long enough inactivity to trigger the sync promo.
+  RunTestSequence(
+      SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
+  if (IsParamFeatureEnabled()) {
+    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  }
+  EXPECT_EQ(avatar->GetText(), u"Work");
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest);
 
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)

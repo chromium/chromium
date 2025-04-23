@@ -652,16 +652,21 @@ class HistorySyncOptinStateProvider : public StateProvider,
   }
 
   void OnNewSession() {
-    if (!HasBeenShownSinceStartup()) {
-      // If the history sync opt-in has not been shown since startup,
-      // do NOT trigger it. This avoids a subtle race condition on startup
-      // when the greetings are about to show roughly at the same time as the
-      // new session is detected (greetings are followed by the history sync
-      // opt-in anyway).
-      //
-      // NOTE: We assume that we are notified about the new session before the
-      // first history sync opt-in collapses (~60 seconds).
-      return;
+    // NOTE: All history sync opt-in triggers for enterprise badging are
+    // considered "on inactivity" (`kHistorySyncOptinExpansionPillOnInactivity`
+    // access point).
+    if (!enterprise_util::CanShowEnterpriseBadgingForAvatar(&profile_.get())) {
+      if (!HasBeenShownSinceStartup()) {
+        // If the history sync opt-in has not been shown since startup,
+        // do NOT trigger it. This avoids a subtle race condition on startup
+        // when the greetings are about to show roughly at the same time as the
+        // new session is detected (greetings are followed by the history sync
+        // opt-in anyway).
+        //
+        // NOTE: We assume that we are notified about the new session before the
+        // first history sync opt-in collapses (~60 seconds).
+        return;
+      }
     }
     Trigger(signin_metrics::AccessPoint::
                 kHistorySyncOptinExpansionPillOnInactivity);
