@@ -20044,23 +20044,6 @@
             ]
         }
     ],
-    "ReadAnythingReadAloudComponentUpdaterMigration": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WasmTtsComponentUpdaterEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingReadAloudDesktop": [
         {
             "platforms": [
