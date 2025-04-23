@@ -22,9 +22,6 @@ ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FieldType& field_type) const {
-  if (field_type != FieldType::EMAIL_ADDRESS) {
-    return {};
-  }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
   content::FederatedAuthAutofillSource* source =
@@ -47,16 +44,26 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     Suggestion suggestion(base::UTF8ToUTF16(account->email),
                           SuggestionType::kIdentityCredential);
 
-    suggestion.icon = Suggestion::Icon::kEmail;
-    suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
-        base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
-    suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
     auto payload = Suggestion::IdentityCredentialPayload(
         account->identity_provider->idp_metadata.config_url, account->id);
-    // TODO(crbug.com/380367784): add more field types.
-    payload.fields[HtmlFieldType::kEmail] = base::UTF8ToUTF16(account->email);
+
+    if (field_type == EMAIL_ADDRESS) {
+      suggestion.icon = Suggestion::Icon::kEmail;
+      suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
+          base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
+      // TODO(crbug.com/380367784): add more field types.
+      payload.fields[HtmlFieldType::kEmail] = base::UTF8ToUTF16(account->email);
+    } else if (field_type == PASSWORD) {
+      suggestion.custom_icon = account->decoded_picture;
+      // TODO(crbug.com/410421491): support more context.
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+          base::UTF8ToUTF16(account->identity_provider->idp_for_display)))});
+    }
+
     suggestion.payload = payload;
     suggestions.push_back(std::move(suggestion));
   }
@@ -78,9 +85,8 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
   Suggestion::IdentityCredentialPayload payload =
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
 
-  // TODO(crbug.com/410533051): Pass the callback to the source.
-  source->NotifyAutofillSuggestionAccepted(payload.config_url,
-                                           payload.account_id);
+  source->NotifyAutofillSuggestionAccepted(
+      payload.config_url, payload.account_id, std::move(callback));
 }
 
 }  // namespace autofill

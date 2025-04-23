@@ -134,8 +134,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // content::FederatedAuthAutofillSource
   const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const override;
-  void NotifyAutofillSuggestionAccepted(const GURL& idp,
-                                        const std::string& account_id) override;
+  void NotifyAutofillSuggestionAccepted(
+      const GURL& idp,
+      const std::string& account_id,
+      OnFederatedTokenReceivedCallback callback) override;
 
   // To be called on the FederatedAuthRequest object corresponding to a
   // popup opened by ShowModalDialog, specifically for the case when
@@ -592,6 +594,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // iframe1.example and iframe2.example. Both iframes can request user info
   // simultaneously.
   RequestTokenCallback auth_request_token_callback_;
+
+  OnFederatedTokenReceivedCallback token_received_callback_for_autofill_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
 

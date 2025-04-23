@@ -529,7 +529,8 @@ AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
 
 IdentityCredentialDelegate*
 ChromeAutofillClient::GetIdentityCredentialDelegate() {
-  if (!base::FeatureList::IsEnabled(::features::kFedCmDelegation)) {
+  if (!(base::FeatureList::IsEnabled(::features::kFedCmDelegation) ||
+        base::FeatureList::IsEnabled(::features::kFedCmAutofill))) {
     return nullptr;
   }
 

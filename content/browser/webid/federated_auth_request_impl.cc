@@ -1933,7 +1933,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
 void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
     const GURL& idp,
-    const std::string& account_id) {
+    const std::string& account_id,
+    OnFederatedTokenReceivedCallback callback) {
+  // Currently the verified email flow opens a modal UI upon notification and
+  // the autofill dropdown UI gets dismissed immediately. i.e. it doesn't need a
+  // valid callback. However, if a user is presented a full federated account,
+  // upon the account selection we'd proceed with fetching tokens directly and
+  // update he autofill dropdown UI to a loading UI.
+  if (!callback.is_null()) {
+    OnAccountSelected(idp, account_id, true);
+    token_received_callback_for_autofill_ = std::move(callback);
+    return;
+  }
   // TODO(crbug.com/380367784): The third argument of OnAccountSelected checks
   // if this is a sign-in or a sign-up moment. In delegation, however, by
   // design, the IdP doesn't get to learn about the presentations, so wouldn't
@@ -2842,12 +2853,13 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // `kTokenRequestDelay` seconds for better UX.
-  // Note that for active flow we can complete without delay because there is
-  // no contextual UI displayed to users.
+  // Note that for active flow or conditional flow we can complete without delay
+  // because there is no contextual UI displayed to users.
   id_assertion_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time =
       id_assertion_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ || rp_mode_ == RpMode::kActive ||
+      mediation_requirement_ == MediationRequirement::kConditional ||
       fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;
@@ -3301,6 +3313,9 @@ void FederatedAuthRequestImpl::CleanUp() {
   rp_mode_ = RpMode::kPassive;
   private_key_.reset();
   disclosures_.clear();
+  if (token_received_callback_for_autofill_) {
+    std::move(token_received_callback_for_autofill_).Run();
+  }
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(

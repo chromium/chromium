@@ -189,6 +189,10 @@
     Skip confirmation emails
   </message>
 
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT" desc="The label to display in an autofill suggestion." translateable="false">
+    Sign in with <ph name="IDP_ORIGIN">$1<ex>google.com</ex></ph>
+  </message>
+
   <if expr="not use_titlecase">
     <message name="IDS_AUTOFILL_MANAGE_ADDRESSES" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses in the user profile that can be used by Chrome Autofill.">
       Manage addresses...

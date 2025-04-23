@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -425,9 +426,13 @@ std::unique_ptr<views::ImageView> GetIconImageView(
 
   if (auto* icon = std::get_if<gfx::Image>(&suggestion.custom_icon);
       icon && !icon->IsEmpty()) {
-    std::optional<ui::ImageModel> image_model =
-        ImageModelFromImageSkia(icon->AsImageSkia());
-    return ConvertModelToImageView(image_model,
+    gfx::ImageSkia image = icon->AsImageSkia();
+    if (std::holds_alternative<Suggestion::IdentityCredentialPayload>(
+            suggestion.payload)) {
+      image =
+          CreateCircleCroppedImage(image, kDesiredAvatarSizeInAutofillDropdown);
+    }
+    return ConvertModelToImageView(ImageModelFromImageSkia(image),
                                    suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
