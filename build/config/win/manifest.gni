@@ -75,10 +75,9 @@ segment_heap_manifest = "//build/win/segment_heap.manifest"
 if (is_win) {
   template("windows_manifest") {
     config_name = "${target_name}__config"
-    source_set_name = target_name
 
     config(config_name) {
-      visibility = [ ":$source_set_name" ]
+      visibility = [ ":$target_name" ]
       assert(defined(invoker.sources),
              "\"sources\" must be defined for a windows_manifest target")
       manifests = []
@@ -93,9 +92,9 @@ if (is_win) {
                 ] + manifests
     }
 
-    # This source set only exists to add a dep on the invoker's deps and to
+    # This group only exists to add a dep on the invoker's deps and to
     # add a public_config that sets ldflags on dependents.
-    source_set(source_set_name) {
+    group(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
       public_configs = [ ":$config_name" ]
 
