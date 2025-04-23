@@ -14,17 +14,46 @@ import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
+import {Output} from './output/output.js';
 
+type AutomationEvent = chrome.automation.AutomationEvent;
 type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+
+type Listener = (evt: AutomationEvent) => void;
+
+interface LastOutputData {
+  // Index of the line in buffer.
+  lineIndex: number;
+  // Start and end char range in the line that is outputted. Needed to handle
+  // partial lines.
+  start: number;
+  end: number;
+}
 
 export class CaptionsHandler implements ChromeVoxRangeObserver {
   static instance: CaptionsHandler;
 
-  private hasAttributeChanged_ = false;
   private inCaptions_ = false;
   private previousFocus_: CursorRange|null = null;
   private previousPrefState_?: boolean;
   private waitingForCaptions_ = false;
+
+  private captionsLabel_: AutomationNode|null = null;
+  private boundOnCaptionsLabelChanged_: Listener|null = null;
+
+  // Max lines of captions to keep around.
+  static readonly MAX_LINES = 100;
+
+  // Captions line buffer.
+  private captionLines_: string[] = [];
+
+  // Tracks the last data sent to the Braille display.
+  private lastOutput_: LastOutputData = {
+    lineIndex: -1,
+    start: -1,
+    end: -1,
+  };
 
   static init(): void {
     CaptionsHandler.instance = new CaptionsHandler();
@@ -48,16 +77,20 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
     return CaptionsHandler.instance.inCaptions_;
   }
 
-  static get hasAttributeChanged(): boolean {
-    return CaptionsHandler.instance.hasAttributeChanged_;
-  }
-
-  static handleAttributeChanged(): void {
-    CaptionsHandler.instance.hasAttributeChanged_ = true;
-  }
-
+  // Returns true if the alert was handled and the default handing should be
+  // skipped, false otherwise.
   maybeHandleAlert(event: ChromeVoxEvent): boolean {
     if (!this.waitingForCaptions_) {
+      // Filter out captions bubble dialog alert and announcement when this is
+      // in the bubble. Otherwise, the alert overwrites the braille output.
+      if (this.inCaptions_ && this.captionsLabel_ &&
+          (this.captionsLabel_ === this.tryFindCaptions_(event.target) ||
+           (event.target.parent &&
+            this.captionsLabel_ ===
+                this.tryFindCaptions_(event.target.parent!)))) {
+        return true;
+      }
+
       return false;
     }
 
@@ -77,8 +110,11 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
       return;
     }
 
-    if (range.start.node.className !== CAPTION_BUBBLE_LABEL) {
+    const currentNode = range.start.node;
+    if (currentNode.className !== CAPTION_BUBBLE_LABEL) {
       this.onExitCaptions_();
+    } else {
+      this.startObserveCaptions_(currentNode);
     }
   }
 
@@ -96,7 +132,11 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
   private jumpToCaptionBubble_(captionsLabel: AutomationNode): void {
     this.previousFocus_ = ChromeVoxRange.current;
     this.onEnterCaptions_();
-    ChromeVoxRange.navigateTo(CursorRange.fromNode(captionsLabel));
+    ChromeVoxRange.navigateTo(
+        CursorRange.fromNode(captionsLabel),
+        /*focus=*/ true, /*speechProps=*/ undefined,
+        /*skipSettingSelection=*/ undefined,
+        /*skipOutput=*/ true);
   }
 
   private onEnterCaptions_(): void {
@@ -106,8 +146,8 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
 
   private onExitCaptions_(): void {
     this.inCaptions_ = false;
-    this.hasAttributeChanged_ = false;
     ChromeVoxRange.removeObserver(this);
+    this.stopObserveCaptions_();
     this.restoreFocus_();
   }
 
@@ -148,6 +188,165 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
     }
 
     this.jumpToCaptionBubble_(captionsLabel);
+  }
+
+  /** Starts to observe live caption label. */
+  private startObserveCaptions_(captionsLabel: AutomationNode): void {
+    this.captionsLabel_ = captionsLabel;
+
+    if (!this.boundOnCaptionsLabelChanged_) {
+      this.boundOnCaptionsLabelChanged_ = () => this.onCaptionsLabelChanged_();
+    }
+
+    this.captionsLabel_.addEventListener(
+        EventType.TEXT_CHANGED, this.boundOnCaptionsLabelChanged_, true);
+    this.updateCaptions_();
+  }
+
+  /** Stops observing live caption label. */
+  private stopObserveCaptions_(): void {
+    if (!this.captionsLabel_) {
+      return;
+    }
+
+    this.captionLines_ = [];
+    this.resetLastOutput_();
+
+    this.captionsLabel_.removeEventListener(
+        EventType.TEXT_CHANGED, this.boundOnCaptionsLabelChanged_!, true);
+    this.captionsLabel_ = null;
+  }
+
+  /** Invoked when captions label is changed. */
+  private onCaptionsLabelChanged_(): void {
+    this.updateCaptions_();
+  }
+
+  /**
+   * Extracts the caption lines from captions bubble and merges with the line
+   * buffer.
+   */
+  private updateCaptions_(): void {
+    if (!this.captionsLabel_) {
+      return;
+    }
+
+    let currentLines: string[] = [];
+    for (let i = 0, child; child = this.captionsLabel_.children[i]; ++i) {
+      if (child.name) {
+        currentLines.push(child.name);
+      }
+    }
+
+    this.mergeLines_(currentLines);
+  }
+
+  /** Merge the current lines in caption bubble with the line buffer. */
+  private mergeLines_(currentLines: string[]): void {
+    // Finds an insertion point to update the line buffer.
+    const fullMatchFirstLine: number =
+        this.captionLines_.lastIndexOf(currentLines[0]);
+    if (fullMatchFirstLine !== -1) {
+      // If first line of `currentLines` is found, copy `currentLines` at the
+      // index.
+      this.captionLines_.splice(
+          fullMatchFirstLine, this.captionLines_.length - fullMatchFirstLine,
+          ...currentLines);
+    } else if (currentLines.length === 1 || this.captionLines_.length === 1) {
+      // If buffer is initiating, just copying over. Reset tracking if
+      // `currentLines` is not relevant.
+      if (this.lastOutput_.lineIndex !== -1) {
+        let lastOutputText =
+            this.captionLines_[this.lastOutput_.lineIndex].substring(
+                this.lastOutput_.start, this.lastOutput_.end);
+        if (currentLines[0].indexOf(lastOutputText) === -1) {
+          this.resetLastOutput_();
+        }
+      }
+
+      this.captionLines_ = [...currentLines];
+    } else {
+      // Otherwise, restart tracking.
+      this.captionLines_ = [...currentLines];
+      this.resetLastOutput_();
+    }
+
+    // Trim when the line buffer is more than MAX_LINES.
+    while (this.captionLines_.length > CaptionsHandler.MAX_LINES) {
+      this.captionLines_.shift();
+      this.lastOutput_.lineIndex--;
+    }
+    if (this.lastOutput_.lineIndex < 0) {
+      this.resetLastOutput_();
+    }
+
+    if (this.lastOutput_.lineIndex === -1 && this.captionLines_.length > 0) {
+      this.output_(0);
+    }
+  }
+
+  /** Reset output tracking */
+  private resetLastOutput_(): void {
+    this.lastOutput_ = {
+      lineIndex: -1,
+      start: -1,
+      end: -1,
+    };
+  }
+
+  /** Outputs the given line. */
+  private output_(index: number, start?: number, end?: number): void {
+    let text = this.captionLines_[index];
+
+    this.lastOutput_.lineIndex = index;
+    this.lastOutput_.start = start ?? 0;
+    this.lastOutput_.end = end ?? text.length;
+
+    new Output()
+        .withString(
+            text.substring(this.lastOutput_.start, this.lastOutput_.end))
+        .go();
+  }
+
+  /** Output the previous line if there is one. */
+  previous(): void {
+    if (this.lastOutput_.lineIndex == -1) {
+      return;
+    }
+
+    // If the last output is in middle of the line, restart from the beginning.
+    if (this.lastOutput_.start != 0) {
+      this.output_(this.lastOutput_.lineIndex, 0);
+      return;
+    }
+
+    // No more previous lines.
+    if (this.lastOutput_.lineIndex == 0) {
+      return;
+    }
+
+    this.output_(this.lastOutput_.lineIndex - 1);
+  }
+
+  /** Output the next line if there is one. */
+  next(): void {
+    if (this.lastOutput_.lineIndex == -1) {
+      return;
+    }
+
+    // If the last output is not at the end, start from where it stops.
+    if (this.captionLines_[this.lastOutput_.lineIndex].length >
+        this.lastOutput_.end) {
+      this.output_(this.lastOutput_.lineIndex, this.lastOutput_.end);
+      return;
+    }
+
+    // No more next lines.
+    if (this.lastOutput_.lineIndex == this.captionLines_.length - 1) {
+      return;
+    }
+
+    this.output_(this.lastOutput_.lineIndex + 1);
   }
 }
 
