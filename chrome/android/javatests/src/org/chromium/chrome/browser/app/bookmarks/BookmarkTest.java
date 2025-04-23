@@ -1242,6 +1242,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/413079613")
     public void testTopLevelFolders() throws Exception {
         openBookmarkManager();
         onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
