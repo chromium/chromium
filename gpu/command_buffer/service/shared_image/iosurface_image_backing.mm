@@ -1034,7 +1034,6 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       dawn_texture_cache_(base::MakeRefCounted<DawnSharedTextureCache>()),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
-      gr_context_type_(gr_context_type),
       weak_factory_(this) {
   CHECK(io_surface_);
   CHECK(!is_thread_safe ||
@@ -1804,6 +1803,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     id<MTLSharedEvent> shared_event = nil;
     uint64_t signal_value = 0;
+    // Note that this enqueues a shared event signal and flushes the context so
+    // that the shared event can be waited on without any further action.
     if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
       AddSharedEventForEndAccess(shared_event, signal_value, readonly);
     } else {
@@ -1835,13 +1836,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   const bool is_swangle =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 
-  // We also need to ReleaseTexImage for Graphite to ensure that any shared
-  // events enqueued are signaled in the flush inside ReleaseTexImage.
-  const bool needs_release_tex_image =
-      (is_swangle || gr_context_type_ != GrContextType::kGL) &&
-      num_ongoing_read_accesses_ == 0;
-
-  if (needs_release_tex_image) {
+  if (is_swangle && num_ongoing_read_accesses_ == 0) {
     CHECK_EQ(static_cast<int>(egl_state->gl_textures_.size()),
              format().NumberOfPlanes());
     CHECK_EQ(static_cast<int>(egl_state->egl_surfaces_.size()),

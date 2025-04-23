@@ -281,10 +281,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   base::flat_map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_
       GUARDED_BY(lock_);
 
-  // GrContextType for SharedContextState used to distinguish between Ganesh
-  // and Graphite.
-  const GrContextType gr_context_type_;
-
   // If Skia is using GL, this object creates a GL texture at construction time
   // for the Skia GL context and reuses it (for that context) for its lifetime.
   // This egl_state is set in IOSurfaceImageBacking Ctor only.

@@ -87,6 +87,11 @@ bool GLDisplayEGL::CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
   // the sync object immediately.
   eglDestroySync(display_, sync);
 
+  // Flush the GL context to ensure that the command buffer is submitted and we
+  // can wait on the shared event immediately.
+  DCHECK(gl::g_current_gl_context);
+  gl::g_current_gl_context->glFlushFn();
+
   *shared_event_out = objc_storage_->metal_shared_event.get();
   *signal_value_out = objc_storage_->metal_signaled_value;
   return true;
