@@ -172,7 +172,8 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
 
   if (!should_track_with_id) {
     is_ad = IsKnownAdScript(execution_context, script_url);
-    if (is_ad && !IsKnownAdExecutionContext(execution_context)) {
+    if (is_ad && !IsKnownAdExecutionContext(execution_context) &&
+        !script_url.empty()) {
       MaybeLinkKnownAdScriptToAncestor(execution_context, v8_context,
                                        script_url, script_id);
     }
@@ -432,6 +433,7 @@ void AdTracker::MaybeLinkKnownAdScriptToAncestor(
     const v8::Local<v8::Context>& v8_context,
     const String& script_name,
     int script_id) {
+  DCHECK(!script_name.empty());
   auto it = context_known_ad_scripts_.find(execution_context);
   DCHECK(it != context_known_ad_scripts_.end());
 
