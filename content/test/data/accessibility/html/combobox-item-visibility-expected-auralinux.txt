@@ -1,7 +1,0 @@
-[document web]
-++[section]
-++++[combo box]
-++++++[menu]
-++++++++[menu item] selectable selected
-++++++++[menu item] selectable
-++++++++[menu item] selectable

@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationGroup
-++++AXMenuItem AXTitle='Menu item'

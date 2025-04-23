@@ -1,3 +1,0 @@
-WebView supplementalDescription:"HTML element" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
-++View supplementalDescription:"BODY element" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++++Button contentDescription:"Button element" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]

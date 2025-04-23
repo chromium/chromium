@@ -1,7 +1,0 @@
-rootWebArea pageLocation=(0, 0) name='done'
-++genericContainer ignored
-++++genericContainer pageLocation=(0, 50)
-++++++genericContainer pageLocation=(0, 50)
-++++++++paragraph pageLocation=(0, 50)
-++++++++++staticText pageLocation=(0, 50) name='content'
-++++++++++++inlineTextBox pageLocation=(0, 50) name='content'

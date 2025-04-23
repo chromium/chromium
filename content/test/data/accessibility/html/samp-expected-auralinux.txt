@@ -1,3 +1,0 @@
-[document web]
-++[section]
-++++[static] name='Sample output from a computer program'

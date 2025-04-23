@@ -1,6 +1,0 @@
-WebView text:"Checking nodes marked as clickable" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Generic div" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView text:"Heading" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
-++Button text:"Button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
-++View clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="group", clickableScore="200"]
-++++TextView text:"Paragraph with click handler on parent and should be not marked as clickable" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph", clickableScore="100"]

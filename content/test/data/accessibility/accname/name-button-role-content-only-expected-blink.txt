@@ -1,1 +1,0 @@
-button name='foo' nameFrom=contents

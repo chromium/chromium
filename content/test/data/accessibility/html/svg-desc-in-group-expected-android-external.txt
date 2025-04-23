@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
-++++++View hint:"Group with circle and text" actions:[AX_FOCUS] bundle:[chromeRole="group", hint="Group with circle and text"]
-++++++++TextView text:"hello world" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

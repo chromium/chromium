@@ -1,8 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXImage AXDescription='pipe' AXRoleDescription='image'
-++++AXStaticText AXValue=' '
-++++AXStaticText AXValue=' '
-++++AXImage AXDescription='  . To get missing image descriptions, open the context menu.'
-++++AXStaticText AXValue=' '
-++++AXImage AXDescription='SVG face' AXRoleDescription='image'

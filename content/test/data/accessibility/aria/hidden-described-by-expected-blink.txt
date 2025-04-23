@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++genericContainer ignored invisible
-++++++++genericContainer description='span-A4' name='span-A3' descriptionFrom=relatedElement
-++++++++++genericContainer ignored invisible
-++++++++genericContainer description='span-A2' name='span-B' descriptionFrom=relatedElement
-++++++++genericContainer name='span-C'

@@ -1,2 +1,0 @@
-IA2_EVENT_TEXT_INSERTED on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE new_text={'<obj><obj><obj>' start=0 end=3}
-IA2_EVENT_TEXT_INSERTED on <p#message> role=ROLE_SYSTEM_GROUPING new_text={'This is important!' start=0 end=18}

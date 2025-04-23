@@ -1,9 +1,0 @@
-rootWebArea focusable name='done'
-++genericContainer ignored
-++++genericContainer
-++++++button focusable name='Before'
-++++++++staticText name='Before'
-++++++++++inlineTextBox name='Before'
-++++++button focusable name='After'
-++++++++staticText name='After'
-++++++++++inlineTextBox name='After'

@@ -1,5 +1,0 @@
-[document web]
-++[paragraph]
-++++[static] name='Some '
-++++[static] name='bold'
-++++[static] name=' text'

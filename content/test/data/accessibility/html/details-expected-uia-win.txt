@@ -1,9 +1,0 @@
-Document PositionInSet=0 SizeOfSet=0
-++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
-++++Button Name='details tag' PositionInSet=1 SizeOfSet=2 ExpandCollapse.ExpandCollapseState='Collapsed'
-++++++Text Name='details tag' PositionInSet=0 SizeOfSet=0
-++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
-++++Button Name='details tag open' PositionInSet=2 SizeOfSet=2 ExpandCollapse.ExpandCollapseState='Expanded'
-++++++Text Name='details tag open' PositionInSet=0 SizeOfSet=0
-++++Group IsControlElement=false PositionInSet=0 SizeOfSet=0
-++++++Text Name='The details tag with open specifies that the details should be visible (open) to the user.' PositionInSet=0 SizeOfSet=0

@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++main description='oranges'
-++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible

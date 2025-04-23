@@ -1,3 +1,0 @@
-include_rules = [
-  "+content/child", # For java bridge bindings
-]

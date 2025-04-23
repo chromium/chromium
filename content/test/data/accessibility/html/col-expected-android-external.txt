@@ -1,8 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++GridView CollectionInfo:[rows=2, cols=2] actions:[AX_FOCUS] bundle:[chromeRole="table", roleDescription="table"]
-++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
-++++++View text:"Browser" CollectionItemInfo:[heading, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="columnHeader", roleDescription="column header"]
-++++++View text:"Rendering Engine" CollectionItemInfo:[heading, rowIndex=0, colIndex=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="columnHeader", roleDescription="column header"]
-++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
-++++++View text:"Chrome" CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
-++++++View text:"Blink" CollectionItemInfo:[rowIndex=1, colIndex=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]

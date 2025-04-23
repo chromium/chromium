@@ -1,9 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++svgRoot htmlTag='svg'
-++++++++group ignored
-++++++++++paragraph htmlTag='p'
-++++++++++++staticText name='Hello world'
-++++++++++++++inlineTextBox name='Hello '
-++++++++++++++inlineTextBox name='world'

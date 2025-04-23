@@ -1,2 +1,0 @@
-# Must match the expectation from NameTextLabelWithInput
-textField name='foo bar baz' nameFrom=relatedElement

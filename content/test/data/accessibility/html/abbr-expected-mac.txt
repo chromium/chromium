@@ -1,6 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXStaticText AXRoleDescription='text' AXValue='The '
-++++AXGroup AXDescription='World Health Organization' AXRoleDescription='group'
-++++++AXStaticText AXRoleDescription='text' AXValue='WHO'
-++++AXStaticText AXRoleDescription='text' AXValue=' was founded in 1948.'

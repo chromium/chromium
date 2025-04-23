@@ -1,5 +1,0 @@
-[document web] focusable focused
-++[section]
-++++[label] label-for=[combo box]
-++++++[static] name='Choose a pokemon '
-++++++[combo box] name='Choose a pokemon' editable focusable selectable-text labelled-by=[label] autocomplete:list haspopup:listbox

@@ -1,5 +1,0 @@
-Document
-++Text Name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++Group IsControlElement=false
-++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='This should be in the tree.'
-++Button Value.Value='0% red 0% green 0% blue'

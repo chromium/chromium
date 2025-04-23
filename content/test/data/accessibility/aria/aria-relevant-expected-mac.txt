@@ -1,6 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationLog AXARIARelevant='additions'
-++AXGroup AXSubrole=AXApplicationLog AXARIARelevant='removals'
-++AXGroup AXSubrole=AXApplicationLog AXARIARelevant='text'
-++AXGroup AXSubrole=AXApplicationLog AXARIARelevant='all'
-++AXGroup AXSubrole=AXApplicationLog AXARIARelevant='additions text'

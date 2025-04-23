@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Before" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
-++View text:"1" clickable focusable RangeInfo:[current=1.0, min=1.0, max=3.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="splitter", roleDescription="splitter"]
-++TextView text:"After" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

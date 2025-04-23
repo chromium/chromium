@@ -1,4 +1,0 @@
-[document web] focusable showing visible
-++[section] showing visible
-++++[entry] name='input 1' focusable showing visible selectable-text
-++++[entry] name='input 2' focusable focused showing visible selectable-text

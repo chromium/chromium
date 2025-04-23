@@ -1,1 +1,0 @@
-IA2_EVENT_ROLE_CHANGED on <div#a> role=ROLE_SYSTEM_PUSHBUTTON name="Role will change"

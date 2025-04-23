@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++comboBoxSelect collapsed setSize=3 posInSet=1
-++++++++menuListPopup invisible setSize=3 ispopup=auto
-++++++++++menuListOption setSize=3 posInSet=1 selected=true
-++++++++++menuListOption invisible setSize=3 posInSet=2 selected=false
-++++++++++menuListOption invisible setSize=3 posInSet=3 selected=false

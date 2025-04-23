@@ -1,2 +1,0 @@
-[document web]
-++[radio button] name='Radio1' checkable:true

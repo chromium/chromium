@@ -1,3 +1,0 @@
-input.accessibilityParameterizedAttributeNames.has(AXAttributedStringForTextMarkerRange)='yes'
-text_range={anchor: {:3, 0, down}, focus: {:3, 8, down}}
-input.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, text_range)={mispeled: {AXFont: {AXFontSize: 13}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}}

@@ -1,3 +1,0 @@
-[document web]
-++[landmark] xml-roles:complementary
-++++[static] name='This is ARIA role complementary.'

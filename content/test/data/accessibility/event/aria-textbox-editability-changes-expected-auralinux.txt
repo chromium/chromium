@@ -1,3 +1,0 @@
-# TODO(accessibility): There should be a state-change:editable event
-=== Start Continuation ===
-# TODO(accessibility): There should be a state-change:editable event

@@ -1,2 +1,0 @@
-AriaProperties changed on role=group
-LiveSetting changed on role=group

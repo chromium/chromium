@@ -1,2 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"ARIA role math." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="math", roleDescription="math"]

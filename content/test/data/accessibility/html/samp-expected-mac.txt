@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='Sample output from a computer program'

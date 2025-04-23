@@ -1,7 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXTextField AXRoleDescription='text field' AXValue='Single line.'
-++++AXStaticText AXRoleDescription='text' AXValue='Single line.'
-++AXTextArea AXRoleDescription='text entry area' AXValue='Multiple<newline>lines.'
-++++AXStaticText AXRoleDescription='text' AXValue='Multiple'
-++++AXGroup AXRoleDescription='group' AXTitle='<newline>'
-++++AXStaticText AXRoleDescription='text' AXValue='lines.'

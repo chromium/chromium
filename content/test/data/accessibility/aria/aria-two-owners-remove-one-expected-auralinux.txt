@@ -1,8 +1,0 @@
-[document web] name='done'
-++[section]
-++++[section]
-++++++[landmark] name='owner2'
-++++++++[section]
-++++++++++[push button] name='1'
-++[static] name='%E2%80%9C'
-++[static] name='%E2%80%9D'

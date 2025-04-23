@@ -1,2 +1,0 @@
-AXWebArea
-++AXCheckBox AXBrailleLabel='aria braille label' AXValue=0

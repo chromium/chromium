@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' n_selections=0
-++IA2_ROLE_SECTION ia2_hypertext='<obj0>' n_selections=0
-++++ROLE_SYSTEM_TEXT value='example.com' FOCUSABLE IA2_STATE_INVALID_ENTRY text-input-type:url ia2_hypertext='example.com' n_selections=0

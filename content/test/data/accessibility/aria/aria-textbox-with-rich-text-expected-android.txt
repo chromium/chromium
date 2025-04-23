@@ -1,6 +1,0 @@
-#<skip -- text_change_added_count is not consistent.>
-android.webkit.WebView focusable scrollable
-++android.widget.EditText clickable editable_text focusable focused multiline name='TextBox1
-' text_change_added_count=9
-++android.widget.EditText clickable editable_text focusable multiline name='TextBox2
-Some text.' text_change_added_count=19

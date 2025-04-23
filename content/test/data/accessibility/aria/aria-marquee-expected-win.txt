@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_ANIMATION FOCUSABLE xml-roles:marquee live:off container-live:off container-relevant:additions text container-atomic:false container-busy:false
-++ROLE_SYSTEM_ANIMATION FOCUSABLE xml-roles:marquee live:polite container-live:polite container-relevant:additions text container-atomic:false container-busy:false
-++ROLE_SYSTEM_ANIMATION FOCUSABLE xml-roles:marquee live:assertive container-live:assertive container-relevant:additions text container-atomic:false container-busy:false

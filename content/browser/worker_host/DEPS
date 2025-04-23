@@ -1,3 +1,0 @@
-include_rules = [
-  "+third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h",
-]

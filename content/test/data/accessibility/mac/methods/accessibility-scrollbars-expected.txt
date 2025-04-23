@@ -1,2 +1,0 @@
-main.accessibilityHorizontalScrollBar.accessibilityLabel='Horizontal Scrollbar'
-main.accessibilityVerticalScrollBar.accessibilityLabel='Vertical Scrollbar'

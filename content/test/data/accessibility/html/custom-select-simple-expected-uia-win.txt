@@ -1,3 +1,0 @@
-Document
-++Group IsControlElement=false
-++++ComboBox Name='Fruit' ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='Apple'

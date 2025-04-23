@@ -1,3 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View role_description='link' clickable link name='ARIA Link'
-++++android.widget.TextView name='ARIA Link'

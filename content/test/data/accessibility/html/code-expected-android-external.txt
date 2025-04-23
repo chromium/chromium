@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"A piece of computer code" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="code"]

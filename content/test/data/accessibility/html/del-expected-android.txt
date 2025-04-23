@@ -1,4 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.TextView interesting name='I am '
-++++android.view.View role_description='deletion' interesting name='vegetarian'

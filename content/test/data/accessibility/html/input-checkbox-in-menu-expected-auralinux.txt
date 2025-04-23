@@ -1,7 +1,0 @@
-[document web]
-++[menu] xml-roles:menu
-++++[check box] name='Checkbox1' checkable:true
-++++[check box] name='Checkbox2' checked checkable:true
-++[menu] xml-roles:menu
-++++[check box] name='Checkbox3' checked checkable:true
-++++[check box] name='Checkbox4' indeterminate checkable:true

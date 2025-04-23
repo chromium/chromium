@@ -1,9 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationLog AXARIAAtomic=0
-++++AXStaticText AXARIAAtomic=0 AXValue='This test is for aria-atomic="false"'
-++AXGroup AXSubrole=AXApplicationLog AXARIAAtomic=1
-++++AXStaticText AXARIAAtomic=0 AXValue='This test is for aria-atomic="true"'
-++AXGroup AXSubrole=AXApplicationAlert AXARIAAtomic=1
-++++AXStaticText AXARIAAtomic=0 AXValue='This test is for alert.'
-++AXGroup AXSubrole=AXApplicationStatus AXARIAAtomic=1
-++++AXStaticText AXARIAAtomic=0 AXValue='This test is for status.'

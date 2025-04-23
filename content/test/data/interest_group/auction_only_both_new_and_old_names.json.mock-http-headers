@@ -1,7 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: Application/JSON
-Ad-Auction-Allowed: true
-X-Allow-FLEDGE: true
-Ad-Auction-Only: true
-X-FLEDGE-Auction-Only: true
-

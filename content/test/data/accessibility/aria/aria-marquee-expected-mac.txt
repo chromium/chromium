@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='off' AXRoleDescription='marquee'
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='polite' AXRoleDescription='marquee'
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='assertive' AXRoleDescription='marquee'

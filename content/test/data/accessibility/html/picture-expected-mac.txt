@@ -1,7 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXImage AXRoleDescription='image' AXDescription='x'
-++++AXImage AXRoleDescription='image' AXDescription=' '
-++++AXImage AXRoleDescription='image'
-++++AXImage AXRoleDescription='image'
-++++AXImage AXRoleDescription='image'

@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[document frame] name='svg' description='SVG Title Tag' description-from:tooltip
-++++++[section]
-++++++++[static] name='Test'

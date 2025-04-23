@@ -1,8 +1,0 @@
-Document
-++Text Name='<newline>'
-++Text Name='Text line 1'
-++Group IsControlElement=false
-++++Text Name='Text line 2'
-++++Text Name='<newline>'
-++++Text Name='Text line 3'
-++Text Name='<newline>'

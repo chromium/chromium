@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++image name='pipe'
-++++++++link name='pipe1'
-++++++++staticText ignored

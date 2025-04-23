@@ -1,3 +1,0 @@
-[document web]
-++[section]
-++++[level bar] current=2.000000 minimum=1.000000 maximum=10.000000

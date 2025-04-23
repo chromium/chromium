@@ -1,2 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXCheckBox AXDescription='aria label' AXRoleDescription='checkbox' AXValue=0

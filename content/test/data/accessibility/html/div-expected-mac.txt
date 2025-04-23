@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='Unfocusable div'
-++AXGroup
-++++AXStaticText AXValue='Focusable div'

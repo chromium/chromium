@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++searchBox value='Search terms'
-++++++++genericContainer ignored
-++++++++++genericContainer
-++++++++++++staticText name='Search terms'
-++++++++++++++inlineTextBox name='Search terms'

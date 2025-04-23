@@ -1,9 +1,0 @@
-[document web]
-++[log] atomic:false container-atomic:false live:polite
-++++[static] name='This test is for aria-atomic="false"' atomic:false container-atomic:false
-++[log] atomic:true container-atomic:true live:polite
-++++[static] name='This test is for aria-atomic="true"' member-of=[log] atomic:false container-atomic:true
-++[notification] atomic:true container-atomic:true live:assertive
-++++[static] name='This test is for alert.' member-of=[notification] atomic:false container-atomic:true
-++[statusbar] atomic:true container-atomic:true live:polite
-++++[static] name='This test is for status.' member-of=[statusbar] atomic:false container-atomic:true

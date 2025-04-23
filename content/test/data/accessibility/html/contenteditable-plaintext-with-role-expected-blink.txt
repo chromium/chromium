@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++menuItemRadio editable multiline value='x' checkedState=false nonAtomicTextFieldRoot=true
-++++++++staticText editable name='x'
-++++++++++inlineTextBox editable name='x'

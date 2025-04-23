@@ -1,4 +1,0 @@
-header.accessibilityAttributeNames.has(AXDOMIdentifier)='yes'
-header.accessibilityAttributeValue(AXDOMIdentifier)='header'
-header.AXChildren[0].accessibilityAttributeNames.has(AXDOMIdentifier)='yes'
-header.AXChildren[0].accessibilityAttributeValue(AXDOMIdentifier)=''

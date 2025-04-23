@@ -1,6 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++IMAGE label='pipe'
-++++++++LINK focusable label='pipe1' actions='{DEFAULT}'
-++++++++STATIC_TEXT hidden

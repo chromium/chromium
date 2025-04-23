@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='This is to check '
-++++AXStaticText AXValue='italic property'
-++++AXStaticText AXValue=' using i tag.'

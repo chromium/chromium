@@ -1,3 +1,0 @@
-rootWebArea name='New Title'
-++genericContainer ignored
-++++genericContainer ignored

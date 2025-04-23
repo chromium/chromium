@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="search", roleDescription="search"]
-++++View text:"Search element." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
-++++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="searchBox", clickableScore="300", roleDescription="search text field"]

@@ -1,4 +1,0 @@
-AXWebArea AXSelected=0
-++AXList AXSelected=0 AXSelectedChildren=[:3]
-++++AXMenuItem AXSelected=1 AXValue='1'
-++++AXMenuItem AXSelected=0 AXValue='2'

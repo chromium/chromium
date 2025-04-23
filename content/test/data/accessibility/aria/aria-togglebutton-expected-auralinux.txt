@@ -1,5 +1,0 @@
-[document web]
-++[push button] name='Regular button' xml-roles:button
-++[toggle button] name='Toggle button' xml-roles:button
-++[toggle button] name='Toggle button' pressed xml-roles:button
-++[toggle button] name='Toggle button' indeterminate xml-roles:button

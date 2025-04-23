@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT name='done' READONLY FOCUSABLE location=(0, 0)
-++IA2_ROLE_SECTION location=(0, 50)
-++++IA2_ROLE_SECTION location=(0, 50)
-++++++IA2_ROLE_PARAGRAPH location=(0, 50)
-++++++++ROLE_SYSTEM_STATICTEXT name='content' location=(0, 50)

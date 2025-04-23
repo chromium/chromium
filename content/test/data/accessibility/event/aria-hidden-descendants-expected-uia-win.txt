@@ -1,3 +1,0 @@
-StructureChanged/ChildAdded on role=banner, name=Banner
-StructureChanged/ChildRemoved on role=toolbar
-StructureChanged/ChildrenReordered on role=toolbar

@@ -1,3 +1,0 @@
-[document web] name='HTML element'
-++[section] name='BODY element'
-++++[push button] name='Button element'

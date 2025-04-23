@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXTextField AXDescription='input 1'
-++++AXTextField AXDescription='input 2'

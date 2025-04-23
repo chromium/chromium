@@ -1,3 +1,0 @@
-[document web]
-++[section]
-++++[image] name='alternative text'

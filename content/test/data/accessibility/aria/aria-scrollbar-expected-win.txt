@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1>'
-++ROLE_SYSTEM_SCROLLBAR value='55' FOCUSABLE IA2_STATE_VERTICAL xml-roles:scrollbar currentValue=55
-++ROLE_SYSTEM_SCROLLBAR value='55' FOCUSABLE IA2_STATE_HORIZONTAL xml-roles:scrollbar currentValue=55

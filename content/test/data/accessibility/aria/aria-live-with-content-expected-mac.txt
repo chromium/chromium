@@ -1,7 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='off'
-++++AXStaticText AXValue='Off'
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='polite'
-++++AXStaticText AXValue='Polite'
-++AXGroup AXSubrole=AXApplicationMarquee AXARIALive='assertive'
-++++AXStaticText AXValue='Assertive'

@@ -1,6 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++svgRoot className='Symbol with role' htmlTag='svg'
-++++++++button htmlTag='svg' name='Click me!' roleDescription='fancy button'
-++++++++button htmlTag='svg' name='Click me!' roleDescription='fancy button'

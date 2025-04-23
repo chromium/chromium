@@ -1,6 +1,0 @@
-Document
-++Group
-++++Group
-++++++Group IsControlElement=false
-++++++++Button Name='Button 1'
-++++++++Button Name='Button 2'

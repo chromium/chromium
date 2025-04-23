@@ -1,3 +1,0 @@
-Invoke_Invoked on role=button, name=button
-Invoke_Invoked on role=group, name=span_onclick
-Invoke_Invoked on role=link, name=link

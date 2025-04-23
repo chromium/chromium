@@ -1,6 +1,0 @@
-AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert AXDescription='a'
-AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert AXDescription='c'
-AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlertDialog AXDescription='b'
-AXLiveRegionCreated on AXGroup AXSubrole=AXApplicationAlert AXDescription='a'
-AXLiveRegionCreated on AXGroup AXSubrole=AXApplicationAlert AXDescription='c'
-AXLiveRegionCreated on AXGroup AXSubrole=AXApplicationAlertDialog AXDescription='b'

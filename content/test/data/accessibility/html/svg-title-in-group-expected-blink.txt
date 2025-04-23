@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++svgRoot
-++++++++image name='abcde' tooltip='abcde' nameFrom=relatedElement
-++++++++++genericContainer
-++++++++++++staticText name='NL' nameFrom=contents
-++++++++++++++inlineTextBox name='NL' nameFrom=contents

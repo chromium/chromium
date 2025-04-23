@@ -1,1 +1,0 @@
-[document web] name='Title of the document'

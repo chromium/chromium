@@ -1,5 +1,0 @@
-Text_TextChanged on role=textbox
-ValueValue changed on role=textbox
-=== Start Continuation ===
-Text_TextChanged on role=textbox
-ValueValue changed on role=textbox

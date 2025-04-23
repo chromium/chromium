@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++IA2_ROLE_LABEL
-++++++ROLE_SYSTEM_STATICTEXT name='Choose a pokemon '
-++++++ROLE_SYSTEM_COMBOBOX name='Choose a pokemon' FOCUSABLE HASPOPUP autocomplete:list haspopup:listbox

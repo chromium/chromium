@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup
-++++++AXStaticText AXValue='Label'

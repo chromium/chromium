@@ -1,5 +1,0 @@
-android.webkit.WebView focusable focused
-++android.view.View
-++++android.widget.TextView interesting name='The '
-++++android.view.View interesting name='World Health Organization'
-++++android.widget.TextView interesting name=' was founded in 1948.'

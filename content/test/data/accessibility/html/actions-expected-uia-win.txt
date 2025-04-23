@@ -1,4 +1,0 @@
-Document Name='Actions'
-++Group IsControlElement=false
-++++Slider RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=100.00 RangeValue.Minimum=1.00 RangeValue.Value=50.00 Value.Value='50'
-++++Edit Name='Test textfield'

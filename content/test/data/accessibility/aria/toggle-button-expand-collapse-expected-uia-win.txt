@@ -1,5 +1,0 @@
-Document
-++Button Name='Toggle button, pressed, collapsed' ExpandCollapse.ExpandCollapseState='Collapsed'
-++Button Name='Toggle button, not pressed, collapsed' ExpandCollapse.ExpandCollapseState='Collapsed'
-++Button Name='Toggle button, pressed, expanded' ExpandCollapse.ExpandCollapseState='Expanded'
-++Button Name='Toggle button, not pressed, collapsed"' ExpandCollapse.ExpandCollapseState='Expanded'

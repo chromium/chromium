@@ -1,6 +1,0 @@
-AutomationFocusChanged on role=textbox, name=search
-StructureChanged/ChildAdded on role=group
-StructureChanged/ChildrenReordered on role=document
-Text_TextChanged on role=textbox, name=search
-Text_TextSelectionChanged on role=textbox, name=search
-ValueValue changed on role=textbox, name=search

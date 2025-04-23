@@ -1,9 +1,0 @@
-rootWebArea pageLocation=(0, 0) htmlTag='#document'
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer pageLocation=(0, 0) htmlTag='div'
-++++++++genericContainer pageLocation=(0, 0) htmlTag='span'
-++++++++++staticText pageLocation=(0, 0) name='Before'
-++++++++++++inlineTextBox pageLocation=(0, 0) name='Before'
-++++++++staticText pageLocation=(100, 0) name='After'
-++++++++++inlineTextBox pageLocation=(100, 0) name='After'

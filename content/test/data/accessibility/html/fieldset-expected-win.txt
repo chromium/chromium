@@ -1,9 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_GROUPING name='Browser Engines:'
-++++++IA2_ROLE_LABEL
-++++++++ROLE_SYSTEM_STATICTEXT name='Browser Engines:'
-++ROLE_SYSTEM_GROUPING name='Which cake do you prefer?'
-++++IA2_ROLE_LABEL
-++++++IA2_ROLE_HEADING name='Which cake do you prefer?'
-++++++++ROLE_SYSTEM_STATICTEXT name='Which cake do you prefer?'

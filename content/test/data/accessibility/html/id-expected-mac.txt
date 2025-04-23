@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='No id'
-++AXGroup AXDOMIdentifier='para2'
-++++AXStaticText AXValue='Has id'

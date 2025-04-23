@@ -1,8 +1,0 @@
-WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
-++View textSize:16.0 style:0 htmlInfo:[{htmlTag="form"}, {display="block"}]
-++++View text:"Browser Engines:" textSize:16.0 style:0 htmlInfo:[{htmlTag="fieldset"}, {display="block"}]
-++++++View text:"Browser Engines:" textSize:16.0 style:0 htmlInfo:[{htmlTag="legend"}, {display="block"}]
-++++++TextView text:"Browser: " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
-++++++EditText textSize:13.0 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="text"}]
-++++++TextView text:" Rendering Engine: " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
-++++++EditText textSize:13.0 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="text"}]

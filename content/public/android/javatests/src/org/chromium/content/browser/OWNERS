@@ -1,5 +1,0 @@
-# Media Session API related
-per-file MediaSession*.java=steimel@chromium.org
-
-# Java Bridge
-per-file JavaBridge*=torne@chromium.org

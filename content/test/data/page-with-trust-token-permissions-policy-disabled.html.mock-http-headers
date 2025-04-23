@@ -1,2 +1,0 @@
-HTTP/1.0 200 OK
-Permissions-Policy: private-state-token-redemption=(), private-state-token-issuance=()

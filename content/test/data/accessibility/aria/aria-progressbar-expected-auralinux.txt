@@ -1,7 +1,0 @@
-[document web]
-++[progress bar] valuetext:3 current=3.000000 minimum=1.000000 maximum=37.000000
-++[progress bar] valuetext:three current=3.000000 minimum=1.000000 maximum=96.000000
-++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=10.000000
-++[progress bar] indeterminate valuetext:5 chickens current=0.000000 minimum=0.000000 maximum=10.000000
-++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=100.000000
-++[progress bar] name='Test label' indeterminate current=0.000000 minimum=0.000000 maximum=100.000000

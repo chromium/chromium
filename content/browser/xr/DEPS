@@ -1,6 +1,0 @@
-include_rules = [
-  "+device/base",
-  "+device/vr/orientation",
-  "+device/vr/android/cardboard",
-  "+device/vr/test",
-]

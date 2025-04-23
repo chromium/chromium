@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXIncrementor AXRoleDescription='stepper' AXValue=1
-++++AXIncrementor AXRoleDescription='stepper' AXValue=6

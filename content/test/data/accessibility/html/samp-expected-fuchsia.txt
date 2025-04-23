@@ -1,5 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++STATIC_TEXT label='Sample output from a computer program'
-++++++++UNKNOWN label='Sample output from a computer program'

@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"My car is blue." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="contentDeletion", roleDescription="deletion"]

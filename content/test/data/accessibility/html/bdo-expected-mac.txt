@@ -1,6 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='Some LTR text'
-++++AXStaticText AXValue=' '
-++++AXStaticText AXValue='Some RTL text '
-++++AXStaticText AXValue='with some LTR text embedded'

@@ -1,4 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXProgressIndicator AXMaxValue=100 AXMinValue=0 AXRoleDescription='progress indicator' AXValue=22
-++++AXProgressIndicator AXMaxValue=0 AXMinValue=0 AXRoleDescription='progress indicator'

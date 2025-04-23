@@ -1,2 +1,0 @@
-StructureChanged/ChildAdded on role=dialog
-StructureChanged/ChildrenReordered on role=document

@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[static] name='Supercali'
-++++[static] name='fragilistic'
-++++[static] name='expialidocious'

@@ -1,4 +1,0 @@
-include_rules = [
-  "+device/bluetooth",
-  "+third_party/blink/common/bluetooth",
-]

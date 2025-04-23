@@ -1,8 +1,0 @@
-AXWebArea
-++AXMenu
-++++AXMenuItem AXTitle='File'
-++++AXMenuItem AXTitle='Edit'
-++++AXMenuItem AXTitle='Complex menuitem'
-++++++AXStaticText AXValue='Complex '
-++++++AXTextField
-++++++AXStaticText AXValue=' menuitem'

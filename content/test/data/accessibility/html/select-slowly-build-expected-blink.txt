@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++comboBoxSelect collapsed value='option'
-++++++++menuListPopup invisible ispopup=auto
-++++++++++menuListOption name='option' selected=true
-++++++genericContainer
-++++++++staticText name='Done'
-++++++++++inlineTextBox name='Done'

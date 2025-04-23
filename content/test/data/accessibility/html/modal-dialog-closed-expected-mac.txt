@@ -1,6 +1,0 @@
-AXWebArea
-++AXStaticText AXValue='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++AXGroup
-++++AXPopUpButton AXValue='This should be in the tree.'
-++++++AXMenuItem AXValue='This should be in the tree.'
-++AXColorWell AXValue='rgb 0.00000 0.00000 0.00000 1'

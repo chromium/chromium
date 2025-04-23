@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='blockDisplay'
-++AXGroup
-++++AXStaticText AXValue='blockDisplay Hiddenfalse'

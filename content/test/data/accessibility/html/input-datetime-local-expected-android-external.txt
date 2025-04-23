@@ -1,3 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++Spinner clickable focusable inputType:4 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="dateTime", clickableScore="300", roleDescription="local date and time picker"]

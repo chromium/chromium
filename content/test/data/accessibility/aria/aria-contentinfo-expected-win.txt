@@ -1,3 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_LANDMARK xml-roles:contentinfo
-++++ROLE_SYSTEM_STATICTEXT name='This is ARIA role contentinfo.'

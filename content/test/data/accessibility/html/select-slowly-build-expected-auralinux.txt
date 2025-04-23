@@ -1,6 +1,0 @@
-[document web]
-++[combo box]
-++++[menu]
-++++++[menu item] name='option' selectable selected
-++[section]
-++++[static] name='Done'

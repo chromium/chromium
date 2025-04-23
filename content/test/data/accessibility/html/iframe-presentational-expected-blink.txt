@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++iframePresentational
-++++++++rootWebArea
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored

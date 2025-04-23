@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_ANIMATION FOCUSABLE live:off container-live:off container-relevant:additions text container-atomic:false container-busy:false
-++ROLE_SYSTEM_ANIMATION FOCUSABLE live:polite container-live:polite container-relevant:additions text container-atomic:false container-busy:false
-++ROLE_SYSTEM_ANIMATION FOCUSABLE live:assertive container-live:assertive container-relevant:additions text container-atomic:false container-busy:false
-++ROLE_SYSTEM_ALERT FOCUSABLE live:assertive container-live:assertive container-relevant:additions text container-atomic:true container-busy:false

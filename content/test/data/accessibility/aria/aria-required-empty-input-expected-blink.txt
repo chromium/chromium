@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++textField required invalidState=false
-++++++++genericContainer
-++++++textField required invalidState=false
-++++++++genericContainer

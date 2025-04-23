@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationStatus AXRoleDescription='status'
-++AXGroup AXSubrole=AXApplicationStatus AXRoleDescription='status'

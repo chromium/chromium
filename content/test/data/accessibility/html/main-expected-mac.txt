@@ -1,5 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXLandmarkMain AXRoleDescription='main'
-++++AXStaticText AXRoleDescription='text' AXValue='This is main element.'
-++AXGroup AXSubrole=AXLandmarkMain AXRoleDescription='main'
-++++AXStaticText AXRoleDescription='text' AXValue='This is an ARIA role main.'

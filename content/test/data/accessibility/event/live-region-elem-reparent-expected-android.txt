@@ -1,2 +1,0 @@
-TYPE_ANNOUNCEMENT - [This is important!]
-TYPE_VIEW_CLICKED

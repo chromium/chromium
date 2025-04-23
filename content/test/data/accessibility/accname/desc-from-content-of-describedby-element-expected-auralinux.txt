@@ -1,1 +1,0 @@
-[entry] description='My name is Eli the weird. (QED) Where are my marbles?' described-by=[section] description-from:aria-describedby

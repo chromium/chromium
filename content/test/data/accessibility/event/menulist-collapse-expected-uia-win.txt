@@ -1,9 +1,0 @@
-AutomationFocusChanged on role=combobox
-=== Start Continuation ===
-AriaProperties changed on role=combobox
-AriaProperties changed on role=combobox
-PositionInSet changed on role=combobox
-SelectionItemIsSelected changed on role=combobox
-SelectionItem_ElementRemovedFromSelection on role=combobox
-Text_TextChanged on role=document
-ValueValue changed on role=combobox

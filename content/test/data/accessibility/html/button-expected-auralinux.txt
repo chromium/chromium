@@ -1,3 +1,0 @@
-[document web]
-++[section]
-++++[push button] name='Click me!'

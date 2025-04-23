@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++graphicsDocument name='graphics-document'
-++++++graphicsObject name='graphics-object'
-++++++graphicsSymbol name='graphics-symbol'

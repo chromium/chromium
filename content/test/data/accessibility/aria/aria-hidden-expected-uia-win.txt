@@ -1,5 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='blockDisplay'
-++Group
-++++Text Name='blockDisplay Hiddenfalse'

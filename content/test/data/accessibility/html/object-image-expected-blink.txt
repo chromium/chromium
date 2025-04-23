@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++pluginObject restriction=disabled
-++++++genericContainer
-++++++++staticText name='complete'
-++++++++++inlineTextBox name='complete'

@@ -1,7 +1,0 @@
-[document web]
-++[panel]
-++++[toggle button] name='details tag'
-++++++[static] name='details tag'
-++[panel]
-++++[toggle button] name='name' description='details #2' description-from:summary
-++++++[static] name='details #2'

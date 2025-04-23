@@ -1,9 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXCheckBox AXRoleDescription='checkbox' AXTitle='CheckBox1' AXValue=1
-++AXCheckBox AXRoleDescription='checkbox' AXTitle='CheckBox2' AXValue=0
-++AXCheckBox AXRoleDescription='checkbox' AXTitle='CheckBox3' AXValue=2
-++AXCheckBox AXRoleDescription='checkbox' AXTitle='CheckBox4' AXValue=0
-++AXCheckBox AXRoleDescription='checkbox' AXTitle='Complex checkbox' AXValue=0
-++++AXStaticText AXRoleDescription='text' AXValue='Complex '
-++++AXTextField AXRoleDescription='text field'
-++++AXStaticText AXRoleDescription='text' AXValue=' checkbox'

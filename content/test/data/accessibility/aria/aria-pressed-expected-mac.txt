@@ -1,5 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXButton AXRoleDescription='button' AXTitle='Regular button'
-++AXCheckBox AXSubrole=AXToggleButton AXRoleDescription='toggle button' AXTitle='Toggle button unpressed' AXValue=0
-++AXCheckBox AXSubrole=AXToggleButton AXRoleDescription='toggle button' AXTitle='Toggle button pressed' AXValue=1
-++AXCheckBox AXSubrole=AXToggleButton AXRoleDescription='toggle button' AXTitle='Toggle button mixed' AXValue=2

@@ -1,8 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="sectionWithoutName"]
-++++View text:"Browser Engines:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++++++View text:"Browser Engines:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="legend"]
-++++++TextView text:"Browser: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
-++++++TextView text:" Rendering Engine: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]

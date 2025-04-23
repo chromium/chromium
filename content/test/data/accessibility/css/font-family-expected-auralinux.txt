@@ -1,5 +1,0 @@
-[document web] offset=0 family-name=Tinos (Fontations)
-++[landmark] offset=0 family-name=Cousine (Fontations) offset=1 family-name=Arimo (Fontations)
-++++[paragraph] offset=0 family-name=Cousine (Fontations)
-++++++[static] name='Monospace'
-++++[static] name='Sans serif'

@@ -1,7 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++TEXT_FIELD_WITH_COMBO_BOX focusable actions='{DEFAULT, SET_VALUE}'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN

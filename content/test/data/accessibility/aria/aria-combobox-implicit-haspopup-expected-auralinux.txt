@@ -1,6 +1,0 @@
-[document web]
-++[combo box] name='ComboBoxGrouping' haspopup:listbox
-++++[entry]
-++[combo box] name='TextFieldWithComboBox' haspopup:listbox
-++[combo box] name='ComboBoxMenuButton' haspopup:listbox
-++++[static] name='Select'

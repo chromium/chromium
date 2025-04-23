@@ -1,9 +1,0 @@
-[document web] focusable focused
-++[section]
-++++[panel] name='Browser Engines:' labelled-by=[label]
-++++++[label] label-for=[panel]
-++++++++[static] name='Browser Engines:'
-++++++[static] name='Browser: '
-++++++[entry] editable focusable single-line selectable-text
-++++++[static] name=' Rendering Engine: '
-++++++[entry] editable focusable single-line selectable-text

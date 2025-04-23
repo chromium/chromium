@@ -1,8 +1,0 @@
-# The entire Chrome Graphics team is allowed to administer these test expectations.
-file://gpu/GRAPHICS_TEAM_OWNERS
-
-per-file webcodecs_expectations.txt=file://third_party/blink/renderer/modules/webcodecs/OWNERS
-
-# Service accounts for automated expectation scripts.
-chrome-automated-expectation@chops-service-accounts.iam.gserviceaccount.com
-chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com

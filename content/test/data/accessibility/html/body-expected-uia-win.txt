@@ -1,3 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='This test is for body tag'

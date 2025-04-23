@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++button name='GrowButton'
-++++++++staticText name='GrowButton'
-++++++++++inlineTextBox name='GrowButton'
-++++++staticText name='Done'
-++++++++inlineTextBox name='Done'

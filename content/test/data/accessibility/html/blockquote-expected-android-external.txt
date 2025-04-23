@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="blockquote", roleDescription="blockquote"]
-++++TextView text:"First blockquote has a child element." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
-++View text:"Second blockquote has no child." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="blockquote", roleDescription="blockquote"]

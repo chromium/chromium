@@ -1,5 +1,0 @@
-rootWebArea name='img-mime-type.png (19%C3%9719)'
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer ignored
-++++++++image

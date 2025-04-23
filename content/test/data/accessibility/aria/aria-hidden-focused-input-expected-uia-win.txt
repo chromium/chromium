@@ -1,4 +1,0 @@
-Document
-++Group
-++++Edit Name='input 1'
-++++Edit Name='input 2'

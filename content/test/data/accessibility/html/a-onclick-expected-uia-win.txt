@@ -1,8 +1,0 @@
-Document
-++Group Name='Done'
-++Hyperlink Name='link with no href but onclick'
-++++Text Name='link with no href but onclick' IsControlElement=false
-++Hyperlink Name='link with no href and click handler added via script'
-++++Text Name='link with no href and click handler added via script' IsControlElement=false
-++Group IsControlElement=false
-++++Text Name='Link with no event handler'

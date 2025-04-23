@@ -1,6 +1,0 @@
-[document web]
-++[section] name='label' editable selectable-text
-++[section] description='description' editable selectable-text described-by=[paragraph] description-from:aria-describedby
-++[section] name='title' editable selectable-text
-++[paragraph] description-for=[section]
-++++[static] name='description'

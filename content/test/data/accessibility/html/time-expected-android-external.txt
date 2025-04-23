@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"10:00" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="time"]
-++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"Valentines day" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="time"]

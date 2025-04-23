@@ -1,6 +1,0 @@
-[document web]
-++[description list]
-++++[description term] name='Coffee'
-++++++[static] name='Coffee'
-++++[description value]
-++++++[static] name='Black hot drink'

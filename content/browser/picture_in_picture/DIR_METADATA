@@ -1,7 +1,0 @@
-mixins: "//third_party/blink/renderer/modules/picture_in_picture/COMMON_METADATA"
-monorail: {
-  component: "Internals>Media>UI"
-}
-buganizer_public: {
-  component_id: 1456838
-}

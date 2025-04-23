@@ -1,2 +1,0 @@
-LiveRegionChanged on role=group
-Text_TextChanged on role=description, name=After

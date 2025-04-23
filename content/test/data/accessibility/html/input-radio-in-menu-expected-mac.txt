@@ -1,8 +1,0 @@
-#<skip -- Below AX tree is correct but crbug.com/421341>
-AXWebArea
-++AXGroup
-++++AXMenuItem
-++++AXMenuItem
-++AXMenu
-++++AXMenuItem
-++++AXMenuItem

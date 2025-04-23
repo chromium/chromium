@@ -1,6 +1,0 @@
-include_rules = [
-  "+third_party/libprotobuf-mutator/src/src",
-  "+third_party/blink/public/common/origin_trials",
-  "+tools/v8_context_snapshot/buildflags.h",
-]
-

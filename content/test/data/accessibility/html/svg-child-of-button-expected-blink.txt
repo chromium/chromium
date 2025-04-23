@@ -1,5 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++button htmlTag='button' name='Search'
-++++++++image className='button-child-icon' htmlTag='svg'

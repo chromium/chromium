@@ -1,2 +1,0 @@
-StructureChanged/ChildRemoved on role=button
-StructureChanged/ChildrenReordered on role=button

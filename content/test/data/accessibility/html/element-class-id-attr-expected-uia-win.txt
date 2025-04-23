@@ -1,9 +1,0 @@
-Document
-++Text Name='Image' ClassName='headerClass'
-++++Text Name='Image' IsControlElement=false
-++Image Name='ImageAlt' ClassName='imageClass'
-=== Start Continuation ===
-Document Name='changed-class'
-++Text Name='Image' ClassName='newClass'
-++++Text Name='Image' IsControlElement=false
-++Image Name='ImageAlt' ClassName='imageClass'

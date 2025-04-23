@@ -1,2 +1,0 @@
-IsRequiredForForm changed on role=checkbox
-IsRequiredForForm changed on role=radio

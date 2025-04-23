@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/aggregation_service",
-  "+components/sqlite_proto",
-  "+third_party/protobuf/src/google/protobuf",
-]

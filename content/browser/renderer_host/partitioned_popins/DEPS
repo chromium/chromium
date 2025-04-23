@@ -1,3 +1,0 @@
-include_rules = [
-  "+content/browser/web_contents/web_contents_impl.h",
-]

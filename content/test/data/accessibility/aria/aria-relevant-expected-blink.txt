@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++log containerLiveRelevant='additions' liveRelevant='additions'
-++++++log containerLiveRelevant='removals' liveRelevant='removals'
-++++++log containerLiveRelevant='text' liveRelevant='text'
-++++++log containerLiveRelevant='all' liveRelevant='all'
-++++++log containerLiveRelevant='additions text' liveRelevant='additions text'

@@ -1,7 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Document IsControlElement=false
-++++++Document Value.Value='about:srcdoc'
-++++++++Group IsControlElement=false
-++++++++++Hyperlink Name='done'
-++++++++++++Text Name='done' IsControlElement=false

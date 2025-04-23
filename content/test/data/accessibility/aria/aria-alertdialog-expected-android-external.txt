@@ -1,2 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View paneTitle:"dialog opened." actions:[AX_FOCUS] bundle:[chromeRole="alertDialog", roleDescription="alert dialog"]

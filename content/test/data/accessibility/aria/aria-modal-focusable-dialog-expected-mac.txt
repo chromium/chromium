@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXApplicationDialog AXDescription='modal dialog'
-++++AXStaticText AXValue='Focusable'

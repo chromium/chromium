@@ -1,7 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_PROGRESSBAR value='3' READONLY xml-roles:progressbar valuetext:3 currentValue=3 minimumValue=1 maximumValue=37
-++ROLE_SYSTEM_PROGRESSBAR value='three' READONLY xml-roles:progressbar valuetext:three currentValue=3 minimumValue=1 maximumValue=96
-++ROLE_SYSTEM_PROGRESSBAR value='0' MIXED READONLY xml-roles:progressbar minimumValue=0 maximumValue=10
-++ROLE_SYSTEM_PROGRESSBAR value='5 chickens' READONLY xml-roles:progressbar valuetext:5 chickens minimumValue=0 maximumValue=10
-++ROLE_SYSTEM_PROGRESSBAR value='0' MIXED READONLY xml-roles:progressbar minimumValue=0 maximumValue=100
-++ROLE_SYSTEM_PROGRESSBAR name='Test label' value='0' MIXED READONLY xml-roles:progressbar minimumValue=0 maximumValue=100

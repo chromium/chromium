@@ -1,2 +1,0 @@
-tr_deletion={anchor: {:2, 0, down}, focus: {:2, 12, down}}
-deletion.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_deletion)={Deleted Text: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXIsSuggestedDeletion: 1}}

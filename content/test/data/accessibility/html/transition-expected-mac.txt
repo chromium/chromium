@@ -1,4 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXButton AXTitle='GrowButton'
-++++AXStaticText AXValue='Done'

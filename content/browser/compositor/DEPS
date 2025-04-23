@@ -1,5 +1,0 @@
-include_rules = [
- "+components/viz/common",
- "+components/viz/host",
- "+ui/platform_window",
-]

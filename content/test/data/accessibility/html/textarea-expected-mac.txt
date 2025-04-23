@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='group'
-++++AXTextArea AXEditableAncestor=:3 AXHighestEditableAncestor=:3 AXRoleDescription='text entry area' AXValue='The <newline>textarea tag  defines a multi-line text input control.<newline>'

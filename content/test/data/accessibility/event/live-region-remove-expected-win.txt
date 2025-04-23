@@ -1,3 +1,0 @@
-EVENT_OBJECT_HIDE on <p#p> role=ROLE_SYSTEM_GROUPING
-EVENT_OBJECT_REORDER on <div#live> role=ROLE_SYSTEM_GROUPING
-IA2_EVENT_TEXT_REMOVED on <div#live> role=ROLE_SYSTEM_GROUPING old_text={'<obj>' start=0 end=1}

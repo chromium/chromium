@@ -1,9 +1,0 @@
-[document web]
-++[paragraph]
-++++[static] name='My favorite browser is '
-++++[content deletion] datetime:2015-02-14 20:00
-++++++[static] name='ABC'
-++++[static] name=' '
-++++[content insertion] datetime:2015-02-14 20:00
-++++++[static] name='Chrome'
-++++[static] name='!'

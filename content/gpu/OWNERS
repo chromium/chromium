@@ -1,8 +1,0 @@
-kbr@chromium.org
-zmo@chromium.org
-
-# For security review.
-per-file browser_exposed_gpu_interfaces.*=set noparent
-per-file browser_exposed_gpu_interfaces.*=file://ipc/SECURITY_OWNERS
-per-file gpu_child_thread_receiver_bindings.*=set noparent
-per-file gpu_child_thread_receiver_bindings.*=file://ipc/SECURITY_OWNERS

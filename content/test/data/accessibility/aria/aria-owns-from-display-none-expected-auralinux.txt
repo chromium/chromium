@@ -1,2 +1,0 @@
-[document web]
-++[entry] selectable-text

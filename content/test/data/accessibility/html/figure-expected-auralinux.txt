@@ -1,3 +1,0 @@
-[document web]
-++[panel]
-++++[image] name='Sunspots'

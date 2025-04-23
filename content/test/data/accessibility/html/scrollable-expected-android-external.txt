@@ -1,4 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"not scrollable" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++TextView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="genericContainer"]

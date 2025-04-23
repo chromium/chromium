@@ -1,6 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="blockquote", roleDescription="blockquote"]
-++++TextView text:"Top level" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View actions:[AX_FOCUS] bundle:[chromeRole="blockquote", roleDescription="blockquote"]
-++++++TextView text:"Sub" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++View text:"Sub-sub" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="blockquote", roleDescription="blockquote"]

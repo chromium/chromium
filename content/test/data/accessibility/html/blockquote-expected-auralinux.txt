@@ -1,6 +1,0 @@
-[document web]
-++[block quote]
-++++[paragraph]
-++++++[static] name='First blockquote has a child element.'
-++[block quote]
-++++[static] name='Second blockquote has no child.'

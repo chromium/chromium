@@ -1,2 +1,0 @@
-treeitemExpanded.isAccessibilityDisclosed=1
-treeitemCollapsed.isAccessibilityDisclosed=0

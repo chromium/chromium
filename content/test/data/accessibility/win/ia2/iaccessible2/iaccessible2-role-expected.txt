@@ -1,1 +1,0 @@
-input.QueryInterface(IAccessible2).role="ROLE_SYSTEM_TEXT"

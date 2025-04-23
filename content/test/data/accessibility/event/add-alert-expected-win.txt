@@ -1,3 +1,0 @@
-EVENT_SYSTEM_ALERT on <div#a> role=ROLE_SYSTEM_ALERT name="a"
-EVENT_SYSTEM_ALERT on <div#b> role=ROLE_SYSTEM_DIALOG name="b"
-EVENT_SYSTEM_ALERT on <div#c> role=ROLE_SYSTEM_ALERT name="c"

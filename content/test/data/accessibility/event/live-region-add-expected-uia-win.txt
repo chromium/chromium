@@ -1,3 +1,0 @@
-LiveRegionChanged on role=group
-StructureChanged/ChildAdded on role=group
-StructureChanged/ChildrenReordered on role=group

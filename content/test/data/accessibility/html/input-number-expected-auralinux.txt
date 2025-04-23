@@ -1,4 +1,0 @@
-[document web] character_count=1
-++[section] character_count=2
-++++[spin button] selectable-text text-input-type:number valuetext:1 current=1.000000 minimum=0.000000 maximum=0.000000 character_count=1
-++++[spin button] selectable-text text-input-type:number valuetext:6 current=6.000000 minimum=5.000000 maximum=10.000000 character_count=1

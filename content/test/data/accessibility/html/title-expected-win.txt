@@ -1,1 +1,0 @@
-ROLE_SYSTEM_DOCUMENT name='Title of the document' READONLY FOCUSABLE

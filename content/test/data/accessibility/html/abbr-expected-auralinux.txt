@@ -1,6 +1,0 @@
-[document web]
-++[paragraph]
-++++[static] name='The '
-++++[static] name='World Health Organization'
-++++++[static] name='WHO'
-++++[static] name=' was founded in 1948.'

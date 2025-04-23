@@ -1,7 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++image htmlTag='svg' name='Has two simple children'
-++++++svgRoot htmlTag='svg' name='Has two focusable children'
-++++++++group htmlTag='svg'
-++++++++group htmlTag='svg'

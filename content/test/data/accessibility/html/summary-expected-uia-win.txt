@@ -1,8 +1,0 @@
-#<skip -- https://crbug.com/1199033>
-Document
-++Group
-++++Button Name='details tag' ExpandCollapse.ExpandCollapseState='Collapsed'
-++++++Text Name='details tag'
-++Group
-++++Button Name='name' FullDescription='details #2' ExpandCollapse.ExpandCollapseState='Collapsed'
-++++++Text Name='details #2'

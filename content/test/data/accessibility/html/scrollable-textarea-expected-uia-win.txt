@@ -1,4 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Edit Value.Value='little'
-++++Edit Value.Value='lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text'

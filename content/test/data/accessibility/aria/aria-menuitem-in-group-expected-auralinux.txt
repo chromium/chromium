@@ -1,3 +1,0 @@
-[document web]
-++[panel]
-++++[menu item] name='Menu item'

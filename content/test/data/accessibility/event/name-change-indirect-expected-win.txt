@@ -1,6 +1,0 @@
-EVENT_OBJECT_HIDE on role=ROLE_SYSTEM_STATICTEXT name="apples"
-EVENT_OBJECT_NAMECHANGE on <div> role=ROLE_SYSTEM_GROUPING name="oranges"
-EVENT_OBJECT_REORDER on <h1#title> role=ROLE_SYSTEM_GROUPING name="oranges" level=1
-EVENT_OBJECT_SHOW on role=ROLE_SYSTEM_STATICTEXT name="oranges"
-IA2_EVENT_TEXT_INSERTED on <h1#title> role=ROLE_SYSTEM_GROUPING name="oranges" level=1 new_text={'oranges' start=0 end=7}
-IA2_EVENT_TEXT_REMOVED on <h1#title> role=ROLE_SYSTEM_GROUPING name="oranges" level=1 old_text={'apples' start=0 end=6}

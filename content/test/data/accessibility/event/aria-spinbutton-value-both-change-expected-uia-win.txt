@@ -1,2 +1,0 @@
-AriaProperties changed on role=spinbutton
-RangeValueValue changed on role=spinbutton

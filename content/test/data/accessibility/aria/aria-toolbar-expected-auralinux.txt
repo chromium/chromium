@@ -1,3 +1,0 @@
-[document web]
-++[tool bar] horizontal
-++++[static] name='A toolbar'

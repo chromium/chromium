@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++textField inputType='text' name='Name' textSelStart=0 textSelEnd=0 nameFrom=placeholder restriction=readOnly
-++++++++genericContainer ignored
-++++++++genericContainer

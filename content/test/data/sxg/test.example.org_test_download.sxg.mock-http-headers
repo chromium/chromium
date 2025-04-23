@@ -1,4 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: application/signed-exchange;v=b3
-Content-Disposition: attachment; filename=test.sxg
-X-Content-Type-Options: nosniff

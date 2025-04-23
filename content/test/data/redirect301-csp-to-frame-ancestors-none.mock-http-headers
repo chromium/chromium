@@ -1,3 +1,0 @@
-HTTP/1.1 301 Moved Permanently
-Location: /frame-ancestors-none.html
-Content-Security-Policy: frame-ancestors 'none'

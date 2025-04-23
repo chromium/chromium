@@ -1,2 +1,0 @@
-div.accessibilityAttributeNames.has(AXARIARelevant)='yes'
-div.accessibilityAttributeValue(AXARIARelevant)='additions'

@@ -1,1 +1,0 @@
-EVENT_OBJECT_FOCUS on <thead#thead> role=ROLE_SYSTEM_GROUPING name="thead" FOCUSED,FOCUSABLE

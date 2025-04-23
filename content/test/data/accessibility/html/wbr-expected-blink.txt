@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++staticText name='Supercali'
-++++++++inlineTextBox name='Supercali'
-++++++staticText name='fragilistic'
-++++++++inlineTextBox name='fragilistic'
-++++++staticText name='expialidocious'
-++++++++inlineTextBox name='expialidocious'

@@ -1,1 +1,0 @@
-button name='foo David: No file chosen' nameFrom=relatedElement

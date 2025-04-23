@@ -1,9 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++genericContainer
-++++++++staticText name='target'
-++++++++++inlineTextBox name='target'
-++++++button name='anchor' detailsFrom=cssAnchor detailsIds=genericContainer
-++++++++staticText name='anchor'
-++++++++++inlineTextBox name='anchor'

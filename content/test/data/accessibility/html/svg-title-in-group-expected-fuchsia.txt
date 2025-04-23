@@ -1,8 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++UNKNOWN
-++++++++IMAGE label='abcde'
-++++++++++UNKNOWN
-++++++++++++STATIC_TEXT label='NL'
-++++++++++++++UNKNOWN label='NL'

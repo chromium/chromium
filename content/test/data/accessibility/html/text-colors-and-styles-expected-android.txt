@@ -1,9 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView interesting name='color'
-++android.widget.TextView role_description='heading 1' heading interesting name='text size'
-++android.widget.TextView role_description='heading 2' heading interesting name='text style'
-++android.view.View
-++++android.view.View interesting name='strong'
-++android.widget.TextView interesting name='italic'
-++android.widget.TextView name=' '
-++android.widget.TextView interesting name='bold'

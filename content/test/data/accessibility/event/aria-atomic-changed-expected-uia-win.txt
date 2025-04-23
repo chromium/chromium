@@ -1,5 +1,0 @@
-AriaProperties changed on role=group, name=Item1
-=== Start Continuation ===
-AriaProperties changed on role=group, name=Item2
-=== Start Continuation ===
-AriaProperties changed on role=group, name=Item3

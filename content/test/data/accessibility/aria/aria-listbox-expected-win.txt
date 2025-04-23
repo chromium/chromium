@@ -1,7 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
-++ROLE_SYSTEM_LIST xml-roles:listbox ia2_hypertext='<obj0><obj1><obj2><obj3><obj4>'
-++++ROLE_SYSTEM_LISTITEM name='Item 1' FOCUSABLE xml-roles:option ia2_hypertext='Item 1'
-++++ROLE_SYSTEM_LISTITEM name='Item 2' FOCUSABLE xml-roles:option ia2_hypertext='Item 2'
-++++ROLE_SYSTEM_SEPARATOR IA2_STATE_HORIZONTAL xml-roles:separator
-++++ROLE_SYSTEM_LISTITEM name='Second group item 1' FOCUSABLE xml-roles:option ia2_hypertext='Second group item 1'
-++++ROLE_SYSTEM_LISTITEM name='Second group item 2' FOCUSABLE xml-roles:option ia2_hypertext='Second group item 2'

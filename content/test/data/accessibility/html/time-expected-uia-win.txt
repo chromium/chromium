@@ -1,7 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text LocalizedControlType='time'
-++++++Text Name='10:00'
-++++Text Name=' '
-++++Text LocalizedControlType='time'
-++++++Text Name='Valentines day'

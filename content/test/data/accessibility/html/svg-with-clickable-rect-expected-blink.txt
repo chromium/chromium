@@ -1,5 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++svgRoot htmlTag='svg'
-++++++++graphicsSymbol htmlTag='rect'

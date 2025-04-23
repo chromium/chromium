@@ -1,6 +1,0 @@
-Document
-++Group
-++++Group IsControlElement=false
-++++++Text Name='First blockquote has a child element.'
-++Group
-++++Text Name='Second blockquote has no child.'

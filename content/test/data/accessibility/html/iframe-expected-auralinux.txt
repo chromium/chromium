@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[internal frame] name='Empty iframe'
-++++++[document web]

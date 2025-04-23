@@ -1,2 +1,0 @@
-table.accessibilityHeader=:23
-row.accessibilityHeader=:9

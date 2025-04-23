@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='figure'
-++++AXImage AXDescription='Sunspots' AXRoleDescription='image'

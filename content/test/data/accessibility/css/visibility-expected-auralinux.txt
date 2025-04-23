@@ -1,3 +1,0 @@
-[document web]
-++[static] name='visible link'
-++[static] name='visible link'

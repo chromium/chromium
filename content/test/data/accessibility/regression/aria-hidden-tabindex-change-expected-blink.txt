@@ -1,5 +1,0 @@
-rootWebArea focusable name='done'
-++genericContainer ignored
-++++genericContainer ignored
-++++++button focusable ignored invisible name='Button'
-++++++++staticText ignored invisible

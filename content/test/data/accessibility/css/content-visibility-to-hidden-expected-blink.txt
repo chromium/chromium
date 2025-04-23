@@ -1,7 +1,0 @@
-rootWebArea name='done'
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer
-++++++++group className='hidden' name='Label'
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible

@@ -1,4 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
-++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1>'
-++++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE ia2_hypertext='Button'
-++++ROLE_SYSTEM_PUSHBUTTON name='Name' FOCUSABLE description-from:button-label ia2_hypertext='Description' description='Description'

@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++textField inputType='email' value='someone@example.com' textSelStart=0 textSelEnd=0
-++++++++genericContainer
-++++++++++staticText name='someone@example.com'
-++++++++++++inlineTextBox name='someone@example.com'

@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile"
-}
-team_email: "clank-dev@google.com"
-buganizer_public: {
-  component_id: 1457074
-}

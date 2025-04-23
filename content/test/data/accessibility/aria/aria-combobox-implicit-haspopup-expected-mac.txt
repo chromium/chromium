@@ -1,6 +1,0 @@
-AXWebArea
-++AXComboBox AXDescription='ComboBoxGrouping'
-++++AXTextField
-++AXComboBox AXDescription='TextFieldWithComboBox'
-++AXComboBox AXDescription='ComboBoxMenuButton' AXValue='Select'
-++++AXStaticText AXValue='Select'

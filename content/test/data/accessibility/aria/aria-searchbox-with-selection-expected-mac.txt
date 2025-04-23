@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXTextField AXSubrole=AXSearchField AXRoleDescription='search text field' AXValue='ARIA role searchbox.'
-++++AXStaticText AXRoleDescription='text' AXValue='ARIA role searchbox.'

@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/browser/content_browser_client.h",
-  "+content/public/gpu/content_gpu_client.h",
-  "+content/public/renderer/content_renderer_client.h",
-  "+content/public/utility/content_utility_client.h",
-  "+services/audio/public",
-  "+services/video_capture/public",
-]
-

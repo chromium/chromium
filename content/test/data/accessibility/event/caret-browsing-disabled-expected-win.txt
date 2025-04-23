@@ -1,2 +1,0 @@
-=== Start Continuation ===
-IA2_EVENT_TEXT_CARET_MOVED on <p#p1> role=ROLE_SYSTEM_GROUPING name="p1"

@@ -1,6 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_GROUPING FOCUSABLE relevant:additions container-relevant:additions
-++ROLE_SYSTEM_GROUPING FOCUSABLE relevant:removals container-relevant:removals
-++ROLE_SYSTEM_GROUPING FOCUSABLE relevant:text container-relevant:text
-++ROLE_SYSTEM_GROUPING FOCUSABLE relevant:all container-relevant:all
-++ROLE_SYSTEM_GROUPING FOCUSABLE relevant:additions text container-relevant:additions text

@@ -1,8 +1,0 @@
-# Speech recognition
-file://third_party/blink/renderer/modules/speech/OWNERS
-
-# Text-to-speech
-per-file *tts_*=dtseng@chromium.org
-per-file *tts_*=katie@chromium.org
-per-file *speech_synthesis_*=dtseng@chromium.org
-per-file *speech_synthesis_*=katie@chromium.org

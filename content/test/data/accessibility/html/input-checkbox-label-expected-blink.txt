@@ -1,6 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++labelText ignored
-++++++++checkBox inputType='checkbox' name='Checkbox Title' checkedState=false
-++++++++staticText ignored

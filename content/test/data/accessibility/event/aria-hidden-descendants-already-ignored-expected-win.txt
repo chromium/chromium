@@ -1,1 +1,0 @@
-EVENT_OBJECT_HIDE on <div#heading-root.a> role=ROLE_SYSTEM_GROUPING name="Heading" level=2

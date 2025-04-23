@@ -1,9 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='This test is to check   pre<newline>formatting.'
-++Group IsControlElement=false
-++++Text Name='This test is to check   pre<newline>formatting'
-++Group IsControlElement=false
-++++Text Name='This test is to check   pre<newline>formatting.'
-++Group IsControlElement=false
-++++Text Name='This test is to check pre formatting.'

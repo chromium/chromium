@@ -1,7 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXProgressIndicator AXMaxValue=37 AXMinValue=1 AXRoleDescription='progress indicator' AXValue=3
-++AXProgressIndicator AXMaxValue=96 AXMinValue=1 AXRoleDescription='progress indicator' AXValue=3 AXValueDescription='three'
-++AXProgressIndicator AXMaxValue=0 AXMinValue=0 AXRoleDescription='progress indicator'
-++AXProgressIndicator AXMaxValue=0 AXMinValue=0 AXRoleDescription='progress indicator' AXValue='5 chickens' AXValueDescription='5 chickens'
-++AXProgressIndicator AXMaxValue=0 AXMinValue=0 AXRoleDescription='progress indicator'
-++AXProgressIndicator AXDescription='Test label' AXMaxValue=0 AXMinValue=0 AXRoleDescription='progress indicator'

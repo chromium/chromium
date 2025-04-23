@@ -1,3 +1,0 @@
-AXElementBusyChanged on AXHeading AXTitle='Item2' AXValue=4
-AXElementBusyChanged on AXHeading AXTitle='Item3' AXValue=4
-AXElementBusyChanged on AXHeading AXTitle='Item4' AXValue=4

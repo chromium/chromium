@@ -1,8 +1,0 @@
-Document LocalizedControlType='document'
-++Text LocalizedControlType='strong'
-++++Text LocalizedControlType='text' Name='role'
-++Text LocalizedControlType='strong' IsControlElement=false
-++++Text LocalizedControlType='text' Name='element (no name)'
-++Text LocalizedControlType='text' Name=' '
-++Text LocalizedControlType='strong' Name='include me'
-++++Text LocalizedControlType='text' Name='element (with name)'

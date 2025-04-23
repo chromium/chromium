@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_GRAPHIC name='svg' description-from:tooltip description='SVG Title Tag'
-++++++IA2_ROLE_SECTION
-++++++++ROLE_SYSTEM_STATICTEXT name='Test'

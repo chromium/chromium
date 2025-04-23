@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[push button] name='Submit' default
-++[form] name='Name'
-++++[push button] name='Submit' default

@@ -1,1 +1,0 @@
-table.accessibilityColumns=[:13, :18]

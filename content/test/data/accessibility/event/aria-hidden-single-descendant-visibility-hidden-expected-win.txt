@@ -1,5 +1,0 @@
-=== Start Continuation ===
-=== Start Continuation ===
-EVENT_OBJECT_HIDE on <div.test-case> role=ROLE_SYSTEM_GROUPING
-=== Start Continuation ===
-EVENT_OBJECT_SHOW on <div.test-case> role=ROLE_SYSTEM_GROUPING

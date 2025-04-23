@@ -1,5 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++TextView text:"This text contains" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++View text:"superscript" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="superscript"]
-++++TextView text:"text." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

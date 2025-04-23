@@ -1,5 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN
-++++++BUTTON focusable label='Search' actions='{DEFAULT}'
-++++++++IMAGE

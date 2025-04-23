@@ -1,6 +1,0 @@
-AXWebArea
-++AXGroup AXSubrole=AXLandmarkMain
-++++AXGroup
-++++++AXGroup
-++++++++AXButton AXTitle='Button 1'
-++++++++AXButton AXTitle='Button 2'

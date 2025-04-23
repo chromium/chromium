@@ -1,2 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXDocumentMath AXRoleDescription='math' AXTitle='ARIA role math.'

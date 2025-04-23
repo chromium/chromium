@@ -1,8 +1,0 @@
-EVENT_OBJECT_HIDE on role=ROLE_SYSTEM_STATICTEXT name="Para"
-EVENT_OBJECT_SHOW on role=ROLE_SYSTEM_STATICTEXT name="Modified Para"
-IA2_EVENT_TEXT_INSERTED on <div#d> role=ROLE_SYSTEM_GROUPING name="d" new_text={'Modified Div' start=0 end=12}
-IA2_EVENT_TEXT_INSERTED on <h2#h> role=ROLE_SYSTEM_GROUPING name="h" level=2 new_text={'Modified Heading' start=0 end=16}
-IA2_EVENT_TEXT_INSERTED on <p#p> role=ROLE_SYSTEM_GROUPING name="p" new_text={'Modified Para' start=0 end=13}
-IA2_EVENT_TEXT_REMOVED on <div#d> role=ROLE_SYSTEM_GROUPING name="d" old_text={'Div' start=0 end=3}
-IA2_EVENT_TEXT_REMOVED on <h2#h> role=ROLE_SYSTEM_GROUPING name="h" level=2 old_text={'Heading' start=0 end=7}
-IA2_EVENT_TEXT_REMOVED on <p#p> role=ROLE_SYSTEM_GROUPING name="p" old_text={'Para' start=0 end=4}

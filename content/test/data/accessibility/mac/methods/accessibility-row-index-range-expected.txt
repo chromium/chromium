@@ -1,1 +1,0 @@
-cell.accessibilityRowIndexRange={loc: 0, len: 0}

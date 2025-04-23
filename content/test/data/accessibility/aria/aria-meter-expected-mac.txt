@@ -1,3 +1,0 @@
-AXWebArea
-++AXLevelIndicator AXSubrole=AXMeter AXDescription='funding' AXValue=50
-++AXLevelIndicator AXSubrole=AXMeter AXDescription='funding' AXValue=10

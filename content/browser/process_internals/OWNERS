@@ -1,7 +1,0 @@
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# Owners of chrome://process-internals.
-alexmos@chromium.org
-creis@chromium.org
-nasko@chromium.org

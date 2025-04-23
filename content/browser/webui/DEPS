@@ -1,7 +1,0 @@
-include_rules = [
-  "+ash/webui/grit/ash_webui_common_resources_map.h",
-  "+chromeos/ash/grit/ash_resources.h",
-  "+chromeos/ash/grit/ash_resources_map.h",
-  "+components/crash/content/browser/error_reporting",
-  "+ui/chromeos/styles",
-]

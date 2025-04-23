@@ -1,3 +1,0 @@
-=== Start Continuation ===
-AriaProperties changed on role=link, name=Toggle
-ExpandCollapseExpandCollapseState changed on role=link, name=Toggle

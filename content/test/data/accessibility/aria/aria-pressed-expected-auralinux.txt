@@ -1,5 +1,0 @@
-[document web]
-++[push button] name='Regular button'
-++[toggle button] name='Toggle button unpressed'
-++[toggle button] name='Toggle button pressed' pressed
-++[toggle button] name='Toggle button mixed' indeterminate

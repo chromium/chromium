@@ -1,5 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXStaticText AXValue='named anchor'
-++AXLink AXDescription='both a named anchor and a link'
-++++AXStaticText AXValue='both a named anchor and a link'

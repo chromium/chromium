@@ -1,2 +1,0 @@
-treeitemLevel1.accessibilityDisclosureLevel=0
-treeitemLevel2.accessibilityDisclosureLevel=1

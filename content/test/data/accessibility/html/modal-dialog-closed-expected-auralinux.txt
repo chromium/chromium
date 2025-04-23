@@ -1,8 +1,0 @@
-[document web]
-++[static] name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++[section]
-++++[combo box] expandable haspopup:menu
-++++++[menu]
-++++++++[panel] name='Group'
-++++++++++[menu item] name='This should be in the tree.' selectable selected
-++[push button]

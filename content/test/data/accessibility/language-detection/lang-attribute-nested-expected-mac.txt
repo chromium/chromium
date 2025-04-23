@@ -1,7 +1,0 @@
-AXWebArea AXLanguage='en'
-++AXGroup AXLanguage='en'
-++++AXStaticText AXLanguage='en' AXValue='This document is excellent.'
-++AXStaticText AXLanguage='es-ES' AXValue='Este documento es excelente.'
-++AXGroup AXLanguage='fr'
-++++AXStaticText AXLanguage='fr' AXValue='Ce document est excellent.'
-++AXStaticText AXLanguage='en' AXValue='This document is excellent.'

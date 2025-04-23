@@ -1,6 +1,0 @@
-UNKNOWN focusable has_input_focus
-++UNKNOWN hidden
-++++UNKNOWN hidden
-++++++UNKNOWN hidden
-++++++STATIC_TEXT label='Done'
-++++++++UNKNOWN label='Done'

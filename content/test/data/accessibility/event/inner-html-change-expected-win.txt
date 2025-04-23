@@ -1,6 +1,0 @@
-EVENT_OBJECT_HIDE on <h1> role=ROLE_SYSTEM_GROUPING name="A" level=1
-EVENT_OBJECT_HIDE on <p> role=ROLE_SYSTEM_GROUPING name="B"
-EVENT_OBJECT_SHOW on <h1> role=ROLE_SYSTEM_GROUPING name="C" level=1
-EVENT_OBJECT_SHOW on <p> role=ROLE_SYSTEM_GROUPING name="D"
-IA2_EVENT_TEXT_INSERTED on <div#main> role=ROLE_SYSTEM_GROUPING name="main" new_text={'<obj><obj>' start=0 end=2}
-IA2_EVENT_TEXT_REMOVED on <div#main> role=ROLE_SYSTEM_GROUPING name="main" old_text={'<obj><obj>' start=0 end=2}

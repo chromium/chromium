@@ -1,6 +1,0 @@
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TabWidget actions:[AX_FOCUS] bundle:[chromeRole="tabList", roleDescription="tab list"]
-++++View text:"tab1" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", roleDescription="tab"]
-++++View text:"tab2" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", roleDescription="tab"]
-++++View text:"tab3" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", roleDescription="tab"]
-++++View text:"tab4" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", roleDescription="tab"]

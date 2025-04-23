@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/aggregation_service",
-  "+third_party/distributed_point_functions/shim",
-  "+third_party/distributed_point_functions/dpf/distributed_point_function.pb.h",
-]

@@ -1,3 +1,0 @@
-div.accessibilityCustomContent[0].label='description'
-div.accessibilityCustomContent[0].value='Text-description'
-not_applicable.accessibilityCustomContent=NULL

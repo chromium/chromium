@@ -1,3 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXScrollBar AXRoleDescription='scroll bar' AXValue=55
-++AXScrollBar AXRoleDescription='scroll bar' AXValue=55

@@ -1,3 +1,0 @@
-AriaProperties changed on role=combobox
-AutomationFocusChanged on role=combobox
-ExpandCollapseExpandCollapseState changed on role=combobox

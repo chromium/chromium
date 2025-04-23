@@ -1,6 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXTabGroup AXARIASetSize=5 AXRoleDescription='tab group'
-++++AXRadioButton AXSubrole=AXTabButton AXARIAPosInSet=2 AXARIASetSize=5 AXRoleDescription='tab' AXTitle='tab1' AXValue=0
-++++AXRadioButton AXSubrole=AXTabButton AXARIAPosInSet=3 AXARIASetSize=5 AXRoleDescription='tab' AXTitle='tab2' AXValue=0
-++++AXRadioButton AXSubrole=AXTabButton AXARIAPosInSet=4 AXARIASetSize=5 AXRoleDescription='tab' AXTitle='tab3' AXValue=0
-++++AXRadioButton AXSubrole=AXTabButton AXARIAPosInSet=5 AXARIASetSize=5 AXRoleDescription='tab' AXTitle='tab4' AXValue=0

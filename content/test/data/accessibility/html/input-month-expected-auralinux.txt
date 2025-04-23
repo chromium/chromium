@@ -1,9 +1,0 @@
-[document web]
-++[section]
-++++[dateeditor] text-input-type:month
-++++++[section]
-++++++++[section]
-++++++++++[spin button] name='Month' valuetext:0 current=0.000000 minimum=1.000000 maximum=12.000000
-++++++++++[static] name=' '
-++++++++++[spin button] name='Year' valuetext:0 current=0.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show month picker' haspopup:menu

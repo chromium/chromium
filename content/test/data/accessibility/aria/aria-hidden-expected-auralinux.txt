@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[static] name='blockDisplay'
-++[section]
-++++[static] name='blockDisplay Hiddenfalse'

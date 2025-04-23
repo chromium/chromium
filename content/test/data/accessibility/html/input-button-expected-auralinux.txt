@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[push button] name='Button'
-++++[push button] name='Name' description='Description' description-from:button-label

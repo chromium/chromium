@@ -1,6 +1,0 @@
-AriaProperties changed on role=option, name=b
-AriaProperties changed on role=option, name=%C3%A7
-AutomationFocusChanged on role=option, name=%C3%A7
-SelectionItemIsSelected changed on role=option, name=b
-SelectionItemIsSelected changed on role=option, name=%C3%A7
-SelectionItem_ElementSelected on role=option, name=%C3%A7

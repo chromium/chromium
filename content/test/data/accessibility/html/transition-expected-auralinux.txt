@@ -1,4 +1,0 @@
-[document web]
-++[section]
-++++[push button] name='GrowButton'
-++++[static] name='Done'

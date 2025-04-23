@@ -1,3 +1,0 @@
-[document web] focusable focused
-++[section]
-++++[entry] editable focusable selectable-text text-input-type:tel

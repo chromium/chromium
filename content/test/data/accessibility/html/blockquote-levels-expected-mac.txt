@@ -1,7 +1,0 @@
-AXWebArea AXBlockQuoteLevel=0
-++AXGroup AXBlockQuoteLevel=1
-++++AXStaticText AXBlockQuoteLevel=1 AXValue='Top level'
-++++AXGroup AXBlockQuoteLevel=2
-++++++AXStaticText AXBlockQuoteLevel=2 AXValue='Sub'
-++++++AXGroup AXBlockQuoteLevel=3
-++++++++AXStaticText AXBlockQuoteLevel=3 AXValue='Sub-sub'

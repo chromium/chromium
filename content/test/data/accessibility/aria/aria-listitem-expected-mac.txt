@@ -1,6 +1,0 @@
-AXWebArea
-++AXList AXSubrole=AXContentList AXSelectedChildren=[] AXVisibleChildren=[:3, :5]
-++++AXGroup AXDescription='1'
-++++++AXStaticText AXValue='Item 1'
-++++AXGroup AXDescription='2'
-++++++AXStaticText AXValue='Item 2'

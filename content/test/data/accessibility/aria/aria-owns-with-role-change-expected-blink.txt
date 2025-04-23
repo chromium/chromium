@@ -1,9 +1,0 @@
-rootWebArea name='done'
-++genericContainer ignored
-++++genericContainer ignored
-++++++region name='Stuff'
-++++++++staticText name='Text'
-++++++++++inlineTextBox name='Text'
-++++++++button name='Button'
-++++++++++staticText name='Button'
-++++++++++++inlineTextBox name='Button'

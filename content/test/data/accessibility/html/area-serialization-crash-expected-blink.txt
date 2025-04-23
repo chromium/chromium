@@ -1,5 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer htmlTag='body'
-++++++staticText name='done'
-++++++++inlineTextBox name='done'

@@ -1,4 +1,0 @@
-# Original expectation was missing a space ("Elithe"), but the spec is not
-# clear about this and it seems wrong, the result should match the rendered text
-# more closely. See: https://github.com/w3c/accname/issues/15
-textField description='My name is Eli the weird. (QED) Where are my marbles?' descriptionFrom=relatedElement

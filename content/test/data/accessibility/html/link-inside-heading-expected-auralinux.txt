@@ -1,4 +1,0 @@
-[document web]
-++[heading] name='Link In Heading'
-++++[link] name='Link In Heading'
-++++++[static] name='Link In Heading'

@@ -1,3 +1,0 @@
-[document web]
-++[landmark] xml-roles:contentinfo
-++++[static] name='Footer element'

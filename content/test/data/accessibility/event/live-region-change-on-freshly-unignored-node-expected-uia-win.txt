@@ -1,2 +1,0 @@
-StructureChanged/ChildAdded on role=group
-StructureChanged/ChildrenReordered on role=document

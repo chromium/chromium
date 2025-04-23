@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView interesting name='Empty before and after'
-++android.widget.TextView interesting name='Empty positioned before and after'
-++android.widget.TextView interesting name='pseudo'
-++android.widget.TextView interesting name='Positioned before and after with content'
-++android.widget.TextView interesting name='pseudo'

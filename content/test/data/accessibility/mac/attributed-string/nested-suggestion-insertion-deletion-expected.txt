@@ -1,2 +1,0 @@
-tr_suggestion={anchor: {:2, 0, down}, focus: {:2, 37, down}}
-suggestion.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_suggestion)={Suggested Deletion: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXIsSuggestedDeletion: 1, AXIsSuggestion: 1}, Suggested Insertion: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXIsSuggestedInsertion: 1, AXIsSuggestion: 1}}

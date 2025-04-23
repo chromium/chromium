@@ -1,5 +1,0 @@
-HTTP/1.1 200 OK
-Use-As-Dictionary: match="/shared_dictionary/path/*"
-Access-Control-Allow-Origin: *
-Cache-Control: max-age=3600
-Content-Type: text/html

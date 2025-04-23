@@ -1,7 +1,0 @@
-rootWebArea htmlTag='#document'
-++genericContainer ignored
-++++genericContainer ignored
-++++++genericContainer htmlTag='div'
-++++++++paragraph htmlTag='p'
-++++++++++staticText name='paragraph'
-++++++++++++inlineTextBox name='paragraph'

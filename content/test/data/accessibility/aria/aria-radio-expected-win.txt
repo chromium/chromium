@@ -1,2 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
-++ROLE_SYSTEM_RADIOBUTTON name='Radio1' IA2_STATE_CHECKABLE xml-roles:radio checkable:true ia2_hypertext='Radio1'

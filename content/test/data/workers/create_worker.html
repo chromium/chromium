@@ -1,9 +1,0 @@
-<script>
-const params = new URLSearchParams(location.search);
-const worker = new Worker(params.get('worker_url'));
-const onmessage_promise = new Promise(r => worker.onmessage = r);
-async function waitForMessage() {
-  const message = await onmessage_promise;
-  return message.data;
-}
-</script>

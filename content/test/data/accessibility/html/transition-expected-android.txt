@@ -1,5 +1,0 @@
-#<skip - Android doesn't output the location and size of objects.>
-android.webkit.WebView focusable scrollable
-++android.view.View
-++++android.widget.Button clickable focusable focused name='GrowButton'
-++++android.view.View clickable name='Done'

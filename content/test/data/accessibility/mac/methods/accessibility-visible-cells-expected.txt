@@ -1,1 +1,0 @@
-table.accessibilityVisibleCells=[:4, :6, :9, :11]

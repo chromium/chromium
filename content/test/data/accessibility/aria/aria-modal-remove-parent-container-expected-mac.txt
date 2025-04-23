@@ -1,3 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXButton AXDescription='Should be in tree'

@@ -1,6 +1,0 @@
-[document web] focusable showing visible
-++[landmark] showing visible
-++++[section] showing visible
-++++++[section] showing visible
-++++++++[push button] name='Button 1' focusable showing visible
-++++++++[push button] name='Button 2' focusable focused showing visible

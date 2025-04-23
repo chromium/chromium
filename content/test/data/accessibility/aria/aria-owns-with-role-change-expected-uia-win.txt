@@ -1,4 +1,0 @@
-Document LocalizedControlType='document' Name='done'
-++Group LocalizedControlType='region' Name='Stuff'
-++++Text LocalizedControlType='text' Name='Text'
-++++Button LocalizedControlType='button' Name='Button'

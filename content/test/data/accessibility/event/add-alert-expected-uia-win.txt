@@ -1,3 +1,0 @@
-LiveRegionChanged on role=alert, name=a
-LiveRegionChanged on role=alert, name=b
-LiveRegionChanged on role=alert, name=c

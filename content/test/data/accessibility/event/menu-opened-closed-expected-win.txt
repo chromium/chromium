@@ -1,5 +1,0 @@
-=== Start Continuation ===
-EVENT_SYSTEM_MENUPOPUPSTART on <div#submenu> role=ROLE_SYSTEM_MENUPOPUP IA2_STATE_VERTICAL SetSize=1
-=== Start Continuation ===
-EVENT_SYSTEM_MENUPOPUPEND on role=ROLE_SYSTEM_MENUPOPUP INVISIBLE
-=== Start Continuation ===

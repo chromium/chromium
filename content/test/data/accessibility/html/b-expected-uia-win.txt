@@ -1,5 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='Some '
-++++Text Name='bold'
-++++Text Name=' text'

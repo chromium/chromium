@@ -1,3 +1,0 @@
-Document
-++Group LocalizedControlType='content information' LocalizedLandmarkType='content information'
-++++Text Name='This is ARIA role contentinfo.'

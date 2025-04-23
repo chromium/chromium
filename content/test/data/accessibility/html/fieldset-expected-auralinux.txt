@@ -1,9 +1,0 @@
-[document web]
-++[section]
-++++[panel] name='Browser Engines:' labelled-by=[label]
-++++++[label] label-for=[panel]
-++++++++[static] name='Browser Engines:'
-++[panel] name='Which cake do you prefer?' labelled-by=[label]
-++++[label] label-for=[panel]
-++++++[heading] name='Which cake do you prefer?'
-++++++++[static] name='Which cake do you prefer?'

@@ -1,4 +1,0 @@
-WebView text:"Actions" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++SeekBar text:"50" clickable focusable RangeInfo:[current=50.0, min=1.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
-++++EditText hint:"Test textfield" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Test textfield"]

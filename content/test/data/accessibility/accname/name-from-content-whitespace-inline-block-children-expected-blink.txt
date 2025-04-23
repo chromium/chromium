@@ -1,1 +1,0 @@
-button name='Adjacent inline-block: one two' nameFrom=contents

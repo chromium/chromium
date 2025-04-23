@@ -1,6 +1,0 @@
-Document
-++Group IsControlElement=false
-++++Text Name='This test is to check '
-++++Text LocalizedControlType='highlight' IsControlElement=false
-++++++Text Name='mark tag'
-++++Text Name='.'
