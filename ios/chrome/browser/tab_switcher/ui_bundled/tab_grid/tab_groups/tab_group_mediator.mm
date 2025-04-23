@@ -667,6 +667,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   if (newGroup.local_group_id() != _tabGroup->tab_group_id()) {
     return;
   }
+  [self updateTabGroupSharingState];
   [self updateFacePileUI];
 }
 
