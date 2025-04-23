@@ -134,6 +134,12 @@ BrowserAction MakeDragAndRelease(const gfx::Point& from_point,
   return action;
 }
 
+BrowserAction MakeWait() {
+  BrowserAction action;
+  action.add_action_information()->mutable_wait();
+  return action;
+}
+
 std::optional<int> FindContentNodeId(content::RenderFrameHost& rfh,
                                      std::string_view query_selector) {
   ScopedTestDevToolsProtocolClient dev_tools_client(rfh);

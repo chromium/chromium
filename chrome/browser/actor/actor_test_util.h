@@ -37,6 +37,7 @@ optimization_guide::proto::BrowserAction MakeScroll(
 optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& from_point,
     const gfx::Point& to_point);
+optimization_guide::proto::BrowserAction MakeWait();
 
 // Returns the DOMNodeId of the node matched by the given CSS query selector.
 std::optional<int> FindContentNodeId(content::RenderFrameHost& rfh,

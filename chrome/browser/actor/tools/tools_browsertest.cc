@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -1219,6 +1220,22 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ListboxOptionSelected) {
   }
 
   EXPECT_EQ(GetSelectElementCurrentValue(listbox_select_id), "delta");
+}
+
+// ===============================================
+// Wait Tool
+// ===============================================
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
+  WaitTool::SetNoDelayForTesting();
+
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  BrowserAction wait = MakeWait();
+  TestFuture<bool> result;
+  actor_coordinator().Act(wait, result.GetCallback());
+  EXPECT_TRUE(result.Get());
 }
 
 }  // namespace

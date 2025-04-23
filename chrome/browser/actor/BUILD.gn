@@ -31,6 +31,8 @@ source_set("actor") {
     "tools/tool_controller.h",
     "tools/tool_invocation.cc",
     "tools/tool_invocation.h",
+    "tools/wait_tool.cc",
+    "tools/wait_tool.h",
   ]
   public_deps = [
     "//base",
