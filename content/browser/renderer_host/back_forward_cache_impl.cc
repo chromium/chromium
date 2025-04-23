@@ -1728,11 +1728,6 @@ bool BackForwardCacheImpl::
   return false;
 }
 
-bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
-  return base::FeatureList::IsEnabled(
-      features::kBackForwardCacheMediaSessionService);
-}
-
 // Static
 bool BackForwardCacheImpl::IsUnloadAllowed() {
   return base::FeatureList::IsEnabled(kBackForwardCacheUnloadAllowed);

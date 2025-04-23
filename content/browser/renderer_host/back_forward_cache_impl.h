@@ -214,9 +214,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   ~BackForwardCacheImpl() override;
 
-  // Returns whether MediaSession's service is allowed for the BackForwardCache.
-  static bool IsMediaSessionServiceAllowed();
-
   // Returns where back/forward cache is allowed for pages with unload handlers.
   static bool IsUnloadAllowed();
 

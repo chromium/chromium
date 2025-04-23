@@ -108,12 +108,6 @@ BASE_FEATURE(kBackForwardCache,
              "BackForwardCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows pages that created a MediaSession service to stay eligible for the
-// back/forward cache.
-BASE_FEATURE(kBackForwardCacheMediaSessionService,
-             "BackForwardCacheMediaSessionService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Set a time limit for the page to enter the cache. Disabling this prevents
 // flakes during testing.
 BASE_FEATURE(kBackForwardCacheEntryTimeout,

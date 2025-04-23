@@ -1696,17 +1696,6 @@ void MediaSessionImpl::UpdateRoutedService() {
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyMediaPositionChanged();
-
-  if (routed_service_ &&
-      !BackForwardCacheImpl::IsMediaSessionServiceAllowed()) {
-    // A page in the back-forward cache may affect the media control UI
-    // displayed to users. So it is marked as ineligible as soon as a
-    // MediaSession service is associated with it.
-    BackForwardCache::DisableForRenderFrameHost(
-        routed_service_->GetRenderFrameHostId(),
-        BackForwardCacheDisable::DisabledReason(
-            BackForwardCacheDisable::DisabledReasonId::kMediaSessionService));
-  }
 }
 
 MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
