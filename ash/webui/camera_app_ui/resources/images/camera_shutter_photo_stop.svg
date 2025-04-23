@@ -1,4 +1,0 @@
-<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M60 30C60 46.5686 46.5686 60 30 60C13.4314 60 0 46.5686 0 30C0 13.4314 13.4314 0 30 0C46.5686 0 60 13.4314 60 30Z"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M38 23.88L36.12 22L30 28.12L23.88 22L22 23.88L28.12 30L22 36.12L23.88 38L30 31.88L36.12 38L38 36.12L31.88 30L38 23.88Z" fill="var(--secondary-color)"/>
-</svg>

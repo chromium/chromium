@@ -1,7 +1,0 @@
-per-file accessibility_event_rewriter*=file://ash/accessibility/OWNERS
-per-file select_to_speak_event_handler*=file://ash/accessibility/OWNERS
-per-file keyboard_capability*=jimmyxgong@chromium.org,dpad@google.com
-per-file peripheral_customization*=jimmyxgong@chromium.org,dpad@google.com
-per-file prerewritten_event_forwarder*=dpad@google.com,jimmyxgong@chromium.org
-hidehiko@chromium.org
-

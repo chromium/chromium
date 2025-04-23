@@ -1,8 +1,0 @@
-team_email: "cros-status-area-eng@google.com"
-mixins: "//ui/message_center/COMMON_METADATA"
-buganizer: {
-  component_id:1246021
-}
-buganizer_public: {
-  component_id:1246047
-}

@@ -1,9 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/geolocation",
-]
-
-specific_include_rules = {
-  "night_light_controller_impl.cc": [
-    "+cc/base/math_util.h",
-  ],
-}

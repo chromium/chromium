@@ -1,6 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/40198320): Remove.
-  "tray_background_view_unittest.cc": [
-    "+components/user_manager/user_manager.h",
-  ],
-}

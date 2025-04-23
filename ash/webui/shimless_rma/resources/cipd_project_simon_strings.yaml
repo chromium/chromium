@@ -1,4 +1,0 @@
-package: chromeos_internal/ash/peripherals-and-serviceability/shimless-rma-project-simon-strings
-description: Project Simon strings for the Shimless RMA app.
-data:
-  - dir: project_simon_strings

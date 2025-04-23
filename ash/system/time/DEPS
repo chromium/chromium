@@ -1,7 +1,0 @@
-include_rules = [
-  "+google_apis/calendar",
-  "+google_apis/common",
-
-  # TODO(http://b/361693496): Remove this after the original issue fixed.
-  "+components/crash/core/common/crash_key.h",
-]

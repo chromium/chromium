@@ -1,5 +1,0 @@
-include_rules = [
-  "+ui/resources",
-  "+ui/webui",
-  "+ui/web_dialogs",
-]

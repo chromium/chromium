@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/device_event_log/device_event_log.h",
-]

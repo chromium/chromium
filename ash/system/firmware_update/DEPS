@@ -1,9 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/fwupd",
-]
-
-specific_include_rules = {
-  "firmware_update_notification_controller_unittest.cc": [
-    "+components/proxy_config",
-  ],
-}

@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromeos/ash/grit/ash_resources.h",
-  "+components/endpoint_fetcher",
-]

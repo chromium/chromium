@@ -1,8 +1,0 @@
-callistus@google.com
-zufeng@google.com
-msalomao@google.com
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# Internal Component: b/components/690873
