@@ -10,17 +10,24 @@ import type {SidePanelErrorPageElement} from './side_panel_error_page.js';
 export function getHtml(this: SidePanelErrorPageElement) {
   return html`<div id="errorPage">
   <div id="errorIcon">
-    <picture>
+    <picture id="genericIcon">
       <source srcset="generic-error-icon-dark.png"
         media="${this.darkMode}">
       <img src="generic-error-icon.png">
     </picture>
+    <span id="protectedIcon"></span>
   </div>
   <div id="errorTopLine">
-    ${loadTimeData.getString('networkErrorPageTopLine')}
+    ${
+      this.isProtectedError ?
+          loadTimeData.getString('protectedErrorPageTopLine') :
+          loadTimeData.getString('networkErrorPageTopLine')}
   </div>
   <div id="errorBottomLine">
-    ${loadTimeData.getString('networkErrorPageBottomLine')}
+    ${
+      this.isProtectedError ?
+          loadTimeData.getString('protectedErrorPageBottomLine') :
+          loadTimeData.getString('networkErrorPageBottomLine')}
   </div>
 </div>`;
 }

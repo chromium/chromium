@@ -20,6 +20,10 @@ export class SidePanelErrorPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      isProtectedError: {
+        type: Boolean,
+        reflect: true,
+      },
       darkMode: {
         type: Boolean,
         reflect: true,
@@ -35,6 +39,9 @@ export class SidePanelErrorPageElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  // Whether the error denoted by this page is a network/server error or a
+  // protected page error.
+  protected accessor isProtectedError: boolean = false;
   // Whether to render the side panel error page in dark mode.
   protected accessor darkMode: boolean = loadTimeData.getBoolean('darkMode');
 
@@ -44,6 +51,10 @@ export class SidePanelErrorPageElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+  }
+
+  setIsProtectedError(isProtectedError: boolean) {
+    this.isProtectedError = isProtectedError;
   }
 }
 

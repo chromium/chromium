@@ -373,6 +373,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private setShowErrorPage(shouldShowErrorPage: boolean) {
+    this.$.errorPage.setIsProtectedError(false);
     this.isErrorPageVisible =
         shouldShowErrorPage && loadTimeData.getBoolean('enableErrorPage');
   }

@@ -14,6 +14,7 @@ if (is_chrome_branded) {
       "copy.svg",
       "copy_image.svg",
       "download.svg",
+      "encrypted.svg",
       "lens.svg",
       "search.svg",
       "stars.svg",

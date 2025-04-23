@@ -19,15 +19,21 @@
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin: 8px auto 16px;
   text-align: center;
+  width: 250px;
 }
 
 #errorIcon {
   height: 48px;
   margin: 156px auto 0px;
   width: 40px;
+}
+
+:host([is-protected-error]) #errorIcon {
+  height: 58px;
+  margin: 152px auto 0px;
+  width: 58px;
 }
 
 #errorPage {
@@ -60,3 +66,25 @@
 :host([dark-mode]) #errorTopLine {
   color: #E8EAED;
 }
+
+#protectedIcon {
+  background-color: #535353;
+  display: inline-block;
+  height: 58px;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: 100%;
+  min-width: 20px;
+  mask-image: url('../encrypted.svg');
+  width: 58px;
+}
+
+:host([dark-mode]) #protectedIcon {
+  background-color: #E8EAED;
+}
+
+:host([is-protected-error]) #genericIcon,
+:host(:not([is-protected-error])) #protectedIcon {
+  display: none;
+}
+
