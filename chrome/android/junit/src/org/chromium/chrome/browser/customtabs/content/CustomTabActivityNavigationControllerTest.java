@@ -18,8 +18,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
-import android.window.OnBackInvokedDispatcher;
 
 import com.google.common.collect.ImmutableList;
 
@@ -76,7 +74,6 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
-    @Mock OnBackInvokedDispatcher mDispatcher;
     @Mock private PackageManager mPackageManager;
     @Mock private ResolveInfo mResolveInfo;
 
@@ -96,11 +93,6 @@ public class CustomTabActivityNavigationControllerTest {
         ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {});
         mTestContext = new TestContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mTestContext);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when(env.activity.getOnBackInvokedDispatcher()).thenReturn(mDispatcher);
-        }
-
         mNavigationController = env.createNavigationController(mTabController);
         mNavigationController.setFinishHandler(mFinishHandler);
         Tab tab = env.prepareTab();
@@ -137,9 +129,9 @@ public class CustomTabActivityNavigationControllerTest {
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
     }
@@ -170,9 +162,9 @@ public class CustomTabActivityNavigationControllerTest {
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
     }
@@ -196,7 +188,7 @@ public class CustomTabActivityNavigationControllerTest {
                 .closeTab();
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
+        mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
@@ -213,7 +205,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
 
-        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
+        mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
@@ -266,7 +258,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        mNavigationController.navigateOnBack();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
