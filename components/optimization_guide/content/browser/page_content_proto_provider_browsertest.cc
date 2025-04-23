@@ -74,6 +74,15 @@ void AssertValidOrigin(
   }
 }
 
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->include_geometry = true;
+  request->on_critical_path = true;
+  request->include_hidden_searchable_content = true;
+
+  return request;
+}
+
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  public:
   PageContentProtoProviderBrowserTest() = default;
@@ -126,7 +135,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   void LoadData(blink::mojom::AIPageContentOptionsPtr request =
-                    DefaultAIPageContentOptions()) {
+                    GetAIPageContentOptions()) {
     base::RunLoop run_loop;
     GetAIPageContent(
         web_contents(), std::move(request),
@@ -319,6 +328,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   auto request = blink::mojom::AIPageContentOptions::New();
   request->on_critical_path = false;
+  request->include_geometry = true;
   LoadData(std::move(request));
 
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);

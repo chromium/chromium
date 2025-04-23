@@ -251,7 +251,16 @@ class AIPageContentAgentTest : public testing::Test {
   mojom::blink::AIPageContentPtr GetAIPageContentWithActionableElements() {
     mojom::blink::AIPageContentOptions options;
     options.enable_experimental_actionable_data = true;
+    options.include_geometry = true;
     return GetAIPageContent(options);
+  }
+
+  mojom::blink::AIPageContentOptions GetAIPageContentOptionsForTest() {
+    mojom::blink::AIPageContentOptions options;
+    options.include_geometry = true;
+    options.on_critical_path = true;
+    options.include_hidden_searchable_content = true;
+    return options;
   }
 
   mojom::blink::AIPageContentPtr GetAIPageContent(
@@ -286,7 +295,8 @@ class AIPageContentAgentTest : public testing::Test {
   }
 
  protected:
-  const mojom::blink::AIPageContentOptions default_options_;
+  const mojom::blink::AIPageContentOptions default_options_ =
+      GetAIPageContentOptionsForTest();
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
 

@@ -1765,8 +1765,12 @@ void LensOverlayController::MaybeGetAnnotatedPageContent(
     std::move(callback).Run(page_contents, primary_content_type, std::nullopt);
     return;
   }
+
+  blink::mojom::AIPageContentOptionsPtr ai_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions();
+  ai_page_content_options->on_critical_path = true;
   optimization_guide::GetAIPageContent(
-      tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
+      tab_->GetContents(), std::move(ai_page_content_options),
       base::BindOnce(&LensOverlayController::OnAnnotatedPageContentReceived,
                      weak_factory_.GetWeakPtr(), page_contents,
                      std::move(callback)));
