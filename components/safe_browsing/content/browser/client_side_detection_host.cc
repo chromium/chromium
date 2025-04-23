@@ -1079,8 +1079,40 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
         safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info;
         if (cache_manager->GetCachedRealTimeLlamaForcedTriggerInfo(
                 current_url_, &llama_forced_trigger_info)) {
+          llama_forced_trigger_info.set_trigger_url(current_url_.spec());
           verdict->mutable_llama_forced_trigger_info()->Swap(
               &llama_forced_trigger_info);
+        } else if (
+            !base::FeatureList::IsEnabled(
+                kClientSideDetectionForcedLlamaRedirectChainKillswitch)) {
+          std::vector<GURL> redirect_chain = web_contents()
+                                                 ->GetController()
+                                                 .GetLastCommittedEntry()
+                                                 ->GetRedirectChain();
+
+          // We pop the last element because if the redirect chain is not empty,
+          // the last element will be the current URL.
+          if (!redirect_chain.empty()) {
+            redirect_chain.pop_back();
+          }
+
+          bool redirect_chain_contains_forced_trigger_info = false;
+          for (GURL url : redirect_chain) {
+            if (cache_manager->GetCachedRealTimeLlamaForcedTriggerInfo(
+                    url, &llama_forced_trigger_info)) {
+              llama_forced_trigger_info.set_trigger_url(url.spec());
+              redirect_chain_contains_forced_trigger_info = true;
+              verdict->mutable_llama_forced_trigger_info()->Swap(
+                  &llama_forced_trigger_info);
+              break;
+            }
+          }
+
+          if (!redirect_chain.empty()) {
+            base::UmaHistogramBoolean(
+                "SBClientPhishing.RedirectChainContainsForcedTriggerInfo",
+                redirect_chain_contains_forced_trigger_info);
+          }
         }
       }
     }

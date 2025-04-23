@@ -60,6 +60,10 @@ BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              "ClientSideDetectionDebuggingMetadataCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
+             "ClientSideDetectionForcedLlamaRedirectChainKillswitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -383,6 +387,7 @@ base::Value::List GetFeatureStatusList() {
   // chrome://safe-browsing. Features should be listed in alphabetical order.
   const base::Feature* kExperimentalFeatures[] = {
       // keep-sorted start
+      &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionKeyboardPointerLockRequest,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionNotificationPrompt,

@@ -67,6 +67,9 @@ BASE_DECLARE_FEATURE(
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
+// Killswitch for Llama forced trigger info redirect chain check.
+BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
+
 // Expand CSPP beyond phishing and trigger when keyboard or pointer lock request
 // occurs on the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest);
