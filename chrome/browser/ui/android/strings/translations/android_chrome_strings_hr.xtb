@@ -1191,7 +1191,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6482749332252372425">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog nedostatka prostora.</translation>
 <translation id="6486420406192123355">Ova je PDF datoteka s web-lokacije koja upotrebljava nesigurnu vezu</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Datoteka je preuzeta}one{# preuzimanje dovršeno}few{# preuzimanja dovršena}other{# preuzimanja dovršeno}}</translation>
-<translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
+<translation id="6508722015517270189">Ponovno pokreni Chrome</translation>
 <translation id="6518133107902771759">Potvrdi</translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="652948702951888897">Chromeova povijest</translation>
