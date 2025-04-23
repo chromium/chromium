@@ -145,7 +145,10 @@ enum class ExtendedStartCrdSessionResultCode {
   // missing in the message.
   kFailureInvalidArgument = 35,
 
-  kMaxValue = kFailureInvalidArgument
+  // Failure because a local network issue has prevented the remote connection.
+  kFailureNetworkFailure = 36,
+
+  kMaxValue = kFailureNetworkFailure
 };
 
 // Translates the error code.

@@ -583,6 +583,7 @@ enum ProtocolErrorCode {
   kUnexpectedAuthenticatorError = 25,
   kInvalidState = 26,
   kInvalidArgument = 27,
+  kNetworkFailure = 28,
 };
 
 // This struct mirrors remoting::SourceLocation.

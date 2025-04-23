@@ -471,6 +471,7 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="FAILURE_UNEXPECTED_AUTHENTICATOR_ERROR"/>
   <int value="34" label="FAILURE_INVALID_STATE"/>
   <int value="35" label="FAILURE_INVALID_ARGUMENT"/>
+  <int value="36" label="FAILURE_NETWORK_FAILURE"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">

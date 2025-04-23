@@ -96,6 +96,8 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return ErrorCode::INVALID_ARGUMENT;
     case Authenticator::RejectionReason::UNEXPECTED_ERROR:
       return ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
+    case Authenticator::RejectionReason::NETWORK_FAILURE:
+      return ErrorCode::NETWORK_FAILURE;
   }
 }
 

@@ -27,6 +27,9 @@ enum ErrorCode {
   // The protocol does not match between host and client.
   INCOMPATIBLE_PROTOCOL = 4;
 
+  // A local network issue has prevented the remote connection.
+  NETWORK_FAILURE = 5;
+
   // Authentication has failed for the connection.
   AUTHENTICATION_FAILED = 8;
 
@@ -108,8 +111,11 @@ enum ErrorCode {
   // message.
   INVALID_ARGUMENT = 67;
 
+  // A peer network issue has prevented the remote connection.
+  PEER_NETWORK_FAILURE = 68;
+
   reserved 2, 11, 12, 15, 17, 41;
-  reserved 5 to 7, 19 to 25, 28 to 39, 51 to 61;
+  reserved 6 to 7, 19 to 25, 28 to 39, 51 to 61;
 
   // [400, 699] are reserved for internal errors.
   reserved 400 to 699;

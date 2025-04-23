@@ -16,9 +16,9 @@ enum ErrorCode : int;
 }  // namespace proto
 
 // If this enum is modified, please also modify the enums in these file:
-// * chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h:
+// * chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h:
 //     ExtendedStartCrdSessionResultCode
-// * chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.cc:
+// * chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.cc:
 //     ToExtendedStartCrdSessionResultCode, ToStartCrdSessionResultCode
 // * remoting/base/errors.cc: kErrorCodeNames
 // * remoting/host/mojom/desktop_session.mojom: ProtocolErrorCode
@@ -59,8 +59,9 @@ enum class ErrorCode {
   UNEXPECTED_AUTHENTICATOR_ERROR = 25,
   INVALID_STATE = 26,
   INVALID_ARGUMENT = 27,
+  NETWORK_FAILURE = 28,
 
-  ERROR_CODE_MAX = INVALID_ARGUMENT,
+  ERROR_CODE_MAX = NETWORK_FAILURE,
 };
 
 bool ParseErrorCode(const std::string& name, ErrorCode* result);

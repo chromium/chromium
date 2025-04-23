@@ -20,6 +20,25 @@
 
 namespace remoting::protocol {
 
+namespace {
+Authenticator::RejectionReason ToRejectionReason(
+    HttpStatus::Code status_code,
+    Authenticator::RejectionReason permission_denied_reason) {
+  switch (status_code) {
+    case HttpStatus::Code::PERMISSION_DENIED:
+      return permission_denied_reason;
+    case HttpStatus::Code::UNAUTHENTICATED:
+      return Authenticator::RejectionReason::INVALID_CREDENTIALS;
+    case HttpStatus::Code::RESOURCE_EXHAUSTED:
+      return Authenticator::RejectionReason::TOO_MANY_CONNECTIONS;
+    case HttpStatus::Code::NETWORK_ERROR:
+      return Authenticator::RejectionReason::NETWORK_FAILURE;
+    default:
+      return Authenticator::RejectionReason::UNEXPECTED_ERROR;
+  }
+}
+}  // namespace
+
 SessionAuthzAuthenticator::SessionAuthzAuthenticator(
     CredentialsType credentials_type,
     std::unique_ptr<SessionAuthzServiceClient> service_client,
@@ -249,20 +268,8 @@ void SessionAuthzAuthenticator::HandleSessionAuthzError(
       "SessionAuthz %s error, code: %d, message: %s", action_name,
       static_cast<int>(status.error_code()), status.error_message()));
   session_authz_state_ = SessionAuthzState::FAILED;
-  switch (status.error_code()) {
-    case HttpStatus::Code::PERMISSION_DENIED:
-      session_authz_rejection_reason_ =
-          RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
-      break;
-    case HttpStatus::Code::UNAUTHENTICATED:
-      session_authz_rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
-      break;
-    case HttpStatus::Code::RESOURCE_EXHAUSTED:
-      session_authz_rejection_reason_ = RejectionReason::TOO_MANY_CONNECTIONS;
-      break;
-    default:
-      session_authz_rejection_reason_ = RejectionReason::UNEXPECTED_ERROR;
-  }
+  session_authz_rejection_reason_ = ToRejectionReason(
+      status.error_code(), RejectionReason::AUTHZ_POLICY_CHECK_FAILED);
 }
 
 void SessionAuthzAuthenticator::StartReauthorizerIfNecessary() {
@@ -283,10 +290,13 @@ void SessionAuthzAuthenticator::StartReauthorizerIfNecessary() {
   verify_token_response_.reset();
 }
 
-void SessionAuthzAuthenticator::OnReauthorizationFailed() {
+void SessionAuthzAuthenticator::OnReauthorizationFailed(
+    HttpStatus::Code error_code,
+    const Authenticator::RejectionDetails& details) {
   session_authz_state_ = SessionAuthzState::FAILED;
-  session_authz_rejection_reason_ =
-      RejectionReason::REAUTHZ_POLICY_CHECK_FAILED;
+  session_authz_rejection_reason_ = ToRejectionReason(
+      error_code, RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
+  rejection_details_ = details;
 
   reauthorizer_.reset();
   NotifyStateChangeAfterAccepted();

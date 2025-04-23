@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/base/logging.h"
@@ -52,7 +53,7 @@ SessionAuthzReauthorizer::SessionAuthzReauthorizer(
     std::string_view session_id,
     std::string_view session_reauth_token,
     base::TimeDelta session_reauth_token_lifetime,
-    base::OnceClosure on_reauthorization_failed)
+    OnReauthorizationFailedCallback on_reauthorization_failed)
     : service_client_(service_client),
       session_id_(session_id),
       session_reauth_token_(session_reauth_token),
@@ -93,12 +94,12 @@ void SessionAuthzReauthorizer::OnReauthorizeResult(
     const HttpStatus& status,
     std::unique_ptr<internal::ReauthorizeHostResponseStruct> response) {
   if (!status.ok()) {
-    LOG(ERROR) << "SessionAuthz reauthorization failed with error. Code: "
-               << static_cast<int>(status.error_code())
-               << " Message: " << status.error_message();
+    Authenticator::RejectionDetails rejection_details(base::StringPrintf(
+        "SessionAuthz reauthorization failed with error. Code: %d Message: %s",
+        static_cast<int>(status.error_code()), status.error_message()));
     if (!IsRetriableError(status.error_code())) {
       LOG(ERROR) << "Error is non-retriable. Closing the session.";
-      NotifyReauthorizationFailed();
+      NotifyReauthorizationFailed(status.error_code(), rejection_details);
       return;
     }
     if (!backoff_entry_) {
@@ -109,7 +110,7 @@ void SessionAuthzReauthorizer::OnReauthorizeResult(
     if (backoff_entry_->GetReleaseTime() >
         (token_expire_time_ - base::Seconds(5))) {
       LOG(ERROR) << "No more retries remaining. Closing the session.";
-      NotifyReauthorizationFailed();
+      NotifyReauthorizationFailed(status.error_code(), rejection_details);
       return;
     }
     ScheduleNextReauth();
@@ -125,7 +126,9 @@ void SessionAuthzReauthorizer::OnReauthorizeResult(
   ScheduleNextReauth();
 }
 
-void SessionAuthzReauthorizer::NotifyReauthorizationFailed() {
+void SessionAuthzReauthorizer::NotifyReauthorizationFailed(
+    HttpStatus::Code error_code,
+    const Authenticator::RejectionDetails& details) {
   // Make sure the callback causes the reauthorizer to be destroyed (which
   // implies the session is closed). Otherwise, crash the process.
   reauthorize_timer_.Start(
@@ -133,7 +136,7 @@ void SessionAuthzReauthorizer::NotifyReauthorizationFailed() {
         LOG(FATAL) << "SessionAuthzReauthorizer is still alive after the "
                    << "reauthorization failure has been notified.";
       }));
-  std::move(on_reauthorization_failed_).Run();
+  std::move(on_reauthorization_failed_).Run(error_code, details);
 }
 
 }  // namespace remoting::protocol
