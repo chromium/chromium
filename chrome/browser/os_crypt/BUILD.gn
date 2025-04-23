@@ -64,13 +64,19 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "app_bound_encryption_win_unittest.cc" ]
+  sources = [
+    "app_bound_encryption_provider_win_unittest.cc",
+    "app_bound_encryption_win_unittest.cc",
+  ]
 
   deps = [
     ":os_crypt",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//chrome/elevation_service:public_headers",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

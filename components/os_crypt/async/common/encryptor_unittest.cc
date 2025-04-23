@@ -749,6 +749,44 @@ TEST_F(EncryptorTestWithOSCrypt, DecryptFlags) {
   }
 }
 
+TEST_F(EncryptorTestWithOSCrypt, KeyAvailability) {
+  std::string ciphertext;
+  {
+    // Encrypt some data using the TEST key.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+  }
+
+  {
+    // Load a key with the name TEST but it's not the same as before, so the
+    // decrypt should fail permanently. This could happen e.g. if a key provider
+    // decides it can never recover a key and generates a new one.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", DeriveAES256TestKey("NOTTEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_FALSE(flags.temporarily_unavailable);
+  }
+
+  {
+    // If the TEST key is not even there, it's also a permanent failure, since
+    // key providers should signal a temporary failure using the proper API. See
+    // OSCryptAsyncTestWithOSCrypt.TemporarilyFailingKeyProvider for a test that
+    // verifies this.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_FALSE(flags.temporarily_unavailable);
+  }
+}
+
 class EncryptorTraitsTest : public EncryptorTestBase {};
 
 TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
