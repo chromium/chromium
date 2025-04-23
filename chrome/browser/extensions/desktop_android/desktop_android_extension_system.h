@@ -94,9 +94,6 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   // Calling methods directly on DesktopAndroidExtensionSystem results in code
   // that is not portable between different OSes and is also incompatible with
   // unit tests (which may use test versions of the ExtensionSystem).
-  bool AddExtension(scoped_refptr<Extension> extension, std::string& error);
-
-  const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path);
 
   // ExtensionSystem implementation:
   void InitForRegularProfile(bool extensions_enabled) override;

@@ -9,10 +9,8 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -26,9 +24,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
-#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -41,7 +36,6 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/file_util.h"
 
 using content::BrowserContext;
 namespace extensions {
@@ -56,7 +50,6 @@ class DesktopAndroidExtensionSystemFactory : public ExtensionSystemProvider {
       : ExtensionSystemProvider(
             "DesktopAndroidExtensionSystem",
             BrowserContextDependencyManager::GetInstance()) {
-    DependsOn(ExtensionPrefsFactory::GetInstance());
     DependsOn(ExtensionRegistryFactory::GetInstance());
   }
   DesktopAndroidExtensionSystemFactory(
@@ -113,57 +106,6 @@ ExtensionSystemProvider* DesktopAndroidExtensionSystem::GetFactory() {
 }
 
 void DesktopAndroidExtensionSystem::Shutdown() {}
-
-bool DesktopAndroidExtensionSystem::AddExtension(
-    scoped_refptr<Extension> extension,
-    std::string& error) {
-  base::expected<base::Value::Dict, std::string> index_result;
-  if (Manifest::IsUnpackedLocation(extension->location())) {
-    // This code is normally handled as part of the UnpackedInstaller, which is
-    // not (yet) included in desktop android builds.
-    // TODO(crbug.com/398299722): Remove this when UnpackedInstaller works on
-    // desktop android.
-    index_result = declarative_net_request::InstallIndexHelper::
-        IndexAndPersistRulesOnInstall(*extension);
-    if (!index_result.has_value()) {
-      error = std::move(index_result.error());
-      return false;
-    }
-  }
-
-  // This is normally handled by ExtensionService, and should likely be moved
-  // to ExtensionRegistrar.
-  ExtensionPrefs::Get(browser_context_)
-      ->OnExtensionInstalled(extension.get(), /*disable_reasons=*/{},
-                             syncer::StringOrdinal(),
-                             kInstallFlagInstallImmediately, std::string(),
-                             std::move(index_result.value()));
-
-  registrar_->AddExtension(std::move(extension));
-  return true;
-}
-
-const Extension* DesktopAndroidExtensionSystem::LoadExtensionFromDirectory(
-    const base::FilePath& file_path) {
-  base::ScopedAllowBlocking allow_blocking;
-
-  std::string load_error;
-  scoped_refptr<Extension> extension = file_util::LoadExtension(
-      file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
-  if (!extension) {
-    return nullptr;
-  }
-
-  std::string error;
-  if (!AddExtension(extension, error)) {
-    return nullptr;
-  }
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  CHECK(registry->enabled_extensions().Contains(extension->id()));
-
-  return extension.get();
-}
 
 void DesktopAndroidExtensionSystem::InitForRegularProfile(
     bool extensions_enabled) {
