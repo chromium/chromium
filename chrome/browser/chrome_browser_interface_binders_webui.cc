@@ -96,6 +96,8 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
@@ -526,6 +528,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      new_tab_footer::mojom::NewTabFooterHandlerFactory, NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,

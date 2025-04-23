@@ -5,27 +5,50 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_FOOTER_NEW_TAB_FOOTER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_FOOTER_NEW_TAB_FOOTER_UI_H_
 
-#include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
+#include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "content/public/browser/webui_config.h"
+#include "ui/webui/mojo_web_ui_controller.h"
+
+class NewTabFooterHandler;
 class NewTabFooterUI;
+class Profile;
 
 class NewTabFooterUIConfig
     : public content::DefaultWebUIConfig<NewTabFooterUI> {
  public:
-  NewTabFooterUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUINewTabFooterHost) {}
-
+  NewTabFooterUIConfig();
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://newtab-footer
-class NewTabFooterUI : public content::WebUIController {
+class NewTabFooterUI
+    : public ui::MojoWebUIController,
+      public new_tab_footer::mojom::NewTabFooterHandlerFactory {
  public:
   explicit NewTabFooterUI(content::WebUI* web_ui);
   ~NewTabFooterUI() override;
+
+  // Instantiates the implementor of the mojom::NewTabFooterHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
+          pending_receiver);
+
+ private:
+  // new_tab_footer::mojom::NewTabFooterHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
+          pending_handler) override;
+
+  std::unique_ptr<NewTabFooterHandler> handler_;
+  mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
+      document_factory_receiver_{this};
+  raw_ptr<Profile> profile_;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_FOOTER_NEW_TAB_FOOTER_UI_H_

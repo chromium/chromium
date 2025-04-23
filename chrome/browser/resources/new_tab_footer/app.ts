@@ -9,6 +9,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {NewTabFooterDocumentProxy} from './browser_proxy.js';
+import type {ExtensionAttribution} from './new_tab_footer.mojom-webui.js';
 
 export class NewTabFooterAppElement extends CrLitElement {
   static get is() {
@@ -25,13 +27,26 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      extensionAttribution_: {type: Object},
       message_: {type: String},
     };
   }
 
+  protected accessor extensionAttribution_: ExtensionAttribution|null = null;
   // TODO(crbug.com/409056431): Remove `message_` once relevant
   // variables/properties are added. This is used as a placeholder.
   protected accessor message_: string = loadTimeData.getString('message');
+
+  constructor() {
+    super();
+    this.getNtpExtensionAttribution_();
+  }
+
+  private async getNtpExtensionAttribution_() {
+    this.extensionAttribution_ = (await NewTabFooterDocumentProxy.getInstance()
+                                      .handler.getNtpExtensionAttribution())
+                                     .attribution;
+  }
 }
 
 declare global {

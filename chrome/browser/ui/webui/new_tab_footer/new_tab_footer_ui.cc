@@ -4,6 +4,13 @@
 
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 
+#include <memory>
+#include <utility>
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_handler.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/new_tab_footer_resources.h"
 #include "chrome/grit/new_tab_footer_resources_map.h"
 #include "components/search/ntp_features.h"
@@ -13,13 +20,18 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
+NewTabFooterUIConfig::NewTabFooterUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUINewTabFooterHost) {}
+
 bool NewTabFooterUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(ntp_features::kNtpFooter);
 }
 
 NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://newtab-footer source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -37,3 +49,22 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
 }
 
 NewTabFooterUI::~NewTabFooterUI() = default;
+
+void NewTabFooterUI::BindInterface(
+    mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
+        pending_receiver) {
+  if (document_factory_receiver_.is_bound()) {
+    document_factory_receiver_.reset();
+  }
+
+  document_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void NewTabFooterUI::CreatePageHandler(
+    mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
+        pending_handler) {
+  handler_ = std::make_unique<NewTabFooterHandler>(std::move(pending_handler),
+                                                   profile_);
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(NewTabFooterUI)
