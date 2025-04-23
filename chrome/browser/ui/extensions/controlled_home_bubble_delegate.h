@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/auto_reset.h"
-#include "base/check_is_test.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "extensions/browser/extension_registry.h"
@@ -58,7 +57,6 @@ class ControlledHomeBubbleDelegate
   void OnBubbleClosed(CloseAction action) override;
 
   const extensions::Extension* extension_for_testing() {
-    CHECK_IS_TEST();
     return extension_.get();
   }
   // Don't try to navigate when "learn more" is clicked.
