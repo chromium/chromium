@@ -12486,6 +12486,7 @@ interface XRRigidTransform
     method constructor
 interface XRSession : EventTarget
     attribute @@toStringTag
+    getter depthActive
     getter depthDataFormat
     getter depthType
     getter depthUsage
@@ -12514,11 +12515,13 @@ interface XRSession : EventTarget
     method constructor
     method end
     method getTrackedImageScores
+    method pauseDepthSensing
     method requestAnimationFrame
     method requestHitTestSource
     method requestHitTestSourceForTransientInput
     method requestLightProbe
     method requestReferenceSpace
+    method resumeDepthSensing
     method updateRenderState
     method updateTargetFrameRate
     setter onend

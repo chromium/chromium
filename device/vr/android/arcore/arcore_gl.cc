@@ -1480,7 +1480,8 @@ void ArCoreGl::ProcessFrame(
     frame_data->light_estimation_data = arcore_->GetLightEstimationData();
   }
 
-  if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH) && options &&
+      options->depth_active) {
     // We only return a single view.
     CHECK(frame_data->render_info->views.size() > 0);
     frame_data->render_info->views[0]->depth_data = arcore_->GetDepthData();

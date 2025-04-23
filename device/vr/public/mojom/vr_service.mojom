@@ -958,6 +958,15 @@ struct XRFrameDataRequestOptions {
   // by the request to |XRFrameDataProvider.GetFrameData()|.
   bool include_lighting_estimation_data;
 
+  // Controls whether |XRView.depth_data| is populated for the XRView's being
+  // sent up by the request to |XRFrameDataProvider.GetFrameData()|. Note that
+  // when this is false, the device is allowed to deallocate any objects it has
+  // created to track or retrieve depth data. Due to device and timing
+  // constraints, the device is not obligated  to send up depth data immediately
+  // when this is `true`, as it may take a few frames before such data is ready.
+  // If depth is not enabled on the session, this value is ignored.
+  bool depth_active;
+
   // The ID of the last known stage parameters set sent to the requesting
   // session. The XRFrameData should only send new stage parameters if it has
   // a higher ID. (Zero would indicate that the stage parameters should always

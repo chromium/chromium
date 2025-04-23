@@ -8,6 +8,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_cpu_depth_information.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -72,6 +73,11 @@ XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
     return nullptr;
   }
 
+  // If we've reached this point, we belong to the same session as the frame.
+  if (!xr_frame->session()->IsDepthActive()) {
+    return nullptr;
+  }
+
   if (!depth_data_) {
     return nullptr;
   }
@@ -91,6 +97,11 @@ XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
   if (usage_ != device::mojom::XRDepthUsage::kGPUOptimized) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidUsageMode);
+    return nullptr;
+  }
+
+  // If we've reached this point, we belong to the same session as the frame.
+  if (!xr_frame->session()->IsDepthActive()) {
     return nullptr;
   }
 

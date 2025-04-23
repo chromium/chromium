@@ -225,6 +225,7 @@ void XRFrameProvider::RequestFrame(XRSession* session) {
   auto options = device::mojom::blink::XRFrameDataRequestOptions::New();
   options->include_lighting_estimation_data = session->LightEstimationEnabled();
   options->stage_parameters_id = session->StageParametersId();
+  options->depth_active = session->IsDepthActive();
 
   // Immersive frame logic.
   if (session->immersive()) {

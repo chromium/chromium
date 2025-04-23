@@ -175,6 +175,9 @@ void OpenXrRenderLoop::GetFrameData(
     return;
   }
 
+  // We only parse this in `GetNextFrameData` if depth is enabled, so we can
+  // just set it now.
+  depth_active_ = options && options->depth_active;
   StartPendingFrame();
   webxr_has_pose_ = true;
   pending_frame_->webxr_has_pose_ = true;
@@ -730,8 +733,15 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
             mojo_from_viewer.ToTransform(), frame_data->input_state.value());
   }
 
+  // If we don't have a depth_sensor, depth wasn't enabled.
+  // If `depth_active_` is false, then we don't need to send depth data.
+  // Technically, if `depth_active` is false and we have a `depth_sensor`, we
+  // could destroy it and re-create it the next time it's `true`; but as the
+  // depth_sensor doesn't have an `Update` method, this method does all of the
+  // heavy lifting, and it should be relatively cheap to pending otherwise to
+  // speed up sending data when the page requests it again.
   OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
-  if (depth_sensor) {
+  if (depth_sensor && depth_active_) {
     depth_sensor->PopulateDepthData(frame_time, frame_data->render_info->views);
   }
 
