@@ -105,6 +105,6 @@ public final class TabListEditorMediatorUnitTest {
         Set<@TabId Integer> tabIds = Set.of(1);
         mMediator.selectTabs(tabIds);
         verify(mSelectionDelegate).setSelectedItems(tabIds);
-        verify(mResetHandler).resetWithListOfTabs(anyList(), eq(null), eq(true));
+        verify(mResetHandler).resetWithListOfTabs(anyList(), eq(null), eq(null), eq(true));
     }
 }

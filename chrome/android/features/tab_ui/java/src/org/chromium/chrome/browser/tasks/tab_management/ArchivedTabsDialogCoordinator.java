@@ -38,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -71,6 +72,7 @@ import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -291,6 +293,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull FadingShadowView mShadowView;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private TabListRecyclerView mDialogRecyclerView;
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
@@ -382,6 +385,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             getCloseAllTabsButtonContainer(), mEdgeToEdgeSupplier);
         }
+
+        mTabGroupSyncService = tabGroupSyncService;
     }
 
     /** Hides the dialog. */
@@ -440,7 +445,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
-        controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), null);
+        controller.show(
+                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
+                getTabGroupSyncIds(),
+                /* recyclerViewPosition= */ null);
         controller.setNavigationProvider(mNavigationProvider);
         mTabListEditorCoordinator.overrideContentDescriptions(
                 R.string.accessibility_archived_tabs_dialog,
@@ -737,6 +745,25 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         mIphMessagePropertyModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, ss);
+    }
+
+    private List<String> getTabGroupSyncIds() {
+        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                || mTabGroupSyncService == null) {
+            return null;
+        }
+
+        List<String> tabGroupSyncIds = new ArrayList<>();
+        for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
+            assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
+
+            if (savedTabGroup.archivalTimeMs != null) {
+                tabGroupSyncIds.add(syncGroupId);
+            }
+        }
+
+        return tabGroupSyncIds;
     }
 
     // SnackbarManageable implementation.

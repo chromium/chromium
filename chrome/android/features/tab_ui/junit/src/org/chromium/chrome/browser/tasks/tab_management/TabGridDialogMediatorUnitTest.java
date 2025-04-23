@@ -364,7 +364,7 @@ public class TabGridDialogMediatorUnitTest {
                 R.id.select_tabs, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
-        verify(mTabListEditorController).show(any(), eq(null));
+        verify(mTabListEditorController).show(any(), eq(new ArrayList<>()), eq(null));
         List<TabListEditorAction> actions = captor.getValue();
         assertThat(actions.get(0), instanceOf(TabListEditorSelectionAction.class));
         assertThat(actions.get(1), instanceOf(TabListEditorCloseAction.class));
@@ -1440,7 +1440,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
-        verify(mTabListEditorController).show(eq(tabGroup), eq(null));
+        verify(mTabListEditorController).show(eq(tabGroup), eq(new ArrayList<>()), eq(null));
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.SelectTabs"));
     }
 

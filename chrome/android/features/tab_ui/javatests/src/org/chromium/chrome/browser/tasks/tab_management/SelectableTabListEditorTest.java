@@ -1954,7 +1954,8 @@ public class SelectableTabListEditorTest {
     private void showSelectionEditor(List<Tab> tabs, @Nullable List<TabListEditorAction> actions) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabListEditorController.show(tabs, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.show(
+                            tabs, new ArrayList<>(), /* recyclerViewPosition= */ null);
                     if (actions != null) {
                         mTabListEditorController.configureToolbarWithMenuItems(actions);
                     }

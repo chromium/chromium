@@ -78,15 +78,19 @@ class TabListEditorCoordinator {
     // TabListCoordinator.
     /** Interface for resetting the selectable tab grid. */
     interface ResetHandler {
+        // TODO(crbug.com/412987337): Rename the function to something more applicable and refactor
+        // the tab and group parameters to not be nullable.
         /**
          * Handles the reset event.
          *
          * @param tabs List of {@link Tab}s to reset.
+         * @param tabGroupSyncIds List of syncIds tied to {@link SavedTabGroup}s to be shown.
          * @param recyclerViewPosition The state to preserve scroll position of the recycler view.
          * @param quickMode whether to use quick mode.
          */
         void resetWithListOfTabs(
                 @Nullable List<Tab> tabs,
+                @Nullable List<String> tabGroupSyncIds,
                 @Nullable RecyclerViewPosition recyclerViewPosition,
                 boolean quickMode);
 
@@ -103,9 +107,13 @@ class TabListEditorCoordinator {
          * Shows the TabListEditor with the given {@Link Tab}s.
          *
          * @param tabs List of {@link Tab}s to show.
+         * @param tabGroupSyncIds List of syncIds tied to {@link SavedTabGroup}s to be shown.
          * @param recyclerViewPosition The state to preserve scroll position of the recycler view.
          */
-        void show(List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition);
+        void show(
+                List<Tab> tabs,
+                List<String> tabGroupSyncIds,
+                @Nullable RecyclerViewPosition recyclerViewPosition);
 
         /** Hides the TabListEditor. */
         void hide();
@@ -191,11 +199,13 @@ class TabListEditorCoordinator {
             new TabListEditorController() {
                 @Override
                 public void show(
-                        List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition) {
+                        List<Tab> tabs,
+                        List<String> tabGroupSyncIds,
+                        @Nullable RecyclerViewPosition recyclerViewPosition) {
                     if (mTabListCoordinator == null) {
                         createTabListCoordinator();
                     }
-                    mTabListEditorMediator.show(tabs, recyclerViewPosition);
+                    mTabListEditorMediator.show(tabs, tabGroupSyncIds, recyclerViewPosition);
                 }
 
                 @Override
@@ -387,10 +397,12 @@ class TabListEditorCoordinator {
      * Resets {@link TabListCoordinator} with the provided list.
      *
      * @param tabs List of {@link Tab}s to reset.
+     * @param tabGroupSyncIds List of syncIds tied to {@link SavedTabGroup}s to be shown.
      * @param quickMode whether to use quick mode.
      */
-    void resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
-        mTabListCoordinator.resetWithListOfTabs(tabs, quickMode);
+    void resetWithListOfTabs(
+            @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
+        mTabListCoordinator.resetWithListOfTabs(tabs, tabGroupSyncIds, quickMode);
     }
 
     /**
@@ -487,9 +499,11 @@ class TabListEditorCoordinator {
                     @Override
                     public void resetWithListOfTabs(
                             @Nullable List<Tab> tabs,
+                            @Nullable List<String> tabGroupSyncIds,
                             @Nullable RecyclerViewPosition recyclerViewPosition,
                             boolean quickMode) {
-                        TabListEditorCoordinator.this.resetWithListOfTabs(tabs, quickMode);
+                        TabListEditorCoordinator.this.resetWithListOfTabs(
+                                tabs, tabGroupSyncIds, quickMode);
                         if (recyclerViewPosition == null) {
                             return;
                         }
@@ -511,7 +525,10 @@ class TabListEditorCoordinator {
                     public void postHiding() {
                         mTabListCoordinator.postHiding();
                         mTabListCoordinator.softCleanup();
-                        mTabListCoordinator.resetWithListOfTabs(null, /* quickMode= */ false);
+                        mTabListCoordinator.resetWithListOfTabs(
+                                /* tabs= */ null,
+                                /* tabGroupSyncIds= */ null,
+                                /* quickMode= */ false);
                     }
                 };
 

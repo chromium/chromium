@@ -100,6 +100,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -1326,7 +1327,12 @@ public class TabGridDialogMediator
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
-        mTabListEditorControllerSupplier.get().show(tabs, mRecyclerViewPositionSupplier.get());
+        mTabListEditorControllerSupplier
+                .get()
+                .show(
+                        tabs,
+                        /* tabGroupSyncIds= */ Collections.emptyList(),
+                        mRecyclerViewPositionSupplier.get());
         configureTabListEditorMenu();
         return true;
     }

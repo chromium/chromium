@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -207,6 +208,7 @@ public class TabListEditorManager {
         var controller = mControllerSupplier.get();
         controller.show(
                 mCurrentTabGroupModelFilterSupplier.get().getRepresentativeTabList(),
+                /* tabGroupSyncIds= */ Collections.emptyList(),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);
 

@@ -512,7 +512,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Override
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
-        mTabListCoordinator.resetWithListOfTabs(tabs, false);
+        mTabListCoordinator.resetWithListOfTabs(
+                tabs, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         boolean startedToShow = mMediator.onReset(tabs);
         if (startedToShow) {
             mShowingOrAnimationSupplier.set(true);

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.Gravity;
@@ -39,6 +40,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -64,15 +66,23 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link TabListMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
 public class ArchivedTabsDialogCoordinatorUnitTest {
+    private static final Token TAB_GROUP_ID = Token.createRandom();
+    private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Rule
@@ -183,6 +193,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testShow() {
         mCoordinator.show(mOnTabSelectingListener);
         verify(mRootView).addView(any());
+        verify(mTabListEditorController).show(any(), eq(null), eq(null));
         verify(mTabListEditorController).setNavigationProvider(any());
         verify(mTabListEditorController).setToolbarTitle("0 inactive tabs");
         verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ARCHIVED_TABS_DIALOG));
@@ -194,6 +205,21 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         doReturn(2).when(mArchivedTabModel).getCount();
         mCoordinator.updateTitle();
         verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testShowWithSyncedTabGroups() {
+        List<String> tabGroupSyncIds = new ArrayList<>(List.of(TAB_GROUP_ID_STRING));
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
+        savedTabGroup.savedTabs = new ArrayList<>(List.of(savedTabGroupTab));
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
+        when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(savedTabGroup);
+
+        mCoordinator.show(mOnTabSelectingListener);
+        verify(mTabListEditorController).show(any(), eq(tabGroupSyncIds), eq(null));
     }
 
     @Test
