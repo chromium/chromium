@@ -63,7 +63,7 @@ TEST(SharedStorageEventParamsTest, NonASCIISerializedData_EscapedByInsertion) {
   SetCloneableMessageWithByteArray(serialized_data_message, data);
 
   auto params = SharedStorageEventParams::CreateForRunForTesting(
-      "test-operation", /*keep_alive=*/false,
+      "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
       SharedStorageEventParams::PrivateAggregationConfigWrapper(),
       serialized_data_message, /*worklet_id=*/0);
 
@@ -91,7 +91,7 @@ TEST(SharedStorageEventParamsTest, ASCIISerializedData_UnchangedByInsertion) {
   SetCloneableMessageWithByteArray(serialized_data_message, data);
 
   auto params = SharedStorageEventParams::CreateForRunForTesting(
-      "test-operation", /*keep_alive=*/false,
+      "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
       SharedStorageEventParams::PrivateAggregationConfigWrapper(),
       serialized_data_message, /*worklet_id=*/0);
 

@@ -99,10 +99,12 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 
   void OnRunOperationOnWorkletFinished(
       base::TimeTicks start_time,
+      int operation_id,
       bool success,
       const std::string& error_message) override;
 
   void OnRunOperationOnWorkletFinishedHelper(base::TimeTicks start_time,
+                                             int operation_id,
                                              bool success,
                                              const std::string& error_message,
                                              bool initial_message);
@@ -110,6 +112,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,
@@ -121,6 +124,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   void OnRunURLSelectionOperationOnWorkletFinishedHelper(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,

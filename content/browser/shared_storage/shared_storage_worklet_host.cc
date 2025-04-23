@@ -812,25 +812,30 @@ void SharedStorageWorkletHost::SelectURL(
 
   shared_storage_runtime_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
+  int operation_id = next_operation_id_++;
+
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kSelectURL,
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForSelectURL(
-          name, keep_alive_after_operation, private_aggregation_config,
-          serialized_data, std::move(converted_urls), resolve_to_config,
+          name, operation_id, keep_alive_after_operation,
+          private_aggregation_config, serialized_data,
+          std::move(converted_urls), resolve_to_config,
           base::UTF16ToUTF8(saved_query_name), urn_uuid, worklet_id_));
 
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
-    auto saved_query_callback = base::BindOnce(
-        &SharedStorageWorkletHost::OnSelectURLSavedQueryFound,
-        weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(), name);
+    auto saved_query_callback =
+        base::BindOnce(&SharedStorageWorkletHost::OnSelectURLSavedQueryFound,
+                       weak_ptr_factory_.GetWeakPtr(), urn_uuid,
+                       base::TimeTicks::Now(), operation_id, name);
     int32_t index = page_->GetSavedQueryResultIndexOrStoreCallback(
         shared_storage_origin_, script_source_url_, name, saved_query_name,
         std::move(saved_query_callback));
     if (index >= 0) {
       // The result index has been stored from a previously resolved worklet
       // operation.
-      OnSelectURLSavedQueryFound(urn_uuid, base::TimeTicks::Now(), name, index);
+      OnSelectURLSavedQueryFound(urn_uuid, base::TimeTicks::Now(), operation_id,
+                                 name, index);
       return;
     }
     if (index == -1) {
@@ -854,7 +859,7 @@ void SharedStorageWorkletHost::SelectURL(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
           weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(),
-          name, saved_query_name));
+          operation_id, name, saved_query_name));
 }
 
 void SharedStorageWorkletHost::Run(
@@ -967,19 +972,22 @@ void SharedStorageWorkletHost::Run(
 
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 
+  int operation_id = next_operation_id_++;
+
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kRun,
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForRun(name, keep_alive_after_operation,
-                                             private_aggregation_config,
-                                             serialized_data, worklet_id_));
+      SharedStorageEventParams::CreateForRun(
+          name, operation_id, keep_alive_after_operation,
+          private_aggregation_config, serialized_data, worklet_id_));
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, std::move(serialized_data),
       MaybeConstructPrivateAggregationOperationDetails(
           private_aggregation_config),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     operation_id));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -1389,6 +1397,7 @@ void SharedStorageWorkletHost::MaybeFinishCreateWorklet() {
 
 void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
     base::TimeTicks start_time,
+    int operation_id,
     bool success,
     const std::string& error_message) {
   if (!success) {
@@ -1406,6 +1415,9 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
         blink::SharedStorageWorkletErrorType::kSuccess);
   }
 
+  // TODO(crbug.com/401011862): Use `operation_id`, along with timing
+  // information, to send a timing report to DevTools.
+
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
       base::TimeTicks::Now() - start_time);
@@ -1416,6 +1428,7 @@ void SharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
         const GURL& urn_uuid,
         base::TimeTicks start_time,
+        int operation_id,
         const std::string& operation_name,
         const std::u16string& saved_query_name_to_cache,
         bool success,
@@ -1443,13 +1456,14 @@ void SharedStorageWorkletHost::
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     operation_name, saved_query_name_to_cache, success,
-                     error_message, index, /*use_page_budgets=*/true));
+                     operation_id, operation_name, saved_query_name_to_cache,
+                     success, error_message, index, /*use_page_budgets=*/true));
 }
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
     base::TimeTicks start_time,
+    int operation_id,
     const std::string& operation_name,
     const std::u16string& saved_query_name_to_cache,
     bool script_execution_succeeded,
@@ -1530,6 +1544,9 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible);
   }
 
+  // TODO(crbug.com/401011862): Use `operation_id`, along with timing
+  // information, to send a timing report to DevTools.
+
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
       base::TimeTicks::Now() - start_time);
@@ -1539,6 +1556,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
 void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
     const GURL& urn_uuid,
     base::TimeTicks start_time,
+    int operation_id,
     const std::string& operation_name,
     uint32_t index) {
   auto it = unresolved_urns_.find(urn_uuid);
@@ -1555,7 +1573,7 @@ void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     operation_name,
+                     operation_id, operation_name,
                      /*saved_query_name_to_cache=*/std::u16string(),
                      /*script_execution_succeeded=*/true,
                      /*script_execution_error_message=*/std::string(), index,
