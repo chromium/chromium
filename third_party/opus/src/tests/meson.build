@@ -1,11 +1,16 @@
 # Tests that link to libopus
 opus_tests = [
   ['test_opus_api'],
-  ['test_opus_decode', [], 60],
-  ['test_opus_encode', 'opus_encode_regressions.c', 120],
+  ['test_opus_decode', [], 120],
+  ['test_opus_encode', 'opus_encode_regressions.c', 240],
+  ['test_opus_extensions', [], 120],
   ['test_opus_padding'],
   ['test_opus_projection'],
 ]
+
+if opt_dred.enabled()
+  opus_tests += [['test_opus_dred', [], 60 * 20]]
+endif
 
 foreach t : opus_tests
   test_name = t.get(0)
@@ -18,9 +23,9 @@ foreach t : opus_tests
 
   exe_kwargs = {}
   # This test uses private symbols
-  if test_name == 'test_opus_projection'
+  if test_name == 'test_opus_projection' or test_name == 'test_opus_extensions'
     exe_kwargs = {
-      'link_with': [celt_lib, silk_lib],
+      'link_with': [celt_lib, silk_lib, dnn_lib],
       'objects': opus_lib.extract_all_objects(),
     }
   endif

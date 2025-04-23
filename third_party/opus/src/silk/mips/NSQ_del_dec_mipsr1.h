@@ -25,8 +25,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
-#ifndef __NSQ_DEL_DEC_MIPSR1_H__
-#define __NSQ_DEL_DEC_MIPSR1_H__
+#ifndef NSQ_DEL_DEC_MIPSR1_H__
+#define NSQ_DEL_DEC_MIPSR1_H__
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -86,14 +86,14 @@ static inline void silk_noise_shape_quantizer_del_dec(
     /*Unused.*/
     (void)arch;
 
-    //Intialize b_Q14 variables
+    //Initialize b_Q14 variables
     b_Q14_0 = b_Q14[ 0 ];
     b_Q14_1 = b_Q14[ 1 ];
     b_Q14_2 = b_Q14[ 2 ];
     b_Q14_3 = b_Q14[ 3 ];
     b_Q14_4 = b_Q14[ 4 ];
 
-    //Intialize a_Q12 variables
+    //Initialize a_Q12 variables
     a_Q12_0 = a_Q12[0];
     a_Q12_1 = a_Q12[1];
     a_Q12_2 = a_Q12[2];
@@ -407,4 +407,4 @@ static inline void silk_noise_shape_quantizer_del_dec(
     }
 }
 
-#endif /* __NSQ_DEL_DEC_MIPSR1_H__ */
+#endif /* NSQ_DEL_DEC_MIPSR1_H__ */

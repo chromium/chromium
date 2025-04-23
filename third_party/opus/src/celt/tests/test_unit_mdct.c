@@ -109,7 +109,7 @@ void test1d(int nfft,int isinverse,int arch)
     kiss_fft_scalar *in;
     kiss_fft_scalar *in_copy;
     kiss_fft_scalar *out;
-    opus_val16 *window;
+    celt_coef *window;
     int k;
 
 #ifdef CUSTOM_MODES
@@ -133,14 +133,18 @@ void test1d(int nfft,int isinverse,int arch)
     in = (kiss_fft_scalar*)malloc(buflen);
     in_copy = (kiss_fft_scalar*)malloc(buflen);
     out = (kiss_fft_scalar*)malloc(buflen);
-    window = (opus_val16*)malloc(sizeof(opus_val16)*nfft/2);
+    window = (celt_coef*)malloc(sizeof(*window)*nfft/2);
 
     for (k=0;k<nfft;++k) {
         in[k] = (rand() % 32768) - 16384;
     }
 
     for (k=0;k<nfft/2;++k) {
+#ifdef ENABLE_QEXT
+       window[k] = Q31ONE;
+#else
        window[k] = Q15ONE;
+#endif
     }
     for (k=0;k<nfft;++k) {
        in[k] *= 32768;
@@ -224,5 +228,6 @@ int main(int argc,char ** argv)
         test1d(1920,1,arch);
 #endif
     }
+    RESTORE_STACK;
     return ret;
 }

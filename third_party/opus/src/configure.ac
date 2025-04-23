@@ -22,9 +22,9 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # For libtool.
 dnl Please update these for releases.
-OPUS_LT_CURRENT=8
-OPUS_LT_REVISION=0
-OPUS_LT_AGE=8
+OPUS_LT_CURRENT=10
+OPUS_LT_REVISION=1
+OPUS_LT_AGE=10
 
 AC_SUBST(OPUS_LT_CURRENT)
 AC_SUBST(OPUS_LT_REVISION)
@@ -151,6 +151,14 @@ AS_IF([test "$enable_float_api" = "no"],[
   AC_DEFINE([DISABLE_FLOAT_API], [1], [Do not build the float API])
 ])
 
+AC_ARG_ENABLE([fixed-res24],
+	      [AS_HELP_STRING([--enable-fixed-res24], [Use 24-bit internal resolution for fixed-point implementation])],,
+    [enable_fixed_res24=no])
+
+AS_IF([test "$enable_fixed_res24" = "yes"],[
+  AC_DEFINE([ENABLE_RES24], [1], [24-bit internal resolution for fixed-point])
+])
+
 AC_ARG_ENABLE([custom-modes],
     [AS_HELP_STRING([--enable-custom-modes], [enable non-Opus modes, e.g. 44.1 kHz & 2^n frames])],,
     [enable_custom_modes=no])
@@ -162,12 +170,39 @@ AS_IF([test "$enable_custom_modes" = "yes"],[
 
 AM_CONDITIONAL([CUSTOM_MODES], [test "$enable_custom_modes" = "yes"])
 
+AC_ARG_ENABLE([dred],
+    [AS_HELP_STRING([--enable-dred], [Use Deep REDundancy (DRED)])],,
+    [enable_dred=no])
+
+AS_IF([test "$enable_dred" = "yes"],[
+  AC_DEFINE([ENABLE_DRED], [1], [DRED])
+])
+AM_CONDITIONAL([ENABLE_DRED], [test "$enable_dred" = "yes"])
+
+AC_ARG_ENABLE([deep-plc],
+    [AS_HELP_STRING([--enable-deep-plc], [Use deep PLC for SILK])],,
+    [enable_deep_plc=no])
+
+AS_IF([test "$enable_deep_plc" = "yes" || test "$enable_dred" = "yes" || test "$enable_osce" = "yes" || test "$enable_osce_training_data" = "yes"],[
+  AC_DEFINE([ENABLE_DEEP_PLC], [1], [Deep PLC])
+])
+AM_CONDITIONAL([ENABLE_DEEP_PLC], [test "$enable_deep_plc" = "yes" || test "$enable_dred" = "yes" || test "$enable_osce" = "yes" || test "$enable_osce_training_data" = "yes"])
+
+AC_ARG_ENABLE([lossgen],
+    [AS_HELP_STRING([--enable-lossgen], [Build opus_demo with packet loss simulator])],,
+    [enable_lossgen=no])
+
+AS_IF([test "$enable_lossgen" = "yes"],[
+  AC_DEFINE([ENABLE_LOSSGEN], [1], [LOSSGEN])
+])
+AM_CONDITIONAL([ENABLE_LOSSGEN], [test "$enable_lossgen" = "yes"])
+
 has_float_approx=no
-#case "$host_cpu" in
-#i[[3456]]86 | x86_64 | powerpc64 | powerpc32 | ia64)
-#  has_float_approx=yes
-#  ;;
-#esac
+case "$host_cpu" in
+i[[3456]]86 | x86_64 | arm* | aarch64* | powerpc64 | powerpc32 | ia64)
+  has_float_approx=yes
+  ;;
+esac
 
 AC_ARG_ENABLE([float-approx],
     [AS_HELP_STRING([--enable-float-approx], [enable fast approximations for floating point])],
@@ -202,7 +237,7 @@ AS_IF([test x"${enable_asm}" = x"yes"],[
     case $host_cpu in
       arm*)
         dnl Currently we only have asm for fixed-point
-        AS_IF([test "$enable_float" != "yes"],[
+        #AS_IF([test "$enable_float" != "yes"],[
             cpu_arm=yes
             AC_DEFINE([OPUS_ARM_ASM], [],  [Make use of ARM asm optimization])
             AS_GCC_INLINE_ASSEMBLY(
@@ -316,6 +351,18 @@ AS_IF([test x"${enable_asm}" = x"yes"],[
                     )
                 ])
                 AC_SUBST(OPUS_ARM_MAY_HAVE_NEON)
+                AS_IF([test x"$OPUS_ARM_MAY_HAVE_DOTPROD" = x"1"],[
+                    AC_DEFINE(OPUS_ARM_MAY_HAVE_DOTPROD, 1,
+                      [Define if compiler supports DOTPROD instructions])
+                    AS_IF([test x"$OPUS_ARM_PRESUME_DOTPROD" = x"1"], [
+                        AC_DEFINE(OPUS_ARM_PRESUME_DOTPROD, 1,
+                          [Define if binary requires DOTPROD instruction support])
+                        asm_optimization="$asm_optimization (DOTPROD)"
+                    ],
+                        [rtcd_support="$rtcd_support (DOTPROD)"]
+                    )
+                ])
+                AC_SUBST(OPUS_ARM_MAY_HAVE_DOTPROD)
                 dnl Make sure turning on RTCD gets us at least one
                 dnl instruction set.
                 AS_IF([test x"$rtcd_support" != x""],
@@ -336,7 +383,7 @@ AS_IF([test x"${enable_asm}" = x"yes"],[
                   [*** ARM assembly requires perl -- disabling optimizations])
                 asm_optimization="(missing perl dependency for ARM)"
             ])
-        ])
+        #])
         ;;
     esac
 ],[
@@ -352,13 +399,14 @@ AM_CONDITIONAL([OPUS_ARM_EXTERNAL_ASM],
 AM_CONDITIONAL([HAVE_SSE], [false])
 AM_CONDITIONAL([HAVE_SSE2], [false])
 AM_CONDITIONAL([HAVE_SSE4_1], [false])
-AM_CONDITIONAL([HAVE_AVX], [false])
+AM_CONDITIONAL([HAVE_AVX2], [false])
 
 m4_define([DEFAULT_X86_SSE_CFLAGS], [-msse])
 m4_define([DEFAULT_X86_SSE2_CFLAGS], [-msse2])
 m4_define([DEFAULT_X86_SSE4_1_CFLAGS], [-msse4.1])
-m4_define([DEFAULT_X86_AVX_CFLAGS], [-mavx])
+m4_define([DEFAULT_X86_AVX2_CFLAGS], [-mavx -mfma -mavx2])
 m4_define([DEFAULT_ARM_NEON_INTR_CFLAGS], [-mfpu=neon])
+m4_define([DEFAULT_ARM_DOTPROD_INTR_CFLAGS], ["-march=armv8.2-a+dotprod"])
 # With GCC on ARM32 softfp architectures (e.g. Android, or older Ubuntu) you need to specify
 # -mfloat-abi=softfp for -mfpu=neon to work.  However, on ARM32 hardfp architectures (e.g. newer Ubuntu),
 # this option will break things.
@@ -374,14 +422,16 @@ AS_CASE([$host],
 AC_ARG_VAR([X86_SSE_CFLAGS], [C compiler flags to compile SSE intrinsics @<:@default=]DEFAULT_X86_SSE_CFLAGS[@:>@])
 AC_ARG_VAR([X86_SSE2_CFLAGS], [C compiler flags to compile SSE2 intrinsics @<:@default=]DEFAULT_X86_SSE2_CFLAGS[@:>@])
 AC_ARG_VAR([X86_SSE4_1_CFLAGS], [C compiler flags to compile SSE4.1 intrinsics @<:@default=]DEFAULT_X86_SSE4_1_CFLAGS[@:>@])
-AC_ARG_VAR([X86_AVX_CFLAGS], [C compiler flags to compile AVX intrinsics @<:@default=]DEFAULT_X86_AVX_CFLAGS[@:>@])
+AC_ARG_VAR([X86_AVX2_CFLAGS], [C compiler flags to compile AVX2 intrinsics @<:@default=]DEFAULT_X86_AVX2_CFLAGS[@:>@])
 AC_ARG_VAR([ARM_NEON_INTR_CFLAGS], [C compiler flags to compile ARM NEON intrinsics @<:@default=]DEFAULT_ARM_NEON_INTR_CFLAGS / DEFAULT_ARM_NEON_SOFTFP_INTR_CFLAGS[@:>@])
+AC_ARG_VAR([ARM_DOTPROD_INTR_CFLAGS], [C compiler flags to compile ARM DOTPROD intrinsics @<:@default=]DEFAULT_ARM_DOTPROD_INTR_CFLAGS[@:>@])
 
 AS_VAR_SET_IF([X86_SSE_CFLAGS], [], [AS_VAR_SET([X86_SSE_CFLAGS], "DEFAULT_X86_SSE_CFLAGS")])
 AS_VAR_SET_IF([X86_SSE2_CFLAGS], [], [AS_VAR_SET([X86_SSE2_CFLAGS], "DEFAULT_X86_SSE2_CFLAGS")])
 AS_VAR_SET_IF([X86_SSE4_1_CFLAGS], [], [AS_VAR_SET([X86_SSE4_1_CFLAGS], "DEFAULT_X86_SSE4_1_CFLAGS")])
-AS_VAR_SET_IF([X86_AVX_CFLAGS], [], [AS_VAR_SET([X86_AVX_CFLAGS], "DEFAULT_X86_AVX_CFLAGS")])
+AS_VAR_SET_IF([X86_AVX2_CFLAGS], [], [AS_VAR_SET([X86_AVX2_CFLAGS], "DEFAULT_X86_AVX2_CFLAGS")])
 AS_VAR_SET_IF([ARM_NEON_INTR_CFLAGS], [], [AS_VAR_SET([ARM_NEON_INTR_CFLAGS], ["$RESOLVED_DEFAULT_ARM_NEON_INTR_CFLAGS"])])
+AS_VAR_SET_IF([ARM_DOTPROD_INTR_CFLAGS], [], [AS_VAR_SET([ARM_DOTPROD_INTR_CFLAGS], ["DEFAULT_ARM_DOTPROD_INTR_CFLAGS"])])
 
 AC_DEFUN([OPUS_PATH_NE10],
    [
@@ -525,6 +575,46 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
             intrinsics_support="$intrinsics_support (NEON [Aarch64])"
          ])
 
+         OPUS_CHECK_INTRINSICS(
+            [Aarch64 dotprod],
+	    [$ARM_DOTPROD_INTR_CFLAGS],
+            [OPUS_ARM_MAY_HAVE_DOTPROD],
+            [OPUS_ARM_PRESUME_DOTPROD],
+            [[#include <arm_neon.h>
+            ]],
+            [[
+               static int32x4_t acc;
+               static int8x16_t a, b;
+               acc = vdotq_s32(acc, a, b);
+            ]]
+         )
+         AS_IF([test x"$OPUS_ARM_MAY_HAVE_DOTPROD" = x"1" && test x"$OPUS_ARM_PRESUME_DOTPROD" != x"1"],
+             [
+                OPUS_ARM_DOTPROD_INTR_CFLAGS="$ARM_NEON_DOTPROD_CFLAGS"
+                AC_SUBST([OPUS_ARM_DOTPROD_INTR_CFLAGS])
+             ]
+         )
+
+         AS_IF([test x"$OPUS_ARM_MAY_HAVE_DOTPROD" = x"1"],
+             [
+                AC_DEFINE([OPUS_ARM_MAY_HAVE_DOTPROD], 1, [Compiler supports Aarch64 DOTPROD Intrinsics])
+                intrinsics_support="$intrinsics_support (DOTPROD)"
+
+                AS_IF([test x"$OPUS_ARM_PRESUME_DOTPROD" = x"1"],
+                [
+                   AC_DEFINE([OPUS_ARM_PRESUME_DOTPROD], 1, [Define if binary requires Aarch64 dotprod Intrinsics])
+                   intrinsics_support="$intrinsics_support (DOTPROD [Aarch64])"
+                ])
+
+                AS_IF([test x"$enable_rtcd" != x"no" && test x"$OPUS_ARM_PRESUME_DOTPROD" != x"1"],
+                   [AS_IF([test x"$rtcd_support" = x"no"],
+                      [rtcd_support="ARM (DOTPROD Intrinsics)"],
+                      [rtcd_support="$rtcd_support (DOTPROD Intrinsics)"])])
+
+             ]
+         )
+
+
          AS_IF([test x"$intrinsics_support" = x""],
             [intrinsics_support=no],
             [intrinsics_support="ARM$intrinsics_support"])
@@ -601,24 +691,31 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
           ]
       )
       OPUS_CHECK_INTRINSICS(
-         [AVX],
-         [$X86_AVX_CFLAGS],
-         [OPUS_X86_MAY_HAVE_AVX],
-         [OPUS_X86_PRESUME_AVX],
+         [AVX2],
+         [$X86_AVX2_CFLAGS],
+         [OPUS_X86_MAY_HAVE_AVX2],
+         [OPUS_X86_PRESUME_AVX2],
          [[#include <immintrin.h>
            #include <time.h>
          ]],
          [[
+             unsigned char utest[[16]] = {1};
              __m256 mtest;
+             __m256i mtest1;
+             __m256i mtest2;
              mtest = _mm256_set1_ps((float)time(NULL));
-             mtest = _mm256_addsub_ps(mtest, mtest);
-             return _mm_cvtss_si32(_mm256_extractf128_ps(mtest, 0));
+             mtest = _mm256_fmadd_ps(mtest, mtest, mtest);
+             mtest1 = _mm256_set_m128i(_mm_loadu_si64(utest), _mm_loadu_si64(utest));
+             mtest2 =
+              _mm256_cvtepi16_epi32(_mm_loadu_si128(utest));
+             return _mm256_extract_epi16(_mm256_xor_si256(
+              _mm256_xor_si256(mtest1, mtest2), _mm256_cvttps_epi32(mtest)), 0);
          ]]
       )
-      AS_IF([test x"$OPUS_X86_MAY_HAVE_AVX" = x"1" && test x"$OPUS_X86_PRESUME_AVX" != x"1"],
+      AS_IF([test x"$OPUS_X86_MAY_HAVE_AVX2" = x"1" && test x"$OPUS_X86_PRESUME_AVX2" != x"1"],
           [
-             OPUS_X86_AVX_CFLAGS="$X86_AVX_CFLAGS"
-             AC_SUBST([OPUS_X86_AVX_CFLAGS])
+             OPUS_X86_AVX2_CFLAGS="$X86_AVX2_CFLAGS"
+             AC_SUBST([OPUS_X86_AVX2_CFLAGS])
           ]
       )
          AS_IF([test x"$rtcd_support" = x"no"], [rtcd_support=""])
@@ -660,17 +757,17 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
          [
             AC_MSG_WARN([Compiler does not support SSE4.1 intrinsics])
          ])
-         AS_IF([test x"$OPUS_X86_MAY_HAVE_AVX" = x"1"],
+         AS_IF([test x"$OPUS_X86_MAY_HAVE_AVX2" = x"1"],
          [
-            AC_DEFINE([OPUS_X86_MAY_HAVE_AVX], 1, [Compiler supports X86 AVX Intrinsics])
-            intrinsics_support="$intrinsics_support AVX"
+            AC_DEFINE([OPUS_X86_MAY_HAVE_AVX2], 1, [Compiler supports X86 AVX2 Intrinsics])
+            intrinsics_support="$intrinsics_support AVX2"
 
-            AS_IF([test x"$OPUS_X86_PRESUME_AVX" = x"1"],
-               [AC_DEFINE([OPUS_X86_PRESUME_AVX], 1, [Define if binary requires AVX intrinsics support])],
-               [rtcd_support="$rtcd_support AVX"])
+            AS_IF([test x"$OPUS_X86_PRESUME_AVX2" = x"1"],
+               [AC_DEFINE([OPUS_X86_PRESUME_AVX2], 1, [Define if binary requires AVX2 intrinsics support])],
+               [rtcd_support="$rtcd_support AVX2"])
          ],
          [
-            AC_MSG_WARN([Compiler does not support AVX intrinsics])
+            AC_MSG_WARN([Compiler does not support AVX2 intrinsics])
          ])
 
          AS_IF([test x"$intrinsics_support" = x""],
@@ -742,6 +839,8 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
 ])
 
 AM_CONDITIONAL([CPU_ARM], [test "$cpu_arm" = "yes"])
+AM_CONDITIONAL([HAVE_ARM_DOTPROD],
+    [test x"$OPUS_ARM_MAY_HAVE_DOTPROD" = x"1"])
 AM_CONDITIONAL([HAVE_ARM_NEON_INTR],
     [test x"$OPUS_ARM_MAY_HAVE_NEON_INTR" = x"1"])
 AM_CONDITIONAL([HAVE_ARM_NE10],
@@ -753,8 +852,8 @@ AM_CONDITIONAL([HAVE_SSE2],
     [test x"$OPUS_X86_MAY_HAVE_SSE2" = x"1"])
 AM_CONDITIONAL([HAVE_SSE4_1],
     [test x"$OPUS_X86_MAY_HAVE_SSE4_1" = x"1"])
-AM_CONDITIONAL([HAVE_AVX],
-    [test x"$OPUS_X86_MAY_HAVE_AVX" = x"1"])
+AM_CONDITIONAL([HAVE_AVX2],
+    [test x"$OPUS_X86_MAY_HAVE_AVX2" = x"1"])
 
 AM_CONDITIONAL([HAVE_RTCD],
  [test x"$enable_rtcd" = x"yes" -a x"$rtcd_support" != x"no"])
@@ -812,6 +911,47 @@ AS_IF([test "$enable_doc" = "yes"], [
 ],[
   HAVE_DOXYGEN=no
 ])
+
+AC_ARG_ENABLE([dot-product],
+	      AS_HELP_STRING([--disable-dot-product], [Disable dot product implementation]),,
+  enable_dot_product=yes)
+
+AS_IF([test "$enable_dot_product" = "no"], [
+       AC_DEFINE([DISABLE_DOT_PROD], [1], [Disable dot product instructions])
+])
+
+AC_ARG_ENABLE([dnn-debug-float],
+	      AS_HELP_STRING([--enable-dnn-debug-float], [Use floating-point DNN computation everywhere]),,
+  enable_dnn_debug_float=no)
+
+AS_IF([test "$enable_dnn_debug_float" = "no"], [
+       AC_DEFINE([DISABLE_DEBUG_FLOAT], [1], [Disable DNN debug float])
+])
+
+AC_ARG_ENABLE([osce-training-data],
+  AS_HELP_STRING([--enable-osce-training-data], [enables feature output for SILK enhancement]),,
+  [enable_osc_training_data=no]
+)
+
+AS_IF([test "$enable_osce_training_data" = "yes"], [
+       AC_DEFINE([ENABLE_OSCE_TRAINING_DATA], [1], [Enable dumping of OSCE training data])
+])
+
+AC_MSG_CHECKING([argument osce training data])
+AS_IF([test "$enable_osce_training_data" = "yes"], [
+       AC_MSG_RESULT([yes])
+], [AC_MSG_RESULT([no])])
+
+AC_ARG_ENABLE([osce],
+  AS_HELP_STRING([--enable-osce], [enables speech coding enhancement]),,
+  [enable_osce=no]
+)
+
+AS_IF([test "$enable_osce" = "yes" || test "$enable_osce_training_data" = "yes"], [
+       AC_DEFINE([ENABLE_OSCE], [1], [Enable Opus Speech Coding Enhancement])
+])
+
+AM_CONDITIONAL([ENABLE_OSCE], [test "$enable_osce" = "yes" || test "$enable_osce_training_data" = "yes"])
 
 AM_CONDITIONAL([HAVE_DOXYGEN], [test "$HAVE_DOXYGEN" = "yes"])
 

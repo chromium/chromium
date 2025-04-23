@@ -26,8 +26,8 @@ POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
 
-#ifndef __SILK_MACROS_MIPSR1_H__
-#define __SILK_MACROS_MIPSR1_H__
+#ifndef SILK_MACROS_MIPSR1_H__
+#define SILK_MACROS_MIPSR1_H__
 
 #define mips_clz(x) __builtin_clz(x)
 
@@ -89,4 +89,4 @@ static inline opus_int32 silk_CLZ32(opus_int32 in32)
     return re32;
 }
 
-#endif /* __SILK_MACROS_MIPSR1_H__ */
+#endif /* SILK_MACROS_MIPSR1_H__ */

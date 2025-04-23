@@ -26,8 +26,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __VQ_MIPSR1_H__
-#define __VQ_MIPSR1_H__
+#ifndef VQ_MIPSR1_H__
+#define VQ_MIPSR1_H__
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -113,4 +113,4 @@ void renormalise_vector(celt_norm *X, int N, opus_val16 gain, int arch)
    /*return celt_sqrt(E);*/
 }
 
-#endif /* __VQ_MIPSR1_H__ */
+#endif /* VQ_MIPSR1_H__ */

@@ -35,7 +35,7 @@
 #include "x86/celt_lpc_sse.h"
 #endif
 
-#define LPC_ORDER 24
+#define CELT_LPC_ORDER 24
 
 void _celt_lpc(opus_val16 *_lpc, const opus_val32 *ac, int p);
 
@@ -61,6 +61,6 @@ void celt_iir(const opus_val32 *x,
          int arch);
 
 int _celt_autocorr(const opus_val16 *x, opus_val32 *ac,
-         const opus_val16 *window, int overlap, int lag, int n, int arch);
+         const celt_coef *window, int overlap, int lag, int n, int arch);
 
 #endif /* PLC_H */

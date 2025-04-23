@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "main.h"
 #include "stack_alloc.h"
+#include "os_support.h"
 
 /* NEON intrinsics optimization now can only parallelize up to 4 delay decision states.    */
 /* If there are more states, C function is called, and this optimization must be expanded. */
@@ -220,7 +221,7 @@ void silk_NSQ_del_dec_neon(
     SideInfoIndices             *psIndices,                                 /* I/O  Quantization Indices            */
     const opus_int16            x16[],                                      /* I    Input                           */
     opus_int8                   pulses[],                                   /* O    Quantized pulse signal          */
-    const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefs     */
+    const opus_int16            *PredCoef_Q12,                              /* I    Short term prediction coefs     */
     const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],    /* I    Long term prediction coefs      */
     const opus_int16            AR_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I Noise shaping coefs              */
     const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],          /* I    Long term shaping coefs         */
@@ -279,6 +280,7 @@ void silk_NSQ_del_dec_neon(
 
         /* Initialize delayed decision states */
         ALLOC( psDelDec, 1, NSQ_del_decs_struct );
+        OPUS_CLEAR(psDelDec, 1);
         /* Only RandState and RD_Q10 need to be initialized to 0. */
         silk_memset( psDelDec->RandState, 0, sizeof( psDelDec->RandState ) );
         vst1q_s32( psDelDec->RD_Q10, vdupq_n_s32( 0 ) );
@@ -587,6 +589,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec_neon(
     silk_assert( nStatesDelayedDecision > 0 );
     silk_assert( ( shapingLPCOrder & 1 ) == 0 );   /* check that order is even */
     ALLOC( psSampleState, 2, NSQ_samples_struct );
+    OPUS_CLEAR(psSampleState, 2);
 
     shp_lag_ptr  = &NSQ->sLTP_shp_Q14[ NSQ->sLTP_shp_buf_idx - lag + HARM_SHAPE_FIR_TAPS / 2 ];
     pred_lag_ptr = &sLTP_Q15[ NSQ->sLTP_buf_idx - lag + LTP_ORDER / 2 ];
@@ -711,23 +714,26 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec_neon(
                 const int rdo_offset = Lambda_Q10/2 - 512;
                 const uint16x4_t greaterThanRdo = vcgt_s16( q1_Q10_s16x4, vdup_n_s16( rdo_offset ) );
                 const uint16x4_t lessThanMinusRdo = vclt_s16( q1_Q10_s16x4, vdup_n_s16( -rdo_offset ) );
+                int16x4_t signed_offset = vbsl_s16( greaterThanRdo, vdup_n_s16( -rdo_offset ), vdup_n_s16( 0 ) );
+                signed_offset = vbsl_s16( lessThanMinusRdo, vdup_n_s16( rdo_offset ), signed_offset );
                 /* If Lambda_Q10 > 32767, then q1_Q0, q1_Q10 and q2_Q10 must change to 32-bit. */
                 silk_assert( Lambda_Q10 <= 32767 );
 
                 q1_Q0_s16x4 = vreinterpret_s16_u16( vclt_s16( q1_Q10_s16x4, vdup_n_s16( 0 ) ) );
-                q1_Q0_s16x4 = vbsl_s16( greaterThanRdo, vsub_s16( q1_Q10_s16x4, vdup_n_s16( rdo_offset ) ), q1_Q0_s16x4 );
-                q1_Q0_s16x4 = vbsl_s16( lessThanMinusRdo, vadd_s16( q1_Q10_s16x4, vdup_n_s16( rdo_offset ) ), q1_Q0_s16x4 );
+                q1_Q0_s16x4 = vbsl_s16(vorr_u16(greaterThanRdo, lessThanMinusRdo), vadd_s16( q1_Q10_s16x4 , signed_offset), q1_Q0_s16x4);
                 q1_Q0_s16x4 = vshr_n_s16( q1_Q0_s16x4, 10 );
             }
             {
                 const uint16x4_t equal0_u16x4 = vceq_s16( q1_Q0_s16x4, vdup_n_s16( 0 ) );
                 const uint16x4_t equalMinus1_u16x4 = vceq_s16( q1_Q0_s16x4, vdup_n_s16( -1 ) );
                 const uint16x4_t lessThanMinus1_u16x4 = vclt_s16( q1_Q0_s16x4, vdup_n_s16( -1 ) );
-                int16x4_t tmp1_s16x4, tmp2_s16x4;
+                int16x4_t tmp1_s16x4, tmp2_s16x4, tmp_summand_s16x4;
 
                 q1_Q10_s16x4 = vshl_n_s16( q1_Q0_s16x4, 10 );
-                tmp1_s16x4 = vadd_s16( q1_Q10_s16x4, vdup_n_s16( offset_Q10 - QUANT_LEVEL_ADJUST_Q10 ) );
-                q1_Q10_s16x4 = vadd_s16( q1_Q10_s16x4, vdup_n_s16( offset_Q10 + QUANT_LEVEL_ADJUST_Q10 ) );
+                tmp_summand_s16x4 = vand_s16( vreinterpret_s16_u16(vcge_s16(q1_Q0_s16x4, vdup_n_s16(0))), vdup_n_s16( offset_Q10 - QUANT_LEVEL_ADJUST_Q10 ) );
+                tmp1_s16x4 = vadd_s16( q1_Q10_s16x4, tmp_summand_s16x4 );
+                tmp_summand_s16x4 = vbsl_s16( lessThanMinus1_u16x4, vdup_n_s16( offset_Q10 + QUANT_LEVEL_ADJUST_Q10 ), vdup_n_s16(0) );
+                q1_Q10_s16x4 = vadd_s16( q1_Q10_s16x4,  tmp_summand_s16x4);
                 q1_Q10_s16x4 = vbsl_s16( lessThanMinus1_u16x4, q1_Q10_s16x4, tmp1_s16x4 );
                 q1_Q10_s16x4 = vbsl_s16( equal0_u16x4, vdup_n_s16( offset_Q10 ), q1_Q10_s16x4 );
                 q1_Q10_s16x4 = vbsl_s16( equalMinus1_u16x4, vdup_n_s16( offset_Q10 - ( 1024 - QUANT_LEVEL_ADJUST_Q10 ) ), q1_Q10_s16x4 );
@@ -818,6 +824,13 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec_neon(
             }
         }
 
+        /* clear unused part of RD_Q10 to avoid overflows */
+        if( nStatesDelayedDecision < NEON_MAX_DEL_DEC_STATES )
+        {
+            OPUS_CLEAR(psSampleState[0].RD_Q10 + nStatesDelayedDecision, NEON_MAX_DEL_DEC_STATES - nStatesDelayedDecision);
+            OPUS_CLEAR(psSampleState[1].RD_Q10 + nStatesDelayedDecision, NEON_MAX_DEL_DEC_STATES - nStatesDelayedDecision);
+        }
+
         /* Increase RD values of expired states */
         {
             uint32x4_t t_u32x4;
@@ -896,7 +909,8 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec_neon(
         vst1q_s32( psDelDec->Pred_Q15[ *smpl_buf_idx ], vshlq_n_s32( vld1q_s32( psSampleState[ 0 ].LPC_exc_Q14 ), 1 ) );
         vst1q_s32( psDelDec->Shape_Q14[ *smpl_buf_idx ], vld1q_s32( psSampleState[ 0 ].sLTP_shp_Q14 ) );
         tmp1_s32x4 = vrshrq_n_s32( tmp1_s32x4, 10 );
-        tmp1_s32x4 = vaddq_s32( vld1q_s32( psDelDec->Seed ), tmp1_s32x4 );
+        tmp1_s32x4 = vreinterpretq_s32_u32( vaddq_u32( vreinterpretq_u32_s32(
+            vld1q_s32( psDelDec->Seed ) ), vreinterpretq_u32_s32( tmp1_s32x4 ) ) );
         vst1q_s32( psDelDec->Seed, tmp1_s32x4 );
         vst1q_s32( psDelDec->RandState[ *smpl_buf_idx ], tmp1_s32x4 );
         vst1q_s32( psDelDec->RD_Q10, vld1q_s32( psSampleState[ 0 ].RD_Q10 ) );
