@@ -142,10 +142,16 @@ class BocaAppHandler : public mojom::PageHandler,
 
  private:
   void UpdateSessionConfig();
+
+  void OnGetSession(GetSessionCallback callback,
+                    base::expected<std::unique_ptr<::boca::Session>,
+                                   google_apis::ApiErrorCode> result);
+
   void OnUpdatedOnTaskConfig(UpdateOnTaskConfigCallback callback,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
   void OnUpdatedCaptionConfig(UpdateCaptionConfigCallback callback,
+                              ::boca::CaptionsConfig captions_config,
                               base::expected<std::unique_ptr<::boca::Session>,
                                              google_apis::ApiErrorCode> result);
   void OnStudentRemoved(RemoveStudentCallback callback,
@@ -164,6 +170,8 @@ class BocaAppHandler : public mojom::PageHandler,
   void UpdateCaptionConfigInternal(mojom::CaptionConfigPtr config,
                                    UpdateCaptionConfigCallback callback,
                                    bool can_proceed);
+
+  void ResetProducerSessionCaptionConfig();
 
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
@@ -188,6 +196,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<PrefService> pref_service_;
+  mojom::CaptionConfigPtr producer_current_session_caption_config_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

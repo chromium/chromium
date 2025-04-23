@@ -183,12 +183,15 @@ class BocaSessionManager
 
   virtual void UpdateTabActivity(std::u16string title);
 
-  virtual void ToggleAppStatus(bool is_app_opened);
+  virtual void OnAppWindowOpened();
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
 
   virtual void NotifyLocalCaptionClosed();
+
+  virtual void NotifySessionCaptionProducerEvents(
+      const ::boca::CaptionsConfig& caption_config);
 
   // Triggered by SWA delegate to notify app reload events.
   virtual void NotifyAppReload();
@@ -211,11 +214,6 @@ class BocaSessionManager
 
   base::OneShotTimer& session_duration_timer_for_testing() {
     return session_duration_timer_;
-  }
-
-  void set_on_app_status_toggled_cb_for_test(
-      base::OnceCallback<void(bool)> on_app_status_toggled_cb) {
-    on_app_status_toggled_cb_for_test_ = std::move(on_app_status_toggled_cb);
   }
 
  private:
@@ -252,7 +250,6 @@ class BocaSessionManager
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
 
   const bool is_producer_;
-  bool is_app_opened_ = false;
   base::TimeDelta in_session_polling_interval_;
   base::TimeDelta indefinite_polling_interval_;
   base::ObserverList<Observer> observers_;
@@ -297,7 +294,6 @@ class BocaSessionManager
   bool is_local_caption_enabled_ = false;
   SessionCaptionInitializer session_caption_initializer_;
   net::BackoffEntry student_heartbeat_retry_backoff_;
-  base::OnceCallback<void(bool)> on_app_status_toggled_cb_for_test_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

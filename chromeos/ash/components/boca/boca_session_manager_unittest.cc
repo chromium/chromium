@@ -50,6 +50,7 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -185,7 +186,7 @@ class BocaSessionManagerTestBase : public testing::Test {
             shill::kStateIdle);
 
     session_client_impl_ =
-        std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
+        std::make_unique<NiceMock<MockSessionClientImpl>>(nullptr);
 
     observer_ = std::make_unique<StrictMock<MockObserver>>();
 
@@ -273,7 +274,7 @@ class BocaSessionManagerTestBase : public testing::Test {
   std::unique_ptr<StrictMock<MockBocaAppClient>> boca_app_client_;
   signin::IdentityTestEnvironment identity_test_env_;
   // Owned by BocaSessionManager, destructed before it.
-  std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
+  std::unique_ptr<NiceMock<MockSessionClientImpl>> session_client_impl_;
   std::unique_ptr<StrictMock<MockObserver>> observer_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::CrosSettings> cros_settings_;
@@ -312,8 +313,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
         .WillRepeatedly(Return(kDeviceId));
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), &local_state(), account_id,
-        /*is_producer=*/true);
+        session_client_impl(), &local_state(), account_id, is_producer_);
     boca_session_manager_->AddObserver(observer());
 
     EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
@@ -321,8 +321,6 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
     ToggleOffline();
     // Trigger network update activity.
     ToggleIntoManagedNetwork();
-
-    boca_session_manager_->ToggleAppStatus(/*is_app_opened=*/true);
   }
 
   BocaSessionManager* boca_session_manager() {
@@ -331,6 +329,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
 
  protected:
   base::Time session_start_time_ = base::Time::Now();
+  bool is_producer_ = true;
 
  private:
   std::unique_ptr<BocaSessionManager> boca_session_manager_;
@@ -661,7 +660,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenCurrentBundleEmpty) {
                                     base::Seconds(1));
 }
 
-TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
+TEST_F(BocaSessionManagerTest,
+       DoesNotNotifyProducerSessionUpdateWhenSessionCaptionUpdated) {
   auto session_1 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
   ::boca::SessionConfig session_config;
@@ -692,13 +692,42 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
                                                      std::move(session_2));
       }));
 
-  EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
-      .Times(2);
+  // Producer captions notification is done through
+  // `BocaSessionManager::NotifySessionCaptionProducerEvents`.
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated).Times(0);
 
   // Have updated two sessions.
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 2 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, NotifySessionCaptionProducerEvents) {
+  const std::string kTachyonGroupId = "tachyon-group";
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  session->set_tachyon_group_id(kTachyonGroupId);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session));
+      }));
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval);
+
+  ::boca::CaptionsConfig captions_config;
+  captions_config.set_captions_enabled(true);
+  captions_config.set_translations_enabled(true);
+  ::boca::CaptionsConfig captions_notify;
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated(_, _, kTachyonGroupId))
+      .WillOnce([&captions_notify](const std::string&,
+                                   const ::boca::CaptionsConfig& captions_param,
+                                   const std::string&) {
+        captions_notify = captions_param;
+      });
+  boca_session_manager()->NotifySessionCaptionProducerEvents(captions_config);
+
+  EXPECT_TRUE(captions_notify.captions_enabled());
+  EXPECT_TRUE(captions_notify.translations_enabled());
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
@@ -1080,10 +1109,10 @@ TEST_F(BocaSessionManagerTest,
                                                      std::move(session_2));
       }));
 
+  // Producer notification is done through
+  // `BocaSessionManager::NotifySessionCaptionProducerEvents`.
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated).Times(0);
   // Only notify once for the initial session flip.
-  EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
-      .Times(1);
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(1);
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(1);
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
@@ -1128,33 +1157,6 @@ TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {
   // MakeAccountAvailable fires a fresh token ready event.
   identity_test_env().MakeAccountAvailable(kTestUserEmail);
   identity_test_env().SetRefreshTokenForAccount(core_account_id());
-}
-
-TEST_F(BocaSessionManagerTest, DoNotDispatchCaptionEventWhenAppNotOpened) {
-  boca_session_manager()->ToggleAppStatus(/*is_app_opened=*/false);
-  auto session_1 =
-      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
-  ::boca::SessionConfig session_config;
-  auto* caption_config_1 = session_config.mutable_captions_config();
-
-  caption_config_1->set_captions_enabled(true);
-  caption_config_1->set_translations_enabled(true);
-  (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
-      std::move(session_config);
-
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
-                                                     std::move(session_1));
-      }));
-
-  EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
-      .Times(0);
-
-  // Have updated 1 sessions.
-  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
-                                    base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
@@ -1278,7 +1280,9 @@ TEST_F(BocaSessionManagerTest, RecordMetricsIfInSessionUpdateFromPolling) {
                                                      std::move(session_1));
       }));
 
-  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated(_, _, _)).Times(1);
+  // Producer notification is done through
+  // `BocaSessionManager::NotifySessionCaptionProducerEvents`.
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated).Times(0);
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
                                     base::Seconds(1));
   histogram_tester.ExpectTotalCount(BocaSessionManager::kPollingResultHistName,
@@ -1522,7 +1526,7 @@ class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {
 };
 
 TEST_F(BocaSessionManagerSodaTest, ReturnUninstalledIfNoInstaller) {
-  boca_session_manager_->ToggleAppStatus(true);
+  boca_session_manager_->OnAppWindowOpened();
   EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
             boca_session_manager_->GetSodaStatus());
 }
@@ -1533,7 +1537,7 @@ TEST_F(BocaSessionManagerSodaTest, HandleSodaInstallationSuccess) {
   boca_session_manager_->SetSodaInstaller(&installer);
   EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
             boca_session_manager_->GetSodaStatus());
-  boca_session_manager_->ToggleAppStatus(true);
+  boca_session_manager_->OnAppWindowOpened();
   EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
             boca_session_manager_->GetSodaStatus());
   // This first call fakes the binary installation, which is necessary for the
@@ -1551,7 +1555,7 @@ TEST_F(BocaSessionManagerSodaTest, HandleSodaBinaryInstallationFailure) {
   boca_session_manager_->SetSodaInstaller(&installer);
   EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
             boca_session_manager_->GetSodaStatus());
-  boca_session_manager_->ToggleAppStatus(true);
+  boca_session_manager_->OnAppWindowOpened();
   EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
             boca_session_manager_->GetSodaStatus());
   // This first call fakes the binary installation, which is necessary for the
@@ -1569,7 +1573,7 @@ TEST_F(BocaSessionManagerSodaTest, HandleSodaLanguageInstallationFailure) {
   boca_session_manager_->SetSodaInstaller(&installer);
   EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
             boca_session_manager_->GetSodaStatus());
-  boca_session_manager_->ToggleAppStatus(true);
+  boca_session_manager_->OnAppWindowOpened();
   EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
             boca_session_manager_->GetSodaStatus());
   // This first call fakes the binary installation, which is necessary for the
@@ -1591,7 +1595,7 @@ TEST_F(BocaSessionManagerSodaTest, HandleUnavailableLanguage) {
             boca_session_manager_->GetSodaStatus());
   EXPECT_CALL(mock_soda_installer_, InstallSoda).Times(0);
   EXPECT_CALL(mock_soda_installer_, InstallLanguage).Times(0);
-  boca_session_manager_->ToggleAppStatus(true);
+  boca_session_manager_->OnAppWindowOpened();
   EXPECT_EQ(BocaSessionManager::SodaStatus::kLanguageUnavailable,
             boca_session_manager_->GetSodaStatus());
   // This first call fakes the binary installation, which is necessary for the
@@ -2112,6 +2116,53 @@ TEST_F(BocaSessionManagerStudentHeartbeatNoPollingTest,
       std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
 
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
+class BocaSessionManagerConsumerTest : public BocaSessionManagerTest {
+ protected:
+  void SetUp() override {
+    is_producer_ = false;
+    BocaSessionManagerTest::SetUp();
+  }
+};
+
+TEST_F(BocaSessionManagerConsumerTest,
+       NotifyConsumerSessionUpdateWhenSessionCaptionUpdated) {
+  auto session_1 =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
+
+  caption_config_1->set_captions_enabled(true);
+  caption_config_1->set_translations_enabled(true);
+  (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+
+  auto session_2 =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  ::boca::SessionConfig session_config_2;
+  auto* caption_config_2 = session_config.mutable_captions_config();
+
+  caption_config_2->set_captions_enabled(false);
+  caption_config_2->set_translations_enabled(false);
+  (*session_2->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config_2);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
+      }));
+
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated).Times(2);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 2 +
+                                    base::Seconds(1));
 }
 
 }  // namespace

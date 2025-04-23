@@ -77,7 +77,7 @@ std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
 }
 
 std::unique_ptr<::boca::CaptionsConfig> CaptionConfigMojomToProto(
-    mojom::CaptionConfigPtr config) {
+    const mojom::CaptionConfigPtr& config) {
   auto captions_config = std::make_unique<::boca::CaptionsConfig>();
   captions_config->set_captions_enabled(config->session_caption_enabled);
   captions_config->set_translations_enabled(
@@ -85,7 +85,9 @@ std::unique_ptr<::boca::CaptionsConfig> CaptionConfigMojomToProto(
   return captions_config;
 }
 
-mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
+mojom::ConfigPtr SessionConfigProtoToMojom(
+    ::boca::Session* session,
+    mojom::CaptionConfigPtr caption_config_override) {
   CHECK(session);
   std::vector<mojom::IdentityPtr> students;
   std::vector<mojom::IdentityPtr> students_join_via_code;
@@ -106,8 +108,10 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
     }
   }
 
-  auto caption_config = mojom::CaptionConfig::New();
-  if (GetSessionConfigSafe(session).has_captions_config()) {
+  mojom::CaptionConfigPtr caption_config = mojom::CaptionConfig::New();
+  if (caption_config_override) {
+    caption_config = std::move(caption_config_override);
+  } else if (GetSessionConfigSafe(session).has_captions_config()) {
     auto session_caption_config =
         GetSessionConfigSafe(session).captions_config();
     caption_config->session_caption_enabled =
@@ -244,9 +248,18 @@ BocaAppHandler::BocaAppHandler(
       base::BindRepeating(&BocaAppHandler::OnActiveNetworkStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   base_url_ = BocaAppClient::Get()->GetSchoolToolsServerBaseUrl();
+  ResetProducerSessionCaptionConfig();
 }
 
 BocaAppHandler::~BocaAppHandler() {
+  if (is_producer_ &&
+      producer_current_session_caption_config_->session_caption_enabled) {
+    ::boca::CaptionsConfig caption_config;
+    caption_config.set_captions_enabled(false);
+    BocaAppClient::Get()
+        ->GetSessionManager()
+        ->NotifySessionCaptionProducerEvents(caption_config);
+  }
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
 }
 
@@ -322,7 +335,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
     request->set_roster(std::move(roster));
   if (config->caption_config) {
     request->set_captions_config(
-        CaptionConfigMojomToProto(config->caption_config->Clone()));
+        CaptionConfigMojomToProto(config->caption_config));
   }
 
   if (config->on_task_config) {
@@ -337,39 +350,8 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
       session_client_impl_->sender(), base_url_, is_producer_,
       GaiaId(user_identity_.gaia_id()),
-      base::BindOnce(
-          [](GetSessionCallback callback,
-             base::expected<std::unique_ptr<::boca::Session>,
-                            google_apis::ApiErrorCode> result) {
-            if (!result.has_value()) {
-              std::move(callback).Run(mojom::SessionResult::NewError(
-                  mojom::GetSessionError::kHTTPError));
-              return;
-            }
-            if (!result.value() ||
-                result.value()->session_state() != ::boca::Session::ACTIVE) {
-              std::move(callback).Run(mojom::SessionResult::NewError(
-                  mojom::GetSessionError::kEmpty));
-              // Load current session into memory;
-              BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                  nullptr, /*dispatch_event=*/true);
-              return;
-            }
-            auto session = std::move(result.value());
-            auto student_activity = SessionActivityProtoToMojom(
-                std::map<std::string, ::boca::StudentStatus>(
-                    session.get()->student_statuses().begin(),
-                    session.get()->student_statuses().end()));
-            auto session_config = SessionConfigProtoToMojom(session.get());
-            std::move(callback).Run(
-                mojom::SessionResult::NewSession(mojom::Session::New(
-                    std::move(session_config), std::move(student_activity))));
-
-            // Load current session into memory;
-            BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                std::move(session), /*dispatch_event=*/true);
-          },
-          std::move(callback)));
+      base::BindOnce(&BocaAppHandler::OnGetSession,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   get_session_request->set_device_id(BocaAppClient::Get()->GetDeviceId());
   session_client_impl_->GetSession(std::move(get_session_request));
 }
@@ -528,16 +510,19 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   // Dispatch remote caption config.
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
-  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
-    VLOG(1) << "[Boca] session inactive, skipping captions update";
+  // Only producer can update session captions config and the session has to be
+  // active.
+  if (!session || session->session_state() != ::boca::Session::ACTIVE ||
+      !is_producer_) {
+    VLOG_IF(1, is_producer_)
+        << "[Boca] session inactive, skipping captions update";
     std::move(callback).Run(std::nullopt);
     return;
   }
-
   // If no session config update, skip network request.
-  if (GetSessionConfigSafe(session).captions_config().captions_enabled() ==
+  if (producer_current_session_caption_config_->session_caption_enabled ==
           config->session_caption_enabled &&
-      GetSessionConfigSafe(session).captions_config().translations_enabled() ==
+      producer_current_session_caption_config_->session_translation_enabled ==
           config->session_translation_enabled) {
     VLOG(1) << "[Boca] no config change, skipping captions update. Captions "
                "enabled: "
@@ -730,6 +715,7 @@ void BocaAppHandler::OnLocalCaptionDisabled() {}
 
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
+  ResetProducerSessionCaptionConfig();
   UpdateSessionConfig();
 }
 
@@ -738,6 +724,7 @@ void BocaAppHandler::OnSessionMetadataUpdated(const std::string& session_id) {
 }
 
 void BocaAppHandler::OnSessionEnded(const std::string& session_id) {
+  ResetProducerSessionCaptionConfig();
   OnSessionConfigUpdated(
       mojom::ConfigResult::NewError(mojom::GetSessionError::kEmpty));
 }
@@ -806,7 +793,45 @@ void BocaAppHandler::UpdateSessionConfig() {
     return;
   }
   OnSessionConfigUpdated(
-      mojom::ConfigResult::NewConfig(SessionConfigProtoToMojom(session)));
+      mojom::ConfigResult::NewConfig(SessionConfigProtoToMojom(
+          session, is_producer_
+                       ? producer_current_session_caption_config_->Clone()
+                       : nullptr)));
+}
+
+void BocaAppHandler::OnGetSession(
+    GetSessionCallback callback,
+    base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
+        result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::SessionResult::NewError(mojom::GetSessionError::kHTTPError));
+    return;
+  }
+  if (!result.value() ||
+      result.value()->session_state() != ::boca::Session::ACTIVE) {
+    std::move(callback).Run(
+        mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
+    // Load current session into memory;
+    BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+        nullptr, /*dispatch_event=*/true);
+    return;
+  }
+  auto session = std::move(result.value());
+  auto student_activity =
+      SessionActivityProtoToMojom(std::map<std::string, ::boca::StudentStatus>(
+          session.get()->student_statuses().begin(),
+          session.get()->student_statuses().end()));
+  auto session_config = SessionConfigProtoToMojom(
+      session.get(), is_producer_
+                         ? producer_current_session_caption_config_->Clone()
+                         : nullptr);
+  std::move(callback).Run(mojom::SessionResult::NewSession(mojom::Session::New(
+      std::move(session_config), std::move(student_activity))));
+
+  // Load current session into memory;
+  BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+      std::move(session), /*dispatch_event=*/true);
 }
 
 void BocaAppHandler::OnUpdatedOnTaskConfig(
@@ -834,12 +859,17 @@ void BocaAppHandler::OnUpdatedOnTaskConfig(
 
 void BocaAppHandler::OnUpdatedCaptionConfig(
     UpdateCaptionConfigCallback callback,
+    ::boca::CaptionsConfig captions_config,
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!result.has_value()) {
-    VLOG(1) << "[Boca] captions update session request failed with code "
-            << result.error();
+  VLOG_IF(1, !result.has_value())
+      << "[Boca] captions update session request failed with code "
+      << result.error();
+  // We should not block producer from stopping sending session captions even
+  // if the update fails. So handle failure only if the producer was trying to
+  // enable captions and ignore it otherwise.
+  if (!result.has_value() && captions_config.captions_enabled()) {
     std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
     // Update failed. Fallback to the most recent in-memory session.
     if (auto* session =
@@ -851,6 +881,10 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
     }
     return;
   }
+  producer_current_session_caption_config_->session_caption_enabled =
+      captions_config.captions_enabled();
+  producer_current_session_caption_config_->session_translation_enabled =
+      captions_config.translations_enabled();
   std::move(callback).Run(std::nullopt);
   VLOG(1) << "[Boca] captions update session result, captions enabled: "
           << GetSessionConfigSafe(result.value().get())
@@ -860,9 +894,13 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
           << GetSessionConfigSafe(result.value().get())
                  .captions_config()
                  .translations_enabled();
-  // Trigger a session reload from session response.
-  BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(result.value()), /*dispatch_event=*/true);
+  if (result.has_value()) {
+    // Trigger a session reload from session response.
+    BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+        std::move(result.value()), /*dispatch_event=*/true);
+  }
+  BocaAppClient::Get()->GetSessionManager()->NotifySessionCaptionProducerEvents(
+      captions_config);
 }
 
 void BocaAppHandler::OnStudentRemoved(
@@ -928,13 +966,14 @@ void BocaAppHandler::UpdateCaptionConfigInternal(
   }
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto captions_config = CaptionConfigMojomToProto(config);
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,
           session->session_id(),
           base::BindOnce(&BocaAppHandler::OnUpdatedCaptionConfig,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  auto captions_config = CaptionConfigMojomToProto(config->Clone());
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         *captions_config));
   // Record the current caption update so that on task change won't override it.
   // Will be reset on callback run.
   latest_caption_config_ =
@@ -949,4 +988,14 @@ void BocaAppHandler::UpdateCaptionConfigInternal(
   VLOG(1) << "[Boca] sending update session request for captions";
   session_client_impl_->UpdateSession(std::move(request));
 }
+
+void BocaAppHandler::ResetProducerSessionCaptionConfig() {
+  if (!is_producer_) {
+    return;
+  }
+  producer_current_session_caption_config_ = mojom::CaptionConfig::New();
+  producer_current_session_caption_config_->session_caption_enabled = false;
+  producer_current_session_caption_config_->session_translation_enabled = false;
+}
+
 }  // namespace ash::boca

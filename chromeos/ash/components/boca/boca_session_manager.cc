@@ -290,13 +290,8 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
   session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 
-void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
-  is_app_opened_ = is_app_opened;
-  if (on_app_status_toggled_cb_for_test_) {
-    std::move(on_app_status_toggled_cb_for_test_).Run(is_app_opened_);
-  }
-
-  if (is_app_opened_ && soda_installer_ != nullptr) {
+void BocaSessionManager::OnAppWindowOpened() {
+  if (soda_installer_ != nullptr) {
     // TODO(378702821) Notify observers of SODA status change.
     soda_installer_->InstallSoda(base::DoNothing());
   }
@@ -305,7 +300,7 @@ void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
 void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {
-    observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
+    observer.OnLocalCaptionConfigUpdated(caption_config);
   }
   is_local_caption_enabled_ = caption_config.captions_enabled();
   HandleCaptionNotification();
@@ -317,6 +312,18 @@ void BocaSessionManager::NotifyLocalCaptionClosed() {
   }
   is_local_caption_enabled_ = false;
   HandleCaptionNotification();
+}
+
+void BocaSessionManager::NotifySessionCaptionProducerEvents(
+    const ::boca::CaptionsConfig& caption_config) {
+  if (!is_producer_ || !IsSessionActive(current_session_.get())) {
+    return;
+  }
+  for (auto& observer : observers_) {
+    observer.OnSessionCaptionConfigUpdated(
+        kMainStudentGroupName, caption_config,
+        current_session_->tachyon_group_id());
+  }
 }
 
 void BocaSessionManager::NotifyAppReload() {
@@ -528,6 +535,11 @@ void BocaSessionManager::NotifyOnTaskUpdate() {
 }
 
 void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
+  // Session captions notifications for producer is done by calling
+  // `NotifySessionCaptionProducerEvents`
+  if (is_producer_) {
+    return;
+  }
   if (!IsSessionActive(current_session_.get())) {
     VLOG(1) << "[Boca] no active session, will not notify captions update";
     return;
@@ -535,20 +547,6 @@ void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
 
   auto current_session_caption_config =
       GetSessionConfigSafe(current_session_.get()).captions_config();
-
-  // We should never turn on caption for teacher when app is not opened. We
-  // already make sure turn off caption when app load/unload, but in the event
-  // of OS crash, we won't be able to fire update in time, this would cause
-  // server caption config to be still on. This check make sure we don't turn on
-  // it for user before they realize.
-  if (is_producer_ && !is_app_opened_ &&
-      current_session_caption_config.captions_enabled()) {
-    VLOG(1) << "[Boca] will not notify captions update, producer: "
-            << is_producer_ << ", app opened: " << is_app_opened_
-            << ", captions enabled: "
-            << current_session_caption_config.captions_enabled();
-    return;
-  }
 
   auto previous_session_caption_config =
       GetSessionConfigSafe(previous_session_.get()).captions_config();
