@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.0.1...chromium-bidi-v4.1.0) (2025-04-23)
+
+
+### Features
+
+* emulate geolocation altitude, altitudeAccuracy, heading and speed ([#3337](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3337)) ([f8e4e34](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f8e4e342c290e3d3b0fc4ee28204a7b8325e9872))
+
 ## [4.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.0.0...chromium-bidi-v4.0.1) (2025-04-15)
 
 
