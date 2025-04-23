@@ -146,6 +146,11 @@ std::string_view CollaborationServiceShareOrManageEventToString(
       return "ManagedAccountSignin";
     case CollaborationServiceShareOrManageEvent::kAccountInfoNotReadyOnSignin:
       return "AccountInfoNotReadyOnSignin";
+    case CollaborationServiceShareOrManageEvent::
+        kCollaborationIdEmptyGroupToken:
+      return "CollarborationIdEmptyGroupToken";
+    case CollaborationServiceShareOrManageEvent::kCollaborationIdShareCanceled:
+      return "CollaborationIdShareCanceled";
   }
 }
 

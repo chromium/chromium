@@ -146,6 +146,8 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Device policy disables signin"/>
   <int value="24" label="Managed account signed in"/>
   <int value="25" label="Account info is not ready upon signin"/>
+  <int value="26" label="Failed - Created group ID empty"/>
+  <int value="27" label="Canceled - Share dialog canceled"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->

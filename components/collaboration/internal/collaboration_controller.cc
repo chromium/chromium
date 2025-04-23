@@ -900,7 +900,23 @@ class ShowingShareScreen : public ControllerState {
       return;
     }
 
-    if (!group_token.has_value() || !group_token.value().IsValid()) {
+    if (outcome == Outcome::kCancel) {
+      RecordShareOrManageEvent(GetLogger(),
+                               CollaborationServiceShareOrManageEvent::
+                                   kCollaborationIdShareCanceled);
+      controller->Exit();
+      return;
+    }
+
+    if (!group_token) {
+      RecordShareOrManageEvent(GetLogger(),
+                               CollaborationServiceShareOrManageEvent::
+                                   kCollaborationIdEmptyGroupToken);
+      controller->Exit();
+      return;
+    }
+
+    if (!group_token.value().IsValid()) {
       RecordShareOrManageEvent(
           GetLogger(),
           CollaborationServiceShareOrManageEvent::kCollaborationIdInvalid);

@@ -88,7 +88,9 @@ enum class CollaborationServiceShareOrManageEvent {
   kDevicePolicyDisableSignin = 23,
   kManagedAccountSignin = 24,
   kAccountInfoNotReadyOnSignin = 25,
-  kMaxValue = kAccountInfoNotReadyOnSignin,
+  kCollaborationIdEmptyGroupToken = 26,
+  kCollaborationIdShareCanceled = 27,
+  kMaxValue = kCollaborationIdShareCanceled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
