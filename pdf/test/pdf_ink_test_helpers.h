@@ -19,6 +19,12 @@
 
 namespace chrome_pdf {
 
+// A possible configuration of Ink feature parameters.
+struct InkTestVariation {
+  bool use_text_annotations;
+  bool use_text_highlighting;
+};
+
 enum class TestAnnotationUndoRedoMessageType {
   kUndo,
   kRedo,
@@ -73,6 +79,9 @@ MATCHER_P6(InkAffineTransformEq,
 
 // Generate the path for test files specific to Ink.
 base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
+
+// Returns all variations of Ink tests to cover all features in development.
+base::span<const InkTestVariation> GetAllInkTestVariations();
 
 }  // namespace chrome_pdf
 

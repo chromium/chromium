@@ -373,31 +373,7 @@ class FakeClient : public PdfInkModuleClient {
   std::vector<gfx::Rect> invalidations_;
 };
 
-struct PdfInkModuleTestVariation {
-  bool use_text_annotations;
-  bool use_text_highlighting;
-};
-
-constexpr PdfInkModuleTestVariation kPdfInkModuleTestVariationNoTextSupport{
-    /*use_text_annotations=*/false,
-    /*use_text_highlighting=*/false};
-constexpr PdfInkModuleTestVariation kPdfInkModuleTestVariationTextHighlighting{
-    /*use_text_annotations=*/false,
-    /*use_text_highlighting=*/true};
-constexpr PdfInkModuleTestVariation
-    kPdfInkModuleTestVariationTextHighlightingAndAnnotations{
-        /*use_text_annotations=*/true, /*use_text_highlighting=*/true};
-
-// Variations of PdfInkModule tests to cover all features in development.
-constexpr auto kPdfInkModuleTestVariations =
-    std::to_array<PdfInkModuleTestVariation>({
-        kPdfInkModuleTestVariationNoTextSupport,
-        kPdfInkModuleTestVariationTextHighlighting,
-        kPdfInkModuleTestVariationTextHighlightingAndAnnotations,
-    });
-
-class PdfInkModuleTest
-    : public testing::TestWithParam<PdfInkModuleTestVariation> {
+class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -3056,18 +3032,18 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleTest,
-                         testing::ValuesIn(kPdfInkModuleTestVariations));
+                         testing::ValuesIn(GetAllInkTestVariations()));
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleStrokeTest,
-                         testing::ValuesIn(kPdfInkModuleTestVariations));
+                         testing::ValuesIn(GetAllInkTestVariations()));
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleUndoRedoTest,
-                         testing::ValuesIn(kPdfInkModuleTestVariations));
+                         testing::ValuesIn(GetAllInkTestVariations()));
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleGetVisibleStrokesTest,
-                         testing::ValuesIn(kPdfInkModuleTestVariations));
+                         testing::ValuesIn(GetAllInkTestVariations()));
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleMetricsTest,
-                         testing::ValuesIn(kPdfInkModuleTestVariations));
+                         testing::ValuesIn(GetAllInkTestVariations()));
 
 }  // namespace chrome_pdf

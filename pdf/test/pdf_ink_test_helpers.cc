@@ -4,6 +4,7 @@
 
 #include "pdf/test/pdf_ink_test_helpers.h"
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -12,6 +13,27 @@
 #include "pdf/pdf_ink_conversions.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+// All possible variations of Ink feature params.
+constexpr InkTestVariation kInkTestVariationNoTextSupport{
+    /*use_text_annotations=*/false,
+    /*use_text_highlighting=*/false};
+constexpr InkTestVariation kInkTestVariationTextHighlighting{
+    /*use_text_annotations=*/false,
+    /*use_text_highlighting=*/true};
+constexpr InkTestVariation kInkTestVariationTextHighlightingAndAnnotations{
+    /*use_text_annotations=*/true, /*use_text_highlighting=*/true};
+
+// Variations of Ink tests to cover all features in development.
+constexpr auto kInkTestVariations = std::to_array<InkTestVariation>({
+    kInkTestVariationNoTextSupport,
+    kInkTestVariationTextHighlighting,
+    kInkTestVariationTextHighlightingAndAnnotations,
+});
+
+}  // namespace
 
 std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
     base::span<const PdfInkInputData> inputs) {
@@ -69,6 +91,10 @@ base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
 
 base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
   return base::FilePath(FILE_PATH_LITERAL("ink")).Append(filename);
+}
+
+base::span<const InkTestVariation> GetAllInkTestVariations() {
+  return kInkTestVariations;
 }
 
 }  // namespace chrome_pdf

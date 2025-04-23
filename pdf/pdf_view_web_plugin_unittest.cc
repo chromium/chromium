@@ -395,8 +395,7 @@ class FakePdfHost : public pdf::mojom::PdfHost {
 
 }  // namespace
 
-class PdfViewWebPluginWithoutInitializeTest
-    : public testing::TestWithParam<bool> {
+class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
  protected:
   // Custom deleter for `plugin_`. PdfViewWebPlugin must be destroyed by
   // PdfViewWebPlugin::Destroy() instead of its destructor.
@@ -1952,7 +1951,9 @@ TEST_F(PdfViewWebPluginTest, HighlightTextFragments) {
   plugin_->OnMessage(message);
 }
 
-class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
+class PdfViewWebPluginWithDocInfoTest
+    : public PdfViewWebPluginTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     PdfViewWebPluginTest::SetUp();
@@ -2787,8 +2788,27 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
+class PdfViewWebPluginInkTest
+    : public PdfViewWebPluginTest,
+      public testing::WithParamInterface<InkTestVariation> {
+ public:
+  void SetUp() override {
+    // Feature and parameters need to be initialized first as it impacts plugin
+    // setup in PdfViewWebPluginTest::SetUp().
+    feature_list_.InitAndEnableFeatureWithParameters(
+        chrome_pdf::features::kPdfInk2,
+        {{features::kPdfInk2TextAnnotations.name,
+          base::ToString(UseTextAnnotations())},
+         {features::kPdfInk2TextHighlighting.name,
+          base::ToString(UseTextHighlighting())}});
+
+    PdfViewWebPluginTest::SetUp();
+  }
+
  protected:
+  bool UseTextAnnotations() const { return GetParam().use_text_annotations; }
+  bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
+
   void SetUpWithTrivialInkStrokes() {
     // Set up the engine so the plugin can draw strokes. The exact strokes do
     // not matter.
@@ -2823,17 +2843,17 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PdfViewWebPluginInkTest, Invalidate) {
+TEST_P(PdfViewWebPluginInkTest, Invalidate) {
   plugin_->set_in_paint_for_testing(true);
   EXPECT_EQ(0u, plugin_->deferred_invalidates_for_testing().size());
   SetUpWithTrivialInkStrokes();
   EXPECT_EQ(3u, plugin_->deferred_invalidates_for_testing().size());
 }
 
-TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPageAndUpdateShapeActive) {
+TEST_P(PdfViewWebPluginInkTest, LoadV2InkPathsForPageAndUpdateShapeActive) {
   const std::map<InkModeledShapeId, ink::PartitionedMesh> kEmptyMap;
   const std::map<InkModeledShapeId, ink::PartitionedMesh> kMap0{
       {InkModeledShapeId(0), ink::PartitionedMesh()},
@@ -2872,7 +2892,7 @@ TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPageAndUpdateShapeActive) {
       /*active=*/false);
 }
 
-TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
+TEST_P(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
   SetUpWithTrivialInkStrokes();
 
   EXPECT_CALL(*client_ptr_, PostMessage)
@@ -2907,7 +2927,7 @@ TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
   SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
 }
 
-TEST_F(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
+TEST_P(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
   EXPECT_CALL(*client_ptr_, PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
         auto expected = base::test::ParseJsonDict(R"({
@@ -2926,7 +2946,7 @@ TEST_F(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
   SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
 }
 
-TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
+TEST_P(PdfViewWebPluginInkTest, UpdateCursor) {
   UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});
 
   ON_CALL(*engine_ptr_, HandleInputEvent)
@@ -2957,21 +2977,21 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 }
 
-TEST_F(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
+TEST_P(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
   SetUpWithTrivialInkStrokes();
   EXPECT_EQ(gfx::SizeF(75.0f, 37.5f),
             plugin_->ink_module_client_for_testing()->GetPageSizeInPoints(
                 /*page_index=*/0));
 }
 
-TEST_F(PdfViewWebPluginInkTest, GetThumbnailSize) {
+TEST_P(PdfViewWebPluginInkTest, GetThumbnailSize) {
   SetUpWithTrivialInkStrokes();
   EXPECT_EQ(gfx::Size(50, 25),
             plugin_->ink_module_client_for_testing()->GetThumbnailSize(
                 /*page_index=*/0));
 }
 
-TEST_F(PdfViewWebPluginInkTest, GetZoom) {
+TEST_P(PdfViewWebPluginInkTest, GetZoom) {
   // Demonstrate that default zoom is identity.
   EXPECT_EQ(1.0f, plugin_->ink_module_client_for_testing()->GetZoom());
 
@@ -3001,7 +3021,7 @@ TEST_F(PdfViewWebPluginInkTest, GetZoom) {
   EXPECT_EQ(2.5f, plugin_->ink_module_client_for_testing()->GetZoom());
 }
 
-TEST_F(PdfViewWebPluginInkTest, RequestThumbnail) {
+TEST_P(PdfViewWebPluginInkTest, RequestThumbnail) {
   EXPECT_CALL(*engine_ptr_, RequestThumbnail)
       .WillOnce([](int page_index, float device_pixel_ratio,
                    SendThumbnailCallback send_callback) {
@@ -3020,7 +3040,7 @@ TEST_F(PdfViewWebPluginInkTest, RequestThumbnail) {
   EXPECT_EQ(1.0f, thumbnail.device_pixel_ratio());
 }
 
-TEST_F(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {
+TEST_P(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {
   const PdfInkBrush kBrush(PdfInkBrush::Type::kPen, SK_ColorRED, /*size=*/4.0f);
   constexpr InkStrokeId kStrokeId(1);
   constexpr int kPageIndex = 0;
@@ -3043,7 +3063,7 @@ TEST_F(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {
                                                           kStrokeId);
 }
 
-TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
+TEST_P(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
   ON_CALL(*engine_ptr_, GetPageContentsRect)
       .WillByDefault([](int page_index) -> gfx::Rect {
         // Uniform 80x180 page sizes, with a `kVerticalEmptySpace` gap above
@@ -3120,7 +3140,7 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
   EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPageBelowLast));
 }
 
-TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
+TEST_P(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
   EXPECT_CALL(*engine_ptr_, SetFormHighlight(false));
   EXPECT_CALL(*engine_ptr_, ClearTextSelection());
 
@@ -3134,7 +3154,7 @@ TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
   EXPECT_FALSE(plugin_->IsInAnnotationMode());
 }
 
-TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
+TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   plugin_->set_in_paint_for_testing(true);
   constexpr gfx::Rect kScreenRect(kCanvasSize);
   constexpr gfx::SizeF kPageSizeInPoints(
@@ -3272,7 +3292,7 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
 
 using PdfViewWebPluginInkMetricTest = PdfViewWebPluginInkTest;
 
-TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithoutV2InkAnnotations) {
+TEST_P(PdfViewWebPluginInkMetricTest, LoadedWithoutV2InkAnnotations) {
   base::HistogramTester histograms;
 
   EXPECT_CALL(*engine_ptr_, ContainsV2InkPath(_))
@@ -3283,7 +3303,7 @@ TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithoutV2InkAnnotations) {
                                 PDFLoadedWithV2InkAnnotations::kFalse, 1);
 }
 
-TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotations) {
+TEST_P(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotations) {
   base::HistogramTester histograms;
 
   EXPECT_CALL(*engine_ptr_, ContainsV2InkPath(_))
@@ -3294,7 +3314,7 @@ TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotations) {
                                 PDFLoadedWithV2InkAnnotations::kTrue, 1);
 }
 
-TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotationsTimeout) {
+TEST_P(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotationsTimeout) {
   base::HistogramTester histograms;
   EXPECT_CALL(*engine_ptr_, ContainsV2InkPath(_))
       .WillOnce(Return(PDFLoadedWithV2InkAnnotations::kUnknown));
@@ -3328,6 +3348,13 @@ TEST_F(PdfViewWebPluginPrintPreviewInkMetricTest,
   // Preview.
   histograms.ExpectTotalCount(kPdfLoadedWithV2InkAnnotationsMetric, 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfViewWebPluginInkTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfViewWebPluginInkMetricTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf
