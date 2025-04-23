@@ -1185,26 +1185,26 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
-  auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
-  if (it != overlays.end() && (*it).overlay_image) {
-    Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
-        (*it).overlay_image->dcomp_visual_content();
-    CHECK(root_visual_content);
-    HRESULT hr = root_visual_content.As(&root_swap_chain);
-    if (hr == E_NOINTERFACE) {
-      DCHECK_EQ(root_swap_chain, nullptr);
-    } else {
-      CHECK_EQ(S_OK, hr);
-      CHECK_NE(root_swap_chain, nullptr);
-    }
-  }
-
   // If delegated ink metadata exists for this frame, attempt to make an overlay
   // so that a visual subtree can be created for a delegated ink visual.
   // TODO(crbug.com/335553727) Consider clearing ink_renderer_ when there's no
   // metadata.
   if (pending_delegated_ink_metadata_) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
+    auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+    if (it != overlays.end() && (*it).overlay_image) {
+      Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+          (*it).overlay_image->dcomp_visual_content();
+      CHECK(root_visual_content);
+      HRESULT hr = root_visual_content.As(&root_swap_chain);
+      if (hr == E_NOINTERFACE) {
+        DCHECK_EQ(root_swap_chain, nullptr);
+      } else {
+        CHECK_EQ(S_OK, hr);
+        CHECK_NE(root_swap_chain, nullptr);
+      }
+    }
+
     if (auto ink_layer = ink_renderer_->MakeDelegatedInkOverlay(
             dcomp_device_.Get(), root_swap_chain.Get(),
             std::move(pending_delegated_ink_metadata_))) {
