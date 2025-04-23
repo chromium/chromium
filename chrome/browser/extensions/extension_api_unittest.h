@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 

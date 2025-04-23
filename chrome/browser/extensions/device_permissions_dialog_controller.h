@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_DEVICE_PERMISSIONS_DIALOG_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/permissions/chooser_controller.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 

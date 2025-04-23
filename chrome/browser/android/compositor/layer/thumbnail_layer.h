@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"

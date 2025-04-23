@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 

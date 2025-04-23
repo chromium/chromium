@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 

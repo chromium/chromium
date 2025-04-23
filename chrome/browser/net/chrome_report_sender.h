@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NET_CHROME_REPORT_SENDER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;

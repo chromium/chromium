@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace i18n {
 namespace addressinput {

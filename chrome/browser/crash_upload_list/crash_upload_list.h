@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_H_
 #define CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/upload_list/upload_list.h"
 
 // Factory that creates the platform-specific implementation of the crash

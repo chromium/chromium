@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_change_registrar.h"

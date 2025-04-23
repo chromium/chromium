@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class Profile;
