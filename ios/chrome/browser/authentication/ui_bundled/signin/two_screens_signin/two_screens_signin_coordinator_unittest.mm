@@ -165,11 +165,10 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
       [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Shut it down.
-  [coordinator_ interruptAnimated:YES];
   [coordinator_ stop];
   // Expect completion block to be run synchronously and be finished when
   // -stop returns.
-  EXPECT_TRUE(completion_block_done_);
+  EXPECT_FALSE(completion_block_done_);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
   histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kSettings, 1);
@@ -186,7 +185,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
 
   // Expect completion block to be run synchronously and be finished when
   // -stop returns.
-  EXPECT_TRUE(completion_block_done_);
+  EXPECT_FALSE(completion_block_done_);
 
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
@@ -210,7 +209,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
 // Tests that the user can swipe to dismiss and that a user action is recorded.
 TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   base::HistogramTester histogram_tester;
-  StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultCanceledByUser, nil);
 
   // Simulate a swipe-to-dismiss.
   EXPECT_EQ(0, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));

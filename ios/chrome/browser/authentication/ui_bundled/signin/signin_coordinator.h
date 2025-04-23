@@ -100,7 +100,7 @@ class PrefRegistrySyncable;
 // Returns a coordinator for upgrade sign-in workflow.
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser

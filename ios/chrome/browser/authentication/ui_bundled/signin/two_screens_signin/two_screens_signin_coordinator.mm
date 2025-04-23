@@ -112,16 +112,19 @@ using base::UserMetricsAction;
                                       completion:nil];
 }
 
-- (void)stop {
-  if (_navigationController) {
-    [self interruptAnimated:NO];
-  }
+#pragma mark - StopAnimatedChromeCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
+  [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
   [_upgradeSigninLogger disconnect];
   _upgradeSigninLogger = nil;
   DCHECK(!_navigationController);
   DCHECK(!_childCoordinator);
   DCHECK(!_screenProvider);
-  [super stop];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - Private
@@ -140,14 +143,12 @@ using base::UserMetricsAction;
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  ProceduralBlock completion = ^{
-    SigninCoordinatorResult result =
-        identity ? SigninCoordinatorResultSuccess
-                 : SigninCoordinatorResultCanceledByUser;
-    [weakSelf finishWithResult:result identity:identity];
-  };
-  [_navigationController dismissViewControllerAnimated:YES
-                                            completion:completion];
+  [_navigationController dismissViewControllerAnimated:YES completion:nil];
+  SigninCoordinatorResult result = identity
+                                       ? SigninCoordinatorResultSuccess
+                                       : SigninCoordinatorResultCanceledByUser;
+  [weakSelf finishWithResult:result identity:identity];
+  [weakSelf runCompletionWithSigninResult:result completionIdentity:identity];
 }
 
 // Presents the screen of certain `type`.
@@ -209,7 +210,6 @@ using base::UserMetricsAction;
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
-  [self runCompletionWithSigninResult:result completionIdentity:identity];
 }
 
 #pragma mark - FirstRunScreenDelegate
@@ -220,20 +220,6 @@ using base::UserMetricsAction;
   CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
   [self stopChildCoordinator];
   [self presentScreen:[_screenProvider nextScreenType]];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  // Interrupt the child coordinator UI first before dismissing the new
-  // sign-in navigation controller.
-  CHECK(![_childCoordinator
-      conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]);
-  [_childCoordinator stop];
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate
@@ -250,7 +236,8 @@ using base::UserMetricsAction;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
-  [self interruptAnimated:NO];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
 }
 
 #pragma mark - NSObject

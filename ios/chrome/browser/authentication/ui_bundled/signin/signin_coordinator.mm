@@ -102,7 +102,7 @@ using signin_metrics::PromoAction;
       changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser
