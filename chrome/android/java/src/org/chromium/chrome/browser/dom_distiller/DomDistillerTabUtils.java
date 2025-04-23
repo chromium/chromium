@@ -103,13 +103,11 @@ public class DomDistillerTabUtils {
      * Check if the distiller should report mobile-friendly pages as non-distillable.
      *
      * @return True if heuristic is ADABOOST_MODEL, and "Simplified view for accessibility" is
-     *     disabled.
+     *     disabled. Or false under certain experimental conditions.
      */
     public static boolean shouldExcludeMobileFriendly(Tab tab) {
         if (sExcludeMobileFriendlyForTesting != null) return sExcludeMobileFriendlyForTesting;
-        if (DomDistillerFeatures.sReaderModeImprovements.isEnabled()
-                && DomDistillerFeatures.sReaderModeImprovementsTriggerOnMobileFriendlyPages
-                        .getValue()) {
+        if (DomDistillerFeatures.triggerOnMobileFriendlyPages()) {
             return false;
         }
 
