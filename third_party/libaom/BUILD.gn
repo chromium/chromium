@@ -31,7 +31,7 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
-} else if (current_cpu == "arm64") {
+} else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   cpu_arch_full = "arm64-cpu-detect"
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
@@ -212,8 +212,8 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
   }
 }
 
-if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
-    cpu_arch_full == "arm-neon-cpu-detect") {
+if (current_cpu == "arm64" || current_cpu == "arm64e" ||
+    cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
   source_set("libaom_intrinsics_neon") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -232,7 +232,7 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
   }
 }
 
-if (current_cpu == "arm64") {
+if (current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libaom_intrinsics_arm_crc32") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -349,11 +349,11 @@ static_library("libaom") {
       ":libaom_nasm",
     ]
   }
-  if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
-      cpu_arch_full == "arm-neon-cpu-detect") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e" ||
+      cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
     deps += [ ":libaom_intrinsics_neon" ]
   }
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e") {
     # This is needed by all arm boards due to aom_arm_cpu_caps()
     sources += [ "source/libaom/aom_ports/aarch64_cpudetect.c" ]
     deps += [
