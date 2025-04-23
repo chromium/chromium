@@ -4,7 +4,7 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
-import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
+import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv3/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
 import {PrefNames} from './constants.js';
 
