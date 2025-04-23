@@ -20,7 +20,7 @@ const char kSoftwareSecureForUMA[] = "SoftwareSecure";
 
 #if BUILDFLAG(IS_WIN)
 const char kPlayReadyKeySystemNameForUMA[] = "PlayReady";
-const char kPlayReadyKeySystemBase[] = "com.microsoft.playready";
+const char kPlayReadyKeySystemBase[] = "com.microsoft.playready.recommendation";
 #endif  // BUILDFLAG(IS_WIN)
 
 enum KeySystemForUkm {
