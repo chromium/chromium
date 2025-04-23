@@ -142,11 +142,7 @@
     // For convenience, add the identity, if it was not added yet.
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  authenticationService->SignIn(identity,
-                                signin_metrics::AccessPoint::kSettings);
+  chrome_test_util::SignIn(identity);
 }
 
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
@@ -163,11 +159,7 @@
         ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
   }
 
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  authenticationService->SignIn(identity,
-                                signin_metrics::AccessPoint::kSettings);
+  chrome_test_util::SignIn(identity);
 }
 
 + (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {

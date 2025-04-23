@@ -38,36 +38,8 @@ using chrome_test_util::SignOutAccountsButton;
 
 namespace {
 
-BOOL IsIdentityManaged(id<SystemIdentity> identity) {
+BOOL IsIdentityPossiblyManaged(id<SystemIdentity> identity) {
   return ![identity.userEmail hasSuffix:@"@gmail.com"];
-}
-
-// Closes the managed account sign-in confirmation dialog when necessary, if
-// `fakeIdentity` is a managed account. That dialog may be shown when User
-// Policy is enabled.
-void CloseManagedAccountSignInDialogIfAny(FakeSystemIdentity* fakeIdentity) {
-  // Don't expect a managed account dialog when the account isn't considered
-  // managed.
-  if (!IsIdentityManaged(fakeIdentity)) {
-    return;
-  }
-
-  // Synchronization off due to an infinite spinner, in the user consent view,
-  // under the managed consent dialog. This spinner is started by the sign-in
-  // process.
-  ScopedSynchronizationDisabler disabler;
-
-  // Verify whether there is a management dialog and interact with it to
-  // complete the sign-in flow if present.
-  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  BOOL hasDialog =
-      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];
-  if (hasDialog) {
-    [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
-  }
 }
 
 void CloseHistorySyncSheet(BOOL enableHistorySync) {
@@ -111,7 +83,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   }
 
   [ChromeEarlGreyUI waitForAppToIdle];
-  CloseManagedAccountSignInDialogIfAny(fakeIdentity);
+  [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
   // If the history type isn't enabled yet, the history opt-in dialog should
   // show up now. Tap the "Yes, I'm In" button.
   if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
@@ -143,9 +115,9 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     [SigninEarlGrey addFakeIdentity:fakeIdentity];
   }
   if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled] &&
-      IsIdentityManaged(fakeIdentity)) {
+      IsIdentityPossiblyManaged(fakeIdentity)) {
     [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
-    CloseManagedAccountSignInDialogIfAny(fakeIdentity);
+    [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
     [ChromeEarlGreyUI waitForAppToIdle];
     CloseHistorySyncSheet(enableHistorySync);
     [ChromeEarlGrey
@@ -156,7 +128,7 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   // without-history flows should be completely different, unify them.
   if (!enableHistorySync) {
     [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
-    CloseManagedAccountSignInDialogIfAny(fakeIdentity);
+    [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
     ConditionBlock condition = ^bool {
       return [[SigninEarlGrey primaryAccountGaiaID]
           isEqualToString:fakeIdentity.gaiaID];

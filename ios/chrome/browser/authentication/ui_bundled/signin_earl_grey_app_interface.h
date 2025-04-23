@@ -66,13 +66,13 @@ enum class UserSelectableType;
 // Signs out the current user.
 + (void)signOut;
 
-// Signs in with the fake identity and access point Settings.
+// Signs in with the fake identity.
 // Adds the fake-identity to the identity manager if necessary.
 // Call `[SigninEarlGrey signinWithFakeIdentity:identity]` instead.
 // `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Signs in with the fake managed identity and access point Settings.
+// Signs in with the fake managed identity.
 // Adds the fake-identity to the identity manager if necessary.
 // If separate profiles for managed accounts are enabled, converts the personal
 // profile into a managed one.

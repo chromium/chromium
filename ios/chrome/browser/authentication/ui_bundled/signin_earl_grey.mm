@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -81,6 +83,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
+  [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
 }
 
@@ -88,6 +91,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     (FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface
       signinWithFakeManagedIdentityInPersonalProfile:identity];
+  [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
 }
 
@@ -246,6 +250,30 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [SigninEarlGreyAppInterface
       setPolicyResponseForNextProfileSeparationPolicyRequest:
           profileSeparationDataMigrationSettings];
+}
+
+- (void)closeManagedAccountSignInDialogIfAny:(FakeSystemIdentity*)fakeIdentity {
+  // Don't expect a managed account dialog when the account is @gmail.com and
+  // thus definitely not managed.
+  if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
+    return;
+  }
+  // Synchronization off due to an infinite spinner, in the user consent view,
+  // under the managed consent dialog. This spinner is started by the sign-in
+  // process.
+  ScopedSynchronizationDisabler disabler;
+
+  // Verify whether there is a management dialog and interact with it to
+  // complete the sign-in flow if present.
+  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:
+          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  BOOL hasDialog =
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];
+  if (hasDialog) {
+    [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  }
 }
 
 - (BOOL)areSeparateProfilesForManagedAccountsEnabled {

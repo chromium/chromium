@@ -152,6 +152,11 @@ class GURL;
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;
 
+// Closes the managed account sign-in confirmation dialog when necessary, if
+// `fakeIdentity` is a managed account. That dialog may be shown on signing in
+// if User Policy is enabled.
+- (void)closeManagedAccountSignInDialogIfAny:(FakeSystemIdentity*)fakeIdentity;
+
 // Returns whether the feature to put each managed account into its own separate
 // profile is enabled. This depends on the `kSeparateProfilesForManagedAccounts`
 // feature flag, plus some additional conditions which can't be directly checked
