@@ -1627,13 +1627,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSReactivationNotifications,
                                     kIOSReactivationNotificationsVariations,
                                     "IOSReactivationNotifications")},
-    {"ios-prompt-search-engine-choice-after-device-restore",
-     flag_descriptions::kIOSPromptSearchEngineChoiceAfterDeviceRestoreName,
+    {"invalidate-search-engine-choice-on-device-restore-detection",
      flag_descriptions::
-         kIOSPromptSearchEngineChoiceAfterDeviceRestoreDescription,
+         kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName,
+     flag_descriptions::
+         kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
-         switches::kIOSPromptSearchEngineChoiceAfterDeviceRestore)},
+         switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)},
     {"ios-provides-app-notification-settings",
      flag_descriptions::kIOSProvidesAppNotificationSettingsName,
      flag_descriptions::kIOSProvidesAppNotificationSettingsDescription,

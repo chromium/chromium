@@ -73,10 +73,15 @@ void RemoveExtensionDefaultSearchFromPrefs(
 
 FakeSearchEngineChoiceServiceClient::FakeSearchEngineChoiceServiceClient(
     country_codes::CountryId variations_country,
-    bool is_profile_eligible_for_dse_guest_propagation)
+    bool is_profile_eligible_for_dse_guest_propagation,
+    bool is_device_restore_detected_in_current_session,
+    bool does_choice_predate_device_restore)
     : variations_country_(variations_country),
       is_profile_eligible_for_dse_guest_propagation_(
-          is_profile_eligible_for_dse_guest_propagation) {}
+          is_profile_eligible_for_dse_guest_propagation),
+      is_device_restore_detected_in_current_session_(
+          is_device_restore_detected_in_current_session),
+      does_choice_predate_device_restore_(does_choice_predate_device_restore) {}
 
 FakeSearchEngineChoiceServiceClient::~FakeSearchEngineChoiceServiceClient() =
     default;
@@ -89,4 +94,14 @@ FakeSearchEngineChoiceServiceClient::GetVariationsCountry() {
 bool FakeSearchEngineChoiceServiceClient::
     IsProfileEligibleForDseGuestPropagation() {
   return is_profile_eligible_for_dse_guest_propagation_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::
+    IsDeviceRestoreDetectedInCurrentSession() {
+  return is_device_restore_detected_in_current_session_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
+    const search_engines::ChoiceCompletionMetadata& choice_metadata) {
+  return does_choice_predate_device_restore_;
 }

@@ -2453,6 +2453,14 @@ const char kIpProtectionProxyOptOutDescription[] =
 const char kIpProtectionProxyOptOutChoiceDefault[] = "Default";
 const char kIpProtectionProxyOptOutChoiceOptOut[] = "Disabled";
 
+const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[] =
+    "Invalidate search engine choice after the install detects it has been "
+    "transferred to a new device";
+const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
+    "When enabled, search engine choices made on what we assume was a "
+    "different device will not be considered valid, leading to the choice "
+    "screen potentially retriggering.";
+
 const char kAutomaticFullscreenContentSettingName[] =
     "Automatic Fullscreen Content Setting";
 const char kAutomaticFullscreenContentSettingDescription[] =

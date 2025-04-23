@@ -11102,6 +11102,8 @@ from previous Chrome versions.
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
   <int value="-1238992816" label="ShelfDimming:enabled"/>
   <int value="-1238769868" label="TabStripGroupDragDropAndroid:disabled"/>
+  <int value="-1238027382"
+      label="InvalidateSearchEngineChoiceOnDeviceRestoreDetection:disabled"/>
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
   <int value="-1237821073" label="SharedHighlightingUseBlocklist:enabled"/>
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
@@ -12862,6 +12864,8 @@ from previous Chrome versions.
   <int value="-560525911" label="SearchEngineChoiceTrigger:disabled"/>
   <int value="-560246178" label="IwaControlledFrame:enabled"/>
   <int value="-560114351" label="OfflinePagesRenovations:disabled"/>
+  <int value="-559976338"
+      label="InvalidateSearchEngineChoiceOnDeviceRestoreDetection:enabled"/>
   <int value="-559098342" label="AutofillEnableBuyNowPayLaterForZip:enabled"/>
   <int value="-559014545" label="MacAccessibilityAPIMigration:enabled"/>
   <int value="-558588766" label="FedCmAlternativeIdentifiers:enabled"/>

@@ -60,6 +60,16 @@ class SearchEngineChoiceService : public KeyedService {
     // Guest-specific default search engine propagation.
     virtual bool IsProfileEligibleForDseGuestPropagation() = 0;
 
+    // Returns whether Chrome detected in this current run that its data has
+    // been transferred / restored to a new device.
+    virtual bool IsDeviceRestoreDetectedInCurrentSession() = 0;
+
+    // Returns whether the search engine choice described in `choice_metadata`
+    // predates the Chrome data having been transferred or restored to this
+    // device.
+    virtual bool DoesChoicePredateDeviceRestore(
+        const ChoiceCompletionMetadata& choice_metadata) = 0;
+
    protected:
     // Helper for subclass to have the possibility to share some of the
     // implementation of `GetVariationsCountry()`.

@@ -369,8 +369,9 @@ extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 extern const char kIOSProactivePasswordGenerationBottomSheetName[];
 extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
 
-extern const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreName[];
-extern const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreDescription[];
+extern const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[];
+extern const char
+    kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[];
 
 extern const char kIOSQuickDeleteName[];
 extern const char kIOSQuickDeleteDescription[];

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/search_engines/model/ios_search_engine_choice_service_client.h"
 
 #import "components/country_codes/country_codes.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
@@ -17,4 +18,14 @@ IOSSearchEngineChoiceServiceClient::GetVariationsCountry() {
 bool IOSSearchEngineChoiceServiceClient::
     IsProfileEligibleForDseGuestPropagation() {
   return false;  // Not eligible since iOS has no Guest profile support.
+}
+
+bool IOSSearchEngineChoiceServiceClient::
+    IsDeviceRestoreDetectedInCurrentSession() {
+  return false;
+}
+
+bool IOSSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
+    const search_engines::ChoiceCompletionMetadata& choice_metadata) {
+  return false;
 }

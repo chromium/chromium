@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
@@ -40,6 +41,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -835,6 +837,119 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingTimestamp) {
       search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+}
+
+struct DeviceRestoreTestParam {
+  std::string test_suffix;
+  bool restore_detected_in_current_session;
+  bool choice_predates_restore;
+  bool is_feature_enabled;
+  bool expect_choice_info_wipe;
+};
+
+class SearchEngineChoiceServiceDeviceRestoreTest
+    : public SearchEngineChoiceServiceTest,
+      public testing::WithParamInterface<DeviceRestoreTestParam> {
+ public:
+  SearchEngineChoiceServiceDeviceRestoreTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+    }
+  }
+
+  void PopulateLazyFactories(
+      SearchEnginesTestEnvironment::ServiceFactories& lazy_factories,
+      InitServiceArgs args) override {
+    lazy_factories.search_engine_choice_service_factory =
+        base::BindLambdaForTesting(
+            [args](SearchEnginesTestEnvironment& environment) {
+              return std::make_unique<SearchEngineChoiceService>(
+                  std::make_unique<FakeSearchEngineChoiceServiceClient>(
+                      args.variation_country_id,
+                      args.is_profile_eligible_for_dse_guest_propagation,
+                      GetParam().restore_detected_in_current_session,
+                      GetParam().choice_predates_restore),
+                  environment.pref_service(), &environment.local_state(),
+                  environment.regional_capabilities_service(),
+                  environment.prepopulate_data_resolver());
+            });
+  }
+
+  static std::string GetTestSuffix(
+      const testing::TestParamInfo<DeviceRestoreTestParam>& info) {
+    return info.param.test_suffix;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SearchEngineChoiceServiceDeviceRestoreTest,
+    ::testing::ValuesIn({
+        DeviceRestoreTestParam{.test_suffix = "WipeForPreexistingChoice",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = true},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForLateDetection",
+                               .restore_detected_in_current_session = false,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = false},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForNewChoice",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = false,
+                               .is_feature_enabled = true,
+                               .expect_choice_info_wipe = false},
+        DeviceRestoreTestParam{.test_suffix = "NoWipeForFeatureDisabled",
+                               .restore_detected_in_current_session = true,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = false,
+                               .expect_choice_info_wipe = false},
+    }),
+    &SearchEngineChoiceServiceDeviceRestoreTest::GetTestSuffix);
+
+TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
+  ASSERT_EQ(switches::kSearchEngineChoiceNoRepromptString,
+            switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  SetChoiceCompletionMetadata(*pref_service(),
+                              {base::Time::Now(), base::Version("1.0.0.0")});
+
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
+
+  if (GetParam().expect_choice_info_wipe) {
+    EXPECT_FALSE(pref_service()->HasPrefPath(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram,
+        SearchEngineChoiceWipeReason::kDeviceRestored, 1);
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceRepromptHistogram, 0);
+  } else {
+    EXPECT_TRUE(pref_service()->HasPrefPath(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceRepromptHistogram,
+        RepromptResult::kNoReprompt, 1);
+  }
+
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      RepromptResult::kInvalidDictionary, 0);
 }
 
 struct RepromptTestParam {

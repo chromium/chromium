@@ -30,6 +30,13 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+// Invalidates old search engine choices when Chrome detects that it has been
+// transferred to a new device.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+             "InvalidateSearchEngineChoiceOnDeviceRestoreDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.
 // The default feature state is split by platform to ease potential merges
@@ -61,11 +68,6 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount{
     &kSearchEngineChoiceTrigger,
     /*name=*/"maximum_skip_count",
     /*default_value=*/10};
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kIOSPromptSearchEngineChoiceAfterDeviceRestore,
-             "IOSPromptSearchEngineChoiceAfterDeviceRestore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

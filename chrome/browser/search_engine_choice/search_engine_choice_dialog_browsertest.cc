@@ -906,8 +906,11 @@ class SearchEngineRepromptBrowserTest
         {switches::kSearchEngineChoiceTriggerRepromptParams.name,
          reprompt_param}};
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
+    feature_list_.InitWithFeaturesAndParameters(
+        /* enabled_features= */
+        {{switches::kSearchEngineChoiceTrigger, std::move(field_trial_params)},
+         {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection, {}}},
+        /* disabled_features= */ {});
   }
 
   bool select_google_in_pre() const { return GetParam().select_google_in_pre; }

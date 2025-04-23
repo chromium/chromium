@@ -21,6 +21,9 @@ class SearchEngineChoiceServiceClient
   // `SearchEngineChoiceService::Client` implementation.
   country_codes::CountryId GetVariationsCountry() override;
   bool IsProfileEligibleForDseGuestPropagation() override;
+  bool IsDeviceRestoreDetectedInCurrentSession() override;
+  bool DoesChoicePredateDeviceRestore(
+      const ChoiceCompletionMetadata& choice_metadata) override;
 
  private:
   bool is_profile_eligible_for_dse_guest_propagation_;

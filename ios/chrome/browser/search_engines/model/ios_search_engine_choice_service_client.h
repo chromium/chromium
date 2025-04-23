@@ -15,6 +15,9 @@ class IOSSearchEngineChoiceServiceClient
   // `SearchEngineChoiceService::Client` implementation.
   country_codes::CountryId GetVariationsCountry() override;
   bool IsProfileEligibleForDseGuestPropagation() override;
+  bool IsDeviceRestoreDetectedInCurrentSession() override;
+  bool DoesChoicePredateDeviceRestore(
+      const search_engines::ChoiceCompletionMetadata& choice_metadata) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_IOS_SEARCH_ENGINE_CHOICE_SERVICE_CLIENT_H_

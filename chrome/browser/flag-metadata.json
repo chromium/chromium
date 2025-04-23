@@ -5565,6 +5565,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "invalidate-search-engine-choice-on-device-restore-detection",
+    "owners": [ "dgn@chromium.org", "chrome-regionalcapabilities@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ios-best-features-screen",
     "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 138

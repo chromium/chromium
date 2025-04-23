@@ -542,6 +542,15 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+      client_->IsDeviceRestoreDetectedInCurrentSession() &&
+      client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
+    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
+                                SearchEngineChoiceWipeReason::kDeviceRestored);
+    return;
+  }
+
   if (ShouldRepromptFromFeatureParams(
           completion_metadata->version,
           regional_capabilities_service_->GetCountryId().GetRestricted(

@@ -37,4 +37,14 @@ bool SearchEngineChoiceServiceClient::
   return is_profile_eligible_for_dse_guest_propagation_;
 }
 
+bool SearchEngineChoiceServiceClient::
+    IsDeviceRestoreDetectedInCurrentSession() {
+  return false;
+}
+
+bool SearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
+    const ChoiceCompletionMetadata& choice_metadata) {
+  return false;
+}
+
 }  // namespace search_engines
