@@ -9,7 +9,7 @@
 
 namespace {
 // Delay before showing the promo after the timer starts.
-constexpr base::TimeDelta kPromoDisplayDelay = base::Seconds(3);
+constexpr base::TimeDelta kPromoDisplayDelay = base::Seconds(1);
 // Timeout period after which the promo will be automatically dismissed if not
 // interacted with.
 constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);

@@ -138,7 +138,7 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
   // Fast-forwards time to trigger the display timer
   void FireDisplayTimer() {
     base::RunLoop run_loop;
-    task_environment_.FastForwardBy(base::Seconds(3));
+    task_environment_.FastForwardBy(base::Seconds(1));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
