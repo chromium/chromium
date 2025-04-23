@@ -805,7 +805,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WebContentsAccessibilityImplJni.get()
                     .setBrowserAXMode(
                             mNativeObj,
-                            AccessibilityState.isScreenReaderEnabled(),
+                            AccessibilityState.isComplexUserInteractionServiceEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
                             AccessibilityState.isKnownScreenReaderEnabled(),
                             AccessibilityState.getTalkBackEnabledState().second);

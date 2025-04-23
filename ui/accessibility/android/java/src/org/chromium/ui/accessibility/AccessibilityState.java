@@ -115,10 +115,13 @@ public class AccessibilityState {
 
     /** A representation of the current accessibility state. */
     public static class State {
-        // True when we determine that genuine assistive technology such as a screen reader
-        // is running, based on the information from running accessibility services. False
-        // otherwise.
-        public final boolean isScreenReaderEnabled;
+        // True when we determine that an assistive technology that performs complex user
+        // interactions is enabled. False otherwise.
+        // Note: This is based on a heuristic from an analysis of the most common assistive
+        // technologies on Android. Certain AccessibilityEvents are associated with complex ATs, but
+        // do not necessarily indicate the presence of a screen reader. See {@link
+        // COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK}.
+        public final boolean isComplexUserInteractionServiceEnabled;
 
         // True when the user has touch exploration enabled. False otherwise.
         public final boolean isTouchExplorationEnabled;
@@ -150,7 +153,7 @@ public class AccessibilityState {
         public final boolean isKnownScreenReaderEnabled;
 
         public State(
-                boolean isScreenReaderEnabled,
+                boolean isComplexUserInteractionServiceEnabled,
                 boolean isTouchExplorationEnabled,
                 boolean isPerformGesturesEnabled,
                 boolean isAnyAccessibilityServiceEnabled,
@@ -159,7 +162,7 @@ public class AccessibilityState {
                 boolean isOnlyAutofillRunning,
                 boolean isOnlyPasswordManagersEnabled,
                 boolean isKnownScreenReaderEnabled) {
-            this.isScreenReaderEnabled = isScreenReaderEnabled;
+            this.isComplexUserInteractionServiceEnabled = isComplexUserInteractionServiceEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
             this.isPerformGesturesEnabled = isPerformGesturesEnabled;
             this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
@@ -173,8 +176,8 @@ public class AccessibilityState {
         @Override
         public String toString() {
             return "State{"
-                    + "isScreenReaderEnabled="
-                    + isScreenReaderEnabled
+                    + "isComplexUserInteractionServiceEnabled="
+                    + isComplexUserInteractionServiceEnabled
                     + ", isTouchExplorationEnabled="
                     + isTouchExplorationEnabled
                     + ", isPerformGesturesEnabled="
@@ -195,11 +198,12 @@ public class AccessibilityState {
         }
     }
 
-    // Analysis of the most popular accessibility services on Android suggests
-    // that any service that requests any of these three events is a screen reader
-    // or other complete assistive technology. If none of these events are requested,
-    // we can enable some optimizations.
-    private static final int SCREEN_READER_EVENT_TYPE_MASK =
+    // Analysis of the most popular accessibility services on Android suggests that any service that
+    // requests any of these three events is an accessibility service that has a more complex user
+    // interaction than something like password managers, but not as much as screen readers. This
+    // heuristic can be used to identify states where some, but not all, accessibility
+    // considerations of clients are required.
+    private static final int COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK =
             AccessibilityEvent.TYPE_VIEW_SELECTED
                     | AccessibilityEvent.TYPE_VIEW_SCROLLED
                     | AccessibilityEvent.TYPE_ANNOUNCEMENT;
@@ -290,9 +294,9 @@ public class AccessibilityState {
         sListeners.add(listener);
     }
 
-    public static boolean isScreenReaderEnabled() {
+    public static boolean isComplexUserInteractionServiceEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isScreenReaderEnabled;
+        return assumeNonNull(sState).isComplexUserInteractionServiceEnabled;
     }
 
     /**
@@ -729,8 +733,8 @@ public class AccessibilityState {
         }
 
         // Calculate heuristic state value derivations.
-        boolean isScreenReaderEnabled =
-                (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
+        boolean isComplexUserInteractionServiceEnabled =
+                (0 != (sEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
         boolean isKnownScreenReaderEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
 
         boolean isOnlyAutofillRunning = false;
@@ -796,7 +800,7 @@ public class AccessibilityState {
         Log.i(TAG, "Informing listeners of changes.");
         updateAndNotifyStateChange(
                 new State(
-                        isScreenReaderEnabled,
+                        isComplexUserInteractionServiceEnabled,
                         isTouchExplorationEnabled,
                         isPerformGesturesEnabled,
                         isAnyAccessibilityServiceEnabled,
@@ -1101,7 +1105,7 @@ public class AccessibilityState {
 
     // ForTesting methods.
 
-    public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
+    public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
         State oldState = assumeNonNull(sState);
 
@@ -1126,7 +1130,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         enabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1145,7 +1149,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         enabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1164,7 +1168,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         enabled,
@@ -1183,7 +1187,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1202,7 +1206,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1221,7 +1225,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1240,7 +1244,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
@@ -1259,7 +1263,7 @@ public class AccessibilityState {
 
         State newState =
                 new State(
-                        oldState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
