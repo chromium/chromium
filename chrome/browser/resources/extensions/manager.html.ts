@@ -28,7 +28,7 @@ ${this.showDrawer_ ? html`
     <div slot="body">
       <extensions-sidebar @close-drawer="${this.onCloseDrawer_}"
           ?in-dev-mode="${this.inDevMode}"
-          enable-enhanced-site-controls="${this.enableEnhancedSiteControls}">
+          ?enable-enhanced-site-controls="${this.enableEnhancedSiteControls}">
       </extensions-sidebar>
     </div>
     <if expr="is_android">
