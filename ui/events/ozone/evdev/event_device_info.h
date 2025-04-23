@@ -246,7 +246,7 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   std::array<input_absinfo, ABS_CNT> abs_info_;
 
   // Store the values for the multi-touch properties for each slot.
-  std::vector<int32_t> slot_values_[EVDEV_ABS_MT_COUNT];
+  std::array<std::vector<int32_t>, EVDEV_ABS_MT_COUNT> slot_values_;
 
   // Device identification.
   std::string name_;

@@ -42,7 +42,7 @@ struct KeycodeConverterData {
   uint32_t usb_keycode;
   const char* code;
   const char* id;
-  int native_keycode[kNativeColumns];
+  std::array<int, kNativeColumns> native_keycode;
 };
 
 #define DOM_CODE(usb, evdev, xkb, win, mac, code, id) \

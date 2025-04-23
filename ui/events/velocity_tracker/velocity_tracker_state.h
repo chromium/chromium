@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/component_export.h"
 #include "ui/events/velocity_tracker/bitset_32.h"
 #include "ui/events/velocity_tracker/velocity_tracker.h"
@@ -44,7 +46,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) VelocityTrackerState {
   VelocityTracker velocity_tracker_;
   int32_t active_pointer_id_;
   BitSet32 calculated_id_bits_;
-  Velocity calculated_velocity_[VelocityTracker::MAX_POINTERS];
+  std::array<Velocity, VelocityTracker::MAX_POINTERS> calculated_velocity_;
 };
 
 }  // namespace ui

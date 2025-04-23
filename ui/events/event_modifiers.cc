@@ -38,7 +38,9 @@ constexpr auto kEventFlagFromModifiers = std::to_array<int>({
 }  // namespace
 
 EventModifiers::EventModifiers() {
-  memset(modifiers_down_, 0, sizeof(modifiers_down_));
+  memset(
+      modifiers_down_.data(), 0,
+      (modifiers_down_.size() * sizeof(decltype(modifiers_down_)::value_type)));
 }
 EventModifiers::~EventModifiers() {}
 
