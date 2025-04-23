@@ -983,7 +983,7 @@ void ExtensionsMenuViewController::SwitchToPage(
 void ExtensionsMenuViewController::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
   // TODO(crbug.com/40879945): We should update the subheader here since it
-  // despends in `toolbar_model_`.
+  // depends on `toolbar_model_`.
   std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
     InsertMenuItemMainPage(main_page, sorted_ids[i], i);
