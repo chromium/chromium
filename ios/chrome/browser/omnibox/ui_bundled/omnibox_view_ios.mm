@@ -433,13 +433,12 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
-void OmniboxViewIOS::EndEditing() {
+void OmniboxViewIOS::EndEditing(bool suggestions_list_scrolled) {
   if (model() && model()->has_focus()) {
     CloseOmniboxPopup();
 
     RecordSuggestionsListScrolled(model()->GetPageClassification(),
-                                  suggestions_list_scrolled_);
-    suggestions_list_scrolled_ = false;
+                                  suggestions_list_scrolled);
 
     model()->OnWillKillFocus();
     model()->OnKillFocus();
@@ -481,11 +480,6 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 }
 
 #pragma mark - OmniboxAutocompleteController interactions
-
-void OmniboxViewIOS::OnPopupDidScroll() {
-  this->HideKeyboard();
-  suggestions_list_scrolled_ = true;
-}
 
 void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
   // Exit preedit state and append the match. Refocus if necessary.

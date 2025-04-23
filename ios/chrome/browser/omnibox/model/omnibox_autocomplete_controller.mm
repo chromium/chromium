@@ -225,9 +225,7 @@ using base::UserMetricsAction;
 }
 
 - (void)onScroll {
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnPopupDidScroll();
-  }
+  [self.omniboxTextController onScroll];
 }
 
 - (void)onCallAction {

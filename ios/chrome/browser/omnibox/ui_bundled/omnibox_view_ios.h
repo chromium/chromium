@@ -50,7 +50,7 @@ class OmniboxViewIOS : public OmniboxView {
 
   // Hide keyboard and call OnDidEndEditing.  This dismisses the keyboard and
   // also finalizes the editing state of the omnibox.
-  void EndEditing();
+  void EndEditing(bool suggestions_list_scrolled);
 
   // OmniboxView implementation.
   std::u16string GetText() const override;
@@ -109,7 +109,6 @@ class OmniboxViewIOS : public OmniboxView {
   void OnAcceptAutocomplete();
 
   // OmniboxAutocompleteController interactions.
-  void OnPopupDidScroll();
   void OnSelectedMatchForAppending(const std::u16string& str);
 
   void OnCallActionTap();
@@ -155,8 +154,6 @@ class OmniboxViewIOS : public OmniboxView {
   // the popup, and then remove this hack.
   BOOL ignore_popup_updates_;
 
-  // Whether the popup was scrolled during this omnibox interaction.
-  bool suggestions_list_scrolled_ = false;
   // Whether it's the lens overlay omnibox.
   bool is_lens_overlay_;
 

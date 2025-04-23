@@ -28,6 +28,8 @@
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for text interactions.
   raw_ptr<OmniboxEditModel> _omniboxEditModel;
+  // Whether the popup was scrolled during this omnibox interaction.
+  BOOL _suggestionsListScrolled;
 }
 
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
@@ -81,8 +83,9 @@
     [self.textField resignFirstResponder];
   }
   if (_omniboxViewIOS) {
-    _omniboxViewIOS->EndEditing();
+    _omniboxViewIOS->EndEditing(_suggestionsListScrolled);
   }
+  _suggestionsListScrolled = NO;
 }
 
 - (void)insertTextToOmnibox:(NSString*)text {
@@ -309,6 +312,12 @@
   [self.delegate omniboxTextController:self
                   didPreviewSuggestion:suggestion
                          isFirstUpdate:isFirstUpdate];
+}
+
+- (void)onScroll {
+  /// Hides the keyboard.
+  [self.textField resignFirstResponder];
+  _suggestionsListScrolled = YES;
 }
 
 #pragma mark - Private

@@ -112,6 +112,9 @@ class OmniboxViewIOS;
 - (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
             isFirstUpdate:(BOOL)isFirstUpdate;
 
+/// Notifies of scroll event.
+- (void)onScroll;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_
