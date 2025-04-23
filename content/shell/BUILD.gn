@@ -655,8 +655,13 @@ if (is_android) {
 
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
-    ios_content_shell_entitlements_path =
-        "//content/app/ios/appex/app.entitlements"
+    if (target_platform == "iphoneos") {
+      ios_content_shell_entitlements_path =
+          "//content/app/ios/appex/app.entitlements"
+    } else {
+      ios_content_shell_entitlements_path =
+          "//build/config/ios/entitlements.plist"
+    }
   }
 
   declare_args() {
