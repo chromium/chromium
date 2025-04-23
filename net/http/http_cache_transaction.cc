@@ -612,12 +612,6 @@ void HttpCache::Transaction::SetWebSocketHandshakeStreamCreateHelper(
   }
 }
 
-void HttpCache::Transaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  DCHECK(!network_trans_);
-  before_network_start_callback_ = std::move(callback);
-}
-
 void HttpCache::Transaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   DCHECK(!network_trans_);
@@ -652,13 +646,6 @@ void HttpCache::Transaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   DCHECK(!network_trans_);
   is_shared_dictionary_read_allowed_callback_ = std::move(callback);
-}
-
-int HttpCache::Transaction::ResumeNetworkStart() {
-  if (network_trans_) {
-    return network_trans_->ResumeNetworkStart();
-  }
-  return ERR_UNEXPECTED;
 }
 
 ConnectionAttempts HttpCache::Transaction::GetConnectionAttempts() const {
@@ -1927,8 +1914,6 @@ int HttpCache::Transaction::DoSendRequest() {
     return rv;
   }
 
-  network_trans_->SetBeforeNetworkStartCallback(
-      std::move(before_network_start_callback_));
   network_trans_->SetConnectedCallback(connected_callback_);
   network_trans_->SetRequestHeadersCallback(request_headers_callback_);
   network_trans_->SetEarlyResponseHeadersCallback(

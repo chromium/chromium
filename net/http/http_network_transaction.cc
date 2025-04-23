@@ -263,7 +263,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     response_.restricted_prefetch = true;
   }
 
-  next_state_ = STATE_NOTIFY_BEFORE_CREATE_STREAM;
+  next_state_ = STATE_CREATE_STREAM;
   int rv = DoLoop(OK);
   if (rv == ERR_IO_PENDING)
     callback_ = std::move(callback);
@@ -626,11 +626,6 @@ void HttpNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
   websocket_handshake_stream_base_create_helper_ = create_helper;
 }
 
-void HttpNetworkTransaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  before_network_start_callback_ = std::move(callback);
-}
-
 void HttpNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   connected_callback_ = callback;
@@ -663,13 +658,6 @@ void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   // This method should not be called for this class.
   NOTREACHED();
-}
-
-int HttpNetworkTransaction::ResumeNetworkStart() {
-  TRACE_EVENT("net", "HttpNetworkTransaction::ResumeNetworkStart",
-              NetLogWithSourceToFlow(net_log_));
-  DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
-  return DoLoop(OK);
 }
 
 void HttpNetworkTransaction::ResumeAfterConnected(int result) {
@@ -871,10 +859,6 @@ int HttpNetworkTransaction::DoLoop(int result) {
     State state = next_state_;
     next_state_ = STATE_NONE;
     switch (state) {
-      case STATE_NOTIFY_BEFORE_CREATE_STREAM:
-        DCHECK_EQ(OK, rv);
-        rv = DoNotifyBeforeCreateStream();
-        break;
       case STATE_CREATE_STREAM:
         DCHECK_EQ(OK, rv);
         rv = DoCreateStream();
@@ -970,18 +954,6 @@ int HttpNetworkTransaction::DoLoop(int result) {
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
   return rv;
-}
-
-int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
-  TRACE_EVENT("net", "HttpNetworkTransaction::NotifyBeforeCreateStream",
-              NetLogWithSourceToFlow(net_log_));
-  next_state_ = STATE_CREATE_STREAM;
-  bool defer = false;
-  if (!before_network_start_callback_.is_null())
-    std::move(before_network_start_callback_).Run(&defer);
-  if (!defer)
-    return OK;
-  return ERR_IO_PENDING;
 }
 
 int HttpNetworkTransaction::DoCreateStream() {

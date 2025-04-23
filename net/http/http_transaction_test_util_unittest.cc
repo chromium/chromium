@@ -155,47 +155,6 @@ TEST_F(MockNetworkTransactionTest, SyncNetStartFailure) {
               test::IsError(ERR_NETWORK_ACCESS_DENIED));
 }
 
-TEST_F(MockNetworkTransactionTest, BeforeNetworkStartCallback) {
-  ScopedMockTransaction mock_transaction(kBasicTransaction);
-  HttpRequestInfo request = MockHttpRequest(mock_transaction);
-
-  auto transaction = CreateNetworkTransaction();
-  bool before_network_start_callback_called = false;
-  transaction->SetBeforeNetworkStartCallback(base::BindLambdaForTesting(
-      [&](bool* defer) { before_network_start_callback_called = true; }));
-
-  TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction->Start(&request, start_callback.callback(),
-                                 NetLogWithSource()),
-              test::IsError(ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
-  EXPECT_TRUE(before_network_start_callback_called);
-}
-
-TEST_F(MockNetworkTransactionTest, BeforeNetworkStartCallbackDeferAndResume) {
-  ScopedMockTransaction mock_transaction(kBasicTransaction);
-  HttpRequestInfo request = MockHttpRequest(mock_transaction);
-
-  auto transaction = CreateNetworkTransaction();
-  bool before_network_start_callback_called = false;
-  transaction->SetBeforeNetworkStartCallback(
-      base::BindLambdaForTesting([&](bool* defer) {
-        before_network_start_callback_called = true;
-        *defer = true;
-      }));
-
-  TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction->Start(&request, start_callback.callback(),
-                                 NetLogWithSource()),
-              test::IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(before_network_start_callback_called);
-  RunUntilIdle();
-  EXPECT_FALSE(start_callback.have_result());
-  transaction->ResumeNetworkStart();
-  EXPECT_FALSE(start_callback.have_result());
-  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
-}
-
 TEST_F(MockNetworkTransactionTest, AsyncConnectedCallback) {
   ScopedMockTransaction mock_transaction(kBasicTransaction);
   HttpRequestInfo request = MockHttpRequest(mock_transaction);
@@ -342,7 +301,6 @@ TEST_F(MockNetworkTransactionTest, CallbackOrder) {
   ScopedMockTransaction mock_transaction(kBasicTransaction);
   mock_transaction.request_headers = "Foo: Bar\r\n";
 
-  bool before_network_start_callback_called = false;
   bool connected_callback_called = false;
   bool modify_request_headers_callback_called_ = false;
   bool transaction_handler_called = false;
@@ -350,7 +308,6 @@ TEST_F(MockNetworkTransactionTest, CallbackOrder) {
   mock_transaction.handler = base::BindLambdaForTesting(
       [&](const HttpRequestInfo* request, std::string* response_status,
           std::string* response_headers, std::string* response_data) {
-        EXPECT_TRUE(before_network_start_callback_called);
         EXPECT_TRUE(connected_callback_called);
         EXPECT_TRUE(modify_request_headers_callback_called_);
         EXPECT_FALSE(transaction_handler_called);
@@ -362,21 +319,10 @@ TEST_F(MockNetworkTransactionTest, CallbackOrder) {
   HttpRequestInfo request = MockHttpRequest(mock_transaction);
 
   auto transaction = CreateNetworkTransaction();
-  transaction->SetBeforeNetworkStartCallback(
-      base::BindLambdaForTesting([&](bool* defer) {
-        EXPECT_FALSE(before_network_start_callback_called);
-        EXPECT_FALSE(connected_callback_called);
-        EXPECT_FALSE(modify_request_headers_callback_called_);
-        EXPECT_FALSE(transaction_handler_called);
-
-        before_network_start_callback_called = true;
-        *defer = true;
-      }));
 
   CompletionOnceCallback callback_for_connected_callback;
   transaction->SetConnectedCallback(base::BindLambdaForTesting(
       [&](const TransportInfo& info, CompletionOnceCallback callback) -> int {
-        EXPECT_TRUE(before_network_start_callback_called);
         EXPECT_FALSE(connected_callback_called);
         EXPECT_FALSE(modify_request_headers_callback_called_);
         EXPECT_FALSE(transaction_handler_called);
@@ -388,7 +334,6 @@ TEST_F(MockNetworkTransactionTest, CallbackOrder) {
 
   transaction->SetModifyRequestHeadersCallback(
       base::BindLambdaForTesting([&](HttpRequestHeaders* request_headers) {
-        EXPECT_TRUE(before_network_start_callback_called);
         EXPECT_TRUE(connected_callback_called);
         EXPECT_FALSE(modify_request_headers_callback_called_);
         EXPECT_FALSE(transaction_handler_called);
@@ -396,16 +341,12 @@ TEST_F(MockNetworkTransactionTest, CallbackOrder) {
         modify_request_headers_callback_called_ = true;
       }));
 
-  EXPECT_FALSE(before_network_start_callback_called);
   TestCompletionCallback start_callback;
   ASSERT_THAT(transaction->Start(&request, start_callback.callback(),
                                  NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
 
-  EXPECT_TRUE(before_network_start_callback_called);
-
   EXPECT_FALSE(connected_callback_called);
-  transaction->ResumeNetworkStart();
   RunUntilIdle();
   EXPECT_TRUE(connected_callback_called);
 

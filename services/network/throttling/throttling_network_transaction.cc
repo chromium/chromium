@@ -91,8 +91,6 @@ void ThrottlingNetworkTransaction::Fail() {
   DCHECK(started_);
   DCHECK(!failed_);
   failed_ = true;
-  network_transaction_->SetBeforeNetworkStartCallback(
-      BeforeNetworkStartCallback());
   if (interceptor_)
     interceptor_.reset();
 }
@@ -278,11 +276,6 @@ void ThrottlingNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
   network_transaction_->SetWebSocketHandshakeStreamCreateHelper(create_helper);
 }
 
-void ThrottlingNetworkTransaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  network_transaction_->SetBeforeNetworkStartCallback(std::move(callback));
-}
-
 void ThrottlingNetworkTransaction::SetRequestHeadersCallback(
     net::RequestHeadersCallback callback) {
   network_transaction_->SetRequestHeadersCallback(std::move(callback));
@@ -312,12 +305,6 @@ void ThrottlingNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   // This method should not be called for this class.
   NOTREACHED();
-}
-
-int ThrottlingNetworkTransaction::ResumeNetworkStart() {
-  if (CheckFailed())
-    return net::ERR_INTERNET_DISCONNECTED;
-  return network_transaction_->ResumeNetworkStart();
 }
 
 net::ConnectionAttempts ThrottlingNetworkTransaction::GetConnectionAttempts()
