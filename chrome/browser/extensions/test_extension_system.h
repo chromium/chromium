@@ -41,6 +41,31 @@ namespace extensions {
 // Test ExtensionSystem, for use with TestingProfile.
 class TestExtensionSystem : public ExtensionSystem {
  public:
+  struct InitParams {
+    InitParams();
+    // Allows callers to specify each field.
+    InitParams(base::CommandLine* command_line,
+               base::FilePath install_directory,
+               base::FilePath unpacked_install_directory,
+               bool autoupdate_enabled,
+               bool enable_extensions);
+    ~InitParams();
+
+    // The commandline to use. If not provided, the commandline for the current
+    // process will be used.
+    raw_ptr<base::CommandLine> command_line = nullptr;
+    // The install directory to use. If not provided, one associated with the
+    // path for the associated Profile will be used.
+    std::optional<base::FilePath> install_directory;
+    // The unpacked install directory to use. If not provided, one associated
+    // with the path for the associated Profile will be used.
+    std::optional<base::FilePath> unpacked_install_directory;
+    // Whether autoupdate is enabled for the test.
+    bool autoupdate_enabled = false;
+    // Whether extensions are enabled for the profile.
+    bool enable_extensions = true;
+  };
+
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
   explicit TestExtensionSystem(Profile* profile);
   ~TestExtensionSystem() override;
@@ -48,7 +73,14 @@ class TestExtensionSystem : public ExtensionSystem {
   // KeyedService implementation.
   void Shutdown() override;
 
+  // Initializes the TestExtensionSystem and the broader extensions platform.
+  void Init();
+  void Init(const InitParams& init_params);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // NOTE: Please don't use these in new code. Prefer using `Init()`, which will
+  // work on builds that don't support ExtensionService.
+
   // Creates an ExtensionService initialized with the testing profile and
   // returns it, and creates ExtensionPrefs if it hasn't been created yet.
   ExtensionService* CreateExtensionService(
@@ -56,7 +88,6 @@ class TestExtensionSystem : public ExtensionSystem {
       const base::FilePath& install_directory,
       bool autoupdate_enabled,
       bool enable_extensions = true);
-
   // Similar to the above, but also allows specifying unpacked install directory
   // if needed.
   ExtensionService* CreateExtensionService(

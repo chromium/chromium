@@ -701,8 +701,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
-      ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
-                               base::FilePath(), false);
+      ->Init();
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
   service->Init();

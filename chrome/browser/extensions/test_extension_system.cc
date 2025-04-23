@@ -97,6 +97,22 @@ std::unique_ptr<KeyedService> BuildFakeCWSService(
 
 }  // namespace
 
+TestExtensionSystem::InitParams::InitParams() = default;
+
+TestExtensionSystem::InitParams::InitParams(
+    base::CommandLine* command_line,
+    base::FilePath install_directory,
+    base::FilePath unpacked_install_directory,
+    bool autoupdate_enabled,
+    bool enable_extensions)
+    : command_line(command_line),
+      install_directory(install_directory),
+      unpacked_install_directory(unpacked_install_directory),
+      autoupdate_enabled(autoupdate_enabled),
+      enable_extensions(enable_extensions) {}
+
+TestExtensionSystem::InitParams::~InitParams() = default;
+
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
       store_factory_(
@@ -124,6 +140,30 @@ void TestExtensionSystem::Shutdown() {
   }
 #endif
   in_process_data_decoder_.reset();
+}
+
+void TestExtensionSystem::Init() {
+  Init(InitParams());
+}
+
+void TestExtensionSystem::Init(const InitParams& params) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/412935322): Put desktop android bootstrapping code
+  // here.
+#else
+  base::CommandLine* command_line =
+      params.command_line ? params.command_line.get()
+                          : base::CommandLine::ForCurrentProcess();
+  base::FilePath install_directory = params.install_directory.value_or(
+      profile_->GetPath().AppendASCII(kInstallDirectoryName));
+  base::FilePath unpacked_install_directory =
+      params.unpacked_install_directory.value_or(
+          profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
+
+  CreateExtensionService(command_line, install_directory,
+                         unpacked_install_directory, params.autoupdate_enabled,
+                         params.enable_extensions);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
