@@ -6,27 +6,6 @@
 
 #import "url/gurl.h"
 
-@implementation BackgroundCustomizationConfiguration {
-  GURL _thumbnailURL;
-  GURL _highResURL;
-}
-
-#pragma mark - Properties
-
-- (const GURL&)thumbnailURL {
-  return _thumbnailURL;
-}
-
-- (void)setThumbnailURL:(const GURL&)url {
-  _thumbnailURL = url;
-}
-
-- (const GURL&)highResURL {
-  return _highResURL;
-}
-
-- (void)setHighResURL:(const GURL&)url {
-  _highResURL = url;
-}
+@implementation BackgroundCustomizationConfiguration
 
 @end

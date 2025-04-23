@@ -119,6 +119,7 @@
                                     NSIndexPath* indexPath,
                                     NSString* itemIdentifier) {
                cell.mutator = weakSelf.mutator;
+               cell.delegate = weakSelf.backgroundPickerPresentationDelegate;
              }];
   }
 }
@@ -215,6 +216,17 @@
 
   return [section isEqualToString:kCustomizationSectionBackground] &&
          ![itemIdentifier isEqualToString:kBackgroundPickerCellIdentifier];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  BackgroundCustomizationConfiguration* backgroundConfiguration =
+      _backgroundCustomizationConfigurationMap[itemIdentifier];
+
+  [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 }
 
 #pragma mark - HomeCustomizationMainConsumer

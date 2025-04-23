@@ -48,44 +48,46 @@ const CGFloat kGapBorderWidth = 3.78;
   BackgroundCustomizationConfiguration* _backgroundConfiguration;
 }
 
-- (void)willMoveToSuperview:(UIView*)newSuperview {
-  [super willMoveToSuperview:newSuperview];
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.contentView.backgroundColor = UIColor.clearColor;
 
-  self.contentView.backgroundColor = UIColor.clearColor;
+    // Outer container view that holds the highlight border.
+    self.borderWrapperView = [[UIView alloc] init];
+    self.borderWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.borderWrapperView.backgroundColor = UIColor.clearColor;
+    self.borderWrapperView.layer.cornerRadius = kHighlightCornerRadius;
+    self.borderWrapperView.layer.masksToBounds = YES;
+    [self.contentView addSubview:self.borderWrapperView];
 
-  // Outer container view that holds the highlight border.
-  self.borderWrapperView = [[UIView alloc] init];
-  self.borderWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.borderWrapperView.backgroundColor = UIColor.clearColor;
-  self.borderWrapperView.layer.cornerRadius = kHighlightCornerRadius;
-  self.borderWrapperView.layer.masksToBounds = YES;
-  [self.contentView addSubview:self.borderWrapperView];
+    // Inner content view, placed with a gap inside the border wrapper view.
+    // This holds the actual content.
+    self.innerContentView = [[UIView alloc] init];
+    self.innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.innerContentView.backgroundColor =
+        [UIColor colorNamed:@"ntp_background_color"];
+    self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
+    self.innerContentView.layer.masksToBounds = YES;
+    [self.borderWrapperView addSubview:self.innerContentView];
 
-  // Inner content view, placed with a gap inside the border wrapper view.
-  // This holds the actual content.
-  self.innerContentView = [[UIView alloc] init];
-  self.innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.innerContentView.backgroundColor =
-      [UIColor colorNamed:@"ntp_background_color"];
-  self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
-  self.innerContentView.layer.masksToBounds = YES;
-  [self.borderWrapperView addSubview:self.innerContentView];
+    // Constraints for positioning the border wrapper view inside the cell.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.borderWrapperView.topAnchor
+          constraintEqualToAnchor:self.contentView.topAnchor
+                         constant:kContentViewTopMargin],
+      [self.borderWrapperView.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor],
+      [self.borderWrapperView.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor],
+      [self.borderWrapperView.bottomAnchor
+          constraintEqualToAnchor:self.contentView.bottomAnchor],
+    ]];
 
-  // Constraints for positioning the border wrapper view inside the cell.
-  [NSLayoutConstraint activateConstraints:@[
-    [self.borderWrapperView.topAnchor
-        constraintEqualToAnchor:self.contentView.topAnchor
-                       constant:kContentViewTopMargin],
-    [self.borderWrapperView.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor],
-    [self.borderWrapperView.trailingAnchor
-        constraintEqualToAnchor:self.contentView.trailingAnchor],
-    [self.borderWrapperView.bottomAnchor
-        constraintEqualToAnchor:self.contentView.bottomAnchor],
-  ]];
-
-  AddSameConstraintsWithInset(self.innerContentView, self.borderWrapperView,
-                              kGapBorderWidth + kHighlightBorderWidth);
+    AddSameConstraintsWithInset(self.innerContentView, self.borderWrapperView,
+                                kGapBorderWidth + kHighlightBorderWidth);
+  }
+  return self;
 }
 
 - (void)configureWithBackgroundOption:

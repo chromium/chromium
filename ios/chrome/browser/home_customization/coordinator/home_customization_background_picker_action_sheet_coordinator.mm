@@ -1,0 +1,107 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
+
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+@implementation HomeCustomizationBackgroundPickerActionSheetCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                                     title:nil
+                                   message:nil
+                             barButtonItem:nil];
+  return self;
+}
+
+- (void)start {
+  __weak __typeof(self) weakSelf = self;
+
+  [self
+      addItemWithTitle:
+          l10n_util::GetNSStringWithFixup(
+              IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE)
+                action:^{
+                  [weakSelf presentPresetGalleryPicker];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self
+      addItemWithTitle:
+          l10n_util::GetNSStringWithFixup(
+              IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PHOTO_LIBRARY_TITLE)
+                action:^{
+                  [weakSelf presentPhotoLibraryPicker];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self addItemWithTitle:
+            l10n_util::GetNSStringWithFixup(
+                IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE)
+                  action:^{
+                    [weakSelf presentBackgroundColorPicker];
+                  }
+                   style:UIAlertActionStyleDefault];
+
+  [super start];
+}
+
+- (void)stop {
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [super stop];
+}
+
+#pragma mark - Private functions
+
+// Presents the view controller for picking a solid background color.
+- (void)presentBackgroundColorPicker {
+  UIViewController* mainViewController =
+      [[HomeCustomizationBackgroundColorPickerViewController alloc] init];
+  mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:mainViewController];
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+}
+
+// Presents the view controller for picking a background image
+// from a preselected gallery collection.
+- (void)presentPresetGalleryPicker {
+  UIViewController* mainViewController =
+      [[HomeCustomizationBackgroundPresetGalleryPickerViewController alloc]
+          init];
+  mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:mainViewController];
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+}
+
+// Presents the view controller for selecting a background photo
+// from the device's photo library.
+- (void)presentPhotoLibraryPicker {
+  UIViewController* mainViewController =
+      [[HomeCustomizationBackgroundPhotoLibraryPickerViewController alloc]
+          init];
+  mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:mainViewController];
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+}
+
+@end

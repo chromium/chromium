@@ -12,6 +12,7 @@
 // Mutator protocol for the UI layer to communicate to the
 // HomeCustomizationMediator.
 @protocol HomeCustomizationMutator;
+@protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 
 // Represents a cell with a picker button that allows users to choose more
 // background options for the NTP customization. This cell enables users to
@@ -19,6 +20,12 @@
 // an easy way to expand their choices.
 @interface HomeCustomizationBackgroundPickerCell
     : HomeCustomizationBackgroundCell
+
+// The delegate object that will handle showing the background picker alert
+// sheet.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerPresentationDelegate>
+        delegate;
 
 @end
 

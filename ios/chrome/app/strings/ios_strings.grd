@@ -2662,6 +2662,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
         Customize your home screen
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick a solid background color.">
+        Select Color
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PHOTO_LIBRARY_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick an image from their camera roll.">
+        Camera Roll
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE" desc="Title of an option in the background customization action sheet that opens a preset background gallery.">
+        Browse Gallery
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Discover feed
       </message>
@@ -3211,8 +3220,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_HINT" desc="Accessibility hint for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only].">
         Readjust the height of the sheet
       </message>
-      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only]."
-        meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
+      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only]." meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
         Sheet grabber
       </message>
       <message name="IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA" desc="The label displayed in the speedbump menu that leads to the camera search option.">
