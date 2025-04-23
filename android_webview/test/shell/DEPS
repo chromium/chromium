@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/embedder_support/android/metrics",
-  "+components/policy/android/javatests",
-  "-content/public/android/java",
-  "+content/public/android/java/src/org/chromium/content_public",
-]

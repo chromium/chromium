@@ -1,5 +1,0 @@
-file://android_webview/nonembedded/OWNERS
-
-# Variations
-per-file MockVariationsSeedServer*=file://android_webview/browser/variations/OWNERS
-per-file VariationsSeedServerTest*=file://android_webview/browser/variations/OWNERS

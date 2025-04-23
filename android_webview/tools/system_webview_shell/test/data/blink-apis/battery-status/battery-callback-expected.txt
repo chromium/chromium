@@ -1,8 +1,0 @@
-Test Battery Status API callback in WebView
-batteryStatusSuccess invoked
-PASS: battery.level is >= 0
-PASS: battery.level is <= 1
-PASS: battery.level.toPrecision(2) == battery.level is true
-PASS: !battery.charging || battery.dischargingTime === Infinity is true
-PASS: battery.charging || battery.chargingTime === Infinity is true
-TEST FINISHED

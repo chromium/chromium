@@ -1,9 +1,0 @@
-# Copyright 2018 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# We need to avoid obfuscating the support library boundary interface because
-# this API is shared with the Android Support Library.
-# Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
-# any sub-packages of that package can still be obfuscated.
--keep public class org.chromium.support_lib_boundary.* { public *; }

@@ -1,5 +1,0 @@
-include_rules = [
-  "+android_webview/crash_client_jni",
-  "+components/crash",
-  "+components/gwp_asan/common/crash_key_name.h",
-]

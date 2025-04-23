@@ -1,7 +1,0 @@
-Test MediaStream API callbacks in WebView
-onPermissionRequest: android.webkit.resource.VIDEO_CAPTURE,android.webkit.resource.AUDIO_CAPTURE
-request granted: android.webkit.resource.VIDEO_CAPTURE,android.webkit.resource.AUDIO_CAPTURE
-PASS: getUserMedia succeeded.
-PASS: track.readyState is "live"
-PASS: activeStream.active is true
-TEST FINISHED

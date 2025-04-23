@@ -1,5 +1,0 @@
-Test JavaScript feedback into WebView
-some debug text
-false
-undefined
-TEST FINISHED

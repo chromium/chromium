@@ -1,3 +1,0 @@
-# For security review.
-per-file browser_exposed_renderer_interfaces.cc=set noparent
-per-file browser_exposed_renderer_interfaces.cc=file://ipc/SECURITY_OWNERS

@@ -1,6 +1,0 @@
-Test EME callbacks in WebView
-keySystem is com.widevine.alpha
-onPermissionRequest: android.webkit.resource.PROTECTED_MEDIA_ID
-request granted: android.webkit.resource.PROTECTED_MEDIA_ID
-EME success
-TEST FINISHED

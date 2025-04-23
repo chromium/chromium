@@ -1,3 +1,0 @@
-This directory contains WebView services running in the WebView provider's
-webview_service process. There is only one such process on a device. The native
-library is not loaded in this process.

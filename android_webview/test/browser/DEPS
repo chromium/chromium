@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/component_updater/android",
-  "+components/embedder_support/origin_trials",
-]
