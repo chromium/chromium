@@ -80,7 +80,15 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
       WaitForState(kTabStripHoverState, true));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, SelectionAndDeselection) {
+// TODO(crbug.com/412844030): Re-enable this test.
+// Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SelectionAndDeselection DISABLED_SelectionAndDeselection
+#else
+#define MAYBE_SelectionAndDeselection SelectionAndDeselection
+#endif
+IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
+                       MAYBE_SelectionAndDeselection) {
   const GURL test_url = embedded_test_server()->GetURL(kDocumentWithTitle);
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
