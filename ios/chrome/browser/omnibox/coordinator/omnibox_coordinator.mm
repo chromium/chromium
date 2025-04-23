@@ -202,6 +202,7 @@
       initWithOmniboxController:_editView->controller()
                  omniboxViewIOS:_editView.get()];
   _omniboxTextController.delegate = self.mediator;
+  _omniboxTextController.focusDelegate = self.focusDelegate;
   _omniboxTextController.omniboxAutocompleteController =
       _omniboxAutocompleteController;
   _omniboxTextController.textField = self.textField;

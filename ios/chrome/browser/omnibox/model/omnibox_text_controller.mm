@@ -15,11 +15,19 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
+
+@interface OmniboxTextController ()
+
+/// The omnibox client.
+@property(nonatomic, assign, readonly) OmniboxClient* client;
+
+@end
 
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
@@ -28,7 +36,7 @@
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for text interactions.
   raw_ptr<OmniboxEditModel> _omniboxEditModel;
-  // Whether the popup was scrolled during this omnibox interaction.
+  /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
 }
 
@@ -82,9 +90,30 @@
   if (self.textField.window) {
     [self.textField resignFirstResponder];
   }
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->EndEditing(_suggestionsListScrolled);
+  if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
+    return;
   }
+  [self.omniboxAutocompleteController endEditing];
+
+  if (OmniboxClient* client = self.client) {
+    RecordSuggestionsListScrolled(
+        client->GetPageClassification(/*is_prefetch=*/false),
+        _suggestionsListScrolled);
+  }
+
+  _omniboxEditModel->OnWillKillFocus();
+  _omniboxEditModel->OnKillFocus();
+  [self.textField exitPreEditState];
+
+  // The controller looks at the current pre-edit state, so the call to
+  // OnKillFocus() must come after exiting pre-edit.
+  [self.focusDelegate omniboxDidResignFirstResponder];
+
+  // Blow away any in-progress edits.
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->RevertAll();
+  }
+  DCHECK(![self.textField hasAutocompleteText]);
   _suggestionsListScrolled = NO;
 }
 
@@ -176,7 +205,7 @@
   if (_omniboxEditModel) {
     // The omnibox edit model doesn't support accepting input with no text.
     // Delegate the call to the client instead.
-    if (OmniboxClient* client = [self omniboxClient];
+    if (OmniboxClient* client = self.client;
         client && !self.textField.text.length) {
       client->OnThumbnailOnlyAccept();
     } else {
@@ -333,9 +362,7 @@
   [textModel setText:previewText userTextLength:previewText.length];
 }
 
-#pragma mark - Private
-
-- (OmniboxClient*)omniboxClient {
+- (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
 }
 

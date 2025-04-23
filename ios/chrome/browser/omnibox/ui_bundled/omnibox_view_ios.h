@@ -48,10 +48,6 @@ class OmniboxViewIOS : public OmniboxView {
     omnibox_text_controller_ = controller;
   }
 
-  // Hide keyboard and call OnDidEndEditing.  This dismisses the keyboard and
-  // also finalizes the editing state of the omnibox.
-  void EndEditing(bool suggestions_list_scrolled);
-
   // OmniboxView implementation.
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,

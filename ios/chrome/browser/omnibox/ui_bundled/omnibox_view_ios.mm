@@ -433,29 +433,6 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
-void OmniboxViewIOS::EndEditing(bool suggestions_list_scrolled) {
-  if (model() && model()->has_focus()) {
-    CloseOmniboxPopup();
-
-    RecordSuggestionsListScrolled(model()->GetPageClassification(),
-                                  suggestions_list_scrolled);
-
-    model()->OnWillKillFocus();
-    model()->OnKillFocus();
-    if ([field_ isPreEditing]) {
-      [field_ exitPreEditState];
-    }
-
-    // The controller looks at the current pre-edit state, so the call to
-    // OnKillFocus() must come after exiting pre-edit.
-    [focus_delegate_ omniboxDidResignFirstResponder];
-
-    // Blow away any in-progress edits.
-    RevertAll();
-    DCHECK(![field_ hasAutocompleteText]);
-  }
-}
-
 void OmniboxViewIOS::HideKeyboard() {
   [field_ resignFirstResponder];
 }

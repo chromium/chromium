@@ -14,9 +14,9 @@
 struct AutocompleteMatch;
 class AutocompleteResult;
 @class AutocompleteResultWrapper;
-class OmniboxController;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
+class OmniboxController;
 @class OmniboxTextController;
 class OmniboxViewIOS;
 
@@ -84,6 +84,9 @@ class OmniboxViewIOS;
             isFirstUpdate:(BOOL)isFirstUpdate;
 
 #pragma mark - OmniboxText events
+
+/// Ends omnibox edit. Closes the omnibox popup.
+- (void)endEditing;
 
 /// Updates the popup text alignment.
 - (void)setTextAlignment:(NSTextAlignment)alignment;

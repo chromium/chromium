@@ -12,6 +12,7 @@
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
 class OmniboxController;
+@protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
 class OmniboxViewIOS;
@@ -21,6 +22,9 @@ class OmniboxViewIOS;
 
 /// Delegate of the omnibox text controller.
 @property(nonatomic, weak) id<OmniboxTextControllerDelegate> delegate;
+
+/// Omnibox focus delegate.
+@property(nonatomic, weak) id<OmniboxFocusDelegate> focusDelegate;
 
 /// Controller of autocomplete.
 @property(nonatomic, weak)

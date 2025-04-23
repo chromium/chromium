@@ -236,6 +236,12 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxText events
 
+- (void)endEditing {
+  if (_omniboxController) {
+    _omniboxController->StopAutocomplete(/*clear_result=*/true);
+  }
+}
+
 - (void)setTextAlignment:(NSTextAlignment)alignment {
   [self.delegate omniboxAutocompleteController:self
                         didUpdateTextAlignment:alignment];
