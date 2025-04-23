@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_precommit_handler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_reload_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api_method_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -203,6 +205,7 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
 }
 
 void NavigateEvent::Redirect(const String& url_string,
+                             NavigationReloadOptions* options,
                              ExceptionState& exception_state) {
   CHECK_NE(intercept_state_, InterceptState::kNone);
   if (!PerformSharedChecks("redirect", exception_state)) {
@@ -238,7 +241,28 @@ void NavigateEvent::Redirect(const String& url_string,
         DomWindow()->Url().ElidedString() + "'.");
     return;
   }
+
+  if (options->hasState()) {
+    scoped_refptr<SerializedScriptValue> serialized_state =
+        SerializedScriptValue::Serialize(
+            DomWindow()->GetIsolate(), options->state().V8Value(),
+            SerializedScriptValue::SerializeOptions(
+                SerializedScriptValue::kForStorage),
+            exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    destination_->SetSerializedState(serialized_state);
+    if (auto* api_method_tracker =
+            DomWindow()->navigation()->ongoing_api_method_tracker_.Get()) {
+      api_method_tracker->SetSerializedState(serialized_state);
+    }
+  }
+
   dispatch_params_->url = url;
+  if (options->hasInfo()) {
+    info_ = options->info();
+  }
 }
 
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {

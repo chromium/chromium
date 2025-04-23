@@ -8,5 +8,5 @@
   RuntimeEnabled=NavigateEventCommitBehavior
 ]
 interface NavigationPrecommitController {
-  [RaisesException] undefined redirect(USVString url);
+  [RaisesException] undefined redirect(USVString url, optional NavigationReloadOptions options = {});
 };

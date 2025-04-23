@@ -37,6 +37,9 @@ class CORE_EXPORT NavigationDestination final : public ScriptWrappable {
   v8::Local<v8::Value> getState(v8::Isolate* isolate) {
     return state_ ? state_->Deserialize(isolate) : v8::Local<v8::Value>();
   }
+  void SetSerializedState(scoped_refptr<SerializedScriptValue> state) {
+    state_ = state;
+  }
 
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
