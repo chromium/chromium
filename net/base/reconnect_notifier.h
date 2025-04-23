@@ -112,6 +112,10 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
   // will be later passed as a time offset of the underlying time representation
   // such as `QuicTime`.
   int32_t ping_interval_in_seconds = 0;
+
+  // Enables the connection keep alive mechanism to periodically send PING
+  // to the server when there are no active requests.
+  bool enable_connection_keep_alive = false;
 };
 
 // Keeps track of the connection management relevant information (e.g.

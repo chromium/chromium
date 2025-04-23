@@ -36,6 +36,11 @@ struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
     return keep_alive_config.ping_interval_in_seconds;
   }
 
+  static bool enable_connection_keep_alive(
+      const net::ConnectionKeepAliveConfig& keep_alive_config) {
+    return keep_alive_config.enable_connection_keep_alive;
+  }
+
   static bool Read(network::mojom::ConnectionKeepAliveConfigDataView data,
                    net::ConnectionKeepAliveConfig* out);
 };

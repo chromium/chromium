@@ -56,4 +56,8 @@ struct ConnectionKeepAliveConfig {
   // exchanged before the idle timeout. We choose a reasonable time in seconds
   // within the uint32 bounds.
   int32 ping_interval_in_seconds = 0;
+
+  // Enables the connection keep alive mechanism to periodically send PING
+  // to the server.
+  bool enable_connection_keep_alive = false;
 };

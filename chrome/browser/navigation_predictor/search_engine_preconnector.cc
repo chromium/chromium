@@ -186,6 +186,7 @@ void SearchEnginePreconnector::PreconnectDSE() {
         net::features::kIdleTimeoutInSeconds.Get();
     keepalive_config->ping_interval_in_seconds =
         net::features::kPingIntervalInSeconds.Get();
+    keepalive_config->enable_connection_keep_alive = true;
 
     if (!receiver_.is_bound()) {
       observer = receiver_.BindNewPipeAndPassRemote();
