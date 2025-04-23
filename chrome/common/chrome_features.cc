@@ -340,6 +340,9 @@ const base::FeatureParam<int> kGlicMinLoadingTimeMs{
 const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
     &kGlic, "glic-max-loading-time-ms", 15000};
 
+const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
+    &kGlic, "glic-reload-max-loading-time-ms", 30000};
+
 const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
                                                 352};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
