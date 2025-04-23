@@ -1,6 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+services/viz/public/cpp/compositing",
-  "+services/viz/public/mojom/compositing",
-  "+skia/public/mojom",
-]
