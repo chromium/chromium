@@ -644,6 +644,9 @@ extern const char kCollaborationEntrepriseV2Description[];
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 
+extern const char kCollaborationSharedTabGroupAccountDataName[];
+extern const char kCollaborationSharedTabGroupAccountDataDescription[];
+
 extern const char kCompressionDictionaryTransportName[];
 extern const char kCompressionDictionaryTransportDescription[];
 

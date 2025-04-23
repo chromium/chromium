@@ -9219,6 +9219,7 @@ from previous Chrome versions.
   <int value="-1961648833" label="show_summary"/>
   <int value="-1961102654" label="WebNotesStylize:enabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
+  <int value="-1961040358" label="SyncSharedTabGroupAccountData:enabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
   <int value="-1960250727" label="DefaultANGLEVulkan:disabled"/>
   <int value="-1959602781" label="ShimlessRMADisableDarkMode:disabled"/>
@@ -13403,6 +13404,7 @@ from previous Chrome versions.
   <int value="-347036716" label="OmniboxDomainSuggestions:disabled"/>
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
+  <int value="-346256818" label="SyncSharedTabGroupAccountData:disabled"/>
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
   <int value="-345422674" label="FedCmAccountAutoSelectedFlag:disabled"/>
   <int value="-345366193" label="FeedDynamicColors:disabled"/>
