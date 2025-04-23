@@ -1,5 +1,5 @@
-# Set build timeout to 120 mins rather than the default of 10 mins
-timeout: 43200s
+# Set build timeout to 4 hours rather than the default of 10 mins
+timeout: 14400s
 
 options:
   pool:
