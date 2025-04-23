@@ -11,6 +11,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {BrailleKeyEvent} from './braille/braille_key_types.js';
 import {BridgeConstants} from './bridge_constants.js';
+import type {InternalKeyEvent} from './internal_key_event.js'
 
 const TARGET = BridgeConstants.LearnMode.TARGET;
 const Action = BridgeConstants.LearnMode.Action;
@@ -30,11 +31,11 @@ export class LearnModeBridge {
     return BridgeHelper.sendMessage(TARGET, Action.ON_BRAILLE_KEY_EVENT, event);
   }
 
-  static onKeyDown(event: KeyboardEvent): Promise<void> {
+  static onKeyDown(event: InternalKeyEvent): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_DOWN, event);
   }
 
-  static onKeyUp(event: KeyboardEvent): Promise<void> {
+  static onKeyUp(event: InternalKeyEvent): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_UP, event);
   }
 

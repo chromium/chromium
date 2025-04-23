@@ -15,6 +15,7 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import type {Command} from '../common/command.js';
 import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
+import {InternalKeyEvent} from '../common/internal_key_event.js'
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
@@ -119,7 +120,8 @@ export class LearnMode {
       BackgroundBridge.ForcedActionPath.onKeyDown(evt).then(
           (shouldPropagate) => {
             if (shouldPropagate) {
-              ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
+              ChromeVoxKbHandler.basicKeyDownActionsListener(
+                  new InternalKeyEvent(evt));
             }
             LearnMode.clearRange();
           });

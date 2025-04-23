@@ -11,6 +11,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import type {Command} from '../common/command.js';
+import type {InternalKeyEvent} from '../common/internal_key_event.js'
 import type {SerializedKeySequence} from '../common/key_sequence.js';
 import {KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
@@ -205,7 +206,7 @@ export class ForcedActionPath {
   }
 
   /** @return Whether the event should continue propagating. */
-  onKeyDown(evt: KeyboardEvent): boolean {
+  onKeyDown(evt: InternalKeyEvent): boolean {
     const keySequence = KeyUtil.keyEventToKeySequence(evt);
     const result = this.onKeySequence(keySequence);
     if (ForcedActionPath.postKeyDownEventCallbackForTesting) {
@@ -368,6 +369,7 @@ BridgeHelper.registerHandler(
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,
-    (evt: KeyboardEvent) => ForcedActionPath.instance?.onKeyDown(evt) ?? true);
+    (evt: InternalKeyEvent) =>
+        ForcedActionPath.instance?.onKeyDown(evt) ?? true);
 
 TestImportManager.exportForTesting(ForcedActionPath);

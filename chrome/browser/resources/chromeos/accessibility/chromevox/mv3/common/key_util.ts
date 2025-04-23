@@ -9,6 +9,7 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {KeyCode} from '/common/key_code.js';
 
+import type {InternalKeyEvent} from './internal_key_event.js'
 import {KeySequence} from './key_sequence.js';
 import {Msgs} from './msgs.js';
 
@@ -19,7 +20,8 @@ export namespace KeyUtil {
    * @param keyEvent The keyEvent to convert.
    * @return A key sequence representation of the key event.
    */
-  export function keyEventToKeySequence(keyEvent: KeyboardEvent): KeySequence {
+  export function keyEventToKeySequence(keyEvent: InternalKeyEvent):
+      KeySequence {
     if (KeyUtil.prevKeySequence &&
         (KeyUtil.maxSeqLength === KeyUtil.prevKeySequence.length())) {
       // Reset the sequence buffer if max sequence length is reached.
