@@ -323,7 +323,7 @@
       name: "AIPromptAPI",
       public: true,
       status: "experimental",
-      implied_by: ["AIPromptAPIForWebPlatform", "AIPromptAPIMultimodalInput", "AIPromptAPIStructuredOutput"],
+      implied_by: ["AIPromptAPIForWebPlatform", "AIPromptAPIMultimodalInput"],
     },
     {
       name: "AIPromptAPIForExtension",
@@ -355,8 +355,12 @@
     },
     {
       name: "AIPromptAPIStructuredOutput",
-      public: true,
+      origin_trial_feature_name: "AIPromptAPIForExtension",
+      origin_trial_allows_third_party: true,
       status: "experimental",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      implied_by: ["AIPromptAPI"],
     },
     {
       name: "AIRewriterAPI",

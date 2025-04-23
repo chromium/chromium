@@ -520,7 +520,8 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   }
 
   String stringified_schema;
-  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled()) {
+  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
+          GetExecutionContext())) {
     if (options->hasResponseJSONSchema()) {
       stringified_schema = ValidateAndStringifyObject(
           options->responseJSONSchema(), script_state, exception_state);
@@ -595,7 +596,8 @@ ReadableStream* LanguageModel::promptStreaming(
   }
 
   String stringified_schema;
-  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled()) {
+  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
+          GetExecutionContext())) {
     if (options->hasResponseJSONSchema()) {
       stringified_schema = ValidateAndStringifyObject(
           options->responseJSONSchema(), script_state, exception_state);
