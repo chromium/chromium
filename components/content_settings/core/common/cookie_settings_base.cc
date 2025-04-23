@@ -523,6 +523,10 @@ CookieSettingsBase::ModifierMode CookieSettingsBase::GetModifierMode(
           net::CookieSettingOverride::kForceDisableThirdPartyCookies)) {
     return ModifierMode::kBlock;
   }
+  if (overrides.Has(
+          net::CookieSettingOverride::kForceEnableThirdPartyCookies)) {
+    return ModifierMode::kAllow;
+  }
   if (top_frame_origin &&
       IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) {
     return ModifierMode::kPhaseout;
