@@ -5,7 +5,9 @@
 #include "components/cronet/android/test/cronet_test_util.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -18,12 +20,14 @@
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_url_request.h"
 #include "net/http/http_server_properties.h"
+#include "net/quic/quic_context.h"
 #include "net/socket/socket_test_util.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/CronetTestUtil_jni.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 
 namespace cronet {
 namespace {
@@ -50,6 +54,27 @@ jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
       ->contains(jnetwork_handle);
 }
 
+jni_zero::ScopedJavaLocalRef<jobjectArray>
+JNI_CronetTestUtil_GetClientConnectionOptions(JNIEnv* env,
+                                              jlong jcontext_adapter) {
+  std::vector<std::string> quic_tags;
+  for (auto tag : TestUtil::GetDefaultURLRequestQuicParams(jcontext_adapter)
+                      .client_connection_options) {
+    quic_tags.push_back(quic::QuicTagToString(tag));
+  }
+  return base::android::ToJavaArrayOfStrings(env, std::move(quic_tags));
+}
+
+jni_zero::ScopedJavaLocalRef<jobjectArray>
+JNI_CronetTestUtil_GetConnectionOptions(JNIEnv* env, jlong jcontext_adapter) {
+  std::vector<std::string> quic_tags;
+  for (auto tag : TestUtil::GetDefaultURLRequestQuicParams(jcontext_adapter)
+                      .connection_options) {
+    quic_tags.push_back(quic::QuicTagToString(tag));
+  }
+  return base::android::ToJavaArrayOfStrings(env, std::move(quic_tags));
+}
+
 // static
 base::flat_map<net::handles::NetworkHandle,
                std::unique_ptr<net::URLRequestContext>>*
@@ -72,6 +97,23 @@ net::URLRequestContext* TestUtil::GetURLRequestContext(jlong jcontext_adapter) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
   return context_adapter->context_->network_tasks_->default_context_;
+}
+
+net::QuicParams& TestUtil::GetDefaultURLRequestQuicParams(
+    jlong jcontext_adapter) {
+  net::URLRequestContext* context;
+  base::WaitableEvent callback_executed;
+  CronetContextAdapter& context_adapter =
+      *reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
+  RunAfterContextInit(jcontext_adapter, base::BindLambdaForTesting([&] {
+                        context =
+                            context_adapter.context_->GetURLRequestContext(
+                                net::handles::kInvalidNetworkHandle);
+                        callback_executed.Signal();
+                      }));
+  callback_executed.Wait();
+  CHECK(context);
+  return *context->quic_context()->params();
 }
 
 // static
