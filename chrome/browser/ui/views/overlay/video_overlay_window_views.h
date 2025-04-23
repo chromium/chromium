@@ -73,6 +73,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // VideoOverlayWindow:
   void Close() override;
   void ShowInactive() override;
+  bool IsVisible() const override;
   void Hide() override;
   gfx::Rect GetBounds() override;
   void UpdateNaturalSize(const gfx::Size& natural_size) override;
@@ -96,7 +97,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // views::Widget:
   bool IsActive() const override;
-  bool IsVisible() const override;
   void OnNativeFocus() override;
   void OnNativeBlur() override;
   gfx::Size GetMinimumSize() const override;
