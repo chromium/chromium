@@ -25,7 +25,7 @@ namespace visited_url_ranking {
 namespace {
 
 const base::FeatureParam<int> kConsecutiveComputationDelaySec{
-    &features::kGroupSuggestionService, "consecutive_computation_delay_sec", 5};
+    &features::kGroupSuggestionService, "consecutive_computation_delay_sec", 0};
 
 FetchOptions GetFetchOptionsForSuggestions() {
   std::vector<URLVisitAggregatesTransformType> transforms{
