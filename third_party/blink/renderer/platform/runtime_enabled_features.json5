@@ -4446,6 +4446,10 @@
       status: "stable",
     },
     {
+      name: "SvgScriptElementAsyncAttribute",
+      status: "experimental",
+    },
+    {
       name: "SvgTransformOnNestedSvgElement",
       status: "experimental",
     },

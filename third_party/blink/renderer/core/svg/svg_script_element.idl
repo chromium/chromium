@@ -28,6 +28,8 @@
 [Exposed=Window]
 interface SVGScriptElement : SVGElement {
     [Reflect] attribute DOMString type;
+    // See https://github.com/w3c/svgwg/issues/918
+    [RuntimeEnabled=SvgScriptElementAsyncAttribute, Reflect] attribute boolean async;
 };
 
 SVGScriptElement includes SVGURIReference;

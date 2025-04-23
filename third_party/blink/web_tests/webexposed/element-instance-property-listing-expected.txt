@@ -2216,6 +2216,7 @@ svg element rect
     property x
     property y
 svg element script
+    property async
     property href
     property type
 svg element set
