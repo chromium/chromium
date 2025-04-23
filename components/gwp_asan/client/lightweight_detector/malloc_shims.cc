@@ -62,14 +62,38 @@ void FreeFn(void* address, void* context) {
   MUSTTAIL return g_allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+void FreeWithSizeFn(void* address, size_t size, void* context) {
   if (MaybeQuarantine(address, size, context,
-                      FreeFunctionKind::kFreeDefiniteSize)) {
+                      FreeFunctionKind::kFreeWithSize)) {
     return;
   }
 
-  MUSTTAIL return g_allocator_dispatch.next->free_definite_size_function(
+  MUSTTAIL return g_allocator_dispatch.next->free_with_size_function(
       address, size, context);
+}
+
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
+                      FreeFunctionKind::kFreeWithAlignment)) {
+    return;
+  }
+
+  MUSTTAIL return g_allocator_dispatch.next->free_with_alignment_function(
+      address, alignment, context);
+}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {
+  if (MaybeQuarantine(address, size, context,
+                      FreeFunctionKind::kFreeWithSizeAndAlignment)) {
+    return;
+  }
+
+  MUSTTAIL return g_allocator_dispatch.next
+      ->free_with_size_and_alignment_function(address, size, alignment,
+                                              context);
 }
 
 void TryFreeDefaultFn(void* address, void* context) {
@@ -93,26 +117,28 @@ static void AlignedFreeFn(void* address, void* context) {
 }
 
 AllocatorDispatch g_allocator_dispatch = {
-    nullptr,             // alloc_function
-    nullptr,             // alloc_unchecked_function
-    nullptr,             // alloc_zero_initialized_function
-    nullptr,             // alloc_aligned_function
-    nullptr,             // realloc_function
-    nullptr,             // realloc_unchecked_function
-    FreeFn,              // free_function
-    nullptr,             // get_size_estimate_function
-    nullptr,             // good_size_function
-    nullptr,             // claimed_address_function
-    nullptr,             // batch_malloc_function
-    nullptr,             // batch_free_function
-    FreeDefiniteSizeFn,  // free_definite_size_function
-    TryFreeDefaultFn,    // try_free_default_function
-    nullptr,             // aligned_malloc_function
-    nullptr,             // aligned_malloc_unchecked_function
-    nullptr,             // aligned_realloc_function
-    nullptr,             // aligned_realloc_unchecked_function
-    AlignedFreeFn,       // aligned_free_function
-    nullptr              // next
+    nullptr,                     // alloc_function
+    nullptr,                     // alloc_unchecked_function
+    nullptr,                     // alloc_zero_initialized_function
+    nullptr,                     // alloc_aligned_function
+    nullptr,                     // realloc_function
+    nullptr,                     // realloc_unchecked_function
+    FreeFn,                      // free_function
+    FreeWithSizeFn,              // free_with_size_function
+    FreeWithAlignmentFn,         // free_with_alignment_function
+    FreeWithSizeAndAlignmentFn,  // free_with_size_and_alignment_function
+    nullptr,                     // get_size_estimate_function
+    nullptr,                     // good_size_function
+    nullptr,                     // claimed_address_function
+    nullptr,                     // batch_malloc_function
+    nullptr,                     // batch_free_function
+    TryFreeDefaultFn,            // try_free_default_function
+    nullptr,                     // aligned_malloc_function
+    nullptr,                     // aligned_malloc_unchecked_function
+    nullptr,                     // aligned_realloc_function
+    nullptr,                     // aligned_realloc_unchecked_function
+    AlignedFreeFn,               // aligned_free_function
+    nullptr                      // next
 };
 
 }  // namespace
@@ -145,9 +171,19 @@ void FinishFree(const AllocationInfo& allocation) {
     case FreeFunctionKind::kFree:
       next->free_function(allocation.address, context);
       break;
-    case FreeFunctionKind::kFreeDefiniteSize:
-      next->free_definite_size_function(allocation.address, allocation.size,
-                                        context);
+    case FreeFunctionKind::kFreeWithSize:
+      next->free_with_size_function(allocation.address, allocation.size,
+                                    context);
+      break;
+    case FreeFunctionKind::kFreeWithAlignment:
+      // TODO(crbug.com/412358843): Memory and forward alignment information.
+      next->free_function(allocation.address, context);
+      break;
+    case FreeFunctionKind::kFreeWithSizeAndAlignment:
+      // TODO(crbug.com/412358843): Similar to above, forward alignment
+      // information. We shall not forward size information here because it can
+      // confuse an allocator by alignment mismatch.
+      next->free_function(allocation.address, context);
       break;
     case FreeFunctionKind::kTryFreeDefault:
       next->try_free_default_function(allocation.address, context);

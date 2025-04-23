@@ -177,7 +177,7 @@ void* MallocZoneMemalign(malloc_zone_t* zone, size_t alignment, size_t size) {
 }
 
 void MallocZoneFreeDefiniteSize(malloc_zone_t* zone, void* ptr, size_t size) {
-  return ShimFreeDefiniteSize(ptr, size, nullptr);
+  return ShimFreeWithSize(ptr, size, nullptr);
 }
 
 unsigned MallocZoneBatchMalloc(malloc_zone_t* zone,

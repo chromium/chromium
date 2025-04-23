@@ -43,6 +43,23 @@ void DefaultWinHeapFreeImpl(void* address, void* context) {
   allocator_shim::WinHeapFree(address);
 }
 
+void DefaultWinHeapFreeWithSizeImpl(void* address, size_t size, void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
+void DefaultWinHeapFreeWithAlignmentImpl(void* address,
+                                         size_t alignment,
+                                         void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
+void DefaultWinHeapFreeWithSizeAndAlignmentImpl(void* address,
+                                                size_t size,
+                                                size_t alignment,
+                                                void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
 size_t DefaultWinHeapGetSizeEstimateImpl(void* address, void* context) {
   return allocator_shim::WinHeapGetSizeEstimate(address);
 }
@@ -77,12 +94,14 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapReallocImpl,
     &DefaultWinHeapReallocImpl, /* realloc_unchecked_function */
     &DefaultWinHeapFreeImpl,
+    &DefaultWinHeapFreeWithSizeImpl,
+    &DefaultWinHeapFreeWithAlignmentImpl,
+    &DefaultWinHeapFreeWithSizeAndAlignmentImpl,
     &DefaultWinHeapGetSizeEstimateImpl,
     nullptr, /* good_size */
     nullptr, /* claimed_address */
     nullptr, /* batch_malloc_function */
     nullptr, /* batch_free_function */
-    nullptr, /* free_definite_size_function */
     nullptr, /* try_free_default_function */
     &DefaultWinHeapAlignedMallocImpl,
     &DefaultWinHeapAlignedMallocImpl, /* aligned_malloc_unchecked_function */

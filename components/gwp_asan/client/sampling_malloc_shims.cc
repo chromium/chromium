@@ -160,6 +160,44 @@ void FreeFn(void* address, void* context) {
   g_allocator_dispatch.next->free_function(address, context);
 }
 
+void FreeWithSizeFn(void* address, size_t size, void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
+    // failed checks using the same pipeline.
+    CHECK_EQ(size, gpa->GetRequestedSize(address));
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_size_function(address, size, context);
+}
+
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_alignment_function(address, alignment,
+                                                          context);
+}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
+    // failed checks using the same pipeline.
+    CHECK_EQ(size, gpa->GetRequestedSize(address));
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_size_and_alignment_function(
+      address, size, alignment, context);
+}
+
 size_t GetSizeEstimateFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return gpa->GetRequestedSize(address);
@@ -210,19 +248,6 @@ void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {
 
   g_allocator_dispatch.next->batch_free_function(to_be_freed, num_to_be_freed,
                                                  context);
-}
-
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
-  if (gpa->PointerIsMine(address)) [[unlikely]] {
-    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
-    // failed checks using the same pipeline.
-    CHECK_EQ(size, gpa->GetRequestedSize(address));
-    gpa->Deallocate(address);
-    return;
-  }
-
-  g_allocator_dispatch.next->free_definite_size_function(address, size,
-                                                         context);
 }
 
 void TryFreeDefaultFn(void* address, void* context) {
@@ -335,12 +360,14 @@ AllocatorDispatch g_allocator_dispatch = {
     &ReallocFn,
     &ReallocUncheckedFn,
     &FreeFn,
+    &FreeWithSizeFn,
+    &FreeWithAlignmentFn,
+    &FreeWithSizeAndAlignmentFn,
     &GetSizeEstimateFn,
     &GoodSizeFn,
     &ClaimedAddressFn,
     &BatchMallocFn,
     &BatchFreeFn,
-    &FreeDefiniteSizeFn,
     &TryFreeDefaultFn,
     &AlignedMallocFn,
     &AlignedMallocUncheckedFn,

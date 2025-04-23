@@ -435,25 +435,46 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
       object);
 }
 
-#if PA_BUILDFLAG(IS_APPLE)
-// Normal free() path on Apple OSes:
-// 1. size = GetSizeEstimate(ptr);
-// 2. if (size) FreeDefiniteSize(ptr, size)
-//
-// So we don't need to re-check that the pointer is owned in Free(), and we
-// can use the size.
 // static
 template <partition_alloc::AllocFlags base_alloc_flags,
           partition_alloc::FreeFlags base_free_flags>
-void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
-    FreeDefiniteSize(void* address, size_t size, void* context) {
-  partition_alloc::ScopedDisallowAllocations guard{};
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags,
+                                base_free_flags>::FreeWithSize(void* object,
+                                                               size_t size,
+                                                               void* context) {
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
-      address);
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
 }
-#endif  // PA_BUILDFLAG(IS_APPLE)
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    FreeWithAlignment(void* object, size_t alignment, void* context) {
+  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
+  // still useful though, as we avoid double-checking that the address is owned.
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void PartitionAllocFunctionsInternal<
+    base_alloc_flags,
+    base_free_flags>::FreeWithSizeAndAlignment(void* object,
+                                               size_t size,
+                                               size_t alignment,
+                                               void* context) {
+  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
+  // still useful though, as we avoid double-checking that the address is owned.
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
+}
 
 // static
 template <partition_alloc::AllocFlags base_alloc_flags,

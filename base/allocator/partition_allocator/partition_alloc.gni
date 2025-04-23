@@ -142,6 +142,9 @@ declare_args() {
   # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc = use_partition_alloc && use_allocator_shim &&
                                   use_partition_alloc_as_malloc_default
+
+  shim_supports_sized_dealloc =
+      use_allocator_shim && shim_supports_sized_dealloc_default
 }
 
 declare_args() {

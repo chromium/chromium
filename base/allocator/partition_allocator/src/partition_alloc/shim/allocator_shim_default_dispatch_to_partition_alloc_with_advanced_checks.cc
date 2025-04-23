@@ -58,6 +58,28 @@ void DelegatedFreeFn(void* address, void* context) {
   PA_MUSTTAIL return delegate->free_function(address, context);
 }
 
+void DelegatedFreeWithSizeFn(void* address, size_t size, void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->free_with_size_function(address, size, context);
+}
+
+void DelegatedFreeWithAlignmentFn(void* address,
+                                  size_t alignment,
+                                  void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->free_with_alignment_function(address, alignment,
+                                                            context);
+}
+
+void DelegatedFreeWithSizeAndAlignmentFn(void* address,
+                                         size_t size,
+                                         size_t alignment,
+                                         void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->free_with_size_and_alignment_function(
+      address, size, alignment, context);
+}
+
 size_t DelegatedGetSizeEstimateFn(void* address, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->get_size_estimate_function(address, context);
@@ -88,12 +110,6 @@ void DelegatedBatchFreeFn(void** to_be_freed,
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->batch_free_function(to_be_freed, num_to_be_freed,
                                                    context);
-}
-
-void DelegatedFreeDefiniteSizeFn(void* address, size_t size, void* context) {
-  const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->free_definite_size_function(address, size,
-                                                           context);
 }
 
 void DelegatedTryFreeDefaultFn(void* address, void* context) {
@@ -158,7 +174,7 @@ void InstallCustomDispatch(AllocatorDispatch* dispatch) {
   PA_DCHECK(dispatch->batch_malloc_function != nullptr);
   PA_DCHECK(dispatch->batch_free_function != nullptr);
 #if PA_BUILDFLAG(IS_APPLE)
-  PA_DCHECK(dispatch->free_definite_size_function != nullptr);
+  PA_DCHECK(dispatch->free_with_size_function != nullptr);
   PA_DCHECK(dispatch->try_free_default_function != nullptr);
 #endif  // PA_BUILDFLAG(IS_APPLE)
   PA_DCHECK(dispatch->aligned_malloc_function != nullptr);
@@ -210,12 +226,15 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     .realloc_function = &DelegatedReallocFn,
     .realloc_unchecked_function = &DelegatedReallocUncheckedFn,
     .free_function = &DelegatedFreeFn,
+    .free_with_size_function = &DelegatedFreeWithSizeFn,
+    .free_with_alignment_function = &DelegatedFreeWithAlignmentFn,
+    .free_with_size_and_alignment_function =
+        &DelegatedFreeWithSizeAndAlignmentFn,
     .get_size_estimate_function = &DelegatedGetSizeEstimateFn,
     .good_size_function = &DelegatedGoodSizeFn,
     .claimed_address_function = &DelegatedClaimedAddressFn,
     .batch_malloc_function = &DelegatedBatchMallocFn,
     .batch_free_function = &DelegatedBatchFreeFn,
-    .free_definite_size_function = &DelegatedFreeDefiniteSizeFn,
     .try_free_default_function = &DelegatedTryFreeDefaultFn,
     .aligned_malloc_function = &DelegatedAlignedMallocFn,
     .aligned_malloc_unchecked_function = &DelegatedAlignedMallocUncheckedFn,

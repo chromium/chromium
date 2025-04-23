@@ -62,7 +62,7 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   };
   new_functions.free_definite_size = [](malloc_zone_t* zone, void* ptr,
                                         size_t size) {
-    ShimFreeDefiniteSize(ptr, size, zone);
+    ShimFreeWithSize(ptr, size, zone);
   };
   new_functions.try_free_default = [](malloc_zone_t* zone, void* ptr) {
     ShimTryFreeDefault(ptr, zone);

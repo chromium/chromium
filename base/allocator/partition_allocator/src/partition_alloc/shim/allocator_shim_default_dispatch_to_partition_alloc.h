@@ -62,9 +62,14 @@ class PartitionAllocFunctionsInternal {
 
   static void Free(void* object, void* context);
 
-#if PA_BUILDFLAG(IS_APPLE)
-  static void FreeDefiniteSize(void* address, size_t size, void* context);
-#endif  // PA_BUILDFLAG(IS_APPLE)
+  static void FreeWithSize(void* object, size_t size, void* context);
+
+  static void FreeWithAlignment(void* object, size_t alignment, void* context);
+
+  static void FreeWithSizeAndAlignment(void* object,
+                                       size_t size,
+                                       size_t alignment,
+                                       void* context);
 
   static size_t GetSizeEstimate(void* address, void* context);
 
@@ -89,14 +94,17 @@ class PartitionAllocFunctionsInternal {
 
   static constexpr AllocatorDispatch MakeDispatch() {
     return {
-        &Malloc,            // alloc_function
-        &MallocUnchecked,   // alloc_unchecked_function
-        &Calloc,            // alloc_zero_initialized_function
-        &Memalign,          // alloc_aligned_function
-        &Realloc,           // realloc_function
-        &ReallocUnchecked,  // realloc_unchecked_function
-        &Free,              // free_function
-        &GetSizeEstimate,   // get_size_estimate_function
+        &Malloc,                    // alloc_function
+        &MallocUnchecked,           // alloc_unchecked_function
+        &Calloc,                    // alloc_zero_initialized_function
+        &Memalign,                  // alloc_aligned_function
+        &Realloc,                   // realloc_function
+        &ReallocUnchecked,          // realloc_unchecked_function
+        &Free,                      // free_function
+        &FreeWithSize,              // free_with_size_function
+        &FreeWithAlignment,         // free_with_alignment_function
+        &FreeWithSizeAndAlignment,  // free_with_size_and_alignment_function
+        &GetSizeEstimate,           // get_size_estimate_function
 #if PA_BUILDFLAG(IS_APPLE)
         &GoodSize,        // good_size
         &ClaimedAddress,  // claimed_address
@@ -107,15 +115,10 @@ class PartitionAllocFunctionsInternal {
         &BatchMalloc,  // batch_malloc_function
         &BatchFree,    // batch_free_function
 #if PA_BUILDFLAG(IS_APPLE)
-        // On Apple OSes, free_definite_size() is always called from free(),
-        // since get_size_estimate() is used to determine whether an allocation
-        // belongs to the current zone. It makes sense to optimize for it.
-        &FreeDefiniteSize,
         // On Apple OSes, try_free_default() is sometimes called as an
         // optimization of free().
         &TryFreeDefault,
 #else
-        nullptr,  // free_definite_size_function
         nullptr,  // try_free_default_function
 #endif
         &AlignedAlloc,             // aligned_malloc_function

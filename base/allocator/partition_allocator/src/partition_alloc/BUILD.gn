@@ -183,6 +183,7 @@ pa_buildflag_header("buildflags") {
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
     "REALLOC_GROWTH_FACTOR_MITIGATION=$partition_alloc_realloc_growth_factor_mitigation",
     "RECORD_ALLOC_INFO=$record_alloc_info",
+    "SHIM_SUPPORTS_SIZED_DEALLOC=$shim_supports_sized_dealloc",
     "SMALLER_PARTITION_COOKIE=$smaller_partition_cookie",
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
