@@ -28,6 +28,8 @@ using content::ClipboardPasteData;
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 
+namespace {
+
 // TODO(crbug.com/410835513): Unify with other declarations of
 // CreateDataEndpoint
 std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
@@ -62,30 +64,20 @@ ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost* render_frame_host) {
       *render_frame_host);
 }
 
-// TODO(crbug.com/387484337) Add instrumentation tests
-void JNI_DataProtectionBridge_VerifyCopyIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_text,
+void VerifyCopyIsAllowedByPolicy(
     const base::android::JavaParamRef<jobject>& jrender_frame_host,
-    const JavaParamRef<jobject>& j_callback) {
-  std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
+    const JavaParamRef<jobject>& j_callback,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
-  ClipboardPasteData data;
-  data.text = text;
 
   base::OnceCallback<void(bool)> boolean_java_callback =
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_callback));
 
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
-      CreateClipboardEndpoint(render_frame_host),
-      {
-          .size = text.size() * sizeof(std::u16string::value_type),
-          .format_type = ui::ClipboardFormatType::PlainTextType(),
-      },
-      data,
+      CreateClipboardEndpoint(render_frame_host), metadata, data,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              const ui::ClipboardFormatType& type,
@@ -94,4 +86,68 @@ void JNI_DataProtectionBridge_VerifyCopyIsAllowedByPolicy(
             std::move(callback).Run(!data.empty());
           },
           std::move(boolean_java_callback)));
+}
+
+}  // namespace
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_text,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
+
+  ClipboardPasteData data;
+  data.text = text;
+
+  VerifyCopyIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          .size = text.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_url,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
+
+  ClipboardPasteData data;
+  data.text = url;
+
+  VerifyCopyIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          .size = url.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::UrlType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_image_uri,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string image_uri =
+      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
+
+  ClipboardPasteData data;
+  data.text = image_uri;
+
+  VerifyCopyIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
+          //  needed by the data controls logic.
+          .format_type = ui::ClipboardFormatType::BitmapType(),
+      },
+      data);
 }

@@ -26,18 +26,25 @@ public class DataProtectionBridge {
      * @param callback The callback to run after verifying the policy. The boolean input will be
      *     true if the copy action was allowed, false if the action was blocked or cancelled.
      */
-    public static void verifyCopyIsAllowedByPolicy(
+    public static void verifyCopyTextIsAllowedByPolicy(
             String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
         if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get().verifyCopyIsAllowedByPolicy(text, renderFrameHost, callback);
+        DataProtectionBridgeJni.get()
+                .verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
     @NativeMethods
     interface Natives {
-        void verifyCopyIsAllowedByPolicy(
+        void verifyCopyTextIsAllowedByPolicy(
                 String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+
+        void verifyCopyUrlIsAllowedByPolicy(
+                String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+
+        void verifyCopyImageIsAllowedByPolicy(
+                String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
     }
 }
