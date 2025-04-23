@@ -47,8 +47,10 @@ import org.chromium.ui.util.KeyboardNavigationListener;
 public class TextViewWithClickableSpans extends TextViewWithLeading
         implements View.OnLongClickListener {
     private static final String TAG = "TextViewWithSpans";
+    private static final int INVALID_INDEX = -1;
+
     private @Nullable PopupMenu mDisambiguationMenu;
-    private @Nullable ClickableSpan mFocusedSpan;
+    private int mFocusedSpanIndex = INVALID_INDEX;
     private final OnKeyListener mOnKeyListener;
     private final SpanBackgroundHelper mSpanBackgroundHelper;
     private @ColorInt int mSpanColor;
@@ -109,60 +111,105 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         // See crbug.com/533362
         setSaveEnabled(false);
         setOnLongClickListener(this);
-        setOnFocusChangeListener(createOnFocusChangeListener());
+
+        setOnFocusChangeListener(
+                (view, focused) -> {
+                    // Always focus on the first span (if present) when the view gains focus,
+                    // irrespective of the direction or source of focus, since this cannot currently
+                    // be determined.
+                    updateFocusedSpan(/* index= */ focused ? 0 : INVALID_INDEX);
+                });
     }
 
     private OnKeyListener createOnKeyListener() {
         return new KeyboardNavigationListener() {
             @Override
             protected boolean handleEnterKeyPress() {
-                if (mFocusedSpan == null) {
+                var spans = getClickableSpans();
+                if (!isFocusedSpanIndexValid(spans)) {
                     Log.w(
                             TAG,
                             "OnKeyListener is active when the view does not contain a focused"
                                     + " clickable span.");
                     return false;
                 }
-                mFocusedSpan.onClick(TextViewWithClickableSpans.this);
+                assumeNonNull(spans);
+                spans[mFocusedSpanIndex].onClick(TextViewWithClickableSpans.this);
                 return true;
+            }
+
+            @Override
+            public @Nullable View getNextFocusForward() {
+                if (updateFocusedSpan(mFocusedSpanIndex + 1)) {
+                    // Don't release focus from this view if another clickable span is present in
+                    // the forward direction.
+                    return TextViewWithClickableSpans.this;
+                }
+                return null;
+            }
+
+            @Override
+            public @Nullable View getNextFocusBackward() {
+                if (updateFocusedSpan(mFocusedSpanIndex - 1)) {
+                    // Don't release focus from this view if another clickable span is present in
+                    // the backward direction.
+                    return TextViewWithClickableSpans.this;
+                }
+                return null;
             }
         };
     }
 
-    private OnFocusChangeListener createOnFocusChangeListener() {
-        return (view, focused) -> {
-            if (focused && mFocusedSpan == null) {
-                var clickableSpans = getClickableSpans();
-                // TODO (crbug.com/405441323): Support keyboard focus handling for text containing
-                // multiple clickable spans.
-                if (clickableSpans == null || clickableSpans.length != 1) return;
-                mFocusedSpan = clickableSpans[0];
-                if (mFocusedSpan instanceof ChromeClickableSpan) {
-                    ((ChromeClickableSpan) mFocusedSpan).setFocused(true);
-                }
-                setOnKeyListener(mOnKeyListener);
-                invalidate();
-            } else if (!focused && mFocusedSpan != null) {
-                if (mFocusedSpan instanceof ChromeClickableSpan) {
-                    ((ChromeClickableSpan) mFocusedSpan).setFocused(false);
-                }
-                mFocusedSpan = null;
+    /**
+     * Adds focus to the span at index {@code index} in the array returned by {@link
+     * #getClickableSpans()}.
+     *
+     * @param index The index of the span that needs to be focused. Can be {@code INVALID_INDEX} if
+     *     a currently focused span's focus needs to be cleared.
+     * @return {@code true} if the span at {@code index} is focused, {@code false} otherwise.
+     */
+    private boolean updateFocusedSpan(int index) {
+        var spans = getClickableSpans();
+        var currFocusedSpan =
+                isFocusedSpanIndexValid(spans) ? assumeNonNull(spans)[mFocusedSpanIndex] : null;
+        mFocusedSpanIndex = index;
+        if (!isFocusedSpanIndexValid(spans)) {
+            // Reset state if the requested span index is invalid.
+            mFocusedSpanIndex = INVALID_INDEX;
+            if (currFocusedSpan != null) {
+                // If switching focus out of a currently focused span, clear state for this span.
+                setSpanFocused(currFocusedSpan, /* focused= */ false);
                 setOnKeyListener(null);
                 invalidate();
             }
-        };
+            return false;
+        }
+
+        // If switching focus from one span to another, clear state for the current span.
+        setSpanFocused(assumeNonNull(currFocusedSpan), /* focused= */ false);
+
+        // Apply span focus state for the requested span.
+        assumeNonNull(spans);
+        var nextFocusedSpan = spans[mFocusedSpanIndex];
+        setSpanFocused(nextFocusedSpan, /* focused= */ true);
+        setOnKeyListener(mOnKeyListener);
+        invalidate();
+        return true;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mFocusedSpan == null || !(getText() instanceof Spanned text)) {
+        var spans = getClickableSpans();
+        if (!isFocusedSpanIndexValid(spans) || !(getText() instanceof Spanned text)) {
             super.onDraw(canvas);
             return;
         }
 
         // Draw the background first so that text can be on top during super.onDraw().
         canvas.translate(getTotalPaddingLeft(), getTotalPaddingTop());
-        mSpanBackgroundHelper.drawFocusedSpanBackground(canvas, text, mFocusedSpan, getLayout());
+        assumeNonNull(spans);
+        mSpanBackgroundHelper.drawFocusedSpanBackground(
+                canvas, text, spans[mFocusedSpanIndex], getLayout());
         canvas.translate(-getTotalPaddingLeft(), -getTotalPaddingTop());
 
         super.onDraw(canvas);
@@ -303,7 +350,19 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         mDisambiguationMenu.show();
     }
 
-    @Nullable ClickableSpan getFocusedSpanForTesting() {
-        return mFocusedSpan;
+    private boolean isFocusedSpanIndexValid(ClickableSpan @Nullable [] spans) {
+        return spans != null
+                && spans.length > 0
+                && mFocusedSpanIndex >= 0
+                && mFocusedSpanIndex < spans.length;
+    }
+
+    private static void setSpanFocused(ClickableSpan span, boolean focused) {
+        if (!(span instanceof ChromeClickableSpan chromeClickableSpan)) return;
+        chromeClickableSpan.setFocused(focused);
+    }
+
+    int getFocusedSpanIndexForTesting() {
+        return mFocusedSpanIndex;
     }
 }
