@@ -124,3 +124,19 @@ promise_test(async () => {
   const result = await writer.measureInputUsage(kTestPrompt);
   assert_greater_than(result, 0);
 }, 'Writer.measureInputUsage() returns non-empty result');
+
+promise_test(async () => {
+  const writer = await Writer.create();
+  await Promise.all([
+    writer.write(kTestPrompt),
+    writer.write(kTestPrompt)
+  ]);
+}, 'Multiple Writer.write() calls are resolved successfully.');
+
+promise_test(async () => {
+  const writer = await Writer.create();
+  await Promise.all([
+    writer.writeStreaming(kTestPrompt),
+    writer.writeStreaming(kTestPrompt)
+  ]);
+}, 'Multiple Writer.writeStreaming() calls are resolved successfully.');

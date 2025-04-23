@@ -59,7 +59,7 @@ AISummarizer::AISummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : AIContextBoundObject(context_bound_object_set),
-      session_(std::move(session)),
+      session_wrapper_(std::move(session)),
       receiver_(this, std::move(receiver)),
       options_(std::move(options)) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -107,7 +107,8 @@ void AISummarizer::Summarize(
     const std::string& context,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  if (!session_) {
+  auto* session = session_wrapper_.session();
+  if (!session) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
     responder->OnError(
@@ -118,8 +119,7 @@ void AISummarizer::Summarize(
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   auto request = BuildRequest(input, context);
-
-  session_->GetExecutionInputSizeInTokens(
+  session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AISummarizer::DidGetExecutionInputSizeForSummarize,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
@@ -127,7 +127,7 @@ void AISummarizer::Summarize(
 
 void AISummarizer::DidGetExecutionInputSizeForSummarize(
     mojo::RemoteSetElementId responder_id,
-    optimization_guide::proto::SummarizeRequest request,
+    const optimization_guide::proto::SummarizeRequest& request,
     std::optional<uint32_t> result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
@@ -137,7 +137,7 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
     return;
   }
 
-  if (!session_) {
+  if (!session_wrapper_.session()) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -155,8 +155,8 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
     return;
   }
 
-  session_->ExecuteModel(
-      request,
+  session_wrapper_.ExecuteModelOrQueue(
+      optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AISummarizer::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), responder_id));
 }
@@ -189,21 +189,23 @@ void AISummarizer::ModelExecutionCallback(
 void AISummarizer::MeasureUsage(const std::string& input,
                                 const std::string& context,
                                 MeasureUsageCallback callback) {
-  if (!session_) {
+  auto* session = session_wrapper_.session();
+  if (!session) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   auto request = BuildRequest(input, context);
-  session_->GetExecutionInputSizeInTokens(
+  session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AISummarizer::DidGetExecutionInputSizeInTokensForMeasure,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AISummarizer::SetPriority(on_device_model::mojom::Priority priority) {
-  if (session_) {
-    session_->SetPriority(priority);
+  auto* session = session_wrapper_.session();
+  if (session) {
+    session->SetPriority(priority);
   }
 }
 

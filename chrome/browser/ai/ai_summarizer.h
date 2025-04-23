@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
+#include "chrome/browser/ai/ai_on_device_session.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,7 +53,7 @@ class AISummarizer : public AIContextBoundObject,
 
   void DidGetExecutionInputSizeForSummarize(
       mojo::RemoteSetElementId responder_id,
-      optimization_guide::proto::SummarizeRequest request,
+      const optimization_guide::proto::SummarizeRequest& request,
       std::optional<uint32_t> result);
 
   void DidGetExecutionInputSizeInTokensForMeasure(
@@ -68,10 +69,10 @@ class AISummarizer : public AIContextBoundObject,
       const std::string& input,
       const std::string& context);
 
-  // The underlying session provided by optimization guide component.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
+  AIOnDeviceSession session_wrapper_;
+
   mojo::Remote<blink::mojom::AISummarizer> remote_;
+
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Summarize()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;

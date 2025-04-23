@@ -123,3 +123,19 @@ promise_test(async () => {
   const result = await rewriter.measureInputUsage(kTestPrompt);
   assert_greater_than(result, 0);
 }, 'Rewriter.measureInputUsage() returns non-empty result');
+
+promise_test(async () => {
+  const rewriter = await Rewriter.create();
+  await Promise.all([
+    rewriter.rewrite(kTestPrompt),
+    rewriter.rewrite(kTestPrompt)
+  ]);
+}, 'Multiple Rewriter.rewrite() calls are resolved successfully.');
+
+promise_test(async () => {
+  const rewriter = await Rewriter.create();
+  await Promise.all([
+    rewriter.rewriteStreaming(kTestPrompt),
+    rewriter.rewriteStreaming(kTestPrompt)
+  ]);
+}, 'Multiple Rewriter.rewriteStreaming() calls are resolved successfully.');

@@ -72,7 +72,7 @@ AIRewriter::AIRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIRewriter> receiver)
     : AIContextBoundObject(context_bound_object_set),
-      session_(std::move(session)),
+      session_wrapper_(std::move(session)),
       options_(std::move(options)),
       receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -107,7 +107,7 @@ void AIRewriter::Rewrite(
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
 
-  session_->GetExecutionInputSizeInTokens(
+  session_wrapper_.session()->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AIRewriter::DidGetExecutionInputSizeForRewrite,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
@@ -115,7 +115,7 @@ void AIRewriter::Rewrite(
 
 void AIRewriter::DidGetExecutionInputSizeForRewrite(
     mojo::RemoteSetElementId responder_id,
-    optimization_guide::proto::WritingAssistanceApiRequest request,
+    const optimization_guide::proto::WritingAssistanceApiRequest& request,
     std::optional<uint32_t> result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
@@ -125,7 +125,7 @@ void AIRewriter::DidGetExecutionInputSizeForRewrite(
     return;
   }
 
-  if (!session_) {
+  if (!session_wrapper_.session()) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -143,8 +143,8 @@ void AIRewriter::DidGetExecutionInputSizeForRewrite(
     return;
   }
 
-  session_->ExecuteModel(
-      request,
+  session_wrapper_.ExecuteModelOrQueue(
+      optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AIRewriter::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), responder_id));
 }
@@ -178,21 +178,23 @@ void AIRewriter::ModelExecutionCallback(
 void AIRewriter::MeasureUsage(const std::string& input,
                               const std::string& context,
                               MeasureUsageCallback callback) {
-  if (!session_) {
+  auto* session = session_wrapper_.session();
+  if (!session) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   auto request = BuildRequest(input, context);
-  session_->GetExecutionInputSizeInTokens(
+  session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AIRewriter::DidGetExecutionInputSizeInTokensForMeasure,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AIRewriter::SetPriority(on_device_model::mojom::Priority priority) {
-  if (session_) {
-    session_->SetPriority(priority);
+  auto* session = session_wrapper_.session();
+  if (session) {
+    session->SetPriority(priority);
   }
 }
 
