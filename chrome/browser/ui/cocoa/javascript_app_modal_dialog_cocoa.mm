@@ -60,11 +60,6 @@ JavaScriptAppModalDialogCocoa::GetAlertParams() {
   params->title = controller_->title();
   params->message_text = controller_->message_text();
 
-  // Set a blank icon for dialogs with text provided by the page.
-  // "onbeforeunload" dialogs don't have text provided by the page, so it's
-  // OK to use the app icon.
-  params->hide_application_icon = !controller_->is_before_unload_dialog();
-
   // Determine the names of the dialog buttons based on the flags. "Default"
   // is the OK button. "Other" is the cancel button. We don't use the
   // "Alternate" button in NSRunAlertPanel.
