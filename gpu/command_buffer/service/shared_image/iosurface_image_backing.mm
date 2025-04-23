@@ -802,13 +802,13 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   internal_usage_ = internal_usage;
 
   texture_ = iosurface_backing->GetDawnTextureCache()->GetCachedWGPUTexture(
-      device_, usage_);
+      device_, usage_, internal_usage_, view_formats_);
   if (!texture_) {
     texture_ = CreateWGPUTexture(shared_texture_memory_, usage(),
                                  io_surface_size_, wgpu_format_, view_formats_,
                                  wgpu_texture_usage, internal_usage);
-    iosurface_backing->GetDawnTextureCache()->MaybeCacheWGPUTexture(device_,
-                                                                    texture_);
+    iosurface_backing->GetDawnTextureCache()->MaybeCacheWGPUTexture(
+        device_, texture_, usage_, internal_usage_, view_formats_);
   }
 
   // If there is already an ongoing Dawn access for this texture, then the
