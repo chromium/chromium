@@ -12790,6 +12790,7 @@ from previous Chrome versions.
   <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-583842972"
       label="WebAuthenticationPasskeysUIExperiment:enabled"/>
+  <int value="-583193481" label="AndroidHubSearchTabGroups:enabled"/>
   <int value="-582959543" label="SubframeProcessReuseThresholds:disabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
   <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
@@ -12812,6 +12813,7 @@ from previous Chrome versions.
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
+  <int value="-574564494" label="AndroidHubSearchTabGroups:disabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574177355"

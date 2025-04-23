@@ -4445,6 +4445,10 @@ const char kAndroidHubSearchName[] = "Android Hub Search";
 const char kAndroidHubSearchDescription[] =
     "Enables searching through the hub.";
 
+const char kAndroidHubSearchTabGroupsName[] = "Android Hub Tab Group Search";
+const char kAndroidHubSearchTabGroupsDescription[] =
+    "Enables searching through tab groups in the hub.";
+
 const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";

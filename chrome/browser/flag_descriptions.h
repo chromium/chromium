@@ -2604,6 +2604,9 @@ extern const char kAndroidElegantTextHeightDescription[];
 extern const char kAndroidHubSearchName[];
 extern const char kAndroidHubSearchDescription[];
 
+extern const char kAndroidHubSearchTabGroupsName[];
+extern const char kAndroidHubSearchTabGroupsDescription[];
+
 extern const char kAndroidOpenPdfInlineName[];
 extern const char kAndroidOpenPdfInlineDescription[];
 

@@ -10411,6 +10411,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAndroidHubSearch,
                                     kAndroidHubSearchVariations,
                                     "AndroidHubSearch")},
+    {"android-hub-search-tab-groups",
+     flag_descriptions::kAndroidHubSearchTabGroupsName,
+     flag_descriptions::kAndroidHubSearchTabGroupsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kAndroidHubSearchTabGroups)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

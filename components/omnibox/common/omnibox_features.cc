@@ -404,6 +404,9 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
 // (Android only) Show the search feature in the hub.
 BASE_FEATURE(kAndroidHubSearch, "AndroidHubSearch", ENABLED);
 
+// (Android only) Show tab groups via the search feature in the hub.
+BASE_FEATURE(kAndroidHubSearchTabGroups, "AndroidHubSearchTabGroups", DISABLED);
+
 // When enabled, delay focusTab to prioritize navigation
 // (https://crbug.com/374852568).
 BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
@@ -425,6 +428,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kRetainOmniboxOnFocus,
       &kJumpStartOmnibox,
       &kAndroidHubSearch,
+      &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

@@ -251,6 +251,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "android-hub-search-tab-groups",
+    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "android-keyboard-a11y",
     "owners": [ "jhimawan@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 160
