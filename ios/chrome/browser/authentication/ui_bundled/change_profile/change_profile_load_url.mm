@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 
 #import "base/functional/callback_helpers.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -23,8 +24,12 @@ void ChangeProfileOpensURLContinuation(GURL url,
       scene_state.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
-  UrlLoadingBrowserAgent::FromBrowser(browser)->Load(
-      UrlLoadParams::InCurrentTab(url));
+  web::WebState* web_state = browser->GetWebStateList()->GetActiveWebState();
+
+  UrlLoadParams load_params = (IsVisibleURLNewTabPage(web_state))
+                                  ? UrlLoadParams::InCurrentTab(url)
+                                  : UrlLoadParams::InNewTab(url);
+  UrlLoadingBrowserAgent::FromBrowser(browser)->Load(load_params);
 
   std::move(closure).Run();
 }
