@@ -104,6 +104,7 @@ android_resources("java_resources") {
     "android/res/values/ids.xml",
     "android/res/values/themes.xml",
   ]
+  deps = [ "//third_party/android_deps:material_design_java" ]
 }
 
 android_library("unit_device_javatests") {

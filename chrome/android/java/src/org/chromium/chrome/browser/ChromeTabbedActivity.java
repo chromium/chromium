@@ -4043,8 +4043,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
         }
 
-        if (!useThemeModule) {
+        if (!ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
             applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
+        } else if (!useThemeModule) {
+            applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Fill);
         }
 
         super.applyThemeOverlays();

@@ -58,7 +58,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(11)
+                    .setRevision(12)
                     .build();
 
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
@@ -76,7 +76,13 @@ public class HubToolbarViewRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity.getTheme().applyStyle(R.style.HubToolbarActionButtonStyleOverlay_Baseline, true);
+        if (ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
+            mActivity.getTheme().applyStyle(R.style.HubToolbarActionButtonStyleOverlay_Fill, true);
+        } else {
+            mActivity
+                    .getTheme()
+                    .applyStyle(R.style.HubToolbarActionButtonStyleOverlay_Baseline, true);
+        }
         ThreadUtils.runOnUiThreadBlocking(this::setUpOnUi);
     }
 

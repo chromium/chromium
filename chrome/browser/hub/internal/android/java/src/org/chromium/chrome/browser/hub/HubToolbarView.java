@@ -132,8 +132,6 @@ public class HubToolbarView extends LinearLayout {
             params.height = buttonSize;
             params.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
             mActionButton.setLayoutParams(params);
-
-            mActionButton.setBackgroundResource(R.drawable.new_tab_button_background);
         }
     }
 
@@ -380,7 +378,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     private void updateActionButtonColorInternal(@ColorInt int color) {
-        mActionButton.getBackground().setColorFilter(color, PorterDuff.Mode.SRC);
+        mActionButton.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {
