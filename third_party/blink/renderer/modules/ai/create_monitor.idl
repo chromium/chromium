@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 // https://github.com/webmachinelearning/prompt-api
+// https://github.com/webmachinelearning/translation-api
+// https://github.com/webmachinelearning/writing-assistance-apis
 
 [
   Exposed=(Window,Worker),
   SecureContext,
   RuntimeEnabled=BuiltInAIAPI
 ]
-interface AICreateMonitor : EventTarget {
+interface CreateMonitor : EventTarget {
   attribute EventHandler ondownloadprogress;
 };
 
-callback AICreateMonitorCallback = undefined (AICreateMonitor monitor);
+callback CreateMonitorCallback = undefined (CreateMonitor monitor);

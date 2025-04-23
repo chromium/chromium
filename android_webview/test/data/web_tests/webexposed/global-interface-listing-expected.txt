@@ -3,11 +3,6 @@ This test documents all interface attributes and methods on the global window ob
 interface AI
     attribute @@toStringTag
     method constructor
-interface AICreateMonitor : EventTarget
-    attribute @@toStringTag
-    getter ondownloadprogress
-    method constructor
-    setter ondownloadprogress
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -1445,6 +1440,11 @@ interface CountQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
+interface CreateMonitor : EventTarget
+    attribute @@toStringTag
+    getter ondownloadprogress
+    method constructor
+    setter ondownloadprogress
 interface Credential
     attribute @@toStringTag
     getter id

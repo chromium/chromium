@@ -21,7 +21,7 @@ dictionary WriterCreateCoreOptions {
 
 dictionary WriterCreateOptions : WriterCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 

@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -91,8 +91,8 @@ CreateTranslatorClient::CreateTranslatorClient(
       receiver_(this, GetExecutionContext()),
       task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())) {
   if (options->hasMonitor()) {
-    monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
-                                                     task_runner_);
+    monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
+                                                   task_runner_);
     std::ignore = options->monitor()->Invoke(nullptr, monitor_);
   }
 }

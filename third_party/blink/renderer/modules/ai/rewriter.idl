@@ -21,7 +21,7 @@ dictionary RewriterCreateCoreOptions {
 
 dictionary RewriterCreateOptions : RewriterCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 

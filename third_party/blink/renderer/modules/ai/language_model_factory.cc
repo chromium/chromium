@@ -16,8 +16,8 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
@@ -29,10 +29,10 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/language_model.h"
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
@@ -86,7 +86,7 @@ class CreateLanguageModelClient
       mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
       String system_prompt,
       Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts,
-      AICreateMonitor* monitor,
+      CreateMonitor* monitor,
       Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs)
       : AIContextObserver(script_state, ai, resolver, signal),
         ai_(ai),
@@ -178,12 +178,12 @@ class CreateLanguageModelClient
 
  private:
   Member<AI> ai_;
-  // The `CreateLanguageModelClient` owns the `AICreateMonitor`, so the
+  // The `CreateLanguageModelClient` owns the `CreateMonitor`, so the
   // `LanguageModel.create()` will only receive model download progress
   // update while the creation promise is pending. After the `LanguageModel`
-  // is created, the `AICreateMonitor` will be destroyed so there is no more
+  // is created, the `CreateMonitor` will be destroyed so there is no more
   // events even if the model is uninstalled and downloaded again.
-  Member<AICreateMonitor> monitor_;
+  Member<CreateMonitor> monitor_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateLanguageModelClient,
                    CreateLanguageModelClient>
       receiver_;
@@ -315,8 +315,8 @@ ScriptPromise<LanguageModel> LanguageModelFactory::create(
   String system_prompt;
   Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
   AbortSignal* signal = nullptr;
-  AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
-      GetExecutionContext(), task_runner_);
+  CreateMonitor* monitor =
+      MakeGarbageCollected<CreateMonitor>(GetExecutionContext(), task_runner_);
 
   if (options) {
     signal = options->getSignalOr(nullptr);

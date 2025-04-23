@@ -11,7 +11,7 @@ dictionary LanguageDetectorCreateCoreOptions {
 
 dictionary LanguageDetectorCreateOptions : LanguageDetectorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
 dictionary LanguageDetectorDetectOptions {

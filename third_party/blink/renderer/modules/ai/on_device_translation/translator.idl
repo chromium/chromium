@@ -12,7 +12,7 @@ dictionary TranslatorCreateCoreOptions {
 
 dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
 dictionary TranslatorTranslateOptions {

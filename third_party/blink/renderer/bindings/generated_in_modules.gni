@@ -15,8 +15,6 @@ generated_async_iterator_sources_in_modules = [
 ]
 
 generated_callback_function_sources_in_modules = [
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animator_constructor.cc",
@@ -27,6 +25,8 @@ generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decode_success_callback.cc",
@@ -1962,8 +1962,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ads.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ambient_light_sensor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ambient_light_sensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_analyser_node.cc",
@@ -2094,6 +2092,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_channel_splitter_node.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_monitor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_monitor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_client.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_clients.cc",

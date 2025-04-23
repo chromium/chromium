@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CREATE_MONITOR_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CREATE_MONITOR_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_
 
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -14,16 +14,15 @@
 namespace blink {
 
 // The monitor class that serves as the target for the `downloadprogress` event.
-class AICreateMonitor final
-    : public EventTarget,
-      public ExecutionContextClient,
-      public mojom::blink::ModelDownloadProgressObserver {
+class CreateMonitor final : public EventTarget,
+                            public ExecutionContextClient,
+                            public mojom::blink::ModelDownloadProgressObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  AICreateMonitor(ExecutionContext* context,
-                  scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~AICreateMonitor() override = default;
+  CreateMonitor(ExecutionContext* context,
+                scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~CreateMonitor() override = default;
 
   void Trace(Visitor* visitor) const override;
 
@@ -43,10 +42,10 @@ class AICreateMonitor final
   bool dispatched_start_ = false;
   bool dispatched_end_ = false;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, AICreateMonitor>
+  HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, CreateMonitor>
       receiver_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CREATE_MONITOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_

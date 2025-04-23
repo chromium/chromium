@@ -44,7 +44,7 @@ dictionary LanguageModelCreateCoreOptions {
 
 dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
   DOMString systemPrompt;
   sequence<LanguageModelPrompt> initialPrompts;
 };

@@ -6,14 +6,14 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -91,11 +91,11 @@ class LanguageDetectorCreateTask
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
         options_(options) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
-                                                       task_runner_);
+      monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
+                                                     task_runner_);
 
       // If an exception is thrown, don't initiate language detection model
-      // download. `AICreateMonitorCallback`'s `Invoke` will automatically
+      // download. `CreateMonitorCallback`'s `Invoke` will automatically
       // reject the promise with the thrown exception.
       if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
         return;
@@ -174,7 +174,7 @@ class LanguageDetectorCreateTask
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  Member<AICreateMonitor> monitor_;
+  Member<CreateMonitor> monitor_;
   Member<LanguageDetectorCreateOptions> options_;
 };
 
