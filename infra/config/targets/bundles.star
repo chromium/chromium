@@ -7301,6 +7301,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "win_x86_specific_smoke_tests",
+    targets = [
+        "base_unittests",
+        "sbox_integration_tests",
+        "sbox_unittests",
+        "sbox_validation_tests",
+    ],
+    per_test_modifications = {
+        "sbox_integration_tests": targets.mixin(swarming = targets.swarming(dimensions = {
+            "integrity": "high",
+        })),
+    },
+)
+
+targets.bundle(
     name = "wpt_tests_ios_suite",
     targets = [
         "wpt_tests_ios",

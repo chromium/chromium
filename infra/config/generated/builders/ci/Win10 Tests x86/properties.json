@@ -1,40 +1,8 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
-      "additional_exclusions": [
-        "infra/config/generated/builders/ci/Win Builder/gn-args.json"
-      ],
       "builder_db": {
         "entries": [
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "WebKit Win10",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
-              "builder_group": "chromium.win",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 32,
-                "target_platform": "win"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Win Builder",
-                "project": "chromium"
-              }
-            }
-          },
           {
             "builder_id": {
               "bucket": "ci",
@@ -96,18 +64,6 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Win Builder",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "WebKit Win10",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Win10 Tests x86",
           "project": "chromium"
         }
@@ -119,20 +75,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win Builder/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 Tests x86/targets"
     }
-  },
-  "$build/siso": {
-    "configs": [
-      "builder"
-    ],
-    "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
-    "enable_cloud_trace": true,
-    "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -142,11 +86,5 @@
     ]
   },
   "builder_group": "chromium.win",
-  "gardener_rotations": [
-    "chromium"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "recipe": "chromium"
 }

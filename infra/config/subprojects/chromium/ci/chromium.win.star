@@ -481,6 +481,48 @@ ci.builder(
 )
 
 ci.thin_tester(
+    name = "Win10 Tests x86",
+    description_html = "Windows x86 release build running on x64 testing bots.",
+    triggered_by = ["ci/Win Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "win_x86_specific_smoke_tests",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+            "isolate_profile_data",
+        ],
+    ),
+    builderless = True,
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "misc",
+        short_name = "x86",
+    ),
+)
+
+ci.thin_tester(
     name = "Win11 Tests x64",
     triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
