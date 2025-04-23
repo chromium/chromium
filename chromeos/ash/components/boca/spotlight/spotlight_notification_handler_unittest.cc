@@ -7,16 +7,20 @@
 #include <memory>
 #include <string_view>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+using base::test::TestFuture;
 
 namespace ash::boca {
 namespace {
@@ -67,7 +71,9 @@ class SpotlightNotificationHandlerTest : public testing::Test {
 };
 
 TEST_F(SpotlightNotificationHandlerTest, StartSpotlightCountdownNotification) {
-  handler_->StartSpotlightCountdownNotification();
+  TestFuture<void> countdown_completion_callback;
+  handler_->StartSpotlightCountdownNotification(
+      countdown_completion_callback.GetCallback());
   task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
 
   int notification_called_count = 1;
@@ -81,10 +87,12 @@ TEST_F(SpotlightNotificationHandlerTest, StartSpotlightCountdownNotification) {
     notification_called_count++;
     task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
   }
+  ASSERT_TRUE(countdown_completion_callback.Wait());
 }
 
 TEST_F(SpotlightNotificationHandlerTest, StopSpotlightNotification) {
-  handler_->StartSpotlightCountdownNotification();
+  handler_->StartSpotlightCountdownNotification(base::BindOnce(
+      []() { GTEST_FAIL() << "Unexpected call to completion callback"; }));
   task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
   ASSERT_EQ(delegate_ptr_->called_show_count(), 1);
 

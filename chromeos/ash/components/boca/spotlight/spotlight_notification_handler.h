@@ -17,6 +17,7 @@ namespace ash::boca {
 // TODO: http://crbug.com/397722474 - Investigate merging notification handlers.
 class SpotlightNotificationHandler {
  public:
+  using CountdownCompletionCallback = base::OnceClosure;
   // Delegate implementation that can be overridden by tests to stub
   // notification display actions. Especially relevant for tests that cannot
   // leverage Ash UI.
@@ -44,7 +45,8 @@ class SpotlightNotificationHandler {
 
   // Handle notification presented to students when a Spotlight session
   // begins.
-  void StartSpotlightCountdownNotification();
+  void StartSpotlightCountdownNotification(
+      CountdownCompletionCallback completion_callback);
 
   // Stops the Spotlight countdown when an in-progress request was cancelled.
   void StopSpotlightCountdown();
@@ -54,7 +56,7 @@ class SpotlightNotificationHandler {
 
   const std::unique_ptr<Delegate> delegate_;
   base::TimeDelta notification_duration_;
-  base::OnceClosure completion_callback_;
+  CountdownCompletionCallback completion_callback_;
   base::RepeatingTimer timer_;
 };
 }  // namespace ash::boca

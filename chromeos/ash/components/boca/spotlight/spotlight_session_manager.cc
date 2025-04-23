@@ -88,9 +88,6 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
             base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
                            weak_ptr_factory_.GetWeakPtr()));
         break;
-      case ::boca::ViewScreenConfig::ACTIVE:
-        spotlight_crd_manager_->ShowPersistentNotification(teacher_name_);
-        break;
       case ::boca::ViewScreenConfig::INACTIVE:
         request_in_progress_ = false;
         notification_handler_->StopSpotlightCountdown();
@@ -105,7 +102,9 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
 void SpotlightSessionManager::OnConnectionCodeReceived(
     const std::string& connection_code) {
   CHECK(spotlight_service_);
-  notification_handler_->StartSpotlightCountdownNotification();
+  notification_handler_->StartSpotlightCountdownNotification(
+      base::BindOnce(&SpotlightSessionManager::OnCountdownEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   spotlight_service_->RegisterScreen(
       connection_code, BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
@@ -126,6 +125,10 @@ void SpotlightSessionManager::OnRegisterScreenRequestSent(
   // immediately updated locally.
   BocaAppClient::Get()->GetSessionManager()->LoadCurrentSession(
       /*from_polling=*/false);
+}
+
+void SpotlightSessionManager::OnCountdownEnded() {
+  spotlight_crd_manager_->ShowPersistentNotification(teacher_name_);
 }
 
 }  // namespace ash::boca

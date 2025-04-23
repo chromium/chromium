@@ -53,23 +53,28 @@ SpotlightNotificationHandler::SpotlightNotificationHandler(
 
 SpotlightNotificationHandler::~SpotlightNotificationHandler() = default;
 
-void SpotlightNotificationHandler::StartSpotlightCountdownNotification() {
+void SpotlightNotificationHandler::StartSpotlightCountdownNotification(
+    CountdownCompletionCallback completion_callback) {
   if (timer_.IsRunning()) {
     StopSpotlightCountdown();
   }
+  completion_callback_ = std::move(completion_callback);
   notification_duration_ = kSpotlightNotificationDuration;
   timer_.Reset();
 }
 
 void SpotlightNotificationHandler::StopSpotlightCountdown() {
+  if (completion_callback_) {
+    completion_callback_.Reset();
+  }
   timer_.Stop();
   delegate_->ClearNotification(kSpotlightStartedNotificationId);
 }
 
 void SpotlightNotificationHandler::
     StartSpotlightCountdownNotificationInternal() {
-  if (!timer_.IsRunning()) {
-    // If the timer was stopped, the request was finished or cancelled.
+  if (!completion_callback_ || !timer_.IsRunning()) {
+    // If there is no callback, the final timer has already ran.
     return;
   }
 
@@ -77,6 +82,7 @@ void SpotlightNotificationHandler::
     timer_.Stop();
     // Clear pre-existing notifications with the same id if still present.
     delegate_->ClearNotification(kSpotlightStartedNotificationId);
+    std::move(completion_callback_).Run();
     return;
   }
   // TODO: dorianbrandon - Update logo to CT logo when ready.
