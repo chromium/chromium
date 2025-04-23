@@ -186,7 +186,8 @@ class LensOverlayController : public LensSearchboxClient,
   // done to unblock the contextual searchbox prototype. This should be
   // refactored to be done in the LensSearchController to not go through the
   // overlay controller.
-  void StartContextualizationWithoutOverlay(
+  // Virtual for testing.
+  virtual void StartContextualizationWithoutOverlay(
       lens::LensOverlayInvocationSource invocation_source);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
@@ -211,7 +212,8 @@ class LensOverlayController : public LensSearchboxClient,
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
-  void ShowUI(lens::LensOverlayInvocationSource invocation_source);
+  // Virtual for testing.
+  virtual void ShowUI(lens::LensOverlayInvocationSource invocation_source);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:

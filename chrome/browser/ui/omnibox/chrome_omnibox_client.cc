@@ -108,7 +108,17 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #endif
 
+namespace {
+
 using predictors::AutocompleteActionPredictor;
+
+LensOverlayController* GetLensOverlayController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+}  // namespace
 
 ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
                                          Browser* browser,
@@ -135,7 +145,12 @@ ChromeOmniboxClient::~ChromeOmniboxClient() {
 
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
+  // base::Unretained(location_bar_) is safe because `location_bar_` outlives
+  // `ChromeOmniboxClient` which outlives `AutocompleteController` which owns
+  // `ChromeAutocompleteProviderClient`.
+  return std::make_unique<ChromeAutocompleteProviderClient>(
+      profile_, base::BindRepeating(&LocationBar::GetWebContents,
+                                    base::Unretained(location_bar_)));
 }
 
 bool ChromeOmniboxClient::CurrentPageExists() const {
@@ -362,13 +377,11 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
     return;
   }
 
-  if (content::WebContents* web_contents = location_bar_->GetWebContents()) {
-    if (LensOverlayController* lens_controller =
-            LensOverlayController::FromTabWebContents(web_contents)) {
-      // TODO(crbug.com/408073216): Create and use new dismissal source.
-      lens_controller->CloseUIAsync(
-          lens::LensOverlayDismissalSource::kEscapeKeyPress);
-    }
+  if (LensOverlayController* lens_overlay_controller =
+          GetLensOverlayController(location_bar_->GetWebContents())) {
+    // TODO(crbug.com/408073216): Create and use new dismissal source.
+    lens_overlay_controller->CloseUIAsync(
+        lens::LensOverlayDismissalSource::kEscapeKeyPress);
   }
 }
 
@@ -732,16 +745,11 @@ bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
-  content::WebContents* web_contents = location_bar_->GetWebContents();
-  if (!web_contents) {
-    return std::nullopt;
+  if (LensSearchboxClient* lens_overlay_controller =
+          GetLensOverlayController(location_bar_->GetWebContents())) {
+    return lens_overlay_controller->GetLensSuggestInputs();
   }
-  LensSearchboxClient* client =
-      LensOverlayController::FromTabWebContents(web_contents);
-  if (!client) {
-    return std::nullopt;
-  }
-  return client->GetLensSuggestInputs();
+  return std::nullopt;
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {
