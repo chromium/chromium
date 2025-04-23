@@ -29,6 +29,7 @@ import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.DialogController;
 import org.chromium.components.payments.MockPackageManagerDelegate;
+import org.chromium.components.payments.MockPackageManagerDelegate.PackageInfoState;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -470,21 +471,83 @@ public class AndroidPaymentAppFinderTest
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.test/webpay", null /* no package info*/);
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.NO_PACKAGE_INFO);
 
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
     }
 
-    /** Unsigned payment app should be filtered out. */
+    /** A payment app with null signature list should be filtered out. */
     @Test
     @Feature({"Payments"})
-    public void testOneAppWithoutSignatures() throws Throwable {
+    public void testOneAppWithNullSignatureList() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.test/webpay", "" /* no signatures */);
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.NULL_SIGNATURE_LIST);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with an empty signature list should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithEmptySignatureList() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.EMPTY_SIGNATURE_LIST);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with one null signature should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithOneNullSignature() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.ONE_NULL_SIGNATURE);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with one empty signature should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithOneEmptySignature() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.ONE_EMPTY_SIGNATURE);
 
         findApps(methods);
 
@@ -1626,7 +1689,8 @@ public class AndroidPaymentAppFinderTest
                 "com.bobpay",
                 "https://bobpay.test/webpay",
                 supportedDelegations,
-                /* signature= */ "01020304050607080900");
+                /* signature= */ "01020304050607080900",
+                PackageInfoState.ONE_VALID_SIGNATURE);
 
         findApps(methods);
 
@@ -1652,7 +1716,8 @@ public class AndroidPaymentAppFinderTest
                 "com.bobpay",
                 "https://bobpay.test/webpay",
                 invalidDelegations,
-                /* signature= */ "01020304050607080900");
+                /* signature= */ "01020304050607080900",
+                PackageInfoState.ONE_VALID_SIGNATURE);
 
         findApps(methods);
 
