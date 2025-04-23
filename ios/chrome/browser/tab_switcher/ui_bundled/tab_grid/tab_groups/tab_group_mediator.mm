@@ -64,7 +64,8 @@ using tab_groups::SharingState;
 namespace {
 
 // The preferred size in points for the avatar icons.
-constexpr CGFloat kFacePileAvatarSize = 24;
+constexpr CGFloat kLegacyFacePileAvatarSize = 24;
+constexpr CGFloat kFacePileAvatarSize = 26;
 // The preferred size in points for the avatar icon in the activity label.
 constexpr CGFloat kActivityLabelAvatarSize = 16;
 
@@ -724,7 +725,11 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = base::SysUTF8ToNSString(savedCollabID.value());
   config.showsEmptyState = YES;
-  config.avatarSize = kFacePileAvatarSize;
+  if (IsContainedTabGroupEnabled()) {
+    config.avatarSize = kFacePileAvatarSize;
+  } else {
+    config.avatarSize = kLegacyFacePileAvatarSize;
+  }
   [_groupConsumer setFacePileView:_shareKitService->FacePileView(config)];
 }
 

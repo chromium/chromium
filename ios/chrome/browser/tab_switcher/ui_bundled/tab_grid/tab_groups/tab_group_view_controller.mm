@@ -42,12 +42,15 @@ namespace {
 constexpr CGFloat kBackgroundAlpha = 0.6;
 
 // Top toolbar
-constexpr CGFloat kTopToolbarHeight = 44;
-constexpr CGFloat kTopStackViewSpacing = 10;
+constexpr CGFloat kTopToolbarHeight = 58;
 constexpr CGFloat kTopToolbarMargin = 16;
 
 // Button.
-constexpr CGFloat kPlusImageSize = 20;
+constexpr CGFloat kButtonSpacing = 10;
+constexpr CGFloat kLegacyMenuImageSize = 20;
+constexpr CGFloat kCloseImageSize = 12.5;
+constexpr CGFloat kMenuImageSize = 16;
+constexpr CGFloat kButtonDiameter = 26;
 
 // Animation.
 constexpr CGFloat kTranslationCompletion = 0;
@@ -66,6 +69,40 @@ constexpr CGFloat kContainerMargin = 12;
 constexpr CGFloat kContainerMultiplier = 0.8;
 constexpr CGFloat kContainerCornerRadius = 24;
 constexpr CGFloat kContainerBackgroundAlpha = 0.8;
+
+// Returns a button to be added to the top toolbar.
+UIButton* TopToolbarButton(NSString* symbol_name,
+                           UIAction* action,
+                           CGFloat image_size) {
+  CHECK(IsContainedTabGroupEnabled());
+  UIBackgroundConfiguration* background_configuration =
+      [UIBackgroundConfiguration clearConfiguration];
+  background_configuration.visualEffect = [UIBlurEffect
+      effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  configuration.baseForegroundColor = UIColor.whiteColor;
+  configuration.background = background_configuration;
+  configuration.image = DefaultSymbolWithConfiguration(
+      symbol_name, [UIImageSymbolConfiguration
+                       configurationWithPointSize:image_size
+                                           weight:UIImageSymbolWeightBold
+                                            scale:UIImageSymbolScaleMedium]);
+  ExtendedTouchTargetButton* button =
+      [ExtendedTouchTargetButton buttonWithConfiguration:configuration
+                                           primaryAction:action];
+  button.minimumDiameter = kButtonDiameter + kButtonSpacing;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.heightAnchor constraintEqualToConstant:kButtonDiameter],
+    [button.widthAnchor constraintEqualToAnchor:button.heightAnchor],
+  ]];
+
+  return button;
+}
 
 }  // namespace
 
@@ -460,14 +497,9 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
 // Returns the menu button, configured.
 - (UIButton*)configuredMenuButton {
-  UIImage* threeDotImage =
-      DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  configuration.image = threeDotImage;
+  CHECK(IsContainedTabGroupEnabled());
 
-  UIButton* button = [UIButton buttonWithConfiguration:configuration
-                                         primaryAction:nil];
+  UIButton* button = TopToolbarButton(kMenuSymbol, nil, kMenuImageSize);
   button.showsMenuAsPrimaryAction = YES;
   button.menu = [self configuredTabGroupMenu];
   button.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
@@ -484,7 +516,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.alignment = UIStackViewAlignmentCenter;
   stackView.distribution = UIStackViewDistributionFill;
-  stackView.spacing = kTopStackViewSpacing;
+  stackView.spacing = kButtonSpacing;
 
   if (_facePileView) {
     [stackView addArrangedSubview:_facePileView];
@@ -497,12 +529,10 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   UIAction* closeAction = [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf didTapCloseButton];
   }];
-  UIButtonConfiguration* closeConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  closeConfiguration.image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kPlusImageSize);
-  UIButton* closeButton = [UIButton buttonWithConfiguration:closeConfiguration
-                                              primaryAction:closeAction];
+
+  UIButton* closeButton =
+      TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize);
+
   [stackView addArrangedSubview:closeButton];
 
   return stackView;
@@ -567,7 +597,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
 
   UIImage* threeDotImage =
-      DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
+      DefaultSymbolWithPointSize(kMenuSymbol, kLegacyMenuImageSize);
   UIBarButtonItem* menuItem =
       [[UIBarButtonItem alloc] initWithImage:threeDotImage
                                         menu:[self configuredTabGroupMenu]];
@@ -618,7 +648,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
     navigationItem.rightBarButtonItems = buttons;
   } else {
     UIImage* plusImage =
-        DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
+        DefaultSymbolWithPointSize(kPlusSymbol, kLegacyMenuImageSize);
     UIBarButtonItem* plusItem =
         [[UIBarButtonItem alloc] initWithImage:plusImage
                                          style:UIBarButtonItemStylePlain
@@ -639,6 +669,11 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   dotView.translatesAutoresizingMaskIntoConstraints = NO;
   dotView.layer.cornerRadius = kDotSize / 2;
   dotView.backgroundColor = _groupColor;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [dotView.heightAnchor constraintEqualToConstant:kDotSize],
+    [dotView.widthAnchor constraintEqualToAnchor:dotView.heightAnchor],
+  ]];
 
   return dotView;
 }
@@ -686,8 +721,6 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
         constraintEqualToAnchor:titleView.trailingAnchor],
     [_titleLabel.topAnchor constraintEqualToAnchor:titleView.topAnchor],
     [_titleLabel.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor],
-    [_coloredDotView.heightAnchor constraintEqualToConstant:kDotSize],
-    [_coloredDotView.widthAnchor constraintEqualToConstant:kDotSize],
   ]];
 
   if (IsContainedTabGroupEnabled()) {
