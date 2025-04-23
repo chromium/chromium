@@ -297,6 +297,10 @@ void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
       ->ReplaceWithSpinner();
 }
 
+void AccountHoverButton::SetCallbackForTesting(PressedCallback callback) {
+  callback_ = std::move(callback);
+}
+
 AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -79,6 +80,33 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
+  }
+
+  void OnAccountSelected(const IdentityRequestAccountPtr& account,
+                         const ui::Event& event) {
+    // Simulate the account selection by calling ShowSingleAccountConfirmDialog
+    // directly
+    account_selection_view()->ShowSingleAccountConfirmDialog(
+        account, /*show_back_button=*/false);
+  }
+
+  void ClickAccountHoverButton(webid::AccountHoverButton* account_hover_button,
+                               const IdentityRequestAccountPtr& account) {
+    ASSERT_NE(account_hover_button, nullptr);
+
+    // Override the callback bound to FedCmAccountSelectionView class
+    // with FakeFedCmAccountSelectionView class to test for AccountHoverButton
+    // Lifecycle during account selection.
+    account_hover_button->SetCallbackForTesting(
+        base::BindRepeating(&FakeFedCmAccountSelectionView::OnAccountSelected,
+                            base::Unretained(this), account));
+
+    // Create mouse event
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), base::TimeTicks(),
+                         ui::EF_LEFT_MOUSE_BUTTON, 0);
+
+    account_hover_button->OnPressed(event);
   }
 
  private:
@@ -273,19 +301,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     }
   }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> GetContents(
-      views::View* container) {
-    return static_cast<views::ScrollView*>(container->children()[1])
-        ->contents()
-        ->children();
-  }
-
-  void TestSingleAccount(const std::u16string expected_title,
-                         bool expected_icon_visibility,
-                         bool has_display_identifier) {
-    CreateAndShowSingleAccountPicker(has_display_identifier,
-                                     LoginState::kSignUp);
-
+  void PerformSingleAccountConfirmDialogChecks(
+      const std::u16string expected_title,
+      bool expected_icon_visibility,
+      bool has_display_identifier) {
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
@@ -309,6 +328,23 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     CheckDisclosureText(single_account_chooser->children()[2],
                         /*expect_terms_of_service=*/true,
                         /*expect_privacy_policy=*/true);
+  }
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> GetContents(
+      views::View* container) {
+    return static_cast<views::ScrollView*>(container->children()[1])
+        ->contents()
+        ->children();
+  }
+
+  void TestSingleAccount(const std::u16string expected_title,
+                         bool expected_icon_visibility,
+                         bool has_display_identifier) {
+    CreateAndShowSingleAccountPicker(has_display_identifier,
+                                     LoginState::kSignUp);
+
+    PerformSingleAccountConfirmDialogChecks(
+        expected_title, expected_icon_visibility, has_display_identifier);
   }
 
   void TestMultipleAccounts(const std::u16string& expected_title,
@@ -1418,6 +1454,48 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   TestSingleAccount(kTitleSignIn,
                     /*expected_icon_visibility=*/true,
                     /*has_display_identifier=*/false);
+}
+
+// Test interaction of AccountHoverButton & FedCmAccountSelectionView via
+// FakeFedCmAccountSelectionView when AccountHoverButton OnPressed() is
+// called.
+class AccountSelectionInteractionTest : public AccountSelectionBubbleViewTest {
+ public:
+  views::View* GetFirstAccountHoverButton() {
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog_->children();
+
+    views::View* container = children[1];
+    std::vector<raw_ptr<views::View, VectorExperimental>> children2 =
+        static_cast<views::ScrollView*>(container->children()[1])
+            ->contents()
+            ->children();
+    // Considering three account details got passed, Account Selection Bubble
+    // view should contain three account hover buttons.
+    EXPECT_EQ(children2.size(), 3u);
+    EXPECT_EQ(children2[0]->GetClassName(), "HoverButton");
+    return children2[0];
+  }
+};
+
+TEST_F(AccountSelectionInteractionTest,
+       TestAccountHoverButtonLifecycleDuringAccountSelection) {
+  const std::vector<std::string> kAccountSuffixes = {"1", "2", "3"};
+  CreateAndShowMultiAccountPicker(kAccountSuffixes);
+
+  AccountHoverButton* account_hover_button =
+      static_cast<AccountHoverButton*>(GetFirstAccountHoverButton());
+  IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, idp_data_, LoginState::kSignUp);
+  // Simulate clicking the account hover button.
+  account_selection_view_->ClickAccountHoverButton(account_hover_button,
+                                                   account);
+
+  // Now that account selection has been made in OnAccountSelect,
+  // perform checks on contents of SingleAccountConfirmDialog
+  PerformSingleAccountConfirmDialogChecks(kTitleSignIn,
+                                          /*expected_icon_visibility=*/true,
+                                          /*has_display_identifier=*/true);
 }
 
 }  //  namespace webid
