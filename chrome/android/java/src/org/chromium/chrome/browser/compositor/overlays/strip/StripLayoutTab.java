@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -389,8 +390,14 @@ public class StripLayoutTab extends StripLayoutView {
     public @ColorInt int getTint(boolean foreground, boolean hovered) {
         // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
-        return TabUiThemeUtil.getTabStripContainerColor(
-                mContext, isIncognito(), foreground, mIsPlaceholder, hovered);
+        if (foreground) {
+            return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
+        } else if (hovered) {
+            return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
+        } else if (mIsPlaceholder) {
+            return TabUiThemeUtil.getTabStripStartupContainerColor(mContext);
+        }
+        return ChromeColors.getDefaultBgColor(mContext, isIncognito());
     }
 
     /**

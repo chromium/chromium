@@ -272,12 +272,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                         TabUiThemeUtil.getTabResource(),
                         getContext().getTheme());
         backgroundTabImage.setTint(
-                TabUiThemeUtil.getTabStripContainerColor(
-                        getContext(),
-                        incognito,
-                        /* foreground= */ true,
-                        /* isPlaceholder= */ false,
-                        /* isHovered= */ false));
+                TabUiThemeUtil.getTabStripSelectedTabColor(getContext(), incognito));
         LayerDrawable backgroundDrawable =
                 new LayerDrawable(new Drawable[] {backgroundColor, backgroundTabImage});
 

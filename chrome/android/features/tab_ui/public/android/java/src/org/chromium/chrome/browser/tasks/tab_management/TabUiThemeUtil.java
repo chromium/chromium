@@ -83,35 +83,6 @@ public class TabUiThemeUtil {
         return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
     }
 
-    /**
-     * Returns the color for the tab container based on experiment arm, incognito mode, foreground,
-     * reordering, placeholder, and hover state.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param foreground Whether the tab is in the foreground.
-     * @param isPlaceholder Whether the tab is a placeholder "ghost" tab.
-     * @param isHovered Whether the tab is hovered on.
-     * @return The color for the tab container.
-     */
-    // TODO (crbug.com/1469465): Encapsulate tab properties in a state object.
-    public static @ColorInt int getTabStripContainerColor(
-            Context context,
-            boolean isIncognito,
-            boolean foreground,
-            boolean isPlaceholder,
-            boolean isHovered) {
-        if (foreground) {
-            return getTabStripSelectedTabColor(context, isIncognito);
-        } else if (isHovered) {
-            return getHoveredTabContainerColor(context, isIncognito);
-        } else if (isPlaceholder) {
-            return getTabStripStartupContainerColor(context);
-        } else {
-            return ChromeColors.getDefaultBgColor(context, isIncognito);
-        }
-    }
-
     /** Returns the tab strip selected tab color. */
     public static @ColorInt int getTabStripSelectedTabColor(Context context, boolean isIncognito) {
         return ChromeColors.getDefaultThemeColor(context, isIncognito);
@@ -162,7 +133,7 @@ public class TabUiThemeUtil {
     }
 
     /** Returns the color for the hovered tab container. */
-    private static @ColorInt int getHoveredTabContainerColor(Context context, boolean isIncognito) {
+    public static @ColorInt int getHoveredTabContainerColor(Context context, boolean isIncognito) {
         int baseColor =
                 isIncognito
                         ? context.getColor(R.color.baseline_primary_80)
@@ -174,7 +145,7 @@ public class TabUiThemeUtil {
     }
 
     /** Returns the color for the tab strip startup "ghost" containers. */
-    private static @ColorInt int getTabStripStartupContainerColor(Context context) {
+    public static @ColorInt int getTabStripStartupContainerColor(Context context) {
         return context.getColor(R.color.bg_tabstrip_tab_folio_startup_tint);
     }
 
