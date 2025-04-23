@@ -98,6 +98,8 @@ enum class SignInHistorySyncStep {
   DCHECK(!_childCoordinator) << base::SysNSStringToUTF8([self description]);
 }
 
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [super start];
   _authenticationService =
@@ -106,22 +108,9 @@ enum class SignInHistorySyncStep {
   [self presentNextStepWithPreviousResult:SigninCoordinatorResultSuccess];
 }
 
-- (void)stop {
-  if (_currentStep != SignInHistorySyncStep::kCompleted) {
-    [self interruptAnimated:NO];
-  }
+#pragma mark - StopAnimatedChromeCoordinator
 
-  _syncService = nullptr;
-  _authenticationService = nullptr;
-  [super stop];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  // TODO(crbug.com/40929259): Turn into CHECK.
-  DUMP_WILL_BE_CHECK(_childCoordinator)
-      << base::SysNSStringToUTF8([self description]);
+- (void)stopAnimated:(BOOL)animated {
   if ([_childCoordinator
           conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
     ChromeCoordinator<InterruptibleChromeCoordinator>* interruptibleChild =
@@ -131,16 +120,20 @@ enum class SignInHistorySyncStep {
     // Interrupt `_childCoordinator` which will trigger the end of this
     // coordinator. Its callback will triggered.
     [interruptibleChild interruptAnimated:animated];
-    return;
+  } else {
+    CHECK(!_childCoordinator ||
+              [_childCoordinator
+                  conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)],
+          base::NotFatalUntil::M145);
+    ChromeCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedChild =
+        base::apple::ObjCCast<ChromeCoordinator<StopAnimatedChromeCoordinator>>(
+            _childCoordinator);
+    [stopAnimatedChild stopAnimated:animated];
+    _childCoordinator = nil;
   }
-
-  CHECK([_childCoordinator
-      conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]);
-  ChromeCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedChild =
-      base::apple::ObjCCast<ChromeCoordinator<StopAnimatedChromeCoordinator>>(
-          _childCoordinator);
-  [stopAnimatedChild stopAnimated:animated];
-  [self currentStepDidFinishWithResult:SigninCoordinatorResultInterrupted];
+  _syncService = nullptr;
+  _authenticationService = nullptr;
+  [super stopAnimated:animated];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate

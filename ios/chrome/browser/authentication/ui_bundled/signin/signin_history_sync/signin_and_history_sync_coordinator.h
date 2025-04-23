@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_HISTORY_SYNC_SIGNIN_AND_HISTORY_SYNC_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_HISTORY_SYNC_SIGNIN_AND_HISTORY_SYNC_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -17,7 +17,7 @@ enum class PromoAction : int;
 // If there is no identity on the device, the SSO add account is displayed to
 // sign-in and then the history sync is displayed.
 @interface SignInAndHistorySyncCoordinator
-    : SigninCoordinator <InterruptibleChromeCoordinator>
+    : SigninCoordinator <StopAnimatedChromeCoordinator>
 
 // Init the coordinator with its base `viewController`, the `browser`, from
 // which `accessPoint` the sign in flow was initialized, using which

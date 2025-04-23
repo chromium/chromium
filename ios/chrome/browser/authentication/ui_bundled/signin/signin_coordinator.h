@@ -225,7 +225,7 @@ class PrefRegistrySyncable;
 // if the user hasn't already approved it.
 // `fullscreenPromo`: whether the promo should be displayed in a fullscreen
 // modal.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                   browser:(Browser*)browser
