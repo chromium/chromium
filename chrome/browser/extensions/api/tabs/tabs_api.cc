@@ -474,6 +474,25 @@ void NotifyExtensionTelemetry(Profile* profile,
 #endif
 }
 
+class ScopedPinBrowserAtFront {
+ public:
+  explicit ScopedPinBrowserAtFront(Browser* browser)
+      : browser_(browser->AsWeakPtr()) {
+    old_z_order_level_ = browser_->window()->GetZOrderLevel();
+    browser_->window()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  }
+
+  ~ScopedPinBrowserAtFront() {
+    if (browser_) {
+      browser_->window()->SetZOrderLevel(old_z_order_level_);
+    }
+  }
+
+ private:
+  base::WeakPtr<Browser> browser_;
+  ui::ZOrderLevel old_z_order_level_;
+};
+
 }  // namespace
 
 void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
@@ -906,27 +925,18 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (focused) {
     new_window->window()->Show();
   } else {
-    // The new window isn't supposed to be focused. Here, instead of showing an
-    // unfocused window on top (possible on some operating systems), we show
-    // the window and then bring the old focused window back on top.
-    // We still use ShowInactive() (instead of doing a Show() followed
-    // immediately by Deactivate()) because the process of showing the window is
-    // somewhat asynchronous. This causes the immediate Deactivate() call to not
-    // work.
+    // Show an unfocused new window.
     BrowserList* const browser_list = BrowserList::GetInstance();
     Browser* last_active_browser = browser_list->GetLastActive();
-    // Check if there's a currently-active window that should re-take focus.
-    new_window->window()->ShowInactive();
 
-    // If the browser is still active, activate the last active (alive) window.
-    // It's possible that showing the new browser synchronously caused the old
-    // one to close, so we check for alive-ness.
-    // We check `active_browser->IsActive()` instead of
-    // `active_browser->window()->IsActive()` because the latter returns false
-    // if only child windows are active.
-    if (base::Contains(*browser_list, last_active_browser) &&
-        last_active_browser->IsActive()) {
-      last_active_browser->window()->Activate();
+    // On some OSes the new unfocused window is shown on top by default.
+    // ScopedPinBrowserAtFront prevents the new browser from being shown above
+    // the old active browser.
+    if (last_active_browser && last_active_browser->IsActive()) {
+      ScopedPinBrowserAtFront scoper(last_active_browser);
+      new_window->window()->ShowInactive();
+    } else {
+      new_window->window()->ShowInactive();
     }
   }
 

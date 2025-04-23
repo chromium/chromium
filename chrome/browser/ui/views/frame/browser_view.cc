@@ -1633,12 +1633,11 @@ void BrowserView::FlashFrame(bool flash) {
 }
 
 ui::ZOrderLevel BrowserView::GetZOrderLevel() const {
-  return ui::ZOrderLevel::kNormal;
+  return frame_->GetZOrderLevel();
 }
 
 void BrowserView::SetZOrderLevel(ui::ZOrderLevel level) {
-  // Not implemented for browser windows.
-  NOTIMPLEMENTED();
+  frame_->SetZOrderLevel(level);
 }
 
 gfx::NativeWindow BrowserView::GetNativeWindow() const {
