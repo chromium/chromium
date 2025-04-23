@@ -1,1 +1,0 @@
- smb://workgroup/server/printersharename 

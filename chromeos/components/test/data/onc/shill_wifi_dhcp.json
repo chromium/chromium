@@ -1,9 +1,0 @@
-{
-   "AutoConnect": true,
-   "GUID": "{b3e26c32-4289-41ea-b2a4-d0554acb1f67}",
-   "Mode": "managed",
-   "Passphrase": "some passphrase",
-   "SecurityClass": "psk",
-   "Type": "wifi",
-   "WiFi.HexSSID": "576966695769746844484350", // "WifiWithDHCP"
-}

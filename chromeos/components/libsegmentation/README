@@ -1,2 +1,0 @@
-The flag is set by ChromeOS chromeos-chrome package.
-See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/chromeos-chrome/metadata.xml

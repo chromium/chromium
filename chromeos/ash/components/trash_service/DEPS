@@ -1,5 +1,0 @@
-# Required to launch the sandboxed process.
-
-include_rules = [
-  "+content/public/browser/service_process_host.h",
-]

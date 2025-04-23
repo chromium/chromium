@@ -1,2 +1,0 @@
-per-file file_icon_util* = file://ui/file_manager/OWNERS
-per-file nudge_util* = file://ash/system/OWNERS

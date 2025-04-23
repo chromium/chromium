@@ -1,4 +1,0 @@
-include_rules = [
-  "+services/screen_ai/public/mojom",
-  "+ui/accessibility",
-]

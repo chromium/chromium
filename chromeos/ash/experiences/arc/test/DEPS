@@ -1,5 +1,0 @@
-include_rules = {
-  "+content/public/test",
-  "+services/accessibility/android/public/mojom",
-  "+storage/browser/file_system/watcher_manager.h",
-}

@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/dbus/easy_unlock",
-  "+chromeos/ash/services/device_sync/proto",
-  "+device/bluetooth/public",
-  "+third_party/securemessage/proto",
-]

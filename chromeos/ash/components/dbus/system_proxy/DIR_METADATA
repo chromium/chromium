@@ -1,7 +1,0 @@
-buganizer {
-  component_id: 1000044 # ChromeOS > Software > Commercial (Enterprise) > Commercial Networking
-}
-buganizer_public {
-    component_id: 1243851 # ChromeOS > Public Tracker > Enterprise & Edu > Commercial Networking
-}
-team_email: "chromeos-commercial-networking@google.com"

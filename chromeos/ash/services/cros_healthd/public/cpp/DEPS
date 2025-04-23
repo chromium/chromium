@@ -1,4 +1,0 @@
-include_rules = [
-  "+ash/system/diagnostics/mojom",
-  "+ui/events",
-]

@@ -1,3 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/chaps_util/chaps_util.h",
-]

@@ -1,8 +1,0 @@
-{
-  "input_nodes": [3],
-  "output_nodes": [5],
-  "threshold": 0.7,
-  "expected_feature_size": 343,
-  "metrics_model_name": "SmartDimModel"
-}
-

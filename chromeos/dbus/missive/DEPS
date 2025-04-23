@@ -1,6 +1,0 @@
-include_rules = [
-  "+base",
-  "+components/reporting",
-  "+google_apis",
-]
-

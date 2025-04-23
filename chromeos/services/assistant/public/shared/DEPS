@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "new_entry_point_constants.cc": [
-    "+chrome/grit",
-  ]
-}

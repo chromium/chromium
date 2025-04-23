@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/dbus/dlcservice",
-  "+components/language/core/common",
-  "+components/session_manager",
-  "+ui/base/ime/ash",
-]

@@ -1,6 +1,0 @@
-include_rules = [
-  "+ash/shell.h",
-  "+ui/display/manager",
-  "+services/device/public",
-  "+services/service_manager/public",
-]

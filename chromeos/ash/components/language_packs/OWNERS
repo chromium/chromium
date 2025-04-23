@@ -1,7 +1,0 @@
-# Primary owners
-mlcui@google.com
-
-# Secondary owners, if primary owners are unavailable
-dvallet@chromium.org #{LAST_RESORT_SUGGESTION}
-jhtin@chromium.org #{LAST_RESORT_SUGGESTION}
-tranbaoduy@chromium.org #{LAST_RESORT_SUGGESTION}

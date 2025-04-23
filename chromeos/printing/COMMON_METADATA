@@ -1,4 +1,0 @@
-monorail {
-  component: "Internals>Printing>CUPS"
-}
-team_email: "cros-printing-dev@chromium.org"

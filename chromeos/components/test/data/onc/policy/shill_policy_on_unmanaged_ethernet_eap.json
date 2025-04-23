@@ -1,9 +1,0 @@
-{
-  "Device": "",
-  "EAP.EAP": "TLS",
-  "GUID": "policy_ethernet_eap",
-  "Profile": "/profile/user1/shill",
-  "Type": "etherneteap",
-  "UIData": "{\"onc_source\":\"user_policy\"}",
-  "Visible": true
-}

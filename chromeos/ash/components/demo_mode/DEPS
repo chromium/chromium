@@ -1,6 +1,0 @@
-include_rules = [
-  "+base",
-  "+third_party/icu",
-  "+chromeos/ash/components/install_attributes",
-  "+chromeos/dbus/power",
-];

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  ".*test.cc": [
-    "+components/session_manager/session_manager_types.h",
-  ]
-}

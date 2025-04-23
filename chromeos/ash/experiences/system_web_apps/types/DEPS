@@ -1,3 +1,0 @@
-include_rules = [
-  "+ash/webui/system_apps/public/system_web_app_type.h",
-]

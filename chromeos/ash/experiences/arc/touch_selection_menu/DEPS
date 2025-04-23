@@ -1,6 +1,0 @@
-include_rules = [
-  "+ash/session",
-  "+ash/shell.h",
-  "+ash/utility/wm_util.h",
-  "+components/session_manager",
-]

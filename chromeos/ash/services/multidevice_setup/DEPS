@@ -1,9 +1,0 @@
-include_rules = [
-  "+ash/constants",
-  "+chromeos/ash/components/multidevice",
-  "+chromeos/ash/services/device_sync",
-  "+components/keyed_service/core",
-  "+components/session_manager/core",
-  "+components/sync_preferences/testing_pref_service_syncable.h",
-  "+mojo/public/cpp/bindings",
-]
