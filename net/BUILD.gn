@@ -1113,8 +1113,6 @@ component("net") {
     "url_request/url_request_netlog_params.h",
     "url_request/url_request_redirect_job.cc",
     "url_request/url_request_redirect_job.h",
-    "url_request/view_cache_helper.cc",
-    "url_request/view_cache_helper.h",
     "url_request/websocket_handshake_userdata_key.cc",
     "url_request/websocket_handshake_userdata_key.h",
   ]
@@ -1969,6 +1967,8 @@ if (!is_ios) {
     testonly = true
     sources = [
       "tools/dump_cache/dump_cache.cc",
+      "tools/dump_cache/dump_cache_helper.cc",
+      "tools/dump_cache/dump_cache_helper.h",
       "tools/dump_cache/dump_files.cc",
       "tools/dump_cache/dump_files.h",
     ]
@@ -2984,6 +2984,9 @@ target(_test_target_type, "net_unittests") {
     "tools/content_decoder_tool/content_decoder_tool.cc",
     "tools/content_decoder_tool/content_decoder_tool.h",
     "tools/content_decoder_tool/content_decoder_tool_unittest.cc",
+    "tools/dump_cache/dump_cache_helper.cc",
+    "tools/dump_cache/dump_cache_helper.h",
+    "tools/dump_cache/dump_cache_helper_unittest.cc",
     "tools/quic/quic_simple_client_test.cc",
     "tools/tld_cleanup/tld_cleanup_util_unittest.cc",
     "url_request/redirect_info_unittest.cc",
@@ -2996,7 +2999,6 @@ target(_test_target_type, "net_unittests") {
     "url_request/url_request_job_unittest.cc",
     "url_request/url_request_quic_unittest.cc",
     "url_request/url_request_unittest.cc",
-    "url_request/view_cache_helper_unittest.cc",
   ]
 
   if (is_android) {
