@@ -5940,6 +5940,7 @@
       valid_for_marker: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
+      valid_for_permission_element: true,
     },
     {
       name: "text-underline-offset",
