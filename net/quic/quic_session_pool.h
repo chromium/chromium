@@ -596,6 +596,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
 
+  // Methods to notify the ConnectionChangeObserver about connection changing
+  // events. `NotifyOnNetworkEvent` will notify all of the notifiers on network
+  // change events, since it affects all the connections. Otherwise, the events
+  // are specific to each connection.
+  void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
+  void NotifyOnSessionClosed(const QuicSessionKey& session_key) const;
+  void NotifyOnConnectionFailure(const QuicSessionKey& session_key) const;
+
   // Returns whether we have an existing session to the same server id as
   // `session_key`. This is used to determine whether we have an existing
   // session to the host but with different `QuicSessionKey`.

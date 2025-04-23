@@ -940,6 +940,9 @@ void QuicSessionPool::OnSessionClosed(QuicChromiumClientSession* session) {
   OnSessionGoingAway(session);
   auto it = all_sessions_.find(session);
   CHECK(it != all_sessions_.end());
+
+  NotifyOnSessionClosed(session->quic_session_key());
+
   all_sessions_.erase(it);
 }
 
@@ -959,6 +962,7 @@ void QuicSessionPool::CancelRequest(QuicSessionRequest* request) {
   // being in the map.
   if (job_iter != active_jobs_.end()) {
     job_iter->second->RemoveRequest(request);
+    NotifyOnConnectionFailure(/*session_key=*/job_iter->first);
   }
 }
 
@@ -1318,6 +1322,7 @@ void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
     ++it;
     session->OnNetworkConnected(network);
   }
+  NotifyOnNetworkEvent(net::NetworkChangeEvent::kConnected);
 }
 
 void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
@@ -1340,6 +1345,7 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
     ++it;
     session->OnNetworkDisconnectedV2(/*disconnected_network*/ network);
   }
+  NotifyOnNetworkEvent(net::NetworkChangeEvent::kDisconnected);
 }
 
 // This method is expected to only be called when migrating from Cellular to
@@ -1347,6 +1353,7 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
 void QuicSessionPool::OnNetworkSoonToDisconnect(
     handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_SOON_TO_DISCONNECT, network);
+  NotifyOnNetworkEvent(net::NetworkChangeEvent::kSoonToDisconnect);
 }
 
 void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
@@ -1384,6 +1391,7 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   if (params_.migrate_sessions_on_network_change_v2) {
     set_has_quic_ever_worked_on_current_network(false);
   }
+  NotifyOnNetworkEvent(net::NetworkChangeEvent::kDefaultNetworkChanged);
 }
 
 void QuicSessionPool::OnTrustStoreChanged() {
@@ -1627,6 +1635,8 @@ void QuicSessionPool::OnJobComplete(
       // Do not notify |request| yet.
       request->SetSession(session->CreateHandle(job->key().destination()));
     }
+  } else if (rv < 0) {
+    NotifyOnConnectionFailure(job->key().session_key());
   }
 
   for (QuicSessionRequest* request : iter->second->requests()) {
@@ -1648,6 +1658,28 @@ bool QuicSessionPool::HasActiveSession(
 
 bool QuicSessionPool::HasActiveJob(const QuicSessionKey& session_key) const {
   return base::Contains(active_jobs_, session_key);
+}
+
+void QuicSessionPool::NotifyOnNetworkEvent(net::NetworkChangeEvent event) {
+  for (auto& notifier : connection_change_notifier_) {
+    notifier.second->OnNetworkEvent(event);
+  }
+}
+
+void QuicSessionPool::NotifyOnSessionClosed(
+    const QuicSessionKey& session_key) const {
+  auto notifier = connection_change_notifier_.find(session_key);
+  if (notifier != connection_change_notifier_.end()) {
+    notifier->second->OnSessionClosed();
+  }
+}
+
+void QuicSessionPool::NotifyOnConnectionFailure(
+    const QuicSessionKey& session_key) const {
+  auto notifier = connection_change_notifier_.find(session_key);
+  if (notifier != connection_change_notifier_.end()) {
+    notifier->second->OnConnectionFailed();
+  }
 }
 
 int QuicSessionPool::CreateSessionSync(
