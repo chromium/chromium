@@ -282,8 +282,12 @@ class BrowserProcessImpl : public BrowserProcess,
 
   const raw_ptr<StartupData> startup_data_;
 
+  // Must be destroyed after |browser_policy_connector_|.
+  std::unique_ptr<gcm::GCMDriver> gcm_driver_;
+
   // Must be destroyed after |local_state_|.
   // Must be destroyed after |profile_manager_|.
+  // Must be destroyed before |gcm_driver_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector> const
       browser_policy_connector_;
 
@@ -451,8 +455,6 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<WebRtcEventLogManager> webrtc_event_log_manager_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
-
-  std::unique_ptr<gcm::GCMDriver> gcm_driver_;
 
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;

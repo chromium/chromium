@@ -185,7 +185,15 @@ class SharingServiceTest : public testing::Test {
   ~SharingServiceTest() override {
     // Make sure we're creating a SharingService so it can take ownership of the
     // local objects.
-    GetSharingService();
+    SharingService* sharing_service = GetSharingService();
+
+    // Avoid dangling pointers by resetting `raw_ptr`s before destroying/freeing
+    // objects that they point to.
+    sharing_device_registration_ = nullptr;
+
+    // Go through the proper shutdown sequence to avoid hitting a `DCHECK` in
+    // the destructor of the `SharingService`.
+    static_cast<KeyedService*>(sharing_service)->Shutdown();
   }
 
   void OnMessageSent(
