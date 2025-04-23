@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -135,6 +136,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Close the panel but keep the glic WebContents alive in the background.
   void Close();
+
+  // Used when the native window is closed directly.
+  void CloseWithReason(views::Widget::ClosedReason reason);
 
   // Sets the audio ducking status.  Returns true if the operation succeeded.
   bool SetAudioDucking(bool enabled);

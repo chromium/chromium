@@ -730,6 +730,13 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
     AttachToBrowser(*browser, AttachChangeReason::kInit);
   }
 
+  // This is used to handle the case where the native window is closed
+  // directly (e.g., Windows context menu close on the title bar). It fixes the
+  // bug where the window position was not restored after closing with the
+  // context menu close menu item.
+  GetGlicWidget()->MakeCloseSynchronous(base::BindOnce(
+      &GlicWindowController::CloseWithReason, base::Unretained(this)));
+
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(host().webui_contents());
 }
@@ -1090,6 +1097,10 @@ void GlicWindowController::SetMinimumWidgetSize(const gfx::Size& size) {
   }
 
   glic_widget_->SetMinimumSize(size);
+}
+
+void GlicWindowController::CloseWithReason(views::Widget::ClosedReason reason) {
+  Close();
 }
 
 void GlicWindowController::Close() {
