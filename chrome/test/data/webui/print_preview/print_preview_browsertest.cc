@@ -54,10 +54,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaSizeSettings) {
   RunTest("print_preview/media_size_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaTypeSettings) {
-  RunTest("print_preview/media_type_settings_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailability) {
   RunTest("print_preview/model_settings_availability_test.js", "mocha.run()");
 }

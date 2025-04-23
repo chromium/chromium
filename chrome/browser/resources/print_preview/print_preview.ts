@@ -9,7 +9,7 @@ export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-export {Cdd, ColorOption, DpiOption, DuplexOption, DuplexType, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientationOption, SelectOption, VendorCapabilityValueType} from './data/cdd.js';
+export {Cdd, ColorOption, DpiOption, DuplexOption, DuplexType, MediaSizeCapability, MediaSizeOption, PageOrientationOption, SelectOption, VendorCapabilityValueType} from './data/cdd.js';
 export {ColorMode, createDestinationKey, Destination, DestinationOptionalParams, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, RecentDestination} from './data/destination.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
 export {PageLayoutInfo} from './data/document_info.js';
@@ -43,7 +43,6 @@ export {PrintPreviewMarginControlElement} from './ui/margin_control.js';
 export {PrintPreviewMarginControlContainerElement} from './ui/margin_control_container.js';
 export {PrintPreviewMarginsSettingsElement} from './ui/margins_settings.js';
 export {PrintPreviewMediaSizeSettingsElement} from './ui/media_size_settings.js';
-export {PrintPreviewMediaTypeSettingsElement} from './ui/media_type_settings.js';
 export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_section.js';
 export {PrintPreviewOtherOptionsSettingsElement} from './ui/other_options_settings.js';
 export {PrintPreviewPagesPerSheetSettingsElement} from './ui/pages_per_sheet_settings.js';

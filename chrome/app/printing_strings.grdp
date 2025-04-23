@@ -86,9 +86,6 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE" desc="Option to do two-sided (duplex) printing with the page flipped on the short edge of the paper.">
       Flip on short edge
     </message>
-    <message name="IDS_PRINT_PREVIEW_BORDERLESS_LABEL" desc="Label for checkbox to enable borderless (zero margins) printing.">
-      No border
-    </message>
     <message name="IDS_PRINT_PREVIEW_PAGES_LABEL" desc="Page range option label.">
       Pages
     </message>
@@ -193,9 +190,6 @@
     <message name="IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL" desc="Media size option label. Provides user the option to change the size of the printed page.">
       Paper size
     </message>
-    <message name="IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL" desc="Media type option label. Provides user the option to select the type of paper to printed on (plain paper, photo paper, etc.)">
-      Paper type
-    </message>
     <message name="IDS_PRINT_PREVIEW_DPI_LABEL" desc="Print quality option label. Provides user the option to select one of the print quality options defined for the printer.">
       Quality
     </message>
@@ -269,8 +263,14 @@
       These settings are enforced by your administrator
     </message>
     <if expr="is_chromeos">
+      <message name="IDS_PRINT_PREVIEW_BORDERLESS_LABEL" desc="Label for checkbox to enable borderless (zero margins) printing.">
+        No border
+      </message>
       <message name="IDS_PRINT_PREVIEW_MANAGE_PRINTERS_LABEL" desc="Text of button to open Printer settings when setup assistance is showing.">
         Manage printers
+      </message>
+      <message name="IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL" desc="Media type option label. Provides user the option to select the type of paper to printed on (plain paper, photo paper, etc.)">
+        Paper type
       </message>
       <message name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT" desc="In CrOS destination dialog, message shown to users when destination list has no printers.">
         Manage your printers in printer settings

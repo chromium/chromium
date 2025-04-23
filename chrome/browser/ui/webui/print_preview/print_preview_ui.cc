@@ -161,7 +161,9 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
        IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_TITLE},
       {"advancedSettingsSearchBoxPlaceholder",
        IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_SEARCH_BOX_PLACEHOLDER},
+#if BUILDFLAG(IS_CHROMEOS)
       {"borderlessLabel", IDS_PRINT_PREVIEW_BORDERLESS_LABEL},
+#endif
       {"bottom", IDS_PRINT_PREVIEW_BOTTOM_MARGIN_LABEL},
       {"cancel", IDS_CANCEL},
       {"clearSearch", IDS_CLEAR_SEARCH},
@@ -189,7 +191,9 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"managedSettings", IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT},
       {"marginsLabel", IDS_PRINT_PREVIEW_MARGINS_LABEL},
       {"mediaSizeLabel", IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL},
+#if BUILDFLAG(IS_CHROMEOS)
       {"mediaTypeLabel", IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL},
+#endif
       {"minimumMargins", IDS_PRINT_PREVIEW_MINIMUM_MARGINS},
       {"moreOptionsLabel", IDS_MORE_OPTIONS_LABEL},
       {"newShowAdvancedOptions", IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS},
@@ -335,9 +339,9 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
       "isEnterpriseManaged",
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
-  source->AddBoolean("isBorderlessPrintingEnabled", BUILDFLAG(IS_CHROMEOS));
 
 #if BUILDFLAG(IS_CHROMEOS)
+  source->AddBoolean("isBorderlessPrintingEnabled", true);
   source->AddBoolean("isUseManagedPrintJobOptionsInPrintPreviewEnabled",
                      base::FeatureList::IsEnabled(
                          ::features::kUseManagedPrintJobOptionsInPrintPreview));
