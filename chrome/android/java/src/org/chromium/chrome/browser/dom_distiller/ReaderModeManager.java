@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
@@ -47,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -260,7 +260,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_AUTO_DISTILL)
+        if (!DomDistillerFeatures.sReaderModeAutoDistill.isEnabled()
                 || url.getScheme().equals(DOM_DISTILLER_SCHEME)
                 || url.getScheme().equals(CHROME_SCHEME)
                 || url.getScheme().equals(CHROME_NATIVE_SCHEME)) {

@@ -493,9 +493,6 @@ public abstract class ChromeFeatureList {
             "ReadAloudIPHMenuButtonHighlightCCT";
     public static final String READALOUD_PLAYBACK = "ReadAloudPlayback";
     public static final String READALOUD_TAP_TO_SEEK = "ReadAloudTapToSeek";
-    public static final String READER_MODE_AUTO_DISTILL = "ReaderModeAutoDistill";
-    public static final String READER_MODE_DEV_ENTRY_POINT = "ReaderModeDevEntryPoint";
-    public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
@@ -1016,8 +1013,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =
             newMutableFlagWithSafeDefault(READALOUD_TAP_TO_SEEK, false);
-    public static final MutableFlagWithSafeDefault sReaderModeImprovements =
-            newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyHub =
@@ -1474,13 +1469,6 @@ public abstract class ChromeFeatureList {
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(
                             "disable_bottom_controls_stacker_y_offset", false);
-    public static final MutableBooleanParamWithSafeDefault
-            sReaderModeImprovementsTriggerOnMobileFriendlyPages =
-                    sReaderModeImprovements.newBooleanParam(
-                            "trigger_on_mobile_friendly_pages", false);
-    public static final MutableBooleanParamWithSafeDefault
-            sReaderModeImprovementsAlwaysOnEntryPoint =
-                    sReaderModeImprovements.newBooleanParam("always_on_entry_point", false);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateDurationMs =
             sTabSwitcherColorBlendAnimate.newIntParam("animation_duration_ms", 240);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateInterpolator =

@@ -114,6 +114,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -139,7 +140,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
-    ChromeFeatureList.READER_MODE_DEV_ENTRY_POINT
+    DomDistillerFeatures.READER_MODE_DEV_ENTRY_POINT
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.

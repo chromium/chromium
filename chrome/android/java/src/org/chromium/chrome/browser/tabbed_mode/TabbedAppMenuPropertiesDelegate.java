@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -301,8 +302,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         menu.findItem(R.id.reader_mode_prefs_id)
                 .setVisible(isCurrentTabNotNull && shouldShowReaderModePrefs(currentTab));
         menu.findItem(R.id.reader_mode_menu_id)
-                .setVisible(
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_DEV_ENTRY_POINT));
+                .setVisible(DomDistillerFeatures.sReaderModeDevEntryPoint.isEnabled());
 
         updateManagedByMenuItem(menu, currentTab);
 

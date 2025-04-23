@@ -15,6 +15,12 @@ bool IsDomDistillerEnabled();
 
 bool ShouldStartDistillabilityService();
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
+BASE_DECLARE_FEATURE(kReaderModeDevEntryPoint);
+BASE_DECLARE_FEATURE(kReaderModeImprovements);
+#endif
+
 }  // namespace dom_distiller
 
 #endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_FEATURES_H_

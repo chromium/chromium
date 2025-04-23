@@ -38,11 +38,11 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationResult;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
@@ -152,7 +152,8 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     @EnableFeatures(
-            ChromeFeatureList.READER_MODE_IMPROVEMENTS + ":trigger_on_mobile_friendly_pages/true")
+            DomDistillerFeatures.READER_MODE_IMPROVEMENTS
+                    + ":trigger_on_mobile_friendly_pages/true")
     public void testMobileFriendlyNotDistillable_exceptWhenFeatureFlagAndParamEnabled() {
         Pair<Boolean, Integer> result =
                 ReaderModeManager.computeDistillationStatus(mTab, true, true, true);
