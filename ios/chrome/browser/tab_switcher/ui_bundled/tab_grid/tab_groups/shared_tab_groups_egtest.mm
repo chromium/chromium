@@ -667,6 +667,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
       performAction:grey_tap()];
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check that kSharedTabTitle tab cell is in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
@@ -872,6 +874,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
       performAction:grey_tap()];
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check that kSharedTabTitle tab cell is in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
