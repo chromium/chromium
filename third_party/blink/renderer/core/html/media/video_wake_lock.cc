@@ -217,14 +217,6 @@ void VideoWakeLock::UpdateWakeLockService() {
 }
 
 void VideoWakeLock::StartIntersectionObserver() {
-  // Most screen timeouts are at least 5s, so we don't need high frequency
-  // intersection updates. Choose a value such that we're never more than 5s
-  // apart w/ a 100ms of delivery leeway.
-  //
-  // TODO(crbug.com/1376286): Delay values appear to be broken. If a change
-  // occurs during the delay window, the update is dropped entirely...
-  constexpr base::TimeDelta kDelay;
-
   visibility_observer_ = IntersectionObserver::Create(
       VideoElement().GetDocument(),
       WTF::BindRepeating(&VideoWakeLock::OnVisibilityChanged,
@@ -232,7 +224,7 @@ void VideoWakeLock::StartIntersectionObserver() {
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {visibility_threshold_},
-          .delay = kDelay,
+          .delay = kIntersectionObserverDelay,
       });
   visibility_observer_->observe(&VideoElement());
 
@@ -250,7 +242,7 @@ void VideoWakeLock::StartIntersectionObserver() {
       IntersectionObserver::Params{
           .thresholds = {kSizeThreshold},
           .semantics = IntersectionObserver::kFractionOfRoot,
-          .delay = kDelay,
+          .delay = kIntersectionObserverDelay,
       });
   size_observer_->observe(&VideoElement());
 }
