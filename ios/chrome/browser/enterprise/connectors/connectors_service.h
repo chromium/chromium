@@ -65,7 +65,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
   // Unowned pointer used for retrieving the management domain for connectors
-  // policies.
+  // policies. Can be null for incognito profiles.
   raw_ptr<signin::IdentityManager> identity_manager_;
 };
 

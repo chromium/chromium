@@ -20,6 +20,17 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
+namespace {
+std::string GetDomainFromEmail(const std::string& email) {
+  size_t email_separator_pos = email.find('@');
+  if (email.empty() || email_separator_pos == std::string::npos ||
+      email_separator_pos == email.size() - 1) {
+    return std::string();
+  }
+  return gaia::ExtractDomainName(email);
+}
+}  // namespace
+
 namespace enterprise_connectors {
 
 ConnectorsService::ConnectorsService(
@@ -35,8 +46,7 @@ ConnectorsService::ConnectorsService(
                                               GetServiceProviderConfig())),
       identity_manager_(identity_manager) {
   DCHECK(prefs_);
-  // TODO(crbug.com/411092942): Add check for IdentityManager once tests are
-  // updated.
+  CHECK(off_the_record_ || identity_manager_ != nullptr);
 }
 
 ConnectorsService::~ConnectorsService() = default;
@@ -78,7 +88,7 @@ std::string ConnectorsService::GetManagementDomain() {
       // Retrieve the domain via profile email for user-scoped policies.
     case policy::PolicyScope::POLICY_SCOPE_USER: {
       std::string profile_email = GetProfileEmail(identity_manager_);
-      return gaia::ExtractDomainName(profile_email);
+      return GetDomainFromEmail(profile_email);
     }
     case policy::PolicyScope::POLICY_SCOPE_MACHINE:
       policy::MachineLevelUserCloudPolicyManager* manager =

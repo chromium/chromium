@@ -94,6 +94,7 @@ source_set("unit_tests") {
 
   deps = [
     ":connectors",
+    ":features",
     ":interstitials",
     "//base",
     "//components/enterprise:test_support",
@@ -104,9 +105,15 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//services/network:test_support",
