@@ -57,6 +57,10 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
         "onTaskEnabled",
         pref_service->GetBoolean(
             prefs::kClassManagementToolsSendingContentEligibilitySetting));
+    if (features::IsBocaSpotlightEnabled()) {
+      source->AddString("spotlightUrlTemplate",
+                        features::kBocaSpotlightUrlTemplate.Get());
+    }
   }
 
  private:

@@ -94,6 +94,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<std::string> kBocaSpotlightUrlTemplate;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaNetworkRestriction);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaSequentialSessionLoad);
