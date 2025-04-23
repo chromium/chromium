@@ -523,6 +523,9 @@ extern const char kBindCookiesToPortDescription[];
 extern const char kBindCookiesToSchemeName[];
 extern const char kBindCookiesToSchemeDescription[];
 
+extern const char kBlockCrossPartitionBlobUrlFetchingName[];
+extern const char kBlockCrossPartitionBlobUrlFetchingDescription[];
+
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 

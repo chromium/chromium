@@ -234,6 +234,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "skia/buildflags.h"
+#include "storage/browser/blob/features.h"
 #include "storage/browser/quota/quota_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -12232,6 +12233,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)},
+
+    {"block-cross-partition-blob-url-fetching",
+     flag_descriptions::kBlockCrossPartitionBlobUrlFetchingName,
+     flag_descriptions::kBlockCrossPartitionBlobUrlFetchingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kBlockCrossPartitionBlobUrlFetching)},
 
     // Add new entries above this line.
 

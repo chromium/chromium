@@ -900,6 +900,11 @@ const char kBackgroundListeningName[] = "BackgroundListening";
 const char kBackgroundListeningDescription[] =
     "Enables the new media player features optimized for background listening.";
 
+const char kBlockCrossPartitionBlobUrlFetchingName[] =
+    "Block Cross Partition Blob URL Fetching";
+const char kBlockCrossPartitionBlobUrlFetchingDescription[] =
+    "Blocks fetching of cross-partitioned Blob URL.";
+
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 

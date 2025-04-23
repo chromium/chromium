@@ -999,6 +999,13 @@
     "expiry_milestone": 132
   },
   {
+    "name": "block-cross-partition-blob-url-fetching",
+    "owners": [
+      "awillia@chromium.org"
+    ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "block-root-window-accessible-name-change-event",
     "owners": [
       "dmangal@microsoft.com"
