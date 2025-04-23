@@ -5,16 +5,13 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 #include "base/json/values_util.h"
-#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/metrics/histogram_variants_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -102,56 +99,9 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   NoticeMap default_notice_map_;
 };
 
-TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeHistograms) {
-  std::optional<base::HistogramVariantsEntryMap> notices;
-  std::vector<std::string> missing_notices;
-  {
-    notices = base::ReadVariantsFromHistogramsXml("PSNotice", "privacy");
-    ASSERT_TRUE(notices.has_value());
-  }
-  EXPECT_EQ(std::size(kPrivacySandboxNoticeNames), notices->size());
-  for (const auto& name : kPrivacySandboxNoticeNames) {
-    // TODO(crbug.com/333406690): Implement something to clean up notices that
-    // don't exist.
-    if (!base::Contains(*notices, std::string(name))) {
-      missing_notices.emplace_back(name);
-    }
-  }
-  ASSERT_TRUE(missing_notices.empty())
-      << "Notices:\n"
-      << base::JoinString(missing_notices, ", ")
-      << "\nconfigured in notice_constants.h but no "
-         "corresponding variants were added to PSNotice variants in "
-         "//tools/metrics/histograms/metadata/privacy/histograms.xml";
-}
-
-TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeActionHistograms) {
-  std::optional<base::HistogramVariantsEntryMap> actions;
-  std::vector<std::string> missing_actions;
-  {
-    actions = base::ReadVariantsFromHistogramsXml("PSNoticeAction", "privacy");
-    ASSERT_TRUE(actions.has_value());
-  }
-
-  for (int i = static_cast<int>(kMinValue); i <= static_cast<int>(kMaxValue);
-       ++i) {
-    std::string notice_name =
-        PrivacySandboxNoticeStorage::GetNoticeActionStringFromEvent(
-            static_cast<PrivacySandboxNoticeEvent>(i));
-    if (!notice_name.empty() && !base::Contains(*actions, notice_name)) {
-      missing_actions.emplace_back(notice_name);
-    }
-  }
-  ASSERT_TRUE(missing_actions.empty())
-      << "Actions:\n"
-      << base::JoinString(missing_actions, ", ")
-      << "\nconfigured in privacy_sandbox_notice_storage.cc but no "
-         "corresponding variants were added to PSNoticeAction variants in "
-         "//tools/metrics/histograms/metadata/privacy/histograms.xml";
-}
-
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
-  const auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
+  const auto actual =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   EXPECT_FALSE(actual.has_value());
 }
 
@@ -185,15 +135,12 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
   // Migrate actions without shown.
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
+                               static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken"}),
-      static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken_time"}),
+      "TopicsConsentDesktopModal.notice_action_taken_time",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -247,7 +194,8 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
   base::Time t1 = base::Time::Now();
   notice_storage()->RecordEvent(kNotice1InCatalog, kAck);
 
-  const auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
+  const auto actual =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(actual.has_value());
 
   ASSERT_EQ(actual->GetNoticeEvents().size(), 2u);
@@ -282,7 +230,7 @@ TEST_F(PrivacySandboxNoticeStorageTest,
   base::Time t1 = base::Time::Now();
   notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
 
-  auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
+  auto actual = notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(actual.has_value());
 
   ASSERT_EQ(actual->GetNoticeEvents().size(), 2u);
@@ -300,7 +248,7 @@ TEST_F(PrivacySandboxNoticeStorageTest,
   task_env_.AdvanceClock(base::Milliseconds(50));
   notice_storage()->RecordEvent(kNotice1InCatalog, kAck);
   actual = notice_storage()->ReadNoticeData(
-      kTopicsConsentModal);  // Re-read data after potential change
+      "TopicsConsentDesktopModal");  // Re-read data after potential change
   ASSERT_TRUE(actual.has_value());
 
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
@@ -328,7 +276,7 @@ TEST_F(PrivacySandboxNoticeStorageTest,
   task_env_.AdvanceClock(base::Milliseconds(100));
   notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
 
-  auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
+  auto actual = notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(actual.has_value());
   EXPECT_EQ(t0, actual->GetNoticeFirstShownFromEvents());
   EXPECT_EQ(t0, actual->GetNoticeLastShownFromEvents());
@@ -359,7 +307,7 @@ TEST_F(PrivacySandboxNoticeStorageTest,
   task_env_.AdvanceClock(base::Milliseconds(50));
   base::Time t1 = base::Time::Now();
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
-  actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
+  actual = notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(actual.has_value());
   EXPECT_EQ(t1, actual->GetNoticeLastShownFromEvents());
   histogram_tester_.ExpectBucketCount(
@@ -374,7 +322,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   task_env_.AdvanceClock(base::Milliseconds(100));
   notice_storage()->RecordEvent(kNotice1InCatalog, kSettings);
   const auto actual_notice1 =
-      notice_storage()->ReadNoticeData(kTopicsConsentModal);
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(actual_notice1.has_value());
 
   // Notice data 2.
@@ -382,7 +330,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   task_env_.AdvanceClock(base::Milliseconds(20));
   notice_storage()->RecordEvent(kNotice2InCatalog, kAck);
   const auto actual_notice2 =
-      notice_storage()->ReadNoticeData(kTopicsConsentModalClankCCT);
+      notice_storage()->ReadNoticeData("TopicsConsentModalClankCCT");
   ASSERT_TRUE(actual_notice2.has_value());
 
   histogram_tester_.ExpectBucketCount(
@@ -436,23 +384,21 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   scoped_feature_list.Reset();
   scoped_feature_list.InitAndDisableFeature(
       kPrivacySandboxMigratePrefsToSchemaV2);
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_last_shown"}),
+      "TopicsConsentDesktopModal.notice_last_shown",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(100)));
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
+                               static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken"}),
-      static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken_time"}),
+      "TopicsConsentDesktopModal.notice_action_taken_time",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  auto notice_data = notice_storage()->ReadNoticeData(notice);
+  auto notice_data =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(notice_data.has_value());
   EXPECT_EQ(notice_data->GetSchemaVersion(), 1);
   NoticeEvents events = notice_data->GetNoticeEvents();
@@ -462,23 +408,21 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        AllEventsPopulatedMigrateSuccessfully) {
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_last_shown"}),
+      "TopicsConsentDesktopModal.notice_last_shown",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(100)));
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
+                               static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken"}),
-      static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken_time"}),
+      "TopicsConsentDesktopModal.notice_action_taken_time",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  auto notice_data = notice_storage()->ReadNoticeData(notice);
+  auto notice_data =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(notice_data.has_value());
   EXPECT_EQ(notice_data->GetSchemaVersion(), 2);
 
@@ -495,17 +439,16 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        NoticeShownPopulatedMigrateSuccessfully) {
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_last_shown"}),
+      "TopicsConsentDesktopModal.notice_last_shown",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(500)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  auto notice_data = notice_storage()->ReadNoticeData(notice);
+  auto notice_data =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(notice_data.has_value());
   EXPECT_EQ(notice_data->GetSchemaVersion(), 2);
 
@@ -518,12 +461,12 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
 TEST_F(PrivacySandboxNoticeStorageV2Test, SchemaAlreadyUpToDateDoesNotMigrate) {
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(
-      base::StrCat({kTopicsConsentModal, ".schema_version"}), 2);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 2);
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
-  NoticeEvents events =
-      notice_storage()->ReadNoticeData(kTopicsConsentModal)->GetNoticeEvents();
+  NoticeEvents events = notice_storage()
+                            ->ReadNoticeData("TopicsConsentDesktopModal")
+                            ->GetNoticeEvents();
   EXPECT_EQ(events.size(), 0u);
 }
 
@@ -535,19 +478,17 @@ class PrivacySandboxNoticeStorageV2ActionsTest
 
 TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
        NoticeActionWithoutShownPopulatedMigrateSuccessfully) {
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
+                               static_cast<int>(std::get<0>(GetParam())));
   update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken"}),
-      static_cast<int>(std::get<0>(GetParam())));
-  update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken_time"}),
+      "TopicsConsentDesktopModal.notice_action_taken_time",
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  auto notice_data = notice_storage()->ReadNoticeData(notice);
+  auto notice_data =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(notice_data.has_value());
   EXPECT_EQ(notice_data->GetSchemaVersion(), 2);
 
@@ -566,17 +507,15 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
 
 TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
        NoticeActionPopulatedWithoutTimestampMigrateSuccessfully) {
-  std::string notice = kTopicsConsentModal;
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
-                               1);
-  update.Get().SetByDottedPath(
-      base::StrCat({notice, ".", "notice_action_taken"}),
-      static_cast<int>(std::get<0>(GetParam())));
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
+  update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
+                               static_cast<int>(std::get<0>(GetParam())));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  auto notice_data = notice_storage()->ReadNoticeData(notice);
+  auto notice_data =
+      notice_storage()->ReadNoticeData("TopicsConsentDesktopModal");
   ASSERT_TRUE(notice_data.has_value());
   EXPECT_EQ(notice_data->GetSchemaVersion(), 2);
 

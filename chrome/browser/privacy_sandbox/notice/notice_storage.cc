@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -59,6 +58,8 @@ constexpr char kPrivacySandboxNoticeEvent[] = "event";
 
 // Key value in the dict entry contained within `events`
 constexpr char kPrivacySandboxNoticeEventTime[] = "timestamp";
+
+constexpr int kPrivacySandboxNoticeSchemaVersion = 2;
 
 std::string CreatePrefPath(std::string_view notice,
                            std::string_view pref_name) {
@@ -107,12 +108,6 @@ void SetChromeVersion(PrefService* pref_service, std::string_view notice) {
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxChromeVersion),
       version_info::GetVersionNumber());
-}
-
-void CheckNoticeNameEligibility(std::string_view notice_name) {
-  CHECK(privacy_sandbox::kPrivacySandboxNoticeNames.contains(notice_name))
-      << "Notice name " << notice_name
-      << " does not exist in notice_constants.h";
 }
 
 const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
@@ -490,7 +485,6 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
 
 std::optional<PrivacySandboxNoticeData>
 PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
-  CheckNoticeNameEligibility(notice);
   const base::Value::Dict& pref_data =
       pref_service_->GetDict(kPrivacySandboxNoticeDataPath);
   return ConvertToNoticeData(pref_data.FindDict(notice));

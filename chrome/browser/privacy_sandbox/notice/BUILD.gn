@@ -21,7 +21,6 @@ source_set("core") {
   ]
   public = [
     "notice_catalog.h",
-    "notice_constants.h",
     "notice_features.h",
     "notice_model.h",
     "notice_storage.h",
@@ -126,6 +125,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "histograms_unittest.cc",
     "notice_catalog_unittest.cc",
     "notice_model_unittest.cc",
     "notice_service_unittest.cc",
