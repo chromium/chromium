@@ -25,6 +25,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -1224,16 +1225,13 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
  public:
   ~LCPPTimingPredictorTestBase() override = default;
 
-  void SetUp() override {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &LCPPTimingPredictorTestBase::RequestHandler, base::Unretained(this)));
-
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InProcessBrowserTest::SetUp();
-  }
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->StartAcceptingConnections();
+
+    slow_response_manager_ =
+        std::make_unique<net::test_server::ControllableHttpResponseManager>(
+            embedded_test_server(), "/image_slow.png");
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     loading_predictor_ =
         LoadingPredictorFactory::GetForProfile(browser()->profile());
@@ -1243,6 +1241,7 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
         loading_predictor_->resource_prefetch_predictor());
     initializer.EnsurePredictorInitialized();
   }
+
   void TearDownOnMainThread() override { loading_predictor_ = nullptr; }
 
   void NavigateAndWaitForLcpElement(
@@ -1251,13 +1250,32 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
       size_t expected_lcp_count,
       const std::optional<size_t>& expected_lcp_index,
       const base::Location& from_here = FROM_HERE) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    page_load_metrics::PageLoadMetricsTestWaiter onload_waiter(web_contents);
+    onload_waiter.AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+
     LcpTimingPredictedWaiter timing_predicted_waiter(
         loading_predictor()->resource_prefetch_predictor());
     LcpUpdatedWaiter lcp_updated_waiter(
         loading_predictor()->resource_prefetch_predictor(), expected_lcp_count);
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    content::NavigationController::LoadURLParams params(url);
+    web_contents->GetController().LoadURLWithParams(params);
+
     const std::vector<std::optional<std::string>>& lcp_element_locators =
         lcp_updated_waiter.Wait();
+
+    std::unique_ptr<net::test_server::ControllableHttpResponse> slow_response =
+        slow_response_manager_->WaitForRequest();
+    slow_response->Send(net::HTTP_OK, "image/png", "image_body", /*cookies=*/{},
+                        {"Cache-Control: no-store"});
+    slow_response->Done();
+
+    onload_waiter.Wait();
+
     const std::optional<std::string>& predicted_lcp_locator =
         timing_predicted_waiter.Wait();
     EXPECT_EQ(predicted_lcp_locator.has_value(),
@@ -1267,11 +1285,12 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
                 *predicted_lcp_locator);
     }
 
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(expected_events, content::EvalJs(web_contents, R"(
       globalThis.events.join(", ")
-        )"));
+        )"))
+        << content::EvalJs(web_contents, R"(
+      globalThis.timings.join(", ")
+        )");
 
     LcpElementLearnWaiter lcp_element_waiter(
         loading_predictor()->resource_prefetch_predictor());
@@ -1283,22 +1302,9 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
   LoadingPredictor* loading_predictor() { return loading_predictor_; }
 
  private:
-  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
-      const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() == "/slow-empty.js") {
-      std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
-          std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::Milliseconds(1000));
-      resp->set_code(net::HTTP_OK);
-      resp->AddCustomHeader("Cache-Control", "no-store");
-      resp->set_content_type("application/javascript");
-      resp->set_content(std::string());
-      return resp;
-    }
-
-    return nullptr;
-  }
   raw_ptr<LoadingPredictor> loading_predictor_ = nullptr;
+  std::unique_ptr<net::test_server::ControllableHttpResponseManager>
+      slow_response_manager_;
 };
 
 class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
@@ -1332,13 +1338,7 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
 
 // Confirm image element of the first LCP is predicted rather than div, or the
 // actual LCP(current implementation)
-// TODO(crbug.com/411280030): Flaky on win-asan.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_Base DISABLED_Base
-#else
-#define MAYBE_Base Base
-#endif
-IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, MAYBE_Base) {
+IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, Base) {
   TestPrediction();
 }
 

@@ -3,6 +3,8 @@
   <head>
     <script>
 globalThis.events = [];
+globalThis.start = new Date();
+globalThis.timings = [];
 
 let lcp_count = 0;
 new PerformanceObserver(entryList => {
@@ -15,15 +17,17 @@ new PerformanceObserver(entryList => {
   entryList.getEntries().forEach(entry => {
     globalThis.events.push(`LCP@${entry.element.tagName}`);
   });
+  globalThis.timings.push(`LCP@${new Date() - globalThis.start}`);
 }).observe({ type: "largest-contentful-paint", buffered: true });
 
 window.onload = () => {
  globalThis.events.push("Onload");
+globalThis.timings.push(`Onload@${new Date() - globalThis.start}`);
 }
     </script>
   </head>
   <body>
     <img style="width:50px;height:50px;" src="red_rectangle.png"/>
-    <script defer src="/slow-empty.js"></script>
+    <img style="width:5px;height:5px;" src="/image_slow.png"/>
   </body>
 </html>
