@@ -33,10 +33,20 @@ namespace net {
 namespace {
 
 std::string_view GetResultHistogramSuffix(std::optional<int> result) {
-  if (result.has_value()) {
-    return *result == OK ? "Success" : "Failure";
+  if (!result.has_value()) {
+    return "Canceled";
   }
-  return "Canceled";
+
+  switch (*result) {
+    case OK:
+      return "Success";
+    case ERR_TIMED_OUT:
+      return "TimedOut";
+    case ERR_CONNECTION_TIMED_OUT:
+      return "ConnectionTimedOut";
+    default:
+      return "OtherFailure";
+  }
 }
 
 std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
@@ -90,25 +100,26 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
 
 HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-  // TODO(bashi): Rename following histograms to use TcpBased*.
-  base::UmaHistogramTimes(base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
-                                        GetResultHistogramSuffix(result_)}),
-                          elapsed);
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime.",
+                    GetResultHistogramSuffix(result_)}),
+      elapsed);
 
   if (cancel_reason_.has_value()) {
     base::UmaHistogramEnumeration(
-        "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
+        "Net.HttpStreamPool.TcpBasedAttemptCancelReason", *cancel_reason_);
 
     std::string_view suffix =
         GetHistogramSuffixForTcpBasedAttemptCancel(*cancel_reason_);
     CHECK(manager_->initial_attempt_state_.has_value());
     base::UmaHistogramEnumeration(
         base::StrCat(
-            {"Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.",
+            {"Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.",
              suffix}),
         *manager_->initial_attempt_state_);
     base::UmaHistogramTimes(
-        base::StrCat({"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
+        base::StrCat(
+            {"Net.HttpStreamPool.TcpBasedAttemptCanceledTime.", suffix}),
         elapsed);
   }
 
@@ -190,7 +201,7 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetSSLConfig() {
 CompletionOnceCallback HttpStreamPool::AttemptManager::TcpBasedAttempt::
     TakeSSLConfigWaitingCallback() {
   CHECK(!ssl_config_wait_start_time_.is_null());
-  base::UmaHistogramTimes("Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime",
+  base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime",
                           base::TimeTicks::Now() - ssl_config_wait_start_time_);
 
   return std::move(ssl_config_waiting_callback_);

@@ -2965,7 +2965,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptCancelCount.{Reason}"
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptCancelCount.{Reason}"
     units="attempts" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -2987,14 +2987,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.{Reason}"
+    name="Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.{Reason}"
     enum="HttpStreamPoolInitialAttemptState" expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Record the initial attempt state (whether known to support QUIC/SPDY,
-    attempt QUIC first, etc) when a StreamAttempt is canceled. Recorded for each
-    stream attempt upon destruction of the canceled attempt.
+    attempt QUIC first, etc) when a TcpBasedAttempt is canceled. Recorded for
+    each stream attempt upon destruction of the canceled attempt.
   </summary>
   <token key="Reason">
     <variant name="ExistingQuicSession"/>
@@ -3005,7 +3005,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptCanceledTime.{Reason}"
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptCanceledTime.{Reason}"
     units="ms" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3022,7 +3022,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptCancelReason"
     enum="StreamSocketCloseReason" expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3032,7 +3032,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptDelay" units="ms"
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptDelay" units="ms"
     expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3042,28 +3042,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime" units="ms"
-    expires_after="2025-07-13">
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime"
+    units="ms" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    Record the time that a StreamAttempt is waiting for SSLConfig. Recorded for
-    each StreamAttempt if it waited for SSLConfig.
+    Record the time that a TcpBasedAttempt is waiting for an SSLConfig. Recorded
+    when a TcpBasedAttempt got an SSLConfig after waiting for the config.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.StreamAttemptTime.{Result}" units="ms"
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptTime.{Result}" units="ms"
     expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    Time from when a stream attempt is created to when the attempt is completed.
-    Recorded for each stream attempt upon destruction of the attempt.
+    Time from when a TCP based attempt is created to when the attempt is
+    completed. Recorded for each TCP based attempt upon destruction of the
+    attempt.
   </summary>
   <token key="Result">
     <variant name="Canceled" summary="Attempt canceled"/>
-    <variant name="Failure" summary="Attempt failed"/>
+    <variant name="ConnectionTimedOut" summary="Attempt connection timed out"/>
+    <variant name="OtherFailure" summary="Attempt failed other than time out"/>
     <variant name="Success" summary="Attempt succeeded"/>
+    <variant name="TimedOut" summary="Attempt timed out"/>
   </token>
 </histogram>
 

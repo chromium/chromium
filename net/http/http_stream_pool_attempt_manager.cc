@@ -189,8 +189,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED,
       net_log_.source());
-  // TODO(bashi): Rename the histogram to TcpBasedAttemptDelay.
-  base::UmaHistogramTimes("Net.HttpStreamPool.StreamAttemptDelay",
+  base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptDelay",
                           tcp_based_attempt_delay_);
 }
 
@@ -528,9 +527,8 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
   tcp_based_attempts_.clear();
   slow_tcp_based_attempt_count_ = 0;
 
-  // TODO(bashi): Rename the histogram to TcpBasedAttemptCancelCount.
   base::UmaHistogramCounts100(
-      base::StrCat({"Net.HttpStreamPool.StreamAttemptCancelCount.",
+      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptCancelCount.",
                     StreamSocketCloseReasonToString(reason)}),
       num_cancel_attempts);
 
