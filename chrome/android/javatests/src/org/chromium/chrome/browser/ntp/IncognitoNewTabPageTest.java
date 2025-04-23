@@ -18,6 +18,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -31,6 +35,10 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
@@ -43,13 +51,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -59,13 +70,19 @@ import java.util.Locale;
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+@EnableFeatures({
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+})
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -111,7 +128,10 @@ public class IncognitoNewTabPageTest {
     /** Test cookie controls toggle defaults to on if cookie controls mode is on. */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    @DisableFeatures({
+        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    })
     public void testCookieControlsToggleStartsOn() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
         mActivityTestRule.newIncognitoTabFromMenu();
@@ -127,7 +147,10 @@ public class IncognitoNewTabPageTest {
     /** Test cookie controls toggle turns on and off cookie controls mode as expected. */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    @DisableFeatures({
+        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    })
     public void testCookieControlsToggleChanges() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
         mActivityTestRule.newIncognitoTabFromMenu();
@@ -151,7 +174,10 @@ public class IncognitoNewTabPageTest {
     /** Test cookie controls disabled if managed by settings. */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    @DisableFeatures({
+        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    })
     public void testCookieControlsToggleManaged() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
         mActivityTestRule.newIncognitoTabFromMenu();
@@ -188,8 +214,10 @@ public class IncognitoNewTabPageTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
+    // TODO(crbug.com/408036586): Remove once FingerprintingProtectionUx launched.
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FINGERPRINTING_PROTECTION_UX})
     public void incognitoNtpShowsThirdPartyCookieBlockingHeader() throws Exception {
         mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.tracking_protection_card))
@@ -208,6 +236,48 @@ public class IncognitoNewTabPageTest {
         onView(withText(R.string.incognito_ntp_block_third_party_cookies_header))
                 .check(matches(isDisplayed()));
         onView(withText(ntpDescription)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void incognitoNtpShowsIncongitoTrackingProtectionsHeader() throws Exception {
+        mActivityTestRule.newIncognitoTabFromMenu();
+        onView(withId(R.id.tracking_protection_card))
+                .perform(scrollTo())
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        String ntpDescription =
+                getIncognitoNtpDescriptionSpanned(
+                        mActivityTestRule
+                                .getActivity()
+                                .getResources()
+                                .getString(
+                                        R.string
+                                                .incognito_ntp_incognito_tracking_protections_description_android));
+
+        onView(withText(R.string.incognito_ntp_incognito_tracking_protections_header))
+                .check(matches(isDisplayed()));
+        onView(withText(ntpDescription)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void incognitoTrackingProtectionsLinkNavigatesToItpSettings() throws Exception {
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        mActivityTestRule.newIncognitoTabFromMenu();
+
+        String ntpDescription =
+                getIncognitoNtpDescriptionSpanned(
+                        mActivityTestRule
+                                .getActivity()
+                                .getResources()
+                                .getString(
+                                        R.string
+                                                .incognito_ntp_incognito_tracking_protections_description_android));
+        onView(withText(ntpDescription)).perform(clickOnClickableSpan(0));
+
+        Mockito.verify(mSettingsNavigation)
+                .startSettings(any(), eq(IncognitoTrackingProtectionsFragment.class));
     }
 
     private Context createContextForLocale(Context context, String languageTag) {

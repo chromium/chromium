@@ -31,6 +31,7 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:visibility="gone"
         style="@style/IncognitoNewTabTextView" />
 
     <org.chromium.ui.widget.TextViewWithClickableSpans

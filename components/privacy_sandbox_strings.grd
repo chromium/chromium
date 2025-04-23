@@ -1100,6 +1100,15 @@
           </message>
         </else>
       </if>
+
+      <!-- ACT - Incognito Tracking Protections Incognito NTP -->
+      <!-- TODO(crbug.com/408036586): Mark translateable after content is finalized -->
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" formatter_data="android_java" translateable="false" >
+        Tracking protections in Incognito
+      </message>
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false" >
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
     </messages>
   </release>
 </grit>

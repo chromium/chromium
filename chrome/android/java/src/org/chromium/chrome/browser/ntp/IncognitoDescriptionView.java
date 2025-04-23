@@ -26,11 +26,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.SwitchCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -88,6 +92,12 @@ public class IncognitoDescriptionView extends LinearLayout {
         mCookieControlsManagedIcon.setOnClickListener(listener);
     }
 
+    private void showIncognitoTrackingProtectionSettings() {
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(getContext(), IncognitoTrackingProtectionsFragment.class);
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -135,26 +145,39 @@ public class IncognitoDescriptionView extends LinearLayout {
             return;
         }
 
+        TextView title = layout.findViewById(R.id.tracking_protection_card_title);
         String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
+        Callback<View> spanOnClickCallback =
+                (unused) -> {
+                    new ChromeAsyncTabLauncher(/* incognito= */ true)
+                            .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
+                };
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
-            TextView title = layout.findViewById(R.id.tracking_protection_card_title);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)) {
+            title.setText(
+                    context.getString(
+                            R.string.incognito_ntp_incognito_tracking_protections_header));
+            text =
+                    context.getString(
+                            R.string
+                                    .incognito_ntp_incognito_tracking_protections_description_android);
+            spanOnClickCallback =
+                    (unused) -> {
+                        showIncognitoTrackingProtectionSettings();
+                    };
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
             title.setText(
                     context.getString(R.string.incognito_ntp_block_third_party_cookies_header));
-            layout.findViewById(R.id.tracking_protection_description_one).setVisibility(View.GONE);
             text =
                     context.getString(
                             R.string.incognito_ntp_block_third_party_cookies_description_android);
+        } else {
+            layout.findViewById(R.id.tracking_protection_description_one)
+                    .setVisibility(View.VISIBLE);
         }
-
         ChromeClickableSpan span =
-                new ChromeClickableSpan(
-                        view.getSpanColor(),
-                        (unused) -> {
-                            new ChromeAsyncTabLauncher(/* incognito= */ true)
-                                    .launchUrl(
-                                            TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
-                        });
+                new ChromeClickableSpan(view.getSpanColor(), spanOnClickCallback);
         view.setText(
                 SpanApplier.applySpans(text, new SpanApplier.SpanInfo("<link>", "</link>", span)));
         view.setMovementMethod(LinkMovementMethod.getInstance());

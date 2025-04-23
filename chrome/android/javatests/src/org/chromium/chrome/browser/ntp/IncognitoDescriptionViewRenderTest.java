@@ -41,7 +41,10 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+@EnableFeatures({
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+})
 public class IncognitoDescriptionViewRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -82,7 +85,10 @@ public class IncognitoDescriptionViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    @DisableFeatures({
+        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    })
     public void testRender_IncognitoDescriptionView() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(
@@ -99,7 +105,10 @@ public class IncognitoDescriptionViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    @DisableFeatures({
+        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+    })
     public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(
@@ -112,9 +121,11 @@ public class IncognitoDescriptionViewRenderTest {
         mRenderTestRule.render(view, "incognito_description_view_tracking_protection");
     }
 
+    // TODO(crbug.com/408036586): Remove once FingerprintingProtectionUx launched.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.FINGERPRINTING_PROTECTION_UX})
     public void render_IncognitoDescriptionView_alwaysBlock3pcsIncognito() throws IOException {
         View view = sActivity.findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(
@@ -125,5 +136,22 @@ public class IncognitoDescriptionViewRenderTest {
                     cardStub.inflate();
                 });
         mRenderTestRule.render(view, "incognito_description_view_always_block_3pcs_incognito_card");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void render_IncognitoDescriptionView_incognitoTrackingProtectionsEnabled()
+            throws IOException {
+        View view = sActivity.findViewById(android.R.id.content);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.setBackgroundResource(R.color.ntp_bg_incognito);
+                    ViewStub cardStub = sActivity.findViewById(R.id.cookie_card_stub);
+                    cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
+                    cardStub.inflate();
+                });
+        mRenderTestRule.render(
+                view, "incognito_description_view_incognito_tracking_protections_card");
     }
 }
