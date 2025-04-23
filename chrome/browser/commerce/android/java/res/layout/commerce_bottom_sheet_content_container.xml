@@ -20,5 +20,6 @@ found in the LICENSE file.
       android:layout_weight="1"
       android:padding="@dimen/content_recycler_view_padding"
       android:orientation="vertical"
+      android:clipToPadding="false"
       app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>

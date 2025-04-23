@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 
 import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,11 +20,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class CommerceBottomSheetContent implements BottomSheetContent {
 
     private final View mContentView;
+    private final RecyclerView mRecyclerView;
     private final BottomSheetController mBottomSheetController;
 
     public CommerceBottomSheetContent(
             View contentView, BottomSheetController bottomSheetController) {
         mContentView = contentView;
+        mRecyclerView =
+                (RecyclerView) mContentView.findViewById(R.id.commerce_content_recycler_view);
         mBottomSheetController = bottomSheetController;
     }
 
@@ -39,6 +43,9 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
+        if (mRecyclerView != null) {
+            return mRecyclerView.computeVerticalScrollOffset();
+        }
         return 0;
     }
 
@@ -117,7 +124,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     private int getContentHeight() {
         mContentView.measure(
                 MeasureSpec.makeMeasureSpec(
-                        mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                        mBottomSheetController.getMaxSheetWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(
                         mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
         return mContentView.getMeasuredHeight();
