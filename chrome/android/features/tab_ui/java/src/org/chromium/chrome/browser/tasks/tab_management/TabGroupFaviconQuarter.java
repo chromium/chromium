@@ -44,7 +44,8 @@ public class TabGroupFaviconQuarter extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mBackground = (GradientDrawable) getBackground();
+        // Mutable drawable so corner modifications (e.g. radii) don't get applied to all corners.
+        mBackground = (GradientDrawable) getBackground().mutate();
         mImageView = findViewById(R.id.favicon_image);
         mTextView = findViewById(R.id.hidden_tab_count);
         mInnerRadius = getResources().getDimension(R.dimen.tab_group_quarter_inner_radius);
