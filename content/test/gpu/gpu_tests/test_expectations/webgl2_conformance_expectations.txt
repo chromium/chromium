@@ -788,6 +788,9 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 # Flaky glyph cache miss
 crbug.com/396434680 [ asan mac amd-0x7340 passthrough ] deqp/functional/gles3/fbocolorbuffer/tex2darray_02.html [ Failure ]
 
+# Flaky failure due to possible synchronization issues
+crbug.com/412679364 [ mac mac-arm64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
+
 ####################
 # Linux failures   #
 ####################
