@@ -433,9 +433,6 @@ crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] Pixel_WebGLFloat
 # Flaky failures vulkan queue submission, causing dchecks on CQ
 # finder:disable-narrowing
 crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 # finder:enable-narrowing
 
 # ChromeOS failures
@@ -478,8 +475,8 @@ crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_Offscree
 # Failures on all Mac and Windows bots running these tests
 crbug.com/370694819 [ mac ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
 crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
+crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
 # Failure on Mac ARM
 crbug.com/412679361 [ mac mac-arm64 ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
