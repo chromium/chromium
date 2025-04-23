@@ -7,16 +7,6 @@ function assertContains(string, substring, error) {
 }
 
 chrome.test.runTests([
-  function testOpenDatabase() {
-    chrome.test.assertTrue(!window.openDatabase);
-    chrome.test.succeed();
-  },
-
-  function testOpenDatabaseSync() {
-    chrome.test.assertTrue(!window.openDatabaseSync);
-    chrome.test.succeed();
-  },
-
   function testLocalStorage() {
     chrome.test.assertTrue(!window.localStorage);
     chrome.test.succeed();

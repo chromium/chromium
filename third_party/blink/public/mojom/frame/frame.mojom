@@ -188,7 +188,6 @@ enum NavigationApiEntryRestoreReason {
 };
 
 enum StorageTypeAccessed {
-    kDatabase,
     kCacheStorage,
     kIndexedDB,
     kFileSystem,

@@ -295,9 +295,6 @@ std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesForStorage(
   if (is_storage_partitioned) {
     enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
   }
-  // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
-  // in tests during deprecation trial and enterprise policy support.
-  enabled.push_back({blink::features::kWebSQLAccess, {}});
   return enabled;
 }
 

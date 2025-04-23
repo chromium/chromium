@@ -36,21 +36,6 @@ class MatchResultListener;
 namespace content {
 
 constexpr char kStorageAccessScript[] = R"(
-    async function accessDatabase() {
-      var my_db = openDatabase('my_db', '1.0', 'description', 1024);
-      var num_rows;
-      await new Promise((resolve, reject) => {
-        my_db.transaction((tx) => {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS tbl (id unique, data)');
-          tx.executeSql('INSERT INTO tbl (id, data) VALUES (1, "foo")');
-          tx.executeSql('SELECT * FROM tbl', [], (tx, results) => {
-            num_rows = results.rows.length;
-          });
-        }, reject, resolve);
-      });
-      if(num_rows <= 0) {throw new Error('Failed to access!')}
-    }
-
     function accessLocalStorage() {
       localStorage.setItem('foo', 'bar');
       return localStorage.getItem('foo');

@@ -58,7 +58,6 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool should_notify_pscs = ([storage_type]() {
     switch (storage_type) {
-      case StorageType::DATABASE:
       case StorageType::LOCAL_STORAGE:
       case StorageType::SESSION_STORAGE:
       case StorageType::FILE_SYSTEM:
@@ -90,7 +89,6 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
             return page_load_metrics::StorageType::kIndexedDb;
           case StorageType::CACHE:
             return page_load_metrics::StorageType::kCacheStorage;
-          case StorageType::DATABASE:
           case StorageType::WEB_LOCKS:
             return std::nullopt;
         }

@@ -386,8 +386,6 @@ bool IsNavigationBlockedByCoopRestrictProperties(
 mojom::blink::StorageTypeAccessed ToMojoStorageType(
     blink::WebContentSettingsClient::StorageType storage_type) {
   switch (storage_type) {
-    case blink::WebContentSettingsClient::StorageType::kDatabase:
-      return mojom::blink::StorageTypeAccessed::kDatabase;
     case blink::WebContentSettingsClient::StorageType::kCacheStorage:
       return mojom::blink::StorageTypeAccessed::kCacheStorage;
     case blink::WebContentSettingsClient::StorageType::kIndexedDB:

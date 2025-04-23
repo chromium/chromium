@@ -16,11 +16,6 @@
       // Access local storage.
       localStorage.setItem('foo', 'bar');
 
-      try {
-        // Third-party context WebSQL is disabled as of M97.
-        window.openDatabase('foo', '1.0', 'foo DB', 1024);
-      } catch (e) {}
-
       // Access file system.
       await new Promise(resolve => {
         window.webkitRequestFileSystem(TEMPORARY, 1024, function (fs) {

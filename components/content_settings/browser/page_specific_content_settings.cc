@@ -733,7 +733,6 @@ void PageSpecificContentSettings::StorageAccessed(
           return BrowsingDataModel::StorageType::kSessionStorage;
         case StorageType::FILE_SYSTEM:
         case StorageType::INDEXED_DB:
-        case StorageType::DATABASE:
         case StorageType::CACHE:
         case StorageType::WEB_LOCKS:
           return BrowsingDataModel::StorageType::kQuotaStorage;

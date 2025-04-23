@@ -54,13 +54,11 @@ namespace {
 
 constexpr char kPage1Path[] = "/title1.html";
 constexpr char kPage2Path[] = "/title2.html";
-constexpr char kPage3Path[] = "/websql.html";
 constexpr char kReportCloseEventsPath[] = "/report_close_events.html";
 constexpr char kVisibilityPath[] = "/visibility.html";
 constexpr char kWaitSizePath[] = "/wait-size.html";
 constexpr char kPage1Title[] = "title 1";
 constexpr char kPage2Title[] = "title 2";
-constexpr char kPage3Title[] = "websql not available";
 constexpr char kDataUrl[] =
     "data:text/html;base64,PGI+SGVsbG8sIHdvcmxkLi4uPC9iPg==";
 
@@ -346,22 +344,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
   context().Unbind();
   run_loop.Run();
   EXPECT_FALSE(frame.ptr());
-}
-
-// TODO(crbug.com/40507959): Remove this test when WebSQL is removed from
-// Chrome.
-IN_PROC_BROWSER_TEST_F(FrameImplTest, EnsureWebSqlDisabled) {
-  auto frame = FrameForTest::Create(context(), {});
-
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  GURL title3(embedded_test_server()->GetURL(kPage3Path));
-
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       title3.spec()));
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(title3, kPage3Title);
 }
 
 namespace {

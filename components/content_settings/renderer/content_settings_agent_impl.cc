@@ -207,8 +207,6 @@ void ContentSettingsAgentImpl::OnContentSettingsAgentRequest(
 mojom::ContentSettingsManager::StorageType
 ContentSettingsAgentImpl::ConvertToMojoStorageType(StorageType storage_type) {
   switch (storage_type) {
-    case StorageType::kDatabase:
-      return mojom::ContentSettingsManager::StorageType::DATABASE;
     case StorageType::kIndexedDB:
       return mojom::ContentSettingsManager::StorageType::INDEXED_DB;
     case StorageType::kCacheStorage:
