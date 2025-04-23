@@ -323,7 +323,10 @@ void SVGAngle::NewValueSpecifiedUnits(SVGAngleType unit_type,
 }
 
 void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType new_unit) {
-  if (new_unit == unit_type_) {
+  // Changing to the same unit can only be a no-op if this SVGAngle is
+  // currently representing a numeric angle. If it isn't we need to ensure we
+  // get the side-effect of updating the associated enumeration.
+  if (IsNumeric() && new_unit == unit_type_) {
     return;
   }
   const float new_value =
