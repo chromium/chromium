@@ -4,7 +4,9 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "chromium_mac_x64": {
@@ -12,7 +14,9 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "chromium_win_x64": {
@@ -20,7 +24,9 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

@@ -11,7 +11,9 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "codesearch-gen-chrome-internal-linux": {
@@ -24,7 +26,9 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

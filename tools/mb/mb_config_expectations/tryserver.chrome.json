@@ -3,14 +3,18 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "mac-arm64-finch-smoke-chrome": {
@@ -19,7 +23,9 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "arm64",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "mac-chrome": {
@@ -28,7 +34,9 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x64",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-branded-compile-rel": {
@@ -38,7 +46,9 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-celab-try-rel": {
@@ -49,7 +59,9 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-chrome": {
@@ -58,14 +70,18 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win64-chrome": {
@@ -74,7 +90,9 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

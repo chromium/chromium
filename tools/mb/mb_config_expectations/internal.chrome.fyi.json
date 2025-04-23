@@ -9,7 +9,9 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "android-emulator-finch-smoke-chrome": {
@@ -27,10 +29,12 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
-  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
+  "chromeos-arm-generic-cfi-thin-lto-chrome-remoteexec": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,
@@ -41,7 +45,9 @@
       "ozone_platform_headless": true,
       "symbol_level": 2,
       "use_cfi_cast": true,
+      "use_reclient": false,
       "use_remoteexec": true,
+      "use_siso": true,
       "use_thin_lto": true
     }
   },
@@ -49,7 +55,9 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "lorenz-graph-dbg": {
@@ -63,7 +71,9 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "mac-arm64-finch-smoke-chrome": {
@@ -72,7 +82,9 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "arm64",
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-celab-rel": {
@@ -83,14 +95,18 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

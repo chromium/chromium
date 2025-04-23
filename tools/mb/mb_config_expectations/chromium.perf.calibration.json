@@ -7,7 +7,9 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   }
 }

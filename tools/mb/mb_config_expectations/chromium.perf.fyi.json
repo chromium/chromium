@@ -10,7 +10,9 @@
       "symbol_level": 1,
       "target_os": "android",
       "thin_lto_enable_optimizations": true,
+      "use_reclient": false,
       "use_remoteexec": true,
+      "use_siso": true,
       "use_thin_lto": true
     }
   },
@@ -26,7 +28,9 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "thin_lto_enable_optimizations": true,
+      "use_reclient": false,
       "use_remoteexec": true,
+      "use_siso": true,
       "use_thin_lto": true
     }
   },
@@ -39,7 +43,9 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "fuchsia-builder-perf-arm64": {
@@ -60,7 +66,9 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_isolate_uses_emulator": false,
-      "use_remoteexec": true
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
     }
   },
   "win-arm64-builder-perf": {
@@ -68,7 +76,7 @@
       "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
+      "remoteexec_cfg_dir": "//buildtools/remoteexec_cfgs/win-cross",
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
