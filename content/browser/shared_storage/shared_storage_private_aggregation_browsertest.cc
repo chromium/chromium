@@ -1516,8 +1516,14 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior);
             ASSERT_EQ(request.payload_contents().contributions.size(), 0u);
             EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
+
+            // Debug mode details are dropped for null reports if the error
+            // reporting feature is disabled.
             EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kDisabled);
+                      base::FeatureList::IsEnabled(
+                          blink::features::kPrivateAggregationApiErrorReporting)
+                          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+                          : AggregatableReportSharedInfo::DebugMode::kDisabled);
             run_loop.Quit();
           }));
 
