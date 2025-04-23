@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import asyncio
 import os
 import plistlib
 import subprocess
@@ -14,38 +15,52 @@ from signing.model import CodeSignedProduct, Paths
 
 class TestSubmitNotarytool(unittest.TestCase):
 
+    @mock.patch('signing.commands.run_command_output_async')
     @mock.patch('signing.commands.run_command_output')
-    def test_valid_upload(self, run_command_output):
-        run_command_output.return_value = plistlib.dumps({
+    def test_valid_upload(self, run_command_output, run_command_output_async):
+        run_command_output_async.return_value = plistlib.dumps({
             'id': '13d6aa9b-d204-4f0d-9164-4bda5e730258',
             'message': 'Successfully uploaded file',
             'path': '/tmp/file.dmg'
         })
+        run_command_output.return_value = plistlib.dumps({'status': 'Accepted'})
         config = test_config.TestConfig()
-        uuid = notarize.submit('/tmp/file.dmg', config)
+        asyncio.run(notarize.submit('/tmp/file.dmg', config))
 
-        self.assertEqual('13d6aa9b-d204-4f0d-9164-4bda5e730258', uuid)
-        run_command_output.assert_called_once_with([
+        run_command_output_async.assert_awaited_once_with([
             'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
             '--output-format', 'plist'
         ])
 
+        run_command_output.assert_called_once_with([
+            'xcrun', 'notarytool', 'info',
+            '13d6aa9b-d204-4f0d-9164-4bda5e730258', '--output-format', 'plist'
+        ])
+
+    @mock.patch('signing.commands.run_command_output_async')
     @mock.patch('signing.commands.run_command_output')
-    def test_valid_upload_with_args(self, run_command_output):
-        run_command_output.return_value = plistlib.dumps(
+    def test_valid_upload_with_args(self, run_command_output,
+                                    run_command_output_async):
+        run_command_output_async.return_value = plistlib.dumps(
             {'id': 'b53b3ed1-82cb-41b4-9e12-b097b2c05f64'})
+        run_command_output.return_value = plistlib.dumps({'status': 'Accepted'})
         config = test_config.TestConfig(
             invoker=test_config.TestInvoker.factory_with_args(notary_arg=[
                 '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
                 '--password', 'hunter2'
             ]))
-        uuid = notarize.submit('/tmp/file.dmg', config)
+        asyncio.run(notarize.submit('/tmp/file.dmg', config))
 
-        self.assertEqual('b53b3ed1-82cb-41b4-9e12-b097b2c05f64', uuid)
-        run_command_output.assert_called_once_with([
+        run_command_output_async.assert_awaited_once_with([
             'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
             '--output-format', 'plist', '--apple-id', '[NOTARY-USER]',
             '--team-id', '[NOTARY-TEAM]', '--password', 'hunter2'
+        ])
+        run_command_output.assert_called_once_with([
+            'xcrun', 'notarytool', 'info',
+            'b53b3ed1-82cb-41b4-9e12-b097b2c05f64', '--output-format', 'plist',
+            '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
+            '--password', 'hunter2'
         ])
 
 
@@ -181,69 +196,6 @@ class TestGetResultNotarytool(unittest.TestCase):
             ]),
             mock.call(['xcrun', 'notarytool', 'log', uuid])
         ])
-
-
-class TestWaitForResults(unittest.TestCase):
-
-    @mock.patch('signing.notarize.Invoker.get_result')
-    def test_success(self, get_result):
-        get_result.return_value = notarize.NotarizationResult(
-            notarize.Status.SUCCESS, 'success', None,
-            'https://example.com/log.json')
-        config = test_config.TestConfig()
-        uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
-        uuids = [uuid]
-        self.assertEqual(uuids, list(notarize.wait_for_results(uuids, config)))
-        get_result.assert_called_once_with(uuid, config)
-
-    @mock.patch('signing.notarize.Invoker.get_result')
-    def test_failure(self, get_result):
-        get_result.return_value = notarize.NotarizationResult(
-            notarize.Status.ERROR, 'invalid', 'Package Invalid',
-            'https://example.com/log.json')
-        config = test_config.TestConfig()
-        uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
-        uuids = [uuid]
-        with self.assertRaises(notarize.NotarizationError) as cm:
-            list(notarize.wait_for_results(uuids, config))
-
-        self.assertEqual(
-            'Notarization request cca0aec2-7c64-4ea4-b895-051ea3a17311 failed '
-            'with status: "invalid".', str(cm.exception))
-
-    @mock.patch('signing.notarize.Invoker.get_result')
-    def test_subprocess_errors(self, get_result):
-        get_result.side_effect = subprocess.CalledProcessError(
-            1, 'notarytool', 'A mysterious error occurred.')
-
-        with self.assertRaises(subprocess.CalledProcessError):
-            uuids = ['77c0ad17-479e-4b82-946a-73739cf6ca16']
-            list(notarize.wait_for_results(uuids, test_config.TestConfig()))
-
-    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
-    @mock.patch.multiple('signing.notarize.Invoker',
-                         **{'get_result': mock.DEFAULT})
-    def test_timeout(self, **kwargs):
-        kwargs['get_result'].return_value = notarize.NotarizationResult(
-            notarize.Status.IN_PROGRESS, None, None, None)
-        config = test_config.TestConfig()
-        uuid = '0c652bb4-7d44-4904-8c59-1ee86a376ece'
-        uuids = [uuid]
-        with self.assertRaises(notarize.NotarizationError) as cm:
-            list(notarize.wait_for_results(uuids, config))
-
-        # Python 2 and 3 stringify set() differently.
-        self.assertIn(
-            str(cm.exception), [
-                "Timed out waiting for notarization requests: set(['0c652bb4-7d44-4904-8c59-1ee86a376ece'])",
-                "Timed out waiting for notarization requests: {'0c652bb4-7d44-4904-8c59-1ee86a376ece'}"
-            ])
-
-        for call in kwargs['get_result'].mock_calls:
-            self.assertEqual(call, mock.call(uuid, config))
-
-        total_time = sum([call[1][0] for call in kwargs['sleep'].mock_calls])
-        self.assertLess(total_time, 61 * 60)
 
 
 class TestStaple(unittest.TestCase):

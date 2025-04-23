@@ -88,17 +88,13 @@ class Interface(Base):
         notarization-related operations.
         """
 
-        def submit(self, path, config):
+        async def submit_async(self, path, config):
             """Submits an artifact to Apple for notarization.
 
             Args:
                 config: The `config.CodeSignConfig`.
                 path: The path to the artifact that will be uploaded for
                     notarization.
-
-            Returns:
-                A string UUID from the notary service that represents the
-                request.
 
             Raises:
                 A `notarize.NotarizationError` on failure.
