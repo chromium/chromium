@@ -127,6 +127,7 @@ void GetAIPageContentForModelPrototyping(
 
   auto options = optimization_guide::DefaultAIPageContentOptions();
   options->enable_experimental_actionable_data = false;
+  options->include_geometry = false;
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
   optimization_guide::GetAIPageContent(web_contents, std::move(options),
