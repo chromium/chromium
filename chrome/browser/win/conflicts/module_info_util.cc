@@ -251,7 +251,7 @@ StringMapping GetEnvironmentVariablesMapping(
   StringMapping string_mapping;
   for (const std::wstring& variable : environment_variables) {
     std::optional<std::string> value =
-        environment->GetVar(base::WideToASCII(variable).c_str());
+        environment->GetVar(base::WideToASCII(variable));
     if (value.has_value()) {
       std::string_view trimmed_value =
           base::TrimString(value.value(), "\\", base::TRIM_TRAILING);
