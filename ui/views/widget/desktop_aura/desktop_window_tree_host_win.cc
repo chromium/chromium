@@ -1492,12 +1492,13 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
 }
 
 void DesktopWindowTreeHostWin::CheckForMonitorChange() {
-  HMONITOR monitor_from_window =
-      ::MonitorFromWindow(GetHWND(), MONITOR_DEFAULTTOPRIMARY);
-  if (monitor_from_window == last_monitor_from_window_) {
+  display::Display nearest_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+  if (nearest_display == last_nearest_display_) {
     return;
   }
-  last_monitor_from_window_ = monitor_from_window;
+  last_nearest_display_ = nearest_display;
+
   OnHostDisplayChanged();
 }
 
