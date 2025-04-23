@@ -301,13 +301,14 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
       active_primary_accounts_metrics_recorder_;
 
-  // |metrics_services_manager_| owns this.
-  raw_ptr<ChromeMetricsServicesManagerClient, AcrossTasksDanglingUntriaged>
-      metrics_services_manager_client_ = nullptr;
-
-  // Must be destroyed before |local_state_|.
+  // Must be destroyed before |local_state_| and after
+  // |metrics_services_manager_client_|.
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
+
+  // |metrics_services_manager_| owns this.
+  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_ =
+      nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
   // Must be destroyed before |local_state_|.
