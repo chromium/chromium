@@ -213,6 +213,23 @@ std::string GetPrefName(mojom::BocaValidPref pref) {
   NOTREACHED();
 }
 
+mojom::SpeechRecognitionInstallState GetMojomSodaState(
+    BocaSessionManager::SodaStatus status) {
+  switch (status) {
+    case BocaSessionManager::SodaStatus::kUninstalled:
+      return mojom::SpeechRecognitionInstallState::kUnknown;
+    case BocaSessionManager::SodaStatus::kInstalling:
+      return mojom::SpeechRecognitionInstallState::kInProgress;
+    case BocaSessionManager::SodaStatus::kLanguageUnavailable:
+      return mojom::SpeechRecognitionInstallState::kSystemLanguageUnsupported;
+    case BocaSessionManager::SodaStatus::kInstallationFailure:
+      return mojom::SpeechRecognitionInstallState::kFailed;
+    case BocaSessionManager::SodaStatus::kReady:
+      return mojom::SpeechRecognitionInstallState::kReady;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -690,6 +707,12 @@ void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
 void BocaAppHandler::RefreshWorkbook(RefreshWorkbookCallback callback) {
   BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
   std::move(callback).Run();
+}
+
+void BocaAppHandler::GetSpeechRecognitionInstallationStatus(
+    GetSpeechRecognitionInstallationStatusCallback callback) {
+  std::move(callback).Run(GetMojomSodaState(
+      BocaAppClient::Get()->GetSessionManager()->GetSodaStatus()));
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

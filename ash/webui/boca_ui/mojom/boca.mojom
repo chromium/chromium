@@ -287,6 +287,14 @@ enum SetViewScreenSessionActiveError {
   kHTTPError,
 };
 
+enum SpeechRecognitionInstallState {
+  kUnknown,
+  kSystemLanguageUnsupported,
+  kInProgress,
+  kFailed,
+  kReady,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Performs authentication and sets the credential in the webview.
@@ -348,6 +356,9 @@ interface PageHandler {
   OpenFeedbackDialog() => ();
   // Refresh the workbook for students.
   RefreshWorkbook() => ();
+  // Gets SODA installation status.
+  GetSpeechRecognitionInstallationStatus()
+    => (SpeechRecognitionInstallState state);
 };
 
 // Implemented by renderer process. There is an implementation in the browser

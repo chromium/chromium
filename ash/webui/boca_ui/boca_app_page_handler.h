@@ -102,6 +102,8 @@ class BocaAppHandler : public mojom::PageHandler,
                 CloseTabCallback callback) override;
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void RefreshWorkbook(RefreshWorkbookCallback callback) override;
+  void GetSpeechRecognitionInstallationStatus(
+      GetSpeechRecognitionInstallationStatusCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
