@@ -9,6 +9,9 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/cookie_change_dispatcher.h"
 
 namespace {
 
@@ -45,6 +48,11 @@ void UserSecuritySignalsService::Start() {
       base::BindRepeating(
           &UserSecuritySignalsService::OnStatePolicyValueChanged,
           weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      kUserSecurityAuthenticatedReporting,
+      base::BindRepeating(
+          &UserSecuritySignalsService::OnCookiePolicyValueChanged,
+          weak_factory_.GetWeakPtr()));
 
   // Manually trigger a policy update to initialize things.
   OnStatePolicyValueChanged();
@@ -66,6 +74,39 @@ void UserSecuritySignalsService::OnReportUploaded() {
                                    SecurityReportTrigger::kTimer));
 }
 
+void UserSecuritySignalsService::OnCookieChange(
+    const net::CookieChangeInfo& change) {
+  // Only trigger a new upload if the cookie change could result in a new or
+  // updated session.
+  if (change.cause == net::CookieChangeCause::INSERTED) {
+    TriggerReport(SecurityReportTrigger::kCookieChange);
+  }
+}
+
+void UserSecuritySignalsService::InitCookieListener() {
+  auto* cookie_manager = delegate_->GetCookieManager();
+  if (!cookie_manager) {
+    return;
+  }
+
+  // Only interested in the secure first-party authentication cookie.
+  cookie_manager->AddCookieChangeListener(
+      GaiaUrls::GetInstance()->secure_google_url(),
+      GaiaConstants::kGaiaSigninCookieName,
+      cookie_listener_receiver_.BindNewPipeAndPassRemote());
+
+  cookie_listener_receiver_.set_disconnect_handler(base::BindOnce(
+      &UserSecuritySignalsService::OnCookieListenerConnectionError,
+      base::Unretained(this)));
+}
+
+void UserSecuritySignalsService::OnCookieListenerConnectionError() {
+  // A connection error from the CookieManager likely means that the network
+  // service process has crashed. Try again to set up a listener.
+  cookie_listener_receiver_.reset();
+  InitCookieListener();
+}
+
 void UserSecuritySignalsService::OnStatePolicyValueChanged() {
   if (!IsSecuritySignalsReportingEnabled()) {
     timer_.Stop();
@@ -76,9 +117,20 @@ void UserSecuritySignalsService::OnStatePolicyValueChanged() {
     return;
   }
 
+  // Make sure that cookie observation is properly set-up, as needed.
+  OnCookiePolicyValueChanged();
+
   // The policy is enabled and the timed loop isn't running. Send an upload
   // immediately.
   TriggerReport(SecurityReportTrigger::kTimer);
+}
+
+void UserSecuritySignalsService::OnCookiePolicyValueChanged() {
+  if (ShouldUseCookies() && !cookie_listener_receiver_.is_bound()) {
+    InitCookieListener();
+  } else if (!ShouldUseCookies() && cookie_listener_receiver_.is_bound()) {
+    cookie_listener_receiver_.reset();
+  }
 }
 
 void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {

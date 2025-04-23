@@ -47,6 +47,7 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
 
   // UserSecuritySignalsService::Delegate implementation.
   void OnReportEventTriggered(SecurityReportTrigger trigger) override;
+  network::mojom::CookieManager* GetCookieManager() override;
 
   // BuildStateObserver implementation.
   void OnUpdate(const BuildState* build_state) override;

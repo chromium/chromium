@@ -10,6 +10,7 @@ namespace enterprise_reporting {
 // Set of triggers which the service uses as hook to trigger a security report.
 enum class SecurityReportTrigger {
   kTimer = 0,
+  kCookieChange = 1,
 };
 
 // Service in charge of the scheduling, and triggering, generation and upload of

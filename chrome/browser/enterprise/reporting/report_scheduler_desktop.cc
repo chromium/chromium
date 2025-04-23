@@ -22,6 +22,7 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace em = enterprise_management;
 
@@ -155,6 +156,11 @@ void ReportSchedulerDesktop::OnReportEventTriggered(
     trigger_report_callback_.Run(
         ReportScheduler::ReportTrigger::kTriggerSecurity);
   }
+}
+
+network::mojom::CookieManager* ReportSchedulerDesktop::GetCookieManager() {
+  return profile_->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess();
 }
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
