@@ -11,7 +11,7 @@
 #include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -26,7 +26,7 @@ struct ConfigureContext {
   ConfigureContext(const ConfigureContext&);
   ~ConfigureContext();
 
-  CoreAccountId authenticated_account_id;
+  GaiaId authenticated_gaia_id;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
   ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;

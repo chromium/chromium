@@ -279,8 +279,8 @@ void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
   }
 
   if (state_ != STOPPED) {
-    DCHECK_EQ(context.authenticated_account_id,
-              last_requested_context_.authenticated_account_id);
+    DCHECK_EQ(context.authenticated_gaia_id,
+              last_requested_context_.authenticated_gaia_id);
     DCHECK_EQ(context.cache_guid, last_requested_context_.cache_guid);
   }
 

@@ -88,12 +88,12 @@ SyncMetadataConsistency GetSyncMetadataConsistency(
   // Check for a mismatch in authenticated account id. The id can change after
   // restart (and this does not mean the account has changed, this is checked
   // above by cache_guid mismatch).
-  if (data_type_state.authenticated_account_id().empty()) {
+  if (data_type_state.authenticated_obfuscated_gaia_id().empty()) {
     return SyncMetadataConsistency::kEmptyPersistedAuthenticatedAccountId;
   }
 
-  if (data_type_state.authenticated_account_id() !=
-      activation_request.authenticated_account_id.ToString()) {
+  if (data_type_state.authenticated_obfuscated_gaia_id() !=
+      activation_request.authenticated_gaia_id.ToString()) {
     return SyncMetadataConsistency::kAuthenticatedAccountIdMismatch;
   }
 
@@ -256,8 +256,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
     data_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(type_));
     data_type_state.set_cache_guid(activation_request_.cache_guid);
-    data_type_state.set_authenticated_account_id(
-        activation_request_.authenticated_account_id.ToString());
+    data_type_state.set_authenticated_obfuscated_gaia_id(
+        activation_request_.authenticated_gaia_id.ToString());
     // For passwords, the bridge re-downloads all passwords to obtain any
     // potential notes from the sync server that were ignored by earlier
     // versions of the browser that didn't support notes. This should be done
@@ -407,7 +407,7 @@ std::string ClientTagBasedDataTypeProcessor::TrackedAccountId() const {
   if (!IsTrackingMetadata()) {
     return "";
   }
-  return entity_tracker_->data_type_state().authenticated_account_id();
+  return entity_tracker_->data_type_state().authenticated_obfuscated_gaia_id();
 }
 
 std::string ClientTagBasedDataTypeProcessor::TrackedCacheGuid() const {
@@ -1488,8 +1488,8 @@ void ClientTagBasedDataTypeProcessor::
       // not clear if this codepath is even required.
       sync_pb::DataTypeState update_data_type_state =
           entity_tracker_->data_type_state();
-      update_data_type_state.set_authenticated_account_id(
-          activation_request_.authenticated_account_id.ToString());
+      update_data_type_state.set_authenticated_obfuscated_gaia_id(
+          activation_request_.authenticated_gaia_id.ToString());
       entity_tracker_->set_data_type_state(update_data_type_state);
       break;
     }

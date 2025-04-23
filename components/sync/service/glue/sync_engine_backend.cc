@@ -143,7 +143,7 @@ void SyncEngineBackend::DoInitialize(
     DLOG(FATAL) << "Sync Data directory creation failed.";
   }
 
-  authenticated_account_id_ = params.authenticated_account_info.account_id;
+  authenticated_gaia_id_ = params.authenticated_account_info.gaia;
 
   auto nigori_processor = std::make_unique<NigoriDataTypeProcessor>();
   // Note: NIGORI always runs in SyncMode::kFull (see
@@ -475,7 +475,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
   // The controller for Nigori is not exposed to the UI thread or the
   // DataTypeManager, so we need to start it here manually.
   ConfigureContext configure_context;
-  configure_context.authenticated_account_id = authenticated_account_id_;
+  configure_context.authenticated_gaia_id = authenticated_gaia_id_;
   configure_context.cache_guid = sync_manager_->cache_guid();
   // Always use kFull mode: it is actually not relevant for Nigori and
   // switching modes harder to detect on this level / can make first sync

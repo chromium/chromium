@@ -94,7 +94,7 @@ TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncModeIfUPMLocalOn) {
   EXPECT_CALL(*transport_only_delegate(), OnSyncStarting);
 
   syncer::ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
+  context.authenticated_gaia_id = GaiaId("gaia");
   context.cache_guid = "cache_guid";
   context.sync_mode = syncer::SyncMode::kFull;
   context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
@@ -110,7 +110,7 @@ TEST_F(PasswordDataTypeControllerTest,
   EXPECT_CALL(*transport_only_delegate(), OnSyncStarting).Times(0);
 
   syncer::ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
+  context.authenticated_gaia_id = GaiaId("gaia");
   context.cache_guid = "cache_guid";
   context.sync_mode = syncer::SyncMode::kFull;
   context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;

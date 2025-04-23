@@ -1639,7 +1639,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(
            << static_cast<int>(reason);
 
   ConfigureContext configure_context;
-  configure_context.authenticated_account_id = GetAccountInfo().account_id;
+  configure_context.authenticated_gaia_id = GetAccountInfo().gaia;
   configure_context.previously_syncing_gaia_id_info =
       DeterminePreviouslySyncingGaiaIdInfoForMetrics();
   configure_context.cache_guid = engine_->GetCacheGuid();
@@ -1669,7 +1669,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(
     }
   }
 
-  DCHECK(!configure_context.authenticated_account_id.empty() ||
+  DCHECK(!configure_context.authenticated_gaia_id.empty() ||
          IsLocalSyncEnabled());
   DCHECK(!configure_context.cache_guid.empty());
   DCHECK_NE(configure_context.reason, CONFIGURE_REASON_UNKNOWN);

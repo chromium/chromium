@@ -116,6 +116,7 @@ class DataTypeLocalChangeProcessor {
 
   // Returns the account ID for which metadata is being tracked, or empty if not
   // tracking metadata.
+  // TODO(crbug.com/383089506): use GaiaId instead of std::string.
   virtual std::string TrackedAccountId() const = 0;
 
   // Returns the cache guid for which metadata is being tracked, or empty if not

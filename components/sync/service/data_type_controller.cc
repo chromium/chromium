@@ -167,7 +167,7 @@ void DataTypeController::LoadModels(
   DataTypeActivationRequest request;
   request.error_handler = base::BindRepeating(
       &DataTypeController::ReportModelError, weak_ptr_factory_.GetWeakPtr());
-  request.authenticated_account_id = configure_context.authenticated_account_id;
+  request.authenticated_gaia_id = configure_context.authenticated_gaia_id;
   request.previously_syncing_gaia_id_info =
       configure_context.previously_syncing_gaia_id_info;
   request.cache_guid = configure_context.cache_guid;

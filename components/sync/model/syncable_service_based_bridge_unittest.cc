@@ -141,8 +141,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = mock_error_handler_.Get();
     request.cache_guid = "TestCacheGuid";
-    request.authenticated_account_id =
-        CoreAccountId::FromGaiaId(GaiaId("SomeAccountId"));
+    request.authenticated_gaia_id = GaiaId("SomeGaiaId");
     return request;
   }
 

@@ -462,8 +462,8 @@ void NigoriDataTypeProcessor::ConnectIfReady() {
   data_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
-  data_type_state_.set_authenticated_account_id(
-      activation_request_.authenticated_account_id.ToString());
+  data_type_state_.set_authenticated_obfuscated_gaia_id(
+      activation_request_.authenticated_gaia_id.ToString());
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   activation_response->data_type_state = data_type_state_;
