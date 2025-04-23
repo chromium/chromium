@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Resources for developer-facing page chrome://interstitials. -->
-<grit-part>
-  <include name="IDR_SECURITY_INTERSTITIAL_UI_HTML"
-           file="../security_interstitials/core/browser/resources/list_of_interstitials.html"
-           preprocess="true"
-           type="BINDATA" />
-</grit-part>

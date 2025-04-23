@@ -1,4 +1,0 @@
-include_rules = [
-  "-components/cast_streaming/browser",
-  "+components/cast_streaming/browser/common",
-]

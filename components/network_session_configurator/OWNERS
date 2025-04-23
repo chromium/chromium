@@ -1,4 +1,0 @@
-rch@chromium.org
-
-file://net/OWNERS
-file://net/quic/OWNERS # For QUICHE rolls only.

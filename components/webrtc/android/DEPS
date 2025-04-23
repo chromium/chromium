@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/browser_ui/notifications/android",
-  "+components/url_formatter/android",
-]

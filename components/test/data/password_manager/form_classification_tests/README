@@ -1,9 +1,0 @@
-This file contains some instructions on using automated form classification
-tests.
-
-1. Build chrome and chromdriver.
-2. Set path to binaries of chrome and cromedriver in
-form_classification_test.py (PATH_TO_CHROME and PATH_TO_CHROMEDRIVER).
-3. Run signin_forms_test.py or signup_forms_test.py from commandline
-(e.g. python signin_forms_test.py. To run a specific test run
-python signin_forms_test.py SignInFormsTest.test_www_linkedin_com).

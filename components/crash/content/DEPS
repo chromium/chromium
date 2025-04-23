@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/breakpad",
-  "+third_party/crashpad",
-]

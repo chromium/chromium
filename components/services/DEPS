@@ -1,6 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+components/strings",
-  "+services/service_manager/public",
-  "+content/public/browser/service_process_host.h",
-]

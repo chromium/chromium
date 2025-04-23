@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/keyed_service",
-  "+components/security_interstitials/core",
-  "+components/url_matcher",
-  "+ui/base/l10n",
-]

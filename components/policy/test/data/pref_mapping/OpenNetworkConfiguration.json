@@ -1,5 +1,0 @@
-[
-  {
-    "reason_for_missing_test": "Complex mapping and validation logic tested via //chrome/browser/ash/policy/networking/network_policy_application_browsertest.cc"
-  }
-]

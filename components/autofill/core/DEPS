@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/os_crypt/async",
-  "+components/pref_registry",
-  "+components/unified_consent",
-  "+components/webauthn/core",
-]

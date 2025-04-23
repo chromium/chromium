@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/signin/public",
-  "+components/version_info",
-  "+third_party/private-join-and-compute/src",
-]

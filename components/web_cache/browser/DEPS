@@ -1,8 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+content/public",
-  "+mojo/public/cpp/bindings",
-  "+services/service_manager/public/cpp",
-  "+third_party/blink/public/web",
-  "+third_party/blink/public/common/features.h",
-]

@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/gcm_driver",
-  "+components/leveldb_proto",
-  "+crypto",
-  "+net/http",
-  "+third_party/boringssl/src/include",
-]

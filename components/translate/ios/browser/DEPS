@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/language/core/browser",
-  "+components/language_detection/core",
-  "+components/language_detection/ios/browser",
-  "+components/ukm/ios",
-]

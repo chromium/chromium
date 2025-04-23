@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/cached_flags/android/java/src/org/chromium/components/cached_flags/CachedFlag.java",
-  "+content/public",
-  "+ui/android",
-]

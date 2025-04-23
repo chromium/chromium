@@ -1,4 +1,0 @@
-{
-  "default_applications": ["https://ikepay.com/app.json"],
-  "supported_origins": ["https://alicepay.com"]
-}

@@ -1,8 +1,0 @@
-# Prefer enterprise-policy-review@ to individual owners. Sending code
-# reviews to the alias allows the owners to distribute code review loads.
-enterprise-policy-review@google.com
-
-include ENTERPRISE_POLICY_OWNERS
-
-ftirelo@chromium.org #{LAST_RESORT_SUGGESTION}
-nicolaso@chromium.org #{LAST_RESORT_SUGGESTION}

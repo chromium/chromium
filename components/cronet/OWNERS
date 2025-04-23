@@ -1,5 +1,0 @@
-file://components/cronet/CRONET_OWNERS
-
-per-file android/lint-*.xml=*
-per-file android/dependencies.txt=set noparent
-per-file android/dependencies.txt=file://components/cronet/CRONET_OWNERS

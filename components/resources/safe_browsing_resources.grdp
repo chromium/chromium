@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <if expr="is_android and safe_browsing_mode == '2'">
-    <include name="IDR_REAL_TIME_URL_CHECKS_ALLOWLIST_PB" file="${root_gen_dir}\components\safe_browsing\content\resources\real_time_url_checks_allowlist\real_time_url_checks_allowlist.pb" use_base_dir="false" type="BINDATA" />
-  </if>
-  <if expr="safe_browsing_mode != 0">
-    <include name="IDR_DOWNLOAD_FILE_TYPES_PB" file="${root_gen_dir}\components\safe_browsing\content\resources\download_file_types.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
-  </if>
-</grit-part>

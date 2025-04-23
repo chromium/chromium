@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/keyed_service",
-  "+components/prefs",
-  "+crypto",
-  "+net",
-  "+sql",
-  "+third_party/boringssl/src/pki",
-]

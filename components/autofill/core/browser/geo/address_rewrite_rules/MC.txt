@@ -1,7 +1,0 @@
-\bquater\b	q
-\bnorth\b	n
-\bsouth\b	s
-\beast\b	e
-\bwest\b	w
-\bbis\b	b
-\bter\b	t

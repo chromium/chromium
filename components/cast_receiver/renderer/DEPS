@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/media_control/renderer",
-  "+components/on_load_script_injector/renderer",
-  "+components/url_rewrite/common",
-  "+components/url_rewrite/renderer",
-  "+content/public/renderer",
-  "+services/network/public/cpp/resource_request.h",
-  "+third_party/blink/public",
-]

@@ -1,6 +1,0 @@
-include_rules = [
-  "+content/public/common",
-  "+content/public/test",
-  "+ipc",
-  "+ui/gfx",
-]

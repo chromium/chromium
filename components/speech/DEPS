@@ -1,6 +1,0 @@
-include_rules = [
-  "+media/mojo/mojom",
-  "+mojo/public/cpp",
-  "+services/network/public",
-  "+third_party/flac",
-]

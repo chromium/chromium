@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/strings",
-  "+content/public/browser",
-  "+mojo/public",
-]

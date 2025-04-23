@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/strings/grit/components_strings.h",
-  "+third_party/blink/public/common",
-]

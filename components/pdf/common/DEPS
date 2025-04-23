@@ -1,7 +1,0 @@
-include_rules = [
-  "+extensions/buildflags/buildflags.h",
-  "+extensions/common/constants.h",
-  "+pdf/buildflags.h",
-  "+pdf/pdf_features.h",
-  "+third_party/skia/include/core/SkColor.h",
-]

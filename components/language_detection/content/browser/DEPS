@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/language_detection/core/browser",
-]

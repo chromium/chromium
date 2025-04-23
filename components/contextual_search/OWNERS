@@ -1,4 +1,0 @@
-file://chrome/browser/android/contextualsearch/OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

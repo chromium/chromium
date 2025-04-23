@@ -1,5 +1,0 @@
-include_rules = [
-  "+base",
-  "+third_party/re2/src/re2/re2.h",
-  "+ui/gfx/geometry",
-]

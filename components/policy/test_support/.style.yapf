@@ -1,4 +1,0 @@
-[style]
-# Old python files should follow the old style, as mentioned in
-# https://yapf.googlesource.com/yapf/src/+/main/styleguide/python/python.md#our-previous-python-style.
-indent_width = 2

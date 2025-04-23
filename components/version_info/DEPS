@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/strings/grit/components_strings.h",
-  "+components/version_info/android/version_constants_bridge_jni",
-  "+ui/base",
-
-  # version_info is used on iOS and thus cannot depend on //content.
-  "-content",
-]

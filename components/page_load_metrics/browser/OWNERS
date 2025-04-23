@@ -1,2 +1,0 @@
-# For QUIC version changes in ConnectionInfo switch statmenets.
-per-file protocol_util.cc=file://net/quic/OWNERS

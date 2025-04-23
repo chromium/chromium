@@ -1,7 +1,0 @@
-monorail: {
-  component: "Internals>Metrics"
-}
-team_email: "chromium-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456863
-}

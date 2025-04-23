@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/prefs",
-  "+components/ukm",
-  "+components/user_prefs",
-  "+content/public/android/java",
-  "+content/public/browser",
-  "+services/metrics/public/cpp",
-  "+ui/android",
-]

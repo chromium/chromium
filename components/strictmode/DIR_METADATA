@@ -1,6 +1,0 @@
-monorail: {
-  component: "Build"
-}
-buganizer_public: {
-  component_id: 1456832
-}

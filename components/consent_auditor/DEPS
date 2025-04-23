@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/keyed_service",
-  "+components/sync",
-  "+components/variations",
-  "+google_apis/gaia",
-]

@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/sync_device_info",
-  "+components/sync/base/features.h",
-  "+components/sync/protocol/sync_enums.pb.h",
-  "+components/ukm/test_ukm_recorder.h",
-  "+services/metrics/public/cpp", 
-]

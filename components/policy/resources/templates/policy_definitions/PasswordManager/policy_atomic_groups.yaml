@@ -1,9 +1,0 @@
-PasswordManager:
-  caption: Password manager
-  policies:
-  - DeletingUndecryptablePasswordsEnabled
-  - PasswordManagerEnabled
-  - PasswordManagerAllowShowPasswords
-  - PasswordSharingEnabled
-  - ThirdPartyPasswordManagersAllowed
-  - PasswordManagerPasskeysEnabled

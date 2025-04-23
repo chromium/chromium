@@ -1,5 +1,0 @@
-include_rules = [
-  "+base",
-  "+crypto",
-  "+third_party/boringssl/src/include",
-]

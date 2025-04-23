@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/pref_registry",
-  "+components/prefs",
-  "+components/strings/grit/components_locale_settings.h",
-  "+components/sync_preferences",
-  "+third_party/s2cellid",
-
-  "-components/language/content",
-]

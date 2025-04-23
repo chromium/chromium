@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h",
-  "+components/version_info",
-]

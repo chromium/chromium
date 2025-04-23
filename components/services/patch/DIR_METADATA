@@ -1,7 +1,0 @@
-monorail: {
-  component: "Internals>Services>ServiceManager"
-}
-team_email: "chrome-updates-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456300
-}

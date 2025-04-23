@@ -1,4 +1,0 @@
-include_rules = [
-  "+ppapi/cpp",
-  "+ppapi/utility",
-]

@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/metrics/call_stacks/call_stack_profile_builder.h",
-]

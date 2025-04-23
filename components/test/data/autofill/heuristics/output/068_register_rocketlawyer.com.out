@@ -1,8 +1,0 @@
-SEARCH_TERM | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery |  |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-NAME_FIRST | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtFirstName | First Name * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-NAME_LAST | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtLastName | Last Name * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-EMAIL_ADDRESS | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtUserName | Email Address * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-EMAIL_ADDRESS | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtConfirmUserName | Confirm Email Address * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtPassword | Password * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtConfirmPassword | Confirm Password * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$chkNewsletter | Yes, send me Rocket Lawyer partner offers, which are sent no more than twice per month and are from Rocket Lawyer's trusted business partners. | on | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1

@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>Speech"
-}
-team_email: "media-dev@chromium.org"
-buganizer_public: {
-  component_id: 1456493
-}

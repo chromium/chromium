@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/embedder_support/android",
-  "+content/public/android",
-  "+content/public/browser",
-]

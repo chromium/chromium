@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Notifications"
-}
-team_email: "chrome-notifications@google.com"
-buganizer_public: {
-  component_id: 1457361
-}

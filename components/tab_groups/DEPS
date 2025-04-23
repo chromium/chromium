@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/strings",
-  "+third_party/skia/include",
-  "+ui/base",
-  "+ui/gfx",
-]

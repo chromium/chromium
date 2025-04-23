@@ -1,5 +1,0 @@
-file://build/fuchsia/OWNERS
-file://chromecast/OWNERS
-
-# For trivial or mechanical horizontal JS/CSS/HTML changes.
-file://ui/webui/PLATFORM_OWNERS

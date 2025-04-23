@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/back_forward_cache",
-  "+content/public/browser",
-  "+content/public/test",
-  "+net/base",
-  "+ui/gfx",
-]

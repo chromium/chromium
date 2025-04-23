@@ -1,4 +1,0 @@
-The contents of the test suite can be examined using gqui.
-Example command:
-gqui from testsuite1.pb proto ../../../../cast_certificate/proto/test_suite.proto:cast_certificate.DeviceCertTestSuite
-

@@ -1,2 +1,0 @@
-per-file *batch_uploader*=file://components/sync/OWNERS
-per-file *sync_bridge*=file://components/sync/OWNERS

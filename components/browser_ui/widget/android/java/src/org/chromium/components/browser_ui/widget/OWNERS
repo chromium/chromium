@@ -1,2 +1,0 @@
-per-file ContextMenu*=file://chrome/android/java/src/org/chromium/chrome/browser/contextmenu/OWNERS
-per-file SpinnerButtonWrapper.java=bjfong@google.com

@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/content_settings/core/browser",
-]

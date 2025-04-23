@@ -1,4 +1,0 @@
-include_rules = [
- "+ui/android",
- "+components/browser_ui/settings/android",
-]

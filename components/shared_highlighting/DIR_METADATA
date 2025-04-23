@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>SharedHighlighting"
-}
-team_email: "chrome-shared-highlighting@google.com"
-buganizer_public: {
-  component_id: 1457165
-}

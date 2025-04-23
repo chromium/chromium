@@ -1,3 +1,0 @@
-[
-  {"reason_for_missing_test": "TODO(crbug.com/40768762): Mandatory policy is being remapped as recommended in the sign-in profile -> not supported by current pref mapping test"}
-]

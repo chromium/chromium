@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/fuzztest",
-  "+third_party/re2",
-]

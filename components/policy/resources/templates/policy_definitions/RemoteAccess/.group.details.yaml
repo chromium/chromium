@@ -1,8 +1,0 @@
-caption: Remote access
-desc: |-
-  Configure remote access options in Chrome Remote Desktop host.
-
-        Chrome Remote Desktop host is a native service that runs on the target machine that a user can connect to using Chrome Remote Desktop application.  The native service is packaged and executed separately from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browser.
-
-        These policies are ignored unless the
-        Chrome Remote Desktop host is installed.

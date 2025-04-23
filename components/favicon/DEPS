@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/favicon_base",
-  "+third_party/blink/public/mojom/manifest",
-  "+ui/base",
-  "+ui/gfx",
-]

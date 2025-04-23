@@ -1,5 +1,0 @@
-Handoff is a feature introduced in iOS 8 and Mac OS X 10.10. It allows a user to
-continue tasks between Apple devices connected to the same iCloud account.
-
-This directory contains files used by both Chrome on Mac and Chrome on iOS to
-support the Handoff feature.

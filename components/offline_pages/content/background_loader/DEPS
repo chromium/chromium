@@ -1,8 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+content/public/test",
-  "+content/public/common/window_container_type.mojom-shared.h",
-  "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
-  "+third_party/blink/public/mojom/mediastream/media_stream.mojom.h",
-  "+third_party/blink/public/mojom/window_features/window_features.mojom.h",
-]

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/webui/about/android/about_ui_jni_headers",
-  "+components/grit/components_resources.h",
-  "+ui/base",
-]

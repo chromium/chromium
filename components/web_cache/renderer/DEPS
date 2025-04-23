@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/child",
-  "+content/public/common",
-  "+content/public/renderer",
-  "+mojo/public",
-  "+services/service_manager/public/cpp",
-  "+third_party/blink/public/common/features.h",
-  "+third_party/blink/public/platform/web_cache.h",
-]

@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/crash/core/common/crash_key.h",
-  "+third_party/skia",
-  "+ui/gfx",
-]

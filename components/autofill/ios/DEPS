@@ -1,5 +1,0 @@
-include_rules = [
-  "+google_apis/gaia",
-  "+ios/testing",
-  "+ios/web/public",
-]

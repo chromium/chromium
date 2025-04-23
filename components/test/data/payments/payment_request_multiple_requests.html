@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script>
-all_requests = [];
-for (var i = 0; i < 5; i++) {
-  all_requests.push(new PaymentRequest(
-    [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
-    {total: {label: 'Total!', amount: {currency: 'USD', value: '1.00'}}}));
-}
-</script>

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <if expr="enable_printing">
-    <include name="IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE" file="../printing/resources/print_header_footer_template_page.html" allowexternalscript="false" type="BINDATA" />
-  </if>
-</grit-part>

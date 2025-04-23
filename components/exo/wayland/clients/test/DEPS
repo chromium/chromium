@@ -1,9 +1,0 @@
-specific_include_rules = {
-  "wayland_client_test_server\.h": [
-    "+chromeos/ash/components/test",
-  ],
-  "wayland_client_test_server\.cc": [
-    "+components/viz/test/test_gpu_service_holder.h",
-    "+mojo/core/embedder/embedder.h",
-  ],
-}

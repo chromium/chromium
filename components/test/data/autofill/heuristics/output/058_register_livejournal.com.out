@@ -1,9 +1,0 @@
-UNKNOWN_TYPE | Widget[CreateAccount]_user | Username: |  | Widget[CreateAccount]_user_1
-EMAIL_ADDRESS | Widget[CreateAccount]_email | Email Address: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_password1 | Password: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_password2 | Confirm Password: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_gender | Gender: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_bday_mm | Birthdate: | 1 | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_bday_dd | Birthdate: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_bday_yyyy | Birthdate: |  | Widget[CreateAccount]_user_1
-UNKNOWN_TYPE | Widget[CreateAccount]_news | Yes, send me LiveJournal announcements via email. | 1 | Widget[CreateAccount]_user_1

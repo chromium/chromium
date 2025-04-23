@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/crash/core/app/crashpad.h",
-  "+components/crash/core/common/crash_key.h",
-  "+partition_alloc",
-]

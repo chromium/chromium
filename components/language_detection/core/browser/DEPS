@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/keyed_service/core",
-  "+components/optimization_guide/proto",
-  "+mojo/public/cpp",
-]

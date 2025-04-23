@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/onc",
-  "+crypto",
-  "+third_party/libxml/chromium",
-]

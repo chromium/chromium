@@ -1,4 +1,0 @@
-include_rules = [
-  "+sql",
-  "+third_party/protobuf/src/google/protobuf",
-]

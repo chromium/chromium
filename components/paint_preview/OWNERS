@@ -1,6 +1,0 @@
-ckitagawa@chromium.org
-fredmello@chromium.org
-yfriedman@chromium.org
-
-# HarfBuzz subsetting integration
-per-file common/subset-font*=file://third_party/harfbuzz-ng/OWNERS

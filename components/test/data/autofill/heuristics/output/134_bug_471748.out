@@ -1,4 +1,0 @@
-CREDIT_CARD_TYPE | ccType | Card Type: | VISA | ccType_1
-CREDIT_CARD_NUMBER | cardnum | Card #: |  | ccType_1
-CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR | expdate | Expire Date: |  | ccType_1
-CREDIT_CARD_VERIFICATION_CODE | cvv2 | CCV2: |  | ccType_1

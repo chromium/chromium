@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Language"
-}
-team_email: "language@chromium.org"
-buganizer_public: {
-  component_id: 1457105
-}

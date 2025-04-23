@@ -1,7 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+mojo/public/cpp/bindings",
-  "+ui/views",
-  "+ui/webui/resources/cr_components/help_bubble",
-  "+ui/webui/resources/js/browser_command",
-]

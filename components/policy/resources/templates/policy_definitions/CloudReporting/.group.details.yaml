@@ -1,7 +1,0 @@
-caption: Cloud Reporting
-desc: |-
-  Configure cloud reporting policies.
-
-  For managed devices, when the policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME">CloudReportingEnabled</ph> is left unset or set to disabled, these policies will be ignored at the browser level. On platforms other than <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, that policy is only supported on browser which enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-  For managed Profiles, when the policy <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME">CloudProfileReportingEnabled</ph> is left unset or set to disabled, these policies will be ignored at the Profile level.

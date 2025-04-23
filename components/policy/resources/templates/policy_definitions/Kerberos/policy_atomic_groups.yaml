@@ -1,5 +1,0 @@
-KerberosPrefilledConfig:
-  caption: Kerberos prefilled configuration
-  policies:
-  - KerberosCustomPrefilledConfig
-  - KerberosUseCustomPrefilledConfig

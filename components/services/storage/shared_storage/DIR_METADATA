@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>Storage>SharedStorage"
-}
-team_email: "chrome-ads-core@google.com"
-buganizer_public: {
-  component_id: 1456384
-}

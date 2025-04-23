@@ -1,5 +1,0 @@
-include_rules = [
-  "+base",
-  "+ui/display",
-  "+ui/gfx/geometry",
-]

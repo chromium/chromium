@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/google/core/common",
-  "+components/signin/public/identity_manager",
-  "+components/sync/base",
-  "+components/sync/service",
-]

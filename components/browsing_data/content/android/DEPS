@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/permissions",
-  "+content/public/android",
-]

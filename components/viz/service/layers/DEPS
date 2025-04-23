@@ -1,5 +1,0 @@
-include_rules = [
-    "+components/viz/service/frame_sinks",
-    "+mojo/public",
-    "+components/viz/client/client_resource_provider.h",
-]

@@ -1,5 +1,0 @@
-cronet_native_public_headers = [
-  "//components/cronet/native/generated/cronet.idl_c.h",
-  "//components/cronet/native/include/cronet_c.h",
-  "//components/cronet/native/include/cronet_export.h",
-]

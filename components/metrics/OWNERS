@@ -1,4 +1,0 @@
-file://base/metrics/OWNERS
-
-per-file BUILD.gn=file://components/metrics/call_stacks/OWNERS
-per-file DEPS=file://components/metrics/call_stacks/OWNERS

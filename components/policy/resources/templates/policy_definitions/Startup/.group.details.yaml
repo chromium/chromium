@@ -1,7 +1,0 @@
-caption: Startup, Home page and New Tab page
-desc: |-
-  Configure the pages to load on startup, the default home page and the default new tab page in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing them.
-
-        The user's home page settings are only completely locked down if you either select the home page to be the new tab page, or set it to be a URL and specify a home page URL. If you don't specify the home page URL, then the user is still able to set the home page to the new tab page by specifying 'chrome://newtab'.
-
-        The policy 'URLs to open on startup' is ignored unless you select 'Open a list of URLs' in 'Action on startup'.

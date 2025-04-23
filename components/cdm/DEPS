@@ -1,7 +1,0 @@
-include_rules = [
-  "+media/base",
-  "+media/cdm",
-  "+media/media_buildflags.h",
-  "+third_party/widevine/cdm/buildflags.h",
-  "+third_party/widevine/cdm/widevine_cdm_common.h",
-]

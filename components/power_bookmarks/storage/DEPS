@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/sync",
-  "+components/sync/protocol",
-  "+sql",
-]

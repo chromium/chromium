@@ -1,9 +1,0 @@
-query_parser is a components used by both history and bookmarks to avoid having
-a cyclic dependencies between the two components. It only exports types used to
-parse and normalize queries into the history search.
-
-query_parser is not allowed to depend on content/, because it is used by iOS.
-If dependences on content/ need to be added to query_parser, it will have to be
-made into a layered component. See [1] for more information.
-
-1: http://www.chromium.org/developers/design-documents/layered-components-design

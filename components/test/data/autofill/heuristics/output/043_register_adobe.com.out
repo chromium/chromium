@@ -1,8 +1,0 @@
-EMAIL_ADDRESS | adobeId | E-Mail AddressThis will be your Adobe ID |  | adobeId_1
-NAME_FIRST | firstName | First Name |  | adobeId_1
-NAME_LAST | lastName | Last Name |  | adobeId_1
-ADDRESS_HOME_COUNTRY | countryCode | Country |  | adobeId_1
-UNKNOWN_TYPE | subscribePass1 | PasswordMust be between 6-12 characters |  | adobeId_1
-UNKNOWN_TYPE | subscribePass2 | Confirm Password |  | adobeId_1
-UNKNOWN_TYPE | agreeToTou | I have read and agree to the and the | on | adobeId_1
-UNKNOWN_TYPE | hostedOptIn | Yes! I would like to receive communications relating to Adobe, its products and services      including product releases, product upgrades, seminars, events, surveys, training and special offers,      and Adobe, and its agents may use data I have provided in accordance with the | on | adobeId_1

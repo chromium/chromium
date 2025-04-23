@@ -1,3 +1,0 @@
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-per-file optimization_guide_proto_util.cc=file://ui/accessibility/OWNERS

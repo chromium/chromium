@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/metrics",
-  "+components/prefs",
-  "+tools/metrics/structured",
-  "+third_party/protobuf",
-]

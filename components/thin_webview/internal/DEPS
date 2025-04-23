@@ -1,6 +1,0 @@
-include_rules = [
-  "+cc/slim",
-  "+components/permissions",
-  "+content/public",
-  "+third_party/skia/include",
-]

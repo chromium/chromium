@@ -1,3 +1,0 @@
-{
-  "enum": ["foo", 42, {"name": false, "description": "a false value"}]
-}

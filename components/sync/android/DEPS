@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/signin/public",
-  "+components/sync/base",
-  "+components/sync/engine",
-  "+components/sync/protocol",
-  "+components/sync/service",
-  "+components/sync/test", # For sync test tools
-]

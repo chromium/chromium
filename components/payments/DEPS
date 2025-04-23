@@ -1,4 +1,0 @@
-include_rules = [
-  "-base/json/json_reader.h",
-  "+ui/gfx/image/image_skia.h",
-]

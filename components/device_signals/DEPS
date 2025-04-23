@@ -1,5 +1,0 @@
-include_rules = [
-  "+crypto",
-  "+google_apis/gaia/gaia_id.h",
-  "+net/cert",
-]

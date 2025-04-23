@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/os_crypt/sync",
-  "+net/extras/sqlite",
-]

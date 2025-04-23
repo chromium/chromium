@@ -1,5 +1,0 @@
-Display:
-  caption: Display
-  policies:
-  - DeviceDisplayResolution
-  - DisplayRotationDefault

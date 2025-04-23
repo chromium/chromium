@@ -1,5 +1,0 @@
-specific_include_rules = {
-  '.*logging.*\.cc': [
-    '+ash/constants/ash_features.h',
-  ],
-}

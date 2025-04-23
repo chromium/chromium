@@ -1,8 +1,0 @@
-file://chrome/browser/share/OWNERS
-
-victorvianna@google.com
-
-per-file *send_tab_to_self_bridge*=file://components/sync/OWNERS
-
-# target_device_info is used by multiple sharing teams.
-per-file target_device_info.*=file://chrome/browser/sharing/OWNERS

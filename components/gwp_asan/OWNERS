@@ -1,6 +1,0 @@
-mpdenton@chromium.org # PST
-glazunov@google.com # CET
-
-# Secondary:
-file://build/config/sanitizers/OWNERS #{LAST_RESORT_SUGGESTION}
-vitalybuka@chromium.org               #{LAST_RESORT_SUGGESTION}

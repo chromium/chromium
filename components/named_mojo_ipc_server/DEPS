@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/test",
-  "+mojo/public",
-  "+mojo/core/embedder",
-]

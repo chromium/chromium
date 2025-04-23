@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/version_info",
-  "+net",
-  "+mojo/public/cpp/bindings",
-  "+services/network",
-]

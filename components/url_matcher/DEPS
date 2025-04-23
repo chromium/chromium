@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/google/core/common",
-  "+components/url_formatter",
-  "+net/base",
-  "+third_party/re2",
-]

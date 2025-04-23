@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/common",
-  "+content/public/renderer",
-  "+ipc",
-  "+mojo/public/cpp/bindings",
-  "+services/service_manager/public/cpp",
-  "+third_party/hunspell",
-  "+third_party/blink/public",
-]

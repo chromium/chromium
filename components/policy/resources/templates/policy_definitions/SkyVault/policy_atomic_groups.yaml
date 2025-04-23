@@ -1,5 +1,0 @@
-SkyVaultSettings:
-  caption: Local user data storage settings
-  policies:
-  - LocalUserFilesAllowed
-  - LocalUserFilesMigrationDestination

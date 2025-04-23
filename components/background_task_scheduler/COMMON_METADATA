@@ -1,8 +1,0 @@
-monorail: {
-  component: "Internals>BackgroundTaskScheduler"
-}
-team_email: "clank-dev@google.com"
-os: ANDROID
-buganizer_public: {
-  component_id: 1456214
-}

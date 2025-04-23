@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/commerce/core/heuristics",
-  "+components/ukm",
-  "+services/metrics/public/cpp"
-]

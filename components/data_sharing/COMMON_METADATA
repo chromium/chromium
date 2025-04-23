@@ -1,8 +1,0 @@
-buganizer {
-  component_id: 1376453
-}
-monorail: {
-  component: "UI>Browser>Chrome Tabs"
-}
-
-team_email: "chrome-data-sharing-eng@google.com"

@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromeos/dbus/dlp",
-  "+components/keyed_service",
-  "+components/url_matcher",
-]

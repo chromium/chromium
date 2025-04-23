@@ -1,8 +1,0 @@
-include_rules = [
-  "-components",
-  "+components/metrics",
-  "+components/metrics_services_manager",
-  "+components/ukm",
-  "+components/variations",
-  "+services/network",
-]
