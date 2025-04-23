@@ -1434,15 +1434,16 @@ const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
     {"OnFocusMaxSearchSuggestions", "2"},
     {"OnFocusMaxUrlSuggestions", "2"},
 };
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax2[] = {
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax2TwoZero[] = {
     {"OnFocusMaxSuggestions", "2"},
     {"OnFocusMaxSearchSuggestions", "2"},
     {"OnFocusMaxUrlSuggestions", "0"},
 };
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax3[] = {
-    {"OnFocusMaxSuggestions", "3"},
-    {"OnFocusMaxSearchSuggestions", "3"},
-    {"OnFocusMaxUrlSuggestions", "0"},
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax3ThreeZero[] =
+    {
+        {"OnFocusMaxSuggestions", "3"},
+        {"OnFocusMaxSearchSuggestions", "3"},
+        {"OnFocusMaxUrlSuggestions", "0"},
 };
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4FourZero[] = {
     {"OnFocusMaxSuggestions", "4"},
@@ -1476,11 +1477,11 @@ const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
          kOmniboxUrlSuggestionsOnFocusMax4,
          std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
         {"- Max 2 Suggestions (2 search, 0 url)",
-         kOmniboxUrlSuggestionsOnFocusMax2,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax2), nullptr},
+         kOmniboxUrlSuggestionsOnFocusMax2TwoZero,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax2TwoZero), nullptr},
         {"- Max 3 Suggestions (3 search, 0 url)",
-         kOmniboxUrlSuggestionsOnFocusMax3,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax3), nullptr},
+         kOmniboxUrlSuggestionsOnFocusMax3ThreeZero,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax3ThreeZero), nullptr},
         {"- Max 4 Suggestions (4 search, 0 url)",
          kOmniboxUrlSuggestionsOnFocusMax4FourZero,
          std::size(kOmniboxUrlSuggestionsOnFocusMax4FourZero), nullptr},
