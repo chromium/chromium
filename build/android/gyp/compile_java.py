@@ -68,39 +68,25 @@ def CreateJarFile(jar_path,
                   classes_dir,
                   services_map=None,
                   additional_jar_files=None,
-                  extra_classes_jar=None,
-                  filter_func=None):
+                  extra_classes_jar=None):
   """Zips files from compilation into a single jar."""
   logging.info('Start creating jar file: %s', jar_path)
   with action_helpers.atomic_output(jar_path) as f:
     with zipfile.ZipFile(f.name, 'w') as z:
-      path_transform = None
-      if filter_func:
-        path_transform = lambda p: p if filter_func(p) else None
-      zip_helpers.zip_directory(z, classes_dir, path_transform=path_transform)
+      zip_helpers.zip_directory(z, classes_dir)
       if services_map:
         for service_class, impl_classes in sorted(services_map.items()):
           zip_path = 'META-INF/services/' + service_class
           data = ''.join(f'{x}\n' for x in sorted(impl_classes))
           zip_helpers.add_to_zip_hermetic(z, zip_path, data=data)
 
-      # Used to merge in kotlinc results.
-      if extra_classes_jar:
-
-        def path_transform2(zip_path):
-          if path_transform and not path_transform(zip_path):
-            return None
-          if zip_path.endswith('.class'):
-            return zip_path
-          return None
-
-        zip_helpers.merge_zips(z, [extra_classes_jar],
-                               path_transform=path_transform2)
-
       if additional_jar_files:
         for src_path, zip_path in additional_jar_files:
           zip_helpers.add_to_zip_hermetic(z, zip_path, src_path=src_path)
-
+      if extra_classes_jar:
+        path_transform = lambda p: p if p.endswith('.class') else None
+        zip_helpers.merge_zips(z, [extra_classes_jar],
+                               path_transform=path_transform)
   logging.info('Completed jar file: %s', jar_path)
 
 
@@ -167,21 +153,12 @@ def ParseJavaSource(data, services_map, path=None):
   return package_name, class_names
 
 
-def _CreateGlobFilter(exclude_globs, include_globs):
-
-  def func(zip_path):
-    if include_globs and not build_utils.MatchesGlob(zip_path, include_globs):
-      return False
-    return not build_utils.MatchesGlob(zip_path, exclude_globs)
-
-  return func
-
-
 class _MetadataParser:
 
-  def __init__(self, chromium_code, filter_func):
+  def __init__(self, chromium_code, exclude_globs, include_globs):
     self._chromium_code = chromium_code
-    self._filter_func = filter_func
+    self._exclude_globs = exclude_globs
+    self._include_globs = include_globs
     # Map of .java path -> .srcjar/nested/path.java.
     self._srcjar_files = {}
     # Map of @ServiceImpl class -> impl class
@@ -220,7 +197,10 @@ class _MetadataParser:
 
   def _ShouldIncludeInJarInfo(self, fully_qualified_name):
     name_as_class_glob = fully_qualified_name.replace('.', '/') + '.class'
-    return self._filter_func(name_as_class_glob)
+    if self._include_globs and not build_utils.MatchesGlob(
+        name_as_class_glob, self._include_globs):
+      return False
+    return not build_utils.MatchesGlob(name_as_class_glob, self._exclude_globs)
 
   def ParseAndWriteInfoFile(self, output_path, java_files, kt_files=None):
     """Writes a .jar.info file.
@@ -363,9 +343,9 @@ def _RunCompiler(changes,
   temp_dir = jar_path + '.staging'
   build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
-  filter_func = _CreateGlobFilter(options.jar_exclude_globs,
-                                  options.jar_include_globs)
-  metadata_parser = _MetadataParser(options.chromium_code, filter_func)
+  metadata_parser = _MetadataParser(options.chromium_code,
+                                    options.jar_info_exclude_globs,
+                                    options.jar_info_include_globs)
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
 
@@ -466,16 +446,9 @@ def _RunCompiler(changes,
       # just the stamp file for that target.
       server_utils.MaybeTouch(jar_path)
     else:
-      CreateJarFile(jar_path,
-                    classes_dir,
-                    metadata_parser.services_map,
-                    options.additional_jar_files,
-                    options.kotlin_jar_path,
-                    filter_func=filter_func)
-      if options.filtered_jar:
-        CreateJarFile(options.filtered_jar,
-                      classes_dir,
-                      filter_func=lambda p: not filter_func(p))
+      CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
+                    options.additional_jar_files, options.kotlin_jar_path)
+
 
     # Remove input srcjars that confuse Android Studio:
     # https://crbug.com/353326240
@@ -524,13 +497,11 @@ def _ParseOptions(argv):
       'files are packaged into the jar. Files should be specified in '
       'format <filename>:<path to be placed in jar>.')
   parser.add_argument(
-      '--jar-exclude-globs',
-      help='GN list of exclude globs to filter from the output .jar.')
+      '--jar-info-exclude-globs',
+      help='GN list of exclude globs to filter from generated .info files.')
   parser.add_argument(
-      '--jar-include-globs',
-      help='GN list of inlclude globs to filter from the output .jar.')
-  parser.add_argument('--filtered-jar',
-                      help='Output filtered .class files here')
+      '--jar-info-include-globs',
+      help='GN list of inlclude globs to filter from generated .info files.')
   parser.add_argument(
       '--chromium-code',
       action='store_true',
@@ -567,10 +538,10 @@ def _ParseOptions(argv):
   options.classpath = action_helpers.parse_gn_list(options.classpath)
   options.processorpath = action_helpers.parse_gn_list(options.processorpath)
   options.java_srcjars = action_helpers.parse_gn_list(options.java_srcjars)
-  options.jar_exclude_globs = action_helpers.parse_gn_list(
-      options.jar_exclude_globs)
-  options.jar_include_globs = action_helpers.parse_gn_list(
-      options.jar_include_globs)
+  options.jar_info_exclude_globs = action_helpers.parse_gn_list(
+      options.jar_info_exclude_globs)
+  options.jar_info_include_globs = action_helpers.parse_gn_list(
+      options.jar_info_include_globs)
 
   additional_jar_files = []
   for arg in options.additional_jar_files or []:
@@ -675,8 +646,6 @@ def main(argv,
   if not use_errorprone:
     jar_info_path = options.jar_path + '.info'
     output_paths.append(jar_info_path)
-  if options.filtered_jar:
-    output_paths.append(options.filtered_jar)
 
   # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
   if write_depfile_only:
@@ -694,11 +663,11 @@ def main(argv,
       input_paths.append(options.header_jar)
     input_paths += [x[0] for x in options.additional_jar_files]
 
-    input_strings = (javac_cmd + javac_args + options.classpath + java_files +
-                     kt_files + [
-                         options.warnings_as_errors, options.jar_exclude_globs,
-                         options.jar_include_globs
-                     ])
+    input_strings = (
+        javac_cmd + javac_args + options.classpath + java_files + kt_files + [
+            options.warnings_as_errors, options.jar_info_exclude_globs,
+            options.jar_info_include_globs
+        ])
 
     # Use md5_check for |pass_changes| feature.
     md5_check.CallAndWriteDepfileIfStale(do_it,
