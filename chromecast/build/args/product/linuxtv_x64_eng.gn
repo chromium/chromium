@@ -1,3 +1,0 @@
-import("//chromecast/build/args/config/linux.gni")
-import("//chromecast/build/args/config/archs/x64.gni")
-import("//chromecast/build/args/config/flavor/eng.gni")

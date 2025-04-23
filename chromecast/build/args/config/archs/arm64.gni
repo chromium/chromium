@@ -1,2 +1,0 @@
-# Args common to ALL arm (64bit) builds.
-target_cpu = "arm64"

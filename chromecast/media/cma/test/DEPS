@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromecast/common/mojom",
-  "+media/filters",
-  "+media/parsers",
-]

@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/embedder_support/android",
-  "+components/minidump_uploader",
-  "+components/module_installer/android/java/src/org/chromium/components/module_installer/builder/ModuleInterface.java",
-  "+content/public/android",
-  "+jni",
-  "+ui/android",
-]

@@ -1,3 +1,0 @@
-import("//chromecast/build/args/config/android.gni")
-import("//chromecast/build/args/config/archs/arm.gni")
-import("//chromecast/build/args/config/flavor/release.gni")

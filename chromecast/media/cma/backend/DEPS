@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromecast/net",
-  "+media/filters",
-]

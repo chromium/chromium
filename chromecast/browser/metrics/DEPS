@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromecast/metrics",
-  "+components/metrics",
-  "+third_party/metrics_proto",
-]

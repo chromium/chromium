@@ -1,4 +1,0 @@
-# Args for ALL Eng builds.
-cast_is_debug = true
-dcheck_always_on = true
-is_debug = true

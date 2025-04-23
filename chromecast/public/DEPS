@@ -1,9 +1,0 @@
-include_rules = [
-   # chromecast/public should not depend on anything Chromium specific
-   # Disallow all chromium-wide dependencies listed in chromium/src/DEPS.
-   "-base",
-   "-build",
-   "-ipc",
-   "-testing",
-   "-url",
-]

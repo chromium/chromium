@@ -1,5 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+third_party/widevine/cdm/buildflags.h",
-  "+ui/gfx/geometry",
-]
