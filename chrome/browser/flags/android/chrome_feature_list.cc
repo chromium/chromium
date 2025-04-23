@@ -318,6 +318,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
     &kProcessRankPolicyAndroid,
+    &kProtectedTabsAndroid,
     &kPwaRestoreUi,
     &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
@@ -1034,6 +1035,13 @@ BASE_FEATURE(kPriceChangeModule,
 
 BASE_FEATURE(kProcessRankPolicyAndroid,
              "ProcessRankPolicyAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Put a higher memory priority to protected background tabs (e.g. tabs with
+// user edits in forms) to prevent them from being killed by LMKD before any
+// other non-protected tabs.
+BASE_FEATURE(kProtectedTabsAndroid,
+             "ProtectedTabsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6166,6 +6166,7 @@ test("unit_tests") {
     "../browser/performance_manager/policies/frame_throttling_policy_unittest.cc",
     "../browser/performance_manager/policies/keep_alive_dse_policy_unittest.cc",
     "../browser/performance_manager/policies/working_set_trimmer_policy_unittest.cc",
+    "../browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper_unittest.cc",
     "../browser/performance_monitor/system_monitor_unittest.cc",
     "../browser/persisted_state_db/session_proto_db_factory_unittest.cc",
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
@@ -8134,7 +8135,6 @@ test("unit_tests") {
       "../browser/performance_manager/user_tuning/battery_saver_mode_manager_unittest.cc",
       "../browser/performance_manager/user_tuning/cpu_health_tracker_unittest.cc",
       "../browser/performance_manager/user_tuning/performance_detection_manager_unittest.cc",
-      "../browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper_unittest.cc",
       "../browser/performance_manager/user_tuning/user_performance_tuning_manager_unittest.cc",
       "../browser/performance_manager/user_tuning/user_performance_tuning_notifier_unittest.cc",
     ]

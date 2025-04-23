@@ -10688,6 +10688,7 @@ from previous Chrome versions.
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1398085246" label="FedCmExemptIdpWithThirdPartyCookies:enabled"/>
   <int value="-1398026794" label="TabSearchPositionSetting:enabled"/>
+  <int value="-1397764922" label="ProtectedTabsAndroid:disabled"/>
   <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
   <int value="-1396906019" label="EarlyExitOnNoopClassOrStyleChange:disabled"/>
@@ -19612,6 +19613,7 @@ from previous Chrome versions.
   <int value="2003811018" label="enable-touch-support-for-screen-magnifier"/>
   <int value="2004483175" label="multi-instance-merge-tabs"/>
   <int value="2004604350" label="AutofillGetPaymentsIdentityFromSync:enabled"/>
+  <int value="2004630146" label="ProtectedTabsAndroid:enabled"/>
   <int value="2004651603" label="NativeFileSystemAPI:disabled"/>
   <int value="2004829262" label="enable-webgl-draft-extensions"/>
   <int value="2005009211" label="OmniboxAdaptiveSuggestionsCount:disabled"/>

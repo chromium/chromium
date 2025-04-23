@@ -4921,6 +4921,12 @@ const char kProcessRankPolicyAndroidDescription[] =
     "Enables performance manager ranking policy to update memory priority of "
     "renderer processes";
 
+const char kProtectedTabsAndroidName[] = "Enable protected tab for Android";
+const char kProtectedTabsAndroidDescription[] =
+    "Ensures that renderer processes for protected tabs will be killed after "
+    "other discard-eligible tabs. Requires #process-rank-policy-android to "
+    "also be enabled";
+
 const char kReadAloudName[] = "Read Aloud";
 const char kReadAloudDescription[] = "Controls the Read Aloud feature";
 

@@ -166,6 +166,7 @@ BASE_DECLARE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
 BASE_DECLARE_FEATURE(kProcessRankPolicyAndroid);
+BASE_DECLARE_FEATURE(kProtectedTabsAndroid);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
@@ -251,6 +252,14 @@ constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
     &kCCTNavigationalPrefetch,
     "holdback",
     false);
+
+// If it does not support PERCEPTIBLE importance (e.g. Android Q- does not
+// support not-perceptible binding), protected tabs have MODERATE importance as
+// fallback.
+constexpr base::FeatureParam<bool> kFallbackToModerateParam(
+    &kProtectedTabsAndroid,
+    "fallback_to_moderate",
+    /*default_value=*/false);
 
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,

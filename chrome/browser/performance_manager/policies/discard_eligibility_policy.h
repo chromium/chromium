@@ -21,7 +21,7 @@ class URLMatcher;
 
 namespace performance_manager::policies {
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
     base::TimeDelta();
 #else
@@ -31,8 +31,14 @@ constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
     base::Minutes(10);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/412839833): kTabAudioProtectionTime may be needed on Android
+// as well.
+constexpr base::TimeDelta kTabAudioProtectionTime = base::TimeDelta();
+#else
 // Time during which a tab cannot be discarded after having played audio.
 constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
+#endif
 
 // Whether a page can be discarded.
 enum class CanDiscardResult {

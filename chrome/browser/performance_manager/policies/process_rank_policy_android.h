@@ -36,6 +36,7 @@ class ProcessRankPolicyAndroid : public GraphOwned,
                                  public PageLiveStateObserver {
  public:
   ProcessRankPolicyAndroid();
+  explicit ProcessRankPolicyAndroid(bool is_perceptible_importance_supported);
   ~ProcessRankPolicyAndroid() override;
   ProcessRankPolicyAndroid(const ProcessRankPolicyAndroid& other) = delete;
   ProcessRankPolicyAndroid& operator=(const ProcessRankPolicyAndroid&) = delete;
@@ -47,14 +48,54 @@ class ProcessRankPolicyAndroid : public GraphOwned,
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
+  void OnTypeChanged(const PageNode* page_node,
+                     PageType previous_type) override;
   void OnIsFocusedChanged(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
+  void OnIsAudibleChanged(const PageNode* page_node) override;
+  void OnHasPictureInPictureChanged(const PageNode* page_node) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node) override;
+  // Change on GetContentsMimeType() is notified by
+  // OnMainFrameDocumentChanged().
+  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
+  void OnPageNotificationPermissionStatusChange(
+      const PageNode* page_node,
+      std::optional<blink::mojom::PermissionStatus> previous_status) override;
+  void OnHadFormInteractionChanged(const PageNode* page_node) override;
+  void OnHadUserEditsChanged(const PageNode* page_node) override;
+  // TODO(crbug.com/410444953):
+  // `DiscardEligibilityPolicy::IsPageOptedOutOfDiscarding()` depends on
+  // `PageNode::GetMainFrameUrl()` and
+  // `DiscardEligibilityPolicy::profiles_no_discard_patterns_`. We need observer
+  // for `DiscardEligibilityPolicy::profiles_no_discard_patterns_` changes when
+  // we enable memory saver mode on Android.
 
   // PageLiveStateObserver implementation:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
+  void OnIsAutoDiscardableChanged(const PageNode* page_node) override;
+  void OnIsCapturingVideoChanged(const PageNode* page_node) override;
+  void OnIsCapturingAudioChanged(const PageNode* page_node) override;
+  void OnIsBeingMirroredChanged(const PageNode* page_node) override;
+  void OnIsCapturingWindowChanged(const PageNode* page_node) override;
+  void OnIsCapturingDisplayChanged(const PageNode* page_node) override;
+  void OnIsConnectedToBluetoothDeviceChanged(
+      const PageNode* page_node) override;
+  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
+  // Pin and dev tools feature is not supported on Android. But
+  // ProcessRankPolicyAndroid supports OnIsPinnedTabChanged()
+  // OnIsDevToolsOpenChanged() to prevent this feature from being broken by
+  // future adoption because DiscardEligibilityPolicy::CanDiscard() takes those
+  // into account. Overriding the method does not have overhead since the
+  // callbacks are never triggered.
+  void OnIsPinnedTabChanged(const PageNode* page_node) override;
+  void OnIsDevToolsOpenChanged(const PageNode* page_node) override;
+  void OnUpdatedTitleOrFaviconInBackgroundChanged(
+      const PageNode* page_node) override;
 
  private:
+  const bool is_perceptible_importance_supported_;
   void UpdateProcessRank(const PageNode* page_node);
+  content::ChildProcessImportance CalculateRank(const PageNode* page_node);
 };
 
 }  // namespace performance_manager::policies

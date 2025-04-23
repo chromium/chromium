@@ -300,7 +300,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
   g_browser_process->profile_manager()->AddObserver(this);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid)) {
+    // performance_manager::policies::DiscardEligibilityPolicy requires
+    // performance_manager::user_tuning::ProfileDiscardOptOutListHelper.
+    profile_discard_opt_out_list_helper_ = std::make_unique<
+        performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+  }
+#else
   profile_discard_opt_out_list_helper_ = std::make_unique<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
   // Create the UserPerformanceTuningManager and BatterySaverMode here so that
@@ -408,7 +415,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   page_live_state_data_helper_.reset();
   page_load_metrics_observer_.reset();
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  profile_discard_opt_out_list_helper_.reset();
+#else
   battery_saver_mode_manager_.reset();
   user_performance_tuning_manager_.reset();
   performance_detection_manager_.reset();
@@ -429,7 +438,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileAdded(
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextAdded(profile);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_discard_opt_out_list_helper_) {
+    profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
+  }
+#else
   profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
 #endif
 }
@@ -445,7 +458,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileWillBeDestroyed(
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextRemoved(profile);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_discard_opt_out_list_helper_) {
+    profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
+  }
+#else
   profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
 #endif
 }
