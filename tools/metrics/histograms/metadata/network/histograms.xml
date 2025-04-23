@@ -2736,6 +2736,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Eap.Event" enum="NetworkEapConnectionEvent"
+    expires_after="2026-03-31">
+  <owner>olsa@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the EAP TLS connection events.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Eap.EventCaCertExperiment1"
+    enum="NetworkEapConnectionEvent" expires_after="2026-03-31">
+  <owner>olsa@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the EAP TLS connection events under the
+    experiment SingleCaCertVerificationPhase1 if system CA certs are in use and
+    custom cert is in use for the server authentication.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Eap.EventCaCertExperiment2"
+    enum="NetworkEapConnectionEvent" expires_after="2026-03-31">
+  <owner>olsa@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the EAP TLS connection events under the
+    experiment SingleCaCertVerificationPhase2 if system CA certs are in use and
+    custom cert is in use for the server authentication.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Eap.EventCaCertExpValidCondition"
+    enum="NetworkEapConnectionEvent" expires_after="2026-03-31">
+  <owner>olsa@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
+  <summary>
+    ChromeOS network metric that tracks the EAP TLS connection events without
+    experiments if system CA certs are in use and custom cert is in use for
+    server authentication.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Ethernet.DevicePresenceStatus"
     enum="BooleanPresent" expires_after="2025-12-31">
   <owner>hugobenichi@google.com</owner>

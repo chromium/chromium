@@ -1020,6 +1020,28 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Disconnected without explicit user action"/>
 </enum>
 
+<enum name="NetworkEapConnectionEvent">
+  <int value="0" label="No Record"/>
+  <int value="1" label="Auth Completed Success"/>
+  <int value="2" label="Auth Local TLS Failure"/>
+  <int value="3" label="Auth Remote TLS Failure"/>
+  <int value="4" label="Auth Failure"/>
+  <int value="5" label="Unexpected Failure"/>
+  <int value="6" label="TLS Status Alert"/>
+  <int value="7" label="Cert Verification Success"/>
+  <int value="8" label="First Cert Verification Failure"/>
+  <int value="9" label="Cert Verification Retry Attempt"/>
+  <int value="10" label="Cert Verification Failure Before Retry"/>
+  <int value="11" label="Cert Verification Failure After Retry"/>
+  <int value="12" label="Cert Verification Load Failure"/>
+  <int value="13" label="Cert Verification Unexpected Parameter"/>
+  <int value="14" label="Cert Verification Issuer Cert Absent"/>
+  <int value="15" label="Pin Missing"/>
+  <int value="16" label="Auth Failure Pin Missing"/>
+  <int value="17" label="Auth Attempt"/>
+  <int value="18" label="Proposed Auth Method Accepted"/>
+</enum>
+
 <enum name="NetworkEligibilityStatus">
   <int value="0" label="Network Is Eligible"/>
   <int value="1" label="No Metedata"/>
