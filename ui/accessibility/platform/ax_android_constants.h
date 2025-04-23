@@ -14,6 +14,7 @@ namespace ui {
 COMPONENT_EXPORT(AX_PLATFORM)
 extern const char kAXAutoCompleteTextViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAbsListViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAlertDialogClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCheckBoxClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCompoundButtonClassname[];

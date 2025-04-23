@@ -283,7 +283,8 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       wcax->HandleWindowContentChange(
           android_node->GetUniqueId(),
           ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_UNDEFINED);
-      if (android_node->GetRole() == ax::mojom::Role::kDialog) {
+      if (android_node->GetRole() == ax::mojom::Role::kDialog ||
+          android_node->GetRole() == ax::mojom::Role::kAlertDialog) {
         wcax->HandleWindowContentChange(
             android_node->GetUniqueId(),
             ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_PANE_TITLE);
@@ -367,6 +368,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       // When a dialog is shown, we will send a SUBTREE_CREATED event.
       // When this happens, we want to generate a TYPE_WINDOW_STATE_CHANGED
       // event and populate the node's paneTitle with the dialog description.
+      // Note that kAlertDialog is not included in this condition because the
+      // pane opened event is already handled for kAlertDialog by the ALERT
+      // event.
       if (android_node->GetRole() == ax::mojom::Role::kDialog) {
         wcax->HandlePaneOpened(android_node->GetUniqueId());
       }

@@ -9,6 +9,7 @@ namespace ui {
 const char kAXAutoCompleteTextViewClassname[] =
     "android.widget.AutoCompleteTextView";
 const char kAXAbsListViewClassname[] = "android.widget.AbsListView";
+const char kAXAlertDialogClassname[] = "android.app.AlertDialog";
 const char kAXButtonClassname[] = "android.widget.Button";
 const char kAXCheckBoxClassname[] = "android.widget.CheckBox";
 const char kAXCheckedTextViewClassname[] = " android.widget.CheckedTextView";
