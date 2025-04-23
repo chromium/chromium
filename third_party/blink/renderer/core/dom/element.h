@@ -1235,6 +1235,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns true if this element has ::view-transition-group children.
   bool HasViewTransitionGroupChildren() const;
 
+  // Returns true if this element contains any ::scroll-button or
+  // ::scroll-marker-group pseudos.
+  bool HasScrollButtonOrMarkerGroupPseudos() const;
+
   bool PseudoElementStylesAffectCounters() const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;

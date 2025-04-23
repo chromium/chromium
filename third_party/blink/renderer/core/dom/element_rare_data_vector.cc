@@ -105,6 +105,12 @@ bool ElementRareDataVector::HasViewTransitionGroupPseudoElement() const {
   return data && data->HasViewTransitionGroupPseudoElement();
 }
 
+bool ElementRareDataVector::HasScrollButtonOrMarkerGroupPseudos() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  return data && data->HasScrollButtonOrMarkerGroupPseudos();
+}
+
 PseudoElementData::PseudoElementVector
 ElementRareDataVector::GetPseudoElements() const {
   PseudoElementData* data =

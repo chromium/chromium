@@ -9038,6 +9038,11 @@ bool Element::HasViewTransitionGroupChildren() const {
   return data && data->HasViewTransitionGroupPseudoElement();
 }
 
+bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
+  ElementRareDataVector* data = GetElementRareData();
+  return data && data->HasScrollButtonOrMarkerGroupPseudos();
+}
+
 Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {

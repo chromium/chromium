@@ -532,6 +532,13 @@ bool ElementHasAnyAriaRelation(Element& element) {
 }
 
 bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
+  // Terminology:
+  // * Scroll button pseudo element: these are the left/right buttons
+  // automatically added for CSS carousels,
+  // * Scroll marker group pseudo element: this is a group of navigation
+  // buttons (often dots) for controlling the CSS carousel.
+  // * Scroll marker pseudo element: this is an individual navigation button.
+  //
   // ::scroll-markers have their layout object nested under
   // ::scroll-marker-group, which isn't related to its node traversal. So we
   // shouldn't use node or layout traversals for this. Instead this is handled
@@ -541,7 +548,36 @@ bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
   if (node->IsScrollMarkerPseudoElement()) {
     return true;
   }
+  // ScrollButtons and ScrollMarkerGroup are added as siblings of their
+  // originating element. See `AddNodeChild`.
+  if (node->IsScrollMarkerGroupPseudoElement() ||
+      node->IsScrollButtonPseudoElement()) {
+    return true;
+  }
   return false;
+}
+
+VectorOf<Node> UnpackScrollerWithSiblingControls(Element* element) {
+  CHECK(element->HasScrollButtonOrMarkerGroupPseudos());
+  // This is the order of how the pseudo elements should appear according to
+  // https://drafts.csswg.org/css-overflow-5/
+  PseudoId ordered_pseudos[] = {
+      kPseudoIdScrollMarkerGroupBefore, kPseudoIdScrollButtonBlockStart,
+      kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+      kPseudoIdScrollButtonBlockEnd,    kPseudoIdNone,
+      kPseudoIdScrollMarkerGroupAfter,
+  };
+  VectorOf<Node> result;
+  for (PseudoId pseudo_id : ordered_pseudos) {
+    if (pseudo_id == kPseudoIdNone) {
+      result.push_back(element);
+    } else if (auto* pseudo = element->GetPseudoElement(pseudo_id)) {
+      result.push_back(pseudo);
+    }
+  }
+  // We should have at least added the element itself.
+  CHECK(!result.empty());
+  return result;
 }
 
 }  // namespace
@@ -5939,10 +5975,10 @@ void AXNodeObject::AddScrollMarkerGroupChildren() {
   // The desired AX tree is the following:
   // Scroller
   //   Item
-  //   ::scroll-marker-group
-  //     ::scroll-marker
+  // ::scroll-marker-group
+  //   ::scroll-marker
   //
-  // So far, we added items as they appeared in the DOM or Layout tree, with the
+  // So far, we added items as they appeared in the Layout tree, with the
   // exception that we pruned ::scroll-markers any time we saw them (see
   // IsAddedOnlyViaSpecialTraversal). Now, we've reached ::scroll-marker-group.
   // From here, we use the layout object walk skipping any anonymous layout
@@ -6000,6 +6036,20 @@ void AXNodeObject::AddChildren() {
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
+
+  if (Element* element = DynamicTo<Element>(node);
+      element && element->HasScrollButtonOrMarkerGroupPseudos()) {
+    VectorOf<Node> children = UnpackScrollerWithSiblingControls(element);
+    for (auto child : children) {
+      AddNodeChildImpl(child.Get());
+    }
+  } else {
+    AddNodeChildImpl(node);
+  }
+}
+
+void AXNodeObject::AddNodeChildImpl(Node* node) {
+  CHECK(node);
 
   AXObject* ax_child = AXObjectCache().Get(node);
   CHECK(!ax_child || !ax_child->IsDetached());

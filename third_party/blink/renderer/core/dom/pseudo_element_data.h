@@ -29,6 +29,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
       const AtomicString& view_transition_name = g_null_atom) const;
 
   bool HasViewTransitionGroupPseudoElement() const;
+  bool HasScrollButtonOrMarkerGroupPseudos() const;
 
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
@@ -291,6 +292,17 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
 inline bool PseudoElementData::HasViewTransitionGroupPseudoElement() const {
   return transition_data_ &&
          transition_data_->HasViewTransitionGroupPseudoElement();
+}
+
+inline bool PseudoElementData::HasScrollButtonOrMarkerGroupPseudos() const {
+  // We exclude `generated_scroll_marker_` because this would be a control
+  // nested under a scroll marker group.
+  return generated_scroll_marker_group_before_ ||
+         generated_scroll_marker_group_after_ ||
+         generated_scroll_button_block_start_ ||
+         generated_scroll_button_inline_start_ ||
+         generated_scroll_button_inline_end_ ||
+         generated_scroll_button_block_end_;
 }
 
 inline PseudoElementData::PseudoElementVector
