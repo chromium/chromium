@@ -79,7 +79,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         // 2. Add a trailing margin to the interacting view to indicate where the view will be
         // inserted should the drag be dropped.
         ArrayList<Animator> animationList = new ArrayList<>();
-        setTrailingMarginForView(
+        setInteractingStateForView(
                 interactingView, stripGroupTitles, /* isInteracting= */ true, animationList);
 
         // 3. Kick-off animations and request an update.
@@ -119,7 +119,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
 
             mAnimationHost.finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
-            setTrailingMarginForView(
+            setInteractingStateForView(
                     mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
             mInteractingView = null;
             mAnimationHost.startAnimations(animationList, null);
@@ -138,12 +138,12 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             // 3.a. Reset the state for the previous "interacting" view.
             ArrayList<Animator> animationList = new ArrayList<>();
             if (mInteractingView != null) {
-                setTrailingMarginForView(
+                setInteractingStateForView(
                         mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
             }
 
             // 3.b. Set state for the new "interacting" view.
-            setTrailingMarginForView(
+            setInteractingStateForView(
                     hoveredView, groupTitles, /* isInteracting= */ true, animationList);
             mInteractingView = hoveredView;
 
@@ -225,6 +225,36 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                         mInteractingViewDuringStop = null;
                     }
                 });
+    }
+
+    /** Wrapper for #setTrailingMarginForView and #shouldHaveTrailingMargin. */
+    protected void setInteractingStateForView(
+            StripLayoutView stripView,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isInteracting,
+            List<Animator> animationList) {
+        setTrailingMarginForView(
+                stripView,
+                groupTitles,
+                shouldHaveTrailingMargin(stripView, isInteracting),
+                animationList);
+    }
+
+    private boolean shouldHaveTrailingMargin(
+            StripLayoutView interactingView, boolean isInteracting) {
+        if (!isInteracting) return false;
+
+        if (TabDragSource.canMergeIntoGroupOnDrop()) return true;
+
+        // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
+        // merging on drop is not allowed.
+        if (interactingView instanceof StripLayoutGroupTitle groupTitle) {
+            return groupTitle.isCollapsed();
+        } else {
+            assert interactingView instanceof StripLayoutTab : "Unexpected view type";
+            return !StripLayoutUtils.isNonTrailingTabInGroup(
+                    mTabGroupModelFilter, mModel, (StripLayoutTab) interactingView);
+        }
     }
 
     // ============================================================================================
