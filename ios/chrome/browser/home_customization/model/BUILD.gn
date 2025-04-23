@@ -6,9 +6,16 @@ source_set("model") {
   sources = [
     "background_customization_configuration.h",
     "background_customization_configuration.mm",
+    "home_background_customization_service.h",
+    "home_background_customization_service.mm",
+    "home_background_customization_service_factory.h",
+    "home_background_customization_service_factory.mm",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ui/base",
     "//url",
   ]

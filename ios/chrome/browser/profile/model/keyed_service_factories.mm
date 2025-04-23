@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
 #import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
@@ -269,6 +270,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   GoogleGroupsManagerFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   HashRealTimeServiceFactory::GetInstance();
+  HomeBackgroundCustomizationServiceFactory::GetInstance();
   HttpsUpgradeServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   ImpressionLimitServiceFactory::GetInstance();
