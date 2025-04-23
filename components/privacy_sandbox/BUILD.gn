@@ -39,13 +39,7 @@ source_set("privacy_sandbox_survey_service") {
     "privacy_sandbox_survey_service.h",
   ]
 
-  deps = [
-    ":features",
-    ":privacy_sandbox_prefs",
-    "//components/keyed_service/core:core",
-    "//components/prefs",
-    "//components/signin/public/identity_manager",
-  ]
+  deps = [ "//components/keyed_service/core:core" ]
 
   public_deps = [ "//base" ]
 }

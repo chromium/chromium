@@ -5,30 +5,33 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_survey_desktop_controller.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "privacy_sandbox_survey_desktop_controller_factory.h"
-#include "privacy_sandbox_survey_factory.h"
 
 using ::testing::_;
+using ::testing::Eq;
 
 namespace privacy_sandbox {
 
-class PrivacySandboxSurveyDesktopControllerTest : public InProcessBrowserTest {
+class PrivacySandboxSurveyDesktopControllerBrowserTest
+    : public InProcessBrowserTest {
  protected:
-  PrivacySandboxSurveyDesktopControllerTest() {
+  PrivacySandboxSurveyDesktopControllerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
   }
 
@@ -62,10 +65,6 @@ class PrivacySandboxSurveyDesktopControllerTest : public InProcessBrowserTest {
         browser()->profile());
   }
 
-  PrivacySandboxSurveyService* survey_service() {
-    return PrivacySandboxSurveyFactory::GetForProfile(browser()->profile());
-  }
-
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
@@ -73,32 +72,38 @@ class PrivacySandboxSurveyDesktopControllerTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-class PrivacySandboxSurveyDesktopControllerLaunchSurveyTest
-    : public PrivacySandboxSurveyDesktopControllerTest {
- protected:
-  void OnSentimentSurveyShown() {
-    survey_desktop_controller()->OnSentimentSurveyShown(browser()->profile());
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerBrowserTest,
                        SurveyNotLaunchedOnFirstNtp) {
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*mock_hats_service_, LaunchSurvey(_, _, _, _, _, _, _)).Times(0);
 
-  // Navigation to the first NTP should not trigger the sentiment survey.
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerBrowserTest,
                        SurveyLaunchedOnSecondNtp) {
+  // Arrange: Set some prefs to true before triggering survey.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled,
+                      false);  // Explicitly default
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+
+  // Expect values matching the modified prefs, still not signed in.
+  std::map<std::string, bool> expected_psb = {
+      {"Topics enabled", true},
+      {"Protected audience enabled", false},
+      {"Measurement enabled", true},
+      {"Signed in", false},
+  };
+  std::map<std::string, std::string> expected_psd = {
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))}};
+
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(GetSentimentSurveyTriggerId(), _, _,
-                           survey_service()->GetSentimentSurveyPsb(), _, _, _));
+                           Eq(expected_psb), Eq(expected_psd), _, _));
 
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
