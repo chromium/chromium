@@ -341,7 +341,7 @@ int NodeReader::FillAffixesForLeafMatch(
       return 0;
     }
     auto [affix_id_bytes, rest] = following_array.split_at<2u>();
-    uint16_t affix_id = base::numerics::U16FromLittleEndian(affix_id_bytes);
+    uint16_t affix_id = base::U16FromLittleEndian(affix_id_bytes);
     following_array = rest;
     if (affix_id == BDict::LEAF_NODE_FOLLOWING_LIST_TERMINATOR) {
       return i + list_offset;  // Found the end of the list.

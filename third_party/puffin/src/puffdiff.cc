@@ -90,7 +90,7 @@ bool CreatePatch(const Buffer& raw_patch,
   // Read header size from big-endian mode.
   base::span(*patch)
       .subspan(offset, 4u)
-      .copy_from(base::numerics::U32ToBigEndian(header_size));
+      .copy_from(base::U32ToBigEndian(header_size));
   offset += 4u;
 
   TEST_AND_RETURN_FALSE(
