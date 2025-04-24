@@ -226,7 +226,7 @@
 <translation id="1703117532528082099">Белсенді терезе сол жаққа бекітілген.</translation>
 <translation id="1708345662127501511">Жұмыс үстелі: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Желі параметрлері</translation>
-<translation id="1719094688023114093">Live Caption қосулы.</translation>
+<translation id="1719094688023114093">Автоматты субтитр функциясы қосулы.</translation>
 <translation id="1720011244392820496">Wi-Fi деректерін синхрондауды қосу</translation>
 <translation id="1720230731642245863">Хотспот өшірулі</translation>
 <translation id="1731815243805539470">Алдыңғы пайдаланушыға ауысу</translation>
@@ -1744,7 +1744,7 @@
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="662830937908749204">Келесі панельге өту</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
-<translation id="6641720045729354415">Live Caption-ді қосу/өшіру. <ph name="STATE_TEXT" /></translation>
+<translation id="6641720045729354415">Автоматты субтитр функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ат бойынша сұрыптау ретін қайтару</translation>
 <translation id="664793810957802384">Ұсынылған топтағы элементтер</translation>
 <translation id="6649641931981131786">Камераны реттеп, сізді экранның ортасына орналастырады.</translation>
@@ -1924,7 +1924,7 @@
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Скриншот түсіру үшін жылдам параметрлердегі экранды түсіру құралын пайдаланыңыз</translation>
 <translation id="7301826272005790482">Терезе ұсыныстарын жабу</translation>
-<translation id="7302889331339392448">Live Caption өшірулі.</translation>
+<translation id="7302889331339392448">Автоматты субтитр функциясы өшірулі.</translation>
 <translation id="7303365578352795231">Басқа құрылғыдан жауап берілуде.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Ешбір нәтиже табылмады</translation>

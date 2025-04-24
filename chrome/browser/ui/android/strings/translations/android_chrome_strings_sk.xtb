@@ -1191,7 +1191,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6482749332252372425">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu nedostatku voľného miesta v úložisku.</translation>
 <translation id="6486420406192123355">Tento súbor PDF pochádza z webu s nezabezpečeným pripojením</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Súbor bol stiahnutý}few{Boli stiahnuté # súbory}many{# downloads complete}other{Bolo stiahnutých # súborov}}</translation>
-<translation id="6508722015517270189">Reštartujte Chrome</translation>
+<translation id="6508722015517270189">Reštartovať Chrome</translation>
 <translation id="6518133107902771759">Overiť</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="652948702951888897">História Chromu</translation>
