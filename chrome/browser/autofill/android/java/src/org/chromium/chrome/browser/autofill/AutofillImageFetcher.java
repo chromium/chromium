@@ -86,9 +86,10 @@ public class AutofillImageFetcher {
 
             for (@ImageSize int size : imageSizes) {
                 CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
-                GURL urlToFetch =
+                String resolvedUrl =
                         AutofillUiUtils.getFifeIconUrlWithParams(
-                                url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+                                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight())
+                                .getSpec();
                 Function<Bitmap, Bitmap> treatImageFunction =
                         bitmap ->
                                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
@@ -97,10 +98,10 @@ public class AutofillImageFetcher {
                         bitmap ->
                                 treatAndCacheImage(
                                         bitmap,
-                                        urlToFetch.getSpec(),
+                                        resolvedUrl,
                                         treatImageFunction,
                                         CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM);
-                fetchImage(urlToFetch.getSpec(), onImageFetched);
+                fetchImage(resolvedUrl, onImageFetched);
             }
         }
     }
@@ -118,17 +119,18 @@ public class AutofillImageFetcher {
                 continue;
             }
 
-            GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
+            String resolvedUrl =
+                    AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url).getSpec();
             Function<Bitmap, Bitmap> treatImageFunction =
                     bitmap -> AutofillImageFetcherUtils.treatPixAccountImage(bitmap);
             Callback<@Nullable Bitmap> onImageFetched =
                     bitmap ->
                             treatAndCacheImage(
                                     bitmap,
-                                    urlWithParams.getSpec(),
+                                    resolvedUrl,
                                     treatImageFunction,
                                     PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
-            fetchImage(urlWithParams.getSpec(), onImageFetched);
+            fetchImage(resolvedUrl, onImageFetched);
         }
     }
 
@@ -141,12 +143,12 @@ public class AutofillImageFetcher {
      * @return {@link Drawable} to be displayed for the Pix account.
      */
     public Drawable getPixAccountIcon(Context context, @Nullable GURL url) {
-        GURL cachedUrl = new GURL("");
+        GURL resolvedUrl = new GURL("");
         if (url != null && url.isValid()) {
-            cachedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
+            resolvedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
         }
 
-        return getIcon(context, cachedUrl, R.drawable.ic_account_balance);
+        return getIcon(context, resolvedUrl, R.drawable.ic_account_balance);
     }
 
     /**
@@ -158,12 +160,12 @@ public class AutofillImageFetcher {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
-        GURL urlToCache =
+        GURL resolvedUrl =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         // If the card art image exists in the cache, return it.
-        if (mImagesCache.containsKey(urlToCache.getSpec())) {
-            return Optional.of(mImagesCache.get(urlToCache.getSpec()));
+        if (mImagesCache.containsKey(resolvedUrl.getSpec())) {
+            return Optional.of(mImagesCache.get(resolvedUrl.getSpec()));
         }
 
         return Optional.empty();
@@ -172,21 +174,21 @@ public class AutofillImageFetcher {
     /**
      * Fetches image for the given URL and passes it to the callback.
      *
-     * @param customUrl The final URL including any params to fetch the image.
+     * @param resolvedUrl The final URL including any params to fetch the image.
      * @param onImageFetched The callback to be called with the fetched image.
      */
-    private void fetchImage(String customUrl, Callback<@Nullable Bitmap> onImageFetched) {
-        if (mImagesCache.containsKey(customUrl)) {
+    private void fetchImage(String resolvedUrl, Callback<@Nullable Bitmap> onImageFetched) {
+        if (mImagesCache.containsKey(resolvedUrl)) {
             return;
         }
 
         // Update the attempt count for fetching the image.
-        int fetchAttemptCount = mFetchAttemptCounter.getOrDefault(customUrl, 0);
-        mFetchAttemptCounter.put(customUrl, fetchAttemptCount + 1);
+        int fetchAttemptCount = mFetchAttemptCounter.getOrDefault(resolvedUrl, 0);
+        mFetchAttemptCounter.put(resolvedUrl, fetchAttemptCount + 1);
 
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        customUrl, ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+                        resolvedUrl, ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(params, onImageFetched);
     }
 
@@ -196,7 +198,7 @@ public class AutofillImageFetcher {
      * {@code REFETCH_DELAY_MS} between each attempt.
      *
      * @param bitmap The Bitmap fetched from server.
-     * @param urlToCache The key against which the treated Bitmap is cached.
+     * @param resolvedUrl The key against which the treated Bitmap is cached.
      * @param treatImageFunction Imagetreatment function.
      * @param overallSuccessHistogramName Histogram name to measure the success rate of a specific
      *     image type. Logs whether or not the image was fetched after a maximum of {@code
@@ -204,7 +206,7 @@ public class AutofillImageFetcher {
      */
     private void treatAndCacheImage(
             @Nullable Bitmap bitmap,
-            String urlToCache,
+            String resolvedUrl,
             Function<Bitmap, Bitmap> treatImageFunction,
             String overallSuccessHistogramName) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
@@ -212,12 +214,12 @@ public class AutofillImageFetcher {
         if (bitmap != null) {
             RecordHistogram.recordBooleanHistogram(overallSuccessHistogramName, /* sample= */ true);
 
-            mImagesCache.put(urlToCache, treatImageFunction.apply(bitmap));
+            mImagesCache.put(resolvedUrl, treatImageFunction.apply(bitmap));
             return;
         }
 
         // Image fetching failed, and max retry attempts reached.
-        if (mFetchAttemptCounter.getOrDefault(urlToCache, 0) >= MAX_FETCH_ATTEMPTS) {
+        if (mFetchAttemptCounter.getOrDefault(resolvedUrl, 0) >= MAX_FETCH_ATTEMPTS) {
             RecordHistogram.recordBooleanHistogram(
                     overallSuccessHistogramName, /* sample= */ false);
             return;
@@ -228,11 +230,11 @@ public class AutofillImageFetcher {
                 fetchedBitmap ->
                         treatAndCacheImage(
                                 fetchedBitmap,
-                                urlToCache,
+                                resolvedUrl,
                                 treatImageFunction,
                                 overallSuccessHistogramName);
         Handler handler = new Handler();
-        handler.postDelayed(() -> fetchImage(urlToCache, onImageFetched), REFETCH_DELAY_MS);
+        handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
     }
 
     /**
@@ -240,16 +242,16 @@ public class AutofillImageFetcher {
      * corresponding to `defaultIconId`.
      *
      * @param context {@link Context} to get the resources.
-     * @param cachedUrl The key for the cached custom image.
+     * @param resolvedUrl The key for the cached custom image.
      * @param defaultIconId Resource id of the default fallback icon.
      * @return {@link Drawable} which is either the custom icon corresponding to `cachedUrl` from
      *     cache or the fallback icon corresponding to `defaultIconId` from resources. Prefers
      *     former over latter.
      */
-    private Drawable getIcon(Context context, GURL cachedUrl, int defaultIconId) {
-        if (cachedUrl.isValid() && mImagesCache.containsKey(cachedUrl.getSpec())) {
+    private Drawable getIcon(Context context, GURL resolvedUrl, int defaultIconId) {
+        if (resolvedUrl.isValid() && mImagesCache.containsKey(resolvedUrl.getSpec())) {
             return new BitmapDrawable(
-                    context.getResources(), mImagesCache.get(cachedUrl.getSpec()));
+                    context.getResources(), mImagesCache.get(resolvedUrl.getSpec()));
         }
 
         return AppCompatResources.getDrawable(context, defaultIconId);
