@@ -1467,16 +1467,8 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest, Shutdown) {
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 }
 
-// TODO(https://crbug.com/368570340)
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
-  DISABLED_ForwardRedirectsAndResponseToAttributionRequestHelper
-#else
-#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
-  ForwardRedirectsAndResponseToAttributionRequestHelper
-#endif
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
-       MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper) {
+       ForwardRedirectsAndResponseToAttributionRequestHelper) {
   // The Attribution Manager uses the DataDecoder service, which, when an
   // InProcessDataDecoer object exists, will route to an internal in-process
   // instance.
@@ -1511,24 +1503,33 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   // The network should now have created pending URLLoader.
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 
+  base::RunLoop run_loop_1;
+
   // Simluates receiving a redirect in the network service.
-  EXPECT_CALL(*mock_attribution_manager, HandleTrigger).Times(1);
+  EXPECT_CALL(*mock_attribution_manager, HandleTrigger)
+      .WillOnce([&](AttributionTrigger, GlobalRenderFrameHostId) {
+        run_loop_1.Quit();
+      });
   constexpr char kRegisterTriggerJson[] = R"json({ })json";
   GetLastPendingRequest()->client->OnReceiveRedirect(
       CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
       CreateResponseHead({{kAttributionReportingRegisterTriggerHeader,
                            kRegisterTriggerJson}}));
+  run_loop_1.Run();
+
+  base::RunLoop run_loop_2;
 
   // Simluates receiving response in the network service.
-  EXPECT_CALL(*mock_attribution_manager, HandleSource).Times(1);
+  EXPECT_CALL(*mock_attribution_manager, HandleSource)
+      .WillOnce(
+          [&](StorableSource, GlobalRenderFrameHostId) { run_loop_2.Quit(); });
   constexpr char kRegisterSourceJson[] =
       R"json({"destination":"https://destination.example"})json";
   GetLastPendingRequest()->client->OnReceiveResponse(
       CreateResponseHead(
           {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
       /*body=*/{}, /*cached_metadata=*/std::nullopt);
-
-  base::RunLoop().RunUntilIdle();
+  run_loop_2.Run();
 }
 
 }  // namespace content
