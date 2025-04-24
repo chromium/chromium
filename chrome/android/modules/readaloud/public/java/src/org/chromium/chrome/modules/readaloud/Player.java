@@ -91,7 +91,7 @@ public interface Player {
          * in place of the mini player layout during browser controls resizing when showing and
          * hiding.
          */
-        LayoutManager getLayoutManager();
+        @Nullable LayoutManager getLayoutManager();
 
         /**
          * Return {@link ActivityLifecycleDispatcher} that can be used to register for configuration

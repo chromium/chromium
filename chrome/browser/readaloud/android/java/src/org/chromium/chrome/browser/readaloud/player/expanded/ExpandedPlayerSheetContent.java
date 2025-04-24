@@ -24,6 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
     // Note: if these times need to change, the "back 10" and "forward 10" icons
@@ -68,12 +70,6 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 LayoutInflater.from(context)
                         .inflate(R.layout.readaloud_expanded_player_layout, null),
                 model);
-        mOptionsMenu =
-                new OptionsMenuSheetContent(
-                        mContext, /* parent= */ this, mBottomSheetController, mModel);
-        mSpeedMenu =
-                new SpeedMenuSheetContent(
-                        mContext, /* parent= */ this, mBottomSheetController, mModel);
     }
 
     @VisibleForTesting
@@ -94,6 +90,13 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mContentView
                 .findViewById(R.id.readaloud_seek_forward_button)
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
+
+        mOptionsMenu =
+                new OptionsMenuSheetContent(
+                        mContext, /* parent= */ this, mBottomSheetController, mModel);
+        mSpeedMenu =
+                new SpeedMenuSheetContent(
+                        mContext, /* parent= */ this, mBottomSheetController, mModel);
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
