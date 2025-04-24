@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
@@ -29,6 +30,10 @@ class PageActionMetricsRecorderTest : public testing::Test {
  protected:
   PageActionMetricsRecorderTest() : tab_(&profile_) {}
 
+  ~PageActionMetricsRecorderTest() override {
+    task_environment_.RunUntilIdle();
+  }
+
   void SetUp() override {
     // By default, let the page action be "not visible." Tests can override.
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
@@ -37,11 +42,16 @@ class PageActionMetricsRecorderTest : public testing::Test {
   void CreateRecorder(bool is_ephemeral) {
     properties_.type = PageActionIconType::kLensOverlay;
     properties_.is_ephemeral = is_ephemeral;
+    properties_.histogram_name = "LensOverlay";
     recorder_ = std::make_unique<PageActionMetricsRecorder>(tab_, properties_,
                                                             mock_model_);
   }
 
   void FireModelChanged() { recorder_->OnPageActionModelChanged(mock_model_); }
+
+  void SimulateClick(PageActionTrigger trigger) {
+    recorder_->RecordClick(trigger);
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -108,6 +118,48 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
   // we do nothing.
   FireModelChanged();
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 0);
+}
+
+TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder(/*is_ephemeral=*/true);
+
+  const std::string general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = base::StrCat(
+      {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
+
+  histogram_tester.ExpectTotalCount(general_histogram, 0);
+  histogram_tester.ExpectTotalCount(specific_histogram, 0);
+
+  SimulateClick(PageActionTrigger::kMouse);
+
+  // Verify both histograms logged once with kClicked value.
+  histogram_tester.ExpectTotalCount(general_histogram, 1);
+  histogram_tester.ExpectUniqueSample(general_histogram,
+                                      PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 1);
+  histogram_tester.ExpectUniqueSample(specific_histogram,
+                                      PageActionCTREvent::kClicked, 1);
+
+  SimulateClick(PageActionTrigger::kKeyboard);
+
+  // Verify both histograms logged again (total 2), check bucket count.
+  histogram_tester.ExpectTotalCount(general_histogram, 2);
+  histogram_tester.ExpectBucketCount(general_histogram,
+                                     PageActionCTREvent::kClicked, 2);
+  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kClicked, 2);
+
+  SimulateClick(PageActionTrigger::kGesture);
+
+  // Verify both histograms logged again (total 3), check bucket count.
+  histogram_tester.ExpectTotalCount(general_histogram, 3);
+  histogram_tester.ExpectBucketCount(general_histogram,
+                                     PageActionCTREvent::kClicked, 3);
+  histogram_tester.ExpectTotalCount(specific_histogram, 3);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kClicked, 3);
 }
 
 }  // namespace

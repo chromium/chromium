@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -552,6 +553,89 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
+}
+
+class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
+                                           public PageActionUiTestBase {
+ public:
+  PageActionMetricsInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {
+            {features::kPageActionsMigrationZoom.name, "true"},
+        });
+  }
+
+  PageActionMetricsInteractiveUiTest(
+      const PageActionMetricsInteractiveUiTest&) = delete;
+  PageActionMetricsInteractiveUiTest& operator=(
+      const PageActionInteractiveUiTest&) = delete;
+  ~PageActionMetricsInteractiveUiTest() override = default;
+
+  // PageActionUiTestBase:
+  Browser* GetBrowser() const override { return browser(); }
+
+ protected:
+  void SetZoomLevel(content::PageZoom zoom_level) {
+    chrome::Zoom(GetBrowser(), zoom_level);
+  }
+
+  auto DoZoomIn() {
+    return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_IN); });
+  }
+
+  auto DoZoomOut() {
+    return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_OUT); });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest, ClickHistogramLogs) {
+  base::HistogramTester histogram_tester;
+  const char* general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = "PageActionController.Zoom.Icon.CTR2";
+
+  RunTestSequence(
+      DoZoomIn(), WaitForShow(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() { return histogram_tester.GetTotalSum(general_histogram); },
+          testing::Eq(0)),
+      CheckResult(
+          [&]() { return histogram_tester.GetTotalSum(specific_histogram); },
+          testing::Eq(0)),
+
+      PressButton(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                general_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(1)),
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                specific_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(1)),
+
+      PressButton(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                general_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(2)),
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                specific_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(2)));
 }
 
 // TODO(crbug.com/411078148): Re-enable on Mac.

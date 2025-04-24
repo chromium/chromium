@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "components/tabs/public/tab_interface.h"
@@ -19,6 +20,7 @@ PageActionMetricsRecorder::PageActionMetricsRecorder(
     PageActionModelInterface& model)
     : is_ephemeral_(properties.is_ephemeral),
       page_action_type_(properties.type),
+      histogram_name_(properties.histogram_name),
       tab_interface_(tab_interface) {
   scoped_observation_.Observe(&model);
 }
@@ -59,6 +61,15 @@ void PageActionMetricsRecorder::OnPageActionVisible() {
   page_action_recorded_urls_.insert(current_url);
   base::UmaHistogramEnumeration("PageActionController.ActionTypeShown2",
                                 page_action_type_);
+}
+
+void PageActionMetricsRecorder::RecordClick(
+    PageActionTrigger /*trigger_source*/) {
+  base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
+                                PageActionCTREvent::kClicked);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PageActionController.", histogram_name_, ".Icon.CTR2"}),
+      PageActionCTREvent::kClicked);
 }
 
 }  // namespace page_actions

@@ -71,6 +71,8 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   if (controller) {
+    click_callback_ =
+        controller->GetClickCallback(action_item_->GetActionId().value());
     controller->AddObserver(action_item_->GetActionId().value(), observation_);
     // TODO(crbug.com/388524315): Have the controller manage its own ActionItem
     // observation. See bug for more explanation.
@@ -171,6 +173,9 @@ void PageActionView::NotifyClick(const ui::Event& event) {
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            trigger_source))
           .Build());
+
+  CHECK(click_callback_);
+  click_callback_.Run(trigger_source);
 }
 
 void PageActionView::UpdateIconImage() {

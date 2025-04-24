@@ -24,6 +24,7 @@ source_set("page_action") {
   sources = [
     "page_action_container_view.cc",
     "page_action_controller.cc",
+    "page_action_enums.h",
     "page_action_metrics_recorder.cc",
     "page_action_metrics_recorder.h",
     "page_action_model.cc",

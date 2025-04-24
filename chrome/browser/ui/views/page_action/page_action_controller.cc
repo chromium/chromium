@@ -48,7 +48,7 @@ void PageActionController::Initialize(
         CreateMetricsRecorder(tab_interface,
                               properties_provider.GetProperties(id),
                               FindPageActionModel(id));
-    metrics_recorders_.push_back(std::move(metrics_recorder));
+    metrics_recorders_.emplace(id, std::move(metrics_recorder));
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
@@ -217,6 +217,20 @@ PageActionController::CreateMetricsRecorder(
     return std::make_unique<PageActionMetricsRecorder>(tab_interface,
                                                        properties, model);
   }
+}
+
+base::RepeatingCallback<void(PageActionTrigger)>
+PageActionController::GetClickCallback(actions::ActionId action_id) {
+  return base::BindRepeating(&PageActionController::RecordClickMetric,
+                             weak_factory_.GetWeakPtr(), action_id);
+}
+
+void PageActionController::RecordClickMetric(actions::ActionId action_id,
+                                             PageActionTrigger trigger_source) {
+  auto id_and_recorder = metrics_recorders_.find(action_id);
+  CHECK(id_and_recorder != metrics_recorders_.end());
+  CHECK(id_and_recorder->second.get());
+  id_and_recorder->second->RecordClick(trigger_source);
 }
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {

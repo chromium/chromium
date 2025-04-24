@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -27,6 +28,9 @@ class PageActionMetricsRecorderInterface {
  public:
   PageActionMetricsRecorderInterface() = default;
   virtual ~PageActionMetricsRecorderInterface() = default;
+
+  // Records a click event for the page action.
+  virtual void RecordClick(PageActionTrigger trigger_source) {}
 };
 
 class PageActionMetricsRecorderFactory {
@@ -54,6 +58,9 @@ class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
 
   ~PageActionMetricsRecorder() override;
 
+  // PageActionMetricsRecorderInterface:
+  void RecordClick(PageActionTrigger trigger_source) override;
+
   // PageActionModelObserver
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
   void OnPageActionModelWillBeDeleted(
@@ -69,6 +76,7 @@ class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
   // Properties associated with the specific page action being observed.
   bool is_ephemeral_;
   PageActionIconType page_action_type_;
+  std::string histogram_name_;
 
   // The TabInterface is guaranteed valid for this object’s lifetime.
   const raw_ref<tabs::TabInterface> tab_interface_;

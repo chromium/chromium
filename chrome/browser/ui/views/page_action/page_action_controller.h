@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 
@@ -139,9 +141,17 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
     return base::PassKey<PageActionController>();
   }
 
+  // Provides a metric recording callback to the caller. The callback won't run
+  // if the page action controller is destroyed.
+  base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      actions::ActionId action_id);
+
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
+  using PageActionMetricsRecordersMap =
+      std::map<actions::ActionId,
+               std::unique_ptr<PageActionMetricsRecorderInterface>>;
 
   // Creates a page action model for the given id, and initializes it's values.
   void Register(actions::ActionId action_id, bool is_tab_active);
@@ -163,6 +173,10 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
       const PageActionProperties& properties,
       PageActionModelInterface& model);
 
+  // Issues internally a metric recording for the provided `action_id`.
+  void RecordClickMetric(actions::ActionId action_id,
+                         PageActionTrigger trigger_source);
+
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>
       page_action_metrics_recorder_factory_ = nullptr;
@@ -171,8 +185,7 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   // Metrics recorders associated with ephemeral page actions.
   // Each recorder handles logging UMA metrics for one specific action id.
-  std::vector<std::unique_ptr<PageActionMetricsRecorderInterface>>
-      metrics_recorders_;
+  PageActionMetricsRecordersMap metrics_recorders_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
@@ -180,6 +193,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   base::CallbackListSubscription tab_activated_callback_subscription_;
   base::CallbackListSubscription tab_deactivated_callback_subscription_;
+
+  base::WeakPtrFactory<PageActionController> weak_factory_{this};
 };
 
 }  // namespace page_actions

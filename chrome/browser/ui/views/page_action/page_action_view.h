@@ -7,10 +7,13 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event.h"
@@ -105,6 +108,11 @@ class PageActionView : public IconLabelBubbleView,
   // Client-provided callbacks for changes to chip state.
   base::RepeatingCallbackList<void(PageActionView*)>
       chip_visibility_changed_callbacks_;
+
+  // Used to record click event histogram. It's initialized to base::DoNothing()
+  // for testing purpose.
+  base::RepeatingCallback<void(PageActionTrigger)> click_callback_ =
+      base::DoNothing();
 };
 
 }  // namespace page_actions
