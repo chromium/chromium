@@ -655,8 +655,9 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
       final_node = MaybeNegateFirstNode(op, node)->Copy();
       continue;
     }
-    final_node = MakeGarbageCollected<CSSMathExpressionOperation>(
-        final_node, node, op, root->Category());
+    final_node =
+        CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            final_node, node, op);
   }
   return final_node;
 }
