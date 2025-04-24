@@ -77,12 +77,12 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
     tree = xml.dom.minidom.parse(path)
     variants, variants_errors = extract_histograms.ExtractVariantsFromXmlTree(
         tree)
-    has_errors = has_errors or variants_errors
+    has_errors = has_errors or bool(variants_errors)
 
     for histogram in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3):
       tokens, tokens_errors = extract_histograms.ExtractTokens(
           histogram, variants)
-      has_errors = has_errors or tokens_errors
+      has_errors = has_errors or bool(tokens_errors)
 
       token_keys = [token['key'] for token in tokens]
       token_keys.extend(variants.keys())
@@ -116,7 +116,7 @@ def main():
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces(paths_to_check)
   errors = errors or _CheckVariantsRegistered(paths_to_check)
-  sys.exit(errors)
+  sys.exit(bool(errors))
 
 
 if __name__ == '__main__':
