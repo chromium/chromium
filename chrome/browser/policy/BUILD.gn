@@ -154,6 +154,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",

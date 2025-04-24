@@ -438,6 +438,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/ui",

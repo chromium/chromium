@@ -281,6 +281,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/extensions:extensions",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common:constants",

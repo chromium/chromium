@@ -43,6 +43,7 @@ static_library("osauth") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",

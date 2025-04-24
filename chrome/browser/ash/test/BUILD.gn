@@ -49,6 +49,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/policy",
     "//chromeos/ash/components/policy/weekly_time:test_support",

@@ -36,6 +36,7 @@ static_library("assistant") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",

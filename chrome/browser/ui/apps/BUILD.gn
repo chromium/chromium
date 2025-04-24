@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/file_system_access",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",

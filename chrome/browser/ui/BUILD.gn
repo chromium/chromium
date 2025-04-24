@@ -1696,6 +1696,7 @@ static_library("ui") {
       "//chrome/browser/background:background",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
+      "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/privacy_sandbox",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
@@ -3036,6 +3037,7 @@ static_library("ui") {
       "webui/signin/sync_confirmation_ui.h",
     ]
     deps += [
+      "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
       "//chrome/browser/ui/autofill/payments",
@@ -5867,6 +5869,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser:buildflags",
+      "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_list",
     ]
