@@ -552,8 +552,8 @@ class AuctionProcessManagerTest
                 url::Origin::Create(GURL("https://joinin-origin.test")),
                 GURL("https://trusted-signals-url/"),
                 url::Origin::Create(GURL("https://coordinator.test")),
-                /*trusted_bidding_signals_key=*/{},
-                /*additional_params=*/{}, partition_id_ignored);
+                /*trusted_bidding_signals_keys=*/{}, /*additional_params=*/{},
+                /*buyer_tkv_signals=*/std::nullopt, partition_id_ignored);
         break;
       case AuctionProcessManager::WorkletType::kSeller:
         trusted_signals_handle =
@@ -567,7 +567,8 @@ class AuctionProcessManagerTest
                 url::Origin::Create(GURL("https://bidder.test")),
                 url::Origin::Create(GURL("https://joining-origin.test")),
                 GURL("https://render-url.test"), /*component_render_urls=*/{},
-                /*additional_params=*/{}, partition_id_ignored);
+                /*additional_params=*/{}, /*seller_tkv_signals=*/std::nullopt,
+                partition_id_ignored);
         break;
     }
 
