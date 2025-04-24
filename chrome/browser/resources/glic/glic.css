@@ -34,7 +34,7 @@ webview:not([hidden]) {
   right: 0;
   font-family: Roboto, sans-serif;
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 20px;
   color: var(--color--on-surface);
 }
@@ -109,6 +109,7 @@ webview:not([hidden]) {
 
 .dialog .notice {
   background-color: var(--color--surface);
+  color: var(--color--on-surface);
   border-radius: 10px;
   padding: 12px;
   margin: 0 14px;
@@ -124,7 +125,7 @@ webview:not([hidden]) {
 
 .dialog .headline {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   margin: 8px 0 4px;
 }
 
