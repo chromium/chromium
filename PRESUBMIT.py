@@ -7645,6 +7645,8 @@ def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
         files_to_check=[r'.*\.java$'])
 
     for f in input_api.AffectedSourceFiles(_FilterFile):
+        if f.Action() != 'A':
+            continue
         for line in f.NewContents():
             if nullmarked_annotation.search(line):
                 break

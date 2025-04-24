@@ -5258,6 +5258,15 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 
+    def testOnlyChecksAddedFiles(self):
+        """Tests that missing @NullMarked or @NullUnmarked is only flagged in newly added files."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneMissing.java', ['public class OneMissing'], action='M'),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(0, len(results))
+
     def testExcludesTests(self):
         """Tests that missing @NullMarked or @NullUnmarked are not flagged in tests."""
         mock_input = MockInputApi()
