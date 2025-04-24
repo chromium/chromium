@@ -7,12 +7,16 @@
 
 #include <optional>
 #include <variant>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ManualFillingController;
@@ -52,6 +56,7 @@ class PaymentMethodAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
+      ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
       AutofillDriver* af_driver);
 
@@ -69,6 +74,7 @@ class PaymentMethodAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
+      ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
       AutofillDriver* af_driver);
 
@@ -96,6 +102,9 @@ class PaymentMethodAccessoryControllerImpl
 
   // Gets IBANs from the personal data manager.
   std::vector<Iban> GetIbans() const;
+
+  // Gets Google Wallet loyalty cards from the valuables data manager.
+  base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
@@ -130,6 +139,9 @@ class PaymentMethodAccessoryControllerImpl
   // Observes the `PaymentsDataManager` of the profile to react to updates.
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
       paydm_observation_{this};
+  // Used to retrieve user's Google Wallet loyalty cards. It's owned by the
+  // profile and guaranteed to outlive this instance.
+  raw_ptr<ValuablesDataManager> valuables_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="CREDENTIAL_PASSWORD"/>
   <int value="19" label="PASSKEY"/>
   <int value="20" label="PLUS_ADDRESS"/>
+  <int value="21" label="LOYALTY_CARD"/>
 </enum>
 
 <enum name="AccessoryToggleType">

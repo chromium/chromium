@@ -42,7 +42,7 @@ class ValuablesDataManager : public KeyedService,
   // finished.
   //
   // The returned span may be invalidated asynchronously.
-  virtual base::span<const LoyaltyCard> GetLoyaltyCards() const;
+  base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;

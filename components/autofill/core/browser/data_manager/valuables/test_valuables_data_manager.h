@@ -16,8 +16,6 @@ class TestValuablesDataManager : public ValuablesDataManager {
   TestValuablesDataManager(const TestValuablesDataManager&) = delete;
   TestValuablesDataManager& operator=(const TestValuablesDataManager&) = delete;
   ~TestValuablesDataManager() override;
-
-  base::span<const LoyaltyCard> GetLoyaltyCards() const override;
 };
 
 }  // namespace autofill

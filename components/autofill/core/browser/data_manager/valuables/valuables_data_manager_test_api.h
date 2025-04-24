@@ -20,6 +20,11 @@ class ValuablesDataManagerTestApi {
 
   void LoadLoyaltyCards() { valuables_data_manager_->LoadLoyaltyCards(); }
 
+  void AddLoyaltyCard(LoyaltyCard loyalty_card) {
+    valuables_data_manager_->loyalty_cards_.emplace_back(
+        std::move(loyalty_card));
+  }
+
  private:
   const raw_ref<ValuablesDataManager> valuables_data_manager_;
 };

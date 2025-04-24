@@ -58,7 +58,11 @@ enum class AccessorySuggestionType {
   // passwords manual filling sheets.
   kPlusAddress = 20,
 
-  kMaxValue = kPlusAddress,
+  // Google Wallet loyalty card suggestion accessing from the payments manual
+  // filling sheet.
+  kLoyaltyCard = 21,
+
+  kMaxValue = kLoyaltyCard,
 };
 
 // Describes possible actions in the keyboard accessory and its sheets. Used to

@@ -10,9 +10,4 @@ TestValuablesDataManager::TestValuablesDataManager()
     : ValuablesDataManager(/*webdata_service=*/nullptr) {}
 TestValuablesDataManager::~TestValuablesDataManager() = default;
 
-base::span<const LoyaltyCard> TestValuablesDataManager::GetLoyaltyCards()
-    const {
-  return {};
-}
-
 }  // namespace autofill
