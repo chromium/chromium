@@ -164,6 +164,10 @@ found in the LICENSE file.
 
     <!-- New Tab Animation -->
     <dimen name="new_tab_animation_rect_corner_radius">10dp</dimen>
+    <dimen name="new_bg_tab_animation_size">32dp</dimen>
+    <dimen name="new_bg_tab_animation_link_elevation">13dp</dimen>
+    <dimen name="new_bg_tab_animation_tab_switcher_elevation">6dp</dimen>
+    <dimen name="new_bg_tab_animation_padding">4dp</dimen>
 
     <!-- Bookmarks dimensions -->
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
@@ -401,7 +405,4 @@ found in the LICENSE file.
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
     <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
-
-    <!-- Background tab animation host view -->
-    <dimen name="bg_tab_animation_elevation">12dp</dimen>
 </resources>

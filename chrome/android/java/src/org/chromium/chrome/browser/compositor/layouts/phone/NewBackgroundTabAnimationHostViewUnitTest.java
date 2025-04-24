@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -52,10 +53,14 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     private Activity mActivity;
     private NewBackgroundTabAnimationHostView mHostView;
     private NewBackgroundTabFakeTabSwitcherButton mFakeTabSwitcherButton;
+    private FrameLayout mFakeTabSwitcherInnerContainer;
+    private ImageView mFakeTabSwitcherButtonView;
+    private Rect mTabSwitcherRect;
 
     @Before
     public void setUp() throws Exception {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+        mTabSwitcherRect = new Rect(50, 0, 120, 100);
     }
 
     private void onActivity(Activity activity) {
@@ -69,6 +74,10 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                                         false);
         mFakeTabSwitcherButton =
                 mHostView.findViewById(R.id.new_background_tab_fake_tab_switcher_button);
+        mFakeTabSwitcherInnerContainer =
+                mFakeTabSwitcherButton.findViewById(R.id.new_tab_indicator_inner_container);
+        mFakeTabSwitcherButtonView =
+                mFakeTabSwitcherInnerContainer.findViewById(R.id.fake_tab_switcher_button);
 
         mActivity.setContentView(mHostView);
     }
@@ -179,7 +188,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                         /* originX= */ -1, /* originY= */ -1, /* statusBarHeight= */ 0);
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
         assertEquals(3, animators.size());
-        AnimatorSet transitionAnimator = (AnimatorSet) animators.get(1);
+        AnimatorSet transitionAnimator = (AnimatorSet) animators.get(0);
         assertEquals(3, transitionAnimator.getChildAnimations().size());
     }
 
@@ -200,7 +209,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
         assertEquals(4, animators.size());
         AnimatorSet transitionAnimator = (AnimatorSet) animators.get(1);
-        assertEquals(4, transitionAnimator.getChildAnimations().size());
+        assertEquals(2, transitionAnimator.getChildAnimations().size());
     }
 
     @Test
@@ -220,7 +229,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
         assertEquals(4, animators.size());
         AnimatorSet transitionAnimator = (AnimatorSet) animators.get(1);
-        assertEquals(4, transitionAnimator.getChildAnimations().size());
+        assertEquals(2, transitionAnimator.getChildAnimations().size());
     }
 
     @Test
@@ -279,7 +288,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
         doAnswer(
                         invocation -> {
                             Rect rect = invocation.getArgument(0);
-                            rect.set(new Rect(50, 0, 120, 100));
+                            rect.set(mTabSwitcherRect);
                             return isVisible;
                         })
                 .when(mTabSwitcherButton)
@@ -287,12 +296,13 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     }
 
     private void assertCommonElements(
-            @NewBackgroundTabAnimationHostView.AnimationType int animationType,
-            int tabCount,
-            FrameLayout.LayoutParams params) {
+            @NewBackgroundTabAnimationHostView.AnimationType int animationType, int tabCount) {
         assertEquals(animationType, mHostView.getAnimationTypeForTesting());
         assertEquals(tabCount, mFakeTabSwitcherButton.getTabCountForTesting());
-        assertEquals(46, params.leftMargin);
+
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mFakeTabSwitcherInnerContainer.getLayoutParams();
+        assertEquals(mTabSwitcherRect.left, params.leftMargin);
     }
 
     private void assertDefaultSettings(
@@ -302,16 +312,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
             @BrandedColorScheme int brandedColorScheme,
             boolean showNotificationIcon,
             int yOffset) {
-        FrameLayout.LayoutParams params =
-                (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
-        assertCommonElements(animationType, tabCount, params);
-        assertEquals(yOffset, params.topMargin);
+        assertCommonElements(animationType, tabCount);
         assertEquals(buttonColor, mFakeTabSwitcherButton.getButtonColorForTesting());
         assertEquals(brandedColorScheme, mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
         assertEquals(
                 showNotificationIcon,
                 mFakeTabSwitcherButton.getShowIconNotificationStatusForTesting());
         assertEquals(1f, mFakeTabSwitcherButton.getAlpha(), MathUtils.EPSILON);
+
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
+        assertEquals(yOffset, params.topMargin);
     }
 
     private void assertNtpSettings(
@@ -320,7 +331,9 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
             int yOffset) {
         FrameLayout.LayoutParams params =
                 (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
-        assertCommonElements(animationType, tabCount, params);
+        // For Ntp, the tabCount increases when calling {@link
+        // mFakeTabSwitcherButton#setUpNtpAnimation}.
+        assertCommonElements(animationType, tabCount + 1);
         int height = yOffset;
         if (animationType == NewBackgroundTabAnimationHostView.AnimationType.NTP_FULL_SCROLL) {
             height +=
@@ -330,6 +343,6 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                                     .getDimension(R.dimen.toolbar_height_no_shadow));
         }
         assertEquals(height, params.topMargin);
-        assertEquals(0f, mFakeTabSwitcherButton.getAlpha(), MathUtils.EPSILON);
+        assertEquals(0f, mFakeTabSwitcherButtonView.getAlpha(), MathUtils.EPSILON);
     }
 }

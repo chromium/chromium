@@ -35,10 +35,9 @@ import java.lang.annotation.Target;
 
 /** Host view for the new background tab animation. */
 public class NewBackgroundTabAnimationHostView extends FrameLayout {
-    private static final long CURVED_MOTION_DURATION_MS = 400L;
-    private static final long LINK_SCALE_DURATION_MS = 120L;
-    private static final long CROSS_FADE_DURATION_MS = 150L;
-    private static final long SCALE_DURATION_MS = 50L;
+    /* package */ static final long CROSS_FADE_DURATION_MS = 150L;
+    private static final long CURVED_MOTION_DURATION_MS = 300L;
+    private static final long LINK_SCALE_DURATION_MS = 160L;
     private static final long DELAY_DURATION_MS = 100L;
 
     @IntDef({
@@ -49,7 +48,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    /*package*/ @interface AnimationType {
+    /* package */ @interface AnimationType {
         int UNINITIALIZED = 0;
         int DEFAULT = 1;
         int NTP_PARTIAL_SCROLL = 2;
@@ -89,9 +88,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         assert mAnimationType != AnimationType.UNINITIALIZED;
         int[] target = new int[2];
         mFakeTabSwitcherButton.getButtonLocation(target, mYOffset + statusBarHeight);
-        target[0] -= mLinkIcon.getWidth() / 2;
-        target[1] -=
-                mAnimationType == AnimationType.NTP_FULL_SCROLL ? mLinkIcon.getHeight() / 2 : 0;
+        target[0] -= Math.round(mLinkIcon.getWidth() / 2f);
+        target[1] -= Math.round(mLinkIcon.getHeight() / 2f);
 
         AnimatorSet transitionAnimator = getTransitionAnimator();
         ObjectAnimator curvedAnimator =
@@ -101,23 +99,19 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         AnimatorSet fakeTabSwitcherAnimator;
 
         if (mAnimationType == AnimationType.DEFAULT) {
-            fakeTabSwitcherAnimator = mFakeTabSwitcherButton.getRotateFadeOutAnimator();
-            backgroundAnimation.playSequentially(
-                    curvedAnimator, transitionAnimator, fakeTabSwitcherAnimator);
+            fakeTabSwitcherAnimator =
+                    mFakeTabSwitcherButton.getShrinkAnimator(/* incrementCount= */ true);
+            backgroundAnimation
+                    .play(transitionAnimator)
+                    .with(fakeTabSwitcherAnimator)
+                    .after(curvedAnimator);
         } else {
             transitionAnimator.setStartDelay(CURVED_MOTION_DURATION_MS - CROSS_FADE_DURATION_MS);
             fakeTabSwitcherAnimator =
                     mFakeTabSwitcherButton.getTranslateAnimator(
-                            NewBackgroundTabFakeTabSwitcherButton.TranslateDirection.UP, true);
+                            NewBackgroundTabFakeTabSwitcherButton.TranslateDirection.UP);
             fakeTabSwitcherAnimator.setStartDelay(DELAY_DURATION_MS);
-
-            ObjectAnimator scaleXAnimator =
-                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_X, 1.15f, 1f);
-            ObjectAnimator scaleYAnimator =
-                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_Y, 1.15f, 1f);
-            AnimatorSet scaleAnimator = new AnimatorSet();
-            scaleAnimator.playTogether(scaleXAnimator, scaleYAnimator);
-            scaleAnimator.setDuration(SCALE_DURATION_MS);
+            AnimatorSet scaleAnimator = mFakeTabSwitcherButton.getScaleDownAnimator();
 
             backgroundAnimation
                     .play(curvedAnimator)
@@ -151,14 +145,12 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         mFakeTabSwitcherButton.setTabCount(tabCount, isIncognito);
 
         Rect tabSwitcherRect = new Rect();
-        boolean tabIconIsVisible = tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
-        int fakeButtonSideMargin = mFakeTabSwitcherButton.getInnerSidePadding();
-        FrameLayout.LayoutParams params =
-                (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
-        params.leftMargin = tabSwitcherRect.left - fakeButtonSideMargin;
-        params.topMargin = yOffset;
+        boolean tabSwitcherButtonIsVisible =
+                tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
+        int horizontalMargin = tabSwitcherRect.left;
+        int verticalMargin = yOffset;
 
-        if (tabIconIsVisible || !isNtp) {
+        if (tabSwitcherButtonIsVisible || !isNtp) {
             mAnimationType = AnimationType.DEFAULT;
             @BrandedColorScheme
             int brandedColorScheme =
@@ -168,9 +160,10 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             mFakeTabSwitcherButton.setNotificationIconStatus(
                     tabSwitcherButton.shouldShowNotificationIcon());
         } else {
+            mFakeTabSwitcherButton.setUpNtpAnimation(/* incrementCount= */ true);
             if (ntpToolbarTransitionPercentage == 1f) {
                 mAnimationType = AnimationType.NTP_FULL_SCROLL;
-                params.topMargin +=
+                verticalMargin +=
                         Math.round(
                                 getContext()
                                         .getResources()
@@ -178,9 +171,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             } else {
                 mAnimationType = AnimationType.NTP_PARTIAL_SCROLL;
             }
-            mFakeTabSwitcherButton.setAlpha(0f);
         }
-        mFakeTabSwitcherButton.setLayoutParams(params);
+        mFakeTabSwitcherButton.setMargin(verticalMargin, horizontalMargin);
     }
 
     /**
@@ -214,32 +206,20 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      */
     private AnimatorSet getTransitionAnimator() {
         AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator fadeAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.ALPHA, 1f, 0f);
 
         if (mAnimationType == AnimationType.DEFAULT) {
             mLinkIcon.setPivotX(mLinkIcon.getMeasuredWidth() / 2f);
-            mLinkIcon.setPivotY(0f);
+            mLinkIcon.setPivotY(mLinkIcon.getMeasuredHeight() / 2f);
 
-            AnimatorSet rotateFadeInAnimator =
-                    mFakeTabSwitcherButton.getRotateFadeInAnimator(/* incrementCount= */ true);
             ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_X, 1f, 0f);
-            scaleXAnimator.setDuration(LINK_SCALE_DURATION_MS);
             ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_Y, 1f, 0f);
-            scaleYAnimator.setDuration(LINK_SCALE_DURATION_MS);
-
-            animatorSet.playTogether(rotateFadeInAnimator, scaleXAnimator, scaleYAnimator);
+            animatorSet.playTogether(scaleXAnimator, scaleYAnimator, fadeAnimator);
+            animatorSet.setDuration(LINK_SCALE_DURATION_MS);
+            animatorSet.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         } else {
-            ObjectAnimator alphaLinkAnimator =
-                    ObjectAnimator.ofFloat(mLinkIcon, View.ALPHA, 1f, 0f);
-            ObjectAnimator alphaTabSwitcherAnimator =
-                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.ALPHA, 0f, 1f);
-
-            ObjectAnimator scaleXAnimator =
-                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_X, 0.5f, 1.15f);
-            ObjectAnimator scaleYAnimator =
-                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_Y, 0.5f, 1.15f);
-
-            animatorSet.playTogether(
-                    scaleXAnimator, scaleYAnimator, alphaLinkAnimator, alphaTabSwitcherAnimator);
+            AnimatorSet fakeTabSwitcherAnimator = mFakeTabSwitcherButton.getScaleFadeAnimator();
+            animatorSet.playTogether(fakeTabSwitcherAnimator, fadeAnimator);
             animatorSet.setDuration(CROSS_FADE_DURATION_MS);
         }
         return animatorSet;
