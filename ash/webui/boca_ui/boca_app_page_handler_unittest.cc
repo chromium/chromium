@@ -401,9 +401,6 @@ class BocaAppPageHandlerTest : public testing::Test {
     session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(&session_client_impl_);
 
-    // Register self as listener.
-    ON_CALL(*boca_app_client(), GetSessionManager())
-        .WillByDefault(Return(session_manager()));
     // Create the WebContents for the BrowserContext.
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(browser_context_));
@@ -427,6 +424,10 @@ class BocaAppPageHandlerTest : public testing::Test {
   void CreateBocaAppHandler(bool is_producer) {
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
     remote_.reset();
+    // `BocaAppClient::GetSessionManager` should be called exactly once on
+    // construction.
+    EXPECT_CALL(*boca_app_client(), GetSessionManager)
+        .WillOnce(Return(session_manager()));
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         remote_.BindNewPipeAndPassReceiver(),
         // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
