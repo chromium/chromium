@@ -753,10 +753,12 @@
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityMultiSelectable/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/OnScreenModeDumpAccessibilityTreeTest.ContentWith3ViewPortScrollsForOnScreenMode/blink
 
 # TODO(crbug.com/368335261): These tests have been failing since
 # https://crrev.com/c/5464569.
