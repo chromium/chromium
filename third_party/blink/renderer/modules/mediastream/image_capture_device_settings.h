@@ -21,6 +21,7 @@ struct MODULES_EXPORT ImageCaptureDeviceSettings {
   std::optional<double> saturation;
   std::optional<double> sharpness;
   std::optional<double> focus_distance;
+  std::optional<bool> expose_pan_tilt_zoom_support;
   std::optional<double> pan;
   std::optional<double> tilt;
   std::optional<double> zoom;

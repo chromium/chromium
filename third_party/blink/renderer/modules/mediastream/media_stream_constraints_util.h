@@ -288,6 +288,12 @@ MODULES_EXPORT bool GetConstraintValueAsDouble(
     const blink::DoubleConstraint MediaTrackConstraintSetPlatform::*picker,
     double* value);
 
+bool IsPanTiltZoomConstraintPresentAndNotFalse(
+    const MediaConstraints& constraints);
+
+bool IsPanTiltZoomConstraintPresentAndNotFalse(
+    const MediaTrackConstraintSetPlatform& constraint_set);
+
 // This function selects track settings from a set of candidate resolutions and
 // frame rates, given the source video-capture format and ideal values.
 // The output are settings for a VideoTrackAdapter, which can adjust the
