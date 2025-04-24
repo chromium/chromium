@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// The Integrity-Policy header enables developers to enforce Subresource
+// Integrity on certain request destinations, to ensure their documents do not
+// load any assets of that type without integrity guaranties.
+struct IntegrityPolicy {
+  // The request destinations on which integrity will be enforced.
+  enum Destination {
+    kScript,
+  };
+  // The source of integrity information.
+  // Inline - represents the `integrity` attribute inlined in the HTML (or DOM).
+  enum Source {
+    kInline,
+  };
+
+  // An array of destinations to be blocked without integrity metadata.
+  array<Destination> blocked_destinations;
+  // An array of possible sources for integrity metadata.
+  array<Source> sources;
+  // An array of Reporting API endpoints to which policy violations will be
+  // reported.
+  array<string> endpoints;
+  // An array of parsing errors, to be communicated from the browser to the
+  // renderer, so that they can be reported to the developer console.
+  array<string> parsing_errors;
+};
