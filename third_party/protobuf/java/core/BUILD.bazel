@@ -147,6 +147,7 @@ java_library(
     deps = [":lite_runtime_only"],
 )
 
+# Bazel users, don't depend on this target, use //java/lite.
 protobuf_versioned_java_library(
     name = "lite_bundle",
     srcs = LITE_SRCS + [
@@ -268,22 +269,17 @@ java_library(
     ],
 )
 
+# Bazel users, don't depend on this target, use :core.
 protobuf_versioned_java_library(
     name = "core_bundle",
-    srcs = FULL_SRCS,
+    srcs = FULL_SRCS + LITE_SRCS,
     automatic_module_name = "com.google.protobuf",
     bundle_description = "Core Protocol Buffers library. Protocol Buffers " +
                          "are a way of encoding structured data in an " +
                          "efficient yet extensible format.",
     bundle_name = "Protocol Buffers [Core]",
     bundle_symbolic_name = "com.google.protobuf",
-    visibility = ["//visibility:public"],
-    exports = [
-        ":lite_runtime_only",
-    ],
-    deps = [
-        ":lite_runtime_only",
-    ],
+    visibility = ["//visibility:private"],
 )
 
 # Bazel users, don't depend on this target, use :core.
@@ -393,8 +389,8 @@ protobuf_java_library(
         ":generic_test_protos_java_proto",
         ":java_test_protos_java_proto",
         ":lite_test_protos_java_proto",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:junit_junit",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:junit_junit",
     ],
 )
 
@@ -444,11 +440,11 @@ junit_tests(
         ":java_test_protos_java_proto",
         ":lite_test_protos_java_proto",
         ":test_util",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:com_google_testparameterinjector_test_parameter_injector",
-        "@protobuf_maven//:com_google_truth_truth",
-        "@protobuf_maven//:junit_junit",
-        "@protobuf_maven//:org_mockito_mockito_core",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:com_google_testparameterinjector_test_parameter_injector",
+        "@protobuf_maven_dev//:com_google_truth_truth",
+        "@protobuf_maven_dev//:junit_junit",
+        "@protobuf_maven_dev//:org_mockito_mockito_core",
     ],
 )
 
@@ -464,9 +460,9 @@ junit_tests(
     ],
     deps = [
         ":core",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:com_google_truth_truth",
-        "@protobuf_maven//:junit_junit",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:com_google_truth_truth",
+        "@protobuf_maven_dev//:junit_junit",
     ],
 )
 
@@ -521,8 +517,8 @@ protobuf_java_library(
         ":java_test_protos_java_proto_lite",
         ":lite_runtime_only",
         ":lite_test_protos_java_proto_lite",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:junit_junit",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:junit_junit",
     ],
 )
 
@@ -533,6 +529,7 @@ LITE_TEST_EXCLUSIONS = [
     "src/test/java/com/google/protobuf/CodedInputStreamTest.java",
     "src/test/java/com/google/protobuf/DeprecatedFieldTest.java",
     "src/test/java/com/google/protobuf/DebugFormatTest.java",
+    "src/test/java/com/google/protobuf/ConcurrentDescriptorsTest.java",
     "src/test/java/com/google/protobuf/DescriptorsTest.java",
     "src/test/java/com/google/protobuf/DiscardUnknownFieldsTest.java",
     "src/test/java/com/google/protobuf/DynamicMessageTest.java",
@@ -590,9 +587,9 @@ junit_tests(
         ":lite",
         ":lite_test_protos_java_proto_lite",
         ":test_util_lite",
-        "@protobuf_maven//:com_google_truth_truth",
-        "@protobuf_maven//:junit_junit",
-        "@protobuf_maven//:org_mockito_mockito_core",
+        "@protobuf_maven_dev//:com_google_truth_truth",
+        "@protobuf_maven_dev//:junit_junit",
+        "@protobuf_maven_dev//:org_mockito_mockito_core",
     ],
 )
 
@@ -606,8 +603,8 @@ protobuf_java_library(
     deps = [
         ":core",
         "//compatibility:v25_test_protos_srcjar",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:junit_junit",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:junit_junit",
     ],
 )
 
@@ -640,10 +637,10 @@ junit_tests(
         ":core",
         ":v25_test_util_srcjar",
         "//compatibility:v25_test_protos_srcjar",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:com_google_truth_truth",
-        "@protobuf_maven//:junit_junit",
-        "@protobuf_maven//:org_mockito_mockito_core",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:com_google_truth_truth",
+        "@protobuf_maven_dev//:junit_junit",
+        "@protobuf_maven_dev//:org_mockito_mockito_core",
     ],
 )
 
@@ -657,8 +654,8 @@ protobuf_java_library(
     deps = [
         ":core",
         "//compatibility:v25_test_protos_jar",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:junit_junit",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:junit_junit",
     ],
 )
 
@@ -690,10 +687,10 @@ junit_tests(
         ":core",
         ":v25_test_util_jar",
         "//compatibility:v25_test_protos_jar",
-        "@protobuf_maven//:com_google_guava_guava",
-        "@protobuf_maven//:com_google_truth_truth",
-        "@protobuf_maven//:junit_junit",
-        "@protobuf_maven//:org_mockito_mockito_core",
+        "@protobuf_maven_dev//:com_google_guava_guava",
+        "@protobuf_maven_dev//:com_google_truth_truth",
+        "@protobuf_maven_dev//:junit_junit",
+        "@protobuf_maven_dev//:org_mockito_mockito_core",
     ],
 )
 
