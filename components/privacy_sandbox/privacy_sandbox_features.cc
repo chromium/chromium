@@ -281,7 +281,7 @@ BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
 
 BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
              "PrivacySandboxMigratePrefsToSchemaV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxFirstTimeNoticeV2,
              "PrivacySandboxFirstTimeNoticeV2",
