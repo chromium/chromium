@@ -144,8 +144,12 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     boolean isMaxImpressionsReached() {
-        return ChromeSharedPreferences.getInstance().readInt(getPromoShowCountPreferenceName())
-                >= MAX_IMPRESSIONS_NTP;
+        return getPromoShownCount() >= MAX_IMPRESSIONS_NTP;
+    }
+
+    @Override
+    int getPromoShownCount() {
+        return ChromeSharedPreferences.getInstance().readInt(getPromoShowCountPreferenceName());
     }
 
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {

@@ -248,5 +248,15 @@ final class SigninPromoMediator
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT),
                 MAX_TOTAL_PROMO_SHOW_COUNT);
+
+        if (!Event.SHOWN.equals(actionType)) {
+            RecordHistogram.recordExactLinearHistogram(
+                    "Signin.Promo.ImpressionsUntil."
+                            + actionType
+                            + "."
+                            + mDelegate.getAccessPointName(),
+                    mDelegate.getPromoShownCount(),
+                    MAX_TOTAL_PROMO_SHOW_COUNT);
+        }
     }
 }

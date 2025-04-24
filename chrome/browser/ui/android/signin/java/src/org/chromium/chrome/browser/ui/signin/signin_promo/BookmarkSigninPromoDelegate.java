@@ -161,8 +161,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     boolean isMaxImpressionsReached() {
-        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName)
-                >= MAX_IMPRESSIONS_BOOKMARKS;
+        return getPromoShownCount() >= MAX_IMPRESSIONS_BOOKMARKS;
     }
 
     @Override
@@ -178,6 +177,11 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
             default:
                 throw new IllegalStateException("Forbidden promo type: " + mPromoState);
         }
+    }
+
+    @Override
+    int getPromoShownCount() {
+        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
     }
 
     private @PromoState int computePromoState() {

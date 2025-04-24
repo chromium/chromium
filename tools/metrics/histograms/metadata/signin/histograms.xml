@@ -2306,6 +2306,18 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
+<histogram name="Signin.Promo.{Action}.ImpressionsUntil.{AccessPoint}"
+    units="impressions" expires_after="2026-04-18">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    This histogram records how many times the sign-in promo of the {AccessPoint}
+    has been shown when a {Action} is done on the same promo (Android Only).
+  </summary>
+  <token key="Action" variants="SigninPromoAction"/>
+  <token key="AccessPoint" variants="SigninPromoAccessPoint"/>
+</histogram>
+
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->
@@ -3050,9 +3062,9 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}"
-    units="bookmarks" expires_after="2025-08-24">
+    units="impressions" expires_after="2025-08-24">
   <owner>triploblastic@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     This histogram records how many times sync promos have been shown (including
     the current one) across all access points when {Action} the {AccessPoint}

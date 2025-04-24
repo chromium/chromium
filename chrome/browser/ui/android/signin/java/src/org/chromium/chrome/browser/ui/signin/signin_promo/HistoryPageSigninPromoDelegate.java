@@ -152,14 +152,18 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     boolean isMaxImpressionsReached() {
-        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName)
-                >= MAX_IMPRESSIONS;
+        return getPromoShownCount() >= MAX_IMPRESSIONS;
     }
 
     @Override
     @HistorySyncConfig.OptInMode
     int getHistoryOptInMode() {
         return HistorySyncConfig.OptInMode.REQUIRED;
+    }
+
+    @Override
+    int getPromoShownCount() {
+        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
     }
 
     private @PromoState int computePromoState() {

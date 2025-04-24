@@ -69,6 +69,9 @@ public abstract class SigninPromoDelegate {
      */
     abstract boolean canShowPromo();
 
+    /** Returns the number of times where the promo is shown to the user, */
+    abstract int getPromoShownCount();
+
     /**
      * Refresh the promo state including its content and visibility. This method is invoked by
      * SigninPromoMediator whenever observed state affecting promo content/visibility is updated
