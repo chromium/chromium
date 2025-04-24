@@ -554,6 +554,15 @@ std::optional<Path> ClipPathClipper::PathBasedClipInternal(
     const LayoutObject& reference_box_object,
     const gfx::Vector2dF& clip_offset) {
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
+  if (const auto* shape = DynamicTo<ShapeClipPathOperation>(clip_path)) {
+    Path path =
+        GetPathWithObjectZoom(*shape, reference_box, reference_box_object);
+    if (!clip_offset.IsZero()) {
+      path = PathBuilder(path).Translate(clip_offset).Finalize();
+    }
+    return path;
+  }
+
   if (const auto* geometry_box_clip =
           DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
     auto box = RoundedReferenceBox(geometry_box_clip->GetGeometryBox(),
@@ -562,38 +571,31 @@ std::optional<Path> ClipPathClipper::PathBasedClipInternal(
     return box.GetPath();
   }
 
-  if (const auto* reference_clip =
-          DynamicTo<ReferenceClipPathOperation>(clip_path)) {
-    if (reference_clip->IsLoading()) {
-      return Path();
-    }
-    LayoutSVGResourceClipper* resource_clipper =
-        ResolveElementReference(clip_path_owner, *reference_clip);
-    if (!resource_clipper)
-      return std::nullopt;
-    std::optional<Path> path = resource_clipper->AsPath();
-    if (!path)
-      return path;
-
-    const auto clip_transform =
-        AffineTransform::Translation(clip_offset.x(), clip_offset.y()) *
-        MaskToContentTransform(*resource_clipper, reference_box,
-                               reference_box_object);
-    if (!clip_transform.IsIdentity()) {
-      path = PathBuilder(*path).Transform(clip_transform).Finalize();
-    }
-
+  const auto& reference_clip = To<ReferenceClipPathOperation>(clip_path);
+  if (reference_clip.IsLoading()) {
+    return Path();
+  }
+  LayoutSVGResourceClipper* resource_clipper =
+      ResolveElementReference(clip_path_owner, reference_clip);
+  if (!resource_clipper) {
+    return std::nullopt;
+  }
+  // If the current clip-path gets clipped itself, we have to fallback to
+  // masking.
+  if (resource_clipper->StyleRef().HasClipPath()) {
+    return std::nullopt;
+  }
+  std::optional<Path> path = resource_clipper->AsPath();
+  if (!path) {
     return path;
   }
-
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
-  const auto& shape = To<ShapeClipPathOperation>(clip_path);
-  Path path = GetPathWithObjectZoom(shape, reference_box, reference_box_object);
-
-  if (!clip_offset.IsZero()) {
-    path = PathBuilder(path).Translate(clip_offset).Finalize();
+  const auto clip_transform =
+      AffineTransform::Translation(clip_offset.x(), clip_offset.y()) *
+      MaskToContentTransform(*resource_clipper, reference_box,
+                             reference_box_object);
+  if (!clip_transform.IsIdentity()) {
+    path = PathBuilder(*path).Transform(clip_transform).Finalize();
   }
-
   return path;
 }
 
