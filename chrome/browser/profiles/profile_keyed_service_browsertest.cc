@@ -386,6 +386,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "ComponentExtensionContentSettingsAllowlist",
+#endif
     "EnterpriseReportingPrivateEventRouter",
     "ExtensionNavigationRegistry",
     "ExtensionSystem",
@@ -597,6 +600,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ChildAccountService",
     "ChromeSigninClient",
     "CommandService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "ComponentExtensionContentSettingsAllowlist",
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     "ComponentLoader",
 #endif

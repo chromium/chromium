@@ -10,6 +10,8 @@ static_library("component_extension_content_settings") {
     "component_extension_content_settings_allowlist.h",
     "component_extension_content_settings_allowlist_factory.cc",
     "component_extension_content_settings_allowlist_factory.h",
+    "component_extension_content_settings_provider.cc",
+    "component_extension_content_settings_provider.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -22,5 +24,19 @@ static_library("component_extension_content_settings") {
     "//components/keyed_service/core",
     "//extensions/common",
     "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "component_extension_content_settings_provider_unittest.cc" ]
+
+  deps = [
+    ":component_extension_content_settings",
+    "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//testing/gmock",
   ]
 }

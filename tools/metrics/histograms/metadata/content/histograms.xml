@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ContentAllProviderTypes">
+  <variant name="ComponentExtensionProvider"/>
   <variant name="CustomExtensionProvider"/>
   <variant name="DefaultProvider"/>
   <variant name="InstalledWebappProvider"/>

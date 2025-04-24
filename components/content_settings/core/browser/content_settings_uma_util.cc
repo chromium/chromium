@@ -177,6 +177,8 @@ std::string GetProviderNameForHistograms(
     // when new providers are added.
     case ProviderType::kWebuiAllowlistProvider:
       return "WebuiAllowlistProvider";
+    case ProviderType::kComponentExtensionProvider:
+      return "ComponentExtensionProvider";
     case ProviderType::kPolicyProvider:
       return "PolicyProvider";
     case ProviderType::kSupervisedProvider:

@@ -157,6 +157,7 @@ constexpr SettingSource GetSettingSourceFromProviderType(
     ProviderType provider_type) {
   switch (provider_type) {
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
       return SettingSource::kAllowList;
     case ProviderType::kPolicyProvider:
       return SettingSource::kPolicy;

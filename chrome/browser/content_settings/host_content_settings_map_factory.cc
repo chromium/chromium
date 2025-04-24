@@ -30,7 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"  // nogncheck
 #include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
@@ -39,6 +39,11 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_provider.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service_factory.h"
@@ -68,6 +73,10 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(extensions::ComponentExtensionContentSettingsAllowlistFactory::
+                GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // Used by way of ShouldRestoreOldSessionCookies().
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(ExitTypeServiceFactory::GetInstance());
@@ -119,6 +128,15 @@ scoped_refptr<RefcountedKeyedService>
   settings_map->RegisterProvider(ProviderType::kWebuiAllowlistProvider,
                                  std::move(allowlist_provider));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  auto component_extension_provider =
+      std::make_unique<extensions::ComponentExtensionContentSettingsProvider>(
+          extensions::ComponentExtensionContentSettingsAllowlistFactory::
+              GetForBrowserContext(profile));
+  settings_map->RegisterProvider(ProviderType::kComponentExtensionProvider,
+                                 std::move(component_extension_provider));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // These must be registered before before the HostSettings are passed over to
   // the IOThread.  Simplest to do this on construction.
@@ -133,6 +151,7 @@ scoped_refptr<RefcountedKeyedService>
           // interaction with profile->IsGuestSession()?
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
+
   supervised_user::SupervisedUserSettingsService* supervised_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.

@@ -29,9 +29,6 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
@@ -47,6 +44,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
 #include "chrome/browser/extensions/forced_extensions/assessment_assistant_tracker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -79,9 +77,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::AccountExtensionTracker::GetFactory();
   extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS)
-  extensions::ComponentExtensionContentSettingsAllowlistFactory::GetInstance();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionErrorControllerFactory::GetInstance();
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
@@ -96,6 +91,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::AssessmentAssistantTrackerFactory::GetInstance();
+  extensions::ComponentExtensionContentSettingsAllowlistFactory::GetInstance();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -724,6 +724,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     const ProviderType provider_type) {
   switch (provider_type) {
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
       return SiteSettingSource::kAllowlist;
     case ProviderType::kPolicyProvider:
     case ProviderType::kSupervisedProvider:
@@ -760,6 +761,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
       return "preference";
     case ProviderType::kInstalledWebappProvider:
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
     case ProviderType::kDefaultProvider:
       return "default";
     case ProviderType::kJavascriptOptimizerAndroidProvider:
