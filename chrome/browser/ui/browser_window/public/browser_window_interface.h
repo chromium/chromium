@@ -105,6 +105,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the browser window is visible on the screen.
   virtual bool IsVisibleOnScreen() const = 0;
 
+  // Returns true if the window is visible.
+  virtual bool IsVisible() const = 0;
+
   virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
 
   // Returns the view that houses the Lens overlay.

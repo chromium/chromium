@@ -1213,6 +1213,10 @@ bool Browser::IsVisibleOnScreen() const {
   return window_->IsVisibleOnScreen();
 }
 
+bool Browser::IsVisible() const {
+  return window_->IsVisible();
+}
+
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
   return AsWeakPtr();
 }
