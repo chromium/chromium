@@ -77,7 +77,8 @@ void PrivacySandboxNoticeService::EmitStartupHistograms() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-DesktopViewManager* PrivacySandboxNoticeService::GetDesktopViewManager() {
+DesktopViewManagerInterface*
+PrivacySandboxNoticeService::GetDesktopViewManager() {
   return desktop_view_manager_.get();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

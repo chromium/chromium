@@ -50,7 +50,7 @@ class PrivacySandboxNoticeService
   NoticeCatalog* GetCatalog();
 
 #if !BUILDFLAG(IS_ANDROID)
-  DesktopViewManager* GetDesktopViewManager() override;
+  DesktopViewManagerInterface* GetDesktopViewManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // KeyedService:
@@ -63,7 +63,7 @@ class PrivacySandboxNoticeService
   std::unique_ptr<NoticeCatalog> catalog_;
   std::unique_ptr<NoticeStorage> notice_storage_;
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<DesktopViewManager> desktop_view_manager_;
+  std::unique_ptr<DesktopViewManagerInterface> desktop_view_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

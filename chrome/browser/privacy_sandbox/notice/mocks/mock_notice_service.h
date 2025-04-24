@@ -39,7 +39,10 @@ class MockPrivacySandboxNoticeService
               (override));
 
 #if !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(DesktopViewManager*, GetDesktopViewManager, (), (override));
+  MOCK_METHOD(DesktopViewManagerInterface*,
+              GetDesktopViewManager,
+              (),
+              (override));
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

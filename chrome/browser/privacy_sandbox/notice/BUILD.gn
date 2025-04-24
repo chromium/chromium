@@ -115,6 +115,8 @@ source_set("test_support") {
   # (Desktop Only)
   if (!is_android) {
     sources += [
+      "mocks/mock_desktop_view_manager.cc",
+      "mocks/mock_desktop_view_manager.h",
       "mocks/mock_desktop_view_manager_observer.cc",
       "mocks/mock_desktop_view_manager_observer.h",
     ]
@@ -165,6 +167,7 @@ source_set("browser_tests") {
     ":core",
     ":interfaces",
     ":notice",
+    ":test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
@@ -178,6 +181,10 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/test:test_support_ui" ]
+    sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
+    deps += [
+      ":desktop_view_manager",
+      "//chrome/test:test_support_ui",
+    ]
   }
 }

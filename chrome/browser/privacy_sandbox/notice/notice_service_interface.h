@@ -14,7 +14,7 @@
 
 namespace privacy_sandbox {
 
-class DesktopViewManager;
+class DesktopViewManagerInterface;
 
 enum class SurfaceType;
 
@@ -31,7 +31,7 @@ class PrivacySandboxNoticeServiceInterface : public KeyedService {
       notice::mojom::PrivacySandboxNoticeEvent event) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
-  virtual DesktopViewManager* GetDesktopViewManager() = 0;
+  virtual DesktopViewManagerInterface* GetDesktopViewManager() = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

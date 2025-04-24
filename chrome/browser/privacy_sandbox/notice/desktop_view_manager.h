@@ -23,7 +23,18 @@ class PrivacySandboxNoticeServiceInterface;
 // the desktop side.
 // 2. Advance multi-step notices
 // 3. Manage sticky behavior of notices across tabs
-class DesktopViewManager {
+class DesktopViewManagerInterface {
+ public:
+  virtual ~DesktopViewManagerInterface();
+
+  // Returns handler responsible for tracking navigations.
+  virtual NavigationHandler* GetNavigationHandler() = 0;
+  // Called by navigation handler when a suitable URL has
+  // been found. All suitable URLs are chrome-owned.
+  virtual void HandleChromeOwnedPageNavigation() = 0;
+};
+
+class DesktopViewManager : public DesktopViewManagerInterface {
  public:
   using ShowViewCallback =
       base::OnceCallback<void(BrowserWindowInterface*,
@@ -31,7 +42,7 @@ class DesktopViewManager {
 
   explicit DesktopViewManager(
       PrivacySandboxNoticeServiceInterface* notice_service);
-  virtual ~DesktopViewManager();
+  ~DesktopViewManager() override;
 
   class Observer {
    public:
@@ -46,13 +57,12 @@ class DesktopViewManager {
 
   // Accessors
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
-  NavigationHandler* GetNavigationHandler();
+  // DesktopViewManagerInterface
+  NavigationHandler* GetNavigationHandler() override;
+  void HandleChromeOwnedPageNavigation() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-  // Called by an the new navigation entrypoint handler when a suitable URL has
-  // been found. All suitable URLs are chrome-owned.
-  void HandleChromeOwnedPageNavigation();
 
  private:
   friend class DesktopViewManagerTestPeer;

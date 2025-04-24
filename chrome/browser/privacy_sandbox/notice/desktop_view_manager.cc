@@ -15,6 +15,8 @@ using notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 using enum notice::mojom::PrivacySandboxNoticeEvent;
 
+DesktopViewManagerInterface::~DesktopViewManagerInterface() = default;
+
 DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service)
     : notice_service_(notice_service) {
