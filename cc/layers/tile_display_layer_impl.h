@@ -48,11 +48,9 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   class CC_EXPORT Tile {
    public:
-    Tile();
-    explicit Tile(const TileContents& contents);
-    Tile(Tile&&);
-    Tile& operator=(Tile&&);
+    explicit Tile(TileDisplayLayerImpl& layer, const TileContents& contents);
     ~Tile();
+    Tile(Tile&&);
 
     const TileContents& contents() const { return contents_; }
 
@@ -74,6 +72,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     bool IsReadyToDraw() const { return true; }
 
    private:
+    const raw_ref<TileDisplayLayerImpl> layer_;
     TileContents contents_;
   };
 
@@ -157,13 +156,13 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void DiscardResource(viz::ResourceId resource);
 
  private:
-  std::vector<std::unique_ptr<Tiling>> tilings_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
+  std::vector<std::unique_ptr<Tiling>> tilings_;
 };
 
 }  // namespace cc

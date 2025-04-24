@@ -48,19 +48,19 @@ TileDisplayLayerImpl::TileResource::operator=(const TileResource&) = default;
 
 TileDisplayLayerImpl::TileResource::~TileResource() = default;
 
-TileDisplayLayerImpl::Tile::Tile() = default;
-
-TileDisplayLayerImpl::Tile::Tile(const TileContents& contents)
-    : contents_(contents) {
+TileDisplayLayerImpl::Tile::Tile(TileDisplayLayerImpl& layer,
+                                 const TileContents& contents)
+    : layer_(layer), contents_(contents) {
   DCHECK(!std::holds_alternative<NoContents>(contents_));
 }
 
 TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
 
-TileDisplayLayerImpl::Tile& TileDisplayLayerImpl::Tile::operator=(Tile&&) =
-    default;
-
-TileDisplayLayerImpl::Tile::~Tile() = default;
+TileDisplayLayerImpl::Tile::~Tile() {
+  if (auto* resource = std::get_if<TileResource>(&contents_)) {
+    layer_->DiscardResource(resource->resource.id);
+  }
+}
 
 TileDisplayLayerImpl::Tiling::Tiling(TileDisplayLayerImpl& layer,
                                      float scale_key)
@@ -127,16 +127,8 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
     if (auto* resource = std::get_if<TileResource>(&contents)) {
       layer_->ImportResource(resource->resource);
     }
-    old_tile = std::exchange(tiles_[key], std::make_unique<Tile>(contents));
-  }
-
-  if (old_tile) {
-    if (auto* resource = std::get_if<TileResource>(&old_tile->contents())) {
-      // As of now, this will mark only one resource discarded at a time.
-      // TODO(vikassoni): Optimize to discard resources in batch. This will
-      // eventually trigger less IPCs back to the Renderer.
-      layer_->DiscardResource(resource->resource.id);
-    }
+    old_tile =
+        std::exchange(tiles_[key], std::make_unique<Tile>(*layer_, contents));
   }
 }
 

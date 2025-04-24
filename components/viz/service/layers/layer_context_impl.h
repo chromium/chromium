@@ -130,11 +130,11 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   mojo::AssociatedRemote<mojom::LayerContextClient> client_;
   const std::unique_ptr<cc::TaskRunnerProvider> task_runner_provider_;
   const std::unique_ptr<cc::RenderingStatsInstrumentation> rendering_stats_;
-  const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 
   std::vector<ReturnedResource> resources_to_return_;
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
+  const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 };
 
 }  // namespace viz
