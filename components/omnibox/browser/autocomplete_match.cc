@@ -1895,6 +1895,14 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     image_dominant_color = duplicate_match.image_dominant_color;
     image_url = duplicate_match.image_url;
     icon_url = duplicate_match.icon_url;
+
+    // Prefer to keep the original `type` for more helpful metric logging.
+    // However, searches and non-searches have different ranking & text display
+    // (see `swap_contents_and_description` and `UpdateKeywordDescriptions()`).
+    // Using text from a search/URL match but displaying the match like a
+    // URL/search could look very broken.
+    if (IsSearchType(type) != IsSearchType(duplicate_match.type))
+      type = duplicate_match.type;
   }
 
   // Copy `rich_autocompletion_triggered` for counterfactual logging.

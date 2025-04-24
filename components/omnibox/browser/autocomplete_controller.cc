@@ -1635,7 +1635,7 @@ void AutocompleteController::AttachActions() {
     return;
   }
 
-  #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Attach the contextual search fulfillment actions in the @page keyword mode.
   if (omnibox_feature_configs::ContextualSearch::Get()
           .contextual_zero_suggest_lens_fulfillment &&
