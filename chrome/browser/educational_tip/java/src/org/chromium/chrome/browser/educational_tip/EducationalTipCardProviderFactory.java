@@ -23,7 +23,8 @@ public class EducationalTipCardProviderFactory {
             @ModuleType int moduleType,
             @NonNull Runnable onModuleClickedCallback,
             @NonNull CallbackController callbackController,
-            @NonNull EducationTipModuleActionDelegate actionDelegate) {
+            @NonNull EducationTipModuleActionDelegate actionDelegate,
+            Runnable removeModuleCallback) {
         switch (moduleType) {
             case ModuleType.DEFAULT_BROWSER_PROMO:
                 return new DefaultBrowserPromoCoordinator(onModuleClickedCallback, actionDelegate);
@@ -38,7 +39,10 @@ public class EducationalTipCardProviderFactory {
                         onModuleClickedCallback, callbackController, actionDelegate);
             case ModuleType.HISTORY_SYNC_PROMO:
                 return new HistorySyncPromoCoordinator(
-                        onModuleClickedCallback, callbackController, actionDelegate);
+                        onModuleClickedCallback,
+                        callbackController,
+                        actionDelegate,
+                        removeModuleCallback);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

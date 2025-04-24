@@ -47,7 +47,7 @@ public interface EducationTipModuleActionDelegate {
     void openAndHighlightQuickDeleteMenuItem();
 
     /** Opens the the history sync opt in page. */
-    void showHistorySyncOptIn();
+    void showHistorySyncOptIn(Runnable removeModuleCallback);
 
     /**
      * Returns the total number of tabs for relaunch across both regular and incognito browsing

@@ -28,13 +28,14 @@ public class HistorySyncPromoCoordinator implements EducationalTipCardProvider {
     public HistorySyncPromoCoordinator(
             Runnable onModuleClickedCallback,
             CallbackController callbackController,
-            EducationTipModuleActionDelegate actionDelegate) {
+            EducationTipModuleActionDelegate actionDelegate,
+            Runnable removeModuleCallback) {
         mActionDelegate = actionDelegate;
 
         mOnClickedRunnable =
                 callbackController.makeCancelable(
                         () -> {
-                            mActionDelegate.showHistorySyncOptIn();
+                            mActionDelegate.showHistorySyncOptIn(removeModuleCallback);
                             onModuleClickedCallback.run();
                         });
     }

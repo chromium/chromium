@@ -301,6 +301,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
@@ -2708,7 +2709,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
 
             @Override
-            public void showHistorySyncOptIn() {
+            public void showHistorySyncOptIn(Runnable dismissHistorySyncModuleCallback) {
                 BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
                         new BottomSheetSigninAndHistorySyncConfig.Builder(
                                         new AccountPickerBottomSheetStrings.Builder(
@@ -2732,8 +2733,20 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                         mTabModelSelector.getCurrentModel().getProfile(),
                                         bottomSheetConfig,
                                         SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP);
+
                 if (intent != null) {
-                    ChromeTabbedActivity.this.startActivity(intent);
+                    WindowAndroid windowAndroid = ChromeTabbedActivity.this.getWindowAndroid();
+                    windowAndroid.showIntent(
+                            intent,
+                            new WindowAndroid.IntentCallback() {
+                                @Override
+                                public void onIntentCompleted(int resultCode, Intent data) {
+                                    if (getContext() != null) {
+                                        dismissHistorySyncModuleCallback.run();
+                                    }
+                                }
+                            },
+                            null);
                 }
             }
 
