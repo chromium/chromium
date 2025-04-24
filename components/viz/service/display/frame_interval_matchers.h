@@ -50,7 +50,16 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
                // scrolling.
     kDefault,  // Used if nothing matched.
   };
-  using Result = std::variant<FrameIntervalClass, base::TimeDelta>;
+  enum class ResultIntervalType {
+    kExact,
+    kAtLeast,
+  };
+  struct ResultInterval {
+    base::TimeDelta interval;
+    ResultIntervalType type = ResultIntervalType::kExact;
+    bool operator==(const ResultInterval& other) const;
+  };
+  using Result = std::variant<FrameIntervalClass, ResultInterval>;
   using ResultCallback =
       base::RepeatingCallback<void(Result, FrameIntervalMatcherType)>;
 

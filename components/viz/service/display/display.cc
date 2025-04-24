@@ -89,6 +89,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
+
 namespace viz {
 
 namespace {
@@ -1447,7 +1448,9 @@ void Display::SetNeedsOneBeginFrame() {
 void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
 #if BUILDFLAG(IS_ANDROID)
   if (OutputSurfaceSupportsSetFrameRate()) {
-    SetFrameIntervalOnOutputSurface(interval);
+    float interval_s = interval.InSecondsF();
+    float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
+    SetFrameIntervalOnOutputSurface({.frame_rate = frame_rate});
     return;
   }
 #endif
@@ -1481,10 +1484,9 @@ bool Display::OutputSurfaceSupportsSetFrameRate() {
          gfx::SurfaceControl::SupportsSetFrameRate();
 }
 
-void Display::SetFrameIntervalOnOutputSurface(base::TimeDelta interval) {
-  float interval_s = interval.InSecondsF();
-  float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
-  output_surface_->SetFrameRate({.frame_rate = frame_rate});
+void Display::SetFrameIntervalOnOutputSurface(
+    gfx::SurfaceControlFrameRate frame_rate) {
+  output_surface_->SetFrameRate(frame_rate);
 }
 
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {

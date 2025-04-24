@@ -15,6 +15,7 @@ namespace viz {
 namespace {
 
 using FrameIntervalClass = FrameIntervalMatcher::FrameIntervalClass;
+using ResultInterval = FrameIntervalMatcher::ResultInterval;
 using Result = FrameIntervalMatcher::Result;
 using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;
 using ContinuousRangeSettings = FrameIntervalMatcher::ContinuousRangeSettings;
@@ -35,8 +36,8 @@ void ExpectResult(const std::optional<Result> result_opt,
                   base::TimeDelta interval) {
   ASSERT_TRUE(result_opt.has_value());
   const Result& result = result_opt.value();
-  ASSERT_TRUE(std::holds_alternative<base::TimeDelta>(result));
-  EXPECT_EQ(interval, std::get<base::TimeDelta>(result));
+  ASSERT_TRUE(std::holds_alternative<ResultInterval>(result));
+  EXPECT_EQ(interval, std::get<ResultInterval>(result).interval);
 }
 
 void ExpectNullResult(const std::optional<Result> result_opt) {

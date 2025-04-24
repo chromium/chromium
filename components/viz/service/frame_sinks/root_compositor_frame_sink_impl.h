@@ -33,6 +33,10 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/ca_layer_params.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
+
 namespace viz {
 
 class Display;
@@ -206,6 +210,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   bool interval_decider_use_fixed_intervals_ = true;
   // The current display frame interval that FrameIntervalDecider decided on.
   base::TimeDelta decided_display_interval_;
+#if BUILDFLAG(IS_ANDROID)
+  gfx::SurfaceControlFrameRateCompatibility decided_display_frame_rate_compat_ =
+      gfx::SurfaceControlFrameRateCompatibility::kFixedSource;
+#endif
 
   // RootCompositorFrameSinkImpl holds a Display and a BeginFrameSource if it
   // was created with a non-null gpu::SurfaceHandle. The source can either be a

@@ -54,6 +54,21 @@
 
 namespace viz {
 
+namespace {
+#if BUILDFLAG(IS_ANDROID)
+gfx::SurfaceControlFrameRateCompatibility IntervalTypeToCompat(
+    FrameIntervalMatcher::ResultIntervalType interval_type) {
+  switch (interval_type) {
+    case FrameIntervalMatcher::ResultIntervalType::kExact:
+      return gfx::SurfaceControlFrameRateCompatibility::kFixedSource;
+    case FrameIntervalMatcher::ResultIntervalType::kAtLeast:
+      return gfx::SurfaceControlFrameRateCompatibility::kAtLeast;
+  }
+  NOTREACHED();
+}
+#endif
+}  // namespace
+
 class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
     : public BeginFrameObserverBase {
  public:
@@ -724,22 +739,38 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
     FrameIntervalDecider::Result result,
     FrameIntervalMatcherType matcher_type) {
 #if BUILDFLAG(IS_ANDROID)
-  base::TimeDelta interval = std::visit(
-      base::Overloaded(
-          [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
-            switch (frame_interval_class) {
-              case FrameIntervalDecider::FrameIntervalClass::kBoost:
-                // Currently there is no Android API to get the highest
-                // available frame rate. So only option for now is to use system
-                // its heuristics which hopefully should boost in this case.
-                return base::Milliseconds(0);
-              case FrameIntervalDecider::FrameIntervalClass::kDefault:
-                // 0 is a special value on Android for no preference.
-                return base::Milliseconds(0);
-            }
-          },
-          [](base::TimeDelta interval) { return interval; }),
-      result);
+  base::TimeDelta interval;
+  std::pair<base::TimeDelta, gfx::SurfaceControlFrameRateCompatibility>
+      interval_and_compat = std::visit(
+          base::Overloaded(
+              [](FrameIntervalDecider::FrameIntervalClass
+                     frame_interval_class) {
+                switch (frame_interval_class) {
+                  case FrameIntervalDecider::FrameIntervalClass::kBoost:
+                    return std::pair(base::Milliseconds(0),
+                                     gfx::SurfaceControlFrameRateCompatibility::
+                                         kFixedSource);
+                  case FrameIntervalDecider::FrameIntervalClass::kDefault:
+                    // 0 is a special value on Android for no preference.
+                    return std::pair(base::Milliseconds(0),
+                                     gfx::SurfaceControlFrameRateCompatibility::
+                                         kFixedSource);
+                }
+              },
+              [](FrameIntervalDecider::ResultInterval interval) {
+                return std::pair(interval.interval,
+                                 IntervalTypeToCompat(interval.type));
+              }),
+          result);
+  interval = interval_and_compat.first;
+  gfx::SurfaceControlFrameRateCompatibility compat = interval_and_compat.second;
+
+  if (decided_display_interval_ == interval &&
+      decided_display_frame_rate_compat_ == compat) {
+    return;
+  }
+  decided_display_interval_ = interval;
+  decided_display_frame_rate_compat_ = compat;
 #else
   base::TimeDelta interval = std::visit(
       base::Overloaded(
@@ -751,18 +782,23 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
                 return FrameRateDecider::UnspecifiedFrameInterval();
             }
           },
-          [](base::TimeDelta interval) { return interval; }),
+          [](FrameIntervalDecider::ResultInterval interval) {
+            return interval.interval;
+          }),
       result);
-#endif
 
   if (decided_display_interval_ == interval) {
     return;
   }
   decided_display_interval_ = interval;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   if (display_->OutputSurfaceSupportsSetFrameRate()) {
-    display_->SetFrameIntervalOnOutputSurface(interval);
+    float interval_s = interval.InSecondsF();
+    float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
+    display_->SetFrameIntervalOnOutputSurface(
+        {.frame_rate = frame_rate, .compatibility = compat});
     return;
   }
 #endif

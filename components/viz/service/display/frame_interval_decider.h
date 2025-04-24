@@ -28,6 +28,7 @@ class SurfaceManager;
 class VIZ_SERVICE_EXPORT FrameIntervalDecider {
  public:
   using FrameIntervalClass = FrameIntervalMatcher::FrameIntervalClass;
+  using ResultInterval = FrameIntervalMatcher::ResultInterval;
   using Result = FrameIntervalMatcher::Result;
   using ResultCallback = FrameIntervalMatcher::ResultCallback;
   using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;

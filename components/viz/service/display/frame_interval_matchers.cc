@@ -55,7 +55,7 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
     return std::nullopt;
   }
 
-  return std::visit(
+  base::TimeDelta interval = std::visit(
       base::Overloaded(
           [&](const std::monostate& monostate) {
             // If no intervals settings are given, then just return the content
@@ -119,10 +119,13 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
             return content_interval.value();
           }),
       matcher_inputs.settings->interval_settings);
+  return FrameIntervalMatcher::ResultInterval{interval};
 }
 
 }  // namespace
 
+bool FrameIntervalMatcher::ResultInterval::operator==(
+    const ResultInterval& other) const = default;
 FrameIntervalMatcher::FixedIntervalSettings::FixedIntervalSettings() = default;
 FrameIntervalMatcher::FixedIntervalSettings::FixedIntervalSettings(
     const FixedIntervalSettings&) = default;
@@ -197,9 +200,10 @@ std::string FrameIntervalMatcher::ResultToString(const Result& result) {
                 return "kDefault";
             }
           },
-          [](base::TimeDelta interval) {
-            return base::StringPrintf("%" PRId64 "us",
-                                      interval.InMicroseconds());
+          [](ResultInterval interval) {
+            return base::StringPrintf("%" PRId64 "us type:%d",
+                                      interval.interval.InMicroseconds(),
+                                      static_cast<int>(interval.type));
           }),
       result);
 }
@@ -257,10 +261,15 @@ std::optional<FrameIntervalMatcher::Result> InputBoostMatcher::Match(
               },
               [](const FixedIntervalSettings& fixed_interval_settings)
                   -> Result {
-                return *fixed_interval_settings.supported_intervals.begin();
+                return ResultInterval{
+                    *fixed_interval_settings.supported_intervals.begin(),
+                    ResultIntervalType::kAtLeast};
               },
               [](const ContinuousRangeSettings& continuous_range_settings)
-                  -> Result { return continuous_range_settings.min_interval; }),
+                  -> Result {
+                return ResultInterval{continuous_range_settings.min_interval,
+                                      ResultIntervalType::kAtLeast};
+              }),
           matcher_inputs.settings->interval_settings);
     }
   }
@@ -314,7 +323,7 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
     return std::nullopt;
   }
 
-  return std::visit(
+  base::TimeDelta interval = std::visit(
       base::Overloaded(
           [&](const std::monostate& monostate) { return min_interval.value(); },
           [&](const FixedIntervalSettings& fixed_interval_settings) {
@@ -341,6 +350,7 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
                               continuous_range_settings.max_interval);
           }),
       matcher_inputs.settings->interval_settings);
+  return ResultInterval{interval};
 }
 
 DefineSimpleMatcherConstructorDestructor(OnlyAnimatingImageMatcher,
