@@ -52,7 +52,7 @@ source_set("lens") {
     "//chrome/browser/companion/text_finder",
     "//chrome/browser/content_extraction",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
-    "//chrome/browser/search_engines:search_engines",
+    "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
@@ -76,7 +76,6 @@ source_set("lens") {
 }
 
 source_set("impl") {
-  public = []
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_controller.cc",
@@ -101,7 +100,6 @@ source_set("impl") {
     "page_content_type_conversions.cc",
   ]
 
-  public_deps = []
   deps = [
     ":lens",
     "//build:branding_buildflags",
@@ -124,6 +122,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
@@ -155,7 +154,7 @@ source_set("impl") {
     "//components/web_modal:web_modal",
     "//components/zoom",
     "//google_apis",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//google_apis/common:request_util",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -169,9 +168,9 @@ source_set("impl") {
     "//third_party/zlib/google:compression_utils",
     "//third_party/zstd:compress",
     "//ui/base:types",
-    "//ui/gfx:gfx",
-    "//ui/gfx/codec:codec",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
     "//ui/menus",
     "//ui/webui",
     "//url",

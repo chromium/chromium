@@ -74,6 +74,10 @@
 #include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+namespace content {
+class WebUI;
+}  // namespace content
+
 namespace lens {
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
@@ -86,15 +90,6 @@ namespace optimization_guide {
 struct AIPageContentResult;
 }  // namespace optimization_guide
 
-namespace views {
-class View;
-class WebView;
-}  // namespace views
-
-namespace content {
-class WebUI;
-}  // namespace content
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -103,14 +98,22 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace variations {
 class VariationsClient;
 }  // namespace variations
 
-enum class SidePanelEntryHideReason;
+namespace views {
+class View;
+class WebView;
+}  // namespace views
 
 class PrefService;
 class Profile;
+enum class SidePanelEntryHideReason;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
 
