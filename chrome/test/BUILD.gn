@@ -1531,6 +1531,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/webstore_installer_test.cc",
       "../browser/extensions/webstore_installer_test.h",
       "../browser/extensions/webstore_reinstaller_browsertest.cc",
+      "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
     ]
     deps += [
       ":test_support",
@@ -3510,7 +3511,6 @@ if (!is_android) {
       "../browser/ui/webui/commerce/shopping_ui_handler_delegate_browsertest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
-      "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
       "../browser/ui/webui/history_clusters/history_clusters_handler_browsertest.cc",
       "../browser/ui/webui/interstitials/interstitial_ui_browsertest.cc",
       "../browser/ui/webui/location_internals/location_internals_ui_browsertest.cc",

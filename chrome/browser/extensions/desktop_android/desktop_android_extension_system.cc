@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -140,6 +141,10 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
     Profile* profile = Profile::FromBrowserContext(browser_context_);
     content::URLDataSource::Add(browser_context_,
                                 std::make_unique<ExtensionIconSource>(profile));
+
+    // Register the source for the chrome://extensions-internals page.
+    content::URLDataSource::Add(
+        profile, std::make_unique<ExtensionsInternalsSource>(profile));
   }
 
   ready_.Signal();

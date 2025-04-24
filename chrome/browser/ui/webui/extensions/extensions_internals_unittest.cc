@@ -30,6 +30,8 @@
 
 namespace {
 
+// TODO(crbug.com/408458901): Port this test when we have a replacement for
+// ExtensionServiceTestBase that works on Android.
 using ExtensionsInternalsUnitTest = extensions::ExtensionServiceTestBase;
 
 std::unique_ptr<KeyedService> BuildEventRouter(
