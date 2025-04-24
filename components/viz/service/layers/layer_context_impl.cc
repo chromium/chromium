@@ -55,7 +55,7 @@ cc::LayerTreeSettings GetDisplayTreeSettings() {
   return settings;
 }
 
-std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
+std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
                                            cc::LayerTreeImpl& tree,
                                            cc::mojom::LayerType type,
                                            int id) {
@@ -67,7 +67,7 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
       return cc::MirrorLayerImpl::Create(&tree, id);
 
     case cc::mojom::LayerType::kPicture:
-      return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
+      return std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
 
     case cc::mojom::LayerType::kSurface:
       // The callback is triggered in the renderer side during WillDraw(),
@@ -491,7 +491,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
 }
 
 base::expected<void, std::string> CreateOrUpdateLayers(
-    LayerContextImpl& context,
+    cc::LayerTreeHostImpl& host_impl,
     const std::vector<mojom::LayerPtr>& updates,
     std::optional<std::vector<int32_t>>& layer_order,
     cc::LayerTreeImpl& layers) {
@@ -517,7 +517,7 @@ base::expected<void, std::string> CreateOrUpdateLayers(
   for (auto& wire : updates) {
     auto& layer = layer_map[wire->id];
     if (!layer) {
-      layer = CreateLayer(context, layers, wire->type, wire->id);
+      layer = CreateLayer(host_impl, layers, wire->type, wire->id);
     }
     RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
@@ -1115,6 +1115,10 @@ size_t LayerContextImpl::CommitDurationSampleCountForTesting() const {
   return 0;
 }
 
+void LayerContextImpl::ReturnResource(ReturnedResource returned_resource) {
+  resources_to_return_.emplace_back(std::move(returned_resource));
+}
+
 void LayerContextImpl::DidObserveFirstScrollDelay(
     int source_frame_number,
     base::TimeDelta first_scroll_delay,
@@ -1161,27 +1165,6 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
 void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
                                           cc::FrameSkippedReason reason) {
   compositor_sink_->DidNotProduceFrame(ack);
-}
-
-void LayerContextImpl::ImportResource(TransferableResource resource) {
-  auto release_callback = base::BindOnce(
-      [](LayerContextImpl* impl, ResourceId id,
-         const gpu::SyncToken& sync_token, bool is_lost) {
-        impl->resources_to_return_.emplace_back(
-            id, sync_token,
-            /*release_fence=*/gfx::GpuFenceHandle(),
-            /*count=*/1, is_lost);
-      },
-      base::Unretained(this), resource.id);
-
-  host_impl_->resource_provider()->ImportResource(
-      resource, /*impl_release_callback=*/std::move(release_callback),
-      /*main_thread_release_callback=*/base::NullCallback(),
-      /*evicted_callback=*/base::NullCallback());
-}
-
-void LayerContextImpl::DiscardResource(ResourceId resource) {
-  host_impl_->resource_provider()->RemoveImportedResource(resource);
 }
 
 void LayerContextImpl::SetVisible(bool visible) {
@@ -1265,8 +1248,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
                                       *(update->view_transition_requests));
   }
 
-  RETURN_IF_ERROR(
-      CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
+  RETURN_IF_ERROR(CreateOrUpdateLayers(
+      *(this->host_impl_.get()), update->layers, update->layer_order, layers));
 
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);

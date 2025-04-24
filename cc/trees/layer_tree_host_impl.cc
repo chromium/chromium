@@ -4907,6 +4907,11 @@ void LayerTreeHostImpl::UpdateChildLocalSurfaceId() {
   }
 }
 
+void LayerTreeHostImpl::ReturnResource(
+    viz::ReturnedResource returned_resource) {
+  client_->ReturnResource(std::move(returned_resource));
+}
+
 void LayerTreeHostImpl::CollectScrollbarUpdatesForCommit(
     CompositorCommitData* commit_data) const {
   commit_data->scrollbars.reserve(scrollbar_animation_controllers_.size());

@@ -17,6 +17,7 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 
@@ -145,10 +146,8 @@ TileDisplayLayerImpl::Tiling::Cover(const gfx::Rect& coverage_rect,
   return DisplayTilingCoverageIterator(this, coverage_scale, coverage_rect);
 }
 
-TileDisplayLayerImpl::TileDisplayLayerImpl(Client& client,
-                                           LayerTreeImpl& tree,
-                                           int id)
-    : LayerImpl(&tree, id), client_(client) {}
+TileDisplayLayerImpl::TileDisplayLayerImpl(LayerTreeImpl& tree, int id)
+    : LayerImpl(&tree, id) {}
 
 TileDisplayLayerImpl::~TileDisplayLayerImpl() = default;
 
@@ -349,11 +348,26 @@ void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
 }
 
 void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {
-  client_->DiscardResource(std::move(resource));
+  layer_tree_impl()->host_impl()->resource_provider()->RemoveImportedResource(
+      std::move(resource));
 }
 
 void TileDisplayLayerImpl::ImportResource(viz::TransferableResource resource) {
-  client_->ImportResource(std::move(resource));
+  // Note that using LayerTreeHostImpl* is safe since LayerTreeHostImpl owns
+  // ClientResourceProvider and hence oulives it.
+  auto release_callback = base::BindOnce(
+      [](LayerTreeHostImpl* host_impl, viz::ResourceId id,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        host_impl->ReturnResource({id, sync_token,
+                                   /*release_fence=*/gfx::GpuFenceHandle(),
+                                   /*count=*/1, is_lost});
+      },
+      layer_tree_impl()->host_impl(), resource.id);
+
+  layer_tree_impl()->host_impl()->resource_provider()->ImportResource(
+      resource, /*impl_release_callback=*/std::move(release_callback),
+      /*main_thread_release_callback=*/base::NullCallback(),
+      /*evicted_callback=*/base::NullCallback());
 }
 
 }  // namespace cc

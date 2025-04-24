@@ -820,6 +820,8 @@ class CC_EXPORT LayerTreeImpl {
                                                  float min_page_scale_factor,
                                                  float max_page_scale_factor);
 
+  LayerTreeHostImpl* host_impl() { return host_impl_; }
+
   class CC_EXPORT DiscardableImageMapUpdater {
     STACK_ALLOCATED();
 

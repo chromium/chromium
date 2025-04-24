@@ -31,15 +31,6 @@ namespace cc {
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
  public:
-  class CC_EXPORT Client {
-   public:
-    virtual ~Client() = default;
-
-    // To notify client to Import or Discard a TransferableResource.
-    virtual void ImportResource(viz::TransferableResource resource) = 0;
-    virtual void DiscardResource(viz::ResourceId resource) = 0;
-  };
-
   struct NoContents {};
 
   struct CC_EXPORT TileResource {
@@ -136,7 +127,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     using TilingCoverageIterator<Tiling>::TilingCoverageIterator;
   };
 
-  TileDisplayLayerImpl(Client& client, LayerTreeImpl& tree, int id);
+  TileDisplayLayerImpl(LayerTreeImpl& tree, int id);
   ~TileDisplayLayerImpl() override;
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
@@ -166,7 +157,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void DiscardResource(viz::ResourceId resource);
 
  private:
-  raw_ref<Client> client_;
   std::vector<std::unique_ptr<Tiling>> tilings_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;

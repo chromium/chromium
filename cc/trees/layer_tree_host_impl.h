@@ -892,6 +892,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void UpdateChildLocalSurfaceId();
 
+  void ReturnResource(viz::ReturnedResource returned_resource);
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
