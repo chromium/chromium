@@ -9,7 +9,7 @@ export {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 export {PageCallbackRouter} from '//resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js';
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {AppElement, WordBoundaryState} from './app.js';
-export {currentReadHighlightClass, MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
+export {currentReadHighlightClass, MAX_SPEECH_LENGTH, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getCurrentSpeechRate, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';

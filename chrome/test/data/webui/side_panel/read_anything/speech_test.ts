@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -467,9 +467,7 @@ suite('Speech', () => {
 
     test('uses max speech length', () => {
       const expectedNumSegments =
-          Math.ceil(
-              longSentences.length / MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES) +
-          1;
+          Math.ceil(longSentences.length / MAX_SPEECH_LENGTH);
 
       app.playSpeech();
 
@@ -477,8 +475,7 @@ suite('Speech', () => {
       for (let i = 0; i < expectedNumSegments; i++) {
         assertEquals(i + 1, speech.getCallCount('speak'));
         assertGT(
-            MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES,
-            speech.getArgs('speak')[i].text.trim().length);
+            MAX_SPEECH_LENGTH, speech.getArgs('speak')[i].text.trim().length);
         speech.getArgs('speak')[i].onend();
       }
     });

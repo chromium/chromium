@@ -20,7 +20,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {getCurrentSpeechRate, isHtmlElementVisible, isWhitespace, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import {getCurrentSpeechRate, isHtmlElementVisible, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
@@ -51,15 +51,7 @@ const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 
 // The maximum speech length that should be used with remote voices
 // due to a TTS engine bug with voices timing out on too-long text.
-export const MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES: number = 175;
-
-// This corresponds to what would be more than a 2 second delay between
-// sentences.
-export const MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES: number = 250;
-
-// Punctuation that is reasonable to splice audio on if text is too long.
-const SPLICEABLE_PUNCTUATION_ARRAY = [',', '(', ')', '-', '[', ']', '{', '}'];
-
+export const MAX_SPEECH_LENGTH: number = 175;
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -152,10 +144,6 @@ export interface WordBoundaryState {
   // The length of the current word if it was provided by the speech engine. If
   // not, this is 0.
   speechUtteranceLength: number;
-  // If we have to break a string because the text is too long, we need to
-  // offset future word boundaries within this utterance by this offset so
-  // that they appear in the correct locations.
-  tooLongTextOffset: number;
 }
 
 export interface AppElement {
@@ -349,7 +337,6 @@ export class AppElement extends AppElementBase {
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,
     speechUtteranceLength: 0,
-    tooLongTextOffset: 0,
   };
 
   // If the node id of the first text node that should be used by Read Aloud
@@ -1918,40 +1905,19 @@ export class AppElement extends AppElementBase {
 
   // Gets the accessible text boundary for the given string.
   getAccessibleTextLength(utteranceText: string): number {
-    const maxSpeechLength = this.selectedVoice_?.localService ?
-        MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES :
-        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
+    // Splicing on commas won't work for all locales, but since this is a
+    // simple strategy for splicing text in languages that do use commas
+    // that reduces the need for calling getAccessibleBoundary.
+    // TODO(crbug.com/40927698): Investigate if we can utilize comma splices
+    // directly in the utils methods called by #getAccessibleBoundary.
+    const lastCommaIndex =
+        utteranceText.substring(0, MAX_SPEECH_LENGTH).lastIndexOf(', ');
 
-    // Splicing on punctuation won't work for all locales, but since this is a
-    // simple strategy for splicing text in languages that do use these
-    // characters that reduces the need for calling getAccessibleBoundary.
-    // Since these characters will be searched for in-order, they should
-    // be listed in priority order for most likely to be a reasonable splice.
-    // TODO: crub.com/1474951 - Investigate if we can utilize comma splices
-    // and splices on other punctuation directly in the utils methods called by
-    // #getAccessibleBoundary.
-    for (const punctuationString of SPLICEABLE_PUNCTUATION_ARRAY) {
-      let utteranceSubstring = utteranceText.substring(0, maxSpeechLength);
-      let lastPunctuationIndex =
-          utteranceSubstring.lastIndexOf(punctuationString);
-
-      // If we're not in a valid splicing position, try to find another
-      // instance of the current punctuation in the string before moving
-      // on to the next punctuation.
-      while (!this.isValidSplicePosition(
-          lastPunctuationIndex, punctuationString, utteranceSubstring,
-          maxSpeechLength)) {
-        utteranceSubstring = utteranceText.substring(0, lastPunctuationIndex);
-        lastPunctuationIndex =
-            utteranceSubstring.lastIndexOf(punctuationString);
-      }
-
-      // To prevent infinite looping, only use the lastCommaIndex if it's not
-      // the first character. Otherwise, use getAccessibleBoundary to prevent
-      // repeatedly splicing on the first comma of the same substring.
-      if (lastPunctuationIndex > 0) {
-        return lastPunctuationIndex;
-      }
+    // To prevent infinite looping, only use the lastCommaIndex if it's not the
+    // first character. Otherwise, use getAccessibleBoundary to prevent
+    // repeatedly splicing on the first comma of the same substring.
+    if (lastCommaIndex > 0) {
+      return lastCommaIndex;
     }
 
     // TODO: crbug.com/40927698 - getAccessibleBoundary breaks on the nearest
@@ -1959,49 +1925,19 @@ export class AppElement extends AppElementBase {
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
     return chrome.readingMode.getAccessibleBoundary(
-        utteranceText, maxSpeechLength);
-  }
-
-  // crbug.com/400786507- If we can't find a better permanent solution for
-  // long delays between sentences, we should look into using
-  // phrase highlighting and / or other i18n libraries here to reduce
-  // duplication and make this more robust.
-  private isValidSplicePosition(
-      splicePosition: number, spliceCharacter: string, utteranceText: string,
-      maxSpeechLength: number): boolean {
-    if (spliceCharacter !== ',' && spliceCharacter !== '-') {
-      return true;
-    }
-
-    if (splicePosition > 0 && splicePosition < maxSpeechLength) {
-      const previousChar = utteranceText.charAt(splicePosition - 1);
-      const nextChar = utteranceText.charAt(splicePosition + 1);
-      // We shouldn't splice on hyphens between two non-whitespace characters.
-      // e.g. twenty-five or 10-4
-      if (spliceCharacter === '-' && !isWhitespace(previousChar) &&
-          !isWhitespace(nextChar)) {
-        return false;
-      }
-
-      // If the previous and next characters are both numbers, don't splice
-      // here to avoid splicing on numbers like 10,000.
-      if (!isNaN(parseInt(previousChar)) && !isNaN(parseInt(nextChar))) {
-        return false;
-      }
-    }
-    return true;
+        utteranceText, MAX_SPEECH_LENGTH);
   }
 
   private playText(utteranceText: string) {
     // This check is needed due limits of TTS audio for remote voices. See
     // crbug.com/1176078 for more details.
-    // This check is also needed for local voices on Windows, Linux, and Mac
-    // to reduce the delay between sentences. See crbug.com/395909372.
     // Since the TTS bug only impacts remote voices, no need to check for
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
-    const isTextTooLong = this.isTextTooLong(utteranceText.length);
+    const isTextTooLong = this.selectedVoice_?.localService ?
+        false :
+        utteranceText.length > MAX_SPEECH_LENGTH;
     const endBoundary = isTextTooLong ?
         this.getAccessibleTextLength(utteranceText) :
         utteranceText.length;
@@ -2059,20 +1995,6 @@ export class AppElement extends AppElementBase {
 
     message.onend = () => {
       if (isTextTooLong) {
-        // If we've had to splice the text because it was too long, we
-        // should offset word boundary highlights by how long the previous
-        // part of the text segment was. Otherwise, highlights will always
-        // show on the first part of the segment.
-        // e.g. with the phrase "This is a long sentence." if we splice the
-        // sentence into "This is a long" and "sentence," when we speak
-        // "sentence," we need to offset the highlight by the length of
-        // "This is a long" to ensure that "sentence" is highlighted and "This"
-        // is not.
-        this.wordBoundaryState = {
-          ...this.wordBoundaryState,
-          tooLongTextOffset:
-              this.wordBoundaryState.tooLongTextOffset + endBoundary,
-        };
         // Since our previous utterance was too long, continue speaking pieces
         // of the current utterance until the utterance is complete. The
         // entire utterance is highlighted, so there's no need to update
@@ -2205,8 +2127,7 @@ export class AppElement extends AppElementBase {
   }
 
   updateBoundary(charIndex: number, charLength: number = 0) {
-    this.wordBoundaryState.previouslySpokenIndex =
-        charIndex + this.wordBoundaryState.tooLongTextOffset;
+    this.wordBoundaryState.previouslySpokenIndex = charIndex;
     this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
     this.wordBoundaryState.speechUtteranceLength = charLength;
   }
@@ -2231,23 +2152,7 @@ export class AppElement extends AppElementBase {
           WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
       speechUtteranceLength: 0,
-      tooLongTextOffset: 0,
     };
-  }
-
-
-  private isTextTooLong(textLength: number): boolean {
-    const maxSpeechLength = this.selectedVoice_?.localService ?
-        MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES :
-        MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
-
-    if (!chrome.readingMode.isChromeOsAsh && this.selectedVoice_ &&
-        isNatural(this.selectedVoice_)) {
-      return textLength > maxSpeechLength;
-    }
-
-    return this.selectedVoice_?.localService ? false :
-                                               textLength > maxSpeechLength;
   }
 
   private extractTextOf(axNodeIds: number[]): string {

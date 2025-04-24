@@ -75,7 +75,6 @@ suite('WordBoundariesUsedForSpeech', () => {
     assertEquals(0, state.previouslySpokenIndex);
     assertEquals(0, state.speechUtteranceStartIndex);
     assertEquals(0, state.speechUtteranceLength);
-    assertEquals(0, state.tooLongTextOffset);
   });
 
   test(
@@ -87,7 +86,6 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(0, state.previouslySpokenIndex);
         assertEquals(0, state.speechUtteranceStartIndex);
         assertEquals(0, state.speechUtteranceLength);
-        assertEquals(0, state.tooLongTextOffset);
       });
 
   suite('during speech with one initial word boundary ', () => {
