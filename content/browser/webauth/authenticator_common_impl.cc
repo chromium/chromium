@@ -1770,11 +1770,13 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   auto completion_callback =
       base::BindOnce(&InsertIsPPAACapability).Then(std::move(callback));
 
+  bool immediate_get_enabled =
+      base::FeatureList::IsEnabled(device::kWebAuthnImmediateGet);
   // IMPORTANT: If you add or remove a capability check below (and expect to
   // collect the results of the check with the `BarrierCallback`), update this
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
-  constexpr size_t kNumberOfComputedCapabilities = 5;
+  const size_t kNumberOfComputedCapabilities = immediate_get_enabled ? 6 : 5;
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
@@ -1799,6 +1801,10 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       caller_origin,
       base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
           .Then(barrier_callback));
+  if (immediate_get_enabled) {
+    barrier_callback.Run(
+        MakeCapability(client_capabilities::kImmediateGet, true));
+  }
 }
 
 void AuthenticatorCommonImpl::IsHybridTransportSupported(
