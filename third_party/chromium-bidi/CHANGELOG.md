@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.1.0...chromium-bidi-v4.1.1) (2025-04-24)
+
+
+### Bug Fixes
+
+* export cjs modules for esm ([#3342](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3342)) ([a5088c4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a5088c46d76967d2681e758402c647c2a0c3c463))
+
 ## [4.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.0.1...chromium-bidi-v4.1.0) (2025-04-23)
 
 
