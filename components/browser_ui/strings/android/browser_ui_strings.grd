@@ -1094,6 +1094,9 @@
       <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
         See more
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_RESUMPTION_MODULE_SEE_MORE" is_accessibility_with_no_ui="true" desc="Accessibility label of the see more button of the module.">
+        See more recent tabs
+      </message>
 
       <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
         Expanded

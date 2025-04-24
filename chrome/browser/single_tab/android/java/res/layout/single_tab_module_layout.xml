@@ -53,6 +53,7 @@ found in the LICENSE file.
         android:text="@string/tab_resumption_module_see_more"
         android:textAlignment="viewEnd"
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"
+        android:contentDescription="@string/accessibility_tab_resumption_module_see_more"
         />
   </LinearLayout>
 
