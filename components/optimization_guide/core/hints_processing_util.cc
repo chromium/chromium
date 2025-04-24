@@ -143,8 +143,6 @@ std::string GetStringNameForOptimizationType(
       return "BuyNowPayLaterAllowlistZip";
     case proto::OptimizationType::SAVED_TAB_GROUP:
       return "SavedTabGroup";
-    case proto::OptimizationType::FORMS_ANNOTATIONS:
-      return "FormsAnnotations";
     case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:
       return "TextClassifierEntityDetection";
     case proto::OptimizationType::EWALLET_MERCHANT_ALLOWLIST:

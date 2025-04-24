@@ -90,12 +90,6 @@ std::string_view GetStringNameForModelExecutionFeature(
         MODEL_EXECUTION_FEATURE_FORMS_CLASSIFICATIONS:
       return "FormsClassifications";
     case proto::ModelExecutionFeature::
-        MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
-      return "FormsPredictions";
-    case proto::ModelExecutionFeature::
-        MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
-      return "FormsAnnotations";
-    case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
       return "BlingPrototyping";
     case proto::ModelExecutionFeature::
