@@ -196,6 +196,19 @@ function assert_not_prefetched (requestHeaders, description){
   assert_equals(requestHeaders.sec_purpose, "", description);
 }
 
+// If the prefetch request is intercepted and modified by ServiceWorker,
+// - "Sec-Purpose: prefetch" header is dropped in Step 33 of
+//   https://fetch.spec.whatwg.org/#dom-request
+//   because it's a https://fetch.spec.whatwg.org/#forbidden-request-header.
+// - "Purpose: prefetch" can still be sent.
+// Note that this check passes also for non-prefetch requests, so additional
+// checks are needed to distinguish from non-prefetch requests.
+function assert_prefetched_without_sec_purpose(requestHeaders, description) {
+  assert_in_array(requestHeaders.purpose, ["", "prefetch"],
+      "The vendor-specific header Purpose, if present, must be 'prefetch'.");
+  assert_equals(requestHeaders.sec_purpose, "", description);
+}
+
 // Use nvs_header query parameter to ask the wpt server
 // to populate No-Vary-Search response header.
 function addNoVarySearchHeaderUsingQueryParam(url, value){
