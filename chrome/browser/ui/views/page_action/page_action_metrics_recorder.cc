@@ -59,6 +59,12 @@ void PageActionMetricsRecorder::OnPageActionVisible() {
   }
 
   page_action_recorded_urls_.insert(current_url);
+
+  base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
+                                PageActionCTREvent::kShown);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PageActionController.", histogram_name_, ".Icon.CTR2"}),
+      PageActionCTREvent::kShown);
   base::UmaHistogramEnumeration("PageActionController.ActionTypeShown2",
                                 page_action_type_);
 }

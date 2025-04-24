@@ -555,6 +555,55 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
 }
 
+// Verifies that "…Icon.CTR2" histograms emit kShown once-per-context.
+// The test mirrors EphemeralPageActionUmaLoggedOncePerContext.
+IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
+                       CTR2HistogramsLoggedOncePerContext) {
+  base::HistogramTester histogram_tester;
+
+  constexpr char kGeneralHistogram[] = "PageActionController.Icon.CTR2";
+  constexpr char kTranslateHistogram[] =
+      "PageActionController.Translate.Icon.CTR2";
+
+  // 1. Initial page-context (tab[0], first navigation).
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectUniqueSample(kGeneralHistogram,
+                                      PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectUniqueSample(kTranslateHistogram,
+                                      PageActionCTREvent::kShown, 1);
+
+  // 2. Hide + re-show in the SAME context → no additional logging.
+  HidePageAction(kActionShowTranslate);
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTranslateHistogram, 1);
+
+  // 3. New navigation in the SAME tab → new context, logs again.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 2);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 2);
+
+  // 4. Open a new tab → brand-new context.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // 4-a) First show of Translate in tab[1] logs again.
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 3);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 3);
+}
+
 class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
                                            public PageActionUiTestBase {
  public:

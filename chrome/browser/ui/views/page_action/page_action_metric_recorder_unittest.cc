@@ -120,6 +120,67 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 0);
 }
 
+TEST_F(PageActionMetricsRecorderTest, RecordShownMetricsGeneralAndSpecific) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder(/*is_ephemeral=*/true);
+
+  const std::string general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = base::StrCat(
+      {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
+
+  // First navigation.
+  GURL url1("https://www.example.com/");
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+
+  // First visibility → record once for each histogram with kShown.
+  FireModelChanged();
+  histogram_tester.ExpectTotalCount(general_histogram, 1);
+  histogram_tester.ExpectUniqueSample(general_histogram,
+                                      PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 1);
+  histogram_tester.ExpectUniqueSample(specific_histogram,
+                                      PageActionCTREvent::kShown, 1);
+
+  // Same URL, second visibility → no additional records.
+  FireModelChanged();
+  histogram_tester.ExpectTotalCount(general_histogram, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 1);
+
+  // New navigation.
+  GURL url2("https://www.another-site.org/");
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+  FireModelChanged();
+
+  // Should now have two kShown samples (one per distinct URL) in both
+  // histograms.
+  histogram_tester.ExpectTotalCount(general_histogram, 2);
+  histogram_tester.ExpectBucketCount(general_histogram,
+                                     PageActionCTREvent::kShown, 2);
+  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kShown, 2);
+}
+
+TEST_F(PageActionMetricsRecorderTest, NoShownMetricsWhenNotEphemeral) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder(/*is_ephemeral=*/false);
+
+  const std::string general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = base::StrCat(
+      {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
+
+  GURL url("https://www.example.com/");
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url);
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+
+  FireModelChanged();
+
+  // Because the page action is *not* ephemeral, no kShown samples are recorded.
+  histogram_tester.ExpectTotalCount(general_histogram, 0);
+  histogram_tester.ExpectTotalCount(specific_histogram, 0);
+}
+
 TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
   base::HistogramTester histogram_tester;
   CreateRecorder(/*is_ephemeral=*/true);
