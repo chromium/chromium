@@ -42,15 +42,15 @@ public class Interpolators {
     public static final Interpolator LEGACY_DECELERATE =
             PathInterpolatorCompat.create(0f, 0f, 0.2f, 1f);
 
-    /** For fading out. Formerly FADE_OUT_CURVE. **/
+    /** For fading out. Formerly FADE_OUT_CURVE. */
     public static final FastOutLinearInInterpolator FAST_OUT_LINEAR_IN_INTERPOLATOR =
             new FastOutLinearInInterpolator();
 
-    /** For general movement. Formerly TRANSFORM_CURVE. **/
+    /** For general movement. Formerly TRANSFORM_CURVE. */
     public static final FastOutSlowInInterpolator FAST_OUT_SLOW_IN_INTERPOLATOR =
             new FastOutSlowInInterpolator();
 
-    /** For fading in. Formerly FADE_IN_CURVE. **/
+    /** For fading in. Formerly FADE_IN_CURVE. */
     public static final LinearOutSlowInInterpolator LINEAR_OUT_SLOW_IN_INTERPOLATOR =
             new LinearOutSlowInInterpolator();
 
