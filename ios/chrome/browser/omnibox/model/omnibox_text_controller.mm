@@ -88,12 +88,8 @@
 }
 
 - (void)endEditing {
-  // This check is a tentative fix for a crash that happens when calling
-  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
-  // and remove the comment or check if needed.
-  if (self.textField.window) {
-    [self.textField resignFirstResponder];
-  }
+  [self hideKeyboard];
+
   if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
     return;
   }
@@ -390,9 +386,17 @@
 }
 
 - (void)onScroll {
-  /// Hides the keyboard.
-  [self.textField resignFirstResponder];
+  [self hideKeyboard];
   _suggestionsListScrolled = YES;
+}
+
+- (void)hideKeyboard {
+  // This check is a tentative fix for a crash that happens when calling
+  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
+  // and remove the comment or check if needed.
+  if (self.textField.window) {
+    [self.textField resignFirstResponder];
+  }
 }
 
 #pragma mark - Private

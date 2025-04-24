@@ -229,9 +229,7 @@ using base::UserMetricsAction;
 }
 
 - (void)onCallAction {
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnCallActionTap();
-  }
+  [self.omniboxTextController hideKeyboard];
 }
 
 #pragma mark - OmniboxText events

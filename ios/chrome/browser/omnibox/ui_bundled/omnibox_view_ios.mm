@@ -375,14 +375,6 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
-void OmniboxViewIOS::HideKeyboard() {
-  [field_ resignFirstResponder];
-}
-
-void OmniboxViewIOS::OnCallActionTap() {
-  this->HideKeyboard();
-}
-
 void OmniboxViewIOS::FocusOmnibox() {
   [field_ becomeFirstResponder];
 }

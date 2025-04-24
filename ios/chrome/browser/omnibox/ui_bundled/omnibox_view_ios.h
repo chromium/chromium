@@ -98,12 +98,6 @@ class OmniboxViewIOS : public OmniboxView {
   // OmniboxAutocompleteController interactions.
   void OnSelectedMatchForAppending(const std::u16string& str);
 
-  void OnCallActionTap();
-
-  // Hide keyboard only.  Used when omnibox popups grab focus but editing isn't
-  // complete.
-  void HideKeyboard();
-
   // Focus the omnibox field.  This is used when the omnibox popup copies a
   // search query to the omnibox so the user can modify it further.
   // This does not affect the popup state and is a NOOP if the omnibox is
