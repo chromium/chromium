@@ -32,6 +32,7 @@ import org.chromium.url.GURL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /** Fetches, and caches credit card art images. */
 @NullMarked
@@ -102,9 +103,17 @@ public class AutofillImageFetcher {
             }
 
             GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
+            Function<Bitmap, Bitmap> treatImageFunction =
+                    bitmap -> AutofillImageFetcherUtils.treatPixAccountImage(bitmap);
+
             fetchImage(
                     urlWithParams.getSpec(),
-                    bitmap -> treatAndCachePixAccountImage(bitmap, urlWithParams.getSpec()));
+                    bitmap ->
+                            treatAndCacheImage(
+                                    bitmap,
+                                    urlWithParams.getSpec(),
+                                    treatImageFunction,
+                                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM));
         }
     }
 
@@ -235,28 +244,35 @@ public class AutofillImageFetcher {
     }
 
     /**
-     * Adds enhancements to Pix account image, and caches it. If image fetching fails, retries
-     * fetching {@code MAX_FETCH_ATTEMPTS - 1} times with a delay of {@code REFETCH_DELAY_MS}
-     * between each attempt.
+     * Adds enhancements to {@code bitmap} by applying {@code treatImageFunction}, and caches it. If
+     * image fetching fails, retries fetching {@code MAX_FETCH_ATTEMPTS - 1} times with a delay of
+     * {@code REFETCH_DELAY_MS} between each attempt.
      *
      * @param bitmap The Bitmap fetched from server.
      * @param urlToCache The key against which the treated Bitmap is cached.
+     * @param treatImageFunction Imagetreatment function.
+     * @param overallSuccessHistogramName Histogram name to measure the success rate of a specific
+     *     image type. Logs whether or not the image was fetched after a maximum of {@code
+     *     MAX_FETCH_ATTEMPTS} attempts.
      */
-    private void treatAndCachePixAccountImage(@Nullable Bitmap bitmap, String urlToCache) {
+    private void treatAndCacheImage(
+            @Nullable Bitmap bitmap,
+            String urlToCache,
+            Function<Bitmap, Bitmap> treatImageFunction,
+            String overallSuccessHistogramName) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
         if (bitmap != null) {
-            RecordHistogram.recordBooleanHistogram(
-                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ true);
+            RecordHistogram.recordBooleanHistogram(overallSuccessHistogramName, /* sample= */ true);
 
-            mImagesCache.put(urlToCache, AutofillImageFetcherUtils.treatPixAccountImage(bitmap));
+            mImagesCache.put(urlToCache, treatImageFunction.apply(bitmap));
             return;
         }
 
         // Image fetching failed, and max retry attempts reached.
         if (mFetchAttemptCounter.getOrDefault(urlToCache, 0) >= MAX_FETCH_ATTEMPTS) {
             RecordHistogram.recordBooleanHistogram(
-                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ false);
+                    overallSuccessHistogramName, /* sample= */ false);
             return;
         }
 
@@ -267,7 +283,11 @@ public class AutofillImageFetcher {
                         fetchImage(
                                 urlToCache,
                                 fetchedImage ->
-                                        treatAndCachePixAccountImage(fetchedImage, urlToCache)),
+                                        treatAndCacheImage(
+                                                fetchedImage,
+                                                urlToCache,
+                                                treatImageFunction,
+                                                overallSuccessHistogramName)),
                 REFETCH_DELAY_MS);
     }
 
