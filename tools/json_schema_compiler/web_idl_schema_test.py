@@ -442,6 +442,53 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/missing_event_interface.idl',
     )
 
+  # Various tests that ensure validation on event interface definitions.
+  # Specifically checks that not defining any of the required add/remove/has
+  # Operations or forgetting the ExtensionEvent inheritance will throw an error.
+  def testMissingEventInheritance(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingInheritanceEvent\):'
+        r' Event Interface missing ExtensionEvent Inheritance.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_inheritance.idl',
+    )
+
+  def testMissingEventAddListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingAddListenerEvent\):'
+        r' Event Interface missing addListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_add_listener.idl',
+    )
+
+  def testMissingEventRemoveListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingRemoveListenerEvent\):'
+        r' Event Interface missing removeListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_remove_listener.idl',
+    )
+
+  def testMissingEventHasListener(self):
+    expected_error_regex = (
+        r'.* Error processing node Interface\(OnMissingHasListenerEvent\):'
+        r' Event Interface missing hasListener Operation definition.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_has_listener.idl',
+    )
+
   # Tests that if description parsing from file comments reaches the top of the
   # file, a schema compiler error is thrown (as the top of the file should
   # always be copyright lines and not part of the description).

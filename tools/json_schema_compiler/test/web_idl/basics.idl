@@ -65,11 +65,15 @@ callback OnTestOneListener = undefined (
     DOMString argument1, optional double argument2);
 callback OnTestTwoListener = undefined (ExampleType customType);
 
-interface OnTestOneEvent {
+interface OnTestOneEvent : ExtensionEvent {
   static void addListener(OnTestOneListener listener);
+  static void removeListener(OnTestOneListener listener);
+  static void hasListener(OnTestOneListener listener);
 };
-interface OnTestTwoEvent {
+interface OnTestTwoEvent : ExtensionEvent {
   static void addListener(OnTestTwoListener listener);
+  static void removeListener(OnTestTwoListener listener);
+  static void hasListener(OnTestTwoListener listener);
 };
 
 dictionary ExampleType {

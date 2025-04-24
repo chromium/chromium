@@ -553,6 +553,7 @@ class Event:
     if event_interface is None or event_interface.GetClass() != 'Interface':
       raise SchemaCompilerError(
           'Could not find Interface definition for event.', self.node)
+    self._VerifyEventDefinition(event_interface)
     add_listener_operation = GetChildWithName(event_interface, 'addListener')
     callback_name = GetTypeName(
         add_listener_operation.GetOneOf('Arguments').GetOneOf('Argument'))
@@ -565,6 +566,39 @@ class Event:
     properties['parameters'] = parameters
 
     return properties
+
+  def _VerifyEventDefinition(self, event: IDLNode) -> None:
+    """Verifies the event has the expected Operations and inheritance.
+
+    Used to verify that an event definition in the IDL file has all the required
+    Operation definitions on it and inherits from ExtensionEvent, raising an
+    exception if anything is wrong. Intended primarily to catch mistakes in IDL
+    API definitions.
+
+    Args:
+      event: The IDLNode for the event Interface to validate.
+
+    Raises:
+      SchemaCompilerError if any of the required definitions are not present.
+    """
+
+    inherit_node = GetChildWithName(event, 'ExtensionEvent')
+    if inherit_node is None or inherit_node.GetClass() != 'Inherit':
+      raise SchemaCompilerError(
+          'Event Interface missing ExtensionEvent Inheritance.', event)
+
+    add_listener = GetChildWithName(event, 'addListener')
+    if add_listener is None or add_listener.GetClass() != 'Operation':
+      raise SchemaCompilerError(
+          'Event Interface missing addListener Operation definition.', event)
+    remove_listener = GetChildWithName(event, 'removeListener')
+    if remove_listener is None or remove_listener.GetClass() != 'Operation':
+      raise SchemaCompilerError(
+          'Event Interface missing removeListener Operation definition.', event)
+    has_listener = GetChildWithName(event, 'hasListener')
+    if has_listener is None or has_listener.GetClass() != 'Operation':
+      raise SchemaCompilerError(
+          'Event Interface missing hasListener Operation definition.', event)
 
 
 class Namespace:

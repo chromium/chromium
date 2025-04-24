@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which is invalid due to an event interface definition
+// not including the required ExtensionEvent inheritance. This should raise a
+// SchemaCompilerError.
+interface TestWebIdl {
+  // This event is correctly defined in the file.
+  static attribute OnTestOneEvent onTestOne;
+  // This event is missing the ExtensionEvent inheritance in the definition.
+  static attribute OnMissingInheritanceEvent onTestTwo;
+};
+
+callback OnTestOneListener = undefined (DOMString argument);
+callback OnMissingInheritanceListener = undefined (DOMString argument);
+
+interface OnTestOneEvent : ExtensionEvent {
+  static void addListener(OnTestOneListener listener);
+  static void removeListener(OnTestOneListener listener);
+  static void hasListener(OnTestOneListener listener);
+};
+
+interface OnMissingInheritanceEvent {
+  static void addListener(OnMissingInheritanceListener listener);
+  static void removeListener(OnMissingInheritanceListener listener);
+  static void hasListener(OnMissingInheritanceListener listener);
+};
+
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};
