@@ -63,12 +63,12 @@ void ShowBookmarkAccountStorageMoveDialog(
   CHECK_NE(is_local_node, bookmark_model->IsLocalOnlyNode(*target_folder));
 
   int title_id = IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE;
-  std::u16string subtitle;
+  std::u16string body_text;
   switch (dialog_type) {
     case BookmarkAccountStorageMoveDialogType::kDownloadOrUpload: {
       title_id = is_local_node ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE
                                : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_TITLE;
-      subtitle = l10n_util::GetStringFUTF16(
+      body_text = l10n_util::GetStringFUTF16(
           is_local_node
               ? (node->is_folder()
                      ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE
@@ -80,7 +80,7 @@ void ShowBookmarkAccountStorageMoveDialog(
       break;
     }
     case BookmarkAccountStorageMoveDialogType::kUpload: {
-      subtitle = l10n_util::GetStringFUTF16(
+      body_text = l10n_util::GetStringFUTF16(
           IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
           node->GetTitle());
     }
@@ -96,7 +96,7 @@ void ShowBookmarkAccountStorageMoveDialog(
   ui::DialogModel::Builder builder;
   builder.SetInternalName("BookmarkAccountStorageMoveDialog")
       .SetTitle(l10n_util::GetStringUTF16(title_id))
-      .SetSubtitle(subtitle)
+      .AddParagraph(ui::DialogModelLabel(body_text))
       .AddOkButton(base::BindOnce(&bookmarks::BookmarkModel::Move,
                                   bookmark_model->AsWeakPtr(), node,
                                   target_folder, index)
