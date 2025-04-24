@@ -100,7 +100,7 @@ import java.util.Optional;
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
-    DomDistillerFeatures.READER_MODE_DEV_ENTRY_POINT
+    DomDistillerFeatures.READER_MODE_IMPROVEMENTS
 })
 public class AppMenuPropertiesDelegateUnitTest {
 

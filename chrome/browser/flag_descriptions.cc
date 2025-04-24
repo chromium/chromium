@@ -4981,9 +4981,6 @@ const char kReadLaterDescription[] =
 const char kReaderModeAutoDistillName[] = "Reader Mode auto distillation";
 const char kReaderModeAutoDistillDescription[] =
     "Automatically distills web contents on every page.";
-const char kReaderModeDevEntryPointName[] = "Reader Mode developer entry point";
-const char kReaderModeDevEntryPointDescription[] =
-    "Shows a button in the app overflow menu to force reader mode.";
 const char kReaderModeHeuristicsName[] = "Reader Mode triggering";
 const char kReaderModeHeuristicsDescription[] =
     "Determines what pages the Reader Mode infobar is shown on.";

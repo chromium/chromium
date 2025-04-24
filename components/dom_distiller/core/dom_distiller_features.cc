@@ -35,10 +35,6 @@ BASE_FEATURE(kReaderModeAutoDistill,
              "ReaderModeAutoDistill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReaderModeDevEntryPoint,
-             "ReaderModeDevEntryPoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReaderModeImprovements,
              "ReaderModeImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -46,8 +42,7 @@ BASE_FEATURE(kReaderModeImprovements,
 namespace android {
 static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
-      &kReaderModeAutoDistill, &kReaderModeDevEntryPoint,
-      &kReaderModeImprovements};
+      &kReaderModeAutoDistill, &kReaderModeImprovements};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());

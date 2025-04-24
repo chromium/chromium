@@ -302,7 +302,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         menu.findItem(R.id.reader_mode_prefs_id)
                 .setVisible(isCurrentTabNotNull && shouldShowReaderModePrefs(currentTab));
         menu.findItem(R.id.reader_mode_menu_id)
-                .setVisible(DomDistillerFeatures.sReaderModeDevEntryPoint.isEnabled());
+                .setVisible(DomDistillerFeatures.showAlwaysOnEntryPoint());
 
         updateManagedByMenuItem(menu, currentTab);
 

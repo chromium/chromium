@@ -17,7 +17,6 @@ bool ShouldStartDistillabilityService();
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
-BASE_DECLARE_FEATURE(kReaderModeDevEntryPoint);
 BASE_DECLARE_FEATURE(kReaderModeImprovements);
 #endif
 

@@ -17,16 +17,19 @@ public class DomDistillerFeatures {
                 && sReaderModeImprovementsTriggerOnMobileFriendlyPages.getValue();
     }
 
+    /** Returns whether reader mode should trigger on mobile friendly pages if it's distillable. */
+    public static boolean showAlwaysOnEntryPoint() {
+        return sReaderModeImprovements.isEnabled()
+                && sReaderModeImprovementsAlwaysOnEntryPoint.getValue();
+    }
+
     // Feature names -- alphabetical ordering.
     public static final String READER_MODE_AUTO_DISTILL = "ReaderModeAutoDistill";
-    public static final String READER_MODE_DEV_ENTRY_POINT = "ReaderModeDevEntryPoint";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
 
     // Feature flags -- alphabetical ordering.
     public static final MutableFlagWithSafeDefault sReaderModeAutoDistill =
             newMutableFlagWithSafeDefault(READER_MODE_AUTO_DISTILL, /* defaultValue= */ false);
-    public static final MutableFlagWithSafeDefault sReaderModeDevEntryPoint =
-            newMutableFlagWithSafeDefault(READER_MODE_DEV_ENTRY_POINT, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
 
