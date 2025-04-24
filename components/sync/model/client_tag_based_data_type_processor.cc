@@ -61,10 +61,10 @@ enum class SyncMetadataConsistency {
   kDataTypeIdMismatch = 2,
 
   // The following cases won't result in metadata being cleared.
-  kEmptyPersistedAuthenticatedAccountId = 3,
-  kAuthenticatedAccountIdMismatch = 4,
+  kEmptyPersistedAuthenticatedGaiaId = 3,
+  kAuthenticatedGaiaIdMismatch = 4,
 
-  kMaxValue = kAuthenticatedAccountIdMismatch,
+  kMaxValue = kAuthenticatedGaiaIdMismatch,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncMetadataConsistency)
 
@@ -89,12 +89,12 @@ SyncMetadataConsistency GetSyncMetadataConsistency(
   // restart (and this does not mean the account has changed, this is checked
   // above by cache_guid mismatch).
   if (data_type_state.authenticated_obfuscated_gaia_id().empty()) {
-    return SyncMetadataConsistency::kEmptyPersistedAuthenticatedAccountId;
+    return SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId;
   }
 
   if (data_type_state.authenticated_obfuscated_gaia_id() !=
       activation_request.authenticated_gaia_id.ToString()) {
-    return SyncMetadataConsistency::kAuthenticatedAccountIdMismatch;
+    return SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch;
   }
 
   return SyncMetadataConsistency::kMetadataConsistent;
@@ -398,16 +398,17 @@ bool ClientTagBasedDataTypeProcessor::IsTrackingMetadata() const {
   return entity_tracker_ != nullptr;
 }
 
-std::string ClientTagBasedDataTypeProcessor::TrackedAccountId() const {
+GaiaId ClientTagBasedDataTypeProcessor::TrackedGaiaId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
   // (i.e. prior to exercising MergeFullSyncData()). Let's be cautious and hide
   // the account ID.
   if (!IsTrackingMetadata()) {
-    return "";
+    return GaiaId();
   }
-  return entity_tracker_->data_type_state().authenticated_obfuscated_gaia_id();
+  return GaiaId(
+      entity_tracker_->data_type_state().authenticated_obfuscated_gaia_id());
 }
 
 std::string ClientTagBasedDataTypeProcessor::TrackedCacheGuid() const {
@@ -1481,8 +1482,8 @@ void ClientTagBasedDataTypeProcessor::
   switch (sync_metadata_consistency) {
     case SyncMetadataConsistency::kMetadataConsistent:
       break;
-    case SyncMetadataConsistency::kEmptyPersistedAuthenticatedAccountId:
-    case SyncMetadataConsistency::kAuthenticatedAccountIdMismatch: {
+    case SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId:
+    case SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch: {
       // Fix the field in place.
       // TODO(crbug.com/40897441): This doesn't fit the method name. It's also
       // not clear if this codepath is even required.

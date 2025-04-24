@@ -696,11 +696,10 @@ TEST_F(DualReadingListModelTest,
             StorageStateForTesting::kExistsInBothModels);
 
   EXPECT_TRUE(dual_model_->GetAccountWhereEntryIsSavedTo(kLocalUrl).empty());
-  // TODO(crbug.com/383089506): removed ToString() once GaiaId is returned.
-  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kAccountUrl).ToString(),
-            kTestGaiaId.ToString());
-  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kCommonUrl).ToString(),
-            kTestGaiaId.ToString());
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kAccountUrl),
+            kTestGaiaId);
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kCommonUrl),
+            kTestGaiaId);
   EXPECT_TRUE(
       dual_model_
           ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
@@ -714,8 +713,8 @@ TEST_F(DualReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 
-  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kUrl).ToString(),
-            kTestGaiaId.ToString());
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kUrl),
+            kTestGaiaId);
   EXPECT_TRUE(
       dual_model_
           ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))

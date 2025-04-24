@@ -232,8 +232,8 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(shared_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    ON_CALL(shared_processor_, TrackedAccountId())
-        .WillByDefault(testing::Return(kDefaultGaiaId.ToString()));
+    ON_CALL(shared_processor_, TrackedGaiaId())
+        .WillByDefault(testing::Return(kDefaultGaiaId));
     ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
 
@@ -609,8 +609,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
 TEST_F(TabGroupSyncServiceTest, UpdateSharedAttributionsOnUpdateVisualData) {
   MakeTabGroupShared(local_group_id_1_, "collaboration");
 
-  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
-      .WillOnce(Return("new_gaia_id"));
+  EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
+      .WillOnce(Return(GaiaId("new_gaia_id")));
   tab_groups::TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   tab_group_sync_service_->UpdateVisualData(local_group_id_1_, &visual_data);
 
@@ -1157,8 +1157,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
   ASSERT_THAT(group->GetTab(local_tab_id),
               Pointee(HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
 
-  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
-      .WillOnce(Return("other_gaia_id"));
+  EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
+      .WillOnce(Return(GaiaId("other_gaia_id")));
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id,
                                        GURL("http://www.example.com"),
                                        u"title 2");
@@ -2125,16 +2125,16 @@ TEST_F(TabGroupSyncServiceTest,
 
   // Mimic the state where we receive a MakeTabGroupShared call while user
   // hasn't completed sign-in.
-  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
-      .WillRepeatedly(Return(""));
+  EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
+      .WillRepeatedly(Return(GaiaId()));
   tab_group_sync_service_->MakeTabGroupShared(
       local_group_id_1_, "collaboration", mock_callback.Get());
   WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
   // Mimic initial merge completion.
-  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
-      .WillRepeatedly(Return("some_gaia"));
+  EXPECT_CALL(*mock_shared_processor(), TrackedGaiaId())
+      .WillRepeatedly(Return(GaiaId("some_gaia")));
   model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
   WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));

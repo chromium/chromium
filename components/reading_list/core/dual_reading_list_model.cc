@@ -14,6 +14,7 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
 namespace reading_list {
@@ -203,14 +204,13 @@ bool DualReadingListModel::IsUrlSupported(const GURL& url) {
   return local_or_syncable_model_->IsUrlSupported(url);
 }
 
-CoreAccountId DualReadingListModel::GetAccountWhereEntryIsSavedTo(
-    const GURL& url) {
+GaiaId DualReadingListModel::GetAccountWhereEntryIsSavedTo(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
 
-  CoreAccountId account_id = account_model_->GetAccountWhereEntryIsSavedTo(url);
-  if (!account_id.empty()) {
-    return account_id;
+  GaiaId gaia_id = account_model_->GetAccountWhereEntryIsSavedTo(url);
+  if (!gaia_id.empty()) {
+    return gaia_id;
   }
   // `local_or_syncable_model_` may return an account for the case where it's
   // sync-ing.

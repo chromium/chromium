@@ -157,12 +157,12 @@ AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
     const GURL& url) {
   ReadingListModel* reading_model =
       ReadingListModelFactory::GetForProfile(browser_->GetProfile());
-  CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
+  GaiaId gaia_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
           browser_->GetProfile()->GetOriginalProfile());
   AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   return account_info;
 }
 

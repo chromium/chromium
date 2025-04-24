@@ -46,7 +46,7 @@ class ForwardingDataTypeLocalChangeProcessor
   void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
-  std::string TrackedAccountId() const override;
+  GaiaId TrackedGaiaId() const override;
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;

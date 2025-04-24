@@ -89,7 +89,7 @@ std::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   ResubmitAllData();
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
@@ -174,7 +174,7 @@ void ConsentSyncBridgeImpl::ApplyDisableSyncChanges(
 }
 
 void ConsentSyncBridgeImpl::ResubmitAllData() {
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   DCHECK(change_processor()->IsTrackingMetadata());
   CHECK(store_);
 
@@ -182,7 +182,9 @@ void ConsentSyncBridgeImpl::ResubmitAllData() {
       store_->CreateWriteBatch();
 
   for (const auto& [storage_key, specifics] : store_->in_memory_data()) {
-    if (specifics.account_id() == change_processor()->TrackedAccountId()) {
+    // TODO(crbug.com/383089506): rename account_id to obfuscated_gaia_id.
+    if (specifics.account_id() ==
+        change_processor()->TrackedGaiaId().ToString()) {
       auto specifics_copy = std::make_unique<UserConsentSpecifics>(specifics);
       change_processor()->Put(storage_key,
                               MoveToEntityData(std::move(specifics_copy)),
@@ -226,7 +228,8 @@ void ConsentSyncBridgeImpl::RecordConsentImpl(
       store_->CreateWriteBatch();
   batch->WriteData(storage_key, *specifics);
 
-  if (specifics->account_id() == change_processor()->TrackedAccountId()) {
+  if (specifics->account_id() ==
+      change_processor()->TrackedGaiaId().ToString()) {
     change_processor()->Put(storage_key, MoveToEntityData(std::move(specifics)),
                             batch->GetMetadataChangeList());
   }
@@ -262,7 +265,7 @@ void ConsentSyncBridgeImpl::OnStoreLoaded(
   store_ = std::move(store);
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
-  if (!change_processor()->TrackedAccountId().empty()) {
+  if (!change_processor()->TrackedGaiaId().empty()) {
     // Resubmit all data in case the client crashed immediately after
     // MergeFullSyncData(), where submissions are supposed to happen and
     // metadata populated.
