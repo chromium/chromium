@@ -56,6 +56,8 @@ export type BluetoothCommand =
   | Bluetooth.DisableSimulation
   | Bluetooth.SimulatePreconnectedPeripheral
   | Bluetooth.SimulateAdvertisement
+  | Bluetooth.SimulateGattConnectionResponse
+  | Bluetooth.SimulateGattDisconnection
   | Record<string, never>;
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
@@ -142,6 +144,31 @@ export namespace Bluetooth {
   };
 }
 export namespace Bluetooth {
+  export type SimulateGattConnectionResponse = {
+    method: 'bluetooth.simulateGattConnectionResponse';
+    params: Bluetooth.SimulateGattConnectionResponseParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateGattConnectionResponseParameters = {
+    context: string;
+    address: string;
+    code: number;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateGattDisconnection = {
+    method: 'bluetooth.simulateGattDisconnection';
+    params: Bluetooth.SimulateGattDisconnectionParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateGattDisconnectionParameters = {
+    context: string;
+    address: string;
+  };
+}
+export namespace Bluetooth {
   export type RequestDevicePromptUpdated = {
     method: 'bluetooth.requestDevicePromptUpdated';
     params: Bluetooth.RequestDevicePromptUpdatedParameters;
@@ -152,5 +179,17 @@ export namespace Bluetooth {
     context: string;
     prompt: Bluetooth.RequestDevicePrompt;
     devices: [...Bluetooth.RequestDeviceInfo[]];
+  };
+}
+export namespace Bluetooth {
+  export type GattConnectionAttempted = {
+    method: 'bluetooth.gattConnectionAttempted';
+    params: Bluetooth.GattConnectionAttemptedParameters;
+  };
+}
+export namespace Bluetooth {
+  export type GattConnectionAttemptedParameters = {
+    context: string;
+    address: string;
   };
 }

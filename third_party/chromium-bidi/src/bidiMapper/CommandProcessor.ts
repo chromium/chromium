@@ -173,6 +173,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#bluetoothProcessor.simulateAdvertisement(
           this.#parser.parseSimulateAdvertisementParameters(command.params),
         );
+      case 'bluetooth.simulateGattConnectionResponse':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
+      case 'bluetooth.simulateGattDisconnection':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'bluetooth.simulatePreconnectedPeripheral':
         return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(
           this.#parser.parseSimulatePreconnectedPeripheralParameters(
