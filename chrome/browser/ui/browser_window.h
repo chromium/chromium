@@ -167,6 +167,9 @@ class BrowserWindow : public ui::BaseWindow,
   // will return an error.
   virtual bool IsOnCurrentWorkspace() const = 0;
 
+  // Returns true if the browser window is visible on the screen.
+  virtual bool IsVisibleOnScreen() const = 0;
+
   // Sets the shown |ratio| of the browser's top controls (a.k.a. top-chrome) as
   // a result of gesture scrolling in |web_contents|.
   virtual void SetTopControlsShownRatio(content::WebContents* web_contents,

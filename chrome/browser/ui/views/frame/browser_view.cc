@@ -1685,6 +1685,17 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+bool BrowserView::IsVisibleOnScreen() const {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/405283740): currently only works for mac. See comments
+  // around Widget::IsVisibleOnScreen() for more details. Eventually this
+  // should work for all platforms.
+  return frame_->IsVisibleOnScreen();
+#else
+  return IsOnCurrentWorkspace();
+#endif
+}
+
 void BrowserView::SetTopControlsShownRatio(content::WebContents* web_contents,
                                            float ratio) {
   if (top_controls_slide_controller_) {

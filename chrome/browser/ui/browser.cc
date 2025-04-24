@@ -1209,6 +1209,10 @@ bool Browser::IsMinimized() const {
   return window_->IsMinimized();
 }
 
+bool Browser::IsVisibleOnScreen() const {
+  return window_->IsVisibleOnScreen();
+}
+
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
   return AsWeakPtr();
 }

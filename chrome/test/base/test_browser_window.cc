@@ -93,6 +93,10 @@ bool TestBrowserWindow::IsOnCurrentWorkspace() const {
   return true;
 }
 
+bool TestBrowserWindow::IsVisibleOnScreen() const {
+  return true;
+}
+
 void TestBrowserWindow::SetTopControlsShownRatio(
     content::WebContents* web_contents,
     float ratio) {}

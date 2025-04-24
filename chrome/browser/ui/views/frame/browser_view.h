@@ -508,6 +508,7 @@ class BrowserView : public BrowserWindow,
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   gfx::NativeWindow GetNativeWindow() const override;
   bool IsOnCurrentWorkspace() const override;
+  bool IsVisibleOnScreen() const override;
   void SetTopControlsShownRatio(content::WebContents* web_contents,
                                 float ratio) override;
   bool DoBrowserControlsShrinkRendererSize(
