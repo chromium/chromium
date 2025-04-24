@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -432,7 +433,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   std::unique_ptr<FirstSessionDescription> first_remote_description_;
 
   // Track which ICE Connection state that this PeerConnection has gone through.
-  bool ice_state_seen_[webrtc::PeerConnectionInterface::kIceConnectionMax] = {};
+  std::array<bool, webrtc::PeerConnectionInterface::kIceConnectionMax>
+      ice_state_seen_ = {};
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

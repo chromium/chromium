@@ -11,6 +11,8 @@
 
 #include <xmmintrin.h>
 
+#include <array>
+
 namespace blink {
 
 ALWAYS_INLINE static __m128i WrapIndexVector(__m128i v_write_index,
@@ -75,8 +77,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   const __m128i v_incr = _mm_set1_epi32(4);
 
   // Temp arrays for storing the samples needed for interpolation
-  float sample1[4] __attribute((aligned(16)));
-  float sample2[4] __attribute((aligned(16)));
+  std::array<float, 4> sample1 __attribute((aligned(16)));
+  std::array<float, 4> sample2 __attribute((aligned(16)));
 
   // Initialize the write index vector, and  wrap the values if needed.
   __m128i v_write_index =
@@ -121,8 +123,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
       sample2[m] = buffer[read_index2[m]];
     }
 
-    const __m128 v_sample1 = _mm_load_ps(sample1);
-    const __m128 v_sample2 = _mm_load_ps(sample2);
+    const __m128 v_sample1 = _mm_load_ps(sample1.data());
+    const __m128 v_sample2 = _mm_load_ps(sample2.data());
 
     v_write_index = _mm_add_epi32(v_write_index, v_incr);
     v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);

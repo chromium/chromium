@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 
@@ -218,7 +219,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   // The loader is owned by the UrlData above.
   raw_ptr<ResourceMultiBufferDataProvider> loader_;
 
-  uint8_t data_[kDataSize];
+  std::array<uint8_t, kDataSize> data_;
 };
 
 TEST_F(ResourceMultiBufferDataProviderTest, StartStop) {

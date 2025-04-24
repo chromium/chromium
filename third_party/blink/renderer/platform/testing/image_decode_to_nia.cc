@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // This program converts an image from stdin (e.g. a JPEG, PNG, etc.) to stdout
 // (in the NIA/NIE format, a trivial image file format).
 //
@@ -89,7 +91,7 @@ void write_nie_pixels(uint32_t width,
                       uint32_t height,
                       blink::ImageFrame* frame) {
   static constexpr size_t kBufferSize = 4096;
-  uint8_t buf[kBufferSize];
+  std::array<uint8_t, kBufferSize> buf;
   size_t n = 0;
   for (uint32_t y = 0; y < height; y++) {
     for (uint32_t x = 0; x < width; x++) {
@@ -99,13 +101,13 @@ void write_nie_pixels(uint32_t width,
       buf[n++] = pix >> SK_R32_SHIFT;
       buf[n++] = pix >> SK_A32_SHIFT;
       if (n == kBufferSize) {
-        fwrite(buf, 1, n, stdout);
+        fwrite(buf.data(), 1, n, stdout);
         n = 0;
       }
     }
   }
   if (n > 0) {
-    fwrite(buf, 1, n, stdout);
+    fwrite(buf.data(), 1, n, stdout);
   }
 }
 

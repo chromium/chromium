@@ -35,7 +35,7 @@ class FontsHolder : public GarbageCollected<FontsHolder> {
     }
   }
 
-  Member<Font> fonts[3];
+  std::array<Member<Font>, 3> fonts;
 };
 }  // namespace
 

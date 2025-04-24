@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_H_
 
+#include <array>
+
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -74,7 +76,7 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   // https://w3c.github.io/screen-wake-lock/#dfn-activelocks
   // An ordered map of wake lock types to a list of WakeLockSentinel objects
   // associated with this Document.
-  Member<WakeLockManager> managers_[V8WakeLockType::kEnumSize];
+  std::array<Member<WakeLockManager>, V8WakeLockType::kEnumSize> managers_;
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockSentinelTest, ContextDestruction);
   FRIEND_TEST_ALL_PREFIXES(WakeLockTest, RequestWakeLockGranted);

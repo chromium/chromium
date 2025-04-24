@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_PANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_PANNER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/delay.h"
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
@@ -48,8 +49,8 @@ class HRTFPanner final : public Panner {
            AudioBus* output_bus,
            uint32_t frames_to_process,
            AudioBus::ChannelInterpretation) override;
-  void PanWithSampleAccurateValues(double* azimuth,
-                                   double* elevation,
+  void PanWithSampleAccurateValues(base::span<double> azimuth,
+                                   base::span<double> elevation,
                                    const AudioBus* input_bus,
                                    AudioBus* output_bus,
                                    uint32_t frames_to_process,

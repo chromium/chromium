@@ -13,6 +13,8 @@
 #include <dawn/wire/WireClient.h>
 #include <dawn/wire/WireServer.h>
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
@@ -158,15 +160,17 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
 
 class WireSerializer : public dawn::wire::CommandSerializer {
  public:
-  size_t GetMaximumAllocationSize() const override { return sizeof(buf_); }
+  size_t GetMaximumAllocationSize() const override {
+    return (buf_.size() * sizeof(decltype(buf_)::value_type));
+  }
 
   void SetHandler(dawn::wire::CommandHandler* handler) { handler_ = handler; }
 
   void* GetCmdSpace(size_t size) override {
-    if (size > sizeof(buf_)) {
+    if (size > (buf_.size() * sizeof(decltype(buf_)::value_type))) {
       return nullptr;
     }
-    if (sizeof(buf_) - size < offset_) {
+    if ((buf_.size() * sizeof(decltype(buf_)::value_type)) - size < offset_) {
       if (!Flush()) {
         return nullptr;
       }
@@ -177,14 +181,14 @@ class WireSerializer : public dawn::wire::CommandSerializer {
   }
 
   bool Flush() override {
-    bool success = handler_->HandleCommands(buf_, offset_) != nullptr;
+    bool success = handler_->HandleCommands(buf_.data(), offset_) != nullptr;
     offset_ = 0;
     return success;
   }
 
  private:
   size_t offset_ = 0;
-  char buf_[1024 * 1024];
+  std::array<char, 1024 * 1024> buf_;
   raw_ptr<dawn::wire::CommandHandler> handler_;
 };
 

@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <memory>
 
@@ -243,7 +244,7 @@ class IpcPacketSocket : public webrtc::AsyncPacketSocket,
 
   // Current error code. Valid when state_ == IS_ERROR.
   int error_;
-  int options_[network::P2P_SOCKET_OPT_MAX];
+  std::array<int, network::P2P_SOCKET_OPT_MAX> options_;
 
   // Track the maximum and current consecutive bytes discarded due to not enough
   // send_bytes_available_.
@@ -298,7 +299,7 @@ IpcPacketSocket::IpcPacketSocket()
       max_discard_bytes_sequence_(0),
       current_discard_bytes_sequence_(0) {
   static_assert(kDefaultMaximumInFlightBytes > 0, "would send at zero rate");
-  std::fill_n(options_, static_cast<int>(network::P2P_SOCKET_OPT_MAX),
+  std::fill_n(options_.data(), static_cast<int>(network::P2P_SOCKET_OPT_MAX),
               kDefaultNonSetOptionValue);
 }
 

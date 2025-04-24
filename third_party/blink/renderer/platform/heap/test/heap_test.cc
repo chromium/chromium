@@ -33,6 +33,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -2546,7 +2548,7 @@ class SimpleObject : public GarbageCollected<SimpleObject> {
   virtual void VirtualMethod() {}
 
  protected:
-  char payload[64];
+  std::array<char, 64> payload;
 };
 
 class Mixin : public GarbageCollectedMixin {
@@ -2556,7 +2558,7 @@ class Mixin : public GarbageCollectedMixin {
   virtual char GetPayload(int i) { return padding_[i]; }
 
  protected:
-  int padding_[8];
+  std::array<int, 8> padding_;
 };
 
 class UseMixin : public SimpleObject, public Mixin {
