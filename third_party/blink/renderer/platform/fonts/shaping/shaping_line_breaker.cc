@@ -22,10 +22,7 @@ ShapingLineBreaker::ShapingLineBreaker(
       break_iterator_(break_iterator),
       hyphenation_(hyphenation),
       font_(font) {
-  // Line breaking performance relies on high-performance x-position to
-  // character offset lookup. Ensure that the desired cache has been computed.
   DCHECK(result_);
-  result_->EnsurePositionData();
 }
 
 namespace {
@@ -270,8 +267,29 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   result_out->is_hyphenated = false;
   result_out->has_trailing_spaces = false;
   const String& text = GetText();
-  const bool is_break_after_any_space =
-      break_iterator_->BreakSpace() == BreakSpaceType::kAfterEverySpace;
+
+  // Early return if it's obvious that breaking isn't necessary, before
+  // `EnsurePositionData`.
+  if (start == range_start && available_space >= result_->SnappedWidth() &&
+      // Disable if the line start may be trimmed. See `FirstSafeOffset`.
+      !(IsStartOfWrappedLine(start) &&
+        ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
+      // Disable if the line start needs reshape.
+      result_->IsStartSafeToBreak() &&
+      RuntimeEnabledFeatures::LineBreakEarlyReturnEnabled()) [[unlikely]] {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    result_->EnsurePositionData();
+    const EdgeOffset first_safe = FirstSafeOffset(start);
+    DCHECK_EQ(first_safe.offset, start);
+    DCHECK(!first_safe.han_kerning);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+    SetBreakOffset(range_end, text, result_out);
+    return ShapeResultView::Create(result_);
+  }
+
+  // Line breaking performance relies on high-performance x-position to
+  // character offset lookup. Ensure that the desired cache has been computed.
+  result_->EnsurePositionData();
 
   // The start position in the original shape results.
   const LayoutUnit start_position =
@@ -355,6 +373,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   // https://www.unicode.org/reports/tr14/#BA
   // TODO(jfernandez): if break-spaces, do special handling.
   BreakOpportunity break_opportunity;
+  const bool is_break_after_any_space =
+      break_iterator_->BreakSpace() == BreakSpaceType::kAfterEverySpace;
   const bool use_previous_break_opportunity =
       !IsBreakableSpace(text[candidate_break]) || is_break_after_any_space;
   if (use_previous_break_opportunity) {
@@ -644,6 +664,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
                                                        unsigned end) {
   DCHECK_GT(end, start);
 
+  result_->EnsurePositionData();
   const EdgeOffset first_safe = FirstSafeOffset(start);
   DCHECK_GE(first_safe.offset, start);
   const ShapeResult* line_start_result = nullptr;

@@ -2755,6 +2755,10 @@
       base_feature: "none",
     },
     {
+      name: "LineBreakEarlyReturn",
+      status: "stable",
+    },
+    {
       name: "ListItemWithCounterSetNotSetExplicitValue",
       status: "stable",
     },
