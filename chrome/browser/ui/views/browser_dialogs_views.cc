@@ -67,14 +67,12 @@ views::Widget* ShowBrowserModal(Browser* browser,
 
 // TODO(pbos): Move bubble showing out of this file (like ShowBrowserModal) so
 // that this code can be used for showing bubbles outside Browser too.
-void ShowBubble(Browser* browser,
+void ShowBubble(ui::ElementContext element_context,
                 ui::ElementIdentifier anchor_element_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
   views::View* const anchor_view =
       views::ElementTrackerViews::GetInstance()->GetUniqueView(
-          anchor_element_id,
-          views::ElementTrackerViews::GetContextForView(
-              BrowserView::GetBrowserViewForBrowser(browser)));
+          anchor_element_id, element_context);
   DCHECK(anchor_view);
   // TODO(pbos): Add a version of BubbleBorder::Arrow that infers position
   // automatically based on the anchor's position relative to its widget.

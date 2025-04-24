@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,6 @@ assert(toolkit_views)
 
 source_set("dialogs") {
   sources = [ "outdated_upgrade_bubble.h" ]
-  public_deps = [ "//ui/views" ]
 }
 
 source_set("impl") {
