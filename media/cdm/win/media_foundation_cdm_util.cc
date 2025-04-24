@@ -19,6 +19,8 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/cdm_paths.h"
 #include "media/cdm/win/media_foundation_cdm.h"
+#include "media/cdm/win/media_foundation_cdm_module.h"
+#include "media/cdm/win/pmp_host_app_impl.h"
 
 namespace media {
 
@@ -57,7 +59,12 @@ HRESULT CreateVideoCapability(const CdmConfig& cdm_config,
   base::win::ScopedPropVariant robustness;
   if (cdm_config.use_hw_secure_codecs) {
     // TODO(xhwang): Provide a way to support other robustness strings.
-    SetBSTR(L"HW_SECURE_ALL", robustness.Receive());
+    if (MediaFoundationCdmModule::GetInstance()->IsOsCdm()) {
+      // Use hardware secure PlayReady robustness
+      SetBSTR(L"3000", robustness.Receive());
+    } else {
+      SetBSTR(L"HW_SECURE_ALL", robustness.Receive());
+    }
     RETURN_IF_FAILED(
         temp_video_capability->SetValue(MF_EME_ROBUSTNESS, robustness.get()));
   }
@@ -211,6 +218,34 @@ HRESULT CreateMediaFoundationCdm(
                                       store_path, cdm_properties));
   RETURN_IF_FAILED(
       cdm_access->CreateContentDecryptionModule(cdm_properties.Get(), &cdm));
+
+  if (MediaFoundationCdmModule::GetInstance()->IsOsCdm()) {
+    // `cdm` is an OS PlayReady CDM.
+    // SetPMPHostApp() on `cdm` to ensure subsequent
+    // `IMFContentDecryptionModuleSession::GenerateRequest()` call to work.
+    ComPtr<IMFGetService> cdm_services;
+    RETURN_IF_FAILED(cdm.As(&cdm_services));
+    ComPtr<IMFPMPHost> pmp_host;
+    HRESULT hr = cdm_services->GetService(MF_CONTENTDECRYPTIONMODULE_SERVICE,
+                                          IID_IMFPMPHost, &pmp_host);
+    if (FAILED(hr)) {
+      DVLOG(1) << "Can't get IMFPMPHost, try IMFPMPHostApp. hr=" << hr;
+      // Some environments don't support IMFPMPHost, try IMFPMPHostApp instead.
+      ComPtr<IMFPMPHostApp> pmp_host_app;
+      RETURN_IF_FAILED(
+          cdm_services->GetService(MF_CONTENTDECRYPTIONMODULE_SERVICE,
+                                   IID_IMFPMPHostApp, &pmp_host_app));
+      ComPtr<PmpHostAppImpl<IMFPMPHostApp>> pmp_host_app_impl;
+      RETURN_IF_FAILED(MakeAndInitialize<PmpHostAppImpl<IMFPMPHostApp>>(
+          &pmp_host_app_impl, pmp_host_app.Get()));
+      RETURN_IF_FAILED(cdm->SetPMPHostApp(pmp_host_app_impl.Get()));
+    } else {
+      ComPtr<PmpHostAppImpl<IMFPMPHost>> pmp_host_impl;
+      RETURN_IF_FAILED(MakeAndInitialize<PmpHostAppImpl<IMFPMPHost>>(
+          &pmp_host_impl, pmp_host.Get()));
+      RETURN_IF_FAILED(cdm->SetPMPHostApp(pmp_host_impl.Get()));
+    }
+  }
 
   mf_cdm.Swap(cdm);
   return S_OK;
