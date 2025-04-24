@@ -384,6 +384,34 @@ OnceClosure GetDeleteFileCallbackInternal(
                   std::move(bound_callback));
 }
 
+// This function checks if the user is an administrator and whether they have a
+// default elevation type. This corresponds to a full administrator such as the
+// SYSTEM user or built in administrator. It will return false for split-token
+// administrators used in UAC and any non-administrator caller. It checks the
+// effective token in case the caller is impersonating an administrator.
+bool IsUserDefaultAdmin() {
+  base::win::Sid admin_sid(base::win::WellKnownSid::kBuiltinAdministrators);
+  BOOL is_member = FALSE;
+  if (!::CheckTokenMembership(nullptr, admin_sid.GetPSID(), &is_member)) {
+    DPLOG(WARNING) << "Error checking token membership";
+    return false;
+  }
+
+  if (!is_member) {
+    return false;
+  }
+
+  TOKEN_ELEVATION_TYPE elevation_type;
+  DWORD ret_length;
+  if (!::GetTokenInformation(::GetCurrentThreadEffectiveToken(),
+                             TokenElevationType, &elevation_type,
+                             sizeof(elevation_type), &ret_length)) {
+    DPLOG(WARNING) << "Cannot get token elevation type";
+    return false;
+  }
+  return elevation_type == TokenElevationTypeDefault;
+}
+
 // This function verifies that no code is attempting to set an ACL on a file
 // that is outside of 'safe' paths. A 'safe' path is defined as one that is
 // within the user data dir, or the temporary directory. This is explicitly to
@@ -424,7 +452,7 @@ bool IsPathSafeToSetAclOn(const FilePath& path) {
   // Admin users create temporary files in SystemTemp; see
   // `CreateNewTempDirectory` below.
   FilePath secure_system_temp;
-  if (::IsUserAnAdmin() &&
+  if (IsUserDefaultAdmin() &&
       PathService::Get(DIR_SYSTEM_TEMP, &secure_system_temp)) {
     valid_paths.push_back(secure_system_temp);
   }
@@ -721,7 +749,7 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
   DCHECK(new_temp_path);
 
   FilePath parent_dir;
-  if (::IsUserAnAdmin() && PathService::Get(DIR_SYSTEM_TEMP, &parent_dir) &&
+  if (IsUserDefaultAdmin() && PathService::Get(DIR_SYSTEM_TEMP, &parent_dir) &&
       CreateTemporaryDirInDir(parent_dir,
                               prefix.empty() ? kDefaultTempDirPrefix : prefix,
                               new_temp_path)) {
