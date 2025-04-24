@@ -125,15 +125,15 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
                             unit_type_);
     return;
   }
-  CSSMathExpressionNode* blended_from =
+  const CSSMathExpressionNode* blended_from =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(1 - progress),
           CSSMathOperator::kMultiply);
-  CSSMathExpressionNode* blended_to =
+  const CSSMathExpressionNode* blended_to =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &to_number.AsExpression(), NumberNode(progress),
           CSSMathOperator::kMultiply);
-  CSSMathExpressionNode* result_expression =
+  const CSSMathExpressionNode* result_expression =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
   result_number.SetExpression(*result_expression);
@@ -211,7 +211,7 @@ void InterpolableNumber::Add(const InterpolableValue& other) {
     value_ += other_number.value_;
     return;
   }
-  CSSMathExpressionNode* result =
+  const CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_number.AsExpression(), CSSMathOperator::kAdd);
   SetExpression(*result);

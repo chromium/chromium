@@ -207,6 +207,15 @@ class CORE_EXPORT CSSMathExpressionNode
   // Returns |UnitType::kUnknown| if type conversion is required.
   virtual CSSPrimitiveValue::UnitType ResolvedUnitType() const = 0;
 
+  CSSPrimitiveValue::UnitType ResolvedUnitTypeForSimplification() const {
+    CSSPrimitiveValue::UnitType unit_type = ResolvedUnitType();
+    if (unit_type == CSSPrimitiveValue::UnitType::kInteger) {
+      return CSSPrimitiveValue::UnitType::kNumber;
+    } else {
+      return unit_type;
+    }
+  }
+
   bool IsNestedCalc() const { return is_nested_calc_; }
   void SetIsNestedCalc() { is_nested_calc_ = true; }
 
@@ -582,7 +591,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
   // calc(0.5 * calc-size(auto, size)) is not valid syntax, but this lets the
   // animation code pass that multiplication to this function and have it turn
   // into calc-size(auto, 0.5 * size).
-  static CSSMathExpressionNode* CreateArithmeticOperationAndSimplifyCalcSize(
+  static const CSSMathExpressionNode*
+  CreateArithmeticOperationAndSimplifyCalcSize(
       const CSSMathExpressionNode* left_side,
       const CSSMathExpressionNode* right_side,
       CSSMathOperator op);
