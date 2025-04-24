@@ -2190,6 +2190,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             if (newConfig.densityDpi != mConfig.densityDpi
                     && !BuildInfo.getInstance().isAutomotive) {
                 doRecreateActivity();
+                return;
+            }
+
+            // Maintain tab state by re-parenting tabs when a Chrome window is moved between
+            // displays.
+            if (newConfig.touchscreen != mConfig.touchscreen
+                    || newConfig.colorMode != mConfig.colorMode) {
+                doRecreateActivity();
+                return;
             }
         }
         mConfig = newConfig;
