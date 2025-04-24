@@ -67,7 +67,6 @@ import java.util.Arrays;
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @Features.EnableFeatures({
     ChromeFeatureList.CCT_EARLY_NAV,
-    ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE,
     ChromeFeatureList.CCT_PREWARM_TAB,
     ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
 })
