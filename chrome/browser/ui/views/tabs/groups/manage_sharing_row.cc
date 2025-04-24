@@ -59,6 +59,7 @@ ManageSharingRow::ManageSharingRow(
   views::InkDrop::Get(this)->SetBaseColorId(kColorHoverButtonBackgroundHovered);
   views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
   views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   RebuildChildren();
 }
