@@ -156,6 +156,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* _facePileView;
   // Container for the content of the ViewController.
   UIView* _container;
+  // The background of the container, for animations.
+  UIView* _containerBackground;
   // The gesture recognizer to swipe to dismiss the tab group view.
   UIPanGestureRecognizer* _swipeDownGestureRecognizer;
 }
@@ -198,7 +200,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   [self contentWillAppearAnimated:YES];
 
-  _navigationBar.alpha = 0;
+  if (IsContainedTabGroupEnabled()) {
+    _topToolbar.alpha = 0;
+    _containerBackground.alpha = 0;
+  } else {
+    _navigationBar.alpha = 0;
+  }
   _gridViewController.view.alpha = 0;
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
@@ -208,10 +215,17 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)animateTopElementsPresentation {
-  _navigationBar.alpha = 1;
+  if (IsContainedTabGroupEnabled()) {
+    _topToolbar.alpha = 1;
+  } else {
+    _navigationBar.alpha = 1;
+  }
 }
 
 - (void)animateGridPresentation {
+  if (IsContainedTabGroupEnabled()) {
+    _containerBackground.alpha = 1;
+  }
   _gridViewController.view.alpha = 1;
   [_gridViewController resetVisibleCellsCenterAndScale];
 }
@@ -297,8 +311,13 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   [self.view addSubview:_container];
 
   if (IsContainedTabGroupEnabled()) {
-    _container.backgroundColor =
+    _containerBackground = [[UIView alloc] init];
+    _containerBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    _containerBackground.backgroundColor =
         [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
+    [_container addSubview:_containerBackground];
+    AddSameConstraints(_container, _containerBackground);
+
     _container.layer.cornerRadius = kContainerCornerRadius;
     _container.layer.masksToBounds = YES;
 
