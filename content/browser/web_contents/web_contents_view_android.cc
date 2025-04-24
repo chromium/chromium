@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
@@ -76,8 +75,6 @@ int DragMovementThresholdDip() {
 // compositor event queue.
 bool ShouldRequestUnbufferedDispatch() {
   static bool should_request_unbuffered_dispatch =
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_LOLLIPOP &&
       !GetContentClient()->UsingSynchronousCompositing() &&
       !base::FeatureList::IsEnabled(
           input::features::kUseAndroidBufferedInputDispatch);
