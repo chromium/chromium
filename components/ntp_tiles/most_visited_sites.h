@@ -153,10 +153,11 @@ class MostVisitedSites :
   // Does not take ownership of |observer|, which must outlive this object and
   // must not be null. |max_num_sites| indicates the the maximum number of most
   // visited sites to return.
-  void AddMostVisitedURLsObserver(Observer* observer, size_t max_num_sites);
+  virtual void AddMostVisitedURLsObserver(Observer* observer,
+                                          size_t max_num_sites);
 
   // Removes the observer.
-  void RemoveMostVisitedURLsObserver(Observer* observer);
+  virtual void RemoveMostVisitedURLsObserver(Observer* observer);
 
   // Sets the client that provides platform-specific homepage preferences.
   // When used to replace an existing client, the new client will first be

@@ -28,6 +28,7 @@ import java.util.List;
 public class AuxiliarySearchBridge {
     private long mNativeBridge;
     private AuxiliarySearchProvider.Observer mObserver;
+    private int mObserverId;
 
     /**
      * Constructs a bridge for the auxiliary search provider.
@@ -98,15 +99,15 @@ public class AuxiliarySearchBridge {
      *
      * @param observer The observer to receive suggestions when they are ready.
      */
-    public void setObserver(Observer observer) {
+    public void setObserver(@Nullable Observer observer) {
         if (observer == null) {
             mObserver = null;
+            AuxiliarySearchBridgeJni.get().removeObserver(mNativeBridge, mObserverId);
             return;
         }
 
-        assert mObserver == null;
         mObserver = observer;
-        AuxiliarySearchBridgeJni.get().setObserverAndTrigger(mNativeBridge, this);
+        mObserverId = AuxiliarySearchBridgeJni.get().setObserverAndTrigger(mNativeBridge, this);
     }
 
     /** Starts a fetch of the current most visited sites suggestions. */
@@ -164,6 +165,10 @@ public class AuxiliarySearchBridge {
         return mObserver;
     }
 
+    int getObserverIdForTesting() {
+        return mObserverId;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -176,7 +181,9 @@ public class AuxiliarySearchBridge {
                 long nativeAuxiliarySearchProvider,
                 Callback<List<AuxiliarySearchDataEntry>> callback);
 
-        void setObserverAndTrigger(long nativeAuxiliarySearchProvider, AuxiliarySearchBridge self);
+        int setObserverAndTrigger(long nativeAuxiliarySearchProvider, AuxiliarySearchBridge self);
+
+        void removeObserver(long nativeAuxiliarySearchProvider, int id);
 
         void getMostVisitedSites(long nativeAuxiliarySearchProvider);
     }

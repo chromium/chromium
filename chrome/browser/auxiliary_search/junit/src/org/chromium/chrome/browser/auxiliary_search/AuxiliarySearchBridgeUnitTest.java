@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -153,14 +152,17 @@ public final class AuxiliarySearchBridgeUnitTest {
     public void testSetObserver() {
         AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
 
+        int id = 100;
+        when(mMockAuxiliarySearchBridgeJni.setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge)))
+                .thenReturn(id);
         mBridge.setObserver(observer);
         assertEquals(observer, mBridge.getObserverForTesting());
+        assertEquals(id, mBridge.getObserverIdForTesting());
         verify(mMockAuxiliarySearchBridgeJni).setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge));
 
         Mockito.reset(mMockAuxiliarySearchBridgeJni);
         mBridge.setObserver(null);
-        verify(mMockAuxiliarySearchBridgeJni, never())
-                .setObserverAndTrigger(anyLong(), any(AuxiliarySearchBridge.class));
+        verify(mMockAuxiliarySearchBridgeJni).removeObserver(eq(NATIVE_BRIDGE), eq(id));
         assertNull(mBridge.getObserverForTesting());
     }
 

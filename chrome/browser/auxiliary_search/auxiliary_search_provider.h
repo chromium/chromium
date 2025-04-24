@@ -54,9 +54,13 @@ class AuxiliarySearchProvider : public KeyedService,
       const base::android::JavaParamRef<jobject>& j_callback_obj) const;
 
   // Sets an observer and immediately fetches the current most visited sites
-  // suggestions.
-  void SetObserverAndTrigger(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& j_ref_obj);
+  // suggestions. Returns the ID of the observer.
+  int SetObserverAndTrigger(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& j_ref_obj);
+
+  // Removes the observer with the given ID from the observers list, and stops
+  // observing the most visited sites if all observers are removed.
+  void RemoveObserver(JNIEnv* env, jint observerId);
 
   // Starts a fetch of the current most visited sites suggestions.
   void GetMostVisitedSites(JNIEnv* env) const;
@@ -74,6 +78,7 @@ class AuxiliarySearchProvider : public KeyedService,
                            QueryEmptyTabList);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, NativeTabTest);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, FilterTabsTest);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, AddAndRemoveObservers);
 
   using NonSensitiveTabsCallback =
       base::OnceCallback<void(std::vector<base::WeakPtr<TabAndroid>>)>;
@@ -94,8 +99,7 @@ class AuxiliarySearchProvider : public KeyedService,
       std::vector<raw_ptr<TabAndroid, VectorExperimental>> all_tabs,
       NonSensitiveTabsCallback callback) const;
 
-  bool is_observing_ = false;
-  base::android::ScopedJavaGlobalRef<jobject> j_ref_;
+  std::map<int, jni_zero::ScopedJavaGlobalRef<jobject>> observers_map_;
 
   const raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;

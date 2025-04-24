@@ -52,8 +52,10 @@ using visited_url_ranking::VisitedURLRankingServiceFactory;
 namespace {
 // Must match Java Tab.INVALID_TAB_ID.
 static constexpr int kInvalidTabId = -1;
+// The next id to assign.
+static int kIdCounter = 0;
 
-const int kMaxNumMostVisitedSites = 4;
+constexpr int kMaxNumMostVisitedSites = 4;
 
 using BackToJavaCallback = base::OnceCallback<void(
     std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>)>;
@@ -159,10 +161,12 @@ AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
 void AuxiliarySearchProvider::Shutdown() {
   if (most_visited_sites_) {
-    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+    if (!observers_map_.empty()) {
+      most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+    }
     most_visited_sites_.reset();
   }
-  is_observing_ = false;
+  observers_map_.clear();
 }
 
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
@@ -194,21 +198,32 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
   helper->StartFetching();
 }
 
-void AuxiliarySearchProvider::SetObserverAndTrigger(
+int AuxiliarySearchProvider::SetObserverAndTrigger(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_ref_obj) {
+  auto j_ref = jni_zero::ScopedJavaGlobalRef<jobject>(j_ref_obj);
+  int id = kIdCounter++;
+  observers_map_[id] = j_ref;
+
   // AuxiliarySearchProvider registers itself as an observer of the
   // |most_visited_sites_|. Don't register again if it has registered before.
-  if (is_observing_) {
-    return;
+  if (observers_map_.size() > 1) {
+    return id;
   }
-
-  is_observing_ = true;
-  j_ref_ = base::android::ScopedJavaGlobalRef<jobject>(j_ref_obj);
 
   CHECK(most_visited_sites_);
   most_visited_sites_->AddMostVisitedURLsObserver(this,
                                                   kMaxNumMostVisitedSites);
+  return id;
+}
+
+void AuxiliarySearchProvider::RemoveObserver(JNIEnv* env, jint id) {
+  CHECK(observers_map_.contains(id));
+  observers_map_.erase(id);
+
+  if (observers_map_.size() == 0) {
+    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+  }
 }
 
 void AuxiliarySearchProvider::GetMostVisitedSites(JNIEnv* env) const {
@@ -221,6 +236,9 @@ void AuxiliarySearchProvider::OnURLsAvailable(
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
   CHECK(most_visited_sites_);
+  if (observers_map_.empty()) {
+    return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
@@ -248,13 +266,21 @@ void AuxiliarySearchProvider::OnURLsAvailable(
         convertSiteSuggestionScore(tile.score)));
   }
 
-  Java_AuxiliarySearchBridge_onMostVisitedSitesURLsAvailable(env, j_ref_,
-                                                             entries);
+  for (auto const& [id, observer] : observers_map_) {
+    Java_AuxiliarySearchBridge_onMostVisitedSitesURLsAvailable(env, observer,
+                                                               entries);
+  }
 }
 
 void AuxiliarySearchProvider::OnIconMadeAvailable(const GURL& site_url) {
+  if (observers_map_.empty()) {
+    return;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AuxiliarySearchBridge_onIconMadeAvailable(env, j_ref_, site_url);
+  for (auto const& [id, observer] : observers_map_) {
+    Java_AuxiliarySearchBridge_onIconMadeAvailable(env, observer, site_url);
+  }
 }
 
 // static
