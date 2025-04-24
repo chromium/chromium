@@ -39,13 +39,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.content.WebContentsFactoryJni;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.content_public.browser.WebContents;
@@ -66,28 +63,21 @@ public class CustomTabActivityTabControllerUnitTest {
 
     private CustomTabActivityTabController mTabController;
 
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Network mNetwork;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
-    @Mock private WebContentsFactory.Natives mWebContentsFactoryJni;
 
     private static final long TEST_TARGET_NETWORK = 1000;
 
     @Before
     public void setUp() {
-        when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
-        when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(env.intentDataProvider.getTargetNetwork()).thenReturn((long) NetId.INVALID);
 
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
 
         CookiesFetcherJni.setInstanceForTesting(mCookiesFetcherJni);
-        WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
     }
 
     @Test
@@ -207,7 +197,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void usesWebContentsCreatedWithWarmRenderer_ByDefault() {
         WebContents webContents = mock(WebContents.class);
-        when(mWebContentsFactoryJni.createWebContents(
+        when(env.mWebContentsFactoryJni.createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
@@ -224,14 +214,14 @@ public class CustomTabActivityTabControllerUnitTest {
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
-        verify(mWebContentsFactoryJni, never())
+        verify(env.mWebContentsFactoryJni, never())
                 .createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),
                         /* targetNetwork= */ not(eq(TEST_TARGET_NETWORK)),
                         any());
-        verify(mWebContentsFactoryJni)
+        verify(env.mWebContentsFactoryJni)
                 .createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
@@ -244,7 +234,7 @@ public class CustomTabActivityTabControllerUnitTest {
     public void createsWebContentsFromScratch_whenIntentDataProviderTargetsNetwork() {
         WebContents webContents = mock(WebContents.class);
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
-        when(mWebContentsFactoryJni.createWebContents(
+        when(env.mWebContentsFactoryJni.createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
                         /* initializeRenderer= */ eq(true),

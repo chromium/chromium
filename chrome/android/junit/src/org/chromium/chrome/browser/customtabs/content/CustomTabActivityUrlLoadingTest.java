@@ -38,15 +38,10 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.content.WebContentsFactoryJni;
-import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
-import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristicsJni;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridgeJni;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -85,16 +80,11 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
-
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityNavigationController mNavigationController;
     private CustomTabIntentHandler mIntentHandler;
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
-    @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
-    @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
     @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
 
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
@@ -102,14 +92,8 @@ public class CustomTabActivityUrlLoadingTest {
     @Before
     public void setUp() {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
-        CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
-        WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
         PreloadingDataBridgeJni.setInstanceForTesting(mPreloadingDataBridgeMock);
         WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
-
-        when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
-        when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
