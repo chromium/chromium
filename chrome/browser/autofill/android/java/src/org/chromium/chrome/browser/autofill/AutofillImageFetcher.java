@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -20,6 +19,8 @@ import org.jni_zero.JniType;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Fetches, and caches credit card art images. */
+@NullMarked
 public class AutofillImageFetcher {
     private static final long REFETCH_DELAY_MS = 5000;
     private static final int MAX_FETCH_ATTEMPTS = 2;
@@ -96,7 +98,8 @@ public class AutofillImageFetcher {
 
             GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
             fetchImage(
-                    urlWithParams, bitmap -> treatAndCachePixAccountImage(bitmap, urlWithParams));
+                    urlWithParams.getSpec(),
+                    bitmap -> treatAndCachePixAccountImage(bitmap, urlWithParams.getSpec()));
         }
     }
 
@@ -172,7 +175,8 @@ public class AutofillImageFetcher {
      * @param url URL for the stored image in the server.
      * @param cardIconSpecs The sizing specifications for the image.
      */
-    private void treatAndCacheImage(Bitmap bitmap, GURL url, CardIconSpecs cardIconSpecs) {
+    private void treatAndCacheImage(
+            @Nullable Bitmap bitmap, GURL url, CardIconSpecs cardIconSpecs) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
         GURL urlToCache =
@@ -210,32 +214,51 @@ public class AutofillImageFetcher {
      * @param customUrl The final URL including any params to fetch the image.
      * @param onImageFetched The callback to be called with the fetched image.
      */
-    private void fetchImage(GURL customUrl, Callback<Bitmap> onImageFetched) {
-        if (mImagesCache.containsKey(customUrl.getSpec())) {
+    private void fetchImage(String customUrl, Callback<@Nullable Bitmap> onImageFetched) {
+        if (mImagesCache.containsKey(customUrl)) {
             return;
         }
 
+        // Update the attempt count for fetching the image.
+        int fetchAttemptCount = mFetchAttemptCounter.getOrDefault(customUrl, 0);
+        mFetchAttemptCounter.put(customUrl, fetchAttemptCount + 1);
+
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        customUrl.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+                        customUrl, ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(params, onImageFetched);
     }
 
     /**
-     * Adds enhancements to Pix account image, and caches it.
+     * Adds enhancements to Pix account image, and caches it. If image fetching fails, retries
+     * fetching {@code MAX_FETCH_ATTEMPTS - 1} times with a delay of {@code REFETCH_DELAY_MS}
+     * between each attempt.
      *
      * @param bitmap The Bitmap fetched from server.
      * @param urlToCache The key against which the treated Bitmap is cached.
      */
-    private void treatAndCachePixAccountImage(Bitmap bitmap, GURL urlToCache) {
+    private void treatAndCachePixAccountImage(@Nullable Bitmap bitmap, String urlToCache) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
-        if (bitmap == null) {
+        if (bitmap != null) {
+            mImagesCache.put(urlToCache, AutofillImageFetcherUtils.treatPixAccountImage(bitmap));
             return;
         }
 
-        mImagesCache.put(
-                urlToCache.getSpec(), AutofillImageFetcherUtils.treatPixAccountImage(bitmap));
+        // Image fetching failed, and max retry attempts reached.
+        if (mFetchAttemptCounter.getOrDefault(urlToCache, 0) >= MAX_FETCH_ATTEMPTS) {
+            return;
+        }
+
+        // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
+        Handler handler = new Handler();
+        handler.postDelayed(
+                () ->
+                        fetchImage(
+                                urlToCache,
+                                fetchedImage ->
+                                        treatAndCachePixAccountImage(fetchedImage, urlToCache)),
+                REFETCH_DELAY_MS);
     }
 
     /**

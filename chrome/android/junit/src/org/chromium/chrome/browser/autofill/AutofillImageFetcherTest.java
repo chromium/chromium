@@ -377,20 +377,72 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        // Failure histogram should be logged since fetching was attempted but failed.
+        // Failure histogram should be logged twice since fetching is attempted again.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
                         .build();
 
         mAutofillImageFetcher.prefetchPixAccountImages(new GURL[] {TEST_IMAGE_URL});
 
-        // Verify that fetchImage was called once.
-        verify(mMockImageFetcher).fetchImage(any(Params.class), any(Callback.class));
+        // Advance the clock to trigger the retry.
+        mShadowLooper.runOneTask();
+        // Advance the task again to make sure image fetching is retried only once.
+        mShadowLooper.runOneTask();
+
+        // Verify that fetchImage was called twice.
+        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
 
         // Verify that the cache is empty since image fetching failed.
         assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefetchPixAccountImages_validUrl_unsuccessfulImageFetch_successOnRetry() {
+        // Use AtomicInteger to track the number of calls.
+        AtomicInteger callCount = new AtomicInteger(0);
+        // Make the first fetch fail, and the second succeed.
+        doAnswer(
+                        invocation -> {
+                            Callback callback = invocation.getArgument(1);
+                            if (callCount.getAndIncrement() == 0) {
+                                callback.onResult(null);
+                                return null;
+                            }
+                            callback.onResult(TEST_IMAGE);
+                            return null;
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(Params.class), any(Callback.class));
+        GURL imageCacheKey =
+                AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(TEST_IMAGE_URL);
+        Bitmap treatedImage = AutofillImageFetcherUtils.treatPixAccountImage(TEST_IMAGE);
+        // Failure and success histogram should be logged once each since fetching is successful on
+        // retry.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .build();
+
+        mAutofillImageFetcher.prefetchPixAccountImages(new GURL[] {TEST_IMAGE_URL});
+        Map<String, Bitmap> cachedImages = mAutofillImageFetcher.getCachedImagesForTesting();
+
+        // Advance the clock to trigger the retry.
+        mShadowLooper.runOneTask();
+
+        // Verify that fetchImage was called twice.
+        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
+
+        // Verify the image cache contains the fetched image.
+        assertEquals(1, cachedImages.size());
+        assertTrue(treatedImage.sameAs(cachedImages.get(imageCacheKey.getSpec())));
 
         expectedHistogram.assertExpected();
     }
