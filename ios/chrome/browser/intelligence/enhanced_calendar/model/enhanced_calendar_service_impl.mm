@@ -105,9 +105,8 @@ void EnhancedCalendarServiceImpl::ExecuteEnhancedCalendarRequest(
       completionCallback:std::move(page_context_completion_callback)];
   [page_context_wrapper_ setShouldGetInnerText:YES];
   [page_context_wrapper_ setShouldGetSnapshot:YES];
-  [page_context_wrapper_
-      setTextToHighlight:base::SysUTF8ToNSString(
-                             request_params->surrounding_text)];
+  [page_context_wrapper_ setTextToHighlight:base::SysUTF8ToNSString(
+                                                request_params->selected_text)];
   [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
