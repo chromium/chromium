@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="LocalRecoveryFactorType">
+  <variant name=".ICloudKeychain" summary="iCloud Keychain"/>
   <variant name=".PhysicalDevice" summary="Local physical device"/>
 </variants>
 

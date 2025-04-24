@@ -233,6 +233,10 @@ std::string GetLocalRecoveryFactorNameForUma(
   switch (local_recovery_factor_type) {
     case LocalRecoveryFactorType::kPhysicalDevice:
       return "PhysicalDevice";
+#if BUILDFLAG(IS_MAC)
+    case LocalRecoveryFactorType::kICloudKeychain:
+      return "ICloudKeychain";
+#endif
       // If adding a new value, also update the variants for
       // LocalRecoveryFactorType in
       // tools/metrics/histograms/metadata/trusted_vault/histograms.xml.

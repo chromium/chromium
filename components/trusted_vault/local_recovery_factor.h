@@ -20,6 +20,9 @@ namespace trusted_vault {
 // they manage recovery keys locally.
 enum class LocalRecoveryFactorType {
   kPhysicalDevice,
+#if BUILDFLAG(IS_MAC)
+  kICloudKeychain,
+#endif
 };
 
 // Interface for a local recovery factor.

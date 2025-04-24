@@ -81,6 +81,13 @@ static_library("trusted_vault") {
       "//third_party/libxml:xml_reader",
     ]
   }
+
+  if (is_mac) {
+    sources += [
+      "icloud_keychain_recovery_factor.cc",
+      "icloud_keychain_recovery_factor.h",
+    ]
+  }
 }
 
 if (!is_android) {

@@ -37,6 +37,10 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/trusted_vault/icloud_keychain_recovery_factor.h"
+#endif
+
 namespace trusted_vault {
 
 namespace {
@@ -111,6 +115,20 @@ class LocalRecoveryFactorsFactoryImpl
     local_recovery_factors.emplace_back(
         std::make_unique<PhysicalDeviceRecoveryFactor>(storage,
                                                        primary_account));
+#if BUILDFLAG(IS_MAC)
+    if (base::FeatureList::IsEnabled(kEnableICloudKeychainRecoveryFactor)) {
+      // Note: The iCloud Keychain recovery factor needs to come after the
+      // physical device recovery factor.
+      // Retrieval attempts are performed in order, and since retrieving using
+      // the iCloud Keychain is significantly more heavy weight than from the
+      // physical device recovery factor, we want to make sure that the latter
+      // is attempted first.
+      local_recovery_factors.emplace_back(
+          std::make_unique<ICloudKeychainRecoveryFactor>(storage,
+                                                         primary_account));
+    }
+#endif
+
     return local_recovery_factors;
   }
 };
