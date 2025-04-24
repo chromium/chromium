@@ -2342,6 +2342,66 @@ TEST_P(CompositorFrameSinkSupportTest, DoNotSendTheSameBeginFrameIdTwice) {
   testing::Mock::VerifyAndClearExpectations(&mock_client);
 }
 
+TEST_P(CompositorFrameSinkSupportTest,
+       SendPresentationFeedbackOnlyInThrottledIntervalWhenThrottled) {
+  // Send PresentationFeedback with default interval when throttled can
+  // cause regression in https://crbug.com/405454652.
+  static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
+  // Request BeginFrames.
+  support_->SetNeedsBeginFrame(true);
+  support_->ThrottleBeginFrame(kThrottledFrameInterval);
+  ASSERT_THAT(BeginFrameArgs::DefaultInterval(), Ne(kThrottledFrameInterval));
+
+  base::TimeTicks frame_time = base::TimeTicks::Now();
+
+  // Issue a BeginFrame.
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  // Client submits a compositor frame in response.
+  BeginFrameAck ack(args, true);
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetBeginFrameAck(ack)
+                              .SetIsHandlingInteraction(true)
+                              .Build();
+  auto token = frame.metadata.frame_token;
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+    support_->SendCompositorFrameAck();
+  }
+
+  // The presentation-feedback from the last submitted frame arrives.
+  SendPresentationFeedback(support_.get(), token);
+
+  // Issue a new BeginFrame with default interval. Since
+  // DefaultInterval < kThrottledFrameInterval, The frame timing details with
+  // submitted presentation feedback should not be sent at this frame.
+  frame_time += BeginFrameArgs::DefaultInterval();
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 1, 2, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+  ASSERT_EQ(fake_support_client_.begin_frame_count(), 1);
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(), SizeIs(0));
+
+  // The frame timing details should be sent even if client disconnects.
+  support_->SetNeedsBeginFrame(false);
+
+  // Issue a new BeginFrame. The frame timing details with submitted
+  // presentation feedback should be received with throttled interval.
+  frame_time += kThrottledFrameInterval - BeginFrameArgs::DefaultInterval();
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 3, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(), SizeIs(1));
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(),
+              Contains(Key(token)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .presentation_feedback.interval,
+              Eq(kThrottledFrameInterval));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CompositorFrameSinkSupportTest,
                          testing::Bool(),
