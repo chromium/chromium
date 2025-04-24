@@ -126,7 +126,7 @@ public class TabArchiverImpl implements TabArchiver {
         List<Tab> tabsToClose = getTabsWithExistingArchivedTabs(regularTabGroupModelFilter);
 
         if (tabsToArchive.size() > 0) {
-            archiveAndRemoveTabs(model, tabsToArchive);
+            archiveAndRemoveTabs(regularTabGroupModelFilter, tabsToArchive);
         }
 
         if (tabsToClose.size() > 0) {
@@ -220,9 +220,12 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     @Override
-    public void archiveAndRemoveTabs(TabModel tabModel, List<Tab> tabs) {
+    public void archiveAndRemoveTabs(
+            TabGroupModelFilter regularTabGroupModelFilter, List<Tab> tabs) {
         ThreadUtils.assertOnUiThread();
 
+        TabModel tabModel = regularTabGroupModelFilter.getTabModel();
+        List<Tab> singleTabsToClose = new ArrayList<>();
         List<Tab> archivedTabs = new ArrayList<>();
         Set<Token> archivedTabGroupIds = new HashSet<>();
         // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
@@ -239,6 +242,7 @@ public class TabArchiverImpl implements TabArchiver {
             Tab archivedTab =
                     mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
+            singleTabsToClose.add(tab);
         }
 
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
@@ -257,8 +261,20 @@ public class TabArchiverImpl implements TabArchiver {
         // Once the archived tabs are added, do a bulk closure from the regular tab model.
         tabModel.getTabRemover()
                 .closeTabs(
-                        TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
+                        TabClosureParams.closeTabs(singleTabsToClose).allowUndo(false).build(),
                         /* allowDialog= */ false);
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+            for (Token tabGroupId : archivedTabGroupIds) {
+                tabModel.getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.forCloseTabGroup(
+                                                regularTabGroupModelFilter, tabGroupId)
+                                        .hideTabGroups(true)
+                                        .allowUndo(false)
+                                        .build(),
+                                /* allowDialog= */ false);
+            }
+        }
 
         RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
         initializePersistedTabDataAsync(archivedTabs);

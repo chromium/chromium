@@ -200,7 +200,12 @@ public class TabArchiverTest {
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
                         .build();
         runOnUiThreadBlocking(
-                () -> mTabArchiver.archiveAndRemoveTabs(mRegularTabModel, Arrays.asList(tab)));
+                () ->
+                        mTabArchiver.archiveAndRemoveTabs(
+                                mRegularTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false),
+                                Arrays.asList(tab)));
         watcher.assertExpected();
 
         assertEquals(1, mRegularTabModel.getCount());
@@ -258,7 +263,12 @@ public class TabArchiverTest {
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
                         .build();
         runOnUiThreadBlocking(
-                () -> mTabArchiver.archiveAndRemoveTabs(mRegularTabModel, Arrays.asList(tab)));
+                () ->
+                        mTabArchiver.archiveAndRemoveTabs(
+                                mRegularTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false),
+                                Arrays.asList(tab)));
         watcher.assertExpected();
 
         assertEquals(1, mRegularTabModel.getCount());
@@ -331,7 +341,12 @@ public class TabArchiverTest {
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
                         .build();
         runOnUiThreadBlocking(
-                () -> mTabArchiver.archiveAndRemoveTabs(mRegularTabModel, Arrays.asList(tab)));
+                () ->
+                        mTabArchiver.archiveAndRemoveTabs(
+                                mRegularTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false),
+                                Arrays.asList(tab)));
         watcher.assertExpected();
         verify(mTabGroupSyncService, times(1)).updateArchivalStatus(eq(syncId), eq(true));
 
@@ -771,7 +786,11 @@ public class TabArchiverTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         runOnUiThreadBlocking(
                 () -> {
-                    mTabArchiver.archiveAndRemoveTabs(mRegularTabModel, Arrays.asList(tab));
+                    mTabArchiver.archiveAndRemoveTabs(
+                            mRegularTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false),
+                            Arrays.asList(tab));
                     ArchivePersistedTabData.from(
                             mArchivedTabModel.getTabAt(0),
                             (archivedTabData) -> {
@@ -838,7 +857,12 @@ public class TabArchiverTest {
                         .expectIntRecords("Tabs.TabArchived.TabCount", 1)
                         .build();
         runOnUiThreadBlocking(
-                () -> mTabArchiver.archiveAndRemoveTabs(mRegularTabModel, Arrays.asList(tab)));
+                () ->
+                        mTabArchiver.archiveAndRemoveTabs(
+                                mRegularTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false),
+                                Arrays.asList(tab)));
 
         watcher.assertExpected();
         assertEquals(1, mRegularTabModel.getCount());

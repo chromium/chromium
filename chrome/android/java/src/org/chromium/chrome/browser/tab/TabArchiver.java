@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.List;
@@ -50,10 +50,11 @@ public interface TabArchiver extends Destroyable {
      * Create an archived copy of the given Tab in the archived TabModel, and close the Tab in the
      * regular TabModel. Must be called on the UI thread.
      *
-     * @param tabModel The {@link TabModel} the tab currently belongs to.
+     * @param regularTabGroupModelFilter The {@link TabGroupModelFilter} the tab currently belongs
+     *     to.
      * @param tabs The list {@link Tab}s to unarchive.
      */
-    void archiveAndRemoveTabs(TabModel tabModel, List<Tab> tabs);
+    void archiveAndRemoveTabs(TabGroupModelFilter regularTabGroupModelFilter, List<Tab> tabs);
 
     /**
      * Unarchive the given tab, moving it into the normal TabModel. The tab is reused between the

@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -40,7 +41,9 @@ public class CloseAllTabsHelper {
                     () ->
                             archiveTabsAfterTabClosureUndo(
                                     profile,
-                                    tabModelSelector.getModel(/* incognito= */ false),
+                                    tabModelSelector
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(/* isIncognito= */ false),
                                     previouslyArchivedTabIds);
         }
         tabModelSelector
@@ -101,7 +104,10 @@ public class CloseAllTabsHelper {
     }
 
     private static void archiveTabsAfterTabClosureUndo(
-            Profile profile, TabModel regularTabModel, List<Integer> previouslyArchivedTabIds) {
+            Profile profile,
+            TabGroupModelFilter regularTabGroupModelFilter,
+            List<Integer> previouslyArchivedTabIds) {
+        TabModel regularTabModel = regularTabGroupModelFilter.getTabModel();
         ArchivedTabModelOrchestrator orchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
         TabArchiver archiver = orchestrator.getTabArchiver();
@@ -113,6 +119,6 @@ public class CloseAllTabsHelper {
             }
         }
 
-        archiver.archiveAndRemoveTabs(regularTabModel, tabsToArchive);
+        archiver.archiveAndRemoveTabs(regularTabGroupModelFilter, tabsToArchive);
     }
 }
