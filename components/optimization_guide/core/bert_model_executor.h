@@ -28,7 +28,7 @@ class BertModelExecutor
       ExecutionStatus* out_status,
       const std::string& input) override;
   base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
-  BuildModelExecutionTask(const base::File& model_file) override;
+  BuildModelExecutionTask(base::File& model_file) override;
 
  private:
   const proto::OptimizationTarget optimization_target_;

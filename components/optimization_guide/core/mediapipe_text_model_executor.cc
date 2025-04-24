@@ -4,6 +4,10 @@
 
 #include "components/optimization_guide/core/mediapipe_text_model_executor.h"
 
+#include <memory>
+#include <string>
+
+#include "base/files/file.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
 namespace optimization_guide {
@@ -48,16 +52,29 @@ std::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
 }
 
 base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
-MediapipeTextModelExecutor::BuildModelExecutionTask(
-    base::MemoryMappedFile* model_file) {
+MediapipeTextModelExecutor::BuildModelExecutionTask(base::File& model_file) {
+  const int buffer_size = model_file.GetLength();
+  std::unique_ptr<char[]> buffer(new char[buffer_size]);
+  // SAFETY: buffer_size is the size of the allocation
+  size_t read_size =
+      UNSAFE_BUFFERS(model_file.Read(0, buffer.get(), buffer_size));
+  if (read_size != static_cast<size_t>(buffer_size)) {
+    LOG(ERROR) << "Failed to read model file";
+    return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
+  }
+
   // Use the inline struct ctor to bypass the default op resolver ctor which is
   // not linked.
   TextClassifierOptions options{
       .base_options =
           {
-              .model_asset_buffer = std::make_unique<std::string>(
-                  reinterpret_cast<const char*>(model_file->data()),
-                  model_file->length()),
+              // TODO(https://crbug.com/413070228): Upstream changes to support
+              // passing a file descriptor / file handle rather than buffer, so
+              // that mediapipe can memory map the file contents.
+              // SAFETY: buffer_size is the size of the allocation
+              .model_asset_buffer =
+                  UNSAFE_BUFFERS(std::make_unique<std::string>(
+                      buffer.get(), buffer.get() + buffer_size)),
               .op_resolver = std::make_unique<TFLiteOpResolver>(),
           },
   };

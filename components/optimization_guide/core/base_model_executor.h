@@ -58,7 +58,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
   }
 
   base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
-  BuildModelExecutionTask(const base::File& model_file) override {
+  BuildModelExecutionTask(base::File& model_file) override {
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine =
         std::make_unique<tflite::task::core::TfLiteEngine>(
             std::make_unique<TFLiteOpResolver>());
