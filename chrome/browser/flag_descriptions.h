@@ -2429,6 +2429,9 @@ extern const char kWebAuthnPasskeyUpgradeName[];
 extern const char kWebAuthnPasskeyUpgradeDescription[];
 #endif
 
+extern const char kWebAuthnImmediateGetName[];
+extern const char kWebAuthnImmediateGetDescription[];
+
 extern const char kWebBluetoothName[];
 extern const char kWebBluetoothDescription[];
 

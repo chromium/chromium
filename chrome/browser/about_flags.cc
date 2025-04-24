@@ -12288,6 +12288,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(input::features::kUseAndroidBufferedInputDispatch)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"web-authentication-immediate-get",
+     flag_descriptions::kWebAuthnImmediateGetName,
+     flag_descriptions::kWebAuthnImmediateGetDescription, kOsAll,
+     FEATURE_VALUE_TYPE(device::kWebAuthnImmediateGet)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

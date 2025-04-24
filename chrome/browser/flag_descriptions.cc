@@ -4170,6 +4170,14 @@ const char kWebAuthnPasskeyUpgradeDescription[] =
     "credential for the same user.";
 #endif
 
+const char kWebAuthnImmediateGetName[] =
+    "Enable immediate mediation for WebAuthn get requests";
+const char kWebAuthnImmediateGetDescription[] =
+    "Enables immediate mediation for WebAuthn and passwords for a "
+    "navigator.credentials.get() request. This will return a NotAllowedError "
+    "if there are no credentials for a given get request. The request can also "
+    "request passwords.";
+
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

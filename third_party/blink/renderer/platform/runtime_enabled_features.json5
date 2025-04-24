@@ -5042,6 +5042,8 @@
     {
       name: "WebAuthenticationImmediateGet",
       status: "experimental",
+      base_feature: "none",
+      public: true,
     },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
