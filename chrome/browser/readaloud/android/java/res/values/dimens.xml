@@ -73,4 +73,8 @@ found in the LICENSE file.
     <!-- Error layout-->
     <dimen name="error_layour_portrait_height">330dp</dimen>
     <dimen name="error_layour_landscape_height">260dp</dimen>
+
+    <!-- Loading layout -->
+    <dimen name="readaloud_expanded_player_loading_text_margin_bottom">27dp</dimen>
+    <dimen name="readaloud_expanded_player_loading_text_margin_start">84dp</dimen>
 </resources>

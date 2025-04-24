@@ -64,6 +64,12 @@ class PlayerMediator implements InteractionHandler {
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
+                  // Due to a race, sometimes a STOPPED state is received after the playback is null (e.g. if it was received in favor of creating a new playback).
+                  // In these cases, we don't propagate the state event.
+                  if (mPlayback == null) {
+                    return;
+                  }
+
                     if (!isHiddenAndPlaying()) {
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());

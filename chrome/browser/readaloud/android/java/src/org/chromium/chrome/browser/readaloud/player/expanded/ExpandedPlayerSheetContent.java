@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -59,8 +58,15 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private SpeedMenuSheetContent mSpeedMenu;
     private TextView mSpeedButton;
 
-    private LinearLayout mNormalLayout;
-    private LinearLayout mErrorLayout;
+    private final TextView mLoadingTextView;
+
+    private final ImageView mPlayPauseButton;
+    private final ImageView mRewindButton;
+    private final ImageView mForwardButton;
+
+    private final LinearLayout mNormalLayout;
+    private final LinearLayout mErrorLayout;
+    private final LinearLayout mLoadingLayout;
 
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController, PropertyModel model) {
@@ -98,11 +104,18 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 new SpeedMenuSheetContent(
                         mContext, /* parent= */ this, mBottomSheetController, mModel);
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
+        mLoadingLayout = (LinearLayout) mContentView.findViewById(R.id.readaloud_loading_overlay);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
         mModeSelectorButton = mContentView.findViewById(R.id.readaloud_mode_selector);
         mModeSelectorButton.setSelected(mIsModeActive);
+
+        mLoadingTextView = mContentView.findViewById(R.id.readaloud_loading_text);
+
+        mPlayPauseButton = mContentView.findViewById(R.id.readaloud_play_pause_button);
+        mRewindButton = mContentView.findViewById(R.id.readaloud_seek_back_button);
+        mForwardButton = mContentView.findViewById(R.id.readaloud_seek_forward_button);
 
         View publisherButton = mContentView.findViewById(R.id.readaloud_player_publisher_button);
         publisherButton.addOnLayoutChangeListener(
@@ -145,22 +158,62 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void onPlaybackStateChanged(@PlaybackListener.State int state) {
-        setPlaying(state == PlaybackListener.State.PLAYING);
-        if (state == PlaybackListener.State.ERROR) {
-            showOnly(mErrorLayout);
-        } else {
-            showOnly(mNormalLayout);
-        }
+      setPlaying(state == PlaybackListener.State.PLAYING);
+      switch (state) {
+        case PlaybackListener.State.ERROR:
+          showErrorLayout();
+          break;
+         case PlaybackListener.State.BUFFERING:
+           showLoadingLayout();
+           break;
+        default:
+          showNormalLayout();
+          break;
+      }
     }
 
-    // Show `layout` and hide the other layouts.
-    private void showOnly(LinearLayout layout) {
-        setVisibleIfMatch(mNormalLayout, layout);
-        setVisibleIfMatch(mErrorLayout, layout);
+    private void showLoadingLayout() {
+      mErrorLayout.setVisibility(View.GONE);
+      mLoadingLayout.setVisibility(View.VISIBLE);
+      mNormalLayout.setAlpha(0.3f);
+
+      mSpeedButton.setVisibility(View.GONE);
+      mLoadingTextView.setVisibility(View.VISIBLE);
+
+      setPlaybackControlsEnabled(false);
     }
 
-    private static void setVisibleIfMatch(LinearLayout a, LinearLayout b) {
-        a.setVisibility(a == b ? View.VISIBLE : View.GONE);
+    private void showErrorLayout() {
+      mNormalLayout.setVisibility(View.GONE);
+      mLoadingLayout.setVisibility(View.GONE);
+      mErrorLayout.setVisibility(View.VISIBLE);
+      mLoadingTextView.setVisibility(View.GONE);
+    }
+
+    private void showNormalLayout() {
+      mNormalLayout.setVisibility(View.VISIBLE);
+      mLoadingLayout.setVisibility(View.GONE);
+      mErrorLayout.setVisibility(View.GONE);
+      mLoadingTextView.setVisibility(View.GONE);
+
+      mNormalLayout.setAlpha(1f);
+
+      mSpeedButton.setVisibility(View.VISIBLE);
+      setPlaybackControlsEnabled(true);
+    }
+
+    private void setPlaybackControlsEnabled(boolean enabled) {
+      mModeSelectorButton.setEnabled(enabled);
+      mModeSelectorButton.setClickable(enabled);
+      mSeekBar.setEnabled(enabled);
+
+      mPlayPauseButton.setEnabled(enabled);
+      mPlayPauseButton.setClickable(enabled);
+
+      mRewindButton.setEnabled(enabled);
+      mRewindButton.setClickable(enabled);
+      mForwardButton.setEnabled(enabled);
+      mForwardButton.setClickable(enabled);
     }
 
     public void show() {

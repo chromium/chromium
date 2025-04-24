@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.readaloud.player;
 
 import android.content.Context;
 import android.view.ViewStub;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
