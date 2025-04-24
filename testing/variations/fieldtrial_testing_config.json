@@ -26192,22 +26192,6 @@
             ]
         }
     ],
-    "VulkanVMALargeHeapBlockSize": [
-        {
-            "platforms": [
-                "android",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "VulkanVMALargeHeapBlockSize",
-                    "enable_features": [
-                        "VulkanVMALargeHeapBlockSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [
