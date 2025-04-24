@@ -5,6 +5,8 @@ owners:
 caption: Specifies whether to apply restrictions to requests to more-private
   network endpoints
 
+deprecated: true
+
 desc: |-
   When this policy is set to Enabled, any time when a warning is supposed to be
   displayed in the <ph name="DEV_TOOLS_NAME">DevTools</ph> due to <ph
@@ -19,12 +21,9 @@ desc: |-
   name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> restrictions.
 
 supported_on:
-- chrome.*:120-
-- chrome_os:120-
-- android:120-
-
-future_on:
-- fuchsia
+- chrome.*:120-137
+- chrome_os:120-137
+- android:120-137
 
 features:
   dynamic_refresh: true
