@@ -775,6 +775,9 @@ BASE_FEATURE(kIPHAutofillHomeWorkProfileSuggestionFeature,
 BASE_FEATURE(kIPHAutofillAiOptInFeature,
              "IPH_AutofillAiOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// This parameter enables updates the Autofill IPH CTA button string.
+const base::FeatureParam<int> kAutofillIphCTAVariationsStringValue{
+    &feature_engagement::kIPHAutofillAiOptInFeature, "x_autofill_ai_cta_string_value", 0};
 BASE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature,
              "IPH_AutofillVirtualCardCVCSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);

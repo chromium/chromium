@@ -286,6 +286,15 @@ BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
 
+// Identifies different strings that can be used in the CTA button for the
+// Autofill Iph.
+enum class AutofillIphCTAVariationsStringVarations {
+  kSeeHow = 0,
+  kTurnOn = 1,
+  kTryIt = 2,
+  kMaxValue = kTryIt
+};
+
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDeepLinkAutofillOptions);

@@ -130,6 +130,12 @@
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
     See how
   </message>
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
+    Turn on
+  </message>
+    <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TRY_IT" desc="The right of two buttons that’s the user’s path learning more and turning on Autofill with AI. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
+    Try it
+  </message>
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on Autofill with AI. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
     Maybe later
   </message>
