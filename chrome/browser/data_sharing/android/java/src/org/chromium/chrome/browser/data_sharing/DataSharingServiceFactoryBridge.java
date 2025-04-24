@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 
@@ -17,6 +18,7 @@ import org.chromium.components.data_sharing.DataSharingSDKDelegate;
  * DataSharingSDKDelegate}.
  */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingServiceFactoryBridge {
 
     @CalledByNative
