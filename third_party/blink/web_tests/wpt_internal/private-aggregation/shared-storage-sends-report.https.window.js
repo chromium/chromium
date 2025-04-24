@@ -303,13 +303,22 @@ private_aggregation_promise_test(async () => {
   let contributions = []
   // Sums to value 1 if overflow is allowed.
   contributions.push({bucket: 1n, value: 2147483647});
-  contributions.push({bucket: 1n, value: 2147483647});
-  contributions.push({bucket: 1n, value: 3});
+  contributions.push({bucket: 1n, value: 1073741824});
+  contributions.push({bucket: 1n, value: 1073741824});
+  contributions.push({bucket: 1n, value: 2});
 
   const data = {enableDebugMode: true, contributions};
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  // No reports are expected as the budget has surely been exceeded.
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
+  // The final contribution should succeed, but the first three should fail.
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+
+  verifyReport(
+      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
+      /*debug_key=*/ undefined,
+      /*expected_payload=*/
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 }, 'run() that calls Private Aggregation with values that sum to more than the max long');

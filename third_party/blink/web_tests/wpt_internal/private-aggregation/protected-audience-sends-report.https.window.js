@@ -370,12 +370,22 @@ subsetTestByKey(
         generateBid: `privateAggregation.enableDebugMode();
         // Sums to value 1 if overflow is allowed.
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2147483647 });
-        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2147483647 });
-        privateAggregation.contributeToHistogram({ bucket: 1n, value: 3 });`
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 1073741824 });
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 1073741824 });
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
       });
 
-      // No reports are expected as the budget has surely been exceeded.
-      await reportPoller.pollReportsAndAssert(
-          /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
+      // The final contribution should succeed, but the first three should fail.
+      const {reports: [report], debug_reports: [debug_report]} =
+          await reportPoller.pollReportsAndAssert(
+              /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+      verifyReport(
+          report, /*api=*/ 'protected-audience',
+          /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
+          /*expected_payload=*/
+          buildExpectedPayload(
+              ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
+
+      verifyReportsIdenticalExceptPayload(report, debug_report);
     },
     'auction that calls Private Aggregation with values that sum to more than the max long');
