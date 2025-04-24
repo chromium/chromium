@@ -222,14 +222,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
   // Suppress attempts to queue.
   queue_manager().SetSuppressQueue(true);
 
-  // Navigate to valid page, failing the holdingHandle check.
-  ui_test_utils::NavigateToURLWithDisposition(
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
-      WindowOpenDisposition::NEW_WINDOW, ui_test_utils::BROWSER_TEST_NO_WAIT);
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.Notice.NotHoldingHandle.NotInQueue",
-      /*sample=*/1, /*expected_count=*/1);
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_FALSE(histogram_tester
+                   .GetTotalCountsForPrefix(
+                       "PrivacySandbox.Notice.NotHoldingHandle.NotInQueue")
+                   .empty());
 }
 
 // Allow the notice to be queued, but add a blocking notice that doesn't allow
@@ -244,13 +245,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       *queue_manager().GetProductMessagingController(), kNoticeId);
 
   // Navigate to valid page, failing the holdingHandle check.
-  ui_test_utils::NavigateToURLWithDisposition(
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
-      WindowOpenDisposition::NEW_WINDOW, ui_test_utils::BROWSER_TEST_NO_WAIT);
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.Notice.NotHoldingHandle.InQueue",
-      /*sample=*/1, /*expected_count=*/1);
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_FALSE(histogram_tester
+                   .GetTotalCountsForPrefix(
+                       "PrivacySandbox.Notice.NotHoldingHandle.InQueue")
+                   .empty());
 }
 
 class PrivacySandboxQueueTestNoticeWithSearchEngine
