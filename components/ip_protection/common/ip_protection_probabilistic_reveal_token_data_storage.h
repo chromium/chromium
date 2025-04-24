@@ -6,6 +6,7 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_DATA_STORAGE_H_
 
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -45,6 +46,8 @@ class IpProtectionProbabilisticRevealTokenDataStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
+  // A helper to encode string like absl::WebSafeBase64Escape().
+  std::string base64url_encode(std::string);
 
   std::optional<base::FilePath> path_to_database_;
 
