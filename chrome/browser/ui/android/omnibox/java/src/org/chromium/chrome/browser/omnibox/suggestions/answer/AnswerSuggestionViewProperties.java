@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.text.Spannable;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -13,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with rendering the answer suggestion view. */
+@NullMarked
 @interface AnswerSuggestionViewProperties {
     /** The maximum number of lines to be shown for the first line of text. */
     static final WritableIntPropertyKey TEXT_LINE_1_MAX_LINES = new WritableIntPropertyKey();

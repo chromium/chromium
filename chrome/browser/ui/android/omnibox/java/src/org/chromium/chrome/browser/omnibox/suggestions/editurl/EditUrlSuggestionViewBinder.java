@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.editurl;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Binder proxy for EditURL Suggestions. */
+@NullMarked
 public class EditUrlSuggestionViewBinder
         implements ViewBinder<PropertyModel, EditUrlSuggestionView, PropertyKey> {
     private final BaseSuggestionViewBinder<View> mBinder;

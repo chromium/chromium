@@ -14,9 +14,8 @@ import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.view.inputmethod.BaseInputConnection;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
@@ -27,13 +26,14 @@ import java.util.Locale;
  * text that will be appended to the user text. In addition, cursor will be hidden whenever we are
  * showing span to the user.
  */
+@NullMarked
 class SpanCursorController {
     private static final String TAG = "SpanCursorController";
     private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
-    private final @NonNull AutocompleteEditTextModelBase.Delegate mDelegate;
-    private final @NonNull BackgroundColorSpan mAutocompleteBgColorSpan;
-    private final @NonNull ForegroundColorSpan mAdditionalTextFgColorSpan;
+    private final AutocompleteEditTextModelBase.Delegate mDelegate;
+    private final BackgroundColorSpan mAutocompleteBgColorSpan;
+    private final ForegroundColorSpan mAdditionalTextFgColorSpan;
 
     public SpanCursorController(AutocompleteEditTextModelBase.Delegate delegate, Context context) {
         mDelegate = delegate;

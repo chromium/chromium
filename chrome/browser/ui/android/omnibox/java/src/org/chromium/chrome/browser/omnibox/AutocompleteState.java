@@ -6,18 +6,21 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Optional;
 
 /** A state to keep track of EditText and autocomplete. */
+@NullMarked
 class AutocompleteState {
-    @NonNull private String mUserText;
-    @NonNull private Optional<String> mAutocompleteText;
-    @NonNull private Optional<String> mAdditionalText;
+    private String mUserText;
+    private Optional<String> mAutocompleteText;
+    private Optional<String> mAdditionalText;
     private int mSelStart;
     private int mSelEnd;
 
@@ -26,7 +29,7 @@ class AutocompleteState {
     }
 
     public AutocompleteState(
-            @NonNull String userText,
+            String userText,
             @Nullable String autocompleteText,
             @Nullable String additionalText,
             int selStart,
@@ -41,8 +44,9 @@ class AutocompleteState {
                 selEnd);
     }
 
+    @Initializer
     public void set(
-            @NonNull String userText,
+            String userText,
             Optional<String> autocompleteText,
             Optional<String> additionalText,
             int selStart,
@@ -58,7 +62,6 @@ class AutocompleteState {
         set(a.mUserText, a.mAutocompleteText, a.mAdditionalText, a.mSelStart, a.mSelEnd);
     }
 
-    @NonNull
     public String getUserText() {
         return mUserText;
     }
@@ -74,7 +77,6 @@ class AutocompleteState {
     /**
      * @return The whole text including autocomplete text.
      */
-    @NonNull
     public String getText() {
         return TextUtils.concat(mUserText, mAutocompleteText.orElse("")).toString();
     }
@@ -136,7 +138,7 @@ class AutocompleteState {
      * @param prevState The previous state to compare the current state with.
      * @return The differential string that has been backward deleted.
      */
-    public String getBackwardDeletedTextFrom(AutocompleteState prevState) {
+    public @Nullable String getBackwardDeletedTextFrom(AutocompleteState prevState) {
         if (!isBackwardDeletedFrom(prevState)) return null;
         return prevState.mUserText.substring(mUserText.length());
     }

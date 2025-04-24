@@ -17,6 +17,8 @@ import android.os.Process;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Keeps track of the device's location, allowing synchronous location requests.
@@ -24,11 +26,12 @@ import org.chromium.base.TraceEvent;
  * refreshLastKnownLocation() several seconds before a location is needed to maximize the chances
  * that the location is known.
  */
+@NullMarked
 class GeolocationTracker {
 
-    private static SelfCancelingListener sListener;
-    private static Location sNetworkLocationForTesting;
-    private static Location sGpsLocationForTesting;
+    private static @Nullable SelfCancelingListener sListener;
+    private static @Nullable Location sNetworkLocationForTesting;
+    private static @Nullable Location sGpsLocationForTesting;
     private static boolean sUseLocationForTesting;
     private static long sLocationAgeForTesting;
     private static boolean sUseLocationAgeForTesting;
@@ -96,7 +99,7 @@ class GeolocationTracker {
     }
 
     /** Returns the last known location or null if none is available. */
-    static Location getLastKnownLocation(Context context) {
+    static @Nullable Location getLastKnownLocation(Context context) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationTracker.getLastKnownLocation")) {
             if (sUseLocationForTesting) {
                 return chooseLocation(sNetworkLocationForTesting, sGpsLocationForTesting);
@@ -175,7 +178,8 @@ class GeolocationTracker {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private static Location chooseLocation(Location networkLocation, Location gpsLocation) {
+    private static @Nullable Location chooseLocation(
+            @Nullable Location networkLocation, @Nullable Location gpsLocation) {
         if (gpsLocation == null) {
             return networkLocation;
         }

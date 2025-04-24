@@ -10,11 +10,11 @@ import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputConnection;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
  * SpannableString. By wrapping all the keyboard related operations in a batch edit, we can
  * effectively hide the existence of autocomplete text from keyboard.
  */
+@NullMarked
 public class SpannableAutocompleteEditTextModel
         implements AutocompleteEditTextModelBase, AutocompleteInputConnection.InputDelegate {
     private static final String TAG = "SpanAutocomplete";
@@ -56,7 +57,7 @@ public class SpannableAutocompleteEditTextModel
 
     private final SpanCursorController mSpanCursorController;
 
-    private AutocompleteInputConnection mInputConnection;
+    private @Nullable AutocompleteInputConnection mInputConnection;
     private boolean mLastEditWasTyping = true;
     private boolean mIgnoreTextChangeFromAutocomplete = true;
     private int mBatchEditNestCount;
@@ -90,7 +91,8 @@ public class SpannableAutocompleteEditTextModel
     }
 
     @Override
-    public InputConnection onCreateInputConnection(InputConnection inputConnection) {
+    public @Nullable InputConnection onCreateInputConnection(
+            @Nullable InputConnection inputConnection) {
         mLastUpdateSelStart = mDelegate.getSelectionStart();
         mLastUpdateSelEnd = mDelegate.getSelectionEnd();
         mBatchEditNestCount = 0;
@@ -401,7 +403,7 @@ public class SpannableAutocompleteEditTextModel
 
     @Override
     public void setAutocompleteText(
-            @NonNull CharSequence userText,
+            CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
             Optional<String> additionalText) {
         // Note: this is invoked when the Autocomplete text is supplied by the Autocomplete
@@ -416,9 +418,7 @@ public class SpannableAutocompleteEditTextModel
     }
 
     private void setAutocompleteTextInternal(
-            @NonNull String userText,
-            @Nullable String autocompleteText,
-            Optional<String> additionalText) {
+            String userText, @Nullable String autocompleteText, Optional<String> additionalText) {
         if (DEBUG) Log.i(TAG, "setAutocompleteText: %s[%s]", userText, autocompleteText);
         mPreviouslySetState.set(
                 userText,
@@ -490,7 +490,7 @@ public class SpannableAutocompleteEditTextModel
     }
 
     @Override
-    public InputConnection getInputConnection() {
+    public @Nullable InputConnection getInputConnection() {
         return mInputConnection;
     }
 

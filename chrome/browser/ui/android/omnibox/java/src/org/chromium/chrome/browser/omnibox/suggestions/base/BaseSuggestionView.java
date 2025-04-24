@@ -12,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -33,13 +33,14 @@ import java.util.Optional;
  * @param <T> The type of View being wrapped by this container.
  */
 @MockedInTests
+@NullMarked
 public class BaseSuggestionView<T extends View> extends SuggestionLayout {
-    public final @NonNull ImageView decorationIcon;
-    public final @NonNull T contentView;
-    public final @NonNull ActionChipsView actionChipsView;
-    public final @NonNull RoundedCornerOutlineProvider decorationIconOutline;
-    private final @NonNull List<ImageView> mActionButtons;
-    private @NonNull Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
+    public final ImageView decorationIcon;
+    public final T contentView;
+    public final ActionChipsView actionChipsView;
+    public final RoundedCornerOutlineProvider decorationIconOutline;
+    private final List<ImageView> mActionButtons;
+    private Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
 
     /**
      * Constructs a new suggestion view and inflates supplied layout as the contents view.

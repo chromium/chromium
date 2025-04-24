@@ -8,11 +8,13 @@ import android.animation.Animator;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 
 import java.util.List;
 
 /** A supplement to {@link LocationBarCoordinator} with methods specific to smaller devices. */
+@NullMarked
 public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCoordinator {
     private LocationBarPhone mLocationBarPhone;
     private StatusCoordinator mStatusCoordinator;
@@ -23,6 +25,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
         mStatusCoordinator = statusCoordinator;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mLocationBarPhone = null;

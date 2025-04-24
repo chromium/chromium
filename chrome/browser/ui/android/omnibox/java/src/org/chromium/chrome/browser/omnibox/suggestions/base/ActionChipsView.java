@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 import android.view.KeyEvent;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
@@ -24,8 +24,9 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Container view for the {@link ChipView}. Chips should be initially horizontally aligned with the
  * Content view and stretch to the end of the encompassing BaseSuggestionView.
  */
+@NullMarked
 public class ActionChipsView extends RecyclerView {
-    private @NonNull RecyclerViewSelectionController mSelectionController;
+    private RecyclerViewSelectionController mSelectionController;
 
     /**
      * Constructs a new pedal view.

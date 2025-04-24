@@ -4,20 +4,25 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -41,6 +46,7 @@ import java.util.List;
  * A component for displaying a status icon (e.g. security icon or navigation icon) and optional
  * verbose status text.
  */
+@NullMarked
 public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
@@ -59,7 +65,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final PageInfoAction mPageInfoAction;
     private LocationBarDataProvider mLocationBarDataProvider;
     private boolean mUrlHasFocus;
-    private View.OnClickListener mOnStatusIconNavigateBackButtonPress;
+    private View.@Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
 
     /**
      * Creates a new {@link StatusCoordinator}.
@@ -86,9 +92,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             Supplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
-            @Nullable
-                    Supplier<MerchantTrustSignalsCoordinator>
-                            merchantTrustSignalsCoordinatorSupplier,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mIsTablet = isTablet;
         mStatusView = statusView;
@@ -99,12 +104,12 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         PropertyModelChangeProcessor.create(mModel, mStatusView, new StatusViewBinder());
 
+        Activity activity =
+                assertNonNull(ContextUtils.activityFromContext(mStatusView.getContext()));
         PageInfoIphController pageInfoIphController =
                 new PageInfoIphController(
                         new UserEducationHelper(
-                                ContextUtils.activityFromContext(mStatusView.getContext()),
-                                profileSupplier,
-                                new Handler(Looper.getMainLooper())),
+                                activity, profileSupplier, new Handler(Looper.getMainLooper())),
                         getSecurityIconView());
 
         mMediator =
@@ -307,7 +312,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /** Returns the icon identifier used for custom resources. */
-    public String getSecurityIconIdentifierForTesting() {
+    public @Nullable String getSecurityIconIdentifierForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
                 ? null
                 : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconIdentifierForTesting();
@@ -329,7 +334,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         if (mUrlHasFocus) return;
 
         if (!mLocationBarDataProvider.hasTab()
-                || mLocationBarDataProvider.getTab().getWebContents() == null) {
+                || assumeNonNull(mLocationBarDataProvider.getTab()).getWebContents() == null) {
             return;
         }
 
@@ -376,6 +381,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLocationBarDataProvider.removeObserver(this);

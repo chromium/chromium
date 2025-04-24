@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -21,9 +23,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** View for Carousel Suggestions. */
 @MockedInTests
+@NullMarked
 public class BaseCarouselSuggestionView extends RecyclerView {
     private RecyclerViewSelectionController mSelectionController;
-    private SpacingRecyclerViewItemDecoration mDecoration;
+    private @Nullable SpacingRecyclerViewItemDecoration mDecoration;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -37,9 +40,11 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setItemAnimator(null);
-        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        LayoutManager layoutManager =
+                new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        setLayoutManager(layoutManager);
 
-        mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
+        mSelectionController = new RecyclerViewSelectionController(layoutManager);
         mSelectionController.setCycleThroughNoSelection(true);
         addOnChildAttachStateChangeListener(mSelectionController);
 
@@ -86,10 +91,12 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (mDecoration.notifyViewSizeChanged(
-                getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT,
-                getMeasuredWidth(),
-                getMeasuredHeight())) {
+        if (mDecoration != null
+                && mDecoration.notifyViewSizeChanged(
+                        getResources().getConfiguration().orientation
+                                == Configuration.ORIENTATION_PORTRAIT,
+                        getMeasuredWidth(),
+                        getMeasuredHeight())) {
             invalidateItemDecorations();
         }
     }

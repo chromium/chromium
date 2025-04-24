@@ -14,13 +14,13 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -57,6 +58,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains the controller logic of the Status component. */
+@NullMarked
 public class StatusMediator
         implements PermissionDialogController.Observer,
                 TemplateUrlServiceObserver,
@@ -70,7 +72,7 @@ public class StatusMediator
     private final PropertyModel mModel;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Supplier<Profile> mProfileSupplier;
-    private final Supplier<MerchantTrustSignalsCoordinator>
+    private final @Nullable Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
@@ -112,7 +114,7 @@ public class StatusMediator
 
     private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
 
-    private CookieControlsBridge mCookieControlsBridge;
+    private @Nullable CookieControlsBridge mCookieControlsBridge;
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
     private int mBlockingStatus3pcd;
@@ -149,9 +151,8 @@ public class StatusMediator
             Supplier<Profile> profileSupplier,
             PageInfoIphController pageInfoIphController,
             WindowAndroid windowAndroid,
-            @Nullable
-                    Supplier<MerchantTrustSignalsCoordinator>
-                            merchantTrustSignalsCoordinatorSupplier) {
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier) {
         initBackgroundDrawables(context);
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -441,7 +442,7 @@ public class StatusMediator
 
     /** Get a CookieControlsBridge instance for testing purposes. */
     @VisibleForTesting
-    CookieControlsBridge getCookieControlsBridge() {
+    @Nullable CookieControlsBridge getCookieControlsBridge() {
         return mCookieControlsBridge;
     }
 
@@ -569,7 +570,7 @@ public class StatusMediator
     }
 
     /** Returns status icon resource for the user-selected default search engine. */
-    private @NonNull StatusIconResource getStatusIconResourceForSearchEngineIcon() {
+    private StatusIconResource getStatusIconResourceForSearchEngineIcon() {
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             return SearchEngineUtils.getFallbackNavigationIcon(mBrandedColorScheme);
@@ -697,7 +698,8 @@ public class StatusMediator
 
     private void animateCookieControlsIcon(Runnable onAnimationFinished) {
         // Check if the web content is valid before attempting to animate.
-        if (mLocationBarDataProvider.getTab().getWebContents() == null) {
+        Tab tab = mLocationBarDataProvider.getTab();
+        if (tab == null || tab.getWebContents() == null) {
             return;
         }
         resetCustomIconsStatus();
@@ -748,7 +750,7 @@ public class StatusMediator
     public void showStoreIcon(
             WindowAndroid window,
             String url,
-            Drawable drawable,
+            @Nullable Drawable drawable,
             @StringRes int stringId,
             boolean canShowIph) {
         if ((window != mWindowAndroid)

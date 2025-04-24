@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -15,6 +15,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * Default implementation of the delegate that allows implementers to override the default URL
  * loading behavior of the LocationBar.
  */
+@NullMarked
 public class OverrideUrlLoadingDelegateImpl implements OverrideUrlLoadingDelegate {
     private @Nullable Runnable mOpenGridTabSwitcher;
 

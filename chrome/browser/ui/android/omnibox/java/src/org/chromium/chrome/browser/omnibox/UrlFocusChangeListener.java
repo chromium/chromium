@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Listener to be notified on url focus changes. */
+@NullMarked
 public interface UrlFocusChangeListener {
     /**
      * Triggered when the URL input field has gained or lost focus.

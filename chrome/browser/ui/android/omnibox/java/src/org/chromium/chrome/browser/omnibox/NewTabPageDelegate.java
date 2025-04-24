@@ -8,15 +8,16 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
  * TODO(crbug.com/40148706): Consider moving this out of toolbar/ into its own target for omnibox as
  * well.
  */
+@NullMarked
 public interface NewTabPageDelegate {
     /**
      * @return {@code true} if the current tab was showing NewTabPage.

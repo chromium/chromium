@@ -16,12 +16,13 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.util.ObjectsCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
@@ -33,21 +34,22 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Model properties for the Status. */
+@NullMarked
 public class StatusProperties {
     // TODO(wylieb): Investigate the case where we only want to swap the tint (if any).
     /** Encapsulates an icon and tint to allow atomic drawable updates for StatusView. */
     public static class StatusIconResource {
-        private @DrawableRes Integer mIconRes;
+        private @DrawableRes @Nullable Integer mIconRes;
         private @ColorRes int mTint;
-        private String mIconIdentifier;
-        private Bitmap mBitmap;
-        private Drawable mDrawable;
+        private @Nullable String mIconIdentifier;
+        private @Nullable Bitmap mBitmap;
+        private @Nullable Drawable mDrawable;
         private @StatusView.IconTransitionType int mIconTransitionType =
                 StatusView.IconTransitionType.CROSSFADE;
-        private Runnable mCallback;
+        private @Nullable Runnable mCallback;
 
         /** Constructor for a custom drawable. */
-        public StatusIconResource(Drawable drawable) {
+        public StatusIconResource(@Nullable Drawable drawable) {
             mDrawable = drawable;
         }
 
@@ -103,7 +105,7 @@ public class StatusProperties {
         /**
          * @return The {@link Drawable} for this StatusIconResource.
          */
-        Drawable getDrawable(Context context, Resources resources) {
+        @Nullable Drawable getDrawable(Context context, Resources resources) {
             if (mBitmap != null) {
                 Drawable drawable = new BitmapDrawable(resources, mBitmap);
                 if (mTint != 0) {
@@ -126,8 +128,7 @@ public class StatusProperties {
         /**
          * @return The icon identifier, used for testing.
          */
-        @Nullable
-        String getIconIdentifierForTesting() {
+        @Nullable String getIconIdentifierForTesting() {
             return mIconIdentifier;
         }
 
@@ -157,8 +158,7 @@ public class StatusProperties {
         /**
          * @return the callback to be run after this icon has been set, if any.
          */
-        @Nullable
-        Runnable getAnimationFinishedCallback() {
+        @Nullable Runnable getAnimationFinishedCallback() {
             return mCallback;
         }
     }
@@ -175,7 +175,7 @@ public class StatusProperties {
 
         private boolean mIsIncognito;
 
-        PermissionIconResource(Drawable drawable, boolean isIncognito) {
+        PermissionIconResource(@Nullable Drawable drawable, boolean isIncognito) {
             super(drawable);
             mIsIncognito = isIncognito;
         }
@@ -187,7 +187,7 @@ public class StatusProperties {
 
         /** Returns a {@link Drawable} for this StatusIconResource. */
         @Override
-        Drawable getDrawable(Context context, Resources resources) {
+        @Nullable Drawable getDrawable(Context context, Resources resources) {
             Drawable icon = super.getDrawable(context, resources);
             if (icon == null) {
                 return null;

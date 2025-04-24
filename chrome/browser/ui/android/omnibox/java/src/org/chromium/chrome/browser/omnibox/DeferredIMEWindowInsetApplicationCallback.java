@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.omnibox;
 import android.app.Activity;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
@@ -27,14 +28,15 @@ import java.util.List;
  * isn't guaranteed to occur in practice, deferred application is only practiced when an animation
  * is known to be running.
  */
+@NullMarked
 public class DeferredIMEWindowInsetApplicationCallback
         implements WindowInsetsConsumer, WindowInsetsAnimationListener {
     private static final int NO_DEFERRED_KEYBOARD_HEIGHT = -1;
     private int mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
     private int mKeyboardHeight;
     private boolean mAnimationInProgress;
-    private WindowInsetsAnimationCompat mCurrentAnimation;
-    private InsetObserver mInsetObserver;
+    private @Nullable WindowInsetsAnimationCompat mCurrentAnimation;
+    private @Nullable InsetObserver mInsetObserver;
     private final Runnable mOnUpdateCallback;
 
     /**
@@ -42,7 +44,7 @@ public class DeferredIMEWindowInsetApplicationCallback
      *
      * @param onUpdateCallback Callback to be invoked when the keyboard height changes.
      */
-    public DeferredIMEWindowInsetApplicationCallback(@NonNull Runnable onUpdateCallback) {
+    public DeferredIMEWindowInsetApplicationCallback(Runnable onUpdateCallback) {
         mOnUpdateCallback = onUpdateCallback;
     }
 
@@ -87,7 +89,7 @@ public class DeferredIMEWindowInsetApplicationCallback
     }
 
     @Override
-    public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onPrepare(WindowInsetsAnimationCompat animation) {
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0) return;
         mAnimationInProgress = true;
         mCurrentAnimation = animation;
@@ -95,16 +97,14 @@ public class DeferredIMEWindowInsetApplicationCallback
     }
 
     @Override
-    public void onStart(
-            @NonNull WindowInsetsAnimationCompat animation, @NonNull BoundsCompat bounds) {}
+    public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {}
 
     @Override
     public void onProgress(
-            @NonNull WindowInsetsCompat windowInsetsCompat,
-            @NonNull List<WindowInsetsAnimationCompat> list) {}
+            WindowInsetsCompat windowInsetsCompat, List<WindowInsetsAnimationCompat> list) {}
 
     @Override
-    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onEnd(WindowInsetsAnimationCompat animation) {
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0
                 || animation != mCurrentAnimation) {
             return;
@@ -116,10 +116,9 @@ public class DeferredIMEWindowInsetApplicationCallback
         }
     }
 
-    @NonNull
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
+            View view, WindowInsetsCompat windowInsetsCompat) {
         int newKeyboardHeight = 0;
         Insets imeInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime());
         if (imeInsets.bottom > 0) {

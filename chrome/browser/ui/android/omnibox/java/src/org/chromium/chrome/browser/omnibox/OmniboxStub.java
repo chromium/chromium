@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 
@@ -15,6 +15,7 @@ import java.util.List;
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
  * and tasks surface.
  */
+@NullMarked
 public interface OmniboxStub {
     /**
      * Signal a {@link UrlBar} focus change request.
@@ -47,8 +48,7 @@ public interface OmniboxStub {
      *
      * @return the {@link VoiceRecognitionHandler}
      */
-    @Nullable
-    VoiceRecognitionHandler getVoiceRecognitionHandler();
+    @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler();
 
     /**
      * Adds a URL focus change listener that will be notified when the URL gains or loses focus.

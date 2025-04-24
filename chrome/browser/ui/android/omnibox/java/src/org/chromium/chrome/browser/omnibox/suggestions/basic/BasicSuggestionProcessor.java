@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.basic;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** A class that handles model and view creation for the basic omnibox suggestions. */
+@NullMarked
 public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Bookmarked state of a URL */
     public interface BookmarkState {
@@ -41,8 +41,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean isBookmarked(GURL url);
     }
 
-    private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private final @NonNull BookmarkState mBookmarkState;
+    private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
+    private final BookmarkState mBookmarkState;
 
     /**
      * @param context An Android context.
@@ -52,11 +52,11 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param bookmarkState Provider of information about whether a given url is bookmarked.
      */
     public BasicSuggestionProcessor(
-            @NonNull Context context,
-            @NonNull SuggestionHost suggestionHost,
-            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull Optional<OmniboxImageSupplier> imageSupplier,
-            @NonNull BookmarkState bookmarkState) {
+            Context context,
+            SuggestionHost suggestionHost,
+            UrlBarEditingTextStateProvider editingTextProvider,
+            Optional<OmniboxImageSupplier> imageSupplier,
+            BookmarkState bookmarkState) {
         super(context, suggestionHost, imageSupplier);
 
         mUrlBarEditingTextProvider = editingTextProvider;
@@ -64,7 +64,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return true;
     }
 
@@ -74,12 +74,12 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
+    public PropertyModel createModel() {
         return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
-    protected @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
+    protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
         int icon = 0;
 
         if (suggestion.isSearchSuggestion()) {
@@ -111,9 +111,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteInput input,
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
             int position) {
         super.populateModel(input, suggestion, model, position);
         final boolean isSearchSuggestion = suggestion.isSearchSuggestion();

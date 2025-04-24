@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -22,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.Optional;
 
 /** A class that handles model and view creation for the tail suggestions. */
+@NullMarked
 public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final boolean mAlignTailSuggestions;
     private @Nullable AlignmentManager mAlignmentManager;
@@ -30,14 +30,13 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
      */
-    public TailSuggestionProcessor(
-            @NonNull Context context, @NonNull SuggestionHost suggestionHost) {
+    public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost) {
         super(context, suggestionHost, Optional.empty());
         mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_TAIL;
     }
 
@@ -47,15 +46,15 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
+    public PropertyModel createModel() {
         return new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
     public void populateModel(
             AutocompleteInput input,
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
             int position) {
         super.populateModel(input, suggestion, model, position);
 

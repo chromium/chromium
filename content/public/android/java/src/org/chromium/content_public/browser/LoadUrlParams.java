@@ -387,10 +387,10 @@ public class LoadUrlParams {
     }
 
     /**
-     * Sets the verbatim extra headers string. This is an alternative to storing the headers in
-     * a map (setExtraHeaders()) for the embedders that use collapsed headers strings.
+     * Sets the verbatim extra headers string. This is an alternative to storing the headers in a
+     * map (setExtraHeaders()) for the embedders that use collapsed headers strings.
      */
-    public void setVerbatimHeaders(String headers) {
+    public void setVerbatimHeaders(@Nullable String headers) {
         mVerbatimHeaders = headers;
         verifyHeaders();
     }

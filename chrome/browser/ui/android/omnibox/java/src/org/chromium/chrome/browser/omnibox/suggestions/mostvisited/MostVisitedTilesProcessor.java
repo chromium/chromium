@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -37,9 +37,10 @@ import java.util.List;
 import java.util.Optional;
 
 /** SuggestionProcessor for Most Visited URL tiles. */
+@NullMarked
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
-    private final @NonNull SuggestionHost mSuggestionHost;
-    private final @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
+    private final SuggestionHost mSuggestionHost;
+    private final Optional<OmniboxImageSupplier> mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
@@ -53,9 +54,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
      * @param imageSupplier Class retrieving favicons for the MV Tiles.
      */
     public MostVisitedTilesProcessor(
-            @NonNull Context context,
-            @NonNull SuggestionHost host,
-            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
+            Context context, SuggestionHost host, Optional<OmniboxImageSupplier> imageSupplier) {
         super(context);
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
@@ -74,7 +73,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch match, int matchIndex) {
+    public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
         switch (match.getType()) {
             case OmniboxSuggestionType.TILE_MOST_VISITED_SITE:
             case OmniboxSuggestionType.TILE_REPEATABLE_QUERY:
@@ -90,9 +89,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
-        @SuppressWarnings("null")
-        @NonNull
+    public PropertyModel createModel() {
         PropertyModel model =
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                         .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
@@ -131,8 +128,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
 
-        @SuppressWarnings("null")
-        @NonNull
         String title =
                 TextUtils.isEmpty(match.getDisplayText())
                         ? match.getUrl().getHost()
@@ -159,8 +154,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     private PropertyModel createTile(
-            @NonNull String title,
-            @NonNull GURL url,
+            String title,
+            GURL url,
             boolean isSearch,
             View.OnClickListener onClick,
             View.OnLongClickListener onLongClick) {

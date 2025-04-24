@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.List;
 
 /** The base set of properties for the Carousel suggestions. */
+@NullMarked
 public @interface BaseCarouselSuggestionViewProperties {
     /** Action Icons description. */
     public static final WritableObjectPropertyKey<List<ListItem>> TILES =

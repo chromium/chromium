@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.header;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with the header suggestions. */
+@NullMarked
 @interface HeaderViewProperties {
     /** The text content to be displayed as a header text. */
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

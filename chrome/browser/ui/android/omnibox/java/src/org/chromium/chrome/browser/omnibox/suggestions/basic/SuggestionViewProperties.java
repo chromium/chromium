@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with rendering the default suggestion view. */
+@NullMarked
 public @interface SuggestionViewProperties {
     /** Whether suggestion is a search suggestion. */
     static final WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();

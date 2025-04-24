@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -12,8 +14,6 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -21,6 +21,8 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -32,27 +34,28 @@ import org.chromium.ui.display.DisplayUtil;
  * Implementation of {@link OmniboxSuggestionsDropdownEmbedder} that positions it using an "anchor"
  * and "horizontal alignment" view.
  */
+@NullMarked
 class OmniboxSuggestionsDropdownEmbedderImpl
         implements OmniboxSuggestionsDropdownEmbedder,
                 OnLayoutChangeListener,
                 OnGlobalLayoutListener,
                 ComponentCallbacks {
     private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
-            new ObservableSupplierImpl<>();
-    private final @NonNull WindowAndroid mWindowAndroid;
-    private final @NonNull View mAnchorView;
-    private final @NonNull View mAlignmentView;
+            new ObservableSupplierImpl<>(OmniboxAlignment.UNSPECIFIED);
+    private final WindowAndroid mWindowAndroid;
+    private final View mAnchorView;
+    private final View mAlignmentView;
     private final boolean mForcePhoneStyleOmnibox;
     private final Supplier<Integer> mKeyboardHeightSupplier;
     private final Supplier<Integer> mBottomWindowPaddingSupplier;
-    private final @NonNull Context mContext;
+    private final Context mContext;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
     // Keeping it as a member lets us avoid allocating a temp array every time.
     private final int[] mPositionArray = new int[2];
     private int mVerticalOffsetInWindow;
     private int mWindowWidthDp;
     private int mWindowHeightDp;
-    private WindowInsetsCompat mWindowInsetsCompat;
+    private @Nullable WindowInsetsCompat mWindowInsetsCompat;
     private @Nullable View mBaseChromeLayout;
 
     /**
@@ -76,9 +79,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      *     soft keyboard is not visible.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull View anchorView,
-            @NonNull View alignmentView,
+            WindowAndroid windowAndroid,
+            View anchorView,
+            View alignmentView,
             boolean forcePhoneStyleOmnibox,
             @Nullable View baseChromeLayout,
             Supplier<Integer> keyboardHeightSupplier,
@@ -100,7 +103,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     @Override
     public OmniboxAlignment addAlignmentObserver(Callback<OmniboxAlignment> obs) {
-        return mOmniboxAlignmentSupplier.addObserver(obs);
+        return assertNonNull(mOmniboxAlignmentSupplier.addObserver(obs));
     }
 
     @Override
@@ -108,10 +111,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mOmniboxAlignmentSupplier.removeObserver(obs);
     }
 
-    @Nullable
     @Override
     public OmniboxAlignment getCurrentAlignment() {
-        return mOmniboxAlignmentSupplier.get();
+        return assertNonNull(mOmniboxAlignmentSupplier.get());
     }
 
     @Override
@@ -162,7 +164,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     // ComponentCallbacks
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig) {
         int windowWidth = newConfig.screenWidthDp;
         int windowHeight = newConfig.screenHeightDp;
         if (windowWidth == mWindowWidthDp && mWindowHeightDp == windowHeight) return;

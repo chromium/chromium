@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.ui.base.PageTransition;
 
 /** Holds parameters for AutocompleteDelegate.LoadUrl. */
+@NullMarked
 public class OmniboxLoadUrlParams {
     public final String url;
     public final @PageTransition int transitionType;
     public final long inputStartTimestamp;
     public final boolean openInNewTab;
-    public final @Nullable byte[] postData;
+    public final byte @Nullable [] postData;
     public final @Nullable String postDataType;
     public final @Nullable AutocompleteLoadCallback callback;
 
@@ -24,7 +25,7 @@ public class OmniboxLoadUrlParams {
             @PageTransition int transitionType,
             long inputStartTimestamp,
             boolean openInNewTab,
-            @Nullable byte[] postData,
+            byte @Nullable [] postData,
             @Nullable String postDataType,
             @Nullable AutocompleteLoadCallback callback) {
         this.url = url;
@@ -42,7 +43,7 @@ public class OmniboxLoadUrlParams {
         public @PageTransition int transitionType;
         public long inputStartTimestamp;
         public boolean openInNewTab;
-        public @Nullable byte[] postData;
+        public byte @Nullable [] postData;
         public @Nullable String postDataType;
         public @Nullable AutocompleteLoadCallback callback;
 
@@ -80,7 +81,8 @@ public class OmniboxLoadUrlParams {
          * @param postData Post data for this http post load.
          * @param postDataType Post data type for this http post load.
          */
-        public Builder setpostDataAndType(byte[] postData, String postDataType) {
+        public Builder setpostDataAndType(
+                byte @Nullable [] postData, @Nullable String postDataType) {
             this.postData = postData;
             this.postDataType = postDataType;
             return this;

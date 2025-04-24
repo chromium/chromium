@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utilities for the Omnibox view component. */
+@NullMarked
 public class OmniboxViewUtil {
 
     /**

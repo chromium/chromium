@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Color;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
@@ -11,6 +13,7 @@ import android.view.ViewOutlineProvider;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -21,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Binder for the Carousel suggestions. */
+@NullMarked
 public interface BaseCarouselSuggestionViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
@@ -29,7 +33,7 @@ public interface BaseCarouselSuggestionViewBinder {
 
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
             var items = model.get(BaseCarouselSuggestionViewProperties.TILES);
-            var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
+            var adapter = assumeNonNull((SimpleRecyclerViewAdapter) view.getAdapter());
             if (items != null) {
                 adapter.getModelList().set(items);
             } else {
@@ -39,7 +43,7 @@ public interface BaseCarouselSuggestionViewBinder {
             propagateCommonProperties(adapter.getModelList(), model);
         } else if (key == SuggestionCommonProperties.COLOR_SCHEME) {
             // Propagate color scheme to all tiles.
-            var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
+            var adapter = assumeNonNull((SimpleRecyclerViewAdapter) view.getAdapter());
             propagateCommonProperties(adapter.getModelList(), model);
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_DECORATION) {
             view.setItemDecoration(model.get(BaseCarouselSuggestionViewProperties.ITEM_DECORATION));

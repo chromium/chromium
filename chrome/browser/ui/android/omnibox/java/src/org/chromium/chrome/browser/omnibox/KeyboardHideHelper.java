@@ -12,6 +12,8 @@ import android.view.WindowManager;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowDelegate;
 
 /**
@@ -20,6 +22,7 @@ import org.chromium.ui.base.WindowDelegate;
  * <p>There are no Android APIs to determine the visibility of a soft keyboard, so this class
  * aggressively detects signals that might indicate the keyboard has been hidden.
  */
+@NullMarked
 class KeyboardHideHelper implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final long SOFT_KEYBOARD_HIDDEN_TIMEOUT_MS = 1000;
 
@@ -28,7 +31,7 @@ class KeyboardHideHelper implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Runnable mClearListenerDelayedTask;
     private final Rect mTempRect;
 
-    private WindowDelegate mWindowDelegate;
+    private @Nullable WindowDelegate mWindowDelegate;
     private boolean mIsLayoutListenerAttached;
     private int mInitialViewportHeight;
 

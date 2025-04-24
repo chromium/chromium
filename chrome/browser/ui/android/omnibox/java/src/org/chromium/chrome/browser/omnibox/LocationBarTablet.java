@@ -15,10 +15,12 @@ import android.view.View.OnLongClickListener;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.Toast;
 
 /** Location bar for tablet form factors. */
+@NullMarked
 class LocationBarTablet extends LocationBarLayout implements OnLongClickListener {
     // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
     private static final int HIDEABLE_BUTTON_COUNT = 3;

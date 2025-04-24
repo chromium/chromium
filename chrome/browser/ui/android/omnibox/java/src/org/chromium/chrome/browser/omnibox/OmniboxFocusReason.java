@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -31,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface OmniboxFocusReason {
     int OMNIBOX_TAP = 0;
     int OMNIBOX_LONG_PRESS = 1;

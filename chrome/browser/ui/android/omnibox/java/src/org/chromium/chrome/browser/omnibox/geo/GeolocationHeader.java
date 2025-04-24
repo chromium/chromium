@@ -12,7 +12,6 @@ import android.os.Process;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,6 +27,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
@@ -49,6 +50,7 @@ import java.time.Duration;
  *
  * <p>X-Geo header spec: https://goto.google.com/xgeospec.
  */
+@NullMarked
 public class GeolocationHeader {
     @IntDef({
         HeaderState.HEADER_ENABLED,
@@ -91,7 +93,7 @@ public class GeolocationHeader {
     private static boolean sAppPermissionGrantedForTesting;
     private static boolean sUseAppPermissionGrantedForTesting;
     private static boolean sCurrentLocationRequested;
-    private static Location sFusedLocation;
+    private static @Nullable Location sFusedLocation;
 
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
@@ -297,10 +299,10 @@ public class GeolocationHeader {
         // an origin that isn't the default search engine. Otherwise remove this line.
         boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
         @ContentSettingValues
-        @Nullable
-        Integer settingValue = locationContentSettingForUrl(profile, uri);
+        @Nullable Integer settingValue = locationContentSettingForUrl(profile, uri);
 
-        boolean enabled = isDseOrigin && settingValue == ContentSettingValues.ALLOW;
+        boolean enabled =
+                isDseOrigin && settingValue != null && settingValue == ContentSettingValues.ALLOW;
         return !enabled;
     }
 
@@ -324,7 +326,7 @@ public class GeolocationHeader {
     }
 
     @VisibleForTesting
-    static Location getLastKnownLocation() {
+    static @Nullable Location getLastKnownLocation() {
         if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled() && sFusedLocation != null) {
             return sFusedLocation;
         }
@@ -332,9 +334,8 @@ public class GeolocationHeader {
     }
 
     /** Encodes location into proto encoding. */
-    @Nullable
     @VisibleForTesting
-    static String encodeProtoLocation(@Nullable Location location) {
+    static @Nullable String encodeProtoLocation(@Nullable Location location) {
         if (location == null) return null;
 
         // Timestamp in microseconds since the UNIX epoch.

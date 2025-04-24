@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** SimpleVerticalLayoutView is a fast and specialized vertical layout view. */
+@NullMarked
 public class SimpleVerticalLayoutView extends ViewGroup {
     public SimpleVerticalLayoutView(Context context) {
         super(context);

@@ -10,15 +10,18 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 
 /** Container view for omnibox tail suggestions. */
+@NullMarked
 public class TailSuggestionView extends TextView {
-    private AlignmentManager mAlignmentManager;
+    private @Nullable AlignmentManager mAlignmentManager;
     private int mFullTextWidth;
     private int mQueryTextWidth;
 
-    public TailSuggestionView(Context context, AttributeSet attrs) {
+    public TailSuggestionView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setGravity(Gravity.CENTER_VERTICAL);
         setMaxLines(1);

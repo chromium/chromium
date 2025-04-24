@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -14,6 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The set of common properties associated with any omnibox suggestion. */
+@NullMarked
 public @interface SuggestionCommonProperties {
     /** Enum for identifying the device type */
     @IntDef({FormFactor.UNKNOWN, FormFactor.PHONE, FormFactor.TABLET})

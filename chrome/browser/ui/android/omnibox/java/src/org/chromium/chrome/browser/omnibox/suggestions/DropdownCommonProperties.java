@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** The set of common properties associated with dropdown suggestions. */
+@NullMarked
 public @interface DropdownCommonProperties {
     /** Whether the suggestion background's top corners should be rounded. */
     public static final WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED =

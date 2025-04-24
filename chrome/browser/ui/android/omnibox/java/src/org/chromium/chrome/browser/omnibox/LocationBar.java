@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.Optional;
 
 /** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
+@NullMarked
 public interface LocationBar {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
@@ -88,8 +88,7 @@ public interface LocationBar {
      *
      * <p>TODO(crbug.com/40153747): Inject OmniboxStub where needed and remove this method.
      */
-    @Nullable
-    OmniboxStub getOmniboxStub();
+    @Nullable OmniboxStub getOmniboxStub();
 
     /** Returns the UrlBarData currently in use by the URL bar inside this location bar. */
     UrlBarData getUrlBarData();
@@ -102,7 +101,6 @@ public interface LocationBar {
     default void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {}
 
-    @NonNull
     Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState();
 
     /**

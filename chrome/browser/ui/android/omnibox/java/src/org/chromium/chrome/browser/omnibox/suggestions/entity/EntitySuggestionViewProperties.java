@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The properties associated with rendering the entity suggestion view. */
+@NullMarked
 @interface EntitySuggestionViewProperties {
     static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {};
 

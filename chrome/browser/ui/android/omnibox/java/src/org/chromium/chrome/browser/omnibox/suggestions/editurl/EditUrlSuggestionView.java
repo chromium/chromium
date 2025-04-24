@@ -9,10 +9,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 
 /** Container view for Search-Ready Omnibox suggestions. Decorates the suggestion with a divider. */
+@NullMarked
 public class EditUrlSuggestionView extends FrameLayout {
     private final BaseSuggestionView<View> mContent;
     private final View mDivider;

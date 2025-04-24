@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -19,8 +21,6 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +31,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -48,6 +50,7 @@ import org.chromium.ui.util.MotionEventUtils;
 import java.util.Optional;
 
 /** A widget for showing a list of omnibox suggestions. */
+@NullMarked
 public class OmniboxSuggestionsDropdown extends RecyclerView {
     /** Used to tag and cancel the Accessibility focus events. */
     private static final Object TOKEN_ACCESSIBILITY_FOCUS = new Object();
@@ -79,12 +82,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private Optional<OmniboxSuggestionsDropdownEmbedder> mEmbedder = Optional.empty();
     private @Nullable GestureObserver mGestureObserver;
     private @Nullable Callback<Integer> mHeightChangeListener;
-    private @NonNull OmniboxAlignment mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
+    private OmniboxAlignment mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
 
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
-    private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver =
-            this::onOmniboxAlignmentChanged;
+    private Callback<OmniboxAlignment> mOmniboxAlignmentObserver = this::onOmniboxAlignmentChanged;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 
@@ -236,14 +238,14 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         /**
          * @param listener A listener will be invoked whenever the User scrolls the list.
          */
-        public void setSuggestionDropdownScrollListener(@NonNull Runnable listener) {
+        public void setSuggestionDropdownScrollListener(Runnable listener) {
             mSuggestionDropdownScrollListener = listener;
         }
 
         /**
          * @param listener A listener will be invoked whenever the User scrolls the list to the top.
          */
-        public void setSuggestionDropdownOverscrolledToTopListener(@NonNull Runnable listener) {
+        public void setSuggestionDropdownOverscrolledToTopListener(Runnable listener) {
             mSuggestionDropdownOverscrolledToTopListener = listener;
         }
     }
@@ -253,7 +255,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context, AttributeSet attrs) {
+    public OmniboxSuggestionsDropdown(Context context, AttributeSet attrs) {
         super(context, attrs, android.R.attr.dropDownListViewStyle);
 
         mHandler = new Handler(Looper.getMainLooper());
@@ -309,7 +311,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /** Get the Android View implementing suggestion list. */
-    public @NonNull ViewGroup getViewGroup() {
+    public ViewGroup getViewGroup() {
         return this;
     }
 
@@ -325,7 +327,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param observer an observer of this gesture.
      */
-    public void setGestureObserver(@NonNull OmniboxSuggestionsDropdown.GestureObserver observer) {
+    public void setGestureObserver(OmniboxSuggestionsDropdown.GestureObserver observer) {
         mGestureObserver = observer;
     }
 
@@ -335,7 +337,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param listener A listener will receive the new height of the suggestion list in pixels.
      */
-    public void setHeightChangeListener(@NonNull Callback<Integer> listener) {
+    public void setHeightChangeListener(Callback<Integer> listener) {
         mHeightChangeListener = listener;
     }
 
@@ -371,7 +373,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
-    public void onChildAttachedToWindow(@NonNull View child) {
+    public void onChildAttachedToWindow(View child) {
         child.setAlpha(mChildAlpha);
         if (mChildVerticalTranslation != 0.0f) {
             child.setTranslationY(mChildVerticalTranslation);
@@ -379,7 +381,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
-    public void onChildDetachedFromWindow(@NonNull View child) {
+    public void onChildDetachedFromWindow(View child) {
         child.setTranslationY(0.0f);
         child.setAlpha(1.0f);
     }
@@ -401,7 +403,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * @return The Suggestion view at specific index.
      */
     public @Nullable View getDropdownItemViewForTest(int index) {
-        final LayoutManager manager = getLayoutManager();
+        final LayoutManager manager = assumeNonNull(getLayoutManager());
         manager.scrollToPosition(index);
         return manager.findViewByPosition(index);
     }
@@ -430,7 +432,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
-    public void setAdapter(@NonNull Adapter adapter) {
+    public void setAdapter(@Nullable Adapter adapter) {
         mAdapter = (OmniboxSuggestionsDropdownAdapter) adapter;
         super.setAdapter(mAdapter);
     }
@@ -565,7 +567,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param embedder the embedder of this list.
      */
-    public void setEmbedder(@NonNull OmniboxSuggestionsDropdownEmbedder embedder) {
+    public void setEmbedder(OmniboxSuggestionsDropdownEmbedder embedder) {
         // Don't reset the current value of `mOmniboxAlignment`, and don't read the value from newly
         // installed embedder to ensure the `onOmniboxAlignmentChanged` does the right thing when we
         // install our observers.
@@ -606,7 +608,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         }
     }
 
-    private void onOmniboxAlignmentChanged(@NonNull OmniboxAlignment omniboxAlignment) {
+    private void onOmniboxAlignmentChanged(OmniboxAlignment omniboxAlignment) {
         boolean isOnlyHorizontalDifference =
                 omniboxAlignment.isOnlyHorizontalDifference(mOmniboxAlignment);
         boolean isWidthDifference = omniboxAlignment.doesWidthDiffer(mOmniboxAlignment);
@@ -674,7 +676,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                             getContext()
                                     .getString(
                                             R.string.accessibility_omnibox_suggested_items,
-                                            mAdapter.getItemCount()));
+                                            mAdapter == null ? 0 : mAdapter.getItemCount()));
                     sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                     setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
                 },

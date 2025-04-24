@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -16,6 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** The properties associated with rendering the ActionChipsView. */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public @interface ActionChipsProperties {
     /**
      * ViewType defines a list of Views that are understood by the Carousel. Views below can be used
