@@ -199,6 +199,7 @@ aggregate_vector_icons("components_vector_icons") {
     "save_cloud.icon",
     "science.icon",
     "screen_share.icon",
+    "screen_share_old.icon",
     "search.icon",
     "search_chrome_refresh.icon",
     "select_window.icon",

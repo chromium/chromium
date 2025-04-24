@@ -1,0 +1,26 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+MOVE_TO, 40, 36,
+R_CUBIC_TO, 2.2, 0, 3.98, -1.8, 3.98, -4,
+LINE_TO, 44, 12,
+R_CUBIC_TO, 0, -2.22, -1.8, -4, -4, -4,
+H_LINE_TO, 8,
+R_CUBIC_TO, -2.22, 0, -4, 1.78, -4, 4,
+R_V_LINE_TO, 20,
+R_CUBIC_TO, 0, 2.2, 1.78, 4, 4, 4,
+H_LINE_TO, 0,
+R_V_LINE_TO, 4,
+R_H_LINE_TO, 48,
+R_V_LINE_TO, -4,
+R_H_LINE_TO, -8,
+CLOSE,
+R_MOVE_TO, -14, -7.06,
+R_V_LINE_TO, -4.38,
+R_CUBIC_TO, -5.56, 0, -9.22, 1.7, -12, 5.44,
+R_CUBIC_TO, 1.12, -5.34, 4.22, -10.66, 12, -11.74,
+V_LINE_TO, 14,
+R_LINE_TO, 8, 7.46,
+R_LINE_TO, -8, 7.48,
+CLOSE

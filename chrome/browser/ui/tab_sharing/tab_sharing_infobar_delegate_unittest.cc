@@ -183,7 +183,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                       .focus_target = FocusTarget{GetGlobalId(0), favicon}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
 
   const int expected_buttons =
       TabSharingInfoBarDelegate::kStop | TabSharingInfoBarDelegate::kQuickNav |
@@ -231,7 +231,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
                       .focus_target = FocusTarget{GetGlobalId(1), favicon}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop |
                                         TabSharingInfoBarDelegate::kQuickNav);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
@@ -253,7 +253,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
                       .role = TabRole::kOtherTab,
                       .can_share_instead = true});
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -319,7 +319,7 @@ TEST_P(TabSharingInfoBarDelegateTest,
                       .focus_target = FocusTarget{GetGlobalId(1), favicon}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
 
   // Correct number of buttons.
   EXPECT_EQ(delegate->GetButtons(),
@@ -392,7 +392,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -416,7 +416,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCastTab) {
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
   EXPECT_STREQ(delegate->GetVectorIcon().name,
-               vector_icons::kScreenShareIcon.name);
+               vector_icons::kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
