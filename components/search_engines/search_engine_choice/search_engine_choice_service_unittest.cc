@@ -844,6 +844,7 @@ struct DeviceRestoreTestParam {
   bool restore_detected_in_current_session;
   bool choice_predates_restore;
   bool is_feature_enabled;
+  bool is_invalidation_retroactive;
   bool expect_choice_info_wipe;
 };
 
@@ -853,8 +854,10 @@ class SearchEngineChoiceServiceDeviceRestoreTest
  public:
   SearchEngineChoiceServiceDeviceRestoreTest() {
     if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+          {{switches::kInvalidateChoiceOnRestoreIsRetroactive.name,
+            GetParam().is_invalidation_retroactive ? "true" : "false"}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
@@ -878,21 +881,31 @@ INSTANTIATE_TEST_SUITE_P(
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = true,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
+                               .expect_choice_info_wipe = true},
+        DeviceRestoreTestParam{.test_suffix = "WipeForRetroactiveDetection",
+                               .restore_detected_in_current_session = false,
+                               .choice_predates_restore = true,
+                               .is_feature_enabled = true,
+                               .is_invalidation_retroactive = true,
                                .expect_choice_info_wipe = true},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForLateDetection",
                                .restore_detected_in_current_session = false,
                                .choice_predates_restore = true,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForNewChoice",
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = false,
                                .is_feature_enabled = true,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
         DeviceRestoreTestParam{.test_suffix = "NoWipeForFeatureDisabled",
                                .restore_detected_in_current_session = true,
                                .choice_predates_restore = true,
                                .is_feature_enabled = false,
+                               .is_invalidation_retroactive = false,
                                .expect_choice_info_wipe = false},
     }),
     &SearchEngineChoiceServiceDeviceRestoreTest::GetTestSuffix);

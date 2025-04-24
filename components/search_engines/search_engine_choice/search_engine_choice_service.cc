@@ -548,11 +548,13 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
 
   if (base::FeatureList::IsEnabled(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
-      client_->IsDeviceRestoreDetectedInCurrentSession() &&
       client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
-    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                SearchEngineChoiceWipeReason::kDeviceRestored);
-    return;
+    if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get() ||
+        client_->IsDeviceRestoreDetectedInCurrentSession()) {
+      WipeSearchEngineChoicePrefs(
+          profile_prefs_.get(), SearchEngineChoiceWipeReason::kDeviceRestored);
+      return;
+    }
   }
 
   if (ShouldRepromptFromFeatureParams(
