@@ -185,6 +185,17 @@ export enum AssignmentType {
 }
 
 /**
+ * Declare Speech Recognition install state enum type
+ */
+export enum SpeechRecognitionInstallState {
+  UNKNOWN = 0,
+  SYSTEM_LANGUAGE_NOT_SUPPORTED = 1,
+  IN_PROGRESS = 2,
+  FAILED = 3,
+  READY = 4
+}
+
+/**
  * Declare controlled tab
  */
 export declare interface ControlledTab {
@@ -423,4 +434,10 @@ export declare interface ClientApi {
    * or outside of a session in the teacher case.
    */
   onLocalCaptionDisabled(): void;
+
+  /**
+   * Notify the app that the status for Soda Installation has changed.
+   */
+  onSpeechRecognitionInstallStateUpdated(state: SpeechRecognitionInstallState):
+      void;
 }

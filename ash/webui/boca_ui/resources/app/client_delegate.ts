@@ -5,15 +5,34 @@
 import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import type {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
-import {CreateSessionError, SubmitAccessCodeError} from '../mojom/boca.mojom-webui.js';
+import {CreateSessionError, SpeechRecognitionInstallState as SpeechRecognitionInstallStateMojom, SubmitAccessCodeError} from '../mojom/boca.mojom-webui.js';
 
 import type {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, Permission, PermissionSetting, SessionConfig} from './boca_app.js';
-import {CreateSessionResult, SubmitAccessCodeResult} from './boca_app.js';
+import {CreateSessionResult, SpeechRecognitionInstallState, SubmitAccessCodeResult} from './boca_app.js';
+
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
 function resultHasError(result: any) {
   return !(result.error === undefined || result.error === null);
+}
+
+export function getSpeechRecognitionInstallStateMojomToUI(
+    state: SpeechRecognitionInstallStateMojom) {
+  switch (state) {
+    case SpeechRecognitionInstallStateMojom.kUnknown:
+      return SpeechRecognitionInstallState.UNKNOWN;
+    case SpeechRecognitionInstallStateMojom.kSystemLanguageUnsupported:
+      return SpeechRecognitionInstallState.SYSTEM_LANGUAGE_NOT_SUPPORTED;
+    case SpeechRecognitionInstallStateMojom.kInProgress:
+      return SpeechRecognitionInstallState.IN_PROGRESS;
+    case SpeechRecognitionInstallStateMojom.kFailed:
+      return SpeechRecognitionInstallState.FAILED;
+    case SpeechRecognitionInstallStateMojom.kReady:
+      return SpeechRecognitionInstallState.READY;
+    default:
+      return SpeechRecognitionInstallState.UNKNOWN;
+  }
 }
 
 export function getStudentActivityMojomToUI(activities: Activity[]):

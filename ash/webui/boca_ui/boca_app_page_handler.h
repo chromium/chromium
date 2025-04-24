@@ -117,6 +117,8 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override;
   void OnLocalCaptionDisabled() override;
+  void OnSpeechRecognitionInstallStateUpdated(
+      mojom::SpeechRecognitionInstallState state) override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -133,6 +135,7 @@ class BocaAppHandler : public mojom::PageHandler,
       const std::string& tachyon_group_id) override;
   void OnSessionRosterUpdated(const ::boca::Roster& roster) override;
   void OnLocalCaptionClosed() override;
+  void OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) override;
 
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 

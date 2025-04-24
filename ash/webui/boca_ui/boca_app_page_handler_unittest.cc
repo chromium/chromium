@@ -323,6 +323,9 @@ class FakePage : public mojom::Page {
     local_caption_disabled_cb_ = std::move(local_caption_disabled_cb);
   }
 
+  void OnSpeechRecognitionInstallStateUpdated(
+      mojom::SpeechRecognitionInstallState state) override {}
+
  private:
   // mojom::Page:
   void OnStudentActivityUpdated(

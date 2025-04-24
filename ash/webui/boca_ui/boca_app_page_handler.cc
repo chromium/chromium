@@ -687,6 +687,9 @@ void BocaAppHandler::OnConsumerActivityUpdated(
 
 void BocaAppHandler::OnLocalCaptionDisabled() {}
 
+void BocaAppHandler::OnSpeechRecognitionInstallStateUpdated(
+    mojom::SpeechRecognitionInstallState) {}
+
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
   ResetProducerSessionCaptionConfig();
@@ -720,6 +723,10 @@ void BocaAppHandler::OnSessionRosterUpdated(const ::boca::Roster& roster) {
 
 void BocaAppHandler::OnLocalCaptionClosed() {
   remote_->OnLocalCaptionDisabled();
+}
+
+void BocaAppHandler::OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) {
+  remote_->OnSpeechRecognitionInstallStateUpdated(GetMojomSodaState(status));
 }
 
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
