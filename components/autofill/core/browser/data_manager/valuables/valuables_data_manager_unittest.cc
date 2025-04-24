@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -28,6 +29,18 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
+class MockValuablesDataManagerObserver : public ValuablesDataManager::Observer {
+ public:
+  MockValuablesDataManagerObserver() = default;
+  MockValuablesDataManagerObserver(const MockValuablesDataManagerObserver&) =
+      delete;
+  MockValuablesDataManagerObserver& operator=(
+      const MockValuablesDataManagerObserver&) = delete;
+  ~MockValuablesDataManagerObserver() override = default;
+
+  MOCK_METHOD(void, OnValuablesDataChanged, (), (override));
+};
+
 class ValuablesDataManagerTest : public testing::Test {
  public:
   ValuablesDataManagerTest() {
@@ -47,10 +60,10 @@ class ValuablesDataManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<ValuablesTable> valuables_table_;
-  std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
   base::test::ScopedFeatureList scoped_feature_list{
       syncer::kSyncAutofillLoyaltyCard};
+  raw_ptr<ValuablesTable> valuables_table_;
+  std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
 };
 
 // Tests that the `ValuablesDataManager` correctly loads loyalty cards from the
@@ -79,6 +92,13 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
               UnorderedElementsAre(card1));
+
+  MockValuablesDataManagerObserver observer;
+  base::ScopedObservation<ValuablesDataManager,
+                          MockValuablesDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&valuables_data_manager);
+  EXPECT_CALL(observer, OnValuablesDataChanged);
 
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
   // Loyalty cards are passed unsorted by sync.

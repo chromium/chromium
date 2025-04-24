@@ -10,6 +10,8 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -29,11 +31,20 @@ namespace autofill {
 class ValuablesDataManager : public KeyedService,
                              public AutofillWebDataServiceObserverOnUISequence {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Triggered after all pending read operations have finished.
+    virtual void OnValuablesDataChanged() = 0;
+  };
+
   explicit ValuablesDataManager(
       scoped_refptr<AutofillWebDataService> webdata_service);
   ValuablesDataManager(const ValuablesDataManager&) = delete;
   ValuablesDataManager& operator=(const ValuablesDataManager&) = delete;
   ~ValuablesDataManager() override;
+
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // Returns the cached loyalty cards from the database.
   //
@@ -60,6 +71,9 @@ class ValuablesDataManager : public KeyedService,
   // Handler method called with newly received loyalty cards.
   void OnLoyaltyCardsLoaded(const std::vector<LoyaltyCard>& loyalty_cards);
 
+  // Notify all observers that a change has occurred.
+  void NotifyObservers();
+
   const scoped_refptr<AutofillWebDataService> webdata_service_;
 
   base::ScopedObservation<AutofillWebDataService,
@@ -68,6 +82,8 @@ class ValuablesDataManager : public KeyedService,
 
   // The ongoing `LoadLoyaltyCards()` query.
   WebDataServiceBase::Handle pending_query_{};
+
+  base::ObserverList<Observer> observers_;
 
   // The result of the last successful `LoadLoyaltyCards()` query.
   // Stored loyalty cards are sorted by merchant name.

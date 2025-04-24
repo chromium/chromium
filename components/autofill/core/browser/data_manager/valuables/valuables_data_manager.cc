@@ -63,11 +63,18 @@ void ValuablesDataManager::OnLoyaltyCardsLoaded(
                     [](const LoyaltyCard& a, const LoyaltyCard& b) {
                       return a.merchant_name() < b.merchant_name();
                     });
+  NotifyObservers();
 }
 
 void ValuablesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::DataType::AUTOFILL_VALUABLE) {
     LoadLoyaltyCards();
+  }
+}
+
+void ValuablesDataManager::NotifyObservers() {
+  for (Observer& observer : observers_) {
+    observer.OnValuablesDataChanged();
   }
 }
 
