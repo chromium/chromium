@@ -15,6 +15,7 @@ struct OcclusionCullerSettings {
   uint16 quad_split_limit;
   uint16 maximum_occluder_complexity;
   uint16 minimum_fragments_reduced;
+  bool generate_complex_occluder_for_rounded_corners;
 };
 
 struct RendererSettings {

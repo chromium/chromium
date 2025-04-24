@@ -20,6 +20,8 @@ bool StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
   out->quad_split_limit = data.quad_split_limit();
   out->maximum_occluder_complexity = data.maximum_occluder_complexity();
   out->minimum_fragments_reduced = data.minimum_fragments_reduced();
+  out->generate_complex_occluder_for_rounded_corners =
+      data.generate_complex_occluder_for_rounded_corners();
   return true;
 }
 

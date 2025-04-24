@@ -29,6 +29,8 @@ TEST_F(StructTraitsTest, RendererSettings) {
   input.occlusion_culler_settings.quad_split_limit = 10;
   input.occlusion_culler_settings.maximum_occluder_complexity = 1;
   input.occlusion_culler_settings.minimum_fragments_reduced = 100;
+  input.occlusion_culler_settings
+      .generate_complex_occluder_for_rounded_corners = true;
 
   RendererSettings output;
   mojom::RendererSettings::Deserialize(
@@ -49,6 +51,10 @@ TEST_F(StructTraitsTest, RendererSettings) {
             output.occlusion_culler_settings.maximum_occluder_complexity);
   EXPECT_EQ(input.occlusion_culler_settings.minimum_fragments_reduced,
             output.occlusion_culler_settings.minimum_fragments_reduced);
+  EXPECT_EQ(input.occlusion_culler_settings
+                .generate_complex_occluder_for_rounded_corners,
+            output.occlusion_culler_settings
+                .generate_complex_occluder_for_rounded_corners);
 }
 
 TEST_F(StructTraitsTest, DebugRendererSettings) {
