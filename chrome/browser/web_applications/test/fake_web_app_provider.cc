@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -309,9 +308,6 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
   SetFileUtils(base::MakeRefCounted<TestFileUtils>());
 
   SetWebAppUiManager(std::make_unique<FakeWebAppUiManager>());
-
-  SetExternallyManagedAppManager(
-      std::make_unique<FakeExternallyManagedAppManager>(profile_));
 
   IwaIdentityValidator::CreateSingleton();
 
