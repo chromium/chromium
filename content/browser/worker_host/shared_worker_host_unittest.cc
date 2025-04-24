@@ -91,7 +91,8 @@ class SharedWorkerHostTest : public testing::Test {
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-        base::MakeRefCounted<PolicyContainerHost>());
+        base::MakeRefCounted<PolicyContainerHost>(),
+        /*extended_lifetime=*/false);
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -383,7 +384,8 @@ TEST_F(SharedWorkerHostTest,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>());
+      base::MakeRefCounted<PolicyContainerHost>(),
+      /*extended_lifetime=*/false);
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
@@ -440,7 +442,8 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)),
+      /*extended_lifetime=*/false);
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;

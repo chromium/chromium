@@ -89,7 +89,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       scoped_refptr<SiteInstanceImpl> site_instance,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      scoped_refptr<PolicyContainerHost> creator_policy_container_host);
+      scoped_refptr<PolicyContainerHost> creator_policy_container_host,
+      bool extended_lifetime);
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
   SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
@@ -367,6 +368,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
+
+  // Indicates if SharedWorker should extend its lifetime on all clients
+  // have been destructed.
+  // See: https://github.com/whatwg/html/issues/10997
+  const bool extended_lifetime_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };

@@ -133,7 +133,8 @@ SharedWorkerHost::SharedWorkerHost(
     scoped_refptr<SiteInstanceImpl> site_instance,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
-    scoped_refptr<PolicyContainerHost> creator_policy_container_host)
+    scoped_refptr<PolicyContainerHost> creator_policy_container_host,
+    bool extended_lifetime)
     : service_(service),
       token_(blink::SharedWorkerToken()),
       instance_(instance),
@@ -149,7 +150,8 @@ SharedWorkerHost::SharedWorkerHost(
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
-      creator_policy_container_host_(std::move(creator_policy_container_host)) {
+      creator_policy_container_host_(std::move(creator_policy_container_host)),
+      extended_lifetime_(extended_lifetime) {
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 

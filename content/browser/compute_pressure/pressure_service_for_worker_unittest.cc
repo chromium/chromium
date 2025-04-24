@@ -273,7 +273,8 @@ class PressureServiceForSharedWorkerTest
     worker_host_ = std::make_unique<SharedWorkerHost>(
         worker_service_.get(), instance, rfh->GetSiteInstance(),
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-        base::MakeRefCounted<PolicyContainerHost>());
+        base::MakeRefCounted<PolicyContainerHost>(),
+        /*extended_lifetime=*/false);
     AddClient(receiver_.InitWithNewPipeAndPassRemote(), rfh->GetGlobalId(),
               blink::MessagePortChannel(port_pair_.TakePort0()),
               kClientUkmSourceId);
