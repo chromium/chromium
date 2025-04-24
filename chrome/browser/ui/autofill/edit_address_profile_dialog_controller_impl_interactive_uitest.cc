@@ -7,6 +7,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -23,6 +24,8 @@ class EditAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
  protected:
   EditAddressProfileDialogControllerImplTest() {
+    base::test::ScopedFeatureList feature_list_{
+        features::kAutofillSupportLastNamePrefix};
     local_profile_ = std::make_unique<AutofillProfile>(
         AutofillProfile::RecordType::kLocalOrSyncable,
         AddressCountryCode("US"));
