@@ -118,6 +118,8 @@ void BocaSessionManager::Observer::OnSessionCaptionConfigUpdated(
 void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
     const ::boca::CaptionsConfig& config) {}
 
+void BocaSessionManager::Observer::OnSodaStatusUpdate(SodaStatus status) {}
+
 void BocaSessionManager::Observer::OnLocalCaptionClosed() {}
 
 void BocaSessionManager::Observer::OnSessionRosterUpdated(
@@ -297,7 +299,9 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
 void BocaSessionManager::OnAppWindowOpened() {
   if (soda_installer_ != nullptr) {
     // TODO(378702821) Notify observers of SODA status change.
-    soda_installer_->InstallSoda(base::DoNothing());
+    soda_installer_->InstallSoda(
+        base::BindOnce(&BocaSessionManager::NotifySodaStatusListeners,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -756,6 +760,12 @@ void BocaSessionManager::UpdateNetworkRestriction(
       disabled_on_non_managed_network_) {
     disabled_on_non_managed_network_ = should_disable_on_non_managed_network;
     LoadCurrentSession(/*from_polling=*/false);
+  }
+}
+
+void BocaSessionManager::NotifySodaStatusListeners(SodaStatus status) {
+  for (auto& observer : observers_) {
+    observer.OnSodaStatusUpdate(status);
   }
 }
 

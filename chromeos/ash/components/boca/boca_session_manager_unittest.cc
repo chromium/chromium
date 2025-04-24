@@ -107,6 +107,11 @@ class MockObserver : public BocaSessionManager::Observer {
               (const ::boca::CaptionsConfig& config),
               (override));
   MOCK_METHOD(void,
+              OnSodaStatusUpdate,
+              (BocaSessionManager::SodaStatus status),
+              (override));
+
+  MOCK_METHOD(void,
               OnSessionRosterUpdated,
               (const ::boca::Roster& roster),
               (override));
@@ -1656,6 +1661,52 @@ TEST_F(BocaSessionManagerSodaTest, HandleUnavailableLanguage) {
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
       speech::GetLanguageCode(kDefaultLanguage));
   ASSERT_EQ(BocaSessionManager::SodaStatus::kLanguageUnavailable,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, ListenForSuccess) {
+  babelorca::SodaInstaller installer = babelorca::SodaInstaller(
+      &local_state(), &local_state(), kDefaultLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+
+  // On any status that's not installing immediately return the status.
+  boca_session_manager_->AddObserver(observer());
+  EXPECT_CALL(*observer(), OnSodaStatusUpdate).Times(1);
+
+  boca_session_manager_->OnAppWindowOpened();
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
+            boca_session_manager_->GetSodaStatus());
+
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kReady,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, ListenForFailure) {
+  babelorca::SodaInstaller installer = babelorca::SodaInstaller(
+      &local_state(), &local_state(), kDefaultLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+  boca_session_manager_->AddObserver(observer());
+  EXPECT_CALL(*observer(), OnSodaStatusUpdate).Times(1);
+
+  boca_session_manager_->OnAppWindowOpened();
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
+            boca_session_manager_->GetSodaStatus());
+
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kInstallationFailure,
             boca_session_manager_->GetSodaStatus());
 }
 

@@ -136,6 +136,9 @@ class BocaSessionManager
     // app.
     virtual void OnLocalCaptionClosed();
 
+    // Notifies when the status of SODA changes.
+    virtual void OnSodaStatusUpdate(SodaStatus status);
+
     // Notifies when session roster updated. Will emit when only elements order
     // changed in the vector too. Deferred to events consumer to decide on
     // the actual action.
@@ -247,6 +250,7 @@ class BocaSessionManager
   void HandleCaptionNotification();
   void UpdateNetworkRestriction(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
+  void NotifySodaStatusListeners(SodaStatus status);
 
   const bool is_producer_;
   base::TimeDelta in_session_polling_interval_;
