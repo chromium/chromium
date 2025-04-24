@@ -8794,6 +8794,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Got extensions? <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>Manage your extensions<ph name="END_LINK">&lt;/a&gt;</ph> in one easy place.
       </message>
 
+      <!-- New Tab Footer -->
+      <message name="IDS_NEW_TAB_FOOTER_NAME" desc="The name of the New Tab Footer feature, a UI that may show at the bottom of the New Tab Page." translateable="false">
+        New Tab Footer
+      </message>
+
       <!-- Star View menu -->
       <if expr="use_titlecase">
         <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">

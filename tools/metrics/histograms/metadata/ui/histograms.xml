@@ -66,6 +66,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".LensOverlayUntrusted"/>
   <variant name=".LensSidePanelUntrusted"/>
   <variant name=".MakoUntrusted"/>
+  <variant name=".NewTabFooter"/>
   <variant name=".PerformanceSidePanel"/>
   <variant name=".ReadAnythingUntrusted"/>
   <variant name=".ReadingList"/>

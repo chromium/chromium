@@ -9,27 +9,35 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
-#include "ui/webui/mojo_web_ui_controller.h"
 
 class NewTabFooterHandler;
 class NewTabFooterUI;
 class Profile;
 
 class NewTabFooterUIConfig
-    : public content::DefaultWebUIConfig<NewTabFooterUI> {
+    : public DefaultTopChromeWebUIConfig<NewTabFooterUI> {
  public:
-  NewTabFooterUIConfig();
+  NewTabFooterUIConfig()
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                    chrome::kChromeUINewTabFooterHost) {}
+
+  // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://newtab-footer
 class NewTabFooterUI
-    : public ui::MojoWebUIController,
+    : public TopChromeWebUIController,
       public new_tab_footer::mojom::NewTabFooterHandlerFactory {
  public:
   explicit NewTabFooterUI(content::WebUI* web_ui);
   ~NewTabFooterUI() override;
+
+  static constexpr std::string GetWebUIName() { return "NewTabFooter"; }
 
   // Instantiates the implementor of the mojom::NewTabFooterHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -48,6 +56,7 @@ class NewTabFooterUI
       document_factory_receiver_{this};
   raw_ptr<Profile> profile_;
 
+ private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

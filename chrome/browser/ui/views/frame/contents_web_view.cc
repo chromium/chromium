@@ -34,12 +34,6 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
   status_bubble_ = std::make_unique<StatusBubbleViews>(this);
   status_bubble_->Reposition();
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
-    new_tab_footer_ = std::make_unique<new_tab_footer::NewTabFooterWebView>(
-        browser_context, this);
-    new_tab_footer_->Reposition();
-  }
-
   web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(this);
 }
 
@@ -106,9 +100,33 @@ void ContentsWebView::SetWebContents(content::WebContents* web_contents) {
   views::WebView::SetWebContents(web_contents);
   if (web_contents == nullptr) {
     status_bubble_ = nullptr;
-  } else if (status_bubble_ == nullptr) {
+    if (new_tab_footer_) {
+      new_tab_footer_->CloseUI();
+      new_tab_footer_ = nullptr;
+    }
+    // Early exit: Without web contents, views dependent on ContentsWebView's
+    // bounds cannot be properly created or positioned. These views will
+    // initialize later when valid web contents exist.
+    return;
+  }
+
+  if (status_bubble_ == nullptr) {
     status_bubble_ = std::make_unique<StatusBubbleViews>(this);
     status_bubble_->Reposition();
+  }
+
+  if (new_tab_footer_ == nullptr &&
+      base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    // TODO(crbug.com/409058788): Make this a sibling of ContentsWebView, rather
+    // than a child. That way the footer can be laid out underneath the
+    // ContentsWebView without having to remove ContentsWebView's assumption
+    // that it occupies 100% of whatever space has been allocated to it.
+    new_tab_footer_ =
+        AddChildView(std::make_unique<new_tab_footer::NewTabFooterWebView>(
+            GetBrowserContext(), this));
+    // TODO(crbug.com/409056427): Only show the footer if the web contents being
+    // set is for a new tab page, close it otherwise.
+    new_tab_footer_->ShowUI();
   }
 }
 

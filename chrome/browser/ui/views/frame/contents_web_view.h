@@ -66,8 +66,7 @@ class ContentsWebView : public views::WebView,
  private:
   void UpdateBackgroundColor();
   std::unique_ptr<StatusBubbleViews> status_bubble_ = nullptr;
-  std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_ =
-      nullptr;
+  raw_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_ = nullptr;
   std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_ =
       nullptr;
 

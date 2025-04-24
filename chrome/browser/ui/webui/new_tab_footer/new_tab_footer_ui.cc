@@ -20,17 +20,13 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
-NewTabFooterUIConfig::NewTabFooterUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUINewTabFooterHost) {}
-
 bool NewTabFooterUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(ntp_features::kNtpFooter);
 }
 
 NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true),
       profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://newtab-footer source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
