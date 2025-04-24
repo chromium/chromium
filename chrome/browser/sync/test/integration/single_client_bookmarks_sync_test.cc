@@ -2934,9 +2934,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
-                       PRE_PreviouslySyncingGaiaId) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
   base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(SetupClients());
+
+  // Create one URL bookmark under Bookmarks Bar to deal with non-empty
+  // datasets.
+  ASSERT_TRUE(AddURL(kSingleProfileIndex,
+                     GetBookmarkBarNode(kSingleProfileIndex), 0, u"Url1",
+                     GURL("http://www.url1.com")));
+
   ASSERT_TRUE(SetupSync());
   histogram_tester.ExpectUniqueSample(
       kPreviouslySyncingGaiaIdMetricName,
@@ -2946,11 +2954,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // Turn Sync off by removing the primary account.
   GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
 
+  // Create a second bookmark, this time under Other Bookmarks.
+  ASSERT_TRUE(AddURL(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+                     u"Url2", GURL("http://www.url2.com")));
+
   // Turn Sync on with the same account.
   ASSERT_TRUE(SetupSync());
   histogram_tester.ExpectBucketCount(
       kPreviouslySyncingGaiaIdMetricName,
       /*sample=*/3 /*kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn*/,
+      /*expected_bucket_count=*/1);
+
+  // Sanity-check the existence of at least two comparison metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid",
+      /*sample=*/3 /*kExactMatchNonEmpty*/,
       /*expected_bucket_count=*/1);
 
   // Enable Sync with a different account.
@@ -2964,7 +2988,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PreviouslySyncingGaiaId) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, ComparisonMetrics) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());

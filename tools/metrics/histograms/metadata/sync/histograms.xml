@@ -300,6 +300,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Sync.BookmarkModelMerger.Comparison.{PreviouslySyncingGaiaId}.{SubtreeSelection}.{GroupingKey}"
+    enum="BookmarkSetComparisonOutcome" expires_after="2025-11-23">
+  <owner>mastiz@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the result of comparing URL bookmarks stored locally with those
+    downloaded from the Sync server. This particular metric variant considers
+    {SubtreeSelection} using {GroupingKey} as uniqueness key when finding
+    matches across local and account bookmarks.
+
+    Recorded on desktop platforms (excluding ChromeOS) only when bookmark sync
+    (legacy Full Sync) is turned on and after account bookmarks are downloaded
+    from the Sync server, for the case where {PreviouslySyncingGaiaId}.
+  </summary>
+<!-- LINT.IfChange(BookmarkComparisonPreviouslySyncingGaiaId) -->
+
+  <token key="PreviouslySyncingGaiaId">
+    <variant name="DiffersPreviousGaiaId"
+        summary="the user (gaia ID) currently turning on bookmark sync is
+                 different to the one that had previously turned sync on"/>
+    <variant name="MatchesPreviousGaiaId"
+        summary="the user (gaia ID) currently turning on bookmark sync is the
+                 same as the one that had previously turned sync on"/>
+    <variant name="NoPreviousGaiaId"
+        summary="sync was never turned on before in the current browser
+                 profile"/>
+    <variant name="UnknownPreviousGaiaId"
+        summary="it is impossible to determine which user (gaia ID), if any,
+                 had turned sync on previously"/>
+  </token>
+<!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonPreviouslySyncingGaiaId) -->
+
+<!-- LINT.IfChange(BookmarkComparisonSubtreeSelection) -->
+
+  <token key="SubtreeSelection">
+    <variant name="ConsideringAllBookmarks" summary="the entire bookmark tree"/>
+    <variant name="UnderBookmarksBar"
+        summary="desdendants of the Bookmarks Bar"/>
+  </token>
+<!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonSubtreeSelection) -->
+
+<!-- LINT.IfChange(BookmarkComparisonGroupingKey) -->
+
+  <token key="GroupingKey">
+    <variant name="ByUrlAndTitle" summary="&lt;URL, title&gt;"/>
+    <variant name="ByUrlAndTitleAndPath"
+        summary="&lt;URL, title, path&gt; (where the path contains ancestor's
+                 titles)"/>
+    <variant name="ByUrlAndUuid" summary="&lt;URL, UUID&gt;"/>
+  </token>
+<!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonGroupingKey) -->
+
+</histogram>
+
 <histogram name="Sync.BookmarkModelMerger.PreviouslySyncingGaiaId"
     enum="PreviouslySyncingGaiaIdInfoForMetrics" expires_after="2025-10-11">
   <owner>mastiz@chromium.org</owner>

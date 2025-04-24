@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -298,7 +299,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractLocalNodes) {
                                    UrlAndTitle{kUrl4, kUrl4Title}));
   EXPECT_THAT(ExtractUniqueLocalNodesByUrlAndTitleForTesting(
                   BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()),
-                  SubtreeSelection::kUnderBookmarkBar),
+                  SubtreeSelection::kUnderBookmarksBar),
               UnorderedElementsAre(UrlAndTitle{kUrl1, kUrl1Title},
                                    UrlAndTitle{kUrl2, kUrl2Title}));
 
@@ -311,7 +312,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractLocalNodes) {
                   UrlAndUuid{kUrl3, kUrl3Uuid}, UrlAndUuid{kUrl4, kUrl4Uuid}));
   EXPECT_THAT(ExtractUniqueLocalNodesByUrlAndUuidForTesting(
                   BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()),
-                  SubtreeSelection::kUnderBookmarkBar),
+                  SubtreeSelection::kUnderBookmarksBar),
               UnorderedElementsAre(UrlAndUuid{kUrl1, kUrl1Uuid},
                                    UrlAndUuid{kUrl2, kUrl2Uuid}));
 
@@ -333,7 +334,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractLocalNodes) {
   EXPECT_THAT(
       ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
           BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()),
-          SubtreeSelection::kUnderBookmarkBar),
+          SubtreeSelection::kUnderBookmarksBar),
       UnorderedElementsAre(
           UrlAndTitleAndPath{kUrl1, kUrl1Title,
                              base::StrCat({u"/", kBookmarkBarFolderName})},
@@ -390,7 +391,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
                                    UrlAndTitle{kUrl3, kUrl3Title},
                                    UrlAndTitle{kUrl4, kUrl4Title}));
   EXPECT_THAT(ExtractUniqueAccountNodesByUrlAndTitleForTesting(
-                  account_data, SubtreeSelection::kUnderBookmarkBar),
+                  account_data, SubtreeSelection::kUnderBookmarksBar),
               UnorderedElementsAre(UrlAndTitle{kUrl1, kUrl1Title},
                                    UrlAndTitle{kUrl2, kUrl2Title}));
 
@@ -401,7 +402,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
                   UrlAndUuid{kUrl1, kUrl1Uuid}, UrlAndUuid{kUrl2, kUrl2Uuid},
                   UrlAndUuid{kUrl3, kUrl3Uuid}, UrlAndUuid{kUrl4, kUrl4Uuid}));
   EXPECT_THAT(ExtractUniqueAccountNodesByUrlAndUuidForTesting(
-                  account_data, SubtreeSelection::kUnderBookmarkBar),
+                  account_data, SubtreeSelection::kUnderBookmarksBar),
               UnorderedElementsAre(UrlAndUuid{kUrl1, kUrl1Uuid},
                                    UrlAndUuid{kUrl2, kUrl2Uuid}));
 
@@ -421,7 +422,7 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
                              base::StrCat({u"/", kOtherBookmarksFolderName})}));
   EXPECT_THAT(
       ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
-          account_data, SubtreeSelection::kUnderBookmarkBar),
+          account_data, SubtreeSelection::kUnderBookmarksBar),
       UnorderedElementsAre(
           UrlAndTitleAndPath{kUrl1, kUrl1Title,
                              base::StrCat({u"/", kBookmarkBarFolderName})},
@@ -493,6 +494,108 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldCompareSets) {
       Eq(SetComparisonOutcome::kIntersectionBelow10PercentExcludingZero));
 
   // IntersectionEmpty.
+}
+
+TEST_F(BookmarkModelMergerComparisonMetricsTest,
+       ShouldSplitByBookmarkBarAndAllNodes) {
+  const std::u16string kFolder1Title = u"folder1";
+  const std::u16string kFolder2Title = u"folder2";
+
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+  const std::u16string kUrl4Title = u"url4";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  //  |- folder 2
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  AddLocalNodes(
+      /*children_of_bookmark_bar=*/{FolderBuilder(kFolder1Title)
+                                        .SetChildren({UrlBookmarkBuilder(
+                                                          kUrl1Title, kUrl1),
+                                                      UrlBookmarkBuilder(
+                                                          kUrl2Title, kUrl2)}),
+                                    FolderBuilder(kFolder2Title)
+                                        .SetChildren({UrlBookmarkBuilder(
+                                                          kUrl3Title, kUrl3),
+                                                      UrlBookmarkBuilder(
+                                                          kUrl4Title, kUrl4)})},
+      /*children_of_mobile_node=*/{},
+      /*children_of_other_node=*/{});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  // mobile_node
+  //  |- folder 2
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  BookmarkModelMerger::RemoteForest account_data = BuildAccountNodes(
+      /*children_of_bookmark_bar=*/{FolderBuilder(kFolder1Title)
+                                        .SetChildren({UrlBookmarkBuilder(
+                                                          kUrl1Title, kUrl1),
+                                                      UrlBookmarkBuilder(
+                                                          kUrl2Title, kUrl2)})},
+      /*children_of_mobile_node=*/
+      {FolderBuilder(kFolder2Title)
+           .SetChildren({UrlBookmarkBuilder(kUrl3Title, kUrl3),
+                         UrlBookmarkBuilder(kUrl4Title, kUrl4)})},
+      /*children_of_other_node=*/{});
+
+  // -------- The expected metrics --------
+  base::HistogramTester histogram_tester;
+  CompareBookmarkModelAndLogHistograms(
+      BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()), account_data,
+      syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+          kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitle",
+      /*sample=*/SetComparisonOutcome::kExactMatchNonEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitleAndPath",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween10And50Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitle",
+      /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitleAndPath",
+      /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

@@ -12,11 +12,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -39,6 +41,55 @@ constexpr char16_t kMobileBookmarksFolderName[] = u"__Mobile bookmarks__";
 
 using RemoteForest = BookmarkModelMerger::RemoteForest;
 using RemoteTreeNode = BookmarkModelMerger::RemoteTreeNode;
+
+std::string_view SubtreeSelectionToInfix(SubtreeSelection value) {
+  // LINT.IfChange(BookmarkComparisonSubtreeSelection)
+  switch (value) {
+    case SubtreeSelection::kConsideringAllBookmarks:
+      return "ConsideringAllBookmarks";
+    case SubtreeSelection::kUnderBookmarksBar:
+      return "UnderBookmarksBar";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonSubtreeSelection)
+  NOTREACHED();
+}
+
+std::string_view GroupingKeyInfixToString(GroupingKeyInfix value) {
+  // LINT.IfChange(BookmarkComparisonGroupingKey)
+  switch (value) {
+    case GroupingKeyInfix::kByUrlAndTitle:
+      return "ByUrlAndTitle";
+    case GroupingKeyInfix::kByUrlAndUuid:
+      return "ByUrlAndUuid";
+    case GroupingKeyInfix::kByUrlAndTitleAndPath:
+      return "ByUrlAndTitleAndPath";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonGroupingKey)
+  NOTREACHED();
+}
+
+std::string_view PreviouslySyncingGaiaIdInfoToInfix(
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics value) {
+  // LINT.IfChange(BookmarkComparisonPreviouslySyncingGaiaId)
+  switch (value) {
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified:
+      NOTREACHED();
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kNotEnoughInformationToTell:
+      return "UnknownPreviousGaiaId";
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kSyncFeatureNeverPreviouslyTurnedOn:
+      return "NoPreviousGaiaId";
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn:
+      return "MatchesPreviousGaiaId";
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn:
+      return "DiffersPreviousGaiaId";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonPreviouslySyncingGaiaId)
+  NOTREACHED();
+}
 
 std::u16string_view GetBookmarkNodeTitle(const bookmarks::BookmarkNode* node) {
   CHECK(node);
@@ -77,7 +128,7 @@ std::vector<const bookmarks::BookmarkNode*> GetRelevantLocalSubtrees(
     case SubtreeSelection::kConsideringAllBookmarks:
       return {all_local_data.bookmark_bar_node(), all_local_data.other_node(),
               all_local_data.mobile_node()};
-    case SubtreeSelection::kUnderBookmarkBar:
+    case SubtreeSelection::kUnderBookmarksBar:
       return {all_local_data.bookmark_bar_node()};
   }
 }
@@ -94,7 +145,7 @@ std::vector<const RemoteTreeNode*> GetRelevantAccountSubtrees(
       relevant_tags.push_back(kMobileBookmarksTag);
       relevant_tags.push_back(kOtherBookmarksTag);
       [[fallthrough]];
-    case SubtreeSelection::kUnderBookmarkBar:
+    case SubtreeSelection::kUnderBookmarksBar:
       relevant_tags.push_back(kBookmarkBarTag);
       break;
   }
@@ -329,6 +380,28 @@ base::flat_set<Key> ExtractAccountDataSet(
   return base::flat_set<Key>(std::move(keys));
 }
 
+template <typename Key>
+void CompareAndLogHistogramsWithKey(
+    SubtreeSelection subtree_selection,
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics
+        previously_syncing_gaia_id_info,
+    const std::vector<const bookmarks::BookmarkNode*>& relevant_local_subtrees,
+    const std::vector<const RemoteTreeNode*>& relevant_account_subtrees) {
+  const base::flat_set<Key> local_data_set =
+      ExtractLocalDataSet<Key>(relevant_local_subtrees);
+  const base::flat_set<Key> account_data_set =
+      ExtractAccountDataSet<Key>(relevant_account_subtrees);
+
+  const std::string histogram_name = base::StrCat(
+      {"Sync.BookmarkModelMerger.Comparison.",
+       PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info), ".",
+       SubtreeSelectionToInfix(subtree_selection), ".",
+       GroupingKeyInfixToString(Key::kGroupingKeyInfix)});
+
+  base::UmaHistogramEnumeration(histogram_name,
+                                CompareSets(local_data_set, account_data_set));
+}
+
 }  // namespace
 
 base::flat_set<UrlAndTitle> ExtractUniqueLocalNodesByUrlAndTitleForTesting(
@@ -379,6 +452,34 @@ SetComparisonOutcome CompareSetsForTesting(
     const base::flat_set<int>& account_data,
     const base::flat_set<int>& local_data) {
   return CompareSets<int>(account_data, local_data);
+}
+
+void CompareBookmarkModelAndLogHistograms(
+    const BookmarkModelView& all_local_data,
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics
+        previously_syncing_gaia_id_info) {
+  CHECK_NE(previously_syncing_gaia_id_info,
+           syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified);
+
+  for (SubtreeSelection subtree_selection :
+       {SubtreeSelection::kConsideringAllBookmarks,
+        SubtreeSelection::kUnderBookmarksBar}) {
+    const std::vector<const bookmarks::BookmarkNode*> relevant_local_subtrees =
+        GetRelevantLocalSubtrees(all_local_data, subtree_selection);
+    const std::vector<const RemoteTreeNode*> relevant_account_subtrees =
+        GetRelevantAccountSubtrees(all_account_data, subtree_selection);
+
+    CompareAndLogHistogramsWithKey<UrlAndTitle>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        relevant_local_subtrees, relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndUuid>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        relevant_local_subtrees, relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndTitleAndPath>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        relevant_local_subtrees, relevant_account_subtrees);
+  }
 }
 
 }  // namespace sync_bookmarks::metrics

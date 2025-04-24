@@ -23,6 +23,7 @@
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync_bookmarks/bookmark_model_merger_comparison_metrics.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
@@ -58,6 +59,11 @@ static const size_t kInvalidIndex = -1;
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";
+
+// Enabled by default, intended as a kill switch.
+BASE_FEATURE(kSyncRecordBookmarkComparisonMetrics,
+             "SyncRecordBookmarkComparisonMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Maximum depth to sync bookmarks tree to protect against stack overflow.
 // Keep in sync with |base::internal::kAbsoluteMaxDepth| in json_common.h.
@@ -576,6 +582,11 @@ void BookmarkModelMerger::Merge() {
 
   if (previously_syncing_gaia_id_info_ !=
       syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified) {
+    if (base::FeatureList::IsEnabled(kSyncRecordBookmarkComparisonMetrics)) {
+      metrics::CompareBookmarkModelAndLogHistograms(
+          *bookmark_model_, remote_forest_, previously_syncing_gaia_id_info_);
+    }
+
     base::UmaHistogramEnumeration(
         "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId",
         previously_syncing_gaia_id_info_);
