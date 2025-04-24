@@ -17,7 +17,6 @@ import org.jspecify.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.util.concurrent.Executor;
 
-/** */
 @NullMarked
 public interface WebViewProviderBoundaryInterface {
     void setAsyncInterceptRequestCallback(
