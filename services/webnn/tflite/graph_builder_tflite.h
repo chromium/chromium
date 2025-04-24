@@ -117,7 +117,7 @@ class GraphBuilderTflite final {
                ::tflite::TensorType data_type,
                base::span<const int32_t> dimensions,
                std::optional<std::string> name = std::nullopt,
-               bool has_quantize_params = false);
+               QuantizateParametersOffset = 0);
     ~TensorInfo();
 
     // Copyable and movable.
@@ -130,7 +130,7 @@ class GraphBuilderTflite final {
     ::tflite::TensorType data_type;
     std::vector<int32_t> dimensions;
     std::optional<std::string> name;
-    bool has_quantize_params;
+    QuantizateParametersOffset quantize_params;
   };
 
   // Serialize tensor for input, constant and output operand and return the
@@ -727,6 +727,13 @@ class GraphBuilderTflite final {
       uint64_t output_operand_id,
       SupportedDataTypes supported_quantized_types);
 
+  bool IsSerializedWithMismatchQuantizeParameters(
+      uint64_t operand_id,
+      QuantizateParametersOffset quantize_params);
+
+  bool AreConstantOperandsEqual(uint64_t lhs_operand_id,
+                                uint64_t rhs_operand_id);
+
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
   Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
@@ -805,7 +812,16 @@ class GraphBuilderTflite final {
   // Tracks dequantizeLinear operations to be lazily serialized.
   base::flat_map<uint64_t, std::pair<size_t, bool>>
       lazy_serialized_dequantize_operations_;
+
   base::flat_set<size_t> quantize_ops_to_skip_;
+
+  // Mapping of the offset to scale_operand_id and zero_point_operand_id.
+  // Because there is no way to retrieve the underlying data from the flatbuffer
+  // offset, we store mapping to constant operands to check when encountering
+  // Q->DQ, whether their quantization params match.
+  base::flat_map<QuantizateParametersOffset::offset_type,
+                 std::pair<uint64_t, uint64_t>>
+      quantize_param_data_;
 };
 
 }  // namespace tflite

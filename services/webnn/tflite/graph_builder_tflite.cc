@@ -755,16 +755,17 @@ GraphBuilderTflite::GraphBuilderTflite(
 GraphBuilderTflite::~GraphBuilderTflite() = default;
 
 GraphBuilderTflite::TensorInfo::TensorInfo() = default;
-GraphBuilderTflite::TensorInfo::TensorInfo(int32_t index,
-                                           ::tflite::TensorType data_type,
-                                           base::span<const int32_t> dimensions,
-                                           std::optional<std::string> name,
-                                           bool has_quantize_params)
+GraphBuilderTflite::TensorInfo::TensorInfo(
+    int32_t index,
+    ::tflite::TensorType data_type,
+    base::span<const int32_t> dimensions,
+    std::optional<std::string> name,
+    QuantizateParametersOffset quantize_params)
     : index(index),
       data_type(data_type),
       dimensions(dimensions.begin(), dimensions.end()),
       name(std::move(name)),
-      has_quantize_params(has_quantize_params) {}
+      quantize_params(quantize_params) {}
 GraphBuilderTflite::TensorInfo::~TensorInfo() = default;
 
 GraphBuilderTflite::TensorInfo::TensorInfo(const TensorInfo&) = default;
@@ -811,7 +812,7 @@ GraphBuilderTflite::SerializeOperand(
                                                operand_type, buffer_index,
                                                operand_name, quantize_params));
   TensorInfo tensor_info(tensor_index, operand_type, signed_operand_dimensions,
-                         operand.name, !quantize_params.IsNull());
+                         operand.name, quantize_params);
   operand_to_tensor_info_map_.insert({operand_id, tensor_info});
 
   return tensor_info;
@@ -848,17 +849,6 @@ GraphBuilderTflite::SerializeInputTensorInfo(
   if (it == operand_to_tensor_info_map_.end()) {
     ASSIGN_OR_RETURN(input_tensor_info,
                      SerializeOperand(operand_id, quantize_params));
-  } else if (!quantize_params.IsNull() && !it->second.has_quantize_params) {
-    // If the operand is already serialized but without quantize params, insert
-    // an identity node to attach quantize params.
-    const int32_t temporary_tensor_index = SerializeTemporaryTensor(
-        it->second.dimensions, it->second.data_type, quantize_params);
-    OperatorOffset operator_offset = SerializeIdentityOperation(
-        it->second.index, temporary_tensor_index, it->second.dimensions);
-    operators_.emplace_back(operator_offset);
-    input_tensor_info =
-        TensorInfo(temporary_tensor_index, it->second.data_type,
-                   it->second.dimensions, "", /*has_quantize_params=*/true);
   } else {
     input_tensor_info = it->second;
   }
@@ -1622,6 +1612,14 @@ bool GraphBuilderTflite::TrySerializeQuantizedInput(
     return false;
   }
 
+  // The input is already serialized and the qint tensor has a different
+  // quantize params, so we have to dequantize explicitly with the new quantize
+  // params.
+  if (IsSerializedWithMismatchQuantizeParameters(
+          dequantize_linear.input_operand_id, *quantize_params)) {
+    return false;
+  }
+
   // Eagerly serialize input with `quantize_params` so that when the
   // dequantizeLinear is skipped, the `quantize_params` is already attached to
   // the input.
@@ -1695,6 +1693,48 @@ GraphBuilderTflite::TrySerializeQuantizedOutput(size_t quantize_op_idx) {
 
   quantize_ops_to_skip_.insert(quantize_op_idx);
   return output.value();
+}
+
+bool GraphBuilderTflite::IsSerializedWithMismatchQuantizeParameters(
+    uint64_t operand_id,
+    QuantizateParametersOffset quantize_params) {
+  auto it = operand_to_tensor_info_map_.find(operand_id);
+  if (it == operand_to_tensor_info_map_.end()) {
+    return false;
+  }
+  QuantizateParametersOffset existing_quantize_params =
+      it->second.quantize_params;
+
+  if (quantize_params.IsNull()) {
+    return !existing_quantize_params.IsNull();
+  }
+
+  if (existing_quantize_params.IsNull()) {
+    return !quantize_params.IsNull();
+  }
+
+  auto lhs_it = quantize_param_data_.find(quantize_params.o);
+  CHECK(lhs_it != quantize_param_data_.end());
+  auto [lhs_scale, lhs_zero_point] = lhs_it->second;
+  auto rhs_it = quantize_param_data_.find(existing_quantize_params.o);
+  CHECK(rhs_it != quantize_param_data_.end());
+  auto [rhs_scale, rhs_zero_point] = rhs_it->second;
+
+  return (!AreConstantOperandsEqual(lhs_scale, rhs_scale) ||
+          !AreConstantOperandsEqual(lhs_zero_point, rhs_zero_point));
+}
+
+bool GraphBuilderTflite::AreConstantOperandsEqual(uint64_t lhs_operand_id,
+                                                  uint64_t rhs_operand_id) {
+  if (lhs_operand_id == rhs_operand_id) {
+    return true;
+  }
+  auto lhs_operand_id_constant_it = constant_operands_->find(lhs_operand_id);
+  CHECK(lhs_operand_id_constant_it != constant_operands_->end());
+  auto rhs_operand_id_constant_it = constant_operands_->find(rhs_operand_id);
+  CHECK(rhs_operand_id_constant_it != constant_operands_->end());
+  return lhs_operand_id_constant_it->second->ByteSpan() ==
+         rhs_operand_id_constant_it->second->ByteSpan();
 }
 
 auto GraphBuilderTflite::FinishAndTakeResult(
@@ -5233,21 +5273,26 @@ auto GraphBuilderTflite::SerializeQuantizeParams(uint64_t zero_point_operand_id,
       builder_.CreateVector<float>(scale_value);
   flatbuffers::Offset<flatbuffers::Vector<int64_t>> zero_point_offset =
       builder_.CreateVector<int64_t>(zero_point_vale);
+  QuantizateParametersOffset quantize_params;
   if (axis) {
     auto checked_axis = base::MakeCheckedNum<int32_t>(*axis);
     if (!checked_axis.IsValid()) {
       return std::nullopt;
     }
     // Per-channel quantization.
-    return ::tflite::CreateQuantizationParameters(
+    quantize_params = ::tflite::CreateQuantizationParameters(
         builder_, /*min=*/0, /*max=*/0, /*scale=*/scale_offset,
         /*zero point=*/zero_point_offset, ::tflite::QuantizationDetails_NONE, 0,
         checked_axis.ValueOrDie());
   } else {
     // Per-node quantization.
-    return ::tflite::CreateQuantizationParameters(
+    quantize_params = ::tflite::CreateQuantizationParameters(
         builder_, /*min=*/0, /*max=*/0, scale_offset, zero_point_offset);
   }
+  quantize_param_data_.try_emplace(
+      quantize_params.o,
+      std::make_pair(scale_operand_id, zero_point_operand_id));
+  return quantize_params;
 }
 
 auto GraphBuilderTflite::SerializeQuantizeLinear(
@@ -5388,9 +5433,12 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
       SerializeQuantizeParams(dequantize_linear.zero_point_operand_id,
                               dequantize_linear.scale_operand_id,
                               input_operand.descriptor.shape().size());
+
   // TODO(crbug.com/375614289): Support constant input after TFLite runtime fix
   // the issue https://github.com/tensorflow/tensorflow/issues/78748.
   if (quantize_params &&
+      !IsSerializedWithMismatchQuantizeParameters(
+          dequantize_linear.input_operand_id, *quantize_params) &&
       input_operand.kind != mojom::Operand::Kind::kConstant &&
       input_operand.descriptor.data_type() != OperandDataType::kInt32) {
     ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
