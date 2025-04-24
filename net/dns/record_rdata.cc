@@ -233,6 +233,11 @@ std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
     const DnsRecordParser& parser) {
   auto rdata = TxtRecordRdata::CreateInstance();
 
+  if (data.empty()) {
+    // Per RFC1035-3.3.14, a TXT record must contain at least one string entry.
+    return nullptr;
+  }
+
   for (size_t i = 0; i < data.size();) {
     uint8_t length = data[i];
 

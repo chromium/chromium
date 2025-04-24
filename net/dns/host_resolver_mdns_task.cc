@@ -271,6 +271,9 @@ std::unique_ptr<HostResolverInternalResult> HostResolverMdnsTask::ParseResult(
           /*strings=*/std::vector<std::string>{},
           /*hosts=*/std::vector<HostPortPair>{});
     case DnsQueryType::TXT:
+      // TXT invalid without at least one string. If none, should be rejected by
+      // parser.
+      CHECK(!parsed->rdata<net::TxtRecordRdata>()->texts().empty());
       return std::make_unique<HostResolverInternalDataResult>(
           std::move(query_hostname), query_type,
           /*expiration=*/base::TimeTicks::Now(),

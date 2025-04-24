@@ -466,6 +466,24 @@ TEST_F(DnsResponseResultExtractorTest, RejectsMalformedTxtRecord) {
             ExtractionError::kMalformedRecord);
 }
 
+TEST_F(DnsResponseResultExtractorTest, RejectsMalformedEmptyTxtRecord) {
+  constexpr char kName[] = "name.test";
+
+  DnsResponse response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeTXT,
+                           /*answers=*/
+                           {BuildTestDnsRecord(kName, dns_protocol::kTypeTXT,
+                                               /*rdata=*/{})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  EXPECT_EQ(extractor
+                .ExtractDnsResults(DnsQueryType::TXT,
+                                   /*original_domain_name=*/kName,
+                                   /*request_port=*/0)
+                .error_or(ExtractionError::kOk),
+            ExtractionError::kMalformedRecord);
+}
+
 TEST_F(DnsResponseResultExtractorTest, RejectsWrongNameTxtRecord) {
   constexpr char kName[] = "name.test";
 
