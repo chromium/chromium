@@ -1716,27 +1716,6 @@
             ]
         }
     ],
-    "AutofillDecoupleAutofillCountFromCache": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillDecoupleAutofillCountFromCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillDeduplicateAccountAddresses": [
         {
             "platforms": [
@@ -2068,62 +2047,6 @@
             ]
         }
     ],
-    "AutofillGranularFillingAvailable": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
-                        "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
-                        "autofill_granular_filling_with_improved_labels": "true"
-                    },
-                    "enable_features": [
-                        "AutofillGranularFillingAvailable"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithoutImprovedLabels",
-                    "params": {
-                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
-                        "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
-                        "autofill_granular_filling_with_improved_labels": "false"
-                    },
-                    "enable_features": [
-                        "AutofillGranularFillingAvailable"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithFillEverythingAtTheTop",
-                    "params": {
-                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
-                        "autofill_granular_filling_with_fill_everything_in_the_footer": "false",
-                        "autofill_granular_filling_with_improved_labels": "true"
-                    },
-                    "enable_features": [
-                        "AutofillGranularFillingAvailable"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithExpandControlVisibleOnSelectionOnly",
-                    "params": {
-                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "true",
-                        "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
-                        "autofill_granular_filling_with_improved_labels": "true"
-                    },
-                    "enable_features": [
-                        "AutofillGranularFillingAvailable"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillGreekRegexes": [
         {
             "platforms": [
@@ -2329,43 +2252,6 @@
                     },
                     "enable_features": [
                         "AutofillImprovedLabels"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillKeyboardAccessory": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_With_Cards_and_VCN_20230324",
-                    "enable_features": [
-                        "AutofillKeyboardAccessory",
-                        "AutofillManualFallbackAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillLogUKMEventsWithSampleRate": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillLogUKMEventsWithSampleRate"
                     ]
                 }
             ]
