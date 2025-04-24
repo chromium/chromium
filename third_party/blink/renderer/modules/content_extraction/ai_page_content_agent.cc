@@ -83,6 +83,40 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
   return ToEnclosingRect(visible_bounding_box);
 }
 
+void ComputeScrollerInfo(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
+  if (!object.IsBoxModelObject()) {
+    return;
+  }
+
+  auto* scrollable_area = To<LayoutBoxModelObject>(object).GetScrollableArea();
+  if (!scrollable_area) {
+    return;
+  }
+
+  const auto scrolling_bounds = scrollable_area->ContentsSize();
+  const auto visible_area = scrollable_area->VisibleContentRect();
+
+  // If the visible area covers the scrollable area, scrolling this node will be
+  // a no-op.
+  if (scrolling_bounds == visible_area.size()) {
+    DCHECK_EQ(visible_area.x(), 0);
+    DCHECK_EQ(visible_area.y(), 0);
+
+    return;
+  }
+
+  auto scroller_info = mojom::blink::AIPageContentScrollerInfo::New();
+  scroller_info->scrolling_bounds = scrolling_bounds;
+  scroller_info->visible_area = visible_area;
+  scroller_info->user_scrollable_horizontal =
+      scrollable_area->UserInputScrollable(kHorizontalScrollbar);
+  scroller_info->user_scrollable_vertical =
+      scrollable_area->UserInputScrollable(kVerticalScrollbar);
+  interaction_info.scroller_info = std::move(scroller_info);
+}
+
 // TODO(crbug.com/383128653): This is duplicating logic from
 // UnsupportedTagTypeValueForNode, consider reusing it.
 bool IsHeadingTag(const HTMLElement& element) {
@@ -1251,58 +1285,62 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
+  auto node_interaction_info =
+      mojom::blink::AIPageContentNodeInteractionInfo::New();
+  ComputeScrollerInfo(object, *node_interaction_info);
+
+  // If experimental data is disabled, only scrollable nodes are included.
   if (!options_->enable_experimental_actionable_data) {
+    if (node_interaction_info->scroller_info) {
+      attributes.node_interaction_info = std::move(node_interaction_info);
+    }
+
     return;
   }
 
-  mojom::blink::AIPageContentNodeInteractionInfo node_interaction_info;
-
   const ComputedStyle& style = *object.Style();
-  node_interaction_info.scrolls_overflow_x = style.ScrollsOverflowX();
-  node_interaction_info.scrolls_overflow_y = style.ScrollsOverflowY();
-
-  node_interaction_info.is_selectable =
+  node_interaction_info->is_selectable =
       style.UsedUserSelect() != EUserSelect::kNone;
 
   if (auto* node = object.GetNode()) {
-    node_interaction_info.is_editable = IsEditable(*node);
+    node_interaction_info->is_editable = IsEditable(*node);
   }
 
   if (auto* box = DynamicTo<LayoutBox>(object)) {
     if (box->CanResize()) {
       EResize resize = style.UsedResize();
-      node_interaction_info.can_resize_vertical =
+      node_interaction_info->can_resize_vertical =
           resize == EResize::kVertical || resize == EResize::kBoth;
-      node_interaction_info.can_resize_horizontal =
+      node_interaction_info->can_resize_horizontal =
           resize == EResize::kHorizontal || resize == EResize::kBoth;
     }
   }
 
   if (auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
-    node_interaction_info.is_focusable = element->IsFocusable();
-    node_interaction_info.is_draggable = element->draggable();
-    node_interaction_info.is_clickable = element->IsMaybeClickable();
+    node_interaction_info->is_focusable = element->IsFocusable();
+    node_interaction_info->is_draggable = element->draggable();
+    node_interaction_info->is_clickable = element->IsMaybeClickable();
   }
 
   const bool needs_interaction_info =
-      node_interaction_info.scrolls_overflow_x ||
-      node_interaction_info.scrolls_overflow_y ||
+      node_interaction_info->scroller_info ||
       // The common case is for the content to be selectable. So assume that's
       // the default and only force a ContentNode if we need to indicate some
       // content is not selectable.
-      !node_interaction_info.is_selectable ||
-      node_interaction_info.is_editable ||
-      node_interaction_info.can_resize_horizontal ||
-      node_interaction_info.can_resize_vertical ||
-      node_interaction_info.is_focusable ||
-      node_interaction_info.is_draggable || node_interaction_info.is_clickable;
+      !node_interaction_info->is_selectable ||
+      node_interaction_info->is_editable ||
+      node_interaction_info->can_resize_horizontal ||
+      node_interaction_info->can_resize_vertical ||
+      node_interaction_info->is_focusable ||
+      node_interaction_info->is_draggable ||
+      node_interaction_info->is_clickable;
 
-  if (needs_interaction_info) {
-    attributes.node_interaction_info =
-        mojom::blink::AIPageContentNodeInteractionInfo::New();
-    *attributes.node_interaction_info = node_interaction_info;
-    AddForDomNodeId(object, *attributes.node_interaction_info);
+  if (!needs_interaction_info) {
+    return;
   }
+
+  attributes.node_interaction_info = std::move(node_interaction_info);
+  AddForDomNodeId(object, *attributes.node_interaction_info);
 }
 
 }  // namespace blink

@@ -116,11 +116,9 @@ struct AIPageContentFrameInteractionInfo {
 };
 
 struct AIPageContentNodeInteractionInfo {
-  // Whether the content node can scroll in the x direction.
-  bool scrolls_overflow_x;
-
-  // Whether the content node can scroll in the y direction.
-  bool scrolls_overflow_y;
+  // If this node supports scrolling, provides information about its current
+  // state.
+  AIPageContentScrollerInfo? scroller_info;
 
   // Whether the content node is selectable.
   bool is_selectable;
@@ -149,6 +147,25 @@ struct AIPageContentNodeInteractionInfo {
   // If this node is a label associated with an input node, provides the
   // dom_node_id for the corresponding input node.
   int32 for_dom_node_id;
+};
+
+// The coordinate space for the dimensions here is physical coordinates (not
+// logical coordinates). This means it's the same irrespective of the writing
+// mode.
+// The dimensions also exclude non-overlay scrollbars.
+struct AIPageContentScrollerInfo {
+  // The complete layout dimensions of the scroller. This is the total area
+  // that can be revealed through a scroll operation.
+  gfx.mojom.Size scrolling_bounds;
+
+  // The subset of this scroller's content which is currently scrolled to. This
+  // is relative to the origin of `scrolling_bounds`.
+  gfx.mojom.Rect visible_area;
+
+  // Indicates whether this can be scrolled by the user in horizontal or
+  // vertical directions.
+  bool user_scrollable_horizontal;
+  bool user_scrollable_vertical;
 };
 
 enum AIPageContentTextSize {

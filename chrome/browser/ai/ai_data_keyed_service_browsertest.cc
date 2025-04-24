@@ -96,12 +96,13 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void LoadSimplePage() {
-    content::NavigateToURLBlockUntilNavigationsComplete(
-        web_contents(), https_server_->GetURL("/simple.html"), 1);
+  void LoadPage(const GURL& url) {
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url, 1);
     content::WaitForCopyableView(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
+
+  void LoadSimplePage() { LoadPage(https_server_->GetURL("/simple.html")); }
 
   AiData QueryAiData() {
     base::test::TestFuture<AiData> ai_data;
@@ -126,6 +127,8 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     LoadSimplePage();
     return QueryAiDataWithSpecifier(std::move(specifier));
   }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
@@ -300,7 +303,9 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
-  AiData ai_data = LoadSimplePageAndData();
+  LoadPage(
+      https_server()->GetURL("/optimization_guide/actionable_elements.html"));
+  AiData ai_data = QueryAiData();
   ASSERT_TRUE(ai_data.has_value());
 
   {
@@ -312,6 +317,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
     EXPECT_EQ(content_attributes.attribute_type(),
               optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
     EXPECT_FALSE(content_attributes.has_interaction_info());
+    EXPECT_EQ(page_content.root_node().children_nodes().size(), 0);
   }
 
   {
@@ -323,7 +329,11 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
         page_content.root_node().content_attributes();
     EXPECT_EQ(content_attributes.attribute_type(),
               optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
-    EXPECT_TRUE(content_attributes.has_interaction_info());
+    EXPECT_FALSE(content_attributes.has_interaction_info());
+
+    ASSERT_EQ(page_content.root_node().children_nodes().size(), 1);
+    const auto& child = page_content.root_node().children_nodes().at(0);
+    EXPECT_TRUE(child.content_attributes().has_interaction_info());
   }
 }
 

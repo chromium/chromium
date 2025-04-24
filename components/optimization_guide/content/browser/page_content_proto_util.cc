@@ -114,6 +114,12 @@ void AddDocumentIdentifier(content::GlobalRenderFrameHostToken frame_token,
       serialized_server_token);
 }
 
+void ConvertSize(const gfx::Size& mojom_size,
+                 optimization_guide::proto::BoundingSize* proto_size) {
+  proto_size->set_width(mojom_size.width());
+  proto_size->set_height(mojom_size.height());
+}
+
 void ConvertRect(const gfx::Rect& mojom_rect,
                  optimization_guide::proto::BoundingRect* proto_rect) {
   proto_rect->set_x(mojom_rect.x());
@@ -143,14 +149,27 @@ void ConvertHitTestNodes(
   }
 }
 
+void ConvertScrollerInfo(
+    const blink::mojom::AIPageContentScrollerInfo& mojom_scroller_info,
+    optimization_guide::proto::ScrollerInfo* proto_scroller_info) {
+  ConvertSize(mojom_scroller_info.scrolling_bounds,
+              proto_scroller_info->mutable_scrolling_bounds());
+  ConvertRect(mojom_scroller_info.visible_area,
+              proto_scroller_info->mutable_visible_area());
+  proto_scroller_info->set_user_scrollable_horizontal(
+      mojom_scroller_info.user_scrollable_horizontal);
+  proto_scroller_info->set_user_scrollable_vertical(
+      mojom_scroller_info.user_scrollable_vertical);
+}
+
 void ConvertNodeInteractionInfo(
     const blink::mojom::AIPageContentNodeInteractionInfo&
         mojom_node_interaction_info,
     optimization_guide::proto::InteractionInfo* proto_interaction_info) {
-  proto_interaction_info->set_scrolls_overflow_x(
-      mojom_node_interaction_info.scrolls_overflow_x);
-  proto_interaction_info->set_scrolls_overflow_y(
-      mojom_node_interaction_info.scrolls_overflow_y);
+  if (mojom_node_interaction_info.scroller_info) {
+    ConvertScrollerInfo(*mojom_node_interaction_info.scroller_info,
+                        proto_interaction_info->mutable_scroller_info());
+  }
   proto_interaction_info->set_is_selectable(
       mojom_node_interaction_info.is_selectable);
   proto_interaction_info->set_is_editable(

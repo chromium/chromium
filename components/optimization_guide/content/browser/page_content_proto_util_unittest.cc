@@ -624,10 +624,6 @@ TEST(PageContentProtoUtilTest, ConvertNodeInteractionInfo) {
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
   text_node->content_attributes->node_interaction_info =
       blink::mojom::AIPageContentNodeInteractionInfo::New();
-  text_node->content_attributes->node_interaction_info->scrolls_overflow_x =
-      true;
-  text_node->content_attributes->node_interaction_info->scrolls_overflow_y =
-      true;
   text_node->content_attributes->node_interaction_info->is_selectable = true;
   text_node->content_attributes->node_interaction_info->is_editable = true;
   text_node->content_attributes->node_interaction_info->can_resize_horizontal =
@@ -654,8 +650,6 @@ TEST(PageContentProtoUtilTest, ConvertNodeInteractionInfo) {
                                      .children_nodes(0)
                                      .content_attributes()
                                      .interaction_info();
-  EXPECT_TRUE(interaction_info.scrolls_overflow_x());
-  EXPECT_TRUE(interaction_info.scrolls_overflow_y());
   EXPECT_TRUE(interaction_info.is_selectable());
   EXPECT_TRUE(interaction_info.is_editable());
   EXPECT_TRUE(interaction_info.can_resize_horizontal());

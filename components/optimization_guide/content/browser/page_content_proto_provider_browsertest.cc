@@ -52,6 +52,12 @@ void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
   EXPECT_EQ(proto_rect.y(), rect.y());
 }
 
+void AssertSizesEqual(const optimization_guide::proto::BoundingSize& proto_size,
+                      gfx::Size size) {
+  EXPECT_EQ(proto_size.width(), size.width());
+  EXPECT_EQ(proto_size.height(), size.height());
+}
+
 void AssertRectsEqual(const optimization_guide::proto::BoundingRect& a,
                       const optimization_guide::proto::BoundingRect& b) {
   EXPECT_EQ(a.width(), b.width());
@@ -242,6 +248,41 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(main_frame_origin.value(), iframe_origin.value());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ScrollerInfo) {
+  const gfx::Size window_bounds(web_contents()->GetSize());
+
+  LoadPage(https_server()->GetURL("a.com", "/scroller.html"));
+
+  const auto& root = page_content().root_node();
+  EXPECT_TRUE(root.content_attributes().has_interaction_info());
+  EXPECT_TRUE(root.content_attributes().interaction_info().has_scroller_info());
+
+  const auto& root_scroller =
+      root.content_attributes().interaction_info().scroller_info();
+  AssertSizesEqual(
+      root_scroller.scrolling_bounds(),
+      gfx::Size(window_bounds.width() + 50, window_bounds.height() + 30));
+  AssertRectsEqual(root_scroller.visible_area(), gfx::Rect(window_bounds));
+
+  ASSERT_EQ(root.children_nodes().size(), 1);
+  const auto& child = root.children_nodes().at(0);
+  EXPECT_TRUE(child.content_attributes().has_interaction_info());
+  EXPECT_TRUE(
+      child.content_attributes().interaction_info().has_scroller_info());
+
+  const auto& sub_scroller =
+      child.content_attributes().interaction_info().scroller_info();
+  AssertSizesEqual(
+      sub_scroller.scrolling_bounds(),
+      gfx::Size(2 * window_bounds.width(), 3 * window_bounds.height()));
+  AssertRectsEqual(
+      sub_scroller.visible_area(),
+      gfx::Rect(200, 100, window_bounds.width(), window_bounds.height()));
+
+  EXPECT_TRUE(sub_scroller.user_scrollable_horizontal());
+  EXPECT_TRUE(sub_scroller.user_scrollable_vertical());
+}
+
 class PageContentProtoProviderBrowserTestActionableElements
     : public PageContentProtoProviderBrowserTest {
  public:
@@ -254,14 +295,13 @@ class PageContentProtoProviderBrowserTestActionableElements
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
                        AIPageContent) {
-  LoadPage(https_server()->GetURL("/simple.html"));
+  LoadPage(https_server()->GetURL("/actionable_elements.html"));
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
-  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
-  EXPECT_TRUE(
-      page_content().root_node().content_attributes().has_interaction_info());
+  const auto& child = page_content().root_node().children_nodes().at(0);
+  EXPECT_TRUE(child.content_attributes().has_interaction_info());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,

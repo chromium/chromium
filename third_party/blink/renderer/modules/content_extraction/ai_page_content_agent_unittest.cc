@@ -1163,125 +1163,169 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
                 "This element flows naturally with the document.");
 }
 
-TEST_F(AIPageContentAgentTest, ScrollContainer) {
+TEST_F(AIPageContentAgentTest, RootScroller) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
-      "     <body>"
-      "       <style>"
-      "       .scrollable-x {"
-      "         width: 100px;"
-      "         height: 50px;"
-      "         overflow-x: scroll;"
-      "         overflow-y: clip;"
-      "       }"
-      "       .scrollable-y {"
-      "         width: 300px;"
-      "         height: 50px;"
-      "         overflow-x: clip;"
-      "         overflow-y: scroll;"
-      "       }"
-      "       .auto-scroll-x {"
-      "         width: 100px;"
-      "         height: 50px;"
-      "         overflow-x: auto;"
-      "         overflow-y: clip;"
-      "       }"
-      "       .auto-scroll-y {"
-      "         width: 300px;"
-      "         height: 50px;"
-      "         overflow-x: clip;"
-      "         overflow-y: auto;"
-      "       }"
-      "       .normal {"
-      "         width: 250px;"
-      "         height: 80px;"
-      "         margin-top: 20px;"
-      "       }"
-      "       </style>"
-      "       <div "
-      "class='scrollable-x'>"
-      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
-      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
-      "UVWXYZ</div>"
-      "       <div class='scrollable-y'>Some long text to make it scrollable. "
-      "Some long text to make it scrollable. Some long text to make it "
-      "scrollable. Some long text to make it scrollable.</div>"
-      "       <div "
-      "class='auto-scroll-x'>"
-      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
-      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
-      "UVWXYZ</div>"
-      "       <div class='auto-scroll-y'>Some long text to make it scrollable. "
-      "Some long text to make it scrollable. Some long text to make it "
-      "scrollable. Some long text to make it scrollable.</div>"
-      "     </body>",
+      R"HTML(
+        <body style='margin: 0px;'>
+          <div style='width: 200vw; height: 300vh; background: grey;'></div>
+          <script>
+            document.scrollingElement.scrollTop=100;
+            document.scrollingElement.scrollLeft=200;
+           </script>
+        </body>
+      )HTML",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContentWithActionableElements();
-  ASSERT_TRUE(content);
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  ASSERT_EQ(root.children_nodes.size(), 4u);
+  ASSERT_TRUE(root.content_attributes->node_interaction_info);
+  ASSERT_TRUE(root.content_attributes->node_interaction_info->scroller_info);
 
-  EXPECT_TRUE(
-      root.content_attributes->node_interaction_info->scrolls_overflow_x);
-  EXPECT_TRUE(
-      root.content_attributes->node_interaction_info->scrolls_overflow_y);
+  const auto& root_scroller =
+      *root.content_attributes->node_interaction_info->scroller_info;
+  EXPECT_EQ(root_scroller.scrolling_bounds.width(), 2 * kWindowSize.width());
+  EXPECT_EQ(root_scroller.scrolling_bounds.height(), 3 * kWindowSize.height());
 
-  const auto& scrollable_x_element = *root.children_nodes[0];
-  CheckContainerNode(scrollable_x_element);
-  EXPECT_FALSE(scrollable_x_element.content_attributes->geometry
-                   ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(scrollable_x_element.content_attributes->node_interaction_info
-                  ->scrolls_overflow_x);
-  EXPECT_FALSE(scrollable_x_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
-  CheckTextNode(
-      *scrollable_x_element.children_nodes[0],
-      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
-      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
-      "UVWXYZ");
+  EXPECT_EQ(root_scroller.visible_area,
+            gfx::Rect(200, 100, kWindowSize.width(), kWindowSize.height()));
+}
 
-  const auto& scrollable_y_element = *root.children_nodes[1];
-  CheckContainerNode(scrollable_y_element);
-  EXPECT_FALSE(scrollable_y_element.content_attributes->geometry
-                   ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(scrollable_y_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_TRUE(scrollable_y_element.content_attributes->node_interaction_info
-                  ->scrolls_overflow_y);
-  CheckTextNode(*scrollable_y_element.children_nodes[0],
-                "Some long text to make it scrollable. Some long text to make "
-                "it scrollable. Some long text to make it scrollable. Some "
-                "long text to make it scrollable.");
+class AIPageContentAgentTestWithSubScroller
+    : public AIPageContentAgentTest,
+      public testing::WithParamInterface<std::string> {};
 
-  const auto& auto_scroll_x_element = *root.children_nodes[2];
-  CheckContainerNode(auto_scroll_x_element);
-  EXPECT_FALSE(auto_scroll_x_element.content_attributes->geometry
-                   ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(auto_scroll_x_element.content_attributes->node_interaction_info
-                  ->scrolls_overflow_x);
-  EXPECT_FALSE(auto_scroll_x_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
-  CheckTextNode(
-      *auto_scroll_x_element.children_nodes[0],
-      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
-      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
-      "UVWXYZ");
+TEST_P(AIPageContentAgentTestWithSubScroller, Overflow) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      base::StringPrintf(
+          R"HTML(
+          <body style='margin: 0px;'>
+            <style>
+             #scroller {
+               overflow:%s; width: 100vw; height:100vh;
+               position:relative; top: 30px; left:50px;
+             }
+            </style>
+            <div id='scroller'>
+             <div style='width: 200vw; height: 300vh; background: grey;'></div>
+            </div>
+            <script>
+              let scroller = document.getElementById('scroller');
+              scroller.scrollTop=100;
+              scroller.scrollLeft=200;
+             </script>
+          </body>
+          )HTML",
+          GetParam()),
+      url_test_helpers::ToKURL("http://foobar.com"));
 
-  const auto& auto_scroll_y_element = *root.children_nodes[3];
-  CheckContainerNode(auto_scroll_y_element);
-  EXPECT_FALSE(auto_scroll_y_element.content_attributes->geometry
-                   ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(auto_scroll_y_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_TRUE(auto_scroll_y_element.content_attributes->node_interaction_info
-                  ->scrolls_overflow_y);
-  CheckTextNode(*auto_scroll_y_element.children_nodes[0],
-                "Some long text to make it scrollable. Some long text to make "
-                "it scrollable. Some long text to make it scrollable. Some "
-                "long text to make it scrollable.");
+  SCOPED_TRACE(GetParam());
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_TRUE(root.content_attributes->node_interaction_info);
+  ASSERT_TRUE(root.content_attributes->node_interaction_info->scroller_info);
+
+  const auto& root_scroller =
+      *root.content_attributes->node_interaction_info->scroller_info;
+  EXPECT_EQ(root_scroller.scrolling_bounds.width(), kWindowSize.width() + 50);
+  EXPECT_EQ(root_scroller.scrolling_bounds.height(), kWindowSize.height() + 30);
+  EXPECT_EQ(root_scroller.visible_area, gfx::Rect(kWindowSize));
+
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& child = *root.children_nodes.at(0);
+  ASSERT_TRUE(child.content_attributes->node_interaction_info);
+  ASSERT_TRUE(child.content_attributes->node_interaction_info->scroller_info);
+
+  const auto& sub_scroller =
+      *child.content_attributes->node_interaction_info->scroller_info;
+  EXPECT_EQ(sub_scroller.scrolling_bounds.width(), 2 * kWindowSize.width());
+  EXPECT_EQ(sub_scroller.scrolling_bounds.height(), 3 * kWindowSize.height());
+
+  EXPECT_EQ(sub_scroller.visible_area,
+            gfx::Rect(200, 100, kWindowSize.width(), kWindowSize.height()));
+
+  bool user_scrollable = GetParam() != "hidden";
+  EXPECT_EQ(sub_scroller.user_scrollable_horizontal, user_scrollable);
+  EXPECT_EQ(sub_scroller.user_scrollable_vertical, user_scrollable);
+}
+
+INSTANTIATE_TEST_SUITE_P(AIPageContentAgentTestWithSubScroller,
+                         AIPageContentAgentTestWithSubScroller,
+                         ::testing::Values("auto", "scroll", "hidden"));
+
+TEST_F(AIPageContentAgentTest, OverflowVisible) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style='margin: 0px;'>
+        <style>
+         #scroller {
+           overflow:visible; width: 100vw; height:100vh;
+           position:relative; top: 30px; left:50px;
+         }
+        </style>
+        <div id='scroller'>
+         <div style='width: 200vw; height: 300vh; background: grey;'></div>
+        </div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_TRUE(root.content_attributes->node_interaction_info);
+  ASSERT_TRUE(root.content_attributes->node_interaction_info->scroller_info);
+
+  const auto& root_scroller =
+      *root.content_attributes->node_interaction_info->scroller_info;
+  EXPECT_EQ(root_scroller.scrolling_bounds.width(),
+            kWindowSize.width() * 2 + 50);
+  EXPECT_EQ(root_scroller.scrolling_bounds.height(),
+            kWindowSize.height() * 3 + 30);
+  EXPECT_EQ(root_scroller.visible_area, gfx::Rect(kWindowSize));
+
+  EXPECT_EQ(root.children_nodes.size(), 0u);
+}
+
+TEST_F(AIPageContentAgentTest, OverflowClip) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style='margin: 0px;'>
+        <style>
+         #scroller {
+           overflow:clip; width: 100vw; height:100vh;
+           position:relative; top: 30px; left:50px;
+         }
+        </style>
+        <div id='scroller'>
+         <div style='width: 200vw; height: 300vh; background: grey;'></div>
+        </div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_TRUE(root.content_attributes->node_interaction_info);
+  ASSERT_TRUE(root.content_attributes->node_interaction_info->scroller_info);
+
+  const auto& root_scroller =
+      *root.content_attributes->node_interaction_info->scroller_info;
+  EXPECT_EQ(root_scroller.scrolling_bounds.width(), kWindowSize.width() + 50);
+  EXPECT_EQ(root_scroller.scrolling_bounds.height(), kWindowSize.height() + 30);
+  EXPECT_EQ(root_scroller.visible_area, gfx::Rect(kWindowSize));
+
+  EXPECT_EQ(root.children_nodes.size(), 0u);
 }
 
 TEST_F(AIPageContentAgentTest, Anchors) {
@@ -2127,6 +2171,8 @@ TEST_F(AIPageContentAgentTest, InteractiveElementsResizableDiv) {
 
   const auto& resize = *content->root_node->children_nodes[0];
   CheckContainerNode(resize);
+  ASSERT_TRUE(resize.content_attributes->node_interaction_info);
+  EXPECT_FALSE(resize.content_attributes->node_interaction_info->scroller_info);
   EXPECT_TRUE(resize.content_attributes->node_interaction_info->is_selectable);
   EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_editable);
   EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_focusable);
@@ -2137,27 +2183,10 @@ TEST_F(AIPageContentAgentTest, InteractiveElementsResizableDiv) {
   EXPECT_TRUE(
       resize.content_attributes->node_interaction_info->can_resize_horizontal);
 
-  EXPECT_EQ(resize.children_nodes.size(), 1u);
+  ASSERT_EQ(resize.children_nodes.size(), 1u);
   const auto& resize_text = *resize.children_nodes[0];
   CheckTextNode(resize_text, "resize");
-  EXPECT_TRUE(
-      resize_text.content_attributes->node_interaction_info->is_selectable);
-  EXPECT_FALSE(
-      resize_text.content_attributes->node_interaction_info->is_editable);
-  EXPECT_FALSE(
-      resize_text.content_attributes->node_interaction_info->is_focusable);
-  EXPECT_FALSE(
-      resize_text.content_attributes->node_interaction_info->is_draggable);
-  EXPECT_FALSE(
-      resize_text.content_attributes->node_interaction_info->is_clickable);
-  EXPECT_FALSE(resize_text.content_attributes->node_interaction_info
-                   ->can_resize_vertical);
-  EXPECT_FALSE(resize_text.content_attributes->node_interaction_info
-                   ->can_resize_horizontal);
-  EXPECT_TRUE(resize_text.content_attributes->node_interaction_info
-                  ->scrolls_overflow_x);
-  EXPECT_TRUE(resize_text.content_attributes->node_interaction_info
-                  ->scrolls_overflow_y);
+  EXPECT_FALSE(resize_text.content_attributes->node_interaction_info);
 }
 
 TEST_F(AIPageContentAgentTest, Selection) {
