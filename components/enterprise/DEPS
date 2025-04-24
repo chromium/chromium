@@ -1,6 +1,7 @@
 include_rules = [
   "+components/download/public/common",
   "+components/device_signals/core/browser",
+  "+components/device_signals/core/common",
   "+components/policy",
   "+components/prefs",
   "+components/reporting/client",

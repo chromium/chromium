@@ -83,6 +83,7 @@ static_library("enterprise") {
   deps = [
     "//base",
     "//components/device_signals/core/browser:browser",
+    "//components/device_signals/core/common:features",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",

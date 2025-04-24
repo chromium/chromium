@@ -22,6 +22,18 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
              "BrowserSignalsReportingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether a signals-only profile report will be triggered when a valid
+// cookie change is observed.
+constexpr base::FeatureParam<bool> kTriggerOnCookieChange{
+    &kProfileSignalsReportingEnabled, "trigger_on_cookie_change", true};
+
+// Controls the minimum interval that signals should be reported via profile
+// reports.
+// Example: "ProfileSignalsReportingEnabled:report_interval/3600" for 3600
+// seconds.
+constexpr base::FeatureParam<base::TimeDelta> kProfileSignalsReportingInterval{
+    &kProfileSignalsReportingEnabled, "report_interval", base::Hours(4)};
+
 bool IsProfileSignalsReportingEnabled() {
   return base::FeatureList::IsEnabled(kProfileSignalsReportingEnabled);
 }

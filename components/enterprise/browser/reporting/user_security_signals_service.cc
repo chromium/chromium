@@ -5,6 +5,7 @@
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
 #include "base/check.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
@@ -12,12 +13,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/cookie_change_dispatcher.h"
-
-namespace {
-
-constexpr base::TimeDelta kSecurityUploadsInterval = base::Hours(4);
-
-}
 
 namespace enterprise_reporting {
 
@@ -32,7 +27,7 @@ UserSecuritySignalsService::UserSecuritySignalsService(
 UserSecuritySignalsService::~UserSecuritySignalsService() = default;
 
 base::TimeDelta UserSecuritySignalsService::GetSecurityUploadCadence() {
-  return kSecurityUploadsInterval;
+  return enterprise_signals::features::kProfileSignalsReportingInterval.Get();
 }
 
 void UserSecuritySignalsService::Start() {
@@ -76,6 +71,9 @@ void UserSecuritySignalsService::OnReportUploaded() {
 
 void UserSecuritySignalsService::OnCookieChange(
     const net::CookieChangeInfo& change) {
+  if (!enterprise_signals::features::kTriggerOnCookieChange.Get()) {
+    return;
+  }
   // Only trigger a new upload if the cookie change could result in a new or
   // updated session.
   if (change.cause == net::CookieChangeCause::INSERTED) {
