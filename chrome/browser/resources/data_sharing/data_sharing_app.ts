@@ -479,6 +479,20 @@ export class DataSharingApp extends CustomElement implements Logger {
 
     switch (flow) {
       case FlowValues.SHARE:
+        document.title =
+            loadTimeData.getStringF('shareGroupTitle', getTabGroupName());
+        break;
+      case FlowValues.MANAGE:
+        document.title =
+            loadTimeData.getStringF('manageGroupTitle', getTabGroupName());
+        break;
+      case FlowValues.JOIN:
+        document.title = loadTimeData.getStringF('previewA11yName');
+        break;
+    }
+
+    switch (flow) {
+      case FlowValues.SHARE:
         this.dataSharingSdk_
             .runInviteFlow({
               parent,

@@ -12405,6 +12405,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name ="IDS_DATA_SHARING_GET_GROUP_PREVIEW_ARIA_LABEL" desc="Aria label for the group preview card.">
           View more details about <ph name="GROUP_NAME">$1<ex>vacation group</ex></ph>
         </message>
+        <message name ="IDS_DATA_SHARING_PREVIEW_A11Y_NAME" desc="The accessibility name the data sharing preview dialog">
+          Join tab group
+        </message>
       <!-- /Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
