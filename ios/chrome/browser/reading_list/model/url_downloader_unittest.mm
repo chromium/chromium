@@ -31,7 +31,7 @@ const char kDistilledPdfContent[] = "123456789";
 const char kBadImageUrl[] = "http://image/bad";
 const char kGoodImageUrl[] = "http://image/good";
 
-class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
+class DistillerViewerTest : public DistillerViewerInterface {
  public:
   DistillerViewerTest(const GURL& url,
                       DistillationFinishedCallback callback,
@@ -39,7 +39,7 @@ class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
                       const std::string& html,
                       const GURL& redirect_url,
                       const std::string& mime_type)
-      : dom_distiller::DistillerViewerInterface(nil) {
+      : DistillerViewerInterface(nil) {
     std::vector<ImageInfo> images;
     ImageInfo image;
 
@@ -127,7 +127,7 @@ class MockURLDownloader : public URLDownloader {
     }
     original_url_ = url;
     saved_size_ = 0;
-    distiller_.reset(new DistillerViewerTest(
+    distiller_viewer_.reset(new DistillerViewerTest(
         url,
         base::BindRepeating(&URLDownloader::DistillerCallback,
                             base::Unretained(this)),
