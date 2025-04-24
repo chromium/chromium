@@ -241,12 +241,6 @@ public class KeyboardShortcuts {
                 // Command+Q
 
                 // Navigation controls.
-            case CTRL | KeyEvent.KEYCODE_L:
-            case ALT | KeyEvent.KEYCODE_D:
-            case KeyEvent.KEYCODE_BUTTON_X:
-                return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
-            case CTRL | KeyEvent.KEYCODE_E:
-                return KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH;
             case CTRL | KeyEvent.KEYCODE_F6:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE;
             case KeyEvent.KEYCODE_SPACE:
@@ -288,13 +282,12 @@ public class KeyboardShortcuts {
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS;
 
                 // Bookmarks.
-            case CTRL | SHIFT | KeyEvent.KEYCODE_O:
-                return KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS;
             case KeyEvent.KEYCODE_BOOKMARK:
             case CTRL | KeyEvent.KEYCODE_D:
                 return KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE;
             case CTRL | SHIFT | KeyEvent.KEYCODE_D:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS;
+                // TODO(crbug.com/412427797): Conform shortcut to KeyboardShortcutDefinition
             case CTRL | SHIFT | KeyEvent.KEYCODE_B:
                 return KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR;
 
@@ -304,8 +297,6 @@ public class KeyboardShortcuts {
                 // TODO(crbug.com/402775002): Allow long press on Esc.
 
                 // Developer tools.
-            case CTRL | SHIFT | KeyEvent.KEYCODE_I:
-                return KeyboardShortcutsSemanticMeaning.DEV_TOOLS;
             case CTRL | SHIFT | KeyEvent.KEYCODE_J:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE;
             case CTRL | SHIFT | KeyEvent.KEYCODE_C:
@@ -325,8 +316,6 @@ public class KeyboardShortcuts {
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS;
 
                 // History.
-            case CTRL | KeyEvent.KEYCODE_H:
-                return KeyboardShortcutsSemanticMeaning.OPEN_HISTORY;
             case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
                 return KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK;
             case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -360,23 +349,12 @@ public class KeyboardShortcuts {
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU;
             case ALT | SHIFT | KeyEvent.KEYCODE_I:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FEEDBACK_FORM;
-            case CTRL | KeyEvent.KEYCODE_F:
-            case CTRL | KeyEvent.KEYCODE_G:
-            case CTRL | SHIFT | KeyEvent.KEYCODE_G:
-            case KeyEvent.KEYCODE_F3:
-            case SHIFT | KeyEvent.KEYCODE_F3:
-                return KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE;
             case ALT | KeyEvent.KEYCODE_HOME:
             case KeyEvent.KEYCODE_HOME:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME;
             case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH: // i.e. Ctrl+?
             case KeyEvent.KEYCODE_F1:
                 return KeyboardShortcutsSemanticMeaning.OPEN_HELP;
-            case ALT | KeyEvent.KEYCODE_E:
-            case ALT | KeyEvent.KEYCODE_F:
-            case KeyEvent.KEYCODE_F10:
-            case KeyEvent.KEYCODE_BUTTON_Y:
-                return KeyboardShortcutsSemanticMeaning.OPEN_MENU;
         }
 
         return KeyboardShortcutsSemanticMeaning.UNKNOWN;
@@ -627,6 +605,66 @@ public class KeyboardShortcuts {
                     new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_CTRL_ON),
                     new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_ALT_ON),
                 });
+
+        // Chrome feature shortcuts (keyboard_shortcut_chrome_feature_group_header).
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
+                new KeyCombo(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_address_bar,
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_D, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_X, NO_MODIFIER)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
+                new KeyCombo(KeyEvent.KEYCODE_E, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_search,
+                R.string.keyboard_shortcut_chrome_feature_group_header);
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
+                new KeyCombo(KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_find_bar,
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_G, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(
+                            KeyEvent.KEYCODE_G, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                    new KeyCombo(KeyEvent.KEYCODE_F3, NO_MODIFIER),
+                    new KeyCombo(KeyEvent.KEYCODE_F3, KeyEvent.META_SHIFT_ON)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_MENU,
+                new KeyCombo(KeyEvent.KEYCODE_E, KeyEvent.META_ALT_ON),
+                R.string.keyboard_shortcut_open_menu,
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_F, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_F10, NO_MODIFIER),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_Y, NO_MODIFIER)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_HISTORY,
+                new KeyCombo(KeyEvent.KEYCODE_H, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_history_manager,
+                R.string.keyboard_shortcut_chrome_feature_group_header);
+
+        // Bookmark shortcuts.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
+                new KeyCombo(KeyEvent.KEYCODE_O, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_bookmark_manager,
+                R.string.keyboard_shortcut_chrome_feature_group_header);
+
+        // Developer tools.
+        if (DeviceFormFactor.isDesktop()) {
+            new KeyboardShortcutDefinition(
+                    KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
+                    new KeyCombo(
+                            KeyEvent.KEYCODE_I, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                    R.string.keyboard_shortcut_developer_tools,
+                    R.string.keyboard_shortcut_developer_group_header);
+        }
     }
 
     private static int getMetaState(KeyEvent event) {
@@ -726,11 +764,12 @@ public class KeyboardShortcuts {
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 
-        HashMap<Integer, KeyboardShortcutGroup> shortcutGroupsById = new HashMap<>();
+        LinkedHashMap<Integer, KeyboardShortcutGroup> shortcutGroupsById = new LinkedHashMap<>();
 
-        for (KeyboardShortcutDefinition shortcutInfo : KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
+        for (KeyboardShortcutDefinition shortcutDefinition :
+                KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
 
-            int groupId = shortcutInfo.mGroupId;
+            int groupId = shortcutDefinition.mGroupId;
             if (!shortcutGroupsById.containsKey(groupId)) {
                 shortcutGroupsById.put(
                         groupId, new KeyboardShortcutGroup(context.getString(groupId)));
@@ -739,55 +778,22 @@ public class KeyboardShortcuts {
             addShortcut(
                     context,
                     shortcutGroup,
-                    shortcutInfo.mResId,
-                    shortcutInfo.mPrimaryShortcut.mKeyCode,
-                    shortcutInfo.mPrimaryShortcut.mModifier);
+                    shortcutDefinition.mResId,
+                    shortcutDefinition.mPrimaryShortcut.mKeyCode,
+                    shortcutDefinition.mPrimaryShortcut.mModifier);
         }
 
-        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>(shortcutGroupsById.values());
-
-        KeyboardShortcutGroup chromeFeatureShortcutGroup =
-                new KeyboardShortcutGroup(
-                        context.getString(R.string.keyboard_shortcut_chrome_feature_group_header));
-        addShortcut(
-                context,
-                chromeFeatureShortcutGroup,
-                R.string.keyboard_shortcut_open_menu,
-                KeyEvent.KEYCODE_E,
-                KeyEvent.META_ALT_ON);
+        // TODO(crbug.com/412427797): Conform shortcut to KeyboardShortcutDefinition
         if (BookmarkBarUtils.isFeatureEnabled(context)) {
             addShortcut(
                     context,
-                    chromeFeatureShortcutGroup,
+                    shortcutGroupsById.get(R.string.keyboard_shortcut_chrome_feature_group_header),
                     R.string.keyboard_shortcut_toggle_bookmark_bar,
                     KeyEvent.KEYCODE_B,
                     ctrlShift);
         }
-        addShortcut(
-                context,
-                chromeFeatureShortcutGroup,
-                R.string.keyboard_shortcut_bookmark_manager,
-                KeyEvent.KEYCODE_O,
-                ctrlShift);
-        addShortcut(
-                context,
-                chromeFeatureShortcutGroup,
-                R.string.keyboard_shortcut_history_manager,
-                KeyEvent.KEYCODE_H,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                chromeFeatureShortcutGroup,
-                R.string.keyboard_shortcut_find_bar,
-                KeyEvent.KEYCODE_F,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                chromeFeatureShortcutGroup,
-                R.string.keyboard_shortcut_address_bar,
-                KeyEvent.KEYCODE_L,
-                KeyEvent.META_CTRL_ON);
-        shortcutGroups.add(chromeFeatureShortcutGroup);
+
+        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>(shortcutGroupsById.values());
 
         KeyboardShortcutGroup webpageShortcutGroup =
                 new KeyboardShortcutGroup(
@@ -829,19 +835,6 @@ public class KeyboardShortcuts {
                 KeyEvent.KEYCODE_SLASH,
                 ctrlShift);
         shortcutGroups.add(webpageShortcutGroup);
-
-        if (DeviceFormFactor.isDesktop()) {
-            KeyboardShortcutGroup developerShortcutGroup =
-                    new KeyboardShortcutGroup(
-                            context.getString(R.string.keyboard_shortcut_developer_group_header));
-            addShortcut(
-                    context,
-                    developerShortcutGroup,
-                    R.string.keyboard_shortcut_developer_tools,
-                    KeyEvent.KEYCODE_I,
-                    ctrlShift);
-            shortcutGroups.add(developerShortcutGroup);
-        }
 
         return shortcutGroups;
     }
