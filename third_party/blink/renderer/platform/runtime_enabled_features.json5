@@ -734,6 +734,12 @@
       status: "test",
     },
     {
+      // https://github.com/WICG/canvas-place-element/blob/main/README.md
+      name: "CanvasElementDrawImage",
+      status: "experimental",
+      implied_by: ["CanvasPlaceElement"],
+    },
+    {
       name: "CanvasFloatingPoint",
       status: "stable",
     },
