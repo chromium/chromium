@@ -10,8 +10,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "cc/slim/layer.h"
@@ -275,6 +277,12 @@ gfx::PointF ViewAndroid::GetLocationOnScreen(float x, float y) {
 }
 
 void ViewAndroid::RemoveAllChildren(bool attached_to_window) {
+  // Modifying children during hit testing can cause issues
+  // (crbug.com/407571917). Log a non-fatal report if this happens.
+  if (is_hit_testing_) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   auto it = children_.begin();
   while (it != children_.end()) {
     if (attached_to_window)
@@ -294,6 +302,11 @@ void ViewAndroid::RemoveChild(ViewAndroid* child) {
   std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it =
       std::ranges::find(children_, child);
   CHECK(it != children_.end(), base::NotFatalUntil::M130);
+  // Modifying children during hit testing can cause issues
+  // (crbug.com/407571917). Log a non-fatal report if this happens.
+  if (is_hit_testing_) {
+    base::debug::DumpWithoutCrashing();
+  }
   children_.erase(it);
   child->parent_ = nullptr;
 }
@@ -714,6 +727,8 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
         return true;
     }
   }
+
+  base::AutoReset<bool> reset_is_hit_testing(&is_hit_testing_, true);
 
   if (!children_.empty()) {
     gfx::PointF offset_point(point);
