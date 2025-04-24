@@ -107,6 +107,11 @@ struct Layer {
   // Indicates whether the layer produces any visual output for the compositor.
   bool is_drawable;
 
+  // Indicate that layer properties have changed and the layer's content area
+  // needs to be redrawn.
+  bool layer_property_changed_not_from_property_trees;
+  bool layer_property_changed_from_property_trees;
+
   // Describes the opaqueness for hit testing in a layered content e.g. a layer.
   cc.mojom.HitTestOpaqueness hit_test_opaqueness;
 

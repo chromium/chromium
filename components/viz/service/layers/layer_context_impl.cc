@@ -421,6 +421,12 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetContentsOpaque(wire.contents_opaque);
   layer.SetContentsOpaqueForText(wire.contents_opaque_for_text);
   layer.SetDrawsContent(wire.is_drawable);
+  if (wire.layer_property_changed_not_from_property_trees) {
+    layer.NoteLayerPropertyChanged();
+  }
+  if (wire.layer_property_changed_from_property_trees) {
+    layer.NoteLayerPropertyChangedFromPropertyTrees();
+  }
   layer.SetBackgroundColor(wire.background_color);
   layer.SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
   layer.SetHitTestOpaqueness(wire.hit_test_opaqueness);

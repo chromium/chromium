@@ -535,6 +535,10 @@ void SerializeLayer(LayerImpl& layer,
   wire.type = layer.GetLayerType();
   wire.bounds = layer.bounds();
   wire.is_drawable = layer.draws_content();
+  wire.layer_property_changed_not_from_property_trees =
+      layer.LayerPropertyChangedNotFromPropertyTrees();
+  wire.layer_property_changed_from_property_trees =
+      layer.LayerPropertyChangedFromPropertyTrees();
   wire.contents_opaque = layer.contents_opaque();
   wire.contents_opaque_for_text = layer.contents_opaque_for_text();
   wire.hit_test_opaqueness = layer.hit_test_opaqueness();
