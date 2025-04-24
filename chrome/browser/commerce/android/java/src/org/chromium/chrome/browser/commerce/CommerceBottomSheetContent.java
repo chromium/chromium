@@ -22,6 +22,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final RecyclerView mRecyclerView;
     private final BottomSheetController mBottomSheetController;
+    private boolean mIsHalfHeightDisabled;
 
     public CommerceBottomSheetContent(
             View contentView, BottomSheetController bottomSheetController) {
@@ -29,6 +30,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
         mRecyclerView =
                 (RecyclerView) mContentView.findViewById(R.id.commerce_content_recycler_view);
         mBottomSheetController = bottomSheetController;
+        mIsHalfHeightDisabled = false;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     @Override
     public float getHalfHeightRatio() {
         float containerHeight = mBottomSheetController.getContainerHeight();
-        if (containerHeight == 0) {
+        if (containerHeight == 0 || mIsHalfHeightDisabled) {
             return HeightMode.DISABLED;
         }
         float contentRatio = getContentHeight() / containerHeight;
@@ -119,6 +121,11 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     public boolean hasCustomScrimLifecycle() {
         // Don't show a scrim (gray overlay on page) when open the bottom sheet.
         return true;
+    }
+
+    /** Set whether to disable the bottom sheet content half height. */
+    public void setIsHalfHeightDisabled(boolean isHalfHeightDisabled) {
+        mIsHalfHeightDisabled = isHalfHeightDisabled;
     }
 
     private int getContentHeight() {

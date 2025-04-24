@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.commerce;
 
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -72,6 +76,7 @@ public class CommerceBottomSheetContentMediator {
         if (mContent != null) {
             mBottomSheetController.hideContent(mContent, true);
         }
+        mCommerceBottomSheetContentContainer.setAccessibilityDelegate(null);
         mContent = null;
         mModelList.clear();
         mContentReadyCount = 0;
@@ -91,11 +96,31 @@ public class CommerceBottomSheetContentMediator {
         mContent =
                 new CommerceBottomSheetContent(
                         mCommerceBottomSheetContentContainer, mBottomSheetController);
+        mCommerceBottomSheetContentContainer.setAccessibilityDelegate(
+                createExpandOnFocusAccessibilityDelegate());
         mBottomSheetController.requestShowContent(mContent, true);
     }
 
     boolean isContentWrappingContent() {
         if (mContent == null) return true;
         return mContent.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
+    }
+
+    private AccessibilityDelegate createExpandOnFocusAccessibilityDelegate() {
+        return new AccessibilityDelegate() {
+            @Override
+            public boolean onRequestSendAccessibilityEvent(
+                    ViewGroup host, View child, AccessibilityEvent event) {
+                // If bottom sheet content is focused under talkback, expand the sheet to full.
+                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                    if (mContent != null
+                            && mBottomSheetController.getSheetState() != SheetState.FULL) {
+                        mContent.setIsHalfHeightDisabled(true);
+                        mBottomSheetController.expandSheet();
+                    }
+                }
+                return super.onRequestSendAccessibilityEvent(host, child, event);
+            }
+        };
     }
 }
