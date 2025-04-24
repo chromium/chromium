@@ -176,7 +176,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   bool is_purging_configured_ = false;
 
   uint16_t largest_active_bucket_index_ =
-      internal::BucketIndexLookup::GetIndex(kThreadCacheDefaultSizeThreshold);
+      internal::BucketIndexLookup::GetIndexForNeutralBuckets(
+          kThreadCacheDefaultSizeThreshold);
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -366,7 +367,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
       kThreadCacheDefaultSizeThreshold;
   static constexpr size_t kLargeSizeThreshold = kThreadCacheLargeSizeThreshold;
   static constexpr uint16_t kBucketCount =
-      internal::BucketIndexLookup::GetIndex(kThreadCacheLargeSizeThreshold) + 1;
+      internal::BucketIndexLookup::GetIndexForNeutralBuckets(
+          kThreadCacheLargeSizeThreshold) +
+      1;
   static_assert(
       kBucketCount < internal::kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");

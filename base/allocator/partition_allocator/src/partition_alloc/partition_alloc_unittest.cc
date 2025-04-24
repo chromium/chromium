@@ -5650,15 +5650,17 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 TEST_P(PartitionAllocTest, GetIndex) {
   BucketIndexLookup lookup{};
 
+  BucketDistribution distribution = allocator.root()->GetBucketDistribution();
+
   for (size_t size = 0; size < kMaxBucketed; size++) {
-    size_t index = BucketIndexLookup::GetIndex(size);
+    size_t index = PartitionRoot::SizeToBucketIndex(size, distribution);
     ASSERT_GE(lookup.bucket_sizes()[index], size);
   }
 
   // Make sure that power-of-two have exactly matching buckets.
   for (size_t size = (1 << (kMinBucketedOrder - 1)); size < kMaxBucketed;
        size <<= 1) {
-    size_t index = BucketIndexLookup::GetIndex(size);
+    size_t index = PartitionRoot::SizeToBucketIndex(size, distribution);
     ASSERT_EQ(lookup.bucket_sizes()[index], size);
   }
 }
@@ -6346,6 +6348,43 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
             0u);
 
   allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
+}
+
+// This test makes sure it's safe to switch to the denser bucket distribution
+// at runtime. This is intended to happen once, near the start of Chrome,
+// once we have enabled features.
+TEST_P(PartitionAllocTest, SwitchBucketDistributionBeforeAlloc) {
+  PartitionRoot* root = allocator.root();
+
+  root->SwitchToDenserBucketDistribution();
+  constexpr size_t n = (1 << 12) * 15 / 8;
+  EXPECT_NE(internal::BucketIndexLookup::GetIndexForDenserBuckets(n),
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
+
+  void* ptr = root->Alloc(n);
+
+  root->ResetBucketDistributionForTesting();
+
+  root->Free(ptr);
+}
+
+// This test makes sure it's safe to switch to the denser bucket distribution
+// at runtime. This is intended to happen once, near the start of Chrome,
+// once we have enabled features.
+TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
+  constexpr size_t n = (1 << 12) * 15 / 8;
+  EXPECT_NE(internal::BucketIndexLookup::GetIndexForDenserBuckets(n),
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
+
+  PartitionRoot* root = allocator.root();
+  void* ptr = root->Alloc(n);
+
+  root->SwitchToDenserBucketDistribution();
+
+  void* ptr2 = root->Alloc(n);
+
+  root->Free(ptr2);
+  root->Free(ptr);
 }
 
 }  // namespace partition_alloc::internal

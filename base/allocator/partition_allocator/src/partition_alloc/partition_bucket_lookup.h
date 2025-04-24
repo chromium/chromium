@@ -73,7 +73,6 @@ class BucketIndexLookup final {
       size_t size);
   PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
       size_t size);
-  PA_ALWAYS_INLINE static constexpr uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -170,24 +169,6 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
-PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
-  const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
-  PA_CHECK(size <= n);
-  return n;
-}
-
-PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
-  const size_t next_power = RoundUpToPowerOfTwo(size);
-  const size_t prev_power = next_power >> 1;
-  PA_CHECK(size <= next_power);
-  PA_CHECK(prev_power < size);
-  if (size <= prev_power * 5 / 4) {
-    return prev_power * 5 / 4;
-  } else {
-    return next_power;
-  }
-}
-
 PA_ALWAYS_INLINE constexpr uint16_t RoundUpToOdd(uint16_t size) {
   return (size % 2 == 0) + size;
 }
@@ -232,32 +213,6 @@ BucketIndexLookup::GetIndexForNeutralBuckets(size_t size) {
   } else {
     return index;
   }
-}
-
-// static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
-  // For any order 2^N, under the denser bucket distribution ("Distribution A"),
-  // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
-  // These numbers represent the maximum size of an allocation that can go into
-  // a given bucket.
-  //
-  // Under the less dense bucket distribution ("Distribution B"), we only have
-  // 2 buckets for the same order 2^N: 2^N and 1.25*2^N.
-  //
-  // Everything that would be mapped to the last two buckets of an order under
-  // Distribution A is instead mapped to the first bucket of the next order
-  // under Distribution B. The following diagram shows roughly what this looks
-  // like for the order starting from 2^10, as an example.
-  //
-  // A: ... | 2^10 | 1.25*2^10 | 1.5*2^10 | 1.75*2^10 | 2^11 | ...
-  // B: ... | 2^10 | 1.25*2^10 | -------- | --------- | 2^11 | ...
-  //
-  // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
-  // Distribution A, but to the 2^11 bucket under Distribution B.
-  if (1 << 8 < size && size < kHighThresholdForAlternateDistribution) {
-    return BucketIndexLookup::GetIndexForNeutralBuckets(RoundUpSize(size));
-  }
-  return BucketIndexLookup::GetIndexForNeutralBuckets(size);
 }
 
 }  // namespace partition_alloc::internal

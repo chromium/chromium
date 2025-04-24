@@ -75,7 +75,8 @@ uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // Start with the normal size, not the maximum one.
 uint16_t ThreadCache::largest_active_bucket_index_ =
-    internal::BucketIndexLookup::GetIndex(ThreadCache::kDefaultSizeThreshold);
+    internal::BucketIndexLookup::GetIndexForNeutralBuckets(
+        ThreadCache::kDefaultSizeThreshold);
 
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
