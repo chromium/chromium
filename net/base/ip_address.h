@@ -159,6 +159,11 @@ constexpr bool ParseIPLiteralToBytes(std::string_view ip_literal,
 
 }  // namespace internal
 
+// Represent an IP address. Has built-in support for IPv4 and IPv6 addresses,
+// though may also be used for Bluetooth addresses.
+//
+// See ip_address_util.h for helpers to convert an IPAddress to an in_addr or
+// in6_addr.
 class NET_EXPORT IPAddress {
  public:
   enum : size_t { kIPv4AddressSize = 4, kIPv6AddressSize = 16 };
