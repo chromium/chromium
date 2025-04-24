@@ -676,7 +676,13 @@ void RenderInputRouter::SetView(RenderWidgetHostViewInput* view) {
 
 void RenderInputRouter::SetBeginFrameSourceForFlingScheduler(
     viz::BeginFrameSource* begin_frame_source) {
-  CHECK(fling_scheduler_);
+  if (!fling_scheduler_) {
+    // In some cases, the fling_scheduler_ might not have been set yet, we
+    // should only attempt to set `nullptr` in such cases. See
+    // crbug.com/411461030.
+    CHECK(!begin_frame_source);
+    return;
+  }
   fling_scheduler_->SetBeginFrameSource(begin_frame_source);
 }
 
