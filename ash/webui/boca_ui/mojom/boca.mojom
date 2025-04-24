@@ -260,19 +260,22 @@ enum UpdateSessionError{
 enum RemoveStudentError{
   // Invalid access code.
   kInvalid,
-  // Network failure.
+  // HTTP request failure.
   kHTTPError,
 };
 
 enum AddStudentsError{
   // Invalid access code.
   kInvalid,
-  // Network failure.
+  // HTTP request failure.
   kHTTPError,
 };
 
 enum SubmitAccessCodeError {
+  // Code is invalid.
   kInvalid,
+  // Enforce managed network.
+  kNetworkRestriction,
 };
 
 enum ViewStudentScreenError {
@@ -295,6 +298,13 @@ enum SpeechRecognitionInstallState {
   kReady,
 };
 
+enum CreateSessionError {
+  // HTTP request failure.
+  kHTTPError,
+  // Enforce manged network.
+  kNetworkRestriction,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Performs authentication and sets the credential in the webview.
@@ -311,7 +321,7 @@ interface PageHandler {
   // Fetch a list of assignments for the courses.
   ListAssignments(string course_id) => (array<Assignment> assignments);
   // Create a session with `config`.
-  CreateSession(Config config) => (bool success);
+  CreateSession(Config config) => (CreateSessionError? error);
   // Retrieves the current session.
   GetSession() => (SessionResult result);
   // End session.

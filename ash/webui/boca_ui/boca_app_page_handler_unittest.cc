@@ -541,7 +541,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
                                         google_apis::ApiErrorCode>>
       future;
   // API callback.
-  base::test::TestFuture<bool> future_1;
+  base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId.ToString());
@@ -659,7 +659,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
 
   boca_app_handler()->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_TRUE(future_1.Get());
+  EXPECT_FALSE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
@@ -670,7 +670,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
                                         google_apis::ApiErrorCode>>
       future;
   // API callback.
-  base::test::TestFuture<bool> future_1;
+  base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
 
   const auto config = mojom::Config::New(
       session_duration, std::nullopt, nullptr,
@@ -711,7 +711,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
   boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_TRUE(future_1.Get());
+  EXPECT_FALSE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionFailedOnNonManagedNetwork) {
@@ -720,7 +720,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionFailedOnNonManagedNetwork) {
                                         google_apis::ApiErrorCode>>
       future;
   // API callback.
-  base::test::TestFuture<bool> future_1;
+  base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
 
   const auto config = mojom::Config::New(
       base::Minutes(2), std::nullopt, nullptr,
@@ -746,7 +746,9 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionFailedOnNonManagedNetwork) {
 
   boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_FALSE(future_1.Get());
+  ASSERT_TRUE(future_1.Get().has_value());
+  EXPECT_EQ(mojom::CreateSessionError::kNetworkRestriction,
+            future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
@@ -2134,7 +2136,8 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionFailedDueToNonManagedNetwork) {
       .WillOnce(Return(true));
   boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
+  EXPECT_EQ(mojom::SubmitAccessCodeError::kNetworkRestriction,
+            future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, ViewScreenSucceeded) {

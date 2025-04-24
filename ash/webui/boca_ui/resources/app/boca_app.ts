@@ -86,6 +86,14 @@ export enum SubmitAccessCodeResult {
   UNKNOWN = 0,
   SUCCESS = 1,
   INVALID_CODE = 2,
+  NETWORK_RESTRICTION = 3,
+}
+
+export enum CreateSessionResult {
+  UNKNOWN = 0,
+  SUCCESS = 1,
+  HTTP_ERROR = 2,
+  NETWORK_RESTRICTION = 3,
 }
 
 export enum StudentStatusDetail {
@@ -296,7 +304,7 @@ export declare interface ClientApiDelegate {
   /**
    * Create a new session.
    */
-  createSession(sessionConfig: SessionConfig): Promise<boolean>;
+  createSession(sessionConfig: SessionConfig): Promise<CreateSessionResult>;
 
   /**
    * Remove a student from the current session.

@@ -5,9 +5,10 @@
 import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import type {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {CreateSessionError, SubmitAccessCodeError} from '../mojom/boca.mojom-webui.js';
 
 import type {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, Permission, PermissionSetting, SessionConfig} from './boca_app.js';
-import {SubmitAccessCodeResult} from './boca_app.js';
+import {CreateSessionResult, SubmitAccessCodeResult} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
@@ -198,7 +199,14 @@ export class ClientDelegateFactory {
           },
           captionConfig: sessionConfig.captionConfig,
         } as Config);
-        return result.success;
+        if (!resultHasError(result)) {
+          return CreateSessionResult.SUCCESS;
+        } else if (result.error == CreateSessionError.kHTTPError) {
+          return CreateSessionResult.HTTP_ERROR;
+        } else if (result.error == CreateSessionError.kNetworkRestriction) {
+          return CreateSessionResult.NETWORK_RESTRICTION;
+        }
+        return CreateSessionResult.SUCCESS;
       },
       getSession: async () => {
         const result = (await pageHandler.getSession()).result;
@@ -270,8 +278,12 @@ export class ClientDelegateFactory {
         const result = await pageHandler.submitAccessCode(code);
         if (!resultHasError(result)) {
           return SubmitAccessCodeResult.SUCCESS;
+        } else if (result.error == SubmitAccessCodeError.kInvalid) {
+          return SubmitAccessCodeResult.INVALID_CODE;
+        } else if (result.error == SubmitAccessCodeError.kNetworkRestriction) {
+          return SubmitAccessCodeResult.NETWORK_RESTRICTION;
         }
-        return SubmitAccessCodeResult.INVALID_CODE;
+        return SubmitAccessCodeResult.SUCCESS;
       },
       viewStudentScreen: async (id: string) => {
         const result = await pageHandler.viewStudentScreen(id);

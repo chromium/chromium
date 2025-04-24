@@ -311,7 +311,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
   }
 
   if (GetSessionManager()->disabled_on_non_managed_network()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::CreateSessionError::kNetworkRestriction);
     return;
   }
   std::unique_ptr<CreateSessionRequest> request =
@@ -523,7 +523,7 @@ void BocaAppHandler::SetFloatMode(bool is_float_mode,
 void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
                                       SubmitAccessCodeCallback callback) {
   if (GetSessionManager()->disabled_on_non_managed_network()) {
-    std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
+    std::move(callback).Run(mojom::SubmitAccessCodeError::kNetworkRestriction);
     return;
   }
   std::unique_ptr<JoinSessionRequest> request =
@@ -919,16 +919,14 @@ void BocaAppHandler::OnCreateSessionResponse(
     CreateSessionCallback callback,
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
-  // TODO(crbug.com/358476060): Potentially parse error code to
-  // UI;
   if (!result.has_value()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::CreateSessionError::kHTTPError);
     return;
   }
   // Load current session into memory;
   GetSessionManager()->UpdateCurrentSession(std::move(result.value()),
                                             /*dispatch_event=*/true);
-  std::move(callback).Run(true);
+  std::move(callback).Run(std::nullopt);
 }
 
 void BocaAppHandler::OnEndSessionResponse(
