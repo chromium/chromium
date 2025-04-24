@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -131,7 +130,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NewTabPageCoordinator () <AuthenticationServiceObserving,
-                                     BooleanObserver,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
@@ -574,7 +572,7 @@
 }
 
 - (BOOL)isFeedVisible {
-  return [self shouldFeedBeVisible] && self.feedViewController;
+  return self.NTPMediator.feedHeaderVisible && self.feedViewController;
 }
 
 #pragma mark - Setters
@@ -671,7 +669,7 @@
       self.feedHeaderViewController;
 
   // Requests feeds here if the correct flags and prefs are enabled.
-  if ([self shouldFeedBeVisible]) {
+  if (self.NTPMediator.feedHeaderVisible) {
     if ([self isFollowingFeedAvailable] &&
         self.selectedFeed == FeedTypeFollowing) {
       self.feedViewController = [self.componentFactory
@@ -1000,10 +998,6 @@
 
   // Updates the NTP state for the newly selected sort type.
   [self saveNTPState];
-}
-
-- (BOOL)shouldFeedBeVisible {
-  return self.NTPMediator.feedHeaderVisible;
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -1428,13 +1422,6 @@
 
     [profileState removeObserver:self];
   }
-}
-
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  // Observes changes in feed visibility pref.
-  [self updateModuleVisibility];
 }
 
 #pragma mark - DiscoverFeedObserverBridge

@@ -23,9 +23,6 @@
 // Handles the sorting being selected for the Following feed.
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType;
 
-// Determines whether the feed should be shown based on the user prefs.
-- (BOOL)shouldFeedBeVisible;
-
 // YES if the Following Feed is currently available. e.g. It might be disabled
 // for certain circumstances like restricted accounts.
 - (BOOL)isFollowingFeedAvailable;

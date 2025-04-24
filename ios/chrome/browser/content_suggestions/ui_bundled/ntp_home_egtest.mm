@@ -1101,7 +1101,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 - (void)testToggleFeedEnabled {
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Disable feed.
@@ -1142,7 +1142,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // scrollable.
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 }
 
@@ -1503,7 +1503,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Opens settings menu and ensures that Discover setting is present.
@@ -1534,7 +1534,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [SigninEarlGreyUI signOut];
 
   // The feed label should be visible on sign-out.
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
   [self checkIfNTPIsScrollable];
 
   // Opens settings menu and ensures that Discover setting is present.
@@ -1652,7 +1652,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:
           grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_not(grey_notVisible())];
-  [self checkFeedLabelForFeedVisible:YES];
+  [self checkFeedLabel];
 }
 
 // Tests that the toggles in the main page of the customization menu can be used
@@ -1832,16 +1832,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Check that feed label is visible with correct text for feed visibility.
-- (void)checkFeedLabelForFeedVisible:(BOOL)visible {
-  NSString* labelTextForVisibleFeed =
-      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-  NSString* labelTextForHiddenFeed =
-      [NSString stringWithFormat:@"%@ – %@", labelTextForVisibleFeed,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
-  NSString* labelText =
-      visible ? labelTextForVisibleFeed : labelTextForHiddenFeed;
+// Check that feed label is visible with correct text.
+- (void)checkFeedLabel {
+  NSString* labelText = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
       assertWithMatcher:grey_sufficientlyVisible()];
   UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
