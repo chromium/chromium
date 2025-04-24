@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_interfaces.h"
+#include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service.h"
@@ -1020,23 +1021,29 @@ void NetworkChangeNotifier::StopSystemDnsConfigNotifier() {
 }
 
 void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl() {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::IPAddressChange");
   GetObserverList().ip_address_observer_list_->Notify(
       FROM_HERE, &IPAddressObserver::OnIPAddressChanged);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeImpl(
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::ConnectionTypeChange",
+                      "type", type);
   GetObserverList().connection_type_observer_list_->Notify(
       FROM_HERE, &ConnectionTypeObserver::OnConnectionTypeChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfNetworkChangeImpl(
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::NetworkChange", "type",
+                      type);
   GetObserverList().network_change_observer_list_->Notify(
       FROM_HERE, &NetworkChangeObserver::OnNetworkChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfDNSChangeImpl() {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::DnsChange");
   GetObserverList().resolver_state_observer_list_->Notify(
       FROM_HERE, &DNSObserver::OnDNSChanged);
 }
@@ -1044,6 +1051,8 @@ void NetworkChangeNotifier::NotifyObserversOfDNSChangeImpl() {
 void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
     double max_bandwidth_mbps,
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::MaxBandwidthChange",
+                      "bandwidth", max_bandwidth_mbps, "type", type);
   GetObserverList().max_bandwidth_observer_list_->Notify(
       FROM_HERE, &MaxBandwidthObserver::OnMaxBandwidthChanged,
       max_bandwidth_mbps, type);
@@ -1052,6 +1061,8 @@ void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
 void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
     NetworkChangeType type,
     handles::NetworkHandle network) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::SpecificNetworkChange",
+                      "type", type, "network", network);
   switch (type) {
     case NetworkChangeType::kConnected:
       GetObserverList().network_observer_list_->Notify(
@@ -1074,11 +1085,14 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeImpl(
     ConnectionCost cost) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::ConnectionCostChange",
+                      "cost", cost);
   GetObserverList().connection_cost_observer_list_->Notify(
       FROM_HERE, &ConnectionCostObserver::OnConnectionCostChanged, cost);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveImpl() {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::DefaultNetworkActive");
   GetObserverList().default_network_active_observer_list_->Notify(
       FROM_HERE, &DefaultNetworkActiveObserver::OnDefaultNetworkActive);
 }
