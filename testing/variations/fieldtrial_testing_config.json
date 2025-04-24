@@ -13315,6 +13315,24 @@
             ]
         }
     ],
+    "InvalidateSearchEngineChoiceOnDeviceRestoreDetection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledJustInTime",
+                    "params": {
+                        "is_retroactive": "false"
+                    },
+                    "enable_features": [
+                        "InvalidateSearchEngineChoiceOnDeviceRestoreDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "InvalidationWithDirectMessagesCbcm": [
         {
             "platforms": [
