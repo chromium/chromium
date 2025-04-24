@@ -574,10 +574,10 @@ public class TabModelImpl extends TabModelJniBridge {
             tab.setClosing(true);
         }
         allowUndo &= supportsPendingClosures();
+        for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         if (!allowUndo) {
             notifyOnFinishingMultipleTabClosure(tabs, saveToTabRestoreService);
         }
-        for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
             // Pass a null undoRunnable here as we want to attach it to the latter tab closure
             // event.
