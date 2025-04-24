@@ -398,8 +398,11 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
               web_contents->GetBrowserContext())) {
     paydm_observation_.Observe(&pdm->payments_data_manager());
   }
-  valuables_data_manager_ = ValuablesDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (ValuablesDataManager* valuables_data_manager =
+          ValuablesDataManagerFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+    valuables_data_manager_observation_.Observe(valuables_data_manager);
+  }
 }
 
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
@@ -413,10 +416,12 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
           *web_contents),
       mf_controller_(mf_controller),
       af_manager_for_testing_(af_manager),
-      af_driver_for_testing_(af_driver),
-      valuables_data_manager_(valuables_data_manager) {
+      af_driver_for_testing_(af_driver) {
   if (payments_data_manager) {
     paydm_observation_.Observe(payments_data_manager);
+  }
+  if (valuables_data_manager) {
+    valuables_data_manager_observation_.Observe(valuables_data_manager);
   }
 }
 
@@ -486,11 +491,11 @@ std::vector<Iban> PaymentMethodAccessoryControllerImpl::GetIbans() const {
 
 base::span<const LoyaltyCard>
 PaymentMethodAccessoryControllerImpl::GetLoyaltyCards() const {
-  if (!valuables_data_manager_) {
+  if (!valuables_data_manager()) {
     return {};
   }
 
-  return valuables_data_manager_->GetLoyaltyCards();
+  return valuables_data_manager()->GetLoyaltyCards();
 }
 
 base::WeakPtr<ManualFillingController>
@@ -582,6 +587,10 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
           base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
                          weak_ptr_factory_.GetWeakPtr()));
   return true;
+}
+
+void PaymentMethodAccessoryControllerImpl::OnValuablesDataChanged() {
+  RefreshSuggestions();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentMethodAccessoryControllerImpl);

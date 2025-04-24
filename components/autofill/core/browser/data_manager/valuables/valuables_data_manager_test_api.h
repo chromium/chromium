@@ -25,6 +25,8 @@ class ValuablesDataManagerTestApi {
         std::move(loyalty_card));
   }
 
+  void NotifyObservers() { valuables_data_manager_->NotifyObservers(); }
+
  private:
   const raw_ref<ValuablesDataManager> valuables_data_manager_;
 };

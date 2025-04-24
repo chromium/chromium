@@ -45,6 +45,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
+using testing::InSequence;
 using testing::SaveArg;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
@@ -694,6 +695,55 @@ TEST_F(PaymentMethodAccessoryControllerTest,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          /*user_info_title=*/
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
+          /*plus_address_title=*/std::u16string())
+          .AddLoyaltyCardInfo(
+              loyalty_card.merchant_name(),
+              base::UTF8ToUTF16(loyalty_card.loyalty_card_number()))
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
+          .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, LoyaltyCardDataIsChangedBySync) {
+  {
+    InSequence seq;
+    // First, there're no loyalty cards, so the filling source is not available.
+    EXPECT_CALL(filling_source_observer_,
+                Run(controller(), IsFillingSourceAvailable(false)));
+    // The filling source should become available after a loyalty card is added.
+    EXPECT_CALL(filling_source_observer_,
+                Run(controller(), IsFillingSourceAvailable(true)));
+  }
+
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          /*user_info_title=*/
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
+          /*plus_address_title=*/std::u16string())
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
+          .Build());
+
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  test_api(valuables_data_manager()).AddLoyaltyCard(loyalty_card);
+  test_api(valuables_data_manager()).NotifyObservers();
 
   EXPECT_EQ(
       controller()->GetSheetData(),

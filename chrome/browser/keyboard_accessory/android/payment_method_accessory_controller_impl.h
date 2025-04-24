@@ -31,6 +31,7 @@ class BrowserAutofillManager;
 class PaymentMethodAccessoryControllerImpl
     : public PaymentMethodAccessoryController,
       public PaymentsDataManager::Observer,
+      public ValuablesDataManager::Observer,
       public content::WebContentsUserData<
           PaymentMethodAccessoryControllerImpl> {
  public:
@@ -121,8 +122,15 @@ class PaymentMethodAccessoryControllerImpl
   // method also tries to fetch IBAN and fill the form field.
   bool FetchIfIban(const std::string& selection_id);
 
+  // ValuablesDataManager::Observer:
+  void OnValuablesDataChanged() override;
+
   const PaymentsDataManager* paydm() const {
     return paydm_observation_.GetSource();
+  }
+
+  const ValuablesDataManager* valuables_data_manager() const {
+    return valuables_data_manager_observation_.GetSource();
   }
 
   base::WeakPtr<ManualFillingController> mf_controller_;
@@ -139,9 +147,10 @@ class PaymentMethodAccessoryControllerImpl
   // Observes the `PaymentsDataManager` of the profile to react to updates.
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
       paydm_observation_{this};
-  // Used to retrieve user's Google Wallet loyalty cards. It's owned by the
-  // profile and guaranteed to outlive this instance.
-  raw_ptr<ValuablesDataManager> valuables_data_manager_;
+
+  // Observes the `ValuablesDataManager` of the profile to react to updates.
+  base::ScopedObservation<ValuablesDataManager, ValuablesDataManager::Observer>
+      valuables_data_manager_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
