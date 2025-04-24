@@ -13,8 +13,6 @@ var socketId = 0;
 var succeeded = false;
 var waitCount = 0;
 
-// Many thanks to Dennis for the StackOverflow answer: http://goo.gl/UDanx
-// Since amended to handle BlobBuilder deprecation.
 function string2ArrayBuffer(string, callback) {
   var blob = new Blob([string]);
   var f = new FileReader();

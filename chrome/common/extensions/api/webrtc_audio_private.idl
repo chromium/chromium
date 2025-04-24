@@ -11,7 +11,8 @@
 // extension calling this API (i.e. they cannot be shared between
 // extensions).
 //
-// See http://goo.gl/8rOmgk for further documentation of this API.
+// See this document for further details of this API:
+// https://docs.google.com/document/d/1un8aJoUvyt5jMUkK_hoeEJ4HRw-Nf8bA25hYUOpg_Oo/
 
 namespace webrtcAudioPrivate {
 

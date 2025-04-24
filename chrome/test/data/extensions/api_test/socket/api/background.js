@@ -26,8 +26,6 @@ var waitCount = 0;
 var request = "<this should be set based on protocol>";
 var expectedResponsePattern = "<this, too>";
 
-// Many thanks to Dennis for his StackOverflow answer: http://goo.gl/UDanx
-// Since amended to handle BlobBuilder deprecation.
 function string2ArrayBuffer(string, callback) {
   var blob = new Blob([string]);
   var f = new FileReader();

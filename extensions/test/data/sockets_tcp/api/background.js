@@ -32,8 +32,6 @@ var waitCount = 0;
 // onReceiveError. Both are functions.
 var receive_dispatcher = {}
 
-// Many thanks to Dennis for the StackOverflow answer: http://goo.gl/UDanx
-// Since amended to handle BlobBuilder deprecation.
 function string2ArrayBuffer(string, callback) {
   var blob = new Blob([string]);
   var f = new FileReader();
