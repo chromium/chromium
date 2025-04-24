@@ -517,8 +517,14 @@ bool CommandService::CanAutoAssign(const ui::Command& command,
             command.accelerator().key_code() <= ui::VKEY_9);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Not a global command, check if the command is a Chrome shortcut.
   return !chrome::IsChromeAccelerator(command.accelerator());
+#else
+  // TODO(crbug.com/406136564): Implement IsChromeAccelerator on desktop
+  // android.
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void CommandService::UpdateExtensionSuggestedCommandPrefs(
@@ -730,7 +736,10 @@ bool CommandService::GetExtensionActionCommand(const ExtensionId& extension_id,
 template <>
 void BrowserContextKeyedAPIFactory<
     CommandService>::DeclareFactoryDependencies() {
+// Global shortcuts are not supported on android.
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(ExtensionCommandsGlobalRegistry::GetFactoryInstance());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace extensions

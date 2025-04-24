@@ -207,6 +207,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui_prefs.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
@@ -220,7 +221,6 @@
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
@@ -1989,6 +1989,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
   extensions::RuntimeAPI::RegisterPrefs(registry);
+  extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::util::RegisterProfilePrefs(registry);
   extensions_ui_prefs::RegisterProfilePrefs(registry);
   ExtensionWebUI::RegisterProfilePrefs(registry);
@@ -2047,7 +2048,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
   DeviceServiceImpl::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
-  extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::TabsCaptureVisibleTabFunction::RegisterProfilePrefs(registry);
   first_run::RegisterProfilePrefs(registry);
   gcm::RegisterProfilePrefs(registry);
