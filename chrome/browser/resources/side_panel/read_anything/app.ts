@@ -747,10 +747,7 @@ export class AppElement extends AppElementBase {
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
-    const hadSpeechBeenTriggered =
-        this.speechPlayingState.hasSpeechBeenTriggered;
-    const hadWordBoundaries =
-        this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED;
+    const previousSpeechPlayingState = {...this.speechPlayingState};
     const previousWordBoundaryState = {...this.wordBoundaryState};
 
     this.speech_.cancel();
@@ -809,31 +806,23 @@ export class AppElement extends AppElementBase {
 
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.
-    if (hadSpeechBeenTriggered) {
+    if (previousSpeechPlayingState.hasSpeechBeenTriggered) {
       this.setPreviousReadingPositionIfExists_(
-          hadWordBoundaries, previousWordBoundaryState);
+          previousWordBoundaryState, previousSpeechPlayingState);
     }
   }
 
   private setPreviousReadingPositionIfExists_(
-      hadWordBoundaries: boolean,
-      previousWordBoundaryState: WordBoundaryState) {
+      previousWordBoundaryState: WordBoundaryState,
+      previousSpeechPlayingState: SpeechPlayingState) {
     if (this.lastReadingId_ === null || this.lastReadingOffset_ === null) {
       return;
     }
 
     if (this.domNodeToAxNodeIdMap_.keyFrom(this.lastReadingId_)) {
-      this.speechPlayingState = {
-        ...this.speechPlayingState,
-        hasSpeechBeenTriggered: true,
-      };
       this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
-      // If there were word boundaries before the content was updated and we can
-      // restore the reading position, restore the word boundary state so that
-      // we can restore the specific word we stopped on.
-      if (hadWordBoundaries) {
-        this.wordBoundaryState = {...previousWordBoundaryState};
-      }
+      this.speechPlayingState = {...previousSpeechPlayingState};
+      this.wordBoundaryState = {...previousWordBoundaryState};
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
