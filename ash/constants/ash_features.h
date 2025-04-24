@@ -175,6 +175,8 @@ BASE_DECLARE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeferConciergeStartup);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDemoModeAppResetWindowContainer);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeSignIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeWallpaperUpdate);
@@ -1101,6 +1103,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppLandscapeLockedEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppResetWindowContainerEnable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeWallpaperUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInFileCleanupEnabled();

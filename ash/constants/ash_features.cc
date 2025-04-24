@@ -567,6 +567,12 @@ BASE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise,
              "CryptohomeRecoveryByDefaultForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether should set demo app window's parent to
+// `kShellWindowId_AlwaysOnTopWallpaperContainer` when attract loop is playing.
+BASE_FEATURE(kDemoModeAppResetWindowContainer,
+             "DemoModeAppResetWindowContainer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether use a demo account (consumer account) to login Demo mode
 // session.
 BASE_FEATURE(kDemoModeSignIn,
@@ -3538,6 +3544,10 @@ bool IsCrossDeviceFeatureSuiteAllowed() {
 
 bool IsCrosSwitcherEnabled() {
   return base::FeatureList::IsEnabled(kCrosSwitcher);
+}
+
+bool IsDemoModeAppResetWindowContainerEnable() {
+  return base::FeatureList::IsEnabled(kDemoModeAppResetWindowContainer);
 }
 
 bool IsDemoModeSignInEnabled() {
