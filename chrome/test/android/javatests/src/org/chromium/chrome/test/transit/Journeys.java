@@ -35,8 +35,6 @@ public class Journeys {
      * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
      * incognito tabs with {@code url} loaded.
      *
-     * <p>Ensures tab thumbnails are captured to disk.
-     *
      * @param <T> specific type of PageStation for all opened tabs.
      * @param startingStation The current active station.
      * @param numRegularTabs The number of regular tabs.
@@ -45,12 +43,47 @@ public class Journeys {
      * @param pageStationFactory A factory method to create the PageStations for each tab.
      * @return the last opened tab's PageStation.
      */
+    public static <T extends PageStation> T prepareTabs(
+            PageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<PageStation.Builder<T>> pageStationFactory) {
+        return doPrepareTabs(
+                startingStation,
+                numRegularTabs,
+                numIncognitoTabs,
+                url,
+                pageStationFactory,
+                /* captureThumbnails= */ false);
+    }
+
+    /**
+     * Same as {@link #prepareTabs(PageStation, int, int, String, Supplier)}, but ensures tab
+     * thumbnails are captured to disk.
+     */
     public static <T extends PageStation> T prepareTabsWithThumbnails(
             PageStation startingStation,
             int numRegularTabs,
             int numIncognitoTabs,
             String url,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
+        return doPrepareTabs(
+                startingStation,
+                numRegularTabs,
+                numIncognitoTabs,
+                url,
+                pageStationFactory,
+                /* captureThumbnails= */ true);
+    }
+
+    private static <T extends PageStation> T doPrepareTabs(
+            PageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<PageStation.Builder<T>> pageStationFactory,
+            boolean captureThumbnails) {
         assert numRegularTabs >= 1;
         assert url != null;
         TabModelSelector tabModelSelector =
@@ -64,29 +97,29 @@ public class Journeys {
         // One tab already exists.
         if (numRegularTabs > 1) {
             station =
-                    createTabsWithThumbnails(
+                    doCreateTabs(
                             station,
                             numRegularTabs - 1,
                             url,
                             /* isIncognito= */ false,
-                            pageStationFactory);
+                            pageStationFactory,
+                            captureThumbnails);
         }
         if (numIncognitoTabs > 0) {
             station =
-                    createTabsWithThumbnails(
+                    doCreateTabs(
                             station,
                             numIncognitoTabs,
                             url,
                             /* isIncognito= */ true,
-                            pageStationFactory);
+                            pageStationFactory,
+                            captureThumbnails);
         }
         return station;
     }
 
     /**
      * Create {@code numTabs} of {@link Tab}s with {@code url} loaded to Chrome.
-     *
-     * <p>Ensures tab thumbnails are captured to disk.
      *
      * @param <T> specific type of PageStation for all opened tabs.
      * @param startingPage The current active station.
@@ -96,12 +129,47 @@ public class Journeys {
      * @param pageStationFactory A factory method to create the PageStations for each tab.
      * @return the last opened tab's PageStation.
      */
+    public static <T extends PageStation> T createTabs(
+            final PageStation startingPage,
+            int numTabs,
+            String url,
+            boolean isIncognito,
+            Supplier<PageStation.Builder<T>> pageStationFactory) {
+        return doCreateTabs(
+                startingPage,
+                numTabs,
+                url,
+                isIncognito,
+                pageStationFactory,
+                /* captureThumbnails= */ false);
+    }
+
+    /**
+     * Same as {@link #createTabs(PageStation, int, String, boolean, Supplier)}, but ensures tab
+     * thumbnails are captured to disk.
+     */
     public static <T extends PageStation> T createTabsWithThumbnails(
             final PageStation startingPage,
             int numTabs,
             String url,
             boolean isIncognito,
             Supplier<PageStation.Builder<T>> pageStationFactory) {
+        return doCreateTabs(
+                startingPage,
+                numTabs,
+                url,
+                isIncognito,
+                pageStationFactory,
+                /* captureThumbnails= */ true);
+    }
+
+    private static <T extends PageStation> T doCreateTabs(
+            final PageStation startingPage,
+            int numTabs,
+            String url,
+            boolean isIncognito,
+            Supplier<PageStation.Builder<T>> pageStationFactory,
+            boolean captureThumbnails) {
         assert numTabs > 0;
 
         TabModelSelector tabModelSelector = startingPage.getActivity().getTabModelSelector();
@@ -115,6 +183,11 @@ public class Journeys {
                             ? currentPage.openNewIncognitoTabFast()
                             : currentPage.openNewTabFast();
             currentPage = currentPage.loadPageProgrammatically(url, pageStationFactory.get());
+
+            if (!captureThumbnails) {
+                continue;
+            }
+
             boolean tryToFixThumbnail = false;
             try {
                 Condition.waitFor(

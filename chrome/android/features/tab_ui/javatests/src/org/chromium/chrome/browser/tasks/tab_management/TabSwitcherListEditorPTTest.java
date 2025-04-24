@@ -166,8 +166,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf10() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         Journeys.mergeAllTabsToNewGroup(tabSwitcher);
 
@@ -182,8 +181,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreate10TabsAndCreateTabGroupOf4() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         TabList tabList =
                 tabSwitcher.tabModelSelectorElement.get().getCurrentModel().getComprehensiveModel();
@@ -206,8 +204,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreate2TabGroups() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
 
         TabModel currentModel = pageStation.getActivity().getCurrentTabModel();
         List<Tab> tabGroup1 = List.of(currentModel.getTabAt(0), currentModel.getTabAt(3));
