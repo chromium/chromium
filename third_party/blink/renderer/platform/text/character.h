@@ -273,6 +273,8 @@ class PLATFORM_EXPORT Character {
 // This function assumes all non-BMP characters may be Bidi.
 inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
   return ch >= 0x0590 &&
+         // `InlineItemsBuilder` may emit U+200B Zero Width Space.
+         ch != kZeroWidthSpaceCharacter &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
          // CJK etc., up to Surrogate Pairs.
@@ -283,6 +285,8 @@ inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
 
 inline bool Character::MaybeBidiRtl(UChar32 ch) {
   return ch >= 0x0590 &&
+         // `InlineItemsBuilder` may emit U+200B Zero Width Space.
+         ch != kZeroWidthSpaceCharacter &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
          // CJK etc., up to Surrogate Pairs.
