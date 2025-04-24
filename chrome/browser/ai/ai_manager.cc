@@ -171,7 +171,7 @@ void OnSessionCreated(
   }
 
   if (initial_request.has_value()) {
-    session->GetContextSizeInTokens(
+    session->GetExecutionInputSizeInTokens(
         initial_request.value().read(),
         base::BindOnce(
             [](AIContextBoundObjectSet& context_bound_object_set,
@@ -568,17 +568,19 @@ void AIManager::CreateSummarizer(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
-  // TODO(crbug.com/398888519): For Summarizer, any context is not set as
-  // `input_context_substitutions` in the optimization guide model config,
-  // which makes it unable to calculate the context token size. Passing in
-  // std::nullopt would prevent unnecessary calculate calls to be made. Consider
-  // updating the model config, or use `SessionImpl::GetSizeInTokens()` instead.
+  std::optional<optimization_guide::MultimodalMessage> initial_request;
+  if (options->shared_context.has_value() &&
+      !options->shared_context.value().empty()) {
+    optimization_guide::proto::SummarizeRequest request;
+    request.set_context(options->shared_context.value());
+    initial_request = optimization_guide::MultimodalMessage(request);
+  }
   auto callback = base::BindOnce(
       &OnSessionCreated<AISummarizer, blink::mojom::AISummarizer,
                         blink::mojom::AIManagerCreateSummarizerClient,
                         blink::mojom::AISummarizerCreateOptionsPtr>,
       std::ref(context_bound_object_set_), std::move(options),
-      /*initial_request=*/std::nullopt);
+      std::move(initial_request));
   CreateWritingAssistanceSessionTask<
       blink::mojom::AIManagerCreateSummarizerClient>::
       CreateAndStart(browser_context_,

@@ -58,7 +58,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
             [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
     ON_CALL(session_, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
-    ON_CALL(session_, GetContextSizeInTokens(_, _))
+    ON_CALL(session_, GetExecutionInputSizeInTokens(_, _))
         .WillByDefault(
             [&](optimization_guide::MultimodalMessageReadView request_metadata,
                 optimization_guide::OptimizationGuideModelSizeInTokenCallback
