@@ -622,39 +622,65 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
 
 void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     JNIEnv* env,
-    jboolean needs_full_engine,
+    jboolean is_known_screen_reader_enabled,
+    jboolean is_complex_accessibility_service_enabled,
     jboolean is_form_controls_candidate,
-    jboolean is_screen_reader_running,
-    jboolean on_screen_mode) {
+    jboolean is_on_screen_mode_candidate) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
+
   auto* accessibility_state_android =
       static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
   accessibility_state_android->SetScreenReaderAppActive(
-      is_screen_reader_running);
+      is_known_screen_reader_enabled);
 
-  ui::AXMode target_mode;
   // Set the AXMode based on currently running services, sent from Java-side
-  // code and will fit into one of the below categories:
-  // 1. Screen reader -- |ui::kAXModeComplete|.
-  //    2. Only Screen reader running -- |ui::kAccessibilityOnScreenMode|.
-  // 3. Performance filtering disallowed -- |ui::kAXModeComplete|.
-  // 4. Only password manager running -- |ui::kAXModeFormControls|
-  // 5. Some accessibility services running that need more information than a
-  //       password manager, but not as much as a screenreader -
-  //       |ui::kAXModeBasic|
+  // code, in the following priority:
+  //
+  // (Note: This must /always/ take the top priority.)
+  // 1. If the performance filtering enterprise policy is disabled, then the
+  // mode must be the most complete mode possible (i.e. no performance
+  // optimizations). (ui::kAXModeComplete)
+  //
+  // 2. When a known screen reader is running, use the complete mode.
+  // (ui::kAXModeComplete)
+  //     2a. (Experimental) If a known screen reader is the only service
+  //     running, then this is a candidate to use the "on screen only"
+  //     experimental mode. (ui::kAXModeOnScreen)
+  //
+  // 3. When services are running that require detailed information according to
+  // the Java-side code (i.e. a "complex" accessibility service), use the
+  // complete mode. (ui::kAXModeComplete)
+  // TODO(aleventahl): We should split this from the known screen reader case by
+  // adding a mode specific to screen readers.
+  //
+  // 4. When the only services running are password managers, then this is a
+  // candidate for filtering for only form controls. (ui::kAXModeFormControls)
+  //
+  // 5. As a final case - at least one accessibility service must be enabled,
+  // and the union of all services has not requested enough information to be in
+  // a complete state, but has requested more than a limited state such as form
+  // controls, so fallback to a basic state. (ui::kAXModeBasic)
+  //
+  // TODO(crbug.com/413016129): Consider adding the ability to turn off the
+  // AXMode here by sending whether or not any service is running. This case is
+  // currently handled by the AutoDisableAccessibilityHandler, which waits ~5
+  // seconds before turning off accessibility, to account for quick toggling of
+  // the state. Analysis of existing data could show whether the 5 second wait
+  // is necessary.
+  ui::AXMode target_mode;
   if (!accessibility_state->IsPerformanceFilteringAllowed()) {
     target_mode = ui::kAXModeComplete;
-  } else if (needs_full_engine) {
-    if (features::IsAccessibilityOnScreenAXModeEnabled() && on_screen_mode) {
-      // Add on screen experimental mode.
-      // TODO(accessibility): expand this for other services running, not only
-      // screen reader on its own.
-      CHECK(accessibility_state->IsPerformanceFilteringAllowed());
-      target_mode = ui::kAXModeOnScreen;
+  } else if (is_known_screen_reader_enabled) {
+    if (is_on_screen_mode_candidate) {
+      target_mode = features::IsAccessibilityOnScreenAXModeEnabled()
+                        ? ui::kAXModeOnScreen
+                        : ui::kAXModeComplete;
     } else {
       target_mode = ui::kAXModeComplete;
     }
+  } else if (is_complex_accessibility_service_enabled) {
+    target_mode = ui::kAXModeComplete;
   } else if (is_form_controls_candidate) {
     target_mode = ui::kAXModeFormControls;
   } else {
@@ -1511,8 +1537,8 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     jboolean forwards,
     jboolean can_wrap_to_last_element,
     jboolean use_default_predicate,
-    jboolean is_talkback_enabled,
-    jboolean is_only_talkback_enabled) {
+    jboolean is_known_screen_reader_enabled,
+    jboolean is_only_one_accessibility_service_enabled) {
   base::ElapsedTimer timer;
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
   if (!start_node) {
@@ -1552,13 +1578,14 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   }
 
   // Record the type of element that was used for navigation, splitting by
-  // whether or not TalkBack was running to see how frequently other apps use
-  // this functionality.
-  if (is_only_talkback_enabled) {
+  // whether or not a screen reader was running to see how frequently other apps
+  // use this functionality.
+  if (is_known_screen_reader_enabled &&
+      is_only_one_accessibility_service_enabled) {
     base::UmaHistogramEnumeration(
         "Accessibility.Android.FindElementType.Usage2.TalkBack",
         EnumForPredicate(element_type));
-  } else if (is_talkback_enabled) {
+  } else if (is_known_screen_reader_enabled) {
     base::UmaHistogramEnumeration(
         "Accessibility.Android.FindElementType.Usage2."
         "TalkBackWithOtherAT",

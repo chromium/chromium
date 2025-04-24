@@ -859,7 +859,7 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
                     AccessibilityState.setServiceIdsForTesting(KNOWN_SCREEN_READER_SERVICE_IDS);
                 });

@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.util.Pair;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -400,6 +399,11 @@ public class AccessibilityState {
     public static boolean isHighContrastEnabled() {
         if (!sExtraStateInitialized) updateExtraState();
         return sHighContrastEnabled;
+    }
+
+    public static int getNumberOfRunningServices() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sServiceIds).size();
     }
 
     /**
@@ -835,27 +839,6 @@ public class AccessibilityState {
         }
 
         return relevantEventTypes;
-    }
-
-    /**
-     * Checks the current enabled state of TalkBack. TalkBack can either be disabled, enabled with
-     * other services running, or be the only enabled service.
-     *
-     * @return A {@link Pair} where the first boolean indicates whether or not TalkBack is enabled
-     *     at all, and the second boolean indicates whether or not TalkBack is the only running
-     *     accessibility service.
-     */
-    public static Pair<Boolean, Boolean> getTalkBackEnabledState() {
-        if (!sInitialized) updateAccessibilityServices();
-        if (sServiceIds == null || sServiceIds.isEmpty()) {
-            return new Pair<Boolean, Boolean>(false, false);
-        }
-
-        boolean isTalkBackEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
-        boolean isOnlyOneServiceEnabled = sServiceIds.size() == 1;
-
-        return new Pair<Boolean, Boolean>(
-                isTalkBackEnabled, isTalkBackEnabled && isOnlyOneServiceEnabled);
     }
 
     /**
@@ -1324,6 +1307,7 @@ public class AccessibilityState {
 
     private static void initializeForTesting() {
         sState = new State(false, false, false, false, false, false, false, false, false);
+        sServiceIds = new ArrayList<String>();
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;
@@ -1331,6 +1315,7 @@ public class AccessibilityState {
 
     protected static void uninitializeForTesting() {
         sState = null;
+        sServiceIds = null;
         sAccessibilityManager = null;
         sInitialized = false;
         sIsInTestingMode = false;
