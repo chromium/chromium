@@ -5,6 +5,7 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
@@ -15,8 +16,6 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,18 +87,16 @@ TEST_F(CrashReportingContextTest, GetNewReportsFromDB) {
 }
 
 TEST_F(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
   time_t timestamp = base::Time::Now().ToTimeT();
 
-  SetLatestCrashReportTime(&pref_service, timestamp);
-  ASSERT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
+  SetLatestCrashReportTime(g_browser_process->local_state(), timestamp);
+  ASSERT_EQ(timestamp,
+            GetLatestCrashReportTime(g_browser_process->local_state()));
 }
 
 TEST_F(CrashReportingContextTest, UploadToReportingServer) {
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
-  EXPECT_EQ(static_cast<long>(0u), GetLatestCrashReportTime(&pref_service));
+  EXPECT_EQ(static_cast<long>(0u),
+            GetLatestCrashReportTime(g_browser_process->local_state()));
 
   time_t timestamp = base::Time::Now().ToTimeT();
   std::vector<crashpad::CrashReportDatabase::Report> reports;
@@ -128,9 +125,10 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
               ReportPastEvent(kBrowserCrashEvent, _, _,
                               base::Time::FromTimeT(timestamp)))
       .Times(1);
-  UploadToReportingServer(reporting_client->AsWeakPtrImpl(), &pref_service,
-                          reports);
-  EXPECT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
+  UploadToReportingServer(reporting_client->AsWeakPtrImpl(),
+                          g_browser_process->local_state(), reports);
+  EXPECT_EQ(timestamp,
+            GetLatestCrashReportTime(g_browser_process->local_state()));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
