@@ -1822,8 +1822,9 @@ void AutocompleteController::UpdateKeywordDescriptions(
               (i->description).size(), ACMatchClassification::DIM));
           // TODO(crbug.com/407610885): Localize the people suggestion metadata.
           i->description +=
-              u" - " + template_url->AdjustedShortNameForLocaleDirection() +
-              u" People";
+              u" - " + l10n_util::GetStringFUTF16(
+                           IDS_PERSON_SUGGESTION_DESCRIPTION,
+                           template_url->AdjustedShortNameForLocaleDirection());
         }
       }
       last_keyword = i->keyword;
