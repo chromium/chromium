@@ -1891,6 +1891,11 @@ void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   MaybeNotifyWindowModalVisibilityChanged(visible);
 }
 
+void Widget::OnNativeWidgetVisibilityOnScreenChanged(bool visible) {
+  observers_.Notify(&WidgetObserver::OnWidgetVisibilityOnScreenChanged, this,
+                    visible);
+}
+
 void Widget::OnNativeWidgetCreated() {
   if (is_top_level()) {
     focus_manager_ = FocusManagerFactory::Create(this);

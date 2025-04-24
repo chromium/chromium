@@ -751,7 +751,7 @@ bool NativeWidgetMac::IsVisible() const {
 }
 
 bool NativeWidgetMac::IsVisibleOnScreen() const {
-  return IsVisible() && ns_window_host_ && ns_window_host_->IsOnActiveSpace();
+  return ns_window_host_ && ns_window_host_->IsVisibleOnScreen();
 }
 
 void NativeWidgetMac::Activate() {

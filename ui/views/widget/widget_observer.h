@@ -57,7 +57,13 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   virtual void OnWidgetDragWillStart(Widget* widget) {}
   virtual void OnWidgetDragComplete(Widget* widget) {}
 
+  // Called when Widget::IsVisible() changed.
   virtual void OnWidgetVisibilityChanged(Widget* widget, bool visible) {}
+
+  // Called when Widget::IsVisibleOnScreen() changed. Only supported on macOS.
+  // TODO(crbug.com/410938804): supports other platforms.
+  virtual void OnWidgetVisibilityOnScreenChanged(Widget* widget, bool visible) {
+  }
 
   virtual void OnWidgetActivationChanged(Widget* widget, bool active) {}
 
