@@ -553,6 +553,8 @@ void TemplateURLService::RegisterProfilePrefs(
       std::string());
   registry->RegisterDictionaryPref(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  registry->RegisterInt64Pref(
+      prefs::kDefaultSearchProviderChoiceInvalidationTimestamp, 0);
 
 #if BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(

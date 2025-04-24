@@ -311,6 +311,10 @@ void SetChoiceCompletionMetadata(PrefService& prefs,
 std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
     PrefService& prefs);
 
+void ClearSearchEngineChoiceInvalidation(PrefService& prefs);
+
+bool IsSearchEngineChoiceInvalid(PrefService& prefs);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the engine marketing snippet string resource id or -1 if the snippet
 // was not found.

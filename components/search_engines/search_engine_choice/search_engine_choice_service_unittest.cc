@@ -861,24 +861,6 @@ class SearchEngineChoiceServiceDeviceRestoreTest
     }
   }
 
-  void PopulateLazyFactories(
-      SearchEnginesTestEnvironment::ServiceFactories& lazy_factories,
-      InitServiceArgs args) override {
-    lazy_factories.search_engine_choice_service_factory =
-        base::BindLambdaForTesting(
-            [args](SearchEnginesTestEnvironment& environment) {
-              return std::make_unique<SearchEngineChoiceService>(
-                  std::make_unique<FakeSearchEngineChoiceServiceClient>(
-                      args.variation_country_id,
-                      args.is_profile_eligible_for_dse_guest_propagation,
-                      GetParam().restore_detected_in_current_session,
-                      GetParam().choice_predates_restore),
-                  environment.pref_service(), &environment.local_state(),
-                  environment.regional_capabilities_service(),
-                  environment.prepopulate_data_resolver());
-            });
-  }
-
   static std::string GetTestSuffix(
       const testing::TestParamInfo<DeviceRestoreTestParam>& info) {
     return info.param.test_suffix;
@@ -923,7 +905,12 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
                               {base::Time::Now(), base::Version("1.0.0.0")});
 
   // Trigger the creation of the service, which should check for the reprompt.
-  search_engine_choice_service();
+  InitService({
+      .force_reset = true,
+      .restore_detected_in_current_session =
+          GetParam().restore_detected_in_current_session,
+      .choice_predates_restore = GetParam().choice_predates_restore,
+  });
 
   if (GetParam().expect_choice_info_wipe) {
     EXPECT_FALSE(pref_service()->HasPrefPath(

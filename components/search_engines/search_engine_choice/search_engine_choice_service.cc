@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -336,7 +337,8 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   }
   CHECK(default_search_engine);
 
-  if (default_search_engine->GetEngineType(
+  if (!IsSearchEngineChoiceInvalid(profile_prefs_.get()) &&
+      default_search_engine->GetEngineType(
           template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
     return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
   }
@@ -399,6 +401,8 @@ void SearchEngineChoiceService::RecordChoiceMade(
     ChoiceMadeLocation choice_location,
     TemplateURLService* template_url_service) {
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
+
+  ClearSearchEngineChoiceInvalidation(*profile_prefs_);
 
   // Don't modify the pref if the user is not in the EEA region.
   if (!regional_capabilities_service_->IsInEeaCountry()) {

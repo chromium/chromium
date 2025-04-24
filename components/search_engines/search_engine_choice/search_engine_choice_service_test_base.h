@@ -23,6 +23,8 @@ struct InitServiceArgs {
   country_codes::CountryId client_country_id;
   bool force_reset = false;
   bool is_profile_eligible_for_dse_guest_propagation = false;
+  bool restore_detected_in_current_session = false;
+  bool choice_predates_restore = false;
 };
 
 class SearchEngineChoiceServiceTestBase : public ::testing::Test {

@@ -13,8 +13,10 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -213,6 +215,14 @@ void RecordChoiceScreenPositions(
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  SearchEngineChoiceWipeReason reason) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
+  if (reason == SearchEngineChoiceWipeReason::kDeviceRestored &&
+      profile_prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    profile_prefs.SetInt64(
+        prefs::kDefaultSearchProviderChoiceInvalidationTimestamp,
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  }
+
   profile_prefs.ClearPref(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
   profile_prefs.ClearPref(
@@ -263,8 +273,37 @@ GetChoiceCompletionMetadata(const PrefService& prefs) {
   };
 }
 
+void ClearSearchEngineChoiceInvalidation(PrefService& prefs) {
+  prefs.ClearPref(prefs::kDefaultSearchProviderChoiceInvalidationTimestamp);
+}
+
+bool IsSearchEngineChoiceInvalid(PrefService& prefs) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+    // Ensure that we never consider a search engine choice invalid when the
+    // feature is disabled. This could happen if a user changes experiment
+    // groups for example.
+    return false;
+  }
+
+  if (prefs.GetInt64(prefs::kDefaultSearchProviderChoiceInvalidationTimestamp) >
+      0) {
+    CHECK(!prefs.HasPrefPath(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+          base::NotFatalUntil::M140);
+    return true;
+  }
+
+  return false;
+}
+
 void SetChoiceCompletionMetadata(PrefService& prefs,
                                  ChoiceCompletionMetadata metadata) {
+  // Verify that any invalidation has already been cleared. Otherwise the
+  // completion
+  // will be ignored.
+  CHECK(!IsSearchEngineChoiceInvalid(prefs), base::NotFatalUntil::M140);
+
   prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
                  metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
   prefs.SetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
