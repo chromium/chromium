@@ -429,19 +429,30 @@ DictValue DictValue::Clone() const {
 }
 
 void DictValue::Merge(DictValue dict) {
-  for (const auto [key, value] : dict) {
-    if (DictValue* nested_dict = value.GetIfDict()) {
-      if (DictValue* current_dict = FindDict(key)) {
-        // If `key` is a nested dictionary in this dictionary and the dictionary
-        // being merged, recursively merge the two dictionaries.
+  if (empty()) {
+    *this = std::move(dict);
+    return;
+  }
+
+  for (auto& [key, value] : dict.storage_) {
+    // Temporarily use nullptr for newly inserted values to avoid allocating a
+    // `std::unique_ptr` unnecessarily; this will be replaced with `value`
+    // itself.
+    auto [it, inserted] = storage_.try_emplace(std::move(key), nullptr);
+    if (!inserted) {
+      DictValue* nested_dict = value->GetIfDict();
+      DictValue* current_dict = it->second->GetIfDict();
+      // If `key` is a nested dictionary in this dictionary and the dictionary
+      // being merged, recursively merge the two dictionaries.
+      if (nested_dict && current_dict) {
         current_dict->Merge(std::move(*nested_dict));
         continue;
       }
     }
 
     // Otherwise, unconditionally set the value, overwriting any value that may
-    // already be associated with the key.
-    Set(key, std::move(value));
+    // already be associated with the key, including the temporary nullptr.
+    it->second = std::move(value);
   }
 }
 
