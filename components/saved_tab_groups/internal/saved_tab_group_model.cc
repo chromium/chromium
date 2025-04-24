@@ -526,6 +526,10 @@ void SavedTabGroupModel::UpdateTabLastSeenTime(const base::Uuid& group_id,
   SavedTabGroup* group = GetMutableGroup(group_id);
   CHECK(group);
 
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
   SavedTabGroupTab* tab = group->GetTab(tab_id);
   CHECK(tab);
 

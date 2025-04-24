@@ -1068,6 +1068,12 @@ void TabGroupSyncServiceImpl::UpdateArchivalStatus(const base::Uuid& sync_id,
   model_->UpdateArchivalStatus(sync_id, archival_status);
 }
 
+void TabGroupSyncServiceImpl::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                                    const base::Uuid& tab_id,
+                                                    TriggerSource source) {
+  model_->UpdateTabLastSeenTime(group_id, tab_id, base::Time::Now(), source);
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceImpl::GetTabGroupSyncMetricsLogger() {
   return metrics_logger_.get();
