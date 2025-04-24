@@ -62,6 +62,7 @@ void FileSystemAccessPageActionController::UpdateVisibility() {
       page_action_controller->Show(kActionShowFileSystemAccess);
     }
   } else {
+    FileSystemAccessUsageBubbleView::CloseCurrentBubble();
     HideIcon();
   }
 }
