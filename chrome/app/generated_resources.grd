@@ -11959,6 +11959,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME" desc="The accessible name of the tab-group-title textfield.">
           Tab-group title
       </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_FACE_PILE_ACCESSIBLE_NAME" desc="The accessible name of face pile bubbles [ICU Syntax]">
+          {MEMBER_COUNT, plural,
+            =1 {# member in the group}
+            other {# members in the group}
+          }
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="The label of the tab group header context menu item for adding a new tab into the current group.">
           New tab in group
