@@ -87,8 +87,7 @@
 #elif PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #elif PA_BUILDFLAG(IS_APPLE)
-#include <mach/host_info.h>
-#include <mach/mach.h>
+#include <sys/sysctl.h>
 #elif PA_BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
@@ -121,14 +120,11 @@ uint64_t AmountOfPhysicalMemory() {
   }
   return 0;
 #elif PA_BUILDFLAG(IS_APPLE)
-  struct host_basic_info host_basic_info;
-  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  if (host_info(mach_host_self(), HOST_BASIC_INFO,
-                reinterpret_cast<host_info_t>(&host_basic_info),
-                &count) == KERN_SUCCESS) {
-    return host_basic_info.max_mem;
-  }
-  return 0;
+  uint64_t physical_memory;
+  size_t size = sizeof(physical_memory);
+  int rv = sysctlbyname("hw.memsize", &physical_memory, &size, nullptr, 0);
+  PA_CHECK(rv == 0) << "sysctlbyname(\"hw.memsize\")";
+  return physical_memory;
 #elif PA_BUILDFLAG(IS_POSIX)
   long pages = sysconf(_SC_PHYS_PAGES);
   long page_size = sysconf(_SC_PAGESIZE);
