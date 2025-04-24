@@ -35,7 +35,7 @@ SplitTabActiveLocation SplitTabData::GetActiveTabLocation() {
     return SplitTabActiveLocation::kNone;
   }
 
-  if (visual_data_.split_layout() == SplitTabLayout::kHorizontal) {
+  if (visual_data_.split_layout() == SplitTabLayout::kVertical) {
     return first_tab_activated ? SplitTabActiveLocation::kLeft
                                : SplitTabActiveLocation::kRight;
   } else {

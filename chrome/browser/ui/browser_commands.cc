@@ -1257,7 +1257,7 @@ void NewSplitTab(Browser* browser) {
       GURL(chrome::kChromeUISplitViewNewTabPageURL), active_index + 1, true,
       tab_strip_model->GetTabGroupForTab(active_index));
   tab_strip_model->AddToNewSplit({active_index},
-                                 split_tabs::SplitTabLayout::kHorizontal);
+                                 split_tabs::SplitTabLayout::kVertical);
 }
 
 void AddNewTabToGroup(Browser* browser) {

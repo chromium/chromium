@@ -338,7 +338,7 @@ void BrowserTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {
     chrome::NewSplitTab(browser_);
   } else {
     browser_->tab_strip_model()->AddToNewSplit(
-        indices, split_tabs::SplitTabLayout::kHorizontal);
+        indices, split_tabs::SplitTabLayout::kVertical);
   }
 }
 
