@@ -127,7 +127,7 @@ class AILanguageModel : public AIContextBoundObject,
 
   // `blink::mojom::AILanguageModel` implementation.
   void Prompt(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-              const std::optional<std::string>& response_json_schema,
+              on_device_model::mojom::ResponseConstraintPtr constraint,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Fork(
@@ -155,7 +155,7 @@ class AILanguageModel : public AIContextBoundObject,
   void PromptGetInputSizeCompletion(
       mojo::RemoteSetElementId responder_id,
       Context::ContextItem current_item,
-      const std::optional<std::string>& response_json_schema,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
       std::optional<uint32_t> result);
   void ModelExecutionCallback(
       const Context::ContextItem& current_item,

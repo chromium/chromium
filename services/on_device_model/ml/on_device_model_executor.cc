@@ -313,7 +313,12 @@ void SessionImpl::Generate(
   ChromeMLConstraint constraint = 0;
   if (options->response_json_schema &&
       !options->response_json_schema->empty()) {
-    constraint = executor_->CreateConstraint(*options->response_json_schema);
+    options->constraint =
+        on_device_model::mojom::ResponseConstraint::NewJsonSchema(
+            *options->response_json_schema);
+  }
+  if (options->constraint) {
+    constraint = executor_->CreateConstraint(*options->constraint);
     if (!constraint) {
       // TODO(crbug.com/391919456): Propagate error.
       responder_.reset();
@@ -466,7 +471,7 @@ OnDeviceModelExecutor::LoadAdaptation(
 
 DISABLE_CFI_DLSYM
 ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
-    const std::string& json_schema) {
+    const on_device_model::mojom::ResponseConstraint& response_constraint) {
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (!tokenizer_) {
     CHECK(chrome_ml_->api().GetTokenizerParams(
@@ -497,8 +502,20 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
 
   LlgConstraintInit init;
   llg_constraint_init_set_defaults(&init, tokenizer_);
-  LlgConstraint* constraint =
-      llg_new_constraint_json(&init, json_schema.c_str());
+  LlgConstraint* constraint = nullptr;
+  switch (response_constraint.which()) {
+    case on_device_model::mojom::ResponseConstraint::Tag::kJsonSchema:
+      constraint = llg_new_constraint_json(
+          &init, response_constraint.get_json_schema().c_str());
+      break;
+    case on_device_model::mojom::ResponseConstraint::Tag::kRegex:
+      constraint = llg_new_constraint_regex(
+          &init, response_constraint.get_regex().c_str());
+      break;
+    case on_device_model::mojom::ResponseConstraint::Tag::kUnknownType:
+      LOG(ERROR) << "Unknown constraint type.";
+      return 0;
+  }
   const char* error = llg_get_error(constraint);
   if (error) {
     LOG(ERROR) << "Error creating constraint: " << error;

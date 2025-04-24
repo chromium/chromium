@@ -386,6 +386,49 @@ BuildPrompts(
   return prompts;
 }
 
+// Parses `constraint` from `options` if available. On success or if no
+// constraint is present returns true, returns false and throws an exception on
+// failure.
+bool ParseConstraint(
+    ScriptState* script_state,
+    const LanguageModelPromptOptions* options,
+    ExceptionState& exception_state,
+    on_device_model::mojom::blink::ResponseConstraintPtr& constraint) {
+  if (!options->hasResponseConstraint()) {
+    return true;
+  }
+
+  if (!RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
+          ExecutionContext::From(script_state))) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "responseConstraint is not supported");
+    return false;
+  }
+
+  v8::Local<v8::Object> value = options->responseConstraint().V8Object();
+  if (value->IsRegExp()) {
+    constraint = on_device_model::mojom::blink::ResponseConstraint::NewRegex(
+        ToBlinkString<String>(script_state->GetIsolate(),
+                              value.As<v8::RegExp>()->GetSource(),
+                              ExternalMode::kDoNotExternalize));
+  } else if (value->IsObject()) {
+    String stringified_schema = ValidateAndStringifyObject(
+        options->responseConstraint(), script_state, exception_state);
+    if (!stringified_schema) {
+      // ValidateAndStringifyObject throws an exception when it returns
+      // a null string.
+      return false;
+    }
+    constraint =
+        on_device_model::mojom::blink::ResponseConstraint::NewJsonSchema(
+            stringified_schema);
+  } else {
+    exception_state.ThrowTypeError("Constraint type is not supported");
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -518,18 +561,10 @@ ScriptPromise<IDLString> LanguageModel::prompt(
     return promise;
   }
 
-  String stringified_schema;
-  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
-          GetExecutionContext())) {
-    if (options->hasResponseJSONSchema()) {
-      stringified_schema = ValidateAndStringifyObject(
-          options->responseJSONSchema(), script_state, exception_state);
-      if (!stringified_schema) {
-        // ValidateAndStringifyObject throws an exception, which automatically
-        // rejects the promise, when it returns a null string.
-        return promise;
-      }
-    }
+  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
+  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
+    // ParseConstraint will throw an exception when false is returned.
+    return promise;
   }
 
   auto pending_remote = CreateModelExecutionResponder(
@@ -540,7 +575,7 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                          WrapWeakPersistent(this)));
   language_model_remote_->Prompt(std::move(prompts).value(),
-                                 std::move(stringified_schema),
+                                 std::move(constraint),
                                  std::move(pending_remote));
   return promise;
 }
@@ -594,18 +629,10 @@ ReadableStream* LanguageModel::promptStreaming(
     return nullptr;
   }
 
-  String stringified_schema;
-  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
-          GetExecutionContext())) {
-    if (options->hasResponseJSONSchema()) {
-      stringified_schema = ValidateAndStringifyObject(
-          options->responseJSONSchema(), script_state, exception_state);
-      if (!stringified_schema) {
-        // ValidateAndStringifyObject throws an exception when it returns
-        // nullopt.
-        return nullptr;
-      }
-    }
+  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
+  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
+    // ParseConstraint will throw an exception when false is returned.
+    return nullptr;
   }
 
   auto [readable_stream, pending_remote] =
@@ -618,7 +645,7 @@ ReadableStream* LanguageModel::promptStreaming(
                              WrapWeakPersistent(this)));
 
   language_model_remote_->Prompt(std::move(prompts).value(),
-                                 std::move(stringified_schema),
+                                 std::move(constraint),
                                  std::move(pending_remote));
   return readable_stream;
 }

@@ -911,7 +911,7 @@ TEST_F(OnDeviceModelServiceTest, SetPriorityCloneInherits) {
 }
 
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
-TEST_F(OnDeviceModelServiceTest, JSONSchema) {
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraint) {
   auto model = LoadModel();
 
   TestResponseHolder response;
@@ -919,7 +919,7 @@ TEST_F(OnDeviceModelServiceTest, JSONSchema) {
   model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
 
   auto options = mojom::GenerateOptions::New();
-  options->response_json_schema = R"({
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema(R"({
     "type": "object",
     "required": ["Rating"],
     "additionalProperties": false,
@@ -930,14 +930,14 @@ TEST_F(OnDeviceModelServiceTest, JSONSchema) {
         "maximum": 5
       }
     }
-  })";
+  })");
   session->Generate(std::move(options), response.BindRemote());
   response.WaitForCompletion();
 
   EXPECT_THAT(response.responses(), ElementsAre(R"({"Rating":1})"));
 }
 
-TEST_F(OnDeviceModelServiceTest, JSONSchemaInvalid) {
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintInvalid) {
   auto model = LoadModel();
 
   TestResponseHolder response;
@@ -946,13 +946,28 @@ TEST_F(OnDeviceModelServiceTest, JSONSchemaInvalid) {
   session->Append(MakeInput("hi"), {});
 
   auto options = mojom::GenerateOptions::New();
-  options->response_json_schema = "blah";
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema("blah");
   session->Generate(std::move(options), response.BindRemote());
   response.WaitForCompletion();
 
   // For now invalid schema will cause a disconnect.
   EXPECT_THAT(response.responses(), ElementsAre());
   EXPECT_TRUE(response.disconnected());
+}
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraint) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("hello");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("hello"));
 }
 #endif
 

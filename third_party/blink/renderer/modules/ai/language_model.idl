@@ -9,7 +9,7 @@ dictionary LanguageModelCloneOptions {
 };
 
 dictionary LanguageModelPromptOptions {
-  object responseJSONSchema;
+  object responseConstraint;
   AbortSignal signal;
 };
 

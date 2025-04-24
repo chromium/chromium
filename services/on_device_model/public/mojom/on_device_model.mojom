@@ -196,6 +196,20 @@ struct AppendOptions {
   uint32 token_offset = 0;
 };
 
+[Stable, Extensible]
+union ResponseConstraint {
+  // A JSON schema defining structured output requirements for the response.
+  // Passed as an opaque JSON blob to llguidance.
+  string json_schema;
+
+  // A regex string specifying the output constraints.
+  string regex;
+
+  // Used to handle version skew.
+  [Default]
+  bool unknown_type;
+};
+
 [Stable]
 struct GenerateOptions {
   // The maximum number of tokens that should be output from a call to
@@ -208,9 +222,12 @@ struct GenerateOptions {
   // Deprecated: use SessionParams.temperature instead.
   float? temperature;
 
-  // A JSON schema defining structured output requirements for the response.
-  // Passed as an opaque JSON blob to llguidance.
+  // Deprecated: use `constraint` instead.
   [MinVersion=1] string? response_json_schema;
+
+  // Specifies any constraints on the output for this Generate() call. Note that
+  // only one of the JSON schema or regex constraints should be provided.
+  [MinVersion=2] ResponseConstraint? constraint;
 };
 
 // Priorities which determine how requests to a session are scheduled.

@@ -109,7 +109,7 @@ class OnDeviceExecution final
       OnDeviceOptions opts,
       ExecuteRemoteFn execute_remote_fn,
       MultimodalMessage message,
-      std::optional<std::string> response_json_schema,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
       std::unique_ptr<ResultLogger> logger,
       OptimizationGuideModelExecutionResultStreamingCallback callback,
       base::OnceCallback<void(bool)> cleanup_callback);
@@ -218,8 +218,8 @@ class OnDeviceExecution final
 
   // The request message.
   MultimodalMessage last_message_;
-  // A JSON schema defining structured output requirements for the response.
-  std::optional<std::string> response_json_schema_;
+  // A constraint defining structured output requirements for the response.
+  on_device_model::mojom::ResponseConstraintPtr constraint_;
   // Time ExecuteModel() was called.
   base::TimeTicks start_;
   // Used to log the result of ExecuteModel().

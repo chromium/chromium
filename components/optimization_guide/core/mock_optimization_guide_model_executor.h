@@ -76,9 +76,9 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
        OptimizationGuideModelExecutionResultStreamingCallback callback));
   MOCK_METHOD(
       void,
-      ExecuteModelWithResponseJsonSchema,
+      ExecuteModelWithResponseConstraint,
       (const google::protobuf::MessageLite& request_metadata,
-       const std::optional<std::string>& response_json_schema,
+       on_device_model::mojom::ResponseConstraintPtr constraint,
        OptimizationGuideModelExecutionResultStreamingCallback callback));
   MOCK_METHOD(void,
               GetSizeInTokens,

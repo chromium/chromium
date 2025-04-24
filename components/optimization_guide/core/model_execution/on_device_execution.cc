@@ -97,7 +97,7 @@ OnDeviceExecution::OnDeviceExecution(
     OnDeviceOptions opts,
     ExecuteRemoteFn execute_remote_fn,
     MultimodalMessage message,
-    std::optional<std::string> response_json_schema,
+    on_device_model::mojom::ResponseConstraintPtr constraint,
     std::unique_ptr<ResultLogger> logger,
     OptimizationGuideModelExecutionResultStreamingCallback callback,
     base::OnceCallback<void(bool)> cleanup_callback)
@@ -105,7 +105,7 @@ OnDeviceExecution::OnDeviceExecution(
       opts_(std::move(opts)),
       execute_remote_fn_(execute_remote_fn),
       last_message_(std::move(message)),
-      response_json_schema_(std::move(response_json_schema)),
+      constraint_(std::move(constraint)),
       histogram_logger_(std::move(logger)),
       callback_(std::move(callback)),
       cleanup_callback_(std::move(cleanup_callback)) {
@@ -188,7 +188,7 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
 
   auto options = on_device_model::mojom::GenerateOptions::New();
   options->max_output_tokens = opts_.token_limits.max_output_tokens;
-  options->response_json_schema = std::move(response_json_schema_);
+  options->constraint = std::move(constraint_);
 
   opts_.safety_checker->RunRequestChecks(
       last_message_,

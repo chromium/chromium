@@ -57,8 +57,8 @@ bool HandleAbortSignal(AbortSignal* signal,
 bool ValidateScriptState(ScriptState* script_state,
                          ExceptionState& exception_state);
 
-// Validates and stringifies the responseJSONSchema option if provided.
-// Throws an exception if an unsupported schema is detected.
+// Validates and stringifies the responseConstraint JSON schema option if
+// provided. Throws an exception if an unsupported schema is detected.
 String ValidateAndStringifyObject(const ScriptValue& input,
                                   ScriptState* script_state,
                                   ExceptionState& exception_state);
