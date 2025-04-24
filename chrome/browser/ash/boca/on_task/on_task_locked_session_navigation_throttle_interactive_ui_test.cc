@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to URLs that should be blocked.
   const GURL google_search_url =
-      embedded_test_server()->GetURL(kTabGoogleHost, "/?q=test");
+      embedded_test_server()->GetURL(kTabGoogleHost, "/search?q=test");
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(boca_app_browser, google_search_url));
   EXPECT_NE(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
