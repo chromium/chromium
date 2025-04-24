@@ -191,6 +191,13 @@ function assert_prefetched (requestHeaders, description) {
                   ["prefetch", "prefetch;anonymous-client-ip"], description);
 }
 
+function assert_prefetched_anonymous_client_ip(requestHeaders, description) {
+  assert_in_array(requestHeaders.purpose, ["", "prefetch"], "The vendor-specific header Purpose, if present, must be 'prefetch'.");
+  assert_equals(requestHeaders.sec_purpose,
+                "prefetch;anonymous-client-ip",
+                description);
+}
+
 function assert_not_prefetched (requestHeaders, description){
   assert_equals(requestHeaders.purpose, "", description);
   assert_equals(requestHeaders.sec_purpose, "", description);
