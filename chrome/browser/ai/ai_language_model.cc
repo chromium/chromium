@@ -9,7 +9,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
@@ -490,7 +489,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
       context_->max_tokens(), context_->current_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature),
-      base::ToVector(input_types));
+      std::move(input_types).extract());
 }
 
 void AILanguageModel::MeasureInputUsage(

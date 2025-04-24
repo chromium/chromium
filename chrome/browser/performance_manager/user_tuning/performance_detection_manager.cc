@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
@@ -174,8 +173,7 @@ PerformanceDetectionManager::PerformanceDetectionManager() {
   CHECK(!g_performance_detection_manager);
   g_performance_detection_manager = this;
 
-  const std::vector<ResourceType> resource_types =
-      base::ToVector(ResourceTypeSet::All());
+  const auto resource_types = ResourceTypeSet::All();
   current_health_status_ = base::MakeFlatMap<ResourceType, HealthLevel>(
       resource_types, {}, [](ResourceType type) {
         return std::make_pair(type, HealthLevel::kHealthy);
