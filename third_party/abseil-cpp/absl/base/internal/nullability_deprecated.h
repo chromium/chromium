@@ -11,16 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-#ifndef ABSL_BASE_INTERNAL_NULLABILITY_IMPL_H_
-#define ABSL_BASE_INTERNAL_NULLABILITY_IMPL_H_
-
-#include <memory>
-#include <type_traits>
+#ifndef ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_
+#define ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/meta/type_traits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -63,7 +58,49 @@ using NullabilityUnknownImpl
 #endif
 
 }  // namespace nullability_internal
+
+// The following template aliases are deprecated forms of nullability
+// annotations. They have some limitations, for example, an incompatibility with
+// `auto*` pointers, as `auto` cannot be used in a template argument.
+//
+// It is important to note that these annotations are not distinct strong
+// *types*. They are alias templates defined to be equal to the underlying
+// pointer type. A pointer annotated `Nonnull<T*>`, for example, is simply a
+// pointer of type `T*`.
+//
+// Prefer the macro style annotations in `absl/base/nullability.h` instead.
+
+// absl::Nonnull, analogous to absl_nonnull
+//
+// Example:
+// absl::Nonnull<int*> foo;
+// Is equivalent to:
+// int* absl_nonnull foo;
+template <typename T>
+using Nonnull =
+    nullability_internal::NonnullImpl<T>;
+
+// absl::Nullable, analogous to absl_nullable
+//
+// Example:
+// absl::Nullable<int*> foo;
+// Is equivalent to:
+// int* absl_nullable foo;
+template <typename T>
+using Nullable =
+    nullability_internal::NullableImpl<T>;
+
+// absl::NullabilityUnknown, analogous to absl_nullability_unknown
+//
+// Example:
+// absl::NullabilityUnknown<int*> foo;
+// Is equivalent to:
+// int* absl_nullability_unknown foo;
+template <typename T>
+using NullabilityUnknown =
+    nullability_internal::NullabilityUnknownImpl<T>;
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_BASE_INTERNAL_NULLABILITY_IMPL_H_
+#endif  // ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_

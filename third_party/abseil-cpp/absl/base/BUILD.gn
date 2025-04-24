@@ -37,12 +37,11 @@ absl_source_set("no_destructor") {
 }
 
 absl_source_set("nullability") {
-  sources = [ "internal/nullability_impl.h" ]
+  sources = [ "internal/nullability_deprecated.h" ]
   public = [ "nullability.h" ]
   deps = [
     ":config",
     ":core_headers",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
 }
 

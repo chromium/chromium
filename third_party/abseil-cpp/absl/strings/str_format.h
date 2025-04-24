@@ -609,7 +609,7 @@ using FormatArg = str_format_internal::FormatArgImpl;
 //
 // Note that unlike with AbslFormatConvert(), AbslStringify() does not allow
 // customization of allowed conversion characters. AbslStringify() uses `%v` as
-// the underlying conversion specififer. Additionally, AbslStringify() supports
+// the underlying conversion specifier. Additionally, AbslStringify() supports
 // use with absl::StrCat while AbslFormatConvert() does not.
 //
 // Example:

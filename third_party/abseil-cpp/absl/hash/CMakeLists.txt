@@ -39,6 +39,7 @@ absl_cc_library(
     absl::variant
     absl::utility
     absl::low_level_hash
+    absl::weakly_mixed_integer
   PUBLIC
 )
 
@@ -119,6 +120,7 @@ absl_cc_library(
     absl::hash
     absl::strings
     absl::str_format
+    absl::weakly_mixed_integer
   TESTONLY
   PUBLIC
 )
@@ -167,6 +169,18 @@ absl_cc_library(
     absl::endian
     absl::int128
     absl::prefetch
+)
+
+# Internal-only target, do not depend on directly.
+absl_cc_library(
+  NAME
+    weakly_mixed_integer
+  HDRS
+    "internal/weakly_mixed_integer.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
 )
 
 absl_cc_test(

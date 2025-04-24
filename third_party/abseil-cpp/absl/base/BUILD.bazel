@@ -82,14 +82,13 @@ cc_library(
 
 cc_library(
     name = "nullability",
-    srcs = ["internal/nullability_impl.h"],
+    srcs = ["internal/nullability_deprecated.h"],
     hdrs = ["nullability.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":config",
         ":core_headers",
-        "//absl/meta:type_traits",
     ],
 )
 

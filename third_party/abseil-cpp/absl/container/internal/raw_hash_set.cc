@@ -466,7 +466,7 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void InitializeSingleElementControlBytes(
 
 // Initializes control bytes for growing after SOO to the next capacity.
 // `soo_ctrl` is placed in the position `SooSlotIndex()`.
-// `new_hash` is placed in the postion `new_offset`.
+// `new_hash` is placed in the position `new_offset`.
 // The table must be non-empty SOO.
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline void
 InitializeThreeElementsControlBytesAfterSoo(ctrl_t soo_ctrl, size_t new_hash,

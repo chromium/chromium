@@ -79,6 +79,7 @@
 #include "absl/base/optimization.h"
 #include "absl/crc/internal/crc_cord_state.h"
 #include "absl/functional/function_ref.h"
+#include "absl/hash/internal/weakly_mixed_integer.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/cord_analysis.h"
 #include "absl/strings/cord_buffer.h"
@@ -1097,7 +1098,8 @@ class Cord {
       hash_state = combiner.add_buffer(std::move(hash_state), chunk.data(),
                                        chunk.size());
     });
-    return H::combine(combiner.finalize(std::move(hash_state)), size());
+    return H::combine(combiner.finalize(std::move(hash_state)),
+                      hash_internal::WeaklyMixedInteger{size()});
   }
 
   friend class CrcCord;
