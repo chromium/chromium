@@ -78,13 +78,20 @@ public class AutofillImageFetcher {
 
         for (GURL url : urls) {
             // Capital One card art image is stored in Chrome binary.
-            if (url == null || url.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)) {
+            if (url == null
+                    || !url.isValid()
+                    || url.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)) {
                 continue;
             }
 
             for (@ImageSize int size : imageSizes) {
                 CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
-                fetchImage(url, cardIconSpecs);
+                GURL urlToFetch =
+                        AutofillUiUtils.getFifeIconUrlWithParams(
+                                url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+                fetchImage(
+                        urlToFetch.getSpec(),
+                        bitmap -> treatAndCacheImage(bitmap, url, cardIconSpecs));
             }
         }
     }
@@ -155,33 +162,6 @@ public class AutofillImageFetcher {
     }
 
     /**
-     * Fetches image for the given URL.
-     *
-     * @param url The URL to fetch the image.
-     */
-    private void fetchImage(GURL url, CardIconSpecs cardIconSpecs) {
-        if (!url.isValid()) {
-            return;
-        }
-
-        GURL urlToFetch =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-        if (mImagesCache.containsKey(urlToFetch.getSpec())) {
-            return;
-        }
-
-        // Update the attempt count for fetching the image.
-        int fetchAttemptCount = mFetchAttemptCounter.getOrDefault(urlToFetch.getSpec(), 0);
-        mFetchAttemptCounter.put(urlToFetch.getSpec(), fetchAttemptCount + 1);
-
-        ImageFetcher.Params params =
-                ImageFetcher.Params.create(
-                        urlToFetch.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(params, bitmap -> treatAndCacheImage(bitmap, url, cardIconSpecs));
-    }
-
-    /**
      * Treats and caches the fetched image. If image fetching fails, retries fetching {@code
      * MAX_FETCH_ATTEMPTS - 1} times with a delay of {@code REFETCH_DELAY_MS} between each attempt.
      *
@@ -219,7 +199,13 @@ public class AutofillImageFetcher {
 
         // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
         Handler handler = new Handler();
-        handler.postDelayed(() -> fetchImage(url, cardIconSpecs), REFETCH_DELAY_MS);
+        handler.postDelayed(
+                () ->
+                        fetchImage(
+                                urlToCache.getSpec(),
+                                fetchedImage ->
+                                        treatAndCacheImage(fetchedImage, url, cardIconSpecs)),
+                REFETCH_DELAY_MS);
     }
 
     /**
