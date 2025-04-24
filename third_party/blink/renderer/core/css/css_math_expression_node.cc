@@ -634,6 +634,7 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
         child.node, child.op, numeric_children, is_multiply);
     CSSPrimitiveValue::UnitType unit_type =
         node->ResolvedUnitTypeForSimplification();
+
     // Skip already used unit types, as they have been already combined.
     if (IsNumericNodeWithDoubleValue(node)) {
       if (used_units.Contains(unit_type)) {
@@ -641,6 +642,14 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
       }
       used_units.insert(unit_type);
     }
+
+    // Skip a constant factor of unity, unless it is the only factor.
+    if (is_multiply && unit_type == CSSPrimitiveValue::UnitType::kNumber &&
+        node->IsNumericLiteral() && node->DoubleValue() == 1.0 &&
+        (numeric_children.size() + all_children.size()) > 1) {
+      continue;
+    }
+
     if (!final_node) {
       // First child.
       final_node = MaybeNegateFirstNode(op, node)->Copy();
