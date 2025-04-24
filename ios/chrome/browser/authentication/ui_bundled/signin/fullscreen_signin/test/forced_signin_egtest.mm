@@ -848,11 +848,6 @@ void CompleteSigninFlow() {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
-  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   // Restart the app to reset the policies.
   [self restartAppWithoutEnterprisePolicy];
 
