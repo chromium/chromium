@@ -227,13 +227,16 @@ void HTMLDetailsElement::ParseAttribute(
 
 void HTMLDetailsElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  const QualifiedName& name = params.name;
-  if (name == html_names::kNameAttr) {
+  if (params.name == html_names::kNameAttr) {
     if (!params.new_value.empty()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLDetailsElementNameAttribute);
     }
     MaybeCloseForExclusivity();
+  }
+  if (params.name == html_names::kOpenAttr &&
+      params.old_value != params.new_value) {
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
 
   HTMLElement::AttributeChanged(params);
