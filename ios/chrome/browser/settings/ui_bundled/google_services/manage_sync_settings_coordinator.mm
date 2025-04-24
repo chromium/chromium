@@ -490,7 +490,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       accountMenuCoordinatorWithBaseViewController:self.viewController
                                            browser:self.browser
                                       contextStyle:SigninContextStyle::kDefault
-                                        anchorView:nil
+                                        anchorView:_viewController.view
                                        accessPoint:AccountMenuAccessPoint::
                                                        kSettings];
 

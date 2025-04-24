@@ -264,9 +264,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   // Stop button
-  if (self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassCompact ||
-      self.navigationController.sheetPresentationController) {
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  if (idiom != UIUserInterfaceIdiomPad) {
     _closeButton = [self addTopButtonWithSymbolName:kXMarkCircleFillSymbol
                                 symbolConfiguration:symbolConfiguration
                                           isLeading:NO
@@ -447,22 +446,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-
-  // In case of compact width only, adjust detents.
-  if (self.traitCollection.horizontalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
-    __weak __typeof(self) weakSelf = self;
-    auto preferredHeightForSheetContent = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return [weakSelf preferredHeightForSheetContent];
-    };
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:preferredHeightForSheetContent];
-    presentationController.detents = @[ customDetent ];
-  }
-
+  __weak __typeof(self) weakSelf = self;
+  auto preferredHeightForSheetContent = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf preferredHeightForSheetContent];
+  };
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                            resolver:preferredHeightForSheetContent];
+  presentationController.detents = @[ customDetent ];
   presentationController.selectedDetentIdentifier =
       kCustomMinimizedDetentIdentifier;
 }
@@ -534,11 +527,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-// Returns the sheet presentation controller of the used presentation style.
+// Returns the sheet presentation controller if it exists.
 - (UISheetPresentationController*)sheetPresentationController {
-  if (self.navigationController.sheetPresentationController) {
-    return self.navigationController.sheetPresentationController;
-  }
   return self.navigationController.popoverPresentationController
       .adaptiveSheetPresentationController;
 }
