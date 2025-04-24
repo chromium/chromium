@@ -119,7 +119,12 @@ void ReportScheduler::OnDMTokenUpdated() {
 }
 
 void ReportScheduler::UploadFullReport(base::OnceClosure on_report_uploaded) {
-  if (!IsReportingEnabled()) {
+  ReportTrigger trigger = kTriggerNone;
+  if (IsReportingEnabled()) {
+    trigger = kTriggerManual;
+  } else if (delegate_->AreSecurityReportsEnabled()) {
+    trigger = kTriggerSecurity;
+  } else {
     VLOG(1) << "Reporting is not enabled.";
     std::move(on_report_uploaded).Run();
     return;
@@ -131,7 +136,7 @@ void ReportScheduler::UploadFullReport(base::OnceClosure on_report_uploaded) {
     return;
   }
   on_manual_report_uploaded_ = std::move(on_report_uploaded);
-  GenerateAndUploadReport(kTriggerManual);
+  GenerateAndUploadReport(trigger);
 }
 
 void ReportScheduler::RegisterPrefObserver() {
@@ -339,9 +344,6 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
   }
 
   if ((active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer)) {
-    if (on_manual_report_uploaded_)
-      std::move(on_manual_report_uploaded_).Run();
-
     // Timer and Manual report are exactly same. If we just uploaded one, skip
     // the other.
     if (pending_triggers_ & kTriggerTimer)
@@ -352,6 +354,10 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
 
   if (active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer ||
       active_trigger_ == kTriggerSecurity) {
+    if (on_manual_report_uploaded_) {
+      std::move(on_manual_report_uploaded_).Run();
+    }
+
     delegate_->OnSecuritySignalsUploaded();
 
     // A full report includes security signals already, we don't need another
