@@ -666,6 +666,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier1QwacResult) -->
 
+<!-- LINT.IfChange(NetCertVerifier2QwacResult) -->
+
+<enum name="NetCertVerifier2QwacResult">
+  <int value="0" label="error parsing 2-QWAC leaf certificate"/>
+  <int value="1" label="certificate does not have 2-QWAC indicators"/>
+  <int value="2"
+      label="Has some QWAC-like indicators, but they are inconsistent or
+             incomplete"/>
+  <int value="3" label="2-QWAC verification succeeded"/>
+  <int value="4" label="certificate name invalid"/>
+  <int value="5" label="certificate date invalid"/>
+  <int value="6" label="authority invalid"/>
+  <int value="7" label="invalid"/>
+  <int value="8" label="weak key"/>
+  <int value="9" label="name constraint violation"/>
+  <int value="10" label="other certificate error"/>
+  <int value="11" label="other error"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier2QwacResult) -->
+
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a

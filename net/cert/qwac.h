@@ -14,6 +14,7 @@
 
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -45,6 +46,23 @@ inline constexpr uint8_t kQevcpwOid[] = {0x04, 0x00, 0x8b, 0xec,
 // which is 0.4.0.194112.1.5
 inline constexpr uint8_t kQncpwOid[] = {0x04, 0x00, 0x8b, 0xec,
                                         0x40, 0x01, 0x05};
+
+// ETSI EN 319 411-2 - V2.6.1 - 5.3.g:
+// QNCP-w-gen: itu-t(0) identified-organization(4) etsi(0)
+//     qualified-certificate-policies(194112) policy-identifiers(1)
+//     qncp-web-gen (6)
+// which is 0.4.0.194112.1.6
+inline constexpr uint8_t kQncpwgenOid[] = {0x04, 0x00, 0x8b, 0xec,
+                                           0x40, 0x01, 0x06};
+
+// ETSI TS 119 411-5 V2.1.1 - Annex A:
+// id-tlsBinding OBJECT IDENTIFIER ::= { itu-t(0) identified-organization(4)
+//     etsi(0) id-qwacImplementation(194115) tls-binding (1) }
+// id-kp-tls-binding OBJECT IDENTIFIER ::= { id-tlsBinding
+//     id-kp-tls-binding(0) }
+// which is 0.4.0.194115.1.0
+inline constexpr uint8_t kIdKpTlsBinding[] = {0x04, 0x00, 0x8b, 0xec,
+                                              0x43, 0x01, 0x00};
 
 // RFC 7299 section 2:
 // id-pkix OBJECT IDENTIFIER ::= { iso(1) identified-organization(3)
@@ -120,6 +138,21 @@ enum class QwacPoliciesStatus {
 // combination of policies to be a 1-QWAC.
 NET_EXPORT_PRIVATE QwacPoliciesStatus
 Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set);
+
+// Returns kHasQwacPolicies if the set of policy OIDs contains a suitable
+// combination of policies to be a 2-QWAC.
+NET_EXPORT_PRIVATE QwacPoliciesStatus
+Has2QwacPolicies(const std::set<bssl::der::Input>& policy_set);
+
+enum class QwacEkuStatus {
+  kNotQwac,
+  kInconsistent,
+  kHasQwacEku,
+};
+
+// Returns kHasQwacEku if the set of policy EKUs is suitable to be a 2-QWAC.
+NET_EXPORT_PRIVATE QwacEkuStatus
+Has2QwacEku(const bssl::ParsedCertificate* cert);
 
 }  // namespace net
 

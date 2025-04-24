@@ -50,6 +50,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
@@ -368,6 +369,19 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
                        hostname, ocsp_response, sct_list, flags, verify_result,
                        out_source),
         std::move(callback));
+  }
+
+  int Verify2Qwac(scoped_refptr<X509Certificate> cert,
+                  const std::string& hostname,
+                  CertVerifyResult* verify_result,
+                  NetLogSource* out_source) {
+    // 2-QWAC verification does not do any blocking calls, so the unittest does
+    // not need to run it on a worker thread.
+    NetLogWithSource net_log(NetLogWithSource::Make(
+        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
+    *out_source = net_log.source();
+    return verify_proc_->Verify2Qwac(cert.get(), hostname, verify_result,
+                                     net_log);
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -2488,6 +2502,310 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacCanBuildAlternatePath) {
 }
 
 INSTANTIATE_TEST_SUITE_P(, CertVerifyProcBuiltin1QwacTest, testing::Bool());
+
+class CertVerifyProcBuiltin2QwacTest : public CertVerifyProcBuiltinTest {
+ public:
+  void ExpectHistogramSample(const base::HistogramTester& histograms,
+                             Verify2QwacResult result) {
+    histograms.ExpectUniqueSample("Net.CertVerifier.Qwac.2Qwac", result, 1u);
+  }
+};
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, InvalidCertificate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+  leaf->SetExtension(bssl::der::Input(bssl::kBasicConstraintsOid),
+                     "invalid extension value", /*critical=*/true);
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kLeafParsingError);
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEutl) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    // If the root is not on the EUTL, a valid path cannot be found, even if
+    // it's a normal root.
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kAuthorityInvalid);
+
+    // The path builder should have found the intermediate, but no root.
+    EXPECT_EQ(leaf->GetCertBuffer(),
+              verify_result.verified_cert->cert_buffer());
+    ASSERT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
+    EXPECT_EQ(intermediate->GetCertBuffer(),
+              verify_result.verified_cert->intermediate_buffers()[0].get());
+  }
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    // If the root is on the EUTL, the certificate verifies successfully with
+    // the QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+
+    // The verified chain has the full cert chain.
+    EXPECT_EQ(leaf->GetCertBuffer(),
+              verify_result.verified_cert->cert_buffer());
+    ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
+    EXPECT_EQ(intermediate->GetCertBuffer(),
+              verify_result.verified_cert->intermediate_buffers()[0].get());
+    EXPECT_EQ(root->GetCertBuffer(),
+              verify_result.verified_cert->intermediate_buffers()[1].get());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresPolicies) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kInconsistentBits);
+  }
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresQcStatements) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kInconsistentBits);
+  }
+
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEku) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kInconsistentBits);
+  }
+
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesName) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.wrong.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_COMMON_NAME_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kNameInvalid);
+  }
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  }
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesValidityDate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetCertificatePolicies({"2.5.29.32.0"});  // anyPolicy
+
+  leaf->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  leaf->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
+  leaf->SetValidity(base::Time::Now() - base::Days(2),
+                    base::Time::Now() - base::Days(1));
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(root->GetCertBuffer());
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsError(ERR_CERT_DATE_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_DATE_INVALID);
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kDateInvalid);
+  }
+
+  // 2-QWACs are not bound by BR lifetime limits, so we don't enforce any
+  // validity too long errors.
+  leaf->SetValidity(base::Time::Now() - base::Days(2),
+                    base::Time::Now() + base::Days(3650));
+
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    int error = Verify2Qwac(leaf->GetX509CertificateChain(), "www.example.com",
+                            &verify_result, &verify_net_log_source);
+
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  }
+}
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

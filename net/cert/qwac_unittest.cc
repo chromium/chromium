@@ -6,8 +6,11 @@
 
 #include <stdint.h>
 
+#include "net/test/cert_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 namespace {
@@ -224,6 +227,13 @@ TEST(Has1QwacPolicies, TestPolicyCases) {
        {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQevcpwOid)}},
       {QwacPoliciesStatus::kInconsistent,
        {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQevcpwOid)}},
+      // Trying to use 2-QWAC policy on a 1-QWAC:
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQncpwgenOid)}},
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQncpwgenOid)}},
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQncpwgenOid)}},
       // Only has EU policies but doesn't have any CABF policy:
       {QwacPoliciesStatus::kInconsistent, {bssl::der::Input(kQevcpwOid)}},
       {QwacPoliciesStatus::kInconsistent, {bssl::der::Input(kQncpwOid)}},
@@ -244,6 +254,70 @@ TEST(Has1QwacPolicies, TestPolicyCases) {
     // the result.
     policy_set.insert(bssl::der::Input(kUnrelated));
     EXPECT_EQ(expected_qwacness, Has1QwacPolicies(policy_set));
+  }
+}
+
+TEST(Has2QwacPolicies, TestPolicyCases) {
+  struct TestCase {
+    QwacPoliciesStatus expected_qwacness;
+    std::vector<bssl::der::Input> policies;
+  } kTestCases[] = {
+      // Expected QWAC cases:
+      {QwacPoliciesStatus::kHasQwacPolicies, {bssl::der::Input(kQncpwgenOid)}},
+      // Trying to use 1-QWAC policies on a 2-QWAC:
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQevcpwOid)}},
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQncpwOid)}},
+      {QwacPoliciesStatus::kNotQwac,
+       {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQncpwOid)}},
+      // No policies:
+      {QwacPoliciesStatus::kNotQwac, {}},
+  };
+
+  constexpr uint8_t kUnrelated[] = {0x01, 0x02, 0x03};
+  for (const auto& [expected_qwacness, policies] : kTestCases) {
+    std::set<bssl::der::Input> policy_set(policies.begin(), policies.end());
+    EXPECT_EQ(expected_qwacness, Has2QwacPolicies(policy_set));
+
+    // Adding additional unrelated policies to the policy set should not change
+    // the result.
+    policy_set.insert(bssl::der::Input(kUnrelated));
+    EXPECT_EQ(expected_qwacness, Has2QwacPolicies(policy_set));
+  }
+}
+
+TEST(Has2QwacEku, TestEkuCases) {
+  struct TestCase {
+    QwacEkuStatus expected_qwacness;
+    std::vector<bssl::der::Input> ekus;
+  } kTestCases[] = {
+      // Expected QWAC case:
+      {QwacEkuStatus::kHasQwacEku, {bssl::der::Input(kIdKpTlsBinding)}},
+      // Contains additional EKUs:
+      {QwacEkuStatus::kInconsistent,
+       {bssl::der::Input(kIdKpTlsBinding),
+        bssl::der::Input(bssl::kServerAuth)}},
+      // Wrong eku:
+      {QwacEkuStatus::kNotQwac, {bssl::der::Input(bssl::kServerAuth)}},
+      {QwacEkuStatus::kNotQwac,
+       {bssl::der::Input(bssl::kServerAuth),
+        bssl::der::Input(bssl::kClientAuth)}},
+      // No eku:
+      {QwacEkuStatus::kNotQwac, {}},
+  };
+
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  for (const auto& [expected_qwacness, ekus] : kTestCases) {
+    if (ekus.empty()) {
+      leaf->EraseExtension(bssl::der::Input(bssl::kExtKeyUsageOid));
+    } else {
+      leaf->SetExtendedKeyUsages(ekus);
+    }
+    auto parsed_cert =
+        bssl::ParsedCertificate::Create(leaf->DupCertBuffer(), {}, nullptr);
+    ASSERT_TRUE(parsed_cert);
+    EXPECT_EQ(expected_qwacness, Has2QwacEku(parsed_cert.get()));
   }
 }
 
