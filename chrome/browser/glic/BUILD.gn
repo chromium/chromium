@@ -40,6 +40,8 @@ source_set("glic") {
     "host/glic_ui.h",
     "host/glic_web_client_access.h",
     "host/guest_util.h",
+    "widget/glic_modal_manager.h",
+    "widget/glic_modal_view.h",
     "widget/glic_view.h",
     "widget/glic_window_controller.h",
   ]
@@ -131,6 +133,8 @@ source_set("impl") {
     "host/webui_contents_container.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
+    "widget/glic_modal_manager.cc",
+    "widget/glic_modal_view.cc",
     "widget/glic_view.cc",
     "widget/glic_widget.cc",
     "widget/glic_widget.h",

@@ -62,6 +62,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/guest_util.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
+
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
 #endif
@@ -391,6 +398,27 @@ void ContentAnalysisDelegate::CreateForWebContents(
     FinalContentAnalysisResult result =
         show_fail_closed_ui ? FinalContentAnalysisResult::FAIL_CLOSED
                             : FinalContentAnalysisResult::SUCCESS;
+
+#if BUILDFLAG(ENABLE_GLIC)
+    content::WebContents* top_web_contents =
+        guest_view::GuestViewBase::GetTopLevelWebContents(
+            web_contents->GetResponsibleWebContents());
+    if (glic::IsGlicWebUI(top_web_contents)) {
+      DVLOG(1) << __func__
+               << ": Skipping web modal on glic surface. Showing glic timed "
+                  "modal instead.";
+      if (glic::GlicProfileManager::GetInstance()) {
+        if (glic::GlicKeyedService* glic_keyed_service =
+                glic::GlicProfileManager::GetInstance()->GetLastActiveGlic()) {
+          std::u16string label = l10n_util::GetPluralStringFUTF16(
+              IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, 1);
+          glic_keyed_service->window_controller().ShowGlicModal(label);
+        }
+      }
+      delegate->Cancel(/*warning=*/false);
+      return;
+    }
+#endif
 
     // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ = new ContentAnalysisDialog(

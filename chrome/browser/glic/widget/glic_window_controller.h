@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/widget/glic_modal_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -51,6 +52,7 @@ class GlicFreController;
 class GlicButton;
 class Host;
 enum class AttachChangeReason;
+class GlicModalManager;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -275,6 +277,8 @@ class GlicWindowController : public views::WidgetObserver,
 
   bool IsDragging() { return in_move_loop_; }
 
+  void ShowGlicModal(std::u16string label);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
 
@@ -494,6 +498,8 @@ class GlicWindowController : public views::WidgetObserver,
   std::unique_ptr<GlicFreController> fre_controller_;
 
   std::unique_ptr<WindowFinder> window_finder_;
+
+  std::unique_ptr<GlicModalManager> glic_modal_manager_;
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;
