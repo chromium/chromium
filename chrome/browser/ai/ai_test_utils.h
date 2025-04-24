@@ -182,7 +182,8 @@ class AITestUtils {
       const std::string& expected_context,
       const optimization_guide::proto::WritingAssistanceApiOptions&
           expected_options,
-      const std::string& expected_input);
+      const std::string& expected_rewrite_text,
+      const std::string& expected_instructions);
   static void CheckSummarizeRequest(
       const google::protobuf::MessageLite& request_metadata,
       const std::string& expected_shared_context,

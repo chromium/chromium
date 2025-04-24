@@ -136,7 +136,7 @@ class AIRewriterTest : public AITestUtils::AITestBase {
                         callback) {
               AITestUtils::CheckWritingAssistanceApiRequest(
                   request_metadata, kSharedContextString, kContextString,
-                  *AIRewriter::ToProtoOptions(options), kInputString);
+                  *AIRewriter::ToProtoOptions(options), kInputString, "");
               callback.Run(CreateExecutionResult("Result text",
                                                  /*is_complete=*/true));
             }));
@@ -528,7 +528,7 @@ TEST_F(AIRewriterTest, ModelExecutionError) {
                      callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+                *GetDefaultExpectedOptions(), kInputString, "");
             callback.Run(CreateExecutionErrorResult(
                 optimization_guide::OptimizationGuideModelExecutionError::
                     FromModelExecutionError(
@@ -565,7 +565,7 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
                      callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+                *GetDefaultExpectedOptions(), kInputString, "");
             callback.Run(
                 CreateExecutionResult("Result ", /*is_complete=*/false));
             callback.Run(CreateExecutionResult("text",
@@ -603,7 +603,7 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
                      callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+                *GetDefaultExpectedOptions(), kInputString, "");
             callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
           }))
@@ -614,7 +614,7 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
                      callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, "test context 2",
-                *GetDefaultExpectedOptions(), "input string 2");
+                *GetDefaultExpectedOptions(), "input string 2", "");
             callback.Run(CreateExecutionResult("Result text 2",
                                                /*is_complete=*/true));
           }));
@@ -672,7 +672,7 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
                       callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+                *GetDefaultExpectedOptions(), kInputString, "");
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));
@@ -708,7 +708,7 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
                       callback) {
             AITestUtils::CheckWritingAssistanceApiRequest(
                 request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+                *GetDefaultExpectedOptions(), kInputString, "");
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));

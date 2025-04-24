@@ -206,7 +206,7 @@ optimization_guide::proto::WritingAssistanceApiRequest AIWriter::BuildRequest(
   optimization_guide::proto::WritingAssistanceApiRequest request;
   request.set_context(context);
   request.set_allocated_options(ToProtoOptions(options_).release());
-  request.set_rewrite_text(input);
+  request.set_instructions(input);
   // TODO(crbug.com/390006887): Pass shared context with session creation.
   request.set_shared_context(options_->shared_context.value_or(std::string()));
   return request;
