@@ -25904,7 +25904,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_for_all_frames",
+                    "params": {
+                        "Target": "AllFrames"
+                    },
                     "enable_features": [
                         "VSyncAlignedPresent"
                     ]

@@ -253,6 +253,15 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
 BASE_FEATURE(kVSyncAlignedPresent,
              "VSyncAlignedPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Present the frame at next VSync only if this frame handles interaction or
+// animation as described in kTargetForVSync. Three finch experiment groups for
+// kVSyncAlignedPresent.
+constexpr const char kTargetForVSyncAllFrames[] = "AllFrames";
+constexpr const char kTargetForVSyncAnimation[] = "Animation";
+constexpr const char kTargetForVSyncInteraction[] = "Interaction";
+const base::FeatureParam<std::string> kTargetForVSync{
+    &kVSyncAlignedPresent, "Target", kTargetForVSyncAllFrames};
 #endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,

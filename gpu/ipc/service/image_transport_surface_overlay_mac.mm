@@ -61,9 +61,6 @@ BASE_FEATURE(kAVFoundationOverlays,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kPresentationDelayForInteractiveFrames,
-             "PresentationDelayForInteractiveFrames",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // CrGpuMain OnVSyncPresentation().
@@ -195,18 +192,27 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  const std::string target_name = features::kTargetForVSync.Get();
+  const bool finch_target_interaction =
+      target_name == features::kTargetForVSyncInteraction;
+  const bool finch_target_animation =
+      target_name == features::kTargetForVSyncAnimation;
+  const bool finch_target_all_frames =
+      target_name == features::kTargetForVSyncAllFrames;
   bool delay_presenetation_until_next_vsync =
-      features::IsVSyncAlignedPresentEnabled();
+      features::IsVSyncAlignedPresentEnabled() &&
+      (finch_target_all_frames ||
+       (finch_target_animation && data.is_handling_animation) ||
+       (finch_target_interaction && data.is_handling_interaction));
 
   // The current frame has been added to
   // ca_layer_tree_coordinator_->NumPendingSwaps() after calling
   // ca_layer_tree_coordinator_->Present(). Check NumPendingSwaps() > 1 to see
   // whether there is any previous pending frame. The current frame must wait in
   // the queue if there is already one before this.
-  if (base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames) &&
-      ca_layer_tree_coordinator_->NumPendingSwaps() > 1 &&
-      !data.is_handling_interaction && !data.is_handling_animation) {
-    delay_presenetation_until_next_vsync = false;
+  if (features::IsVSyncAlignedPresentEnabled() &&
+      ca_layer_tree_coordinator_->NumPendingSwaps() > 1) {
+    delay_presenetation_until_next_vsync = true;
   }
 
   if (vsync_callback_mac_) {
