@@ -8959,9 +8959,6 @@ crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wp
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]
 
-# Test failed on WebAudio that timeout occurs in the getter process() test.
-crbug.com/395670634 external/wpt/webaudio/the-audio-api/the-audioworklet-interface/process-getter.https.html [ Timeout ]
-
 # Test failed on WebAudio that timeout occurs in the 'Singleton AudioWorkletProcessor' test.
 crbug.com/40116479 external/wpt/webaudio/the-audio-api/the-audioworklet-interface/processor-construction-port.https.html [ Timeout ]
 
