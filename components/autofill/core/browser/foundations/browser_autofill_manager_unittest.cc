@@ -8159,6 +8159,10 @@ TEST_F(BrowserAutofillManagerIdentityCredentialTest,
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      Not(Contains(EqualsSuggestion(SuggestionType::kIdentityCredential))));
 }
 
 // Tests that plus address suggestions are queried and shown for email fields
