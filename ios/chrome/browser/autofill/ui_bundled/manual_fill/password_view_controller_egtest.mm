@@ -774,15 +774,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-// TODO(crbug.com/412722420): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testIPadTappingOutsidePopOverDismissPasswordController \
-  FLAKY_testIPadTappingOutsidePopOverDismissPasswordController
-#else
-#define MAYBE_testIPadTappingOutsidePopOverDismissPasswordController \
-  testIPadTappingOutsidePopOverDismissPasswordController
-#endif
-- (void)MAYBE_testIPadTappingOutsidePopOverDismissPasswordController {
+- (void)testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }

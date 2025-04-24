@@ -465,8 +465,16 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Verify the window is not visible.
-  [[EarlGrey selectElementWithMatcher:windowMatcher]
-      assertWithMatcher:grey_notVisible()];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:windowMatcher]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return !error;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Popover was not dismissed.");
 }
 
 - (void)longPressElementOnWebView:(ElementSelector*)selector {
