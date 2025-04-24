@@ -49584,6 +49584,9 @@ should be able to be added at any place in this file.
   <suffix name="EditBookmark"
       label="Recorded when the 'Edit bookmark' option in the context menu is
              selected."/>
+  <suffix name="MoveToGroup"
+      label="Recorded when the 'Move to group' option in the context menu is
+             selected."/>
   <suffix name="SelectTabs"
       label="Recorded when the 'Select tabs' option in the context menu is
              selected."/>

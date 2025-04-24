@@ -174,7 +174,8 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 recordUserActionWithPrefix("AddToNewGroup");
             } else if (menuId == R.id.add_to_tab_group) {
                 coordinator.showBottomSheet(List.of(tab));
-                recordUserActionWithPrefix("AddToGroup");
+                recordUserActionWithPrefix(
+                        tab.getTabGroupId() == null ? "AddToGroup" : "MoveToGroup");
             } else if (menuId == R.id.edit_bookmark) {
                 tabBookmarker.addOrEditBookmark(tab);
                 recordUserActionWithPrefix("EditBookmark");
@@ -206,7 +207,9 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         } else {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.add_tab_to_group,
+                            tab.getTabGroupId() == null
+                                    ? R.string.add_tab_to_group
+                                    : R.string.move_tab_to_group,
                             R.id.add_to_tab_group,
                             R.drawable.ic_widgets));
         }

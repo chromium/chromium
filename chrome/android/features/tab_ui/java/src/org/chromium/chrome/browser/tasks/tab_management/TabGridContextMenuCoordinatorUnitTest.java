@@ -308,6 +308,21 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
+        assertEquals(R.string.move_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(3));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+    }
+
+    @Test
+    public void testBuildMenuActionItems_notInGroup() {
+        mUrl = new GURL(LOCALHOST_URL);
+        when(mTab.getUrl()).thenReturn(mUrl);
+        when(mTab.getTabGroupId()).thenReturn(null);
+        mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
+
+        assertEquals(5, mMenuItemList.size());
         assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
         assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
         assertEquals(R.string.share, getMenuItemTitleId(2));
@@ -350,6 +365,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     @Test
     public void testBuildMenuActionItems_sharingDisabled() {
         mUrl = new GURL(CHROME_URL);
+        when(mTab.getTabGroupId()).thenReturn(null);
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
