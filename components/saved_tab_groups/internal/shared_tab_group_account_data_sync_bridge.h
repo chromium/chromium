@@ -69,6 +69,12 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
+  void SavedTabGroupRemovedFromSync(
+      const SavedTabGroup& removed_group) override;
 
   // Returns whether the sync bridge has initialized by reading data
   // from the on-disk store.

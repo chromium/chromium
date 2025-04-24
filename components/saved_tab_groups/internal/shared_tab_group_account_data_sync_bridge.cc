@@ -40,6 +40,12 @@ std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
          group.collaboration_id().value().value();
 }
 
+// Client tag consists of the tab guid concatenated with collaboration id.
+std::string CreateClientTagForSharedTab(const CollaborationId& collaboration_id,
+                                        const base::Uuid& tab_guid) {
+  return tab_guid.AsLowercaseString() + "|" + collaboration_id.value();
+}
+
 // Returns the client tag for this specifics object. Note that
 // SharedTabGroupAccountDataSpecifics uses the client tag as a storage key.
 std::string GetClientTagFromSpecifics(
@@ -431,9 +437,34 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedLocally(
 
   // This is an update for a shared tab deletion from local. Remove the
   // corresponding entity from sync.
-  const std::string storage_key = tab_guid->AsLowercaseString() + "|" +
-                                  group->collaboration_id().value().value();
+  const std::string storage_key = CreateClientTagForSharedTab(
+      group->collaboration_id().value(), tab_guid.value());
   RemoveEntitySpecifics(storage_key);
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedFromSync(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid) {
+  // Regardless of update source, we need to detect tab deletions and clean them
+  // up from sync.
+  SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedLocally(
+    const SavedTabGroup& removed_group) {
+  if (!removed_group.is_shared_tab_group()) {
+    return;
+  }
+
+  // Delete tab entities for all tabs in the group.
+  for (const SavedTabGroupTab& tab : removed_group.saved_tabs()) {
+    RemoveEntitySpecifics(CreateClientTagForSharedTab(removed_group, tab));
+  }
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedFromSync(
+    const SavedTabGroup& removed_group) {
+  SavedTabGroupRemovedLocally(removed_group);
 }
 
 bool SharedTabGroupAccountDataSyncBridge::IsInitialized() const {
