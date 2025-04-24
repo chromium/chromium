@@ -126,7 +126,8 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
       this, GetKey().session_key(), std::move(*quic_endpoint),
       cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,
       /*use_dns_aliases=*/true, std::move(dns_aliases),
-      manager_->CalculateMultiplexedSessionCreationInitiator());
+      manager_->CalculateMultiplexedSessionCreationInitiator(),
+      /*connection_management_config=*/std::nullopt);
 
   if (GetTcpBasedAttemptDelayBehavior() ==
       TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {

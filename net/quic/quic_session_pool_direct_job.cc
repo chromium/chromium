@@ -35,6 +35,7 @@ QuicSessionPool::DirectJob::DirectJob(
     bool require_dns_https_alpn,
     int cert_verify_flags,
     MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config,
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
           pool,
@@ -51,7 +52,8 @@ QuicSessionPool::DirectJob::DirectJob(
       cert_verify_flags_(cert_verify_flags),
       retry_on_alternate_network_before_handshake_(
           retry_on_alternate_network_before_handshake),
-      session_creation_initiator_(session_creation_initiator) {
+      session_creation_initiator_(session_creation_initiator),
+      connection_management_config_(connection_management_config) {
   // TODO(davidben): `require_dns_https_alpn_` only exists to be `DCHECK`ed
   // for consistency against `quic_version_`. Remove the parameter?
   DCHECK_EQ(quic_version_.IsKnown(), !require_dns_https_alpn_);
@@ -210,7 +212,7 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       dns_resolution_start_time_, dns_resolution_end_time_,
       retry_on_alternate_network_before_handshake_, use_dns_aliases_,
       std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr,
-      session_creation_initiator_);
+      session_creation_initiator_, connection_management_config_);
 
   return session_attempt_->Start(
       base::BindOnce(&DirectJob::OnSessionAttemptComplete, GetWeakPtr()));

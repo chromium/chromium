@@ -174,7 +174,8 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         /*cert_verify_flags=*/0,
         /*dns_resolution_start_time=*/base::TimeTicks(),
         /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
-        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown);
+        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown,
+        /*connection_management_config=*/std::nullopt);
   }
 
   SessionAttemptHelper(const SessionAttemptHelper&) = delete;

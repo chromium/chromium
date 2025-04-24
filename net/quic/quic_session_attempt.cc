@@ -62,7 +62,8 @@ QuicSessionAttempt::QuicSessionAttempt(
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
-    MultiplexedSessionCreationInitiator session_creation_initiator)
+    MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config)
     : delegate_(delegate),
       ip_endpoint_(std::move(ip_endpoint)),
       metadata_(std::move(metadata)),
@@ -77,7 +78,8 @@ QuicSessionAttempt::QuicSessionAttempt(
       use_dns_aliases_(use_dns_aliases),
       dns_aliases_(std::move(dns_aliases)),
       crypto_client_config_handle_(std::move(crypto_client_config_handle)),
-      session_creation_initiator_(session_creation_initiator) {
+      session_creation_initiator_(session_creation_initiator),
+      connection_management_config_(connection_management_config) {
   CHECK(delegate_);
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }
@@ -90,7 +92,8 @@ QuicSessionAttempt::QuicSessionAttempt(
     int cert_verify_flags,
     std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
     const HttpUserAgentSettings* http_user_agent_settings,
-    MultiplexedSessionCreationInitiator session_creation_initiator)
+    MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config)
     : delegate_(delegate),
       ip_endpoint_(std::move(proxy_peer_endpoint)),
       quic_version_(std::move(quic_version)),
@@ -102,7 +105,8 @@ QuicSessionAttempt::QuicSessionAttempt(
       proxy_stream_(std::move(proxy_stream)),
       http_user_agent_settings_(http_user_agent_settings),
       local_endpoint_(std::move(local_endpoint)),
-      session_creation_initiator_(session_creation_initiator) {
+      session_creation_initiator_(session_creation_initiator),
+      connection_management_config_(connection_management_config) {
   CHECK(delegate_);
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }
@@ -193,13 +197,13 @@ int QuicSessionAttempt::DoCreateSession() {
           key(), quic_version_, cert_verify_flags_, require_confirmation,
           ip_endpoint_, metadata_, dns_resolution_start_time_,
           dns_resolution_end_time_, net_log(), network_,
-          session_creation_initiator_);
+          session_creation_initiator_, connection_management_config_);
     }
     rv = pool()->CreateSessionSync(
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         ip_endpoint_, metadata_, dns_resolution_start_time_,
         dns_resolution_end_time_, net_log(), &session_, &network_,
-        session_creation_initiator_);
+        session_creation_initiator_, connection_management_config_);
 
     DVLOG(1) << "Created session on network: " << network_;
   }

@@ -79,7 +79,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       bool use_dns_aliases,
       std::set<std::string> dns_aliases,
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
-      MultiplexedSessionCreationInitiator session_creation_initiator);
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config);
   // Create a SessionAttempt for a connection proxied over the given stream.
   QuicSessionAttempt(
       Delegate* delegate,
@@ -89,7 +90,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       int cert_verify_flags,
       std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
       const HttpUserAgentSettings* http_user_agent_settings,
-      MultiplexedSessionCreationInitiator session_creation_initiator);
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config);
 
   ~QuicSessionAttempt();
 
@@ -149,6 +151,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const IPEndPoint local_endpoint_;
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
+  std::optional<ConnectionManagementConfig> connection_management_config_;
 
   State next_state_ = State::kNone;
   bool in_loop_ = false;
