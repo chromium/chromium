@@ -28,6 +28,7 @@ const CGFloat kHeaderIconMargin = 8;
 const CGFloat kIdentityAvatarPadding = 8;
 const CGFloat kSignedOutIdentityIconSize = 24;
 const CGFloat kCustomizationMenuIconSize = 16;
+const CGFloat kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar = 17;
 const CGFloat kCustomizationMenuButtonDimension = 37;
 const CGFloat kCustomizationMenuButtonCornerRadius = 11;
 

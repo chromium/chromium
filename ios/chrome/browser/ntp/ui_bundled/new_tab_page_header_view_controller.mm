@@ -121,6 +121,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   NSLayoutConstraint* _identityDiscHeightConstraint;
   // Trailing Anchor for the identity disc button.
   NSLayoutConstraint* _identityDiscTrailingConstraint;
+  // Constraint for the identity disc button's capsule-style width.
+  NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -529,6 +531,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide.trailingAnchor
                      constant:0];
   _identityDiscTrailingConstraint.active = YES;
+  _identityDiscCapsuleWidthConstraint = [self.identityDiscButton.widthAnchor
+      constraintGreaterThanOrEqualToAnchor:self.identityDiscButton.heightAnchor
+                                multiplier:2.0];
 
   // Initially set the constraints of the identity disc.
   [self updateIdentityDiscConstraints];
@@ -538,23 +543,31 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)addCustomizationMenu {
   UIButton* customizationMenuButton =
       [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.image = DefaultSymbolTemplateWithPointSize(
-      kPencilSymbol, ntp_home::kCustomizationMenuIconSize);
-  buttonConfiguration.background.backgroundColor =
-      [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-          colorWithAlphaComponent:0.8];
-  buttonConfiguration.baseForegroundColor = [UIColor
-      colorNamed:IsSignInButtonNoAvatarEnabled() ? kBlueColor
-                                                 : kTextSecondaryColor];
+
+  UIImage* icon = DefaultSymbolTemplateWithPointSize(
+      kPencilSymbol,
+      IsSignInButtonNoAvatarEnabled()
+          ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
+          : ntp_home::kCustomizationMenuIconSize);
+  [customizationMenuButton setImage:icon forState:UIControlStateNormal];
+
+  UIColor* backgroundColor =
+      IsSignInButtonNoAvatarEnabled()
+          ? [[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.08]
+          : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+                colorWithAlphaComponent:0.8];
+  customizationMenuButton.backgroundColor = backgroundColor;
+
+  UIColor* tintColor = [UIColor
+      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlueColor
+                                                  : kTextSecondaryColor)];
+  customizationMenuButton.tintColor = tintColor;
 
   customizationMenuButton.accessibilityIdentifier =
       kNTPCustomizationMenuButtonIdentifier;
   customizationMenuButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL);
 
-  customizationMenuButton.configuration = buttonConfiguration;
   [customizationMenuButton addTarget:self.commandHandler
                               action:@selector(customizationMenuWasTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -584,12 +597,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     UIButtonConfiguration* config =
         [UIButtonConfiguration plainButtonConfiguration];
     config.background.backgroundColor =
-        [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-            colorWithAlphaComponent:0.8];
+        [[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.08];
     NSDictionary* attributes = @{
-      NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleCaption1,
-                                                      UIFontWeightSemibold,
-                                                      kIdentityDiscMaxFontSize),
+      NSFontAttributeName : PreferredFontForTextStyle(
+          UIFontTextStyleBody, UIFontWeightSemibold, kIdentityDiscMaxFontSize),
       NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     };
     config.attributedTitle = [[NSAttributedString alloc]
@@ -978,6 +989,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   _identityDiscWidthConstraint.active = !showSignInButtonWithoutAvatar;
   _identityDiscHeightConstraint.active = !showSignInButtonWithoutAvatar;
   _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
+  _identityDiscCapsuleWidthConstraint.active = showSignInButtonWithoutAvatar;
 }
 
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
