@@ -164,7 +164,9 @@ std::string GenerateConfigurationLogForController(
       const std::string size = ModeSize(*(param.mode.get())).ToString();
       const std::string refresh_rate =
           base::NumberToString(ModeRefreshRate(*param.mode));
-      mode = base::StrCat({size, "@", refresh_rate});
+      const char* scan_mode =
+          param.mode.get()->flags & DRM_MODE_FLAG_INTERLACE ? "i" : "p";
+      mode = base::StrCat({size, scan_mode, "@", refresh_rate});
     } else {
       mode = "Disabled";
     }
