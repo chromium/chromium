@@ -12305,6 +12305,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnImmediateGetDescription, kOsAll,
      FEATURE_VALUE_TYPE(device::kWebAuthnImmediateGet)},
 
+    {"media-playback-while-not-visible-permission-policy",
+     flag_descriptions::kMediaPlaybackWhileNotVisiblePermissionPolicyName,
+     flag_descriptions::
+         kMediaPlaybackWhileNotVisiblePermissionPolicyDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kMediaPlaybackWhileNotVisiblePermissionPolicy)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

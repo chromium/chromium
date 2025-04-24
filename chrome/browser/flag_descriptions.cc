@@ -1086,6 +1086,14 @@ const char kDoubleBufferCompositingDescription[] =
     "Latency should be reduced in some cases. On the other hand, more skipped "
     "frames are expected.";
 
+const char kMediaPlaybackWhileNotVisiblePermissionPolicyName[] =
+    "media-playback-while-not-visible permission policy";
+const char kMediaPlaybackWhileNotVisiblePermissionPolicyDescription[] =
+    "Enables the media-playback-while-not-visible permission policy. This "
+    "permission policy will pause any media being played by any disallowed "
+    "iframes which are not currently rendered. See"
+    "https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/"
+    "IframeMediaPause/iframe_media_pausing.md for more information.";
 const char kMediaSessionEnterPictureInPictureName[] =
     "Media Session enterpictureinpicture action";
 const char kMediaSessionEnterPictureInPictureDescription[] =

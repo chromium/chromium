@@ -10332,6 +10332,8 @@ from previous Chrome versions.
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
+  <int value="-1532501905"
+      label="MediaPlaybackWhileNotVisiblePermissionPolicy:disabled"/>
   <int value="-1532100164" label="WebViewMeasureScreenCoverage:enabled"/>
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
   <int value="-1532014193" label="disable-encryption-migration"/>
@@ -15946,6 +15948,8 @@ from previous Chrome versions.
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="633573061"
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:enabled"/>
+  <int value="634350211"
+      label="MediaPlaybackWhileNotVisiblePermissionPolicy:enabled"/>
   <int value="634557307" label="HidGetFeatureReportFix:enabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>

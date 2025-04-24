@@ -320,6 +320,9 @@ extern const char kAvifGainmapHdrImagesDescription[];
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
+extern const char kMediaPlaybackWhileNotVisiblePermissionPolicyName[];
+extern const char kMediaPlaybackWhileNotVisiblePermissionPolicyDescription[];
+
 extern const char kMediaSessionEnterPictureInPictureName[];
 extern const char kMediaSessionEnterPictureInPictureDescription[];
 
