@@ -1699,9 +1699,9 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test |AccessibilityNodeInfo| object for node with spelling error, and ensure the
-     * spelling error is encoded as a Spannable.
-     **/
+     * Test |AccessibilityNodeInfo| object for node with spelling error, and ensure the spelling
+     * error is encoded as a Spannable.
+     */
     @Test
     @SmallTest
     public void testNodeInfo_spellingError() {

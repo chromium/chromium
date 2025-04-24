@@ -27,9 +27,7 @@ import org.chromium.base.Log;
 class SmsProviderFakes {
     private static final String TAG = "WebOTPService";
 
-    /**
-     * Fakes com.google.android.gms.auth.api.phone.SmsRetrieverClient.
-     **/
+    /** Fakes com.google.android.gms.auth.api.phone.SmsRetrieverClient. */
     static class FakeSmsRetrieverClient extends Wrappers.SmsRetrieverClientWrapper {
         @CalledByNative("FakeSmsRetrieverClient")
         private static FakeSmsRetrieverClient create() {
