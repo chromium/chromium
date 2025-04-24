@@ -15,6 +15,22 @@ import org.chromium.url.GURL;
 @NullMarked
 public class DataSharingUiConfig {
 
+    /** Enum for user actions. */
+    public enum DataSharingUserAction {
+        SHARE_FLOW_SHARE_LINK,
+        SHARE_FLOW_OPEN_LEARN_MORE,
+        JOIN_FLOW_JOIN_AND_OPEN,
+        JOIN_FLOW_OPEN_LEARN_MORE,
+        MANAGE_FLOW_SHARE_LINK,
+        MANAGE_FLOW_LEAVE_GROUP,
+        MANAGE_FLOW_BLOCK_PERSON,
+        MANAGE_FLOW_BLOCK_AND_LEAVE_GROUP,
+        MANAGE_FLOW_REMOVE_PERSON,
+        MANAGE_FLOW_STOP_SHARING,
+        MANAGE_FLOW_OPEN_LEARN_MORE,
+        MANAGE_FLOW_SHOW_ACTIVITY_LOGS,
+    }
+
     // --- Form Factor Config ---
     private boolean mIsTablet;
 
@@ -31,6 +47,8 @@ public class DataSharingUiConfig {
     /** Callback interface for common data sharing UI events. */
     public interface DataSharingCallback {
         default void onClickOpenChromeCustomTab(Context context, GURL url) {}
+
+        default void recordUserActionClicks(DataSharingUserAction dataSharingUserAction) {}
     }
 
     private DataSharingUiConfig(Builder builder) {
