@@ -30,6 +30,12 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
   SaveUpdateAddressProfileFlowManagerBrowserTest() = default;
   ~SaveUpdateAddressProfileFlowManagerBrowserTest() override = default;
 
+  void SetUp() override {
+    AndroidBrowserTest::SetUp();
+    profile_ = test::GetFullProfile();
+    original_profile_ = test::GetFullProfile2();
+  }
+
   // AndroidBrowserTest:
   void SetUpOnMainThread() override {
     flow_manager_ = std::make_unique<SaveUpdateAddressProfileFlowManager>();
@@ -52,15 +58,17 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
     return !!flow_manager_->GetPromptControllerForTest();
   }
 
+  AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
+  AutofillProfile original_profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfMessageIsDisplayed) {
-  AutofillProfile submitted_profile = test::GetFullProfile();
-  AutofillProfile original_profile = test::GetFullProfile2();
-  flow_manager_->OfferSave(GetWebContents(), submitted_profile,
-                           &original_profile, kNotMigrationToAccount,
+  flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
+                           kNotMigrationToAccount,
                            /*callback=*/base::DoNothing());
   EXPECT_TRUE(IsMessageDisplayed());
   EXPECT_FALSE(IsPromptDisplayed());
@@ -78,10 +86,8 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfPromptIsDisplayed) {
-  AutofillProfile submitted_profile = test::GetFullProfile();
-  AutofillProfile original_profile = test::GetFullProfile2();
-  flow_manager_->OfferSave(GetWebContents(), submitted_profile,
-                           &original_profile, kNotMigrationToAccount,
+  flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
+                           kNotMigrationToAccount,
                            /*callback=*/base::DoNothing());
   // Proceed with message to prompt.
   flow_manager_->GetMessageControllerForTest()->OnPrimaryAction();

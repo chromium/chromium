@@ -59,19 +59,14 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
  public:
   SelectTypeAndMigrateLocalDataItemsWhenActiveTest()
       : SyncTest(SINGLE_CLIENT),
+        address_(autofill::test::GetFullProfile()),
         password_(CreateTestPasswordForm(0)) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
-         switches::kSyncEnableBookmarksInTransportMode,
-         autofill::features::kAutofillSupportLastNamePrefix},
+         switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers});
-
-    // Ensure profile creation occurs after flag initialization to guarantee
-    // their effectiveness within the profile's constructor.
-    address_ =
-        std::make_unique<AutofillProfile>(autofill::test::GetFullProfile());
   }
 
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
@@ -79,7 +74,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
   }
 
-  const AutofillProfile& address() { return *address_; }
+  const AutofillProfile& address() { return address_; }
   const PasswordForm& password() { return password_; }
 
   // Sign in with `signin::ConsentLevel::kSignin`.
@@ -94,10 +89,10 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
   }
 
   void SaveLocalAddress() {
-    GetPersonalDataManager()->address_data_manager().AddProfile(*address_);
+    GetPersonalDataManager()->address_data_manager().AddProfile(address_);
     EXPECT_TRUE(AddressDataManagerProfileChecker(
                     &GetPersonalDataManager()->address_data_manager(),
-                    UnorderedElementsAre(*address_))
+                    UnorderedElementsAre(address_))
                     .Wait());
   }
 
@@ -126,7 +121,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<AutofillProfile> address_;
+  AutofillProfile address_;
   PasswordForm password_;
 };
 
