@@ -85,7 +85,8 @@ public class NotificationUmaTracker {
         SystemNotificationType.DATA_SHARING,
         SystemNotificationType.UPM_ACCESS_LOSS_WARNING,
         SystemNotificationType.TRACING,
-        SystemNotificationType.SERIAL
+        SystemNotificationType.SERIAL,
+        SystemNotificationType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -133,8 +134,9 @@ public class NotificationUmaTracker {
         int UPM_ACCESS_LOSS_WARNING = 40;
         int TRACING = 41;
         int SERIAL = 42;
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 43;
 
-        int NUM_ENTRIES = 43;
+        int NUM_ENTRIES = 44;
     }
 
     /*

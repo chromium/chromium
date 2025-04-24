@@ -146,6 +146,12 @@ public class NotificationConstants {
      */
     public static final int NOTIFICATION_ID_UPM_ACCESS_LOSS = 18;
 
+    /**
+     * Unique identifier for notifications about auto-revoked notification permissions from Safety
+     * Hub.
+     */
+    public static final int NOTIFICATION_ID_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 19;
+
     // Separator used to separate the notification origin from additional data such as the developer
     // specified tag. This and the prefix following it need to be the same as the one specified in
     // notification_id_generator.cc.

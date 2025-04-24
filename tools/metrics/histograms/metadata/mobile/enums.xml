@@ -603,6 +603,7 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Unified password manager access loss warning"/>
   <int value="41" label="Tracing"/>
   <int value="42" label="Serial"/>
+  <int value="43" label="Safety Check Revoked Notification Permissions"/>
 </enum>
 
 </enums>

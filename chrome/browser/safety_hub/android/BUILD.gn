@@ -13,6 +13,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnsubscribedNotificationsNotificationManager.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
   ]
 }
@@ -82,6 +83,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubUpdateCheckModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubUtils.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnsubscribedNotificationsNotificationManager.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
   ]
   deps = [
@@ -92,6 +94,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/notifications:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android/pwd_check_wrapper:java",
@@ -111,6 +114,7 @@ android_library("java") {
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/util/android:java",
@@ -165,6 +169,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubSafeBrowsingModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubUpdateCheckModuleMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/UnsubscribedNotificationsNotificationManagerTest.java",
   ]
   deps = [
     ":java",
@@ -195,6 +200,9 @@ robolectric_library("junit") {
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:test_support_java",
+    "//components/browser_ui/notifications/android:utils_java",
     "//components/browser_ui/settings/android:java",
     "//components/content_settings/core/common:content_settings_types_java",
     "//components/prefs/android:java",
