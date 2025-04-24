@@ -5,45 +5,49 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 
 #include "base/feature_list.h"
-#include "base/version_info/channel.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/channel_info.h"
+
+namespace {
+
+const base::FeatureParam<bool>* GetPageActionMigrationParam(
+    PageActionIconType page_action) {
+  switch (page_action) {
+    case PageActionIconType::kLensOverlay:
+      return &features::kPageActionsMigrationLensOverlay;
+    case PageActionIconType::kMemorySaver:
+      return &features::kPageActionsMigrationMemorySaver;
+    case PageActionIconType::kTranslate:
+      return &features::kPageActionsMigrationTranslate;
+    case PageActionIconType::kIntentPicker:
+      return &features::kPageActionsMigrationIntentPicker;
+    case PageActionIconType::kZoom:
+      return &features::kPageActionsMigrationZoom;
+    case PageActionIconType::kPaymentsOfferNotification:
+      return &features::kPageActionsMigrationOfferNotification;
+    case PageActionIconType::kFileSystemAccess:
+      return &features::kPageActionsMigrationFileSystemAccess;
+    case PageActionIconType::kPwaInstall:
+      return &features::kPageActionsMigrationPwaInstall;
+    case PageActionIconType::kPriceInsights:
+      return &features::kPageActionsMigrationPriceInsights;
+    default:
+      return nullptr;
+  }
+}
+
+}  // namespace
 
 bool IsPageActionMigrated(PageActionIconType page_action) {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  const auto* feature_param = GetPageActionMigrationParam(page_action);
+  if (feature_param == nullptr) {
     return false;
   }
 
-  // For developer manual testing only, allow all migrations to be enabled
-  // through a single param.
+  // For developer manual testing only, allow all migrated page actions to be
+  // enabled through a single switch.
   if (features::kPageActionsMigrationEnableAll.Get()) {
-    const auto channel = chrome::GetChannel();
-    if (channel == version_info::Channel::CANARY ||
-        channel == version_info::Channel::UNKNOWN) {
-      return true;
-    }
+    return true;
   }
 
-  switch (page_action) {
-    case PageActionIconType::kLensOverlay:
-      return features::kPageActionsMigrationLensOverlay.Get();
-    case PageActionIconType::kMemorySaver:
-      return features::kPageActionsMigrationMemorySaver.Get();
-    case PageActionIconType::kTranslate:
-      return features::kPageActionsMigrationTranslate.Get();
-    case PageActionIconType::kIntentPicker:
-      return features::kPageActionsMigrationIntentPicker.Get();
-    case PageActionIconType::kZoom:
-      return features::kPageActionsMigrationZoom.Get();
-    case PageActionIconType::kPaymentsOfferNotification:
-      return features::kPageActionsMigrationOfferNotification.Get();
-    case PageActionIconType::kFileSystemAccess:
-      return features::kPageActionsMigrationFileSystemAccess.Get();
-    case PageActionIconType::kPwaInstall:
-      return features::kPageActionsMigrationPwaInstall.Get();
-    case PageActionIconType::kPriceInsights:
-      return features::kPageActionsMigrationPriceInsights.Get();
-    default:
-      return false;
-  }
+  return feature_param->Get();
 }
