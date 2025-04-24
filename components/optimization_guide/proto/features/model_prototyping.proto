@@ -363,6 +363,7 @@ message HistoryQuerySpecifiers {
   repeated HistoryQuery history_queries = 1;
 }
 
+// Next ID: 6
 message ExtensionAddedInformation {
   // Free form data that a prototyper can inject into prompts.
   repeated string free_form_data = 1;
@@ -375,6 +376,8 @@ message ExtensionAddedInformation {
 
   // The local annotated page content as a list of passages.
   string local_annotated_page_content_as_passages = 4;
+
+  bytes mhtml = 5;
 }
 
 message ModelPrototypingResponse {

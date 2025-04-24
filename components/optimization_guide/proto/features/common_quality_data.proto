@@ -337,12 +337,14 @@ message BoundingRect {
 
 // The interaction information for the content node. This indicates whether the
 // node is interactive and what type of interaction it supports.
-// Next ID: 12
+// Next ID: 13
 message InteractionInfo {
-  // Whether the content node can scroll in the x direction.
+  // Set if the content node is scrollable.
+  ScrollerInfo scroller_info = 12;
+
+  // DEPRECATED: Use `scroller_info` instead.
   bool scrolls_overflow_x = 1;
 
-  // Whether the content node can scroll in the y direction.
   bool scrolls_overflow_y = 2;
 
   // Whether the content node is selectable.
@@ -379,6 +381,32 @@ message InteractionInfo {
   int32 for_dom_node_id = 11;
 
   reserved 8;
+}
+
+// The coordinate space for the dimensions here is physical coordinates (not
+// logical coordinates). This means it's the same irrespective of the writing
+// mode.
+// The dimensions also exclude non-overlay scrollbars.
+message ScrollerInfo {
+  // The complete layout dimensions of the scroller. This is the total area
+  // that can be revealed through a scroll operation.
+  BoundingSize scrolling_bounds = 1;
+
+  // The subset of this scroller's content which is currently scrolled to. This
+  // is relative to the origin of `scrolling_bounds`.
+  BoundingRect visible_area = 2;
+
+  // Indicates whether this can be scrolled by the user in horizontal or
+  // vertical directions. These nodes can still be scrolled by script.
+  bool user_scrollable_horizontal = 3;
+
+  bool user_scrollable_vertical = 4;
+}
+
+message BoundingSize {
+  int32 width = 1;
+
+  int32 height = 2;
 }
 
 // Next ID: 5
