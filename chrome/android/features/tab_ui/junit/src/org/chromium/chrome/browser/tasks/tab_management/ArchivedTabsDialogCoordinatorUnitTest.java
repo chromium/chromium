@@ -73,6 +73,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabListMediator}. */
@@ -193,7 +194,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testShow() {
         mCoordinator.show(mOnTabSelectingListener);
         verify(mRootView).addView(any());
-        verify(mTabListEditorController).show(any(), eq(null), eq(null));
+        verify(mTabListEditorController).show(any(), eq(Collections.emptyList()), eq(null));
         verify(mTabListEditorController).setNavigationProvider(any());
         verify(mTabListEditorController).setToolbarTitle("0 inactive tabs");
         verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ARCHIVED_TABS_DIALOG));

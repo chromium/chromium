@@ -83,6 +83,7 @@ import org.chromium.ui.util.TokenHolder;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
@@ -750,7 +751,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private List<String> getTabGroupSyncIds() {
         if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
                 || mTabGroupSyncService == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<String> tabGroupSyncIds = new ArrayList<>();
