@@ -4,6 +4,7 @@
 
 #include "net/base/features.h"
 
+#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -738,5 +739,14 @@ BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
              "IncludeDeprecatedClientCertLookup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kRestrictAbusePorts,
+             "RestrictAbusePorts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kPortsToRestrictForAbuse,
+                   &kRestrictAbusePorts,
+                   "PortsToRestrictForAbuse",
+                   "");
 
 }  // namespace net::features

@@ -747,6 +747,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kVerifyQWACs);
 NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
 #endif
 
+// Finch-controlled list of ports that should be blocked due to ongoing abuse.
+NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePorts);
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPortsToRestrictForAbuse;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

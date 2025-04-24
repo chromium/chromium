@@ -20731,6 +20731,25 @@
             ]
         }
     ],
+    "RestrictAbusePorts": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "RestrictAbusePorts",
+                    "params": {
+                        "PortsToRestrictForAbuse": "30987,30988,30989"
+                    },
+                    "enable_features": [
+                        "RestrictAbusePorts"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
