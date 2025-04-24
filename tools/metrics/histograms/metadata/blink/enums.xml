@@ -6172,6 +6172,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5545" label="RoleAttributeTreeitem"/>
   <int value="5546" label="InputParsedParentSelect"/>
   <int value="5547" label="InputParsedAncestorSelect"/>
+  <int value="5548" label="CSSSelectorPseudoHasSlotted"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8172,6 +8173,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="317" label="SpeculationRules"/>
   <int value="318" label="TextBox"/>
   <int value="319" label="ScrollInitialTarget"/>
+  <int value="320" label="HasSlotted"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

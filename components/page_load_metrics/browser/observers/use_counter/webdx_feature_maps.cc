@@ -65,6 +65,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
             WebDXFeature::kFocusVisible},
            {WebFeature::kCSSGridLayout, WebDXFeature::kGrid},
            {WebFeature::kCSSSelectorPseudoHas, WebDXFeature::kHas},
+           {WebFeature::kCSSSelectorPseudoHasSlotted,
+            WebDXFeature::kHasSlotted},
            {WebFeature::kIdleDetectionStart, WebDXFeature::kIdleDetection},
            {WebFeature::kImportMap, WebDXFeature::kImportMaps},
            {WebFeature::kIntersectionObserverV2,
