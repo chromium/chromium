@@ -492,12 +492,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testSignOutWithManagedAccount {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [SigninEarlGrey
-        signinWithFakeManagedIdentityInPersonalProfile:fakeIdentity];
-  } else {
-    [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  }
+  [SigninEarlGrey signinWithFakeManagedIdentityInPersonalProfile:fakeIdentity];
 
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];

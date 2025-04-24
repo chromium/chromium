@@ -257,7 +257,8 @@ void TriggerEditMenu() {
   [SigninEarlGrey verifySignedOut];
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [self loadPage];
   TriggerEditMenu();
   bool found = FindEditMenuAction([NSString
