@@ -8,7 +8,6 @@
 // login password has been saved to SessionManager (b/183084821).
 // This means that triggering the shill user profile load depends on user
 // policy having been processed (as user policy would mandate whether the login
-#include "google_apis/gaia/gaia_id.h"
 // password should be reused, and thus only after processing user network policy
 // does chrome decide if the password should be saved in SessionManager).
 //
@@ -17,7 +16,6 @@
 
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/functional/bind.h"
-#include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/protobuf_matchers.h"
@@ -39,6 +37,7 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

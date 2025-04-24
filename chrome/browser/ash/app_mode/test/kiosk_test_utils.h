@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/auto_reset.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/function_ref.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
