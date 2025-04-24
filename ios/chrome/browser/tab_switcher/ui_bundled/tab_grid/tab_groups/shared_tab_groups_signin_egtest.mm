@@ -37,6 +37,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using ::base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::FakeJoinFlowView;
 using chrome_test_util::FakeShareFlowView;
@@ -69,6 +70,22 @@ void LongPressOn(id<GREYMatcher> matcher) {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Long press failed.");
+}
+
+// Waits for the fake join flow view to appear.
+void WaitForFakeJoinFlowView() {
+  GREYCondition* waitForFakeJoinFlowView = [GREYCondition
+      conditionWithName:@"Wait for the fake join flow view to appear."
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+                        assertWithMatcher:grey_sufficientlyVisible()
+                                    error:&error];
+                    return error == nil;
+                  }];
+  GREYAssertTrue([waitForFakeJoinFlowView
+                     waitWithTimeout:kWaitForActionTimeout.InSecondsF()],
+                 @"The fake join flow view did not appear.");
 }
 
 // Long presses a tab group cell.
@@ -295,9 +312,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                  @"History sync is disabled.");
 
   // Verify that this opened the fake Join flow.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
-  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  WaitForFakeJoinFlowView();
 
   // Join the group.
   [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
@@ -339,9 +354,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                  @"History sync is disabled.");
 
   // Verify that this opened the fake Join flow.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
-  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  WaitForFakeJoinFlowView();
 
   // Join the group.
   [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]

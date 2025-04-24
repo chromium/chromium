@@ -81,7 +81,7 @@ const CGFloat kFaviconSize = 16.0;
 const CGFloat kScrimOpacity = 0.3;
 
 // Maximum delay to return preview items.
-constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(15);
+constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(5);
 
 }  // namespace
 
