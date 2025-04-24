@@ -2759,6 +2759,10 @@
       status: "stable",
     },
     {
+      name: "ListOwnerMustHaveCSSBox",
+      status: "stable",
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.
