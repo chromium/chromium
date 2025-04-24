@@ -439,6 +439,15 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
     return;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (browser_->window()->IsFeaturePromoActive(
+          feature_engagement::kIPHPasswordsSavePrimingPromoFeature)) {
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+#endif
+
   if (!explicit_button_pressed_action_.is_null()) {
     explicit_button_pressed_action_.Run();
     return;

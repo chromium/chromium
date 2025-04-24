@@ -10709,11 +10709,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT" desc="Body of the in Product Help shown when the 'Save to account` is selected">
           You can save this password in your Google Account or only on this device
         </message>
-        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY" desc="Body of IPH prompting users to consider saving passwords">
-          To save your password with Google Password Manager, sign in to Chrome
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_TEMPLATE" is_accessibility_with_no_ui="true" desc="Placeholder for string to be shown for IPH prompting users to consider saving passwords">
+          <ph name="message">$1<ex>Use Google Password Manager to sign in faster</ex></ph>
+        </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_SIGNED_IN" desc="Body of IPH prompting users to consider saving passwords">
+          Use Google Password Manager to sign in faster to sites from any of your devices
+        </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_NOT_SIGNED_IN" desc="Body of IPH prompting users to consider saving passwords">
+          To save strong passwords with Google Password Manager, sign in to Chrome
         </message>
         <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for IPH prompting users to consider saving passwords">
-          You can save passwords with Google Password Manager when you sign in to Chrome
+          You can save passwords with Google Password Manager when you are signed in to Chrome
         </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_MANAGEMENT_BUBBLE_AFTER_SAVE" desc="Body of the in Product Help shown after saving a password informing the user about the password management bubble">
           To view your password or add a note about it, click the key icon

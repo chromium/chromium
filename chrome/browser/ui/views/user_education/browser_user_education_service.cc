@@ -637,7 +637,7 @@ void MaybeRegisterChromeFeaturePromos(
 #else
           kToolbarAvatarButtonElementId,
 #endif
-          IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY,
+          IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_TEMPLATE,
           IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetMetadata(
