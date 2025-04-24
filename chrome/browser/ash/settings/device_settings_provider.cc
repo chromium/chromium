@@ -40,6 +40,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -431,6 +432,25 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       if (entry.kiosk_app().has_update_url()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                        entry.kiosk_app().update_url());
+      }
+      if (policy::features::IsHeliumArcvmKioskEnabled()) {
+        if (entry.arcvm_kiosk_app().has_package_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                         entry.arcvm_kiosk_app().package_name());
+        }
+        if (entry.arcvm_kiosk_app().has_class_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                         entry.arcvm_kiosk_app().class_name());
+        }
+        if (entry.arcvm_kiosk_app().has_action()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                         entry.arcvm_kiosk_app().action());
+        }
+        if (entry.arcvm_kiosk_app().has_display_name()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+              entry.arcvm_kiosk_app().display_name());
+        }
       }
       if (entry.web_kiosk_app().has_url()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,

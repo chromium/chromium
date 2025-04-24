@@ -61,6 +61,7 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     case policy::DeviceLocalAccountType::kKioskApp:
     case policy::DeviceLocalAccountType::kWebKioskApp:
     case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case policy::DeviceLocalAccountType::kArcvmKioskApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
   }
   NOTREACHED();

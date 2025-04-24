@@ -38,6 +38,15 @@ inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId[] =
     "iwa_kiosk_web_bundle_id";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl[] =
     "iwa_kiosk_update_manifest_url";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage[] =
+    "arcvm_kiosk_package";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass[] =
+    "arcvm_kiosk_class";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction[] =
+    "arcvm_kiosk_action";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName[] =
+        "arcvm_kiosk_display_name";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[] =
     "web_kiosk_url";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =

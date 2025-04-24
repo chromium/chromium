@@ -479,7 +479,6 @@ message KioskAppInfoProto {
 }
 
 // Describes which Android application is to be launched.
-// Deprecated. Unsupported starting with M126.
 message AndroidKioskAppInfoProto {
   // Package name (must be present).
   // In the event this is the only field that is specified, runtime may use
@@ -574,6 +573,11 @@ message DeviceLocalAccountInfoProto {
     // An account that serves as a container for a single full-screen
     // Isolated Web App (IWA).
     ACCOUNT_TYPE_KIOSK_IWA = 5;
+    // An account that serves as a container for a single full-screen
+    // Android app running inside ARCVM. This is different from the deprecated
+    // ACCOUNT_TYPE_KIOSK_ANDROID_APP as this will be used only for Project
+    // Starline devices.
+    ACCOUNT_TYPE_KIOSK_ARCVM = 6;
   }
   // Should keep ChromeServletUtil.toDimensionAccountType logic in sync with
   // AccountType enum.
@@ -623,6 +627,11 @@ message DeviceLocalAccountInfoProto {
 
   // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_IWA.
   optional IsolatedWebAppKioskInfoProto isolated_kiosk_app = 8;
+
+  // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_ARCVM.
+  // This is different from the deprecated android_kiosk_app field as this will
+  // be used only for Project Starline devices.
+  optional AndroidKioskAppInfoProto arcvm_kiosk_app = 9;
 }
 
 message DeviceLocalAccountsProto {

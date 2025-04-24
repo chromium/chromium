@@ -115,6 +115,7 @@ bool IsExtensionTracked(DeviceLocalAccountType account_type) {
       return true;
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case DeviceLocalAccountType::kArcvmKioskApp:
       return false;
   }
   NOTREACHED();

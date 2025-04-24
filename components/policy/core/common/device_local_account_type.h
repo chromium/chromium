@@ -35,6 +35,10 @@ enum class DeviceLocalAccountType {
   // An account that serves as a container for a single full-screen
   // Isolated Web App (IWA).
   kKioskIsolatedWebApp = 5,
+
+  // An account that serves as a container for a single full-screen
+  // Android app running inside ARCVM.
+  kArcvmKioskApp = 6,
 };
 
 // Returns whether the given value is valid DeviceLocalAccountType.

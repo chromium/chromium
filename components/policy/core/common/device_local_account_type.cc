@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace policy {
@@ -20,6 +21,7 @@ constexpr auto kDomainPrefixMap =
     base::MakeFixedFlatMap<DeviceLocalAccountType, std::string_view>({
         {DeviceLocalAccountType::kPublicSession, "public-accounts"},
         {DeviceLocalAccountType::kKioskApp, "kiosk-apps"},
+        {DeviceLocalAccountType::kArcvmKioskApp, "arcvm-kiosk-apps"},
         {DeviceLocalAccountType::kSamlPublicSession, "saml-public-accounts"},
         {DeviceLocalAccountType::kWebKioskApp, "web-kiosk-apps"},
         {DeviceLocalAccountType::kKioskIsolatedWebApp, "isolated-kiosk-apps"},
@@ -38,6 +40,8 @@ bool IsValidDeviceLocalAccountType(int value) {
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
       return true;
+    case DeviceLocalAccountType::kArcvmKioskApp:
+      return policy::features::IsHeliumArcvmKioskEnabled();
   }
   return false;
 }

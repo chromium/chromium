@@ -164,6 +164,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
 
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case DeviceLocalAccountType::kArcvmKioskApp:
       // Disable translation functionality in Web Kiosk Mode.
       chrome_policy.Set(key::kTranslateEnabled, POLICY_LEVEL_MANDATORY,
                         POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,

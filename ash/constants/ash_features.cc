@@ -1436,11 +1436,6 @@ BASE_FEATURE(kHelpAppAppDetailPage,
              "HelpAppAppDetailPage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Kiosk session for the Helium android app.
-BASE_FEATURE(kHeliumArcvmKiosk,
-             "HeliumArcvmKiosk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the Help app will render the Apps List page and entry point.
 BASE_FEATURE(kHelpAppAppsList,
              "HelpAppAppsList",
@@ -3918,10 +3913,6 @@ bool AreAnyGlanceablesTimeManagementViewsEnabled() {
 
 bool AreHealthdInternalsTabsEnabled() {
   return base::FeatureList::IsEnabled(kHealthdInternalsTabs);
-}
-
-bool IsHeliumArcvmKioskEnabled() {
-  return base::FeatureList::IsEnabled(kHeliumArcvmKiosk);
 }
 
 bool IsHibernateEnabled() {
