@@ -635,6 +635,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/gesturenav/NavigationSheetCoordinator.java",
   "java/src/org/chromium/chrome/browser/gesturenav/NavigationSheetMediator.java",
   "java/src/org/chromium/chrome/browser/gesturenav/NavigationSheetView.java",
+  "java/src/org/chromium/chrome/browser/gesturenav/OverscrollGlowCoordinator.java",
   "java/src/org/chromium/chrome/browser/gesturenav/OverscrollGlowOverlay.java",
   "java/src/org/chromium/chrome/browser/gesturenav/OverscrollSceneLayer.java",
   "java/src/org/chromium/chrome/browser/gesturenav/RtlGestureNavIphController.java",

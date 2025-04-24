@@ -35,6 +35,9 @@ abstract class NavigationGlow {
     /** Cancels the glow UI in action. */
     public abstract void reset();
 
+    /** Whether the glow is showing. */
+    public abstract boolean isShowing();
+
     /** Destroys internal objects when navigation logic is destroyed. */
     public abstract void destroy();
 }

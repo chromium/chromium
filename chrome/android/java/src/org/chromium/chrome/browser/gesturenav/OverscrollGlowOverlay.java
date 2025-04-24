@@ -89,6 +89,11 @@ class OverscrollGlowOverlay extends NavigationGlow implements SceneOverlay {
     }
 
     @Override
+    public boolean isShowing() {
+        return mIsShowing;
+    }
+
+    @Override
     public EventFilter getEventFilter() {
         return null;
     }

@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
+import org.chromium.chrome.browser.gesturenav.OverscrollGlowCoordinator;
 import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -361,6 +362,7 @@ public class ToolbarManager
     private @Nullable UndoBarThrottle mUndoBarThrottle;
 
     private float mNtpSearchBoxScrollPercentage;
+    private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -435,6 +437,7 @@ public class ToolbarManager
         private boolean mIsGestureMode;
         private @BackGestureEventSwipeEdge int mInitialEdge;
         private boolean mIsInProgress;
+        private final CallbackController mCallbackController = new CallbackController();
 
         @Override
         public int handleBackPress() {
@@ -450,6 +453,9 @@ public class ToolbarManager
                 // When the user swipes semantically backward and canGoBack == false.
                 if (isInvalidSwipeWhenNavigatingBack()) {
                     return BackPressResult.FAILURE;
+                }
+                if (mOverscrollGlowCoordinator != null && mOverscrollGlowCoordinator.isShowing()) {
+                    mOverscrollGlowCoordinator.releaseGlow();
                 }
                 // When the user swipes semantically forward with no forward history.
                 return BackPressResult.IGNORED;
@@ -489,10 +495,16 @@ public class ToolbarManager
             mBackGestureInProgress = false;
             mIsGestureMode = false;
             mHandler = null;
+            if (mOverscrollGlowCoordinator != null && mOverscrollGlowCoordinator.isShowing()) {
+                mOverscrollGlowCoordinator.releaseGlow();
+            }
         }
 
         @Override
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            if (mOverscrollGlowCoordinator != null && mOverscrollGlowCoordinator.isShowing()) {
+                mOverscrollGlowCoordinator.pullGlow(backEvent.getTouchX(), backEvent.getTouchY());
+            }
             if (mHandler == null) return;
             if (!mIsInProgress) {
                 handleOnBackStarted(backEvent);
@@ -516,6 +528,10 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            if (mOverscrollGlowCoordinator != null && mOverscrollGlowCoordinator.isShowing()) {
+                mOverscrollGlowCoordinator.resetGlow();
+            }
+
             mIsInProgress = true;
             mIsGestureMode = UiUtils.isGestureNavigationMode(mActivity.getWindow());
             mInitialEdge = backEvent.getSwipeEdge();
@@ -541,6 +557,20 @@ public class ToolbarManager
                 // Do not proceed if: 1. swiping semantically forward with no forward history. 2.
                 // swiping semantically backward and canGoBack == false.
                 if (isInvalidSwipeWhenNavigatingForward() || isInvalidSwipeWhenNavigatingBack()) {
+                    if (mOverscrollGlowCoordinator == null) {
+                        mOverscrollGlowCoordinator =
+                                new OverscrollGlowCoordinator(
+                                        mWindowAndroid,
+                                        mLayoutManager,
+                                        mCompositorViewHolder.getCompositorView(),
+                                        mCallbackController.makeCancelable(
+                                                mLayoutManager.getActiveLayout()::requestUpdate));
+                    }
+
+                    if (!mActivityTabProvider.get().isNativePage()) {
+                        mOverscrollGlowCoordinator.showGlow(
+                                backEvent.getTouchX(), backEvent.getTouchY());
+                    }
                     mBackGestureInProgress = false;
                     return;
                 }
