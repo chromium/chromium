@@ -203,7 +203,7 @@ class PrefRegistrySyncable;
 // `viewController` presents the promo.
 // This method can return nil if sign-in is not authorized or if there is no
 // account on the device.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser

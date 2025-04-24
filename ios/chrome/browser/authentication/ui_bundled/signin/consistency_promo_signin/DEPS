@@ -1,5 +1,1 @@
-specific_include_rules = {
-  "consistency_promo_signin_coordinator\.*": [
-    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
-  ],
-}
+

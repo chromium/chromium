@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -134,18 +133,6 @@
             continuationProvider:continuationProvider];
 }
 
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  [self stopAlertCoordinator];
-  [self stopAddAccountCoordinatorAnimated:animated];
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
-}
-
 #pragma mark - SigninCoordinator
 
 - (void)start {
@@ -199,11 +186,6 @@
                                       completion:nil];
 }
 
-- (void)stop {
-  [super stop];
-  [self stopDefaultAccountCoordinator];
-}
-
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
   switch (signinResult) {
@@ -230,16 +212,29 @@
       NOTREACHED();
   }
   DCHECK(!self.alertCoordinator);
-  self.navigationController.delegate = nil;
-  self.navigationController.transitioningDelegate = nil;
-  self.navigationController = nil;
-  [self stopDefaultAccountCoordinator];
-  [self stopAccountChooserCoordinator];
-  self.consistencyPromoSigninMediator.delegate = nil;
-  [self.consistencyPromoSigninMediator disconnectWithResult:signinResult];
-  self.consistencyPromoSigninMediator = nil;
+  [self disconnectMediatorWithResult:signinResult];
   [super runCompletionWithSigninResult:signinResult
                     completionIdentity:completionIdentity];
+}
+
+#pragma mark - StopAnimatedSigninCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  [self stopAlertCoordinator];
+  [self stopAddAccountCoordinatorAnimated:animated];
+  if (self.navigationController) {
+    // If `self` requested to be stopped, the navigation controller would
+    // already be dismissed.
+    base::RecordAction(
+        base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));
+  }
+  [self dismissViewControllerAnimated:animated];
+  [self stopDefaultAccountCoordinator];
+  // If the mediator was already disconnected, this second disconnect does
+  // nothing.
+  [self disconnectMediatorWithResult:SigninCoordinatorResultInterrupted];
+  [self stopAccountChooserCoordinator];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - Properties
@@ -249,6 +244,21 @@
 }
 
 #pragma mark - Private
+
+- (void)dismissViewControllerAnimated:(BOOL)animated {
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
+  self.navigationController.delegate = nil;
+  self.navigationController.transitioningDelegate = nil;
+  self.navigationController = nil;
+}
+
+- (void)disconnectMediatorWithResult:(SigninCoordinatorResult)signinResult {
+  self.consistencyPromoSigninMediator.delegate = nil;
+  [self.consistencyPromoSigninMediator disconnectWithResult:signinResult];
+  self.consistencyPromoSigninMediator = nil;
+}
 
 - (void)stopAlertCoordinator {
   [self.alertCoordinator stop];
@@ -385,9 +395,7 @@
     userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount,
                                 skipCounter);
   }
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
+  [self dismissViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
                    completionIdentity:nil];
 }
@@ -496,9 +504,7 @@
                                     withIdentity:(id<SystemIdentity>)identity {
   DCHECK([identity isEqual:self.selectedIdentity]);
   id<SystemIdentity> completionIdentity = identity;
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
+  [self dismissViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
                    completionIdentity:completionIdentity];
 }

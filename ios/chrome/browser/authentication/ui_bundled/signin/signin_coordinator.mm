@@ -221,7 +221,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint];
 }
 
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser
@@ -308,7 +308,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  // Subclasses implementing `InterruptibleChromeCoordinator` must call
+  // Subclasses implementing `StopAnimatedChromeCoordinator` must call
   // -[SigninCoordinator runCompletionWithSigninResult:completionIdentity:]
   // before the coordinator is deallocated.
   DCHECK(![self conformsToProtocol:@protocol(InterruptibleChromeCoordinator)] ||
