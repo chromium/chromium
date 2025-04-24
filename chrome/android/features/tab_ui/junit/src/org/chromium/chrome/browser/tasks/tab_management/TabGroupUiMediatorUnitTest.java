@@ -1198,7 +1198,6 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
         initAndAssertProperties(mTab1);
         verify(mSharedImageTilesConfigBuilder).setBorderColor(Color.RED);
-        verify(mSharedImageTilesConfigBuilder).setBackgroundColor(Color.RED);
         verify(mSharedImageTilesCoordinator).updateConfig(any());
 
         doReturn(Color.BLUE).when(mThemeColorProvider).getThemeColor();
@@ -1207,7 +1206,6 @@ public class TabGroupUiMediatorUnitTest {
                 .getValue()
                 .onThemeColorChanged(Color.BLUE, /* shouldAnimate= */ false);
         verify(mSharedImageTilesConfigBuilder).setBorderColor(Color.BLUE);
-        verify(mSharedImageTilesConfigBuilder).setBackgroundColor(Color.BLUE);
         verify(mSharedImageTilesCoordinator, times(2)).updateConfig(any());
     }
 

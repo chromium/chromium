@@ -375,7 +375,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         mModel.set(BACKGROUND_COLOR, color);
         if (mSharedImageTilesCoordinator != null && mSharedImageTilesConfigBuilder != null) {
-            mSharedImageTilesConfigBuilder.setBorderColor(color).setBackgroundColor(color);
+            mSharedImageTilesConfigBuilder.setBorderColor(color);
             mSharedImageTilesCoordinator.updateConfig(mSharedImageTilesConfigBuilder.build());
         }
         publishSnapshotToken();
