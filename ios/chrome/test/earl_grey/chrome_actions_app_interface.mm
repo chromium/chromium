@@ -73,8 +73,8 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
 
 @implementation ChromeActionsAppInterface : NSObject
 
-+ (id<GREYAction>)longPressElement:(ElementSelector*)selector
-                triggerContextMenu:(BOOL)triggerContextMenu {
++ (id<GREYAction>)longPressElementOnWebView:(ElementSelector*)selector
+                         triggerContextMenu:(BOOL)triggerContextMenu {
   return WebViewLongPressElementForContextMenu(
       chrome_test_util::GetCurrentWebState(), selector, triggerContextMenu);
 }

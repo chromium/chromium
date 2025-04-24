@@ -21,6 +21,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
@@ -40,6 +41,8 @@ using ::base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 const char kElementToLongPress[] = "selectid";
+ElementSelector* kElementToLongPressSelector =
+    [ElementSelector selectorWithElementID:kElementToLongPress];
 
 // An HTML template that puts some text in a simple span element.
 const char kBasicSelectionUrl[] = "/basic";
@@ -99,35 +102,6 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   return !error;
 }
 
-// Long presses on `element_id`.
-void LongPressElement(const char* element_id) {
-  // Use triggers_context_menu = true as this is really "triggers_browser_menu".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector selectorWithElementID:element_id],
-                        true)];
-}
-
-// Convenient function to trigger the Edit Menu on `kElementToLongPress`.
-void TriggerEditMenu() {
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
-      assertWithMatcher:grey_notVisible()];
-  LongPressElement(kElementToLongPress);
-
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  if (error) {
-    // If edit is not visible, try to tap the element again.
-    // This is possible on inputs when the first long press just selects the
-    // input.
-    LongPressElement(kElementToLongPress);
-    [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
-}
-
 }  // namespace
 
 // Tests for the Search With Edit menu entry.
@@ -170,7 +144,7 @@ void TriggerEditMenu() {
 // `kCanUseModelExecutionFeaturesName` capability.
 - (void)testExplainWithGemini {
   [self loadPage];
-  TriggerEditMenu();
+  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -210,7 +184,7 @@ void TriggerEditMenu() {
 - (void)testExplainWithGeminiIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
-  TriggerEditMenu();
+  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -223,7 +197,7 @@ void TriggerEditMenu() {
   [SigninEarlGrey signOut];
   [SigninEarlGrey verifySignedOut];
   [self loadPage];
-  TriggerEditMenu();
+  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -242,7 +216,7 @@ void TriggerEditMenu() {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [self loadPage];
-  TriggerEditMenu();
+  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -260,7 +234,7 @@ void TriggerEditMenu() {
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [self loadPage];
-  TriggerEditMenu();
+  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);

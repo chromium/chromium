@@ -81,14 +81,6 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   return std::move(http_response);
 }
 
-// Long presses on `element_id` to trigger context menu.
-void LongPressElement(const char* element_id) {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector selectorWithElementID:element_id],
-                        true /* menu should appear */)];
-}
-
 }  // namespace
 
 const char kFindInPageTestRepeatingText[] = "repeating";
@@ -296,7 +288,9 @@ id<GREYMatcher> PasteButton() {
     [ChromeEarlGrey loadURL:destinationURL];
 
     // Select and copy text on the web page.
-    LongPressElement(kFindInPageTestShortTextID);
+    [ChromeEarlGreyUI
+        longPressElementOnWebView:
+            [ElementSelector selectorWithElementID:kFindInPageTestShortTextID]];
 
     [[EarlGrey
         selectElementWithMatcher:
