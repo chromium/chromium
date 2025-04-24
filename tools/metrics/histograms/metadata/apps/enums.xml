@@ -517,8 +517,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed to initialize ICA"/>
   <int value="2" label="Failed to initialize OCR"/>
   <int value="3" label="Failed to decode image"/>
-  <int value="4" label="Image processing time out"/>
+  <int value="4" label="Image processing time out Deprecated"/>
   <int value="5" label="Failed to process ICA"/>
+  <int value="6" label="Failed to process OCR"/>
+  <int value="7" label="Reached ICA disconnection Limit"/>
+  <int value="8" label="Reached OCR disconnection Limit"/>
 </enum>
 
 <enum name="ImageContentAnnotatorStatus">

@@ -28,6 +28,8 @@ class OpticalCharacterRecognizer
     : public ProfileObserver,
       public base::RefCountedDeleteOnSequence<OpticalCharacterRecognizer> {
  public:
+  using OcrDisconnectedCallback = base::RepeatingCallback<void()>;
+
   // Creates OCR using ScreenAI service instance for `profile`. If needed,
   // triggers download and initialization of the component. Calls
   // `status_callback` asynchronously after the OCR has been created and the
@@ -86,13 +88,14 @@ class OpticalCharacterRecognizer
   // Ensures all posted tasks are completed in tests.
   virtual void FlushForTesting() {}
 
-  // Disconnects from ScreenAI service for testing. This is to simulate idle
-  // timeout or service shutdown/crash.
-  void DisconnectForTesting() {
-    if (screen_ai_annotator_) {
-      screen_ai_annotator_->reset();
-    }
-  }
+  // Disconnects from ScreenAI service. This can also be used to simulate idle
+  // timeout or service shutdown/crash for testing.
+  void DisconnectAnnotator();
+
+  // Sets the callback for the disconnection of `screen_ai_annotator_`. It will
+  // be triggered from the UI thread, and it's the responsibility of the client
+  // to execute it on the right thread.
+  void SetDisconnectedCallback(OcrDisconnectedCallback callback);
 
  protected:
   explicit OpticalCharacterRecognizer(Profile* profile,
@@ -116,11 +119,16 @@ class OpticalCharacterRecognizer
       base::OnceCallback<void(bool)> status_callback,
       bool successful);
 
+  void OnOcrDisconnected();
+
   // Is initialized in the constructor and is cleared if profile gets destroyed
   // while this object still exists.
   raw_ptr<Profile> profile_;
 
   mojom::OcrClientType client_type_;
+
+  // Called when the `screen_ai_annotator_` is disconnected.
+  OcrDisconnectedCallback ocr_disconnected_callback_;
 
   // For calls from another sequence, this object keeps a pointer to the task
   // scheduler of the other sequence to return the result.
@@ -134,6 +142,7 @@ class OpticalCharacterRecognizer
   base::ScopedObservation<Profile, ProfileObserver> profile_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<OpticalCharacterRecognizer> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

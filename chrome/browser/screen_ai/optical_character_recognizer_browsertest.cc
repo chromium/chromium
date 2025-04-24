@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_TRUE(init_future.Wait());
   ASSERT_TRUE(init_future.Get<bool>());
 
-  ocr->DisconnectForTesting();
+  ocr->DisconnectAnnotator();
 
   // Perform OCR and get VisualAnnotation.
   SkBitmap bitmap = LoadImageFromTestFile(
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 #endif
 
-  ocr->DisconnectForTesting();
+  ocr->DisconnectAnnotator();
 
   // Perform OCR and get AxTreeUpdate.
   base::test::TestFuture<const ui::AXTreeUpdate&> perform_future2;
