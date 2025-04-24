@@ -48,6 +48,8 @@ class CreditCardAccessorySheetViewBinder {
                 return new PromoCodeInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.IBAN_INFO:
                 return new IbanInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.LOYALTY_CARD_INFO:
+                return new LoyaltyCardInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -132,6 +134,20 @@ class CreditCardAccessorySheetViewBinder {
             bindChipView(view.getValue(), info.getValue());
 
             view.setIcon(AppCompatResources.getDrawable(view.getContext(), R.drawable.iban_icon));
+        }
+    }
+
+    /** View which represents a single Google Wallet loyalty card and its fields. */
+    static class LoyaltyCardInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.LoyaltyCardInfo, LoyaltyCardInfoView> {
+        LoyaltyCardInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_loyalty_card_info);
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.LoyaltyCardInfo info, LoyaltyCardInfoView view) {
+            view.getMerchantName().setText(info.getMerchantName());
+            bindChipView(view.getLoyaltyCardNumber(), info.getLoyaltyCardNumber());
         }
     }
 

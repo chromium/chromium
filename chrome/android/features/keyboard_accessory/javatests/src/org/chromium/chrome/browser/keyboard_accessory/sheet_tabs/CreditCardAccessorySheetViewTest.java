@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -473,6 +474,57 @@ public class CreditCardAccessorySheetViewTest {
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
         ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingLoyaltyCardInfoToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final String kMerchantName = "CVS Pharmacy";
+        final String kLoyaltyCardNumber = "987654321";
+        final AtomicBoolean clicked = new AtomicBoolean();
+        assertThat(mView.get().getChildCount(), is(0));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LoyaltyCardInfo info =
+                            new LoyaltyCardInfo(
+                                    kMerchantName,
+                                    new UserInfoField.Builder()
+                                            .setSuggestionType(AccessorySuggestionType.LOYALTY_CARD)
+                                            .setDisplayText(kLoyaltyCardNumber)
+                                            .setA11yDescription(kLoyaltyCardNumber)
+                                            .setCallback(item -> clicked.set(true))
+                                            .build());
+
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    "No payment methods", AccessorySheetDataPiece.Type.TITLE));
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    info, AccessorySheetDataPiece.Type.LOYALTY_CARD_INFO));
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new KeyboardAccessoryData.FooterCommand(
+                                            "Manage loyalty cards", null),
+                                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
+                });
+
+        // mView's child count should be 3: no payment methods message, loyalty card field, and
+        // footer command.
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(3)));
+
+        // Check that the titles are correct:
+        LoyaltyCardInfoView loyaltyCardView = (LoyaltyCardInfoView) mView.get().getChildAt(1);
+        assertThat(loyaltyCardView.getMerchantName().isShown(), is(true));
+        assertThat(loyaltyCardView.getMerchantName().getText(), is(kMerchantName));
+        assertThat(
+                loyaltyCardView.getLoyaltyCardNumber().getPrimaryTextView().getText(),
+                is(kLoyaltyCardNumber));
+
+        // Chips are clickable:
+        ThreadUtils.runOnUiThreadBlocking(loyaltyCardView.getLoyaltyCardNumber()::performClick);
         assertThat(clicked.get(), is(true));
     }
 

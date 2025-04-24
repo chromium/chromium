@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
@@ -333,6 +334,29 @@ class ManualFillingComponentBridge {
                                 .setId(guid)
                                 .setCallback(callback)
                                 .build());
+    }
+
+    @CalledByNative
+    private void addLoyaltyCardInfoToAccessorySheetData(
+            AccessorySheetData accessorySheetData,
+            @AccessorySuggestionType int suggestionType,
+            @JniType("std::string") String merchantName,
+            @JniType("std::u16string") String loyaltyCardNumber) {
+        // TODO: crbug.com/412619430 - Add filling callback for the loyalty card number chip.
+        accessorySheetData
+                .getLoyaltyCardInfoList()
+                .add(
+                        new LoyaltyCardInfo(
+                                merchantName,
+                                new UserInfoField.Builder()
+                                        .setSuggestionType(suggestionType)
+                                        .setDisplayText(loyaltyCardNumber)
+                                        .setTextToFill(loyaltyCardNumber)
+                                        .setA11yDescription(loyaltyCardNumber)
+                                        .setIsObfuscated(false)
+                                        .setId("")
+                                        .setCallback((userInfoField) -> {})
+                                        .build()));
     }
 
     @CalledByNative
