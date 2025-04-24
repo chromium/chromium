@@ -3577,5 +3577,25 @@ TEST_F(AIPageContentAgentTest, AriaLabelledBy) {
   EXPECT_EQ(input.content_attributes->label, "on element and first and second");
 }
 
+TEST_F(AIPageContentAgentTest, DisabledButton) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+         <button disabled>Text</button>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& button = *root.children_nodes.at(0);
+  EXPECT_FALSE(button.content_attributes->node_interaction_info);
+}
+
 }  // namespace
 }  // namespace blink

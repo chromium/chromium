@@ -1285,6 +1285,12 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
+  auto* node = object.GetNode();
+  auto* form_control_element = DynamicTo<HTMLFormControlElement>(node);
+  if (form_control_element && form_control_element->IsActuallyDisabled()) {
+    return;
+  }
+
   auto node_interaction_info =
       mojom::blink::AIPageContentNodeInteractionInfo::New();
   ComputeScrollerInfo(object, *node_interaction_info);
@@ -1302,7 +1308,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   node_interaction_info->is_selectable =
       style.UsedUserSelect() != EUserSelect::kNone;
 
-  if (auto* node = object.GetNode()) {
+  if (node) {
     node_interaction_info->is_editable = IsEditable(*node);
   }
 
