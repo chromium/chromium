@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -183,7 +183,7 @@ class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
   TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList feature_list_{
       features::kExtendedUpdatesOptInFeature};
-  ScopedDeviceSettingsTestHelper device_settings_helper_;
+  ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<NotificationDisplayServiceTester>
