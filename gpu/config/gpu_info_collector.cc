@@ -298,6 +298,10 @@ void GetDawnTogglesForSkiaGraphite(
 #endif  // BUILDFLAG(IS_WIN)
   if (backend_type == wgpu::BackendType::Vulkan) {
     force_enabled_toggles->push_back("vulkan_monolithic_pipeline_cache");
+#if BUILDFLAG(IS_ANDROID)
+    force_enabled_toggles->push_back(
+        "ignore_imported_ahardwarebuffer_vulkan_image_size");
+#endif
   }
 #endif  // DCHECK_IS_ON()
 }
