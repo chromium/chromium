@@ -451,8 +451,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
 class TabStripModelTest : public testing::Test {
  public:
-  TabStripModelTest() : profile_(new TestingProfile) {
-  }
+  TabStripModelTest() : profile_(new TestingProfile) {}
   TabStripModelTest(const TabStripModelTest&) = delete;
   TabStripModelTest& operator=(const TabStripModelTest&) = delete;
 
@@ -5587,7 +5586,6 @@ TEST_F(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
 }
 
 TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -5606,28 +5604,99 @@ TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
   // When active tab is part of a split, the selection should cover the split.
   tabstrip.ActivateTabAt(1);
   tabstrip.ExtendSelectionTo(2);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
 
   // When index tab is part of a split and selection extends left, the selection
   // should cover the split.
   tabstrip.ActivateTabAt(2);
   tabstrip.ExtendSelectionTo(1);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
 
   // When index tab is part of a split and selection extends right, the
   // selection should cover the split.
   tabstrip.ActivateTabAt(3);
   tabstrip.ExtendSelectionTo(4);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(4));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(5));
-  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+  ExpectSelectionIsExactly(tabstrip, {3, 4, 5});
+}
+
+TEST_F(TabStripModelTest, ExtendSelectionTo_MultipleInDifferentDirection) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+  tabstrip.ActivateTabAt(2);
+
+  tabstrip.ExtendSelectionTo(4);
+  ExpectSelectionIsExactly(tabstrip, {2, 3, 4});
+  EXPECT_EQ(tabstrip.active_index(), 4);
+
+  tabstrip.ExtendSelectionTo(0);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
+  EXPECT_EQ(tabstrip.active_index(), 0);
+}
+
+TEST_F(TabStripModelTest, ExtendSelectionTo_MultipleInSameDirection) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "0"));
+  tabstrip.ActivateTabAt(0);
+
+  tabstrip.ExtendSelectionTo(1);
+  ExpectSelectionIsExactly(tabstrip, {0, 1});
+  EXPECT_EQ(tabstrip.active_index(), 1);
+
+  tabstrip.ExtendSelectionTo(2);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
+  EXPECT_EQ(tabstrip.active_index(), 2);
+}
+
+TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_SplitTabs) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create six tabs with a split containing tabs 0 and 1 and another split with
+  // tabs 4 and 5.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 6, 0, "0"));
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip.ActivateTabAt(4);
+  tabstrip.AddToNewSplit({5}, split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip.ActivateTabAt(3);
+  tabstrip.AddSelectionFromAnchorTo(4);
+  ExpectSelectionIsExactly(tabstrip, {3, 4, 5});
+  EXPECT_EQ(tabstrip.active_index(), 4);
+
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ExtendSelectionTo(1);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
+  EXPECT_EQ(tabstrip.active_index(), 1);
+}
+
+TEST_F(TabStripModelTest,
+       AddSelectionFromAnchorTo_MultipleInDifferentDirection) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+  tabstrip.ActivateTabAt(2);
+
+  tabstrip.AddSelectionFromAnchorTo(4);
+  ExpectSelectionIsExactly(tabstrip, {2, 3, 4});
+  EXPECT_EQ(tabstrip.active_index(), 4);
+
+  tabstrip.AddSelectionFromAnchorTo(0);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2, 3, 4});
+  EXPECT_EQ(tabstrip.active_index(), 0);
 }
 
 TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
@@ -5646,12 +5715,12 @@ TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
   selection_model.set_anchor(std::nullopt);
   selection_model.set_active(3);
   tabstrip.SetSelectionFromModel(selection_model);
+  ExpectSelectionIsExactly(tabstrip, {3});
   tabstrip.AddSelectionFromAnchorTo(1);
-  ExpectSelectionIsExactly(tabstrip, {0, 1, 3});
+  ExpectSelectionIsExactly(tabstrip, {0, 1});
 }
 
 TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
@@ -5667,8 +5736,7 @@ TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {
   // When selected tab is part of a split, both tabs in the split are selected.
   tabstrip.ActivateTabAt(1);
   tabstrip.SelectTabAt(2);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
+  ExpectSelectionIsExactly(tabstrip, {1, 2, 3});
 }
 
 TEST_F(TabStripModelTest, DeselectTabAt_SplitTabs) {
@@ -5690,9 +5758,7 @@ TEST_F(TabStripModelTest, DeselectTabAt_SplitTabs) {
   tabstrip.ActivateTabAt(0);
   tabstrip.SelectTabAt(2);
   tabstrip.DeselectTabAt(2);
-  EXPECT_FALSE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_FALSE(tabstrip.selection_model().IsSelected(3));
-  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+  ExpectSelectionIsExactly(tabstrip, {0});
 }
 
 TEST_F(TabStripModelTest, DeselectTabAt_CantDeselectOnlySelectedSplitTabs) {
@@ -5713,9 +5779,7 @@ TEST_F(TabStripModelTest, DeselectTabAt_CantDeselectOnlySelectedSplitTabs) {
   // nothing happens.
   tabstrip.ActivateTabAt(2);
   tabstrip.DeselectTabAt(2);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
-  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+  ExpectSelectionIsExactly(tabstrip, {2, 3});
 }
 
 TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
@@ -5737,21 +5801,14 @@ TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ(tabstrip.active_index(), 1);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(3));
-  EXPECT_EQ(tabstrip.selection_model().size(), 4u);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2, 3});
 
   // Close the right half of the split tab.
   tabstrip.CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
 
   // Verify that the other half of the split is active and 3 tabs are selected.
   EXPECT_EQ(tabstrip.active_index(), 1);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 2});
 }
 
 TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
@@ -5770,18 +5827,14 @@ TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ(tabstrip.active_index(), 1);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+  ExpectSelectionIsExactly(tabstrip, {1, 2});
 
   // Unsplit the tabs
   tabstrip.RemoveSplit(split_tab_id);
 
   // Verify that only the active tab (1) is selected.
   EXPECT_EQ(tabstrip.active_index(), 1);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_FALSE(tabstrip.selection_model().IsSelected(2));
-  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+  ExpectSelectionIsExactly(tabstrip, {1});
 }
 
 TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
@@ -5799,17 +5852,14 @@ TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   // Verify the selection model before closing the tab.
   EXPECT_EQ("0s 1s 2 3", GetTabStripStateString(tabstrip));
   EXPECT_EQ(tabstrip.active_index(), 0);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
-  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+  ExpectSelectionIsExactly(tabstrip, {0, 1});
 
   // Close the left half of the split tab.
   tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
 
   // Verify that the other half of the split is now active.
   EXPECT_EQ(tabstrip.active_index(), 0);
-  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
-  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+  ExpectSelectionIsExactly(tabstrip, {0});
 }
 
 TEST_F(TabStripModelTest, IteratorTest) {

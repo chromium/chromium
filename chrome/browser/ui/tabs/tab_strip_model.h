@@ -493,8 +493,9 @@ class TabStripModel : public TabGroupController {
   // This can fail if the tabstrip is not editable.
   void DeselectTabAt(int index);
 
-  // Makes sure the tabs from the anchor to |index| are selected. This only
-  // adds to the selection.
+  // Makes sure the tabs from the anchor to |index| are selected. This adds to
+  // the selection if there is an anchor and resets the selection to |index| if
+  // there is not an anchor.
   void AddSelectionFromAnchorTo(int index);
 
   // Returns true if the tab at |index| is selected.
@@ -1059,7 +1060,8 @@ class TabStripModel : public TabGroupController {
   void UpdateSelectionModelForMoves(const std::vector<int>& tab_indices,
                                     int destination_index);
 
-  // Sets the selected index by taking into account split tabs.
+  // Clears any previous selection and sets the selected index. This takes into
+  // account split tabs so both will be selected if `index` is a split tab.
   void SetSelectedIndex(ui::ListSelectionModel* selection, int index);
 
   // Returns the range of indices between the anchor and a provided index, that
