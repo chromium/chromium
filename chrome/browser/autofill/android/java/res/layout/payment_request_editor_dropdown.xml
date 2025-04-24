@@ -19,7 +19,8 @@ found in the LICENSE file.
             android:id="@+id/spinner_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:importantForAccessibility="no" />
 
     <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spinner"
