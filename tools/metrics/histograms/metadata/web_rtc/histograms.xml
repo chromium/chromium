@@ -2317,12 +2317,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks{WebRtcCodecs}"
-    units="frames" expires_after="2025-03-09">
+    units="frames" expires_after="2026-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The number of hardware decoded frames between fallbacks to software decoder
-    for a received video stream. {WebRtcCodecs}
+    for a received video stream. {WebRtcCodecs} Warning: this histogram was
+    expired from 2025-03-09 to 2025-04-24; data may be missing.
   </summary>
   <token key="WebRtcCodecs">
     <variant name=".Av1" summary=""/>
@@ -3764,7 +3765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.TotalReceiveDelay" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
