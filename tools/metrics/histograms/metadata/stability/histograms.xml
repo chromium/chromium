@@ -151,9 +151,9 @@ chromium-metrics-reviews@google.com.
     Details: {KillType}
   </summary>
   <token key="KillType">
-    <variant name="Intentional"
+    <variant name="IntentionalKill"
         summary="Intentionally killed by the browser process"/>
-    <variant name="Oom"
+    <variant name="OOM"
         summary="Killed because of out of memory. All the non-clean exits
                  that is neither a crash nor requested by the browser or the
                  renderer are classified as out of memory."/>
