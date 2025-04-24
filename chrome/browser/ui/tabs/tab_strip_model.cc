@@ -1173,7 +1173,8 @@ int TabStripModel::IndexOfFirstNonPinnedTab() const {
 void TabStripModel::ExtendSelectionTo(int index) {
   CHECK(ContainsIndex(index));
   ui::ListSelectionModel new_model = selection_model_;
-  std::pair<int, int> selection_range = GetRangeFromAnchorTo(index);
+  std::pair<int, int> selection_range =
+      GetSelectionRangeFromAnchorToIndex(index);
   new_model.SetSelectedIndex(index);
   new_model.AddIndexRangeToSelection(selection_range.first,
                                      selection_range.second);
@@ -1241,7 +1242,8 @@ void TabStripModel::DeselectTabAt(int index) {
 
 void TabStripModel::AddSelectionFromAnchorTo(int index) {
   ui::ListSelectionModel new_model = selection_model_;
-  std::pair<int, int> selection_range = GetRangeFromAnchorTo(index);
+  std::pair<int, int> selection_range =
+      GetSelectionRangeFromAnchorToIndex(index);
   new_model.AddIndexRangeToSelection(selection_range.first,
                                      selection_range.second);
   SetSelection(std::move(new_model), TabStripModelObserver::CHANGE_REASON_NONE,
@@ -3844,9 +3846,16 @@ void TabStripModel::SetSelectedIndex(ui::ListSelectionModel* selection,
   }
 }
 
-std::pair<int, int> TabStripModel::GetRangeFromAnchorTo(int index) {
+std::pair<int, int> TabStripModel::GetSelectionRangeFromAnchorToIndex(
+    int index) {
   if (!selection_model().anchor().has_value()) {
-    return std::pair(index, index);
+    if (std::optional<split_tabs::SplitTabId> split_id = GetSplitForTab(index);
+        split_id.has_value()) {
+      gfx::Range index_range = GetIndexRangeOfSplit(split_id.value());
+      return std::pair(index_range.start(), index_range.end() - 1);
+    } else {
+      return std::pair(index, index);
+    }
   }
 
   const int anchor_index = static_cast<int>(selection_model().anchor().value());

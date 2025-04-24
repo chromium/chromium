@@ -550,6 +550,14 @@ class TabStripModelTest : public testing::Test {
     model->SetSelectionFromModel(selection_model);
   }
 
+  void ExpectSelectionIsExactly(const TabStripModel& tabstrip,
+                                std::vector<int> selected) {
+    for (const int i : selected) {
+      EXPECT_TRUE(tabstrip.selection_model().IsSelected(i));
+    }
+    EXPECT_EQ(tabstrip.selection_model().size(), selected.size());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -5620,6 +5628,26 @@ TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
   EXPECT_TRUE(tabstrip.selection_model().IsSelected(4));
   EXPECT_TRUE(tabstrip.selection_model().IsSelected(5));
   EXPECT_EQ(tabstrip.selection_model().size(), 3u);
+}
+
+TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create six tabs with a split containing tabs 0 and 1.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 6, 0, "0"));
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  ui::ListSelectionModel selection_model;
+  selection_model.AddIndexToSelection(3);
+  selection_model.set_anchor(std::nullopt);
+  selection_model.set_active(3);
+  tabstrip.SetSelectionFromModel(selection_model);
+  tabstrip.AddSelectionFromAnchorTo(1);
+  ExpectSelectionIsExactly(tabstrip, {0, 1, 3});
 }
 
 TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {

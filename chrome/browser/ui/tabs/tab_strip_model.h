@@ -1066,7 +1066,7 @@ class TabStripModel : public TabGroupController {
   // takes into account split tabs. If the anchor or the tab at index is part of
   // a split, the range will include that split. The start and end indices are
   // inclusive.
-  std::pair<int, int> GetRangeFromAnchorTo(int index);
+  std::pair<int, int> GetSelectionRangeFromAnchorToIndex(int index);
 
   // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
   // selection model and openers.
