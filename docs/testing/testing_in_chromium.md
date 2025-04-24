@@ -15,9 +15,8 @@ for one platform.
 *   **[gtest]** is Google's C++ test framework,
     which helps you write better C++ tests in Chromium.
     gtest is test framework for unit tests in Chromium and browser tests are built on top of it.
-*   **Browser Tests** is built on top of gtest, and it is used to write integration tests
+*   **[Browser Tests]** is built on top of gtest, and it is used to write integration tests
     and e2e tests in Chromium.
-    <!-- TODO(leilei) Add link to browser tests --->
 *   **[Web Tests] (formerly known as "Layout Tests" or "LayoutTests")**
     is used by Blink to test many components, including but not
     limited to layout and rendering. In general, web tests involve loading pages
@@ -201,6 +200,7 @@ Tests are not configured to upload metrics, such as UMA, UKM or crash reports.
 
 [gtest]: https://github.com/google/googletest
 [Simple gtests]: https://github.com/google/googletest/blob/main/docs/primer.md#simple-tests
+[Browser Tests]: https://chromium.googlesource.com/website/+/HEAD/site/developers/testing/browser-tests/index.md
 [Robolectric]: android_robolectric_tests.md
 [Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/docs/testing/android_instrumentation_tests.md
 [EarlGrey]: https://github.com/google/EarlGrey
