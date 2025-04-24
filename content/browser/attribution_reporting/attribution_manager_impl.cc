@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <optional>
@@ -91,6 +92,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/schemeful_site.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -495,6 +497,17 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesEventLevel(report.failed_send_attempts());
+
+      // `time_since_original_report_time` can be negative when sent from the
+      // web UI.
+      dwa::builders::AttributionConversionsSendReport()
+          .SetContent(report.reporting_origin().Serialize())
+          .SetEventLevelExtraReportDelay(
+              ukm::GetSemanticBucketMinForDurationTiming(
+                  std::max(time_since_original_report_time.InMilliseconds(),
+                           int64_t(0))))
+          .Record(metrics::dwa::DwaRecorder::Get());
+
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -517,6 +530,16 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesAggregatable(report.failed_send_attempts());
+
+      // `time_from_conversion_to_report_sent` can be negative in edge cases,
+      // e.g. the user adjusted the clock backwards and sent from the web UI.
+      dwa::builders::AttributionConversionsSendReport()
+          .SetContent(report.reporting_origin().Serialize())
+          .SetAggregatableReportDelayFromTrigger(
+              ukm::GetSemanticBucketMinForDurationTiming(
+                  std::max(time_from_conversion_to_report_sent.InMilliseconds(),
+                           int64_t(0))))
+          .Record(metrics::dwa::DwaRecorder::Get());
       break;
     case AttributionReport::Type::kNullAggregatable:
       break;
