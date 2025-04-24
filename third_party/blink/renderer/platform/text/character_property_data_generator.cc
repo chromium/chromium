@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/text/character_property_data.h"
-
 #include <stdio.h>
 #include <unicode/brkiter.h>
 #include <unicode/locid.h>
@@ -26,6 +24,8 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/character_property_data.h"
+#include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -101,6 +101,7 @@ class CharacterPropertyValues {
     SetForRanges(kIsHangulRanges, std::size(kIsHangulRanges),
                  CharacterProperty::kIsHangul);
     SetHanKerning();
+    SetEastAsianSpacing();
   }
 
   // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property as CJK
@@ -136,6 +137,117 @@ class CharacterPropertyValues {
                          HanKerningCharType::kCloseNarrow);
   }
 
+  void SetEastAsianSpacing() {
+    // Set based on https://www.unicode.org/reports/tr59/#data.
+    UErrorCode error = U_ZERO_ERROR;
+
+    icu::UnicodeSet unassigned(icu::UnicodeString("[:General_Category=Cn:]"),
+                               error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+
+    // 1. Set for the "Wide" property
+    //
+    // 1.1 Include if the Script property is one of the following values:
+    // Bopomofo (Bopo) Han (Hani) Hangul (Hang) Hiragana (Hira) Katakana (Kana)
+    // Khitan_Small_Script (Kits) Nushu (Nshu) Tangut (Tang) Yi (Yiii)
+    icu::UnicodeSet ideographs(
+        icu::UnicodeString(
+            "[[:sc=Bopomofo:][:sc=Han:][:sc=Hangul:][:sc=Hiragana:][:sc="
+            "Katakana:][:sc=Khitan_Small_Script:][:sc=Nushu:][:sc=Tangut:][:sc="
+            "Yi:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+
+    {
+      // 1.2. Include if the Script_Extensions property is one of the values
+      // above, except when the East_Asian_Width property is “Neutral (N)” or
+      // “Narrow (Na)”.
+      icu::UnicodeSet temp_set(
+          icu::UnicodeString(
+              "[[[:scx=Bopo:][:scx=Hani:][:scx=Hang:][:scx=Hira:]["
+              ":scx=Kana:][:scx=Kits:][:scx=Nshu:][:scx=Tang:][:"
+              "scx=Yiii:]]-[:East_Asian_Width=Narrow:]-[:East_"
+              "Asian_Width=Neutral:]]"),
+          error);
+      CHECK_EQ(error, U_ZERO_ERROR);
+      ideographs.addAll(temp_set);
+    }
+    {
+      // 1.3 Exclude if the East_Asian_Width property is “East Asian Halfwidth
+      // (H)”.
+      // 1.4 Exclude if the General_Category property is “Punctuation (P)” or
+      // “Other_Number (No)”.
+      // 1.5 Exclude if the General_Category property is “Symbol (S)” except
+      // “Modifier_Symbol (Sk)”.
+      icu::UnicodeSet temp_set(
+          icu::UnicodeString(
+              "[[:East_Asian_Width=H:][:General_Category=P:][:"
+              "General_Category=No:]"
+              "[[:General_Category=S:]-[:General_Category=Sk:]]]"),
+          error);
+      CHECK_EQ(error, U_ZERO_ERROR);
+      ideographs.removeAll(temp_set);
+    }
+    // 1.6 Include the following code point: U+3013 GETA MARK
+    ideographs.add(0x3013);
+    ideographs.removeAll(unassigned);
+    SetForUnicodeSet(ideographs,
+                     ToCharacterProperty(EastAsianSpacingType::kWide),
+                     CharacterProperty::kEastAsianSpacingShiftedMask);
+
+    // 2. Set for the Conditional property
+    //
+    // 2.1 Include if the General_Category property is “Other_Punctuation (Po)”.
+    // 2.2 Exclude if the East_Asian_Width property is “East Asian Fullwidth
+    // (F)”, “East Asian Halfwidth (H)”, or “East Asian Wide (W)”.
+    icu::UnicodeSet conditional(
+        icu::UnicodeString("[[:General_Category=Po:]-[:East_Asian_Width=F:]-[:"
+                           "East_Asian_Width=H:]-[:East_Asian_Width=W:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    // 2.3 Exclude the following code points: U+0022 QUOTATION MARK U+0027
+    // APOSTROPHE U+002A ASTERISK U+002F SOLIDUS U+00B7 MIDDLE DOT U+2020 DAGGER
+    // U+2021 DOUBLE DAGGER U+2026 HORIZONTAL ELLIPSIS
+    conditional.remove(0x0022);  // QUOTATION MARK
+    conditional.remove(0x0027);  // APOSTROPHE
+    conditional.remove(0x002A);  // ASTERISK
+    conditional.remove(0x002F);  // SOLIDUS
+    conditional.remove(0x00B7);  // MIDDLE DOT
+    conditional.remove(0x2020);  // DAGGER
+    conditional.remove(0x2021);  // DOUBLE DAGGER
+    conditional.remove(0x2026);  // HORIZONTAL ELLIPSIS
+
+    conditional.removeAll(unassigned);
+    SetForUnicodeSet(conditional,
+                     ToCharacterProperty(EastAsianSpacingType::kConditional),
+                     CharacterProperty::kEastAsianSpacingShiftedMask);
+
+    // 3. Set for the Narrow property
+    // 3.1 Include if the General_Category property is “Letter (L)”, “Mark (M)”,
+    // or “Decimal_Number (Nd)”.
+    // 3.2 xclude if the East_Asian_Width property is “East Asian Fullwidth
+    // (F)", “East Asian Halfwidth (H)”, or “East Asian Wide (W)”.
+    icu::UnicodeSet narrow(
+        icu::UnicodeString(
+            "[[:General_Category=Letter:][:General_Category=M:][:"
+            "General_Category=Nd:]-[:East_Asian_Width=F:]-[:"
+            "East_Asian_Width=H:]-[:East_Asian_Width=W:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    // The intersection set of kWide and kConditional is not empty, so remove
+    // the chars which have been assigned the kWide property from narrow.
+    narrow.removeAll(ideographs);
+
+    // The remaining assigned codes are kOther.
+    icu::UnicodeSet all(0, kMaxCodepoint);
+    all.removeAll(unassigned);
+    all.removeAll(narrow);
+    all.removeAll(ideographs);
+    all.removeAll(conditional);
+    SetForUnicodeSet(all, ToCharacterProperty(EastAsianSpacingType::kOther),
+                     CharacterProperty::kEastAsianSpacingShiftedMask);
+  }
+
   static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
     CHECK_EQ((static_cast<unsigned>(value) &
               ~static_cast<unsigned>(CharacterProperty::kHanKerningMask)),
@@ -143,6 +255,25 @@ class CharacterPropertyValues {
     return static_cast<CharacterProperty>(
         static_cast<unsigned>(value)
         << static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+  }
+  static CharacterProperty ToCharacterProperty(EastAsianSpacingType value) {
+    return static_cast<CharacterProperty>(
+        static_cast<unsigned>(value)
+        << static_cast<unsigned>(CharacterProperty::kEastAsianSpacingShift));
+  }
+
+  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set,
+                        CharacterProperty value,
+                        CharacterProperty mask) {
+    const int32_t range_count = unicode_set.getRangeCount();
+    for (int32_t i = 0; i < range_count; ++i) {
+      const UChar32 end = unicode_set.getRangeEnd(i);
+      CHECK_LE(end, kMaxCodepoint);
+      for (UChar32 ch = unicode_set.getRangeStart(i); ch <= end; ++ch) {
+        CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u) << ch;
+        values_[ch] |= value;
+      }
+    }
   }
 
   void SetForUnicodePattern(const char* pattern, HanKerningCharType type) {
@@ -162,15 +293,7 @@ class CharacterPropertyValues {
     UErrorCode error = U_ZERO_ERROR;
     icu::UnicodeSet set(icu::UnicodeString(pattern), error);
     CHECK_EQ(error, U_ZERO_ERROR);
-    const int32_t range_count = set.getRangeCount();
-    for (int32_t i = 0; i < range_count; ++i) {
-      const UChar32 end = set.getRangeEnd(i);
-      CHECK_LE(end, kMaxCodepoint);
-      for (UChar32 ch = set.getRangeStart(i); ch <= end; ++ch) {
-        CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u);
-        values_[ch] |= value;
-      }
-    }
+    SetForUnicodeSet(set, value, mask);
   }
 
   void SetForRanges(const UChar32* ranges,

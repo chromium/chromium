@@ -38,6 +38,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -126,6 +127,7 @@ class PLATFORM_EXPORT Character {
   static bool MaybeBidiRtl(const String&);
 
   static HanKerningCharType GetHanKerningCharType(UChar32 character);
+  static EastAsianSpacingType GetEastAsianSpacingType(UChar32 character);
   // Check the `HanKerningCharType` of a character without knowing the font.
   // It depends on fonts, so it may not be `kOpen` or `kClose` even when this
   // function returns `true`. See `HanKerning::GetCharType`.
