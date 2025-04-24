@@ -31,6 +31,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 
 /** Utility methods for tab group sync. */
@@ -53,6 +54,16 @@ public final class TabGroupSyncUtils {
             TabGroupModelFilter tabGroupModelFilter, LocalTabGroupId localId) {
         int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(localId.tabGroupId);
         return rootId != Tab.INVALID_TAB_ID;
+    }
+
+    private static boolean isInAnyWindow(
+            LocalTabGroupId localId, List<TabGroupModelFilter> filterList) {
+        for (TabGroupModelFilter filter : filterList) {
+            if (isInCurrentWindow(filter, localId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
@@ -108,14 +119,23 @@ public final class TabGroupSyncUtils {
      */
     public static void unmapLocalIdsNotInTabGroupModelFilter(
             TabGroupSyncService tabGroupSyncService, TabGroupModelFilter filter) {
-        assert !filter.getTabModel().isOffTheRecord();
+        unmapLocalIdsNotInTabGroupModelFilterList(
+                tabGroupSyncService, Collections.singletonList(filter));
+    }
+
+    /** Same as {@Link #unmapLocalIdsNotInTabGroupModelFilter} only with a list of filters. */
+    public static void unmapLocalIdsNotInTabGroupModelFilterList(
+            TabGroupSyncService tabGroupSyncService, List<TabGroupModelFilter> filterList) {
+        for (TabGroupModelFilter filter : filterList) {
+            assert !filter.getTabModel().isOffTheRecord();
+        }
 
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
             // If there is no local ID the group is already hidden so this is a no-op.
             if (savedTabGroup == null || savedTabGroup.localId == null) continue;
 
-            if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
+            if (!isInAnyWindow(savedTabGroup.localId, filterList)) {
                 tabGroupSyncService.removeLocalTabGroupMapping(
                         savedTabGroup.localId, ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE);
             }

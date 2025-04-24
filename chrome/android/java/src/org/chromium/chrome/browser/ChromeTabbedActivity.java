@@ -3004,7 +3004,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 getActivityTabProvider(),
                 mTabModelProfileSupplier.get());
 
-        mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
+            Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+            TabWindowManagerSingleton.getInstance()
+                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile);
+        } else {
+            mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
+        }
 
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.onDeferredStartup();

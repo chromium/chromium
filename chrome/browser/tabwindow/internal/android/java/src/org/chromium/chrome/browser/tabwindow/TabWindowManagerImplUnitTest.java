@@ -45,6 +45,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -87,6 +89,7 @@ public class TabWindowManagerImplUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
     private AsyncTabParamsManager mAsyncTabParamsManager;
@@ -973,5 +976,52 @@ public class TabWindowManagerImplUnitTest {
         // Different window ids gets different selectors.
         TabModelSelector selector8 = mSubject.requestSelectorWithoutActivity(1, mProfile);
         assertNotEquals(selector7, selector8);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HEADLESS_TAB_MODEL)
+    public void testInitializeAllTabModels() {
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        instanceInfoList.add(new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
+        instanceInfoList.add(new InstanceInfo(1, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
+        instanceInfoList.add(new InstanceInfo(2, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
+        when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
+
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        mSubject.requestSelector(
+                activity0,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler0,
+                0);
+
+        assertEquals(1, mSubject.getAllTabModelSelectors().size());
+
+        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile);
+        assertEquals(3, mSubject.getAllTabModelSelectors().size());
+
+        ActivityController<Activity> activityController1 = createActivity();
+        Activity activity1 = activityController1.get();
+        mSubject.requestSelector(
+                activity1,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler0,
+                1);
+
+        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile);
+        assertEquals(3, mSubject.getAllTabModelSelectors().size());
+
+        destroyActivity(activityController1);
+        assertEquals(3, mSubject.getAllTabModelSelectors().size());
+
+        // Shutting down the last activity shouldn't trigger any headless init.
+        destroyActivity(activityController0);
+        assertEquals(2, mSubject.getAllTabModelSelectors().size());
     }
 }
