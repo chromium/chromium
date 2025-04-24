@@ -228,4 +228,7 @@ found in the LICENSE file.
     <!-- Loading Fullscreen dimens -->
     <dimen name="left_right_padding">16dp</dimen>
     <dimen name="top_bottom_padding">18dp</dimen>
+
+    <!-- Anchored popup menu dimens -->
+    <dimen name="popup_menu_shadow_length">6dp</dimen>
 </resources>

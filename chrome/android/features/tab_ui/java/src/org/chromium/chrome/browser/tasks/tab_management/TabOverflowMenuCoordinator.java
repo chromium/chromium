@@ -9,6 +9,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -274,10 +275,19 @@ public abstract class TabOverflowMenuCoordinator<T> {
 
     /** Returns menu background drawable. */
     public static Drawable getMenuBackground(Context context, boolean isIncognito) {
+        // LINT.IfChange
         final @DrawableRes int bgDrawableId =
                 isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
 
         return AppCompatResources.getDrawable(context, bgDrawableId);
+        // Lint.ThenChange cannot handle multiline comments.
+        // LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml|//components/browser_ui/widget/android/java/res/values-night/dimens.xml)
+    }
+
+    private static void offsetPopupRect(Context context, boolean isIncognito, Rect rect) {
+        if (isIncognito) return;
+        rect.offset(
+                0, -context.getResources().getDimensionPixelSize(R.dimen.popup_menu_shadow_length));
     }
 
     // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this
@@ -354,6 +364,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
         // dividers.
         ModelList modelList = new ModelList();
         configureMenuItems(modelList, id);
+        // Apply offset from the background.
+        offsetPopupRect(mContext, isIncognito, anchorViewRectProvider.getRect());
         mMenuHolder =
                 new OverflowMenuHolder<>(
                         anchorViewRectProvider,

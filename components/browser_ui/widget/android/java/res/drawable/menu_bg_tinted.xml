@@ -5,6 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!-- LINT.IfChange -->
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/popup_bg_24dp">
@@ -18,3 +19,4 @@ found in the LICENSE file.
         </shape>
     </item>
 </layer-list>
+<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml) -->
