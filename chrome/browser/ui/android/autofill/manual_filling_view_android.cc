@@ -165,6 +165,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
        tab_data.loyalty_card_info_list()) {
     Java_ManualFillingComponentBridge_addLoyaltyCardInfoToAccessorySheetData(
         env, java_object, j_tab_data,
+        static_cast<int>(tab_data.get_sheet_type()),
         static_cast<int>(loyalty_card_info.value().suggestion_type()),
         loyalty_card_info.merchant_name(),
         loyalty_card_info.value().display_text());

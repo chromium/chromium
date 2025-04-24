@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -710,6 +711,24 @@ TEST_F(PaymentMethodAccessoryControllerTest,
                   IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
               AccessoryAction::MANAGE_CREDIT_CARDS)
           .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, FillLoyaltyCardNumber) {
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  LoyaltyCardInfo loyalty_card_info(
+      loyalty_card.merchant_name(),
+      base::UTF8ToUTF16(loyalty_card.loyalty_card_number()));
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                               mojom::ActionPersistence::kFill, field_id,
+                               loyalty_card_info.value().text_to_fill()));
+
+  controller()->OnFillingTriggered(field_id, loyalty_card_info.value());
 }
 
 }  // namespace autofill

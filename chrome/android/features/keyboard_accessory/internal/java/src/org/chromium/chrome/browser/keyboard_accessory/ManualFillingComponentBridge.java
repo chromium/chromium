@@ -339,10 +339,18 @@ class ManualFillingComponentBridge {
     @CalledByNative
     private void addLoyaltyCardInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
+            @AccessoryTabType int sheetType,
             @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String merchantName,
             @JniType("std::u16string") String loyaltyCardNumber) {
-        // TODO: crbug.com/412619430 - Add filling callback for the loyalty card number chip.
+        Callback<UserInfoField> callback =
+                (field) -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordSuggestionSelected(
+                            sheetType, suggestionType);
+                    ManualFillingComponentBridgeJni.get()
+                            .onFillingTriggered(mNativeView, this, sheetType, field);
+                };
         accessorySheetData
                 .getLoyaltyCardInfoList()
                 .add(
@@ -355,7 +363,7 @@ class ManualFillingComponentBridge {
                                         .setA11yDescription(loyaltyCardNumber)
                                         .setIsObfuscated(false)
                                         .setId("")
-                                        .setCallback((userInfoField) -> {})
+                                        .setCallback(callback)
                                         .build()));
     }
 
