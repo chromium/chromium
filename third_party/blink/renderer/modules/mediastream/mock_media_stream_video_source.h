@@ -105,10 +105,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
   // Implements blink::MediaStreamVideoSource.
   void StartSourceImpl(
-      VideoCaptureDeliverFrameCB frame_callback,
-      EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
+      MediaStreamVideoSourceCallbacks media_stream_callbacks) override;
   void StopSourceImpl() override;
   std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void StopSourceForRestartImpl() override;

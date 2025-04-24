@@ -104,17 +104,14 @@ void MediaStreamVideoCapturerSource::OnCapturingLinkSecured(bool is_secure) {
 }
 
 void MediaStreamVideoCapturerSource::StartSourceImpl(
-    VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-    VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) {
+    MediaStreamVideoSourceCallbacks media_stream_callbacks) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   state_ = kStarting;
-  frame_callback_ = std::move(frame_callback);
+  frame_callback_ = media_stream_callbacks.deliver_frame_cb;
   sub_capture_target_version_callback_ =
-      std::move(sub_capture_target_version_callback);
-  frame_dropped_callback_ = std::move(frame_dropped_callback);
+      media_stream_callbacks.sub_capture_target_version_cb;
+  frame_dropped_callback_ = media_stream_callbacks.frame_dropped_cb;
 
   source_->StartCapture(
       capture_params_, frame_callback_, sub_capture_target_version_callback_,
@@ -154,6 +151,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
   media::VideoCaptureParams new_capture_params = capture_params_;
   new_capture_params.requested_format = new_format;
   state_ = kRestarting;
+
   source_->StartCapture(
       new_capture_params, frame_callback_, sub_capture_target_version_callback_,
       frame_dropped_callback_,

@@ -43,6 +43,28 @@ class MediaStreamVideoTrack;
 class VideoTrackAdapter;
 class VideoTrackAdapterSettings;
 
+// MediaStreamVideoSourceCallbacks is a struct that holds all the callbacks
+// needed for video capturer to deliver frames to the MediaStreamVideoTrack.
+
+// for screen content capture, e.g. getDisplayMedia.
+// `deliver_frame_cb` is called when a new video frame is available.
+// `frame_dropped_cb` is called when a video frame is dropped.
+// `sub_capture_target_version_cb` is called when the sub-capture target
+// version is updated.
+// `encoded_frame_cb` is called when an encoded video frame is available.
+// `settings_cb` is called when the video track settings are updated.
+// `format_cb` is called when the video track format is updated.
+// `state_update_cb` is called when the video capturer state is updated.
+struct MediaStreamVideoSourceCallbacks {
+  VideoCaptureDeliverFrameCB deliver_frame_cb;
+  VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
+  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  EncodedVideoFrameCB encoded_frame_cb;
+  VideoTrackSettingsCallback settings_cb;
+  VideoTrackFormatCallback format_cb;
+  VideoCaptureStateUpdateCB state_update_cb;
+};
+
 // MediaStreamVideoSource is an interface used for sending video frames to a
 // MediaStreamVideoTrack.
 // https://dev.w3.org/2011/webrtc/editor/getusermedia.html
@@ -85,15 +107,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 #endif
 
   // Puts |track| in the registered tracks list.
+  // Refers to  the below |StartSourceImpl()| comments for the
+  // |MediaStreamVideoSourceCallbacks| callbacks.
   void AddTrack(MediaStreamVideoTrack* track,
                 const VideoTrackAdapterSettings& track_adapter_settings,
-                const VideoCaptureDeliverFrameCB& frame_callback,
-                const VideoCaptureNotifyFrameDroppedCB& dropped_callback,
-                const EncodedVideoFrameCB& encoded_frame_callback,
-                const VideoCaptureSubCaptureTargetVersionCB&
-                    sub_capture_target_version_callback,
-                const VideoTrackSettingsCallback& settings_callback,
-                const VideoTrackFormatCallback& format_callback,
+                MediaStreamVideoSourceCallbacks video_stream_callbacks,
                 ConstraintsOnceCallback callback);
   void RemoveTrack(MediaStreamVideoTrack* track, base::OnceClosure callback);
 
@@ -260,20 +278,24 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // An implementation must start capturing frames after this method is called.
   // When the source has started or failed to start OnStartDone must be called.
   // An implementation must call the following callbacks on the IO thread:
-  // * |frame_callback| with the captured frames.
-  // * |encoded_frame_callback| with encoded frames if supported and enabled
-  //   via OnEncodedSinkEnabled.
-  // * |sub_capture_target_version_callback| whenever it is guaranteed that all
-  // subsequent
-  //   frames that |frame_callback| will be called for, will have either
-  //   the given sub-capture-target version or higher.
-  // * |frame_dropped_callback| will be called when a frame was dropped prior to
-  //   delivery (i.e. |frame_callback| was not called for this frame).
+  // * |media_stream_callbacks.deliver_frame_cb| with the captured frames.
+  // * |media_stream_callbacks.encoded_frame_cb| with encoded frames if
+  //    supported and enabled via OnEncodedSinkEnabled.
+  // * |media_stream_callbacks.sub_capture_target_version_cb| whenever it is
+  //    guaranteed that all subsequent frames that
+  // * |media_stream_callbacks.deliver_frame_cb| will be called for, will have
+  //    either the given sub-capture-target version or higher.
+  // * |media_stream_callbacks.frame_dropped_cb| will be called when a frame was
+  //    dropped prior to delivery (i.e.
+  //   |media_stream_callbacks.deliver_frame_cb| was not called for this frame).
+  // * |media_stream_callbacks.settings_cb| will run on the main render thread
+  //    even though it is called from the IO thread when video track settings
+  //    (frame size, rate, scale.) updated.
+  // * |media_stream_callbacks.format_cb| will run on the main render thread
+  //    even though it is called from the IO thread when video track format
+  //    (frame size, rate) updated.
   virtual void StartSourceImpl(
-      VideoCaptureDeliverFrameCB frame_callback,
-      EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) = 0;
+      MediaStreamVideoSourceCallbacks media_stream_callbacks) = 0;
   void OnStartDone(mojom::MediaStreamRequestResult result);
 
   // A subclass that supports restart must override this method such that it
@@ -391,12 +413,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   struct PendingTrackInfo {
     raw_ptr<MediaStreamVideoTrack> track;
-    VideoCaptureDeliverFrameCB frame_callback;
-    VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback;
-    EncodedVideoFrameCB encoded_frame_callback;
-    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback;
-    VideoTrackSettingsCallback settings_callback;
-    VideoTrackFormatCallback format_callback;
+    MediaStreamVideoSourceCallbacks media_stream_callbacks;
     // TODO(guidou): Make |adapter_settings| a regular field instead of a
     // unique_ptr.
     std::unique_ptr<VideoTrackAdapterSettings> adapter_settings;

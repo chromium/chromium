@@ -40,10 +40,7 @@ class MockLocalMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   }
 
   void StartSourceImpl(
-      VideoCaptureDeliverFrameCB frame_callback,
-      EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override {}
+      MediaStreamVideoSourceCallbacks media_stream_callbacks) override {}
 
   void StopSourceImpl() override {}
 

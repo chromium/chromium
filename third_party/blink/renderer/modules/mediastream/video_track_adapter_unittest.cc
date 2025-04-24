@@ -279,21 +279,23 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void AddTrackInternal(MediaStreamVideoTrack* track,
                         const VideoTrackAdapterSettings& adapter_settings) {
+    MediaStreamVideoSourceCallbacks video_stream_fallbacks;
+    video_stream_fallbacks.deliver_frame_cb =
+        base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDelivered,
+                            base::Unretained(this));
+    video_stream_fallbacks.frame_dropped_cb = base::BindRepeating(
+        &VideoTrackAdapterFixtureTest::OnFrameDropped, base::Unretained(this));
+    video_stream_fallbacks.encoded_frame_cb = base::BindRepeating(
+        &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
+        base::Unretained(this));
+    video_stream_fallbacks.settings_cb = base::BindRepeating(
+        &VideoTrackAdapterFixtureTest::OnFrameSettings, base::Unretained(this));
+    video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_stream_fallbacks.format_cb = base::DoNothing();
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &VideoTrackAdapter::AddTrack, adapter_, track,
-            base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDelivered,
-                                base::Unretained(this)),
-            base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDropped,
-                                base::Unretained(this)),
-            base::BindRepeating(
-                &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
-                base::Unretained(this)),
-            /*sub_capture_target_version_callback=*/base::DoNothing(),
-            base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameSettings,
-                                base::Unretained(this)),
-            /*format_callback=*/base::DoNothing(), adapter_settings));
+        base::BindOnce(&VideoTrackAdapter::AddTrack, adapter_, track,
+                       std::move(video_stream_fallbacks), adapter_settings));
   }
 
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
@@ -651,16 +653,18 @@ TEST_F(VideoTrackAdapterFixtureTest,
   // the first track. The lambda callback method should run as part of the
   // VideoTrackAdapter::AddTrack logic.
   std::unique_ptr<MediaStreamVideoTrack> second_track;
+  MediaStreamVideoSourceCallbacks video_stream_fallbacks;
+  video_stream_fallbacks.deliver_frame_cb = base::DoNothing();
+  video_stream_fallbacks.frame_dropped_cb = base::DoNothing();
+  video_stream_fallbacks.encoded_frame_cb = base::DoNothing();
+  video_stream_fallbacks.settings_cb =
+      base::BindLambdaForTesting(check_dimensions);
+  video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_stream_fallbacks.format_cb = base::DoNothing();
   testing_render_thread_.task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &VideoTrackAdapter::AddTrack, adapter_, second_track.get(),
-          /*frame_callback=*/base::DoNothing(),
-          /*notify_dropped_frame_callback=*/base::DoNothing(),
-          /*encoded_frame_callback=*/base::DoNothing(),
-          /*sub_capture_target_version_callback=*/base::DoNothing(),
-          /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
-          /*track_callback=*/base::DoNothing(), adapter_settings));
+      base::BindOnce(&VideoTrackAdapter::AddTrack, adapter_, second_track.get(),
+                     std::move(video_stream_fallbacks), adapter_settings));
   settings_callback_run_.Wait();
 }
 
@@ -848,18 +852,21 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     auto track = std::make_unique<MediaStreamVideoTrack>(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true);
+
+    MediaStreamVideoSourceCallbacks video_stream_fallbacks;
+    video_stream_fallbacks.deliver_frame_cb =
+        base::BindRepeating(&VideoTrackAdapterEncodedTest::OnFrameDelivered,
+                            base::Unretained(this));
+    video_stream_fallbacks.frame_dropped_cb = base::DoNothing();
+    video_stream_fallbacks.encoded_frame_cb = base::BindRepeating(
+        &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
+        base::Unretained(this));
+    video_stream_fallbacks.settings_cb = base::DoNothing();
+    video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
+    video_stream_fallbacks.format_cb = base::DoNothing();
     RunSyncOnRenderThread([&] {
-      adapter_->AddTrack(
-          track.get(),
-          base::BindRepeating(&VideoTrackAdapterEncodedTest::OnFrameDelivered,
-                              base::Unretained(this)),
-          base::DoNothing(),
-          base::BindRepeating(
-              &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
-              base::Unretained(this)),
-          /*sub_capture_target_version_callback=*/base::DoNothing(),
-          /*settings_callback=*/base::DoNothing(),
-          /*track_callback=*/base::DoNothing(), VideoTrackAdapterSettings());
+      adapter_->AddTrack(track.get(), std::move(video_stream_fallbacks),
+                         VideoTrackAdapterSettings());
     });
     return track;
   }

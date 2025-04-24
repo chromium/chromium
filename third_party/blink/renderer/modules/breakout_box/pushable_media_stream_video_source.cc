@@ -159,14 +159,10 @@ void PushableMediaStreamVideoSource::PushFrame(
 }
 
 void PushableMediaStreamVideoSource::StartSourceImpl(
-    VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-    // The pushable media stream does not report frame drops.
-    VideoCaptureNotifyFrameDroppedCB) {
+    MediaStreamVideoSourceCallbacks media_stream_callbacks) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(frame_callback);
-  broker_->OnSourceStarted(std::move(frame_callback));
+  DCHECK(media_stream_callbacks.deliver_frame_cb);
+  broker_->OnSourceStarted(std::move(media_stream_callbacks.deliver_frame_cb));
   OnStartDone(mojom::blink::MediaStreamRequestResult::OK);
 }
 

@@ -624,12 +624,7 @@ VideoTrackAdapter::~VideoTrackAdapter() {
 
 void VideoTrackAdapter::AddTrack(
     const MediaStreamVideoTrack* track,
-    VideoCaptureDeliverFrameCB frame_callback,
-    VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
-    EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-    VideoTrackSettingsCallback settings_callback,
-    VideoTrackFormatCallback format_callback,
+    MediaStreamVideoSourceCallbacks video_stream_fallbacks,
     const VideoTrackAdapterSettings& settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -638,13 +633,18 @@ void VideoTrackAdapter::AddTrack(
       CrossThreadBindOnce(
           &VideoTrackAdapter::AddTrackOnVideoTaskRunner,
           WTF::CrossThreadUnretained(this), WTF::CrossThreadUnretained(track),
-          CrossThreadBindRepeating(std::move(frame_callback)),
-          CrossThreadBindRepeating(std::move(notify_frame_dropped_callback)),
-          CrossThreadBindRepeating(std::move(encoded_frame_callback)),
           CrossThreadBindRepeating(
-              std::move(sub_capture_target_version_callback)),
-          CrossThreadBindRepeating(std::move(settings_callback)),
-          CrossThreadBindRepeating(std::move(format_callback)), settings));
+              std::move(video_stream_fallbacks.deliver_frame_cb)),
+          CrossThreadBindRepeating(
+              std::move(video_stream_fallbacks.frame_dropped_cb)),
+          CrossThreadBindRepeating(
+              std::move(video_stream_fallbacks.encoded_frame_cb)),
+          CrossThreadBindRepeating(
+              std::move(video_stream_fallbacks.sub_capture_target_version_cb)),
+          CrossThreadBindRepeating(
+              std::move(video_stream_fallbacks.settings_cb)),
+          CrossThreadBindRepeating(std::move(video_stream_fallbacks.format_cb)),
+          settings));
 }
 
 void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
