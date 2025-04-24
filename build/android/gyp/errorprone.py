@@ -27,6 +27,9 @@ TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InlineMeInliner',
     'InlineMeSuggester',
+    'UnnecessaryAssignment',
+    'IntLiteralCast',
+    'UnnecessaryStringBuilder',
     # High priority to enable:
     'HidingField',
     'AlreadyChecked',

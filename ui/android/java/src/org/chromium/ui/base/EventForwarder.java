@@ -576,7 +576,6 @@ public class EventForwarder {
         String url = null;
         if (event.getAction() == DragEvent.ACTION_DROP) {
             try {
-                StringBuilder contentBuilder = new StringBuilder("");
                 ClipData clipData = event.getClipData();
                 final int itemCount = clipData == null ? 0 : clipData.getItemCount();
                 for (int i = 0; i < itemCount; i++) {
@@ -607,7 +606,7 @@ public class EventForwarder {
                         html = temp.toString();
                     }
                 }
-                content = contentBuilder.toString();
+                content = "";
             } catch (UndeclaredThrowableException e) {
                 // When dropped item is not successful for whatever reason, catch before we crash.
                 // While ClipData.Item does capture most common failures, there could be exceptions

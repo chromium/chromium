@@ -83,7 +83,7 @@ public class HostZoomMap {
         // system level setting. Here we need to do the reverse operation of the above, effectively
         // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale|.
         return HostZoomMapImpl.adjustZoomLevel(
-                HostZoomMapImpl.getZoomLevel(webContents), (float) 1 / sSystemFontScale);
+                HostZoomMapImpl.getZoomLevel(webContents), 1.0f / sSystemFontScale);
     }
 
     /**
