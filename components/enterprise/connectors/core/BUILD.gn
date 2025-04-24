@@ -91,6 +91,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "realtime_reporting_test_server.cc",
+    "realtime_reporting_test_server.h",
     "reporting_test_utils.cc",
     "reporting_test_utils.h",
   ]
@@ -98,10 +100,16 @@ source_set("test_support") {
   deps = [
     ":core",
     "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/policy/test_support",
     "//components/prefs",
+    "//net",
+    "//net:test_support",
     "//testing/gmock:gmock",
+    "//url",
   ]
 }
 

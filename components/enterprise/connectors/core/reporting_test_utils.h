@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_TEST_UTILS_H_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
 
 class PrefService;
 
@@ -91,6 +93,16 @@ void SetOnSecurityEventReporting(
         enabled_opt_in_events =
             std::map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
+
+// Create a policy server that vends the cloud-only
+// "OnSecurityEventEnterpriseConnector" policy for integration tests. Returns
+// `nullptr` if the server could not be created.
+std::unique_ptr<policy::EmbeddedPolicyTestServer>
+CreatePolicyTestServerForSecurityEvents(
+    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events =
+            std::map<std::string, std::vector<std::string>>());
 
 }  // namespace enterprise_connectors::test
 

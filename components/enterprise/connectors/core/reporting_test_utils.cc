@@ -4,15 +4,20 @@
 
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 
+#include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,6 +42,29 @@ base::Value::List CreateOptInEventsList(
     enabled_opt_in_events_list.Append(std::move(event_value));
   }
   return enabled_opt_in_events_list;
+}
+
+base::Value::Dict CreateSecurityEventReportingSettings(
+    const std::set<std::string>& enabled_event_names,
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events) {
+  base::Value::Dict settings;
+
+  settings.Set(kKeyServiceProvider, base::Value("google"));
+  if (!enabled_event_names.empty()) {
+    base::Value::List enabled_event_name_list;
+    for (const auto& enabled_event_name : enabled_event_names) {
+      enabled_event_name_list.Append(enabled_event_name);
+    }
+    settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
+  }
+
+  if (!enabled_opt_in_events.empty()) {
+    settings.Set(kKeyEnabledOptInEvents,
+                 CreateOptInEventsList(enabled_opt_in_events));
+  }
+
+  return settings;
 }
 
 constexpr char kKeyURL[] = "url";
@@ -72,27 +100,46 @@ void SetOnSecurityEventReporting(
     return;
   }
 
-  base::Value::Dict settings;
-
-  settings.Set(kKeyServiceProvider, base::Value("google"));
-  if (!enabled_event_names.empty()) {
-    base::Value::List enabled_event_name_list;
-    for (const auto& enabled_event_name : enabled_event_names) {
-      enabled_event_name_list.Append(enabled_event_name);
-    }
-    settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
-  }
-
-  if (!enabled_opt_in_events.empty()) {
-    settings.Set(kKeyEnabledOptInEvents,
-                 CreateOptInEventsList(enabled_opt_in_events));
-  }
-
-  settings_list->Append(std::move(settings));
+  settings_list->Append(CreateSecurityEventReportingSettings(
+      enabled_event_names, enabled_opt_in_events));
 
   prefs->SetInteger(
       kOnSecurityEventScopePref,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
+}
+
+std::unique_ptr<policy::EmbeddedPolicyTestServer>
+CreatePolicyTestServerForSecurityEvents(
+    const std::set<std::string>& enabled_event_names,
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Policy is not supported for Fuchsia yet.
+  return nullptr;
+#else
+  base::Value::List reporting_settings =
+      base::Value::List().Append(CreateSecurityEventReportingSettings(
+          enabled_event_names, enabled_opt_in_events));
+  std::optional<std::string> reporting_settings_payload =
+      base::WriteJson(reporting_settings);
+  if (!reporting_settings_payload) {
+    return nullptr;
+  }
+
+  enterprise_management::CloudPolicySettings settings;
+  settings.mutable_onsecurityevententerpriseconnector()
+      ->mutable_policy_options()
+      ->set_mode(enterprise_management::PolicyOptions::MANDATORY);
+  settings.mutable_onsecurityevententerpriseconnector()->set_value(
+      std::move(*reporting_settings_payload));
+
+  auto policy_server = std::make_unique<policy::EmbeddedPolicyTestServer>();
+  policy::PolicyStorage* policy_storage = policy_server->policy_storage();
+  policy_storage->SetPolicyPayload(
+      policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+      settings.SerializeAsString());
+  return policy_server;
+#endif
 }
 
 EventReportValidatorBase::EventReportValidatorBase(

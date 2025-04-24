@@ -7,6 +7,7 @@
 
 #import <memory>
 
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -14,9 +15,16 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/enterprise/browser/enterprise_switches.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/realtime_reporting_test_server.h"
+#import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/plus_addresses/features.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_switches.h"
+#import "components/policy/test_support/embedded_policy_test_server.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
@@ -24,6 +32,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
@@ -46,9 +55,15 @@ constexpr char kFormPassword[] = "pw";
 namespace {
 
 NSString* const kPassphrase = @"hello";
+constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
+constexpr char kEnrollmentToken[] = "fake-enrollment-token";
+constexpr char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using ::chrome::cros::reporting::proto::Event;
+using ::chrome::cros::reporting::proto::UploadEventsRequest;
+using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TapWebElementWithId;
@@ -151,9 +166,28 @@ void LoginOnUff() {
 @interface PasswordControllerEGTest : WebHttpServerChromeTestCase
 @end
 
-@implementation PasswordControllerEGTest
+@implementation PasswordControllerEGTest {
+  std::unique_ptr<policy::EmbeddedPolicyTestServer> _policyServer;
+  std::unique_ptr<enterprise_connectors::test::RealtimeReportingTestServer>
+      _reportingServer;
+}
 
 - (void)setUp {
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+    // Start the servers before calling the superclass's `-setUp` so that their
+    // addresses can be added to the app launch config. `GREYAssertTrue` can
+    // only be used after calling the superclass's `-setUp`, so use `CHECK()`
+    // instead.
+    _policyServer =
+        enterprise_connectors::test::CreatePolicyTestServerForSecurityEvents(
+            {"loginEvent"}, {{"loginEvent", {"*"}}});
+    CHECK(_policyServer);
+    CHECK(_policyServer->Start());
+    _reportingServer = std::make_unique<
+        enterprise_connectors::test::RealtimeReportingTestServer>();
+    CHECK(_reportingServer->Start());
+  }
+
   [super setUp];
 
   // Set up server.
@@ -169,9 +203,15 @@ void LoginOnUff() {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [AutofillAppInterface clearProfilesStore];
+
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [AutofillAppInterface clearProfilesStore];
@@ -183,6 +223,27 @@ void LoginOnUff() {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
+  }
+
+  // Set Enterprise features for testing password-related event reporting.
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+    CHECK(_policyServer);
+    CHECK(_reportingServer);
+    config.additional_args.push_back(
+        base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
+    config.additional_args.push_back(base::StrCat(
+        {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+    config.additional_args.push_back(
+        base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
+                      "</key><string>", kEnrollmentToken, "</string></dict>"}));
+    config.additional_args.push_back(
+        base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
+                      _policyServer->GetServiceURL().spec()}));
+    config.additional_args.push_back(
+        base::StrCat({"--", policy::switches::kRealtimeReportingUrl, "=",
+                      _reportingServer->GetServiceURL().spec()}));
+    config.features_enabled.push_back(
+        enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS);
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
@@ -694,6 +755,54 @@ void LoginOnUff() {
   [PasswordManagerAppInterface
       verifyCredentialStoredWithUsername:usernameValue
                                 password:passwordValue];
+}
+
+// Tests that log in events are reported to an enterprise connector.
+- (void)testLoginEventReported {
+  [self loadLoginPage];
+
+  // Simulate login.
+  TypeTextOnField(@"test-username@test-domain.com", kFormUsername);
+  TypeTextOnField(@"test-password", kFormPassword);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  // Use metrics to detect that the report upload completed. This is the best
+  // known way to wait because a task environment isn't available here, so
+  // there's nothing for `_reportingServer` to post to when the request
+  // arrives. This also precludes helpers like `base::RunLoop` or
+  // `net::test_server::ControllableHttpResponse` that require such an
+  // environment.
+  GREYAssertTrue(
+      WaitUntilConditionOrTimeout(
+          kReportUploadTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                expectTotalCount:1
+                    forHistogram:@"Enterprise.ReportingEventUploadSuccess"];
+            return error == nil;
+          }),
+      @"Timed out uploading security event.");
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
+
+  std::vector<UploadEventsRequest> requests =
+      _reportingServer->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
+  GREYAssertEqual(std::string("iOS"), requests[0].device().os_platform(),
+                  @"Wrong OS platform in report.");
+  GREYAssertEqual(1, requests[0].events_size(), @"Wrong number of events.");
+
+  const Event& event = requests[0].events(0);
+  GREYAssertTrue(event.has_login_event(), @"Wrong event type.");
+  GREYAssertEqual(self.testServer->GetURL("/"), event.login_event().url(),
+                  @"Wrong URL reported to server.");
+  // The `test-username` portion of the email will be masked, but the domain
+  // part shouldn't be.
+  GREYAssertTrue(
+      event.login_event().login_user_name().ends_with("@test-domain.com"),
+      @"Wrong domain in login user name.");
 }
 
 @end
