@@ -157,9 +157,6 @@ bool ImageFrameGenerator::DecodeAndScale(
     return false;
 
   SetHasAlpha(index, has_alpha);
-  if (frame_count != 0u)
-    frame_count_ = frame_count;
-
   return true;
 }
 

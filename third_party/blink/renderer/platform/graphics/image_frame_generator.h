@@ -173,7 +173,6 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   mutable base::Lock generator_lock_;
   bool decode_failed_ GUARDED_BY(generator_lock_) = false;
   bool yuv_decoding_failed_ GUARDED_BY(generator_lock_) = false;
-  wtf_size_t frame_count_ GUARDED_BY(generator_lock_) = 0u;
   Vector<bool> has_alpha_ GUARDED_BY(generator_lock_);
 
   struct ClientLock {
