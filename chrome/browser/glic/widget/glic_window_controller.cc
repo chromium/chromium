@@ -971,7 +971,7 @@ GlicView* GlicWindowController::GetGlicView() {
   return static_cast<GlicView*>(GetGlicWidget()->GetContentsView());
 }
 
-views::Widget* GlicWindowController::GetGlicWidget() {
+GlicWidget* GlicWindowController::GetGlicWidget() {
   return glic_widget_.get();
 }
 

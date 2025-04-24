@@ -24,6 +24,8 @@ class GlicWindowAnimator;
 // * Callbacks are posted when this object is destroyed and must remain valid
 // until they run. This class will generally override any other changes to
 // window size.
+// This class deals exclusively with the widget bounds, which may be different
+// than the content bounds on Windows.
 class GlicWindowResizeAnimation : public gfx::LinearAnimation,
                                   public gfx::AnimationDelegate {
  public:

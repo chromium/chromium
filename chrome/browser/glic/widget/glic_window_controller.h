@@ -230,7 +230,7 @@ class GlicWindowController : public views::WidgetObserver,
   void ResizeFinished();
 
   // Returns the widget that backs the glic window.
-  views::Widget* GetGlicWidget();
+  GlicWidget* GetGlicWidget();
 
   // Returns the WebContents used for the first-run experience, or nullptr if
   // none.
