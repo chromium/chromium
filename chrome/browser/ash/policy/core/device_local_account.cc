@@ -80,6 +80,9 @@ ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo(const std::string& package_name,
 ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo(
     const ArcvmKioskAppBasicInfo& other) = default;
 
+ArcvmKioskAppBasicInfo& ArcvmKioskAppBasicInfo::operator=(
+    const ArcvmKioskAppBasicInfo&) = default;
+
 ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo() = default;
 
 ArcvmKioskAppBasicInfo::~ArcvmKioskAppBasicInfo() = default;

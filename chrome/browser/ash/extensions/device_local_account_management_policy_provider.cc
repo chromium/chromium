@@ -68,7 +68,7 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
       }
       break;
     case policy::DeviceLocalAccountType::kArcvmKioskApp:
-      // Unexpected case.
+      // No companion extensions in ARC VM kiosk.
       break;
   }
 

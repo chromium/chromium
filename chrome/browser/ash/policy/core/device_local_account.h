@@ -59,14 +59,19 @@ struct ArcvmKioskAppBasicInfo {
                          const std::string& class_name,
                          const std::string& action,
                          const std::string& display_name);
-  ArcvmKioskAppBasicInfo(const ArcvmKioskAppBasicInfo& other);
   ArcvmKioskAppBasicInfo();
   ~ArcvmKioskAppBasicInfo();
+  ArcvmKioskAppBasicInfo(const ArcvmKioskAppBasicInfo& other);
+  ArcvmKioskAppBasicInfo& operator=(const ArcvmKioskAppBasicInfo&);
 
-  const std::string& package_name() const { return package_name_; }
-  const std::string& class_name() const { return class_name_; }
-  const std::string& action() const { return action_; }
-  const std::string& display_name() const { return display_name_; }
+  [[nodiscard]] const std::string& package_name() const {
+    return package_name_;
+  }
+  [[nodiscard]] const std::string& class_name() const { return class_name_; }
+  [[nodiscard]] const std::string& action() const { return action_; }
+  [[nodiscard]] const std::string& display_name() const {
+    return display_name_;
+  }
 
  private:
   std::string package_name_;
