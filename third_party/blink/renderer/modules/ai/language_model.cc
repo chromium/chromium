@@ -209,8 +209,7 @@ base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
 ToMojo(base::span<uint8_t> audio_bytes, ExecutionContext* execution_context) {
   // TODO(crbug.com/401010825): Use the file sample rate.
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-      audio_bytes.data(), audio_bytes.size(),
-      /*mix_to_mono=*/true, /*sample_rate=*/48000);
+      audio_bytes, /*mix_to_mono=*/true, /*sample_rate=*/48000);
   if (!bus) {
     // TODO(crbug.com/409615288): This should throw a TypeError according to the
     // spec.
