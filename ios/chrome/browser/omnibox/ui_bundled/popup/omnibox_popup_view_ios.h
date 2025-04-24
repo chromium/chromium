@@ -38,7 +38,6 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetTextAlignment(NSTextAlignment alignment) override;
   void SetSemanticContentAttribute(
       UISemanticContentAttribute semanticContentAttribute) override;
-  bool IsPopupOpen() override;
   void SetHasThumbnail(bool has_thumbnail) override;
 
  private:

@@ -11,7 +11,6 @@
 /// about the state of and configure the popup.
 class OmniboxPopupProvider {
  public:
-  virtual bool IsPopupOpen() = 0;
   virtual void SetTextAlignment(NSTextAlignment alignment) = 0;
   virtual void SetSemanticContentAttribute(
       UISemanticContentAttribute semanticContentAttrbute) = 0;

@@ -34,9 +34,7 @@ class OmniboxViewIOS : public OmniboxView {
                  std::unique_ptr<OmniboxClient> client,
                  ProfileIOS* profile,
                  id<OmniboxCommands> omnibox_focuser,
-                 id<OmniboxFocusDelegate> focus_delegate,
-                 id<ToolbarCommands> toolbar_commands_handler,
-                 bool is_lens_overlay);
+                 id<ToolbarCommands> toolbar_commands_handler);
 
   ~OmniboxViewIOS() override;
 
@@ -87,8 +85,6 @@ class OmniboxViewIOS : public OmniboxView {
 
   // OmniboxTextChange methods.
 
-  // Called when the Omnibox text field starts editing
-  void OnDidBeginEditing();
   // Called before the Omnibox text field changes. `new_text` will replace the
   // text currently in `range`. This should return true if the text change
   // should happen and false otherwise.
@@ -122,9 +118,6 @@ class OmniboxViewIOS : public OmniboxView {
   // already focused.
   void FocusOmnibox();
 
-  // Returns `true` if AutocompletePopupView is currently open.
-  BOOL IsPopupOpen();
-
  protected:
   int GetOmniboxTextLength() const override;
   void EmphasizeURLComponents() override {}
@@ -134,10 +127,6 @@ class OmniboxViewIOS : public OmniboxView {
   void UpdateSchemeStyle(const gfx::Range& scheme_range) override {}
 
   OmniboxTextFieldIOS* field_;
-
-  // Delegate that manages the browser UI changes in response to omnibox being
-  // focused and defocused.
-  __weak id<OmniboxFocusDelegate> focus_delegate_;
 
   State state_before_change_;
   NSString* marked_text_before_change_;
@@ -149,9 +138,6 @@ class OmniboxViewIOS : public OmniboxView {
   // the underlying problem, which is that textDidChange: is called when closing
   // the popup, and then remove this hack.
   BOOL ignore_popup_updates_;
-
-  // Whether it's the lens overlay omnibox.
-  bool is_lens_overlay_;
 
   raw_ptr<OmniboxPopupProvider> popup_provider_;  // weak
 

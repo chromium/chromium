@@ -55,10 +55,6 @@ bool OmniboxPopupViewIOS::IsOpen() const {
 
 #pragma mark - OmniboxPopupProvider
 
-bool OmniboxPopupViewIOS::IsPopupOpen() {
-  return omnibox_autocomplete_controller_.hasSuggestions;
-}
-
 void OmniboxPopupViewIOS::SetTextAlignment(NSTextAlignment alignment) {
   [omnibox_autocomplete_controller_ setTextAlignment:alignment];
 }

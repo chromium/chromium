@@ -55,14 +55,10 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                std::unique_ptr<OmniboxClient> client,
                                ProfileIOS* profile,
                                id<OmniboxCommands> omnibox_focuser,
-                               id<OmniboxFocusDelegate> focus_delegate,
-                               id<ToolbarCommands> toolbar_commands_handler,
-                               bool is_lens_overlay)
+                               id<ToolbarCommands> toolbar_commands_handler)
     : OmniboxView(std::move(client)),
       field_(field),
-      focus_delegate_(focus_delegate),
       ignore_popup_updates_(false),
-      is_lens_overlay_(is_lens_overlay),
       popup_provider_(nullptr) {
   DCHECK(field_);
 }
@@ -229,50 +225,6 @@ gfx::NativeView OmniboxViewIOS::GetNativeView() const {
 
 gfx::NativeView OmniboxViewIOS::GetRelativeWindowForPopup() const {
   return gfx::NativeView();
-}
-
-void OmniboxViewIOS::OnDidBeginEditing() {
-  // If Open from Clipboard offers a suggestion, the popup may be opened when
-  // `OnSetFocus` is called on the model. The state of the popup is saved early
-  // to ignore that case.
-  DCHECK(popup_provider_);
-  bool popup_was_open_before_editing_began = popup_provider_->IsPopupOpen();
-
-  // Make sure the omnibox popup's semantic content attribute is set correctly.
-  popup_provider_->SetSemanticContentAttribute(
-      [field_ bestSemanticContentAttribute]);
-
-  OnBeforePossibleChange();
-
-  if (model()) {
-    model()->OnSetFocus(/*control_down=*/false);
-
-    if (is_lens_overlay_ && field_.userText.length) {
-      model()->SetUserText(base::SysNSStringToUTF16(field_.userText));
-      model()->StartAutocomplete(/*has_selected_text=*/false,
-                                 /*prevent_inline_autocomplete=*/true);
-    } else {
-      model()->StartZeroSuggestRequest();
-    }
-  }
-
-  // If the omnibox is displaying a URL and the popup is not showing, set the
-  // field into pre-editing state.  If the omnibox is displaying search terms,
-  // leave the default behavior of positioning the cursor at the end of the
-  // text.  If the popup is already open, that means that the omnibox is
-  // regaining focus after a popup scroll took focus away, so the pre-edit
-  // behavior should not be invoked. When `is_lens_overlay_` is true, the
-  // omnibox only display search terms.
-  if (!popup_was_open_before_editing_began && !is_lens_overlay_) {
-    [field_ enterPreEditState];
-  }
-
-  // `location_bar_` is only forwarding the call to the BVC. This should only
-  // happen when the omnibox is being focused and it starts showing the popup;
-  // if the popup was already open, no need to call this.
-  if (!popup_was_open_before_editing_began) {
-    [focus_delegate_ omniboxDidBecomeFirstResponder];
-  }
 }
 
 bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
@@ -443,13 +395,6 @@ void OmniboxViewIOS::OnCallActionTap() {
 
 void OmniboxViewIOS::FocusOmnibox() {
   [field_ becomeFirstResponder];
-}
-
-BOOL OmniboxViewIOS::IsPopupOpen() {
-  if (!popup_provider_) {
-    return NO;
-  }
-  return popup_provider_->IsPopupOpen();
 }
 
 int OmniboxViewIOS::GetOmniboxTextLength() const {
