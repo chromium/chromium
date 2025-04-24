@@ -36,11 +36,6 @@ class BASE_EXPORT Environment {
   // Note that the variable may be set to an empty string.
   virtual std::optional<std::string> GetVar(std::string_view variable_name) = 0;
 
-  // DEPRECATED. Prefer GetVar() overload above.
-  // Gets an environment variable's value and stores it in |result|.
-  // Returns false if the key is unset.
-  bool GetVar(std::string_view variable_name, std::string* result);
-
   // Syntactic sugar for GetVar(variable_name).has_value();
   bool HasVar(std::string_view variable_name);
 

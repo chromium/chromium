@@ -123,16 +123,6 @@ std::unique_ptr<Environment> Environment::Create() {
   return std::make_unique<EnvironmentImpl>();
 }
 
-bool Environment::GetVar(std::string_view variable_name, std::string* result) {
-  std::optional<std::string> actual_result = GetVar(variable_name);
-  if (!actual_result.has_value()) {
-    return false;
-  }
-
-  *result = std::move(actual_result.value());
-  return true;
-}
-
 bool Environment::HasVar(std::string_view variable_name) {
   return GetVar(variable_name).has_value();
 }
