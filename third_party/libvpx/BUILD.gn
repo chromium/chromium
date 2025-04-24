@@ -559,7 +559,7 @@ static_library("libvpx") {
       sources = libvpx_srcs_arm
       public_deps = [ ":libvpx_arm_headers" ]
     }
-  } else if (current_cpu == "arm64" || current_cpu == "arm64") {
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
     if (is_chromeos || is_win || is_mac || is_ios) {
       sources = libvpx_srcs_arm64_highbd
       public_deps = [ ":libvpx_arm64_highbd_headers" ]
