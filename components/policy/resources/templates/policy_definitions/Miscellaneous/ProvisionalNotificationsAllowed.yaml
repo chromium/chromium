@@ -12,8 +12,8 @@ owners:
 - scottyoder@google.com
 - file://components/policy/OWNERS
 
-future_on:
-- ios
+supported_on:
+- ios:137-
 
 deprecated: false
 
