@@ -566,20 +566,20 @@ void ZLIB_INTERNAL gz_error(gz_statep state, int err, const char *msg) {
 #endif
 }
 
-#ifndef INT_MAX
 /* portably return maximum value for an int (when limits.h presumed not
    available) -- we need to do this to cover cases where 2's complement not
    used, since C standard permits 1's complement and sign-bit representations,
    otherwise we could just use ((unsigned)-1) >> 1 */
 unsigned ZLIB_INTERNAL gz_intmax(void) {
-    unsigned p, q;
-
-    p = 1;
+#ifdef INT_MAX
+    return INT_MAX;
+#else
+    unsigned p = 1, q;
     do {
         q = p;
         p <<= 1;
         p++;
     } while (p > q);
     return q >> 1;
-}
 #endif
+}
