@@ -170,7 +170,9 @@ public class NotificationUmaTracker {
         ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
         ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
         ActionType.SHOW_ORIGINAL_NOTIFICATION,
-        ActionType.ALWAYS_ALLOW
+        ActionType.ALWAYS_ALLOW,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK,
+        ActionType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -254,8 +256,14 @@ public class NotificationUmaTracker {
         // The "Always allow" button, used for allowing suspicious web notifications from an origin.
         int ALWAYS_ALLOW = 35;
 
+        // The "Got it" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK = 36;
+
+        // The "Review" button on Safety Hub notification about unsubscribed notifications.
+        int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW = 37;
+
         // Number of real entries, excluding `UNKNOWN`.
-        int NUM_ENTRIES = 36;
+        int NUM_ENTRIES = 38;
     }
 
     /**

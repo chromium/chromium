@@ -1964,6 +1964,12 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Removed notification permissions from one site you haven’t visited recently}
         other {Removed notification permissions from # sites you haven’t visited recently}}
       </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Got it
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Review
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
