@@ -157,15 +157,16 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
 }
 
-const OnDeviceModelComponentStateManager::RegistrationCriteria*
-OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
+OnDeviceModelComponentStateManager::DebugState
+OnDeviceModelComponentStateManager::GetDebugState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return registration_criteria_.get();
-}
-
-int64_t OnDeviceModelComponentStateManager::GetDiskBytesAvailableForModel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return disk_space_available_;
+  DebugState debug;
+  debug.criteria_ = registration_criteria_.get();
+  debug.disk_space_available_ = disk_space_available_;
+  debug.status_ = GetOnDeviceModelStatus();
+  debug.has_override_ = !!switches::GetOnDeviceModelExecutionOverride();
+  debug.state_ = state_.get();
+  return debug;
 }
 
 bool OnDeviceModelComponentStateManager::IsLowTierDevice() const {

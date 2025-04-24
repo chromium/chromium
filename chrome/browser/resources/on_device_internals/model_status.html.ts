@@ -7,14 +7,36 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OnDeviceInternalsModelStatusElement} from './model_status.js';
 
 export function getHtml(this: OnDeviceInternalsModelStatusElement) {
+  const baseModel = this.pageData_.baseModel;
+  const baseInfo = this.pageData_.baseModel.info;
+  const criteria = this.pageData_.baseModel.registrationCriteria;
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="cr-centered-card-container">
   <h3>Foundational Model</h3>
   <div class="card">
     <div class="cr-row first">
-      <div class="cr-padded-text">Foundational model state:
-      ${this.pageData_.modelState}</div>
+      <div class="cr-padded-text">
+        <div>
+          Foundational model state:
+          <span class="value">${baseModel.state}</span>
+        </div>
+      ${baseInfo ? html`
+        <div>
+          <div>
+            Model Name:
+            <span class="value">${baseInfo.name}</value>
+          </div>
+          <div>
+            Version:
+            <span class="value">${baseInfo.version}</value>
+          </div>
+          <div>
+            File path:
+            <span class="value">${baseInfo.filePath}</value>
+          </div>
+        </div>` : html``}
+      </div>
     </div>
     <div class="cr-row">
       <div class="cr-padded-text">
@@ -30,7 +52,7 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
     </div>
   </div>
   <h3>Foundational model criteria</h3>
-  ${(Object.keys(this.pageData_.registrationCriteria).length === 0) ?
+  ${(Object.keys(criteria).length === 0) ?
     html`
       <div class="card">
         <div class="cr-row first">
@@ -50,10 +72,10 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
              </tr>
            </thead>
            <tbody>
-             ${Object.keys(this.pageData_.registrationCriteria).map(key => html`
+             ${Object.keys(criteria).map(key => html`
                <tr>
                  <td>${key}</td>
-                 <td>${this.pageData_.registrationCriteria[key]}</td>
+                 <td>${criteria[key]}</td>
                </tr>`)}
            </tbody>
          </table>
