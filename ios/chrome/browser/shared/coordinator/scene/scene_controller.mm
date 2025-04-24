@@ -465,7 +465,8 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 // The coordinator used to control sign-in UI flows. Lazily created the first
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
 // the coordinator.
-@property(nonatomic, strong) SigninCoordinator* signinCoordinator;
+@property(nonatomic, strong)
+    SigninCoordinator<StopAnimatedChromeCoordinator>* signinCoordinator;
 
 // YES if the process of dismissing the sign-in prompt is from an external
 // trigger and is currently ongoing. An external trigger isn't done from the
@@ -1014,14 +1015,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 // Stops the signin coordinator.
 // TODO(crbug.com/381444097): always use the animated.
 - (void)stopSigninCoordinatorAnimated:(BOOL)animated {
-  if ([self.signinCoordinator
-          conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]) {
-    [base::apple::ObjCCastStrict<
-        SigninCoordinator<StopAnimatedChromeCoordinator>>(
-        self.signinCoordinator) stopAnimated:animated];
-  } else {
-    [self.signinCoordinator stop];
-  }
+  [self.signinCoordinator stopAnimated:animated];
   self.signinCoordinator = nil;
 }
 
@@ -1444,7 +1438,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
-  [self interruptSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
+  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
@@ -4003,7 +3997,7 @@ using UserFeedbackDataCallback =
     // to be closed first.
     // If signinCoordinator is already dismissing, completion execution will
     // happen when it is done animating.
-    [self interruptSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
+    [self stopSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
     UIViewController* presentingViewController =
         self.settingsNavigationController.presentingViewController;
     if (presentingViewController) {
@@ -4017,17 +4011,15 @@ using UserFeedbackDataCallback =
   } else {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
-    [self interruptSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
+    [self stopSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
     resetAndDismiss();
   }
 }
 
 // Interrupts the sign-in coordinator actions and dismisses its views either
 // with or without animation.
-// TODO(crbug.com/381444097): Rename to `stopSigninCoordinatorAnimated` when the
-// InterruptibleChromeCoordinator protocol is removed.
-- (void)interruptSigninCoordinatorAnimated:(BOOL)animated
-                       fromExternalTrigger:(BOOL)external {
+- (void)stopSigninCoordinatorAnimated:(BOOL)animated
+                  fromExternalTrigger:(BOOL)external {
   if (!self.signinCoordinator) {
     return;
   }
@@ -4035,32 +4027,15 @@ using UserFeedbackDataCallback =
     self.dismissingSigninPromptFromExternalTrigger = YES;
   }
 
-  if ([self.signinCoordinator
-          conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
-    [base::apple::ObjCCastStrict<
-        SigninCoordinator<InterruptibleChromeCoordinator>>(
-        self.signinCoordinator) interruptAnimated:animated];
-  } else {
-    CHECK([self.signinCoordinator
-        conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]);
-    [base::apple::ObjCCastStrict<
-        SigninCoordinator<StopAnimatedChromeCoordinator>>(
-        self.signinCoordinator) stopAnimated:animated];
-    SigninCoordinatorCompletionCallback signinCompletion =
-        self.signinCoordinator.signinCompletion;
-    self.signinCoordinator.signinCompletion = nil;
-    if (signinCompletion) {
-      // The signin completion is not expected to be called during
-      // `stopAnimated`. However, a child of `self.signinCoordinator` that
-      // implements `InterruptibleChromeCoordinator` can request its owner to be
-      // stopped in its own `signinCompletion`. Thus, this case need to be
-      // considered during the migration away InterruptibleChromeCoordinator.
-      // TODO(crbug.com/381444097): replace the `if` by a check when there are
-      // no more `InterruptibleChromeCoordinator`s.
-      signinCompletion(SigninCoordinatorResultInterrupted, nil);
-    }
-    self.signinCoordinator = nil;
-  }
+  CHECK([self.signinCoordinator
+      conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]);
+  [self.signinCoordinator stopAnimated:animated];
+  SigninCoordinatorCompletionCallback signinCompletion =
+      self.signinCoordinator.signinCompletion;
+  self.signinCoordinator.signinCompletion = nil;
+  CHECK(signinCompletion, base::NotFatalUntil::M142);
+  signinCompletion(SigninCoordinatorResultInterrupted, nil);
+  self.signinCoordinator = nil;
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.
@@ -4621,7 +4596,7 @@ using UserFeedbackDataCallback =
     (PolicyWatcherBrowserAgent*)policyWatcher {
 
   if (self.signinCoordinator) {
-    [self interruptSigninCoordinatorAnimated:YES fromExternalTrigger:YES];
+    [self stopSigninCoordinatorAnimated:YES fromExternalTrigger:YES];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
     policyWatcher->SignInUIDismissed();

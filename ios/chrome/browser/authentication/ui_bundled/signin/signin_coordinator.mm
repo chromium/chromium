@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
@@ -307,15 +306,6 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint];
 }
 
-- (void)dealloc {
-  // Subclasses implementing `StopAnimatedChromeCoordinator` must call
-  // -[SigninCoordinator runCompletionWithSigninResult:completionIdentity:]
-  // before the coordinator is deallocated.
-  DCHECK(![self conformsToProtocol:@protocol(InterruptibleChromeCoordinator)] ||
-         !self.signinCompletion)
-      << base::SysNSStringToUTF8([self description]);
-}
-
 #pragma mark - SigninCoordinator
 
 - (void)start {
@@ -325,30 +315,14 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
-  // All classes inheriting SigninCoordinator are currently being migrated from
-  // InterruptibleChromeCoordinator. See crbug.com/c/381444097 for details. If
-  // you are an user of a SigninCoordinator<StopAnimatedChromeCoordinator>
-  // subclass, you can stop it by calling -stop or -stopAnimated. If you are an
-  // user of a SigninCoordinator<InterruptibleChromeCoordinator> subclass: The
-  // sign-in view is still presented. You should not call `stop`, if you need to
-  // close the view. You need to call -[SigninCoordinator
-  // interruptWithAction:completion:].
-  // If you work on a SigninCoordinator<InterruptibleChromeCoordinator>
-  // subclass:
-  // -[SigninCoordinator
-  // runCompletionWithSigninResult:completionIdentity:] has to be called
-  // by the subclass before
-  // -[SigninCoordinator stop] is called.
-  if ([self conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]) {
-    SigninCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedSelf =
-        base::apple::ObjCCast<SigninCoordinator<StopAnimatedChromeCoordinator>>(
-            self);
-    [stopAnimatedSelf stopAnimated:NO];
-  } else {
-    CHECK([self conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]);
-    DCHECK(!self.signinCompletion);
-    [super stop];
-  }
+  // If you are an user of a SigninCoordinator<StopAnimatedChromeCoordinator>
+  // subclass, you can stop it by calling -stop or -stopAnimated.
+  CHECK([self conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)],
+        base::NotFatalUntil::M145);
+  SigninCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedSelf =
+      base::apple::ObjCCast<SigninCoordinator<StopAnimatedChromeCoordinator>>(
+          self);
+  [stopAnimatedSelf stopAnimated:NO];
 }
 
 #pragma mark - Protected

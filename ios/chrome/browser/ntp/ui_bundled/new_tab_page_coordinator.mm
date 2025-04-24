@@ -31,7 +31,6 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
@@ -404,6 +403,7 @@
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
   [_accountMenuCoordinator stop];
+  _accountMenuCoordinator = nil;
 
   self.NTPMetricsRecorder = nil;
 
@@ -1545,7 +1545,6 @@
 // Update the state, to take into account that the account menu coordinator is
 // stopped.
 - (void)showAccountMenuDidFinish {
-  CHECK(_accountMenuCoordinator, base::NotFatalUntil::M135);
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator = nil;
 }
