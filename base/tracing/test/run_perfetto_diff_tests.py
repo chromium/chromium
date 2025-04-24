@@ -40,7 +40,7 @@ def main():
                             args.all_chrome_metrics_descriptor,
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
     "--winscope-extensions", args.winscope_extensions_descriptor,
-    "--override-sql-module", os.path.abspath(args.chrome_stdlib),
+    "--override-sql-package", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,
     "--name-filter",
     args.name_filter,
