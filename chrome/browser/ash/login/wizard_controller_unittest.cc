@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -177,7 +179,12 @@ void CreateExtensionServiceFor(Profile* profile) {
 // be done to run unit tests, but is not directly related to the tests.
 class WizardControllerTestBase : public ::testing::Test {
  public:
-  WizardControllerTestBase() = default;
+  WizardControllerTestBase() {
+    // Stabilizes the behavior on branded build.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -263,6 +270,8 @@ class WizardControllerTestBase : public ::testing::Test {
   testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
 
  private:
+  base::test::ScopedCommandLine command_line_;
+
   std::unique_ptr<base::test::TaskEnvironment> task_environment_ =
       std::make_unique<content::BrowserTaskEnvironment>(
           base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
