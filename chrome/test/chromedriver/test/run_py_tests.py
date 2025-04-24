@@ -802,9 +802,6 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
   def testBrowserWithUsedUserDataDir(self):
     """Verify that it is impossible to create a parallel Chrome session using
     the same user data directory.
-    Verify that it is possible to create a parallel chrome-headless-shell
-    session using the same user data directory.
-    See go/headless:user-data-directory
     """
     temp_dir = self.CreateTempDir()
     driver = self.CreateDriver(chrome_switches=[
@@ -812,11 +809,17 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
                                ])
     self.assertEqual(len(driver.GetWindowHandles()), 1)
 
-    if (_BROWSER_NAME == 'chrome-headless-shell'):
-      driver2 = self.CreateDriver(
-          chrome_switches=['--user-data-dir=%s' % temp_dir,])
-      self.assertEqual(len(driver2.GetWindowHandles()), 1)
-    else:
+    # TODO(crbug.com/40708010): Re-enable when chrome-headless-shell
+    # is compatible with crbug.com/411407649.
+    # if (_BROWSER_NAME == 'chrome-headless-shell'):
+      # Verify that it is possible to create a parallel chrome-headless-shell
+      # session using the same user data directory.
+      # See go/headless:user-data-directory
+      # driver2 = self.CreateDriver(
+      #     chrome_switches=['--user-data-dir=%s' % temp_dir,])
+      # self.assertEqual(len(driver2.GetWindowHandles()), 1)
+      #
+    if (_BROWSER_NAME != 'chrome-headless-shell'):
       with self.assertRaises(chromedriver.SessionNotCreated):
         self.CreateDriver(chrome_switches=['--user-data-dir=%s' % temp_dir,])
 
