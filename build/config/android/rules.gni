@@ -1992,6 +1992,9 @@ if (!is_robolectric && enable_java_templates) {
       if (is_cronet_build) {
         defines += [ "_IS_CRONET_BUILD" ]
         defines += [ "_LOGTAG_PREFIX=cn_" ]
+        if (is_cronet_for_aosp_build) {
+          defines += [ "_CRONET_FOR_AOSP_BUILD" ]
+        }
       } else {
         defines += [ "_LOGTAG_PREFIX=cr_" ]
       }

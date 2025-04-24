@@ -77,6 +77,12 @@ public class BuildConfig {
     public static boolean IS_CRONET_BUILD;
 #endif
 
+#if defined(_CRONET_FOR_AOSP_BUILD)
+    public static boolean CRONET_FOR_AOSP_BUILD = true;
+#else
+    public static boolean CRONET_FOR_AOSP_BUILD;
+#endif
+
 #if defined(_WRITE_CLANG_PROFILING_DATA)
     public static boolean WRITE_CLANG_PROFILING_DATA = true;
 #else
