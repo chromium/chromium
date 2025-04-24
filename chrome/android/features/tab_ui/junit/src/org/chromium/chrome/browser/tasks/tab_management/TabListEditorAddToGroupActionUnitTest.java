@@ -106,7 +106,7 @@ public class TabListEditorAddToGroupActionUnitTest {
                         TEXT,
                         START,
                         mDrawable,
-                        (a, b, c, d, e, f, g) -> mCoordinator);
+                        (a, b, c, d, e, f, g, h) -> mCoordinator);
         mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
     }
 

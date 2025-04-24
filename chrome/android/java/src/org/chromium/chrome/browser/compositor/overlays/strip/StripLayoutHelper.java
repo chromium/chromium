@@ -2125,9 +2125,10 @@ public class StripLayoutHelper
                                             findGroupTitle(newTabGroupId),
                                             /* shouldWaitForUpdate= */ true);
                                 },
+                                /* tabMovedCallback= */ null,
                                 mTabGroupModelFilter,
                                 mBottomSheetController,
-                                /* showNewGroupRow= */ true,
+                                /* supportsShowNewGroup= */ true,
                                 /* destroyOnHide= */ false);
             }
             mTabContextMenuCoordinator =

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -27,6 +29,7 @@ import java.util.Objects;
 class LocalTabGroupListBottomSheetRowMediator {
     private final Token mGroupId;
     private final TabGroupModelFilter mTabGroupModelFilter;
+    private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
@@ -34,6 +37,7 @@ class LocalTabGroupListBottomSheetRowMediator {
      * @param tabGroupModelFilter Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param onClickRunnable To be run on clicking the row.
+     * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param tabs The tabs to be added to a tab group.
      */
     public LocalTabGroupListBottomSheetRowMediator(
@@ -41,9 +45,11 @@ class LocalTabGroupListBottomSheetRowMediator {
             TabGroupModelFilter tabGroupModelFilter,
             FaviconResolver faviconResolver,
             Runnable onClickRunnable,
+            @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
         mGroupId = groupId;
         mTabGroupModelFilter = tabGroupModelFilter;
+        mTabMovedCallback = tabMovedCallback;
 
         int numTabs = mTabGroupModelFilter.getTabCountForGroup(mGroupId);
         int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(mGroupId);
@@ -98,6 +104,9 @@ class LocalTabGroupListBottomSheetRowMediator {
         }
 
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
+        if (mTabMovedCallback != null) {
+            mTabMovedCallback.onTabMoved();
+        }
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

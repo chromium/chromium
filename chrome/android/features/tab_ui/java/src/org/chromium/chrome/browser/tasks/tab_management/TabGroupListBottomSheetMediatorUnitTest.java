@@ -38,9 +38,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -67,8 +69,10 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Mock private TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     @Mock private TabGroupModelFilter mFilter;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabList mTabList;
     @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
+    @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Tab mTab1;
@@ -96,11 +100,12 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mModelList,
                         mFilter,
                         mTabGroupCreationCallback,
+                        mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
                         mBottomSheetController,
                         mDelegate,
-                        /* showNewGroupRow= */ true);
+                        /* supportsShowNewGroup= */ true);
         when(mTabList.getCount()).thenReturn(3);
 
         when(mTabList.getTabAtChecked(0)).thenReturn(mTab1);
@@ -109,6 +114,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
         when(mFilter.getTabModel()).thenReturn(mTabModel);
+        when(mFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
@@ -246,11 +252,12 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mModelList,
                         mFilter,
                         mTabGroupCreationCallback,
+                        mTabMovedCallback,
                         mFaviconResolver,
                         /* tabGroupSyncService= */ null,
                         mBottomSheetController,
                         mDelegate,
-                        /* showNewGroupRow= */ true);
+                        /* supportsShowNewGroup= */ true);
 
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
@@ -308,6 +315,24 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         verify(mTabGroupCreationCallback).onTabGroupCreated(any());
     }
 
+    @Test
+    public void testCreateNewGroup_singleTabInTabGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mDelegate.requestShowContent()).thenReturn(true);
+
+        List<Tab> tabs = Arrays.asList(mTab1);
+        mMediator.requestShowContent(tabs);
+
+        // Simulate clicking the "New Group" row.
+        mModelList.get(0).model.get(ROW_CLICK_RUNNABLE).run();
+
+        verify(mTabMovedCallback).onTabMoved();
+        verify(mTabUngrouper).ungroupTabs(eq(tabs), anyBoolean(), anyBoolean());
+        verify(mFilter).createSingleTabGroup(mTab1);
+        verify(mDelegate).hide(INTERACTION_COMPLETE);
+        verify(mTabGroupCreationCallback).onTabGroupCreated(any());
+    }
+
     @Test(expected = AssertionError.class)
     public void testCreateNewGroup_emptyTabs() {
         when(mDelegate.requestShowContent()).thenReturn(true);
@@ -325,13 +350,80 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mModelList,
                         mFilter,
                         mTabGroupCreationCallback,
+                        mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
                         mBottomSheetController,
                         mDelegate,
-                        /* showNewGroupRow= */ false);
+                        /* supportsShowNewGroup= */ false);
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
         assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    public void testPopulateList_noNewGroupRow_multipleTabsInSameGroup() {
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mTabMovedCallback,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* supportsShowNewGroup= */ false);
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(mToken1);
+
+        List<Tab> list = Arrays.asList(mTab1, mTab2);
+        mMediator.requestShowContent(list);
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testPopulateList_showNewGroupRow_singleTabInGroup() {
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mTabMovedCallback,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* supportsShowNewGroup= */ true);
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(mToken1);
+
+        List<Tab> list = List.of(mTab1);
+        mMediator.requestShowContent(list);
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    public void testPopulateList_showNewGroupRow_multipleTabGroups() {
+        mMediator =
+                new TabGroupListBottomSheetMediator(
+                        mModelList,
+                        mFilter,
+                        mTabGroupCreationCallback,
+                        mTabMovedCallback,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mBottomSheetController,
+                        mDelegate,
+                        /* supportsShowNewGroup= */ true);
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(mToken2);
+
+        List<Tab> list = Arrays.asList(mTab1, mTab2);
+        mMediator.requestShowContent(list);
+        assertEquals(3, mModelList.size());
     }
 }

@@ -2069,6 +2069,7 @@ public class StripLayoutHelperTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(),
+                        any(),
                         eq(mTabGroupModelFilter),
                         eq(mBottomSheetController),
                         eq(true),

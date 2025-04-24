@@ -49,6 +49,7 @@ public class TabGroupListBottomSheetCoordinator {
     }
 
     /** A callback to run after a tab group is created. */
+    @FunctionalInterface
     public interface TabGroupCreationCallback {
         /**
          * Responds to tab group creation.
@@ -56,6 +57,13 @@ public class TabGroupListBottomSheetCoordinator {
          * @param tabGroupId The tab group ID of the newly-created tab group.
          */
         void onTabGroupCreated(Token tabGroupId);
+    }
+
+    /** A callback to run after a tab moves groups or is ungrouped. */
+    @FunctionalInterface
+    public interface TabMovedCallback {
+        /** Runs after a tab moves groups or is ungrouped. */
+        void onTabMoved();
     }
 
     private final TabGroupListBottomSheetView mView;
@@ -68,20 +76,24 @@ public class TabGroupListBottomSheetCoordinator {
      * @param context The {@link Context} to attach the bottom sheet to.
      * @param profile The current user profile.
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
+     * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param filter Used to read current tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
-     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether this object should be destroyed on hiding the bottom sheet.
      */
     public TabGroupListBottomSheetCoordinator(
             Context context,
             Profile profile,
             TabGroupCreationCallback tabGroupCreationCallback,
+            @Nullable TabMovedCallback tabMovedCallback,
             TabGroupModelFilter filter,
             BottomSheetController bottomSheetController,
-            boolean showNewGroupRow,
+            boolean supportsShowNewGroup,
             boolean destroyOnHide) {
-        mView = new TabGroupListBottomSheetView(context, bottomSheetController, showNewGroupRow);
+        mView =
+                new TabGroupListBottomSheetView(
+                        context, bottomSheetController, supportsShowNewGroup);
         mBottomSheetController = bottomSheetController;
 
         MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();
@@ -128,11 +140,12 @@ public class TabGroupListBottomSheetCoordinator {
                         modelList,
                         filter,
                         tabGroupCreationCallback,
+                        tabMovedCallback,
                         faviconResolver,
                         tabGroupSyncService,
                         bottomSheetController,
                         createDelegate(destroyOnHide),
-                        showNewGroupRow);
+                        supportsShowNewGroup);
     }
 
     /** Creates the delegate. */

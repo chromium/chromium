@@ -84,7 +84,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         TabGroupListBottomSheetCoordinatorFactory factory =
-                (a, b, callback, d, e, f, g) -> {
+                (a, b, callback, d, e, f, g, h) -> {
                     mTabGroupCreationCallback = callback;
                     return mTabGroupListBottomSheetCoordinator;
                 };

@@ -824,9 +824,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         mActivity,
                         profile,
                         tabGroupId -> tabGroupCreationDialogManager.showDialog(tabGroupId, filter),
+                        /* tabMovedCallback= */ null,
                         filter,
                         mBottomSheetController,
-                        /* showNewGroupRow= */ true,
+                        /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ false);
 
         TabBookmarker tabBookmarker = mTabBookmarkerSupplier.get();

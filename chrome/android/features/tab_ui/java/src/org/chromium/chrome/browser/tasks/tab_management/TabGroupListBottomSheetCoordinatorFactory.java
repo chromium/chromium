@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Factory class for creating {@link TabGroupListBottomSheetCoordinator} instances. */
@@ -21,18 +23,20 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      *
      * @param context The {@link Context} to attach the bottom sheet to.
      * @param profile The current user profile.
-     * @param callback Used to follow up on tab group creation.
+     * @param tabGroupCreationCallback Used to follow up on tab group creation.
+     * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param filter Used to read current tab groups.
      * @param controller Used to interact with the bottom sheet.
-     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether the coordinator should be destroyed on hide.
      */
     TabGroupListBottomSheetCoordinator create(
             Context context,
             Profile profile,
-            TabGroupCreationCallback callback,
+            TabGroupCreationCallback tabGroupCreationCallback,
+            @Nullable TabMovedCallback tabMovedCallback,
             TabGroupModelFilter filter,
             BottomSheetController controller,
-            boolean showNewGroupRow,
+            boolean supportsShowNewGroup,
             boolean destroyOnHide);
 }

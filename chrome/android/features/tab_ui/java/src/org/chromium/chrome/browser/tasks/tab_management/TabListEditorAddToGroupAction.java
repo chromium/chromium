@@ -183,7 +183,14 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
 
         mTabGroupListBottomSheetCoordinator =
                 mFactory.create(
-                        mActivity, profile, groupCreationCallback, filter, controller, true, true);
+                        mActivity,
+                        profile,
+                        groupCreationCallback,
+                        /* tabMovedCallback= */ null,
+                        filter,
+                        controller,
+                        true,
+                        true);
         mTabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
     }
 

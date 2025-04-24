@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -24,7 +25,9 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Mediator class for the Tab Group List Bottom Sheet. This mediator contains the logic for bottom
@@ -36,6 +39,7 @@ public class TabGroupListBottomSheetMediator {
     private final TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     private final ModelList mModelList;
     private final TabGroupModelFilter mFilter;
+    private final @Nullable TabMovedCallback mTabMovedCallback;
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -61,29 +65,32 @@ public class TabGroupListBottomSheetMediator {
      * @param modelList Side effect is adding items to this list.
      * @param filter Used to read current tab groups.
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
+     * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param delegate Called on {@link BottomSheetObserver} calls.
-     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      */
     public TabGroupListBottomSheetMediator(
             ModelList modelList,
             TabGroupModelFilter filter,
             TabGroupCreationCallback tabGroupCreationCallback,
+            @Nullable TabMovedCallback tabMovedCallback,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             BottomSheetController bottomSheetController,
             TabGroupListBottomSheetCoordinatorDelegate delegate,
-            boolean showNewGroupRow) {
+            boolean supportsShowNewGroup) {
         mModelList = modelList;
         mFilter = filter;
         mTabGroupCreationCallback = tabGroupCreationCallback;
+        mTabMovedCallback = tabMovedCallback;
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
         mBottomSheetController = bottomSheetController;
         mDelegate = delegate;
-        mShowNewGroup = showNewGroupRow;
+        mShowNewGroup = supportsShowNewGroup;
     }
 
     /**
@@ -112,8 +119,8 @@ public class TabGroupListBottomSheetMediator {
      */
     private void populateList(List<Tab> tabs) {
         mModelList.clear();
-        if (mShowNewGroup) {
-            insertAddGroupRow(tabs);
+        if (shouldShowNewGroupRow(tabs)) {
+            insertNewGroupRow(tabs);
         }
 
         if (mTabGroupSyncService != null) {
@@ -131,6 +138,7 @@ public class TabGroupListBottomSheetMediator {
                             mFilter,
                             mFaviconResolver,
                             () -> hide(StateChangeReason.INTERACTION_COMPLETE),
+                            mTabMovedCallback,
                             tabs);
             mModelList.add(
                     new MVCListAdapter.ListItem(RowType.EXISTING_GROUP, rowMediator.getModel()));
@@ -151,13 +159,14 @@ public class TabGroupListBottomSheetMediator {
                             mFaviconResolver,
                             mTabGroupSyncService,
                             () -> hide(StateChangeReason.INTERACTION_COMPLETE),
+                            mTabMovedCallback,
                             tabs);
             mModelList.add(
                     new MVCListAdapter.ListItem(RowType.EXISTING_GROUP, rowMediator.getModel()));
         }
     }
 
-    private void insertAddGroupRow(List<Tab> tabs) {
+    private void insertNewGroupRow(List<Tab> tabs) {
         Runnable onClickRunnable = () -> createNewGroupForTabs(tabs);
 
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupRowProperties.ALL_KEYS);
@@ -173,14 +182,33 @@ public class TabGroupListBottomSheetMediator {
 
         if (tabs.size() == 1 && tab.getTabGroupId() == null) {
             mFilter.createSingleTabGroup(tab);
+        } else if (tabs.size() == 1 && tab.getTabGroupId() != null) {
+            mFilter.getTabUngrouper()
+                    .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
+            if (mTabMovedCallback != null) {
+                mTabMovedCallback.onTabMoved();
+            }
+            mFilter.createSingleTabGroup(tab);
         } else {
             mFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
         }
 
         hide(StateChangeReason.INTERACTION_COMPLETE);
-        var tabGroupId = tab.getTabGroupId();
+        Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return;
         mTabGroupCreationCallback.onTabGroupCreated(tabGroupId);
+    }
+
+    private boolean shouldShowNewGroupRow(List<Tab> tabs) {
+        Set<Token> groupIds = new HashSet<>();
+        for (Tab tab : tabs) {
+            if (tab.getTabGroupId() != null) {
+                groupIds.add(tab.getTabGroupId());
+            }
+        }
+        int numGroups = groupIds.size();
+        return (numGroups == 0 || (numGroups == 1 && tabs.size() <= 1) || numGroups > 1)
+                && mShowNewGroup;
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {

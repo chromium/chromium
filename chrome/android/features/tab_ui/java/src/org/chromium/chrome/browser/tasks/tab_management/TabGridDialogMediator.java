@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageTy
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -560,14 +561,17 @@ public class TabGridDialogMediator
                 TabGroupCreationDialogManager tabGroupCreationDialogManager =
                         new TabGroupCreationDialogManager(activity, modalDialogManager, null);
                 TabGroupCreationCallback tabGroupCreationCallback =
-                        groupId -> {
-                            tabGroupCreationDialogManager.showDialog(groupId, filter);
-                        };
+                        groupId -> tabGroupCreationDialogManager.showDialog(groupId, filter);
+
+                // Dismiss the dialog if open. The dialog should be open when the bottom sheet is
+                // visible.
+                TabMovedCallback tabMovedCallback = () -> hideDialog(true);
                 mTabGroupListBottomSheetCoordinator =
                         new TabGroupListBottomSheetCoordinator(
                                 activity,
                                 profile,
                                 tabGroupCreationCallback,
+                                tabMovedCallback,
                                 filter,
                                 bottomSheetController,
                                 true,

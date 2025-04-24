@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,6 +46,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Runnable mOnClickRunnable;
+    @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
@@ -72,7 +74,12 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
-                        mGroupId, mTabGroupModelFilter, mFaviconResolver, mOnClickRunnable, mTabs);
+                        mGroupId,
+                        mTabGroupModelFilter,
+                        mFaviconResolver,
+                        mOnClickRunnable,
+                        mTabMovedCallback,
+                        mTabs);
     }
 
     @Test
@@ -100,6 +107,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
                         mTabGroupModelFilter,
                         mFaviconResolver,
                         mOnClickRunnable,
+                        mTabMovedCallback,
                         tabList);
         PropertyModel model = mMediator.getModel();
 
@@ -107,6 +115,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabList, mTab1, true);
+        verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -119,6 +128,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -132,6 +142,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 }

@@ -82,11 +82,12 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                 new TabGroupListBottomSheetCoordinator(
                         mContext,
                         mProfile,
-                        ignored -> {},
+                        /* tabGroupCreationCallback= */ ignored -> {},
+                        /* tabMovedCallback= */ null,
                         mFilter,
                         mBottomSheetController,
-                        true,
-                        false);
+                        /* supportsShowNewGroup= */ true,
+                        /* destroyOnHide= */ false);
     }
 
     @Test
@@ -136,6 +137,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(true);
         // Test that the Coordinator can be constructed without crashing.
         new TabGroupListBottomSheetCoordinator(
-                mContext, mProfile, ignored -> {}, mFilter, mBottomSheetController, true, false);
+                mContext,
+                mProfile,
+                /* tabGroupCreationCallback= */ ignored -> {},
+                /* tabMovedCallback= */ null,
+                mFilter,
+                mBottomSheetController,
+                /* supportsShowNewGroup= */ true,
+                /* destroyOnHide= */ false);
     }
 }
