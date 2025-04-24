@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREBackPressType;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFRERestoredTabsResult;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREResultAction;
@@ -28,6 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The bottom sheet content for the Restore Tabs promo. */
+@NullMarked
 public class RestoreTabsPromoSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final PropertyModel mModel;
