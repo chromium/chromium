@@ -576,9 +576,11 @@ class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:
   GlicWindowControllerWithMemoryPressureUiTest() {
-    features_.InitWithFeatures(
+    features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {features::kGlicWarming},
+        {{features::kGlicWarming,
+          {{features::kGlicWarmingDelayMs.name, "0"},
+           {features::kGlicWarmingJitterMs.name, "0"}}}},
         /*disabled_features=*/{});
   }
   ~GlicWindowControllerWithMemoryPressureUiTest() override = default;

@@ -55,15 +55,21 @@ class GlicProfileManagerUiTest
  public:
   GlicProfileManagerUiTest() {
     if (ShouldWarmMultiple()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicWarming,
-                                features::kGlicFreWarming,
-                                features::kGlicWarmMultiple},
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kGlicWarmMultiple, {}},
+                                {features::kGlicFreWarming, {}},
+                                {features::kGlicWarming,
+                                 {{features::kGlicWarmingDelayMs.name, "0"},
+                                  {features::kGlicWarmingJitterMs.name, "0"}}}},
           /*disabled_features=*/{});
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicWarming,
-                                features::kGlicFreWarming},
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kGlicFreWarming, {}},
+                                {features::kGlicWarming,
+                                 {
+                                     {features::kGlicWarmingDelayMs.name, "0"},
+                                     {features::kGlicWarmingJitterMs.name, "0"},
+                                 }}},
           /*disabled_features=*/{features::kGlicWarmMultiple});
     }
   }

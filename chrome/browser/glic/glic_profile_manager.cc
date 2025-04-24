@@ -305,4 +305,8 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   }
 }
 
+base::WeakPtr<GlicProfileManager> GlicProfileManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace glic

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -54,6 +55,21 @@
 #include "url/gurl.h"
 
 namespace glic {
+
+namespace {
+
+base::TimeDelta GetWarmingDelay() {
+  base::TimeDelta delay_start =
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get());
+  base::TimeDelta delay_limit =
+      delay_start + base::Milliseconds(features::kGlicWarmingJitterMs.Get());
+  if (delay_limit > delay_start) {
+    return RandTimeDelta(delay_start, delay_limit);
+  }
+  return delay_start;
+}
+
+}  // namespace
 
 GlicKeyedService::GlicKeyedService(
     Profile* profile,
@@ -382,9 +398,24 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
 
 void GlicKeyedService::TryPreload() {
   CHECK(glic_profile_manager_);
+  base::TimeDelta delay = GetWarmingDelay();
 
-  glic_profile_manager_->ShouldPreloadForProfile(
-      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+  // TODO(b/411100559): Ideally we'd use post delayed task in all cases,
+  // but this requires a refactor of tests that are currently brittle. For now,
+  // just synchronously call ShouldPreloadForProfile if there is no delay.
+  if (delay.is_zero()) {
+    glic_profile_manager_->ShouldPreloadForProfile(
+        profile_,
+        base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GlicProfileManager::ShouldPreloadForProfile,
+            glic_profile_manager_->GetWeakPtr(), profile_,
+            base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr())),
+        delay);
+  }
 }
 
 void GlicKeyedService::TryPreloadFre() {

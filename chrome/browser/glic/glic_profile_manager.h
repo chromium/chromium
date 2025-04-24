@@ -87,6 +87,8 @@ class GlicProfileManager {
   static void ForceConnectionTypeForTesting(
       std::optional<network::mojom::ConnectionType> type);
 
+  base::WeakPtr<GlicProfileManager> GetWeakPtr();
+
  private:
   // Callback from ProfilePicker::Show().
   void DidSelectProfile(Profile* profile);
