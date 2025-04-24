@@ -13,7 +13,6 @@ promise_test(async t => {
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
   const from = navigation.currentEntry;
-  const expectedError = new Error("boo");
 
   const recorder = new Recorder({
     skipCurrentChange: !hasVariant("currententrychange"),
@@ -23,10 +22,12 @@ promise_test(async t => {
   recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", e => {
-    e.intercept({ handler() {
-      recorder.record("handler run");
-      return Promise.reject(expectedError);
-    }});
+    e.intercept({ async precommitHandler() {
+                    recorder.record("precommitHandler start");
+                    return Promise.reject();
+                  },
+                  async handler() { recorder.record("handler should not run"); }
+                });
   });
 
   const result = navigation.navigate("#1");
@@ -39,16 +40,13 @@ promise_test(async t => {
   recorder.assert([
     /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["currententrychange", "#1", { from, navigationType: "push" }],
-    ["handler run", "#1", { from, navigationType: "push" }],
-    ["committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["transition.committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["promise microtask", "#1", { from, navigationType: "push" }],
-    ["navigateerror", "#1", { from, navigationType: "push" }],
-    ["finished rejected", "#1", null],
-    ["transition.finished rejected", "#1", null],
+    ["precommitHandler start", "", { from, navigationType: "push" }],
+    ["promise microtask", "", { from, navigationType: "push" }],
+    ["navigateerror", "", { from, navigationType: "push" }],
+    ["committed rejected", "", null],
+    ["finished rejected", "", null],
+    ["transition.committed rejected", "", null],
+    ["transition.finished rejected", "", null],
   ]);
-
-  recorder.assertErrorsAre(expectedError);
-}, "event and promise ordering for same-document navigation.navigate() intercepted by passing a rejected promise to intercept()");
+}, "event and promise ordering for same-document navigation.navigate() intercepted by intercept() with a precommitHandler");
 </script>

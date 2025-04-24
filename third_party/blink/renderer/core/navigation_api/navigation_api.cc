@@ -272,6 +272,9 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     ongoing_api_method_tracker_->NotifyAboutTheCommittedToEntry(
         entries_[current_entry_index_], type);
   }
+  if (transition_) {
+    transition_->ResolveCommittedPromise();
+  }
 
   NavigateEvent* ongoing_navigate_event = ongoing_navigate_event_;
 
