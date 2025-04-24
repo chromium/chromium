@@ -194,7 +194,9 @@ class OOFCandidateStyleIterator {
 
     if (!style_) {
       // The last successful fallback no longer exists. The rule may have been
-      // deleted. Update to base style.
+      // deleted. Performing ResizeObserver steps invalidates such last
+      // successful options (and then this won't be an issue), but we may
+      // perform layout before that has happened. Update to base style.
       UpdateStyle(std::nullopt);
     }
   }
