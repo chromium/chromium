@@ -305,26 +305,25 @@ Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
     return numbers;
 
   WTF::VisitCharacters(input, [&](auto chars) {
-    const auto* position = chars.data();
-    using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + chars.size();
+    using CharacterType = std::decay_t<decltype(*chars.data())>;
 
-    SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+    size_t position = SkipWhile<CharacterType, IsSpaceOrDelimiter>(chars, 0);
 
-    while (position < end) {
-      SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(position, end);
+    while (position < chars.size()) {
+      position = SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(
+          chars, position);
 
-      const CharacterType* unparsed_number_start = position;
-      SkipUntil<CharacterType, IsSpaceOrDelimiter>(position, end);
+      const size_t unparsed_number_start = position;
+      position = SkipUntil<CharacterType, IsSpaceOrDelimiter>(chars, position);
 
       size_t parsed_length = 0;
       double number = CharactersToDouble(
-          {unparsed_number_start,
-           static_cast<size_t>(position - unparsed_number_start)},
+          chars.subspan(unparsed_number_start,
+                        static_cast<size_t>(position - unparsed_number_start)),
           parsed_length);
       numbers.push_back(CheckDoubleValue(number, parsed_length != 0, 0));
 
-      SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+      position = SkipWhile<CharacterType, IsSpaceOrDelimiter>(chars, position);
     }
   });
   return numbers;
