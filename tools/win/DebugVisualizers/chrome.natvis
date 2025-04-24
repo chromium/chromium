@@ -13,6 +13,29 @@
     <AlternativeType Name="gfx::RectF"/>
     <DisplayString>({origin_.x_}, {origin_.y_}) x ({size_.width_}, {size_.height_})</DisplayString>
   </Type>
+  <Type Name="gfx::Matrix44">
+    <Expand>
+      <ArrayItems>
+        <!-- Matrix44 is stored column-major, "Backward" makes the index appear as [row,col]. -->
+        <Direction>Backward</Direction>
+        <Rank>2</Rank>
+        <Size>4</Size>
+        <ValuePointer>matrix_[0]</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="gfx::AxisTransform2d">
+    <DisplayString>({scale_.x_}, {scale_.y_}) + ({translation_.x_}, {translation_.y_})</DisplayString>
+  </Type>
+  </Type>
+    <Type Name="gfx::Transform">
+    <DisplayString Condition="full_matrix_">{{ full_matrix_={full_matrix_} }}</DisplayString>
+    <DisplayString Condition="!full_matrix_">{{ axis_2d_={axis_2d_} }}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="full_matrix_ == true">matrix_</ExpandedItem>
+      <ExpandedItem Condition="!full_matrix_">axis_2d_</ExpandedItem>
+    </Expand>
+  </Type>
   <Type Name="scoped_refptr&lt;*&gt;">
     <SmartPointer Usage="Minimal">ptr_</SmartPointer>
     <DisplayString Condition="ptr_ == 0">null</DisplayString>
