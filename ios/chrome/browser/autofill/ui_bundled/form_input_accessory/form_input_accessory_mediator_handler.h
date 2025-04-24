@@ -19,6 +19,9 @@ enum class SuggestionFeatureForIPH;
 // The mediator detected that the keyboard input view should be reset.
 - (void)resetFormInputView;
 
+// Dismisses the popover (tablet only).
+- (void)dismissPopover;
+
 // The mediator shows autofill suggestion tip if needed.
 - (void)showAutofillSuggestionIPHIfNeededFor:
     (SuggestionFeatureForIPH)featureForIPH;

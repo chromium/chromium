@@ -415,6 +415,14 @@ bool CanReloadInputViews() {
   [self reset];
 }
 
+- (void)dismissPopover {
+  if (IsKeyboardAccessoryUpgradeEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // Close the popover view.
+    [self stopChildren];
+  }
+}
+
 - (void)notifyAutofillSuggestionWithIPHSelectedFor:
     (SuggestionFeatureForIPH)featureForIPH {
   // The engagement tracker can change during testing (in feature engagement app
