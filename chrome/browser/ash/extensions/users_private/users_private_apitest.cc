@@ -224,7 +224,13 @@ class UsersPrivateApiLockStatusTest : public UsersPrivateApiLoginStatusTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, AddUser) {
+// TODO(crbug.com/413060105): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddUser DISABLED_AddUser
+#else
+#define MAYBE_AddUser AddUser
+#endif
+IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, MAYBE_AddUser) {
   EXPECT_TRUE(RunSubtest("addUser")) << message_;
 }
 
