@@ -205,16 +205,23 @@ void CollaborationMessagingObserver::DispatchMessage(
 }
 
 CollaborationMessagingObserver::CollaborationMessagingObserver(Profile* profile)
-    : profile_(profile),
-      instant_message_queue_processor_(profile),
-      service_(MessagingBackendServiceFactory::GetForProfile(profile_)) {
+    : profile_(profile), instant_message_queue_processor_(profile) {
+  // This observer is disabled when Shared Tab Groups is not supported.
+  if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    return;
+  }
+
+  service_ = MessagingBackendServiceFactory::GetForProfile(profile_);
   CHECK(service_);
+
   persistent_message_service_observation_.Observe(service_);
   service_->SetInstantMessageDelegate(this);
 }
 
 CollaborationMessagingObserver::~CollaborationMessagingObserver() {
-  service_->SetInstantMessageDelegate(nullptr);
+  if (service_) {
+    service_->SetInstantMessageDelegate(nullptr);
+  }
 }
 
 void CollaborationMessagingObserver::OnMessagingBackendServiceInitialized() {

@@ -795,6 +795,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   collaboration::CollaborationServiceFactory::GetInstance();
   collaboration::messaging::MessagingBackendServiceFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  tab_groups::CollaborationMessagingObserverFactory::GetInstance();
+#endif
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
   ContentIndexProviderFactory::GetInstance();
@@ -1387,12 +1391,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
-    tab_groups::CollaborationMessagingObserverFactory::GetInstance();
-  }
-#endif
 }
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {
