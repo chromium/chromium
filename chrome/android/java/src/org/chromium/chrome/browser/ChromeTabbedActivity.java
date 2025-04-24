@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -259,6 +260,7 @@ import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -1619,26 +1621,29 @@ public class ChromeTabbedActivity extends ChromeActivity {
             tabs.add(tab);
         }
 
-        // Dragging a collapsed tab group to a new window can result in a window with a single
-        // collapsed group and no tab in foreground. To prevent this, we skip applying the
-        // collapsed state and select the first tab in the dropped group instead.
-        TabModel tabModel = getCurrentTabModel();
-        Tab selectedTab = TabModelUtils.getCurrentTab(tabModel);
-        if (selectedTab == null) {
-            TabModelUtils.setIndex(tabModel, /* index= */ 0);
-        }
-
         // 4. Regroup tabs and restore the original group properties(e.g. color, title, collapsed
         // state).
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(tabGroupMetadata.isIncognito);
+
+        StripLayoutHelperManager layoutHelperManager = mLayoutManager.getStripLayoutHelperManager();
+        boolean isTabStripVisible =
+                layoutHelperManager != null
+                        && layoutHelperManager.getStripVisibilityState()
+                                == StripVisibilityState.VISIBLE;
+        int dropIndex =
+                intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX);
         TabGroupUtils.regroupTabs(
                 tabGroupModelFilter,
                 tabs,
                 tabGroupMetadata,
-                /* shouldApplyCollapse= */ selectedTab != null);
+                TabGroupUtils.shouldApplyCollapsedState(
+                        getCurrentTabModel(),
+                        tabGroupMetadata.tabGroupCollapsed,
+                        isTabStripVisible,
+                        dropIndex));
         return true;
     }
 

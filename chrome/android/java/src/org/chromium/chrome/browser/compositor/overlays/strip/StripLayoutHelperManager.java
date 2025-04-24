@@ -1589,7 +1589,8 @@ public class StripLayoutHelperManager
         return mStripVisibilityStateSupplier.get();
     }
 
-    private void setStripVisibilityState(@StripVisibilityState int visibilityState, boolean clear) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void setStripVisibilityState(@StripVisibilityState int visibilityState, boolean clear) {
         @StripVisibilityState int curVisibility = mStripVisibilityStateSupplier.get();
         mStripVisibilityStateSupplier.set(
                 clear ? (curVisibility & ~visibilityState) : (curVisibility | visibilityState));
