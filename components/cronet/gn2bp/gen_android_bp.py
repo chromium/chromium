@@ -2764,7 +2764,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             module_target.generated_headers.update(dep_module.generated_headers)
             module_target.shared_libs.update(dep_module.shared_libs)
             module_target.header_libs.update(dep_module.header_libs)
-          elif module.type == 'rust_ffi_static':
+          elif module.type in ('rust_ffi_static', 'rust_bindgen'):
             module_target.shared_libs.update(dep_module.shared_libs)
           else:
             raise Exception(
