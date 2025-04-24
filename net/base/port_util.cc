@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -126,8 +127,10 @@ constexpr int kAllowablePorts[] = {};
 
 int g_scoped_allowable_port = 0;
 
-std::set<int>* g_restricted_abuse_ports() {
-  static base::NoDestructor<std::set<int>> restricted_abuse_ports;
+using PortSet = base::flat_set<int>;
+
+PortSet* g_restricted_abuse_ports() {
+  static base::NoDestructor<PortSet> restricted_abuse_ports;
   return restricted_abuse_ports.get();
 }
 
@@ -135,14 +138,20 @@ void InitializeRestrictedAbusePorts() {
   g_restricted_abuse_ports()->clear();
   if (base::FeatureList::IsEnabled(features::kRestrictAbusePorts)) {
     const std::string ports_string = features::kPortsToRestrictForAbuse.Get();
+    PortSet::container_type ports;
     for (const auto& port_string :
          base::SplitStringPiece(ports_string, ",", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY)) {
       int port;
-      CHECK(net::ParseInt32(port_string,
-                            net::ParseIntFormat::STRICT_NON_NEGATIVE, &port));
-      g_restricted_abuse_ports()->insert(port);
+      if (net::ParseInt32(port_string, net::ParseIntFormat::STRICT_NON_NEGATIVE,
+                          &port)) {
+        ports.push_back(port);
+      } else {
+        DLOG(ERROR) << "Ignoring invalid port for kPortsToRestrictForAbuse: "
+                    << port_string;
+      }
     }
+    *g_restricted_abuse_ports() = PortSet(std::move(ports));
   }
 }
 
@@ -177,10 +186,8 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
       InitializeRestrictedAbusePorts();
     }
 
-    for (int abused_port : *g_restricted_abuse_ports()) {
-      if (port == abused_port) {
-        return false;
-      }
+    if (g_restricted_abuse_ports()->contains(port)) {
+      return false;
     }
   }
 
