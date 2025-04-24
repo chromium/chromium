@@ -654,6 +654,9 @@ class OmniboxEditModel {
   void SetKeyword(const std::u16string& keyword);
   void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
 
+  // Closes lens if still needed.
+  void MaybeCloseLens();
+
   // Owns this.
   raw_ptr<OmniboxController> controller_;
 
@@ -791,6 +794,13 @@ class OmniboxEditModel {
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
   bool in_revert_;
+
+  // The omnibox sometimes opens the lens controller, e.g. when entering '@page'
+  // keyword mode. When exiting the scope or committing the omnibox, it should
+  // be closed again, unless lens is invoked by taking a contextual search
+  // match. In that case, the omnibox relinquishes the obligation to close so
+  // as to not interfere with lens match fulfillment and continued use.
+  bool close_lens_;
 
   // Indicates if the upcoming autocomplete search is allowed to be treated as
   // an exact keyword match.  If this is true then keyword mode will be
