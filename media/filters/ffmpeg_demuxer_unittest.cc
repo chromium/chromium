@@ -876,6 +876,30 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
        kInfiniteDuration);
   Read(video, FROM_HERE, 4049, 133467, false);
 }
+
+TEST_F(FFmpegDemuxerTest, Read_FrontDiscard_FiniteDuration) {
+  // This file has buffers that are marked for complete discard (e.g. the front
+  // discard padding ends up being `kInfiniteDuration`). It is a regression
+  // test, guarding against the demuxer reporting an infinite duration.
+  CreateDemuxer("front-discard.mp4");
+  InitializeDemuxer();
+
+  const auto verify_finite_duration = [](DemuxerStream* stream) {
+    base::RunLoop loop;
+    stream->Read(100, base::BindLambdaForTesting(
+                          [&](DemuxerStream::Status status,
+                              DemuxerStream::DecoderBufferVector buffers) {
+                            loop.QuitWhenIdle();
+                          }));
+    loop.Run();
+    auto* ffmpeg_stream = reinterpret_cast<FFmpegDemuxerStream*>(stream);
+    EXPECT_FALSE(ffmpeg_stream->duration().is_inf() ||
+                 ffmpeg_stream->duration().is_max());
+  };
+
+  verify_finite_duration(GetStream(DemuxerStream::AUDIO));
+  verify_finite_duration(GetStream(DemuxerStream::VIDEO));
+}
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Similar to the test above, but using sfx-opus.ogg, which has a much smaller

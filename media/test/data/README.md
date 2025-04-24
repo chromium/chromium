@@ -73,6 +73,9 @@ ffmpeg -ss 80.482733 -i sync2.mp4 -vn -acodec copy -t 8 out_audio.mp4
 ffmpeg -i out_vid.mp4 -itsoffset -3 -i out_audio.mp4 -c copy sync2-trimmed.mp4
 ```
 
+#### front-discard.mp4
+File recorded by a ChromeOS device, whose first packet is marked for complete discard.
+
 ### FLAC
 
 #### bear-flac.mp4
