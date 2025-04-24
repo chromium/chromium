@@ -14,7 +14,7 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
 // Reports.
 BASE_FEATURE(kProfileSignalsReportingEnabled,
              "ProfileSignalsReportingEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the addition of device signals fields to Browser-level Chrome
 // Reports.
