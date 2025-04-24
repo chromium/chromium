@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.b
 
 import android.content.Context;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,12 +44,14 @@ public class HomeButtonCoordinator {
     /**
      * @param context The Android context used for various view operations.
      * @param homeButton The concrete {@link View} class for this MVC component.
+     * @param onClickListener Listener invoked when button is clicked.
      * @param onMenuClickCallback Callback when home button menu item is clicked.
      * @param isHomepageMenuDisabledSupplier Supplier for whether the home button menu is enabled.
      */
     public HomeButtonCoordinator(
             @NonNull Context context,
             @NonNull View homeButton,
+            OnClickListener onClickListener,
             @NonNull Callback<Context> onMenuClickCallback,
             @NonNull Supplier<Boolean> isHomepageMenuDisabledSupplier) {
         mContext = context;
@@ -56,6 +59,7 @@ public class HomeButtonCoordinator {
         mOnMenuClickCallback = onMenuClickCallback;
         mIsHomeButtonMenuDisabled = isHomepageMenuDisabledSupplier;
         mHomeButton.setOnLongClickListener(this::onLongClickHomeButton);
+        mHomeButton.setOnClickListener(onClickListener);
     }
 
     @VisibleForTesting

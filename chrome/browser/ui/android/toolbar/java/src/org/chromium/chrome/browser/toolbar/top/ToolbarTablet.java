@@ -63,7 +63,6 @@ import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.BooleanSupplier;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
@@ -146,8 +145,6 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     @Override
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        mHomeButton.setOnClickListener(this);
-
         mForwardButton.setOnClickListener(this);
         mForwardButton.setLongClickable(true);
     }
@@ -188,10 +185,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (mHomeButton == v) {
-            recordHomeModuleClickedIfNTPVisible();
-            openHomepage();
-        } else if (mForwardButton == v) {
+        if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
         }
@@ -408,7 +402,6 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
@@ -420,7 +413,6 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
                 menuButtonCoordinator,
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
-                partnerHomepageEnabledSupplier,
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,

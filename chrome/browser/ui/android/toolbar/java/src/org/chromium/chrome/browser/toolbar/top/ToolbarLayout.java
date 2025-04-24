@@ -67,8 +67,6 @@ import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
-import java.util.function.BooleanSupplier;
-
 /**
  * Layout class that contains the base shared logic for manipulating the toolbar component. For
  * interaction that are not from Views inside Toolbar hierarchy all interactions should be done
@@ -88,7 +86,6 @@ public abstract class ToolbarLayout extends FrameLayout
     private ToolbarTabController mToolbarTabController;
 
     @Nullable protected ToolbarProgressBar mProgressBar;
-    @Nullable protected BooleanSupplier mPartnerHomepageEnabledSupplier;
 
     private boolean mNativeLibraryReady;
     private boolean mUrlHasFocus;
@@ -132,8 +129,6 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param tabController The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      * @param historyDelegate Delegate used to display navigation history.
-     * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
-     *     homepage is enabled.
      * @param userEducationHelper Helper for user education flows.
      * @param trackerSupplier Provides a {@link Tracker} when available.
      */
@@ -144,7 +139,6 @@ public abstract class ToolbarLayout extends FrameLayout
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
@@ -154,7 +148,6 @@ public abstract class ToolbarLayout extends FrameLayout
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
-        mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
         mProgressBar = progressBar;
     }
 
@@ -723,12 +716,6 @@ public abstract class ToolbarLayout extends FrameLayout
     boolean forward() {
         maybeUnfocusUrlBar();
         return mToolbarTabController != null ? mToolbarTabController.forward() : false;
-    }
-
-    /** Opens hompage in the current tab. */
-    void openHomepage() {
-        maybeUnfocusUrlBar();
-        if (mToolbarTabController != null) mToolbarTabController.openHomepage();
     }
 
     private void maybeUnfocusUrlBar() {
