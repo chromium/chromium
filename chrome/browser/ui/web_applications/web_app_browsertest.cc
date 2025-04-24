@@ -850,7 +850,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithMinimalUiButtons) {
                           /*expected_launch_display=*/DisplayMode::kMinimalUi));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
+// TODO(https://crbug.com/413273037): Flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WithoutMinimalUiButtons DISABLED_WithoutMinimalUiButtons
+#else
+#define MAYBE_WithoutMinimalUiButtons WithoutMinimalUiButtons
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WithoutMinimalUiButtons) {
   EXPECT_FALSE(HasMinimalUiButtons(
       DisplayMode::kStandalone, std::nullopt,
       /*open_as_window=*/true,
@@ -892,8 +898,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                           /*expected_launch_display=*/DisplayMode::kMinimalUi));
 }
 
+// TODO(https://crbug.com/413273037): Flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WithoutMinimalUiButtons_DisplayOverride \
+  DISABLED_WithoutMinimalUiButtons_DisplayOverride
+#else
+#define MAYBE_WithoutMinimalUiButtons_DisplayOverride \
+  WithoutMinimalUiButtons_DisplayOverride
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       WithoutMinimalUiButtons_DisplayOverride) {
+                       MAYBE_WithoutMinimalUiButtons_DisplayOverride) {
   EXPECT_FALSE(HasMinimalUiButtons(
       DisplayMode::kStandalone, DisplayMode::kBrowser,
       /*open_as_window=*/true,
