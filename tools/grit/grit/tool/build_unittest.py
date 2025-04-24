@@ -44,7 +44,13 @@ class BuildUnittest(unittest.TestCase):
     builder.Run(DummyOpts(), ['-o', output_dir.GetPath()])
     output_dir.CleanUp()
 
-  def testGenerateDepFile(self):
+  def testGenerateDepFileWithoutGenderSupport(self):
+    self._testGenerateDepFileInternal(False)
+
+  def testGenerateDepFileWithGenderSupport(self):
+    self._testGenerateDepFileInternal(True)
+
+  def _testGenerateDepFileInternal(self, translate_genders):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts:
@@ -53,9 +59,16 @@ class BuildUnittest(unittest.TestCase):
         self.verbose = False
         self.extra_verbose = False
     expected_dep_file = output_dir.GetPath('substitute.grd.d')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(),
-                              '--depdir', output_dir.GetPath(),
-                              '--depfile', expected_dep_file])
+
+    args = [
+        '-o',
+        output_dir.GetPath(), '--depdir',
+        output_dir.GetPath(), '--depfile', expected_dep_file
+    ]
+    if translate_genders:
+      args.append('--translate-genders')
+
+    builder.Run(DummyOpts(), args)
 
     self.assertTrue(os.path.isfile(expected_dep_file))
     with open(expected_dep_file) as f:
@@ -63,7 +76,9 @@ class BuildUnittest(unittest.TestCase):
       (dep_output_file, deps_string) = line.split(': ')
       deps = deps_string.split(' ')
 
-      self.assertEqual("default_100_percent.pak", dep_output_file)
+      self.assertEqual(
+          "default_100_percent_OTHER.pak"
+          if translate_genders else "default_100_percent.pak", dep_output_file)
       self.assertEqual(deps, [
           util.PathFromRoot('grit/testdata/default_100_percent/a.png'),
           util.PathFromRoot('grit/testdata/grit_part.grdp'),
@@ -212,7 +227,13 @@ class BuildUnittest(unittest.TestCase):
                                   encoding='utf16')
     output_dir.CleanUp()
 
-  def testAllowlistResources(self):
+  def testAllowlistResourcesWithoutGenderSupport(self):
+    self._testAllowlistResourcesInternal(False)
+
+  def testAllowlistResourcesWithGenderSupport(self):
+    self._testAllowlistResourcesInternal(True)
+
+  def _testAllowlistResourcesInternal(self, translate_genders):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts:
@@ -222,11 +243,18 @@ class BuildUnittest(unittest.TestCase):
         self.extra_verbose = False
 
     allowlist_file = util.PathFromRoot('grit/testdata/allowlist.txt')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(), '-w', allowlist_file])
+
+    args = ['-o', output_dir.GetPath(), '-w', allowlist_file]
+    if translate_genders:
+      args.append('--translate-genders')
+    builder.Run(DummyOpts(), args)
+
     header = output_dir.GetPath('allowlist_test_resources.h')
     map_cc = output_dir.GetPath('allowlist_test_resources_map.cc')
     map_h = output_dir.GetPath('allowlist_test_resources_map.h')
-    pak = output_dir.GetPath('allowlist_test_resources.pak')
+    pak = output_dir.GetPath(
+        'allowlist_test_resources_OTHER.pak'
+        if translate_genders else 'allowlist_test_resources.pak')
 
     # Ensure the resource map header and .pak files exist, but don't verify
     # their content.

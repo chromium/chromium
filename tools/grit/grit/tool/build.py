@@ -178,7 +178,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
         ('depdir=', 'depfile=', 'assert-file-list=', 'help',
          'output-all-resource-defines', 'no-output-all-resource-defines',
          'no-replace-ellipsis', 'depend-on-stamp', 'css-minifier=',
-         'write-only-new=', 'allowlist-support', 'brotli='))
+         'write-only-new=', 'allowlist-support', 'brotli=',
+         'translate-genders'))
     for (key, val) in own_opts:
       if key == '-a':
         assert_output_files.append(val)
