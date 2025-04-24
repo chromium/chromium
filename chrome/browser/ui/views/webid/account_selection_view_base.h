@@ -13,7 +13,6 @@
 #include "base/i18n/case_conversion.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -21,6 +20,10 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace webid {
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_H_
 
 #include "base/feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class NewTabPageFeaturePromoHelper {

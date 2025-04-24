@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 
