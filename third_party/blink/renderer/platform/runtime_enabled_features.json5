@@ -372,6 +372,11 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "AIRewriterAPIForWorkers",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "AISummarizationAPI",
       public: true,
       status: "experimental",
@@ -381,6 +386,11 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "AISummarizationAPIForWorkers",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "AIWriterAPI",
       public: true,
       status: "experimental",
@@ -388,6 +398,11 @@
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
+    },
+    {
+      name: "AIWriterAPIForWorkers",
+      public: true,
+      status: "experimental",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",

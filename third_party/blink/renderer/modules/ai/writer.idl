@@ -31,7 +31,7 @@ dictionary WriterWriteOptions {
 };
 
 [
-  Exposed=(Window,Worker),
+  Exposed(Window AIWriterAPI, Worker AIWriterAPIForWorkers),
   RuntimeEnabled=AIWriterAPI,
   SecureContext
 ]

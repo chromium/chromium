@@ -31,7 +31,7 @@ dictionary RewriterRewriteOptions {
 };
 
 [
-  Exposed=(Window,Worker),
+  Exposed(Window AIRewriterAPI, Worker AIRewriterAPIForWorkers),
   RuntimeEnabled=AIRewriterAPI,
   SecureContext
 ]

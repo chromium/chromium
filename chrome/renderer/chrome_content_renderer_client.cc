@@ -1711,15 +1711,16 @@ void ChromeContentRendererClient::
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))
     blink::WebRuntimeFeatures::EnableAdTagging(true);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // WebHID and WebUSB on service workers is only available in extensions.
   if (IsStandaloneContentExtensionProcess()) {
+    // These Web APIs are only exposed to workers in extensions.
     blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
 #if !BUILDFLAG(IS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
+    blink::WebRuntimeFeatures::EnableAIRewriterAPIForWorkers(true);
+    blink::WebRuntimeFeatures::EnableAISummarizationAPIForWorkers(true);
+    blink::WebRuntimeFeatures::EnableAIWriterAPIForWorkers(true);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(
