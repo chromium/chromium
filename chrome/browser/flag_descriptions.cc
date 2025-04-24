@@ -2969,11 +2969,6 @@ const char kOnDeviceNotificationContentDetectionModelDescription[] =
     "verdicts on how suspicious the notification content looks and logging "
     "metrics based on the response.";
 
-const char kOneTimePermissionName[] = "One time permission";
-const char kOneTimePermissionDescription[] =
-    "Enables experimental one time permissions for Geolocation, Microphone and "
-    "Camera.";
-
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

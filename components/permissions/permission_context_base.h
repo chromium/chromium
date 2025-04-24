@@ -48,6 +48,9 @@ class Observer : public base::CheckedObserver {
       ContentSettingsTypeSet content_type_set) = 0;
 };
 
+// Default one time permission expiration time.
+static constexpr base::TimeDelta kOneTimePermissionTimeout = base::Minutes(5);
+
 // A one time grant will never last longer than this value.
 static constexpr base::TimeDelta kOneTimePermissionMaximumLifetime =
     base::Hours(16);

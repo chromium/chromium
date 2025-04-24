@@ -30,7 +30,6 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -1079,8 +1078,6 @@ class PermissionRequestManagerOneTimePermissionBrowserTest
     : public PermissionRequestManagerBrowserTest {
  public:
   PermissionRequestManagerOneTimePermissionBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kOneTimePermission);
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
   }

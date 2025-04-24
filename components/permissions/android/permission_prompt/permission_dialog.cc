@@ -43,12 +43,8 @@ base::android::ScopedJavaLocalRef<jstring>
 PermissionDialog::GetPositiveButtonText(JNIEnv* env, bool is_one_time) const {
   return is_one_time
              ? ConvertUTF16ToJavaString(
-                   env,
-                   l10n_util::GetStringUTF16(
-                       permissions::feature_params::kUseWhileVisitingLanguage
-                               .Get()
-                           ? IDS_PERMISSION_ALLOW_WHILE_VISITING
-                           : IDS_PERMISSION_ALLOW_EVERY_VISIT))
+                   env, l10n_util::GetStringUTF16(
+                            IDS_PERMISSION_ALLOW_WHILE_VISITING))
              : ConvertUTF16ToJavaString(
                    env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
 }
@@ -56,12 +52,7 @@ base::android::ScopedJavaLocalRef<jstring>
 PermissionDialog::GetNegativeButtonText(JNIEnv* env, bool is_one_time) const {
   return is_one_time
              ? ConvertUTF16ToJavaString(
-                   env,
-                   l10n_util::GetStringUTF16(
-                       permissions::feature_params::kUseStrongerPromptLanguage
-                               .Get()
-                           ? IDS_PERMISSION_NEVER_ALLOW
-                           : IDS_PERMISSION_DONT_ALLOW))
+                   env, l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW))
              : ConvertUTF16ToJavaString(
                    env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
 }

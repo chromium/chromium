@@ -38,10 +38,8 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   // Create our Java counterpart, which manages the lifetime of
   // PermissionDialogDelegate.
   JNIEnv* env = base::android::AttachCurrentThread();
-  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
-  bool showPositiveNonEphemeralAsFirstButton =
-      is_one_time &&
-      permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
+  bool is_one_time = PermissionUtil::DoesSupportTemporaryGrants(
+      permission_prompt_->GetContentSettingType(0));
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
       env, reinterpret_cast<uintptr_t>(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
@@ -54,7 +52,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       permission_prompt_->GetPositiveButtonText(env, is_one_time),
       permission_prompt_->GetNegativeButtonText(env, is_one_time),
       permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
-      showPositiveNonEphemeralAsFirstButton,
+      /*showPositiveNonEphemeralAsFirstButton=*/is_one_time,
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant())));
 }
 
@@ -123,7 +121,8 @@ void PermissionDialogJavaDelegate::UpdateDialog() {
   CHECK(permission_prompt_->GetEmbeddedPromptVariant() !=
         EmbeddedPermissionPromptFlowModel::Variant::kUninitialized);
   JNIEnv* env = base::android::AttachCurrentThread();
-  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
+  bool is_one_time = PermissionUtil::DoesSupportTemporaryGrants(
+      permission_prompt_->GetContentSettingType(0));
   Java_PermissionDialogDelegate_updateDialog(
       env, j_delegate_, permission_prompt_->GetContentSettingTypes(env),
       PermissionsClient::Get()->MapToJavaDrawableId(
@@ -134,8 +133,7 @@ void PermissionDialogJavaDelegate::UpdateDialog() {
       permission_prompt_->GetPositiveButtonText(env, is_one_time),
       permission_prompt_->GetNegativeButtonText(env, is_one_time),
       permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
-      is_one_time &&
-          permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get(),
+      /*showPositiveNonEphemeralAsFirstButton=*/is_one_time,
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant()));
 }
 

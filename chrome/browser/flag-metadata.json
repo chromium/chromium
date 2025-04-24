@@ -7157,11 +7157,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "one-time-permission",
-    "owners": ["fjacky@chromium.org", "permissions-core@google.com"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "only-access-clipboard-async",
     "owners": ["rkgibson@google.com", "bling-flags@google.com"],
     "expiry_milestone": 127

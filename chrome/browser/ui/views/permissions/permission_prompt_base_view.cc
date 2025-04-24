@@ -169,10 +169,7 @@ std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
   }
 
   // Use the generic text.
-  return l10n_util::GetStringUTF16(
-      permissions::feature_params::kUseWhileVisitingLanguage.Get()
-          ? IDS_PERMISSION_ALLOW_WHILE_VISITING
-          : IDS_PERMISSION_ALLOW_EVERY_VISIT);
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_WHILE_VISITING);
 }
 
 std::u16string PermissionPromptBaseView::GetBlockText(
@@ -187,10 +184,7 @@ std::u16string PermissionPromptBaseView::GetBlockText(
   }
 
   // Use the generic text.
-  return l10n_util::GetStringUTF16(
-      permissions::feature_params::kUseStrongerPromptLanguage.Get()
-          ? IDS_PERMISSION_NEVER_ALLOW
-          : IDS_PERMISSION_DONT_ALLOW);
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW);
 }
 
 void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {

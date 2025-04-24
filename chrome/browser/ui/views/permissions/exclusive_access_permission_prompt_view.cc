@@ -211,13 +211,9 @@ void ExclusiveAccessPermissionPromptView::InitButtons() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kButtonVerticalDistance));
 
-  if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
-    AddAlwaysAllowButton(*buttons_container);
-    AddAllowThisTimeButton(*buttons_container);
-  } else {
-    AddAllowThisTimeButton(*buttons_container);
-    AddAlwaysAllowButton(*buttons_container);
-  }
+  AddAlwaysAllowButton(*buttons_container);
+  AddAllowThisTimeButton(*buttons_container);
+
   AddButton(*buttons_container,
             l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW),
             ButtonType::kNeverAllow, ui::ButtonStyle::kTonal, kNeverAllowId);

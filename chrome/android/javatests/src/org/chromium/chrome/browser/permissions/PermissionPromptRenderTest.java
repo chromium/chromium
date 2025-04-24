@@ -27,14 +27,12 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -117,20 +115,6 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Features.DisableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
-    public void testGeolocationRegularPrompt() throws Exception {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
-
-        mPermissionRule.loadUrl(mPermissionRule.getURL(TEST_FILE));
-
-        testPrompt(/* goldenViewId= */ "regularPrompt");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Prompt", "RenderTest"})
-    @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testGeolocationOneTimePrompt() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -141,9 +125,6 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Features.EnableFeatures(
-            PermissionsAndroidFeatureList.ONE_TIME_PERMISSION
-                    + ":show_allow_always_as_first_button/true")
     public void testGeolocationOneTimePromptWithAllowAlwaysFirst() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -154,11 +135,6 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Features.EnableFeatures(
-            PermissionsAndroidFeatureList.ONE_TIME_PERMISSION
-                    + ":show_allow_always_as_first_button/true"
-                    + "/use_stronger_prompt_language/true"
-                    + "/use_while_visiting_language/true")
     public void testGeolocationOneTimePromptWithAllowWhileVisitingFirst() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -169,7 +145,6 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testGeolocationOneTimePromptLongOriginWrapsToNextLineAndIsNotElided()
             throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
@@ -185,7 +160,6 @@ public class PermissionPromptRenderTest {
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
     @DisabledTest(message = "crbug.com/385114151")
-    @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testNegativeButtonOutOfScreen() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());

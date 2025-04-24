@@ -30,7 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -232,8 +232,7 @@ void SmartCardPermissionContext::GrantEphemeralReaderPermission(
   CHECK(!HasReaderPermission(origin, reader_name));
   ephemeral_grants_with_expiry_[origin].emplace(
       reader_name,
-      base::Time::Now() +
-          permissions::feature_params::kOneTimePermissionLongTimeout.Get());
+      base::Time::Now() + permissions::kOneTimePermissionMaximumLifetime);
 
   if (!power_suspend_observer_) {
     power_suspend_observer_ = std::make_unique<PowerSuspendObserver>(*this);
@@ -252,7 +251,7 @@ void SmartCardPermissionContext::GrantEphemeralReaderPermission(
       base::BindOnce(&SmartCardPermissionContext::
                          RevokeEphemeralPermissionIfLongTimeoutOccured,
                      weak_ptr_factory_.GetWeakPtr(), origin, reader_name),
-      permissions::feature_params::kOneTimePermissionLongTimeout.Get());
+      permissions::kOneTimePermissionMaximumLifetime);
 }
 
 void SmartCardPermissionContext::GrantPersistentReaderPermission(

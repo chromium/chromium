@@ -1721,9 +1721,6 @@ extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 extern const char kOnDeviceNotificationContentDetectionModelName[];
 extern const char kOnDeviceNotificationContentDetectionModelDescription[];
 
-extern const char kOneTimePermissionName[];
-extern const char kOneTimePermissionDescription[];
-
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

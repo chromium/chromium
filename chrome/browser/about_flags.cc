@@ -8685,10 +8685,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNDirectML)},
 #endif  // BUILDFLAG(IS_WIN)
 
-    {"one-time-permission", flag_descriptions::kOneTimePermissionName,
-     flag_descriptions::kOneTimePermissionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
-
     {"permission-element",
      flag_descriptions::kPageEmbeddedPermissionControlName,
      flag_descriptions::kPageEmbeddedPermissionControlDescription,

@@ -16,9 +16,6 @@ namespace features {
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kBackForwardCacheUnblockPermissionRequest);
 
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kOneTimePermission);
-
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kKeyboardLockPrompt);
@@ -84,21 +81,6 @@ BASE_DECLARE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch);
 #endif
 }  // namespace features
 namespace feature_params {
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<bool> kUseStrongerPromptLanguage;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<bool> kUseWhileVisitingLanguage;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<bool> kShowAllowAlwaysAsFirstButton;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<base::TimeDelta> kOneTimePermissionLongTimeout;
 
 enum class PermissionElementPromptPosition {
   kWindowMiddle,

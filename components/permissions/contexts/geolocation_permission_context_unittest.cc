@@ -222,14 +222,9 @@ class GeolocationPermissionContextTests
 };
 
 GeolocationPermissionContextTests::GeolocationPermissionContextTests() {
-  feature_list_.InitWithFeatures(/*enabled_features=*/
-                                 {
-                                     permissions::features::kOneTimePermission,
 #if BUILDFLAG(IS_WIN)
-                                     ::features::kWinSystemLocationPermission,
+  feature_list_.InitAndEnableFeature(::features::kWinSystemLocationPermission);
 #endif  // BUILDFLAG(IS_WIN)
-                                 },
-                                 /*disabled_features=*/{});
 }
 
 PermissionRequestID GeolocationPermissionContextTests::RequestID(

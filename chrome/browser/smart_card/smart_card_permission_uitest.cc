@@ -13,7 +13,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_client.h"
@@ -34,13 +33,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
 class SmartCardPermissionUiTest
     : public InteractiveBrowserTestT<policy::PolicyTest> {
  public:
-  SmartCardPermissionUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kOneTimePermission,
-         blink::features::kSmartCard},
-        {});
-  }
-
   void TearDown() override { InteractiveBrowserTestT::TearDown(); }
 
   auto SetSmartCardConnectAllowedFor(const GURL& origin_url) {
@@ -140,7 +132,8 @@ class SmartCardPermissionUiTest
   }
 
   std::optional<bool> permission_decision_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kSmartCard};
   policy::PolicyMap policies_;
 };
 

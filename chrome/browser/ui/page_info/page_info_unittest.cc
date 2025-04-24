@@ -2136,15 +2136,6 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
 // Unit tests for logic in the PageInfoUI that toggles permission between
 // allow/block and remember/forget.
 class PageInfoToggleStatesUnitTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kOneTimePermission);
-    ::testing::Test::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Testing all possible state transitions for a permission that doesn't
