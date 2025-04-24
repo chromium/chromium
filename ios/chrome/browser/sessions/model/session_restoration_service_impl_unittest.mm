@@ -20,6 +20,8 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
@@ -364,7 +366,16 @@ class SessionRestorationServiceImplTest : public PlatformTest {
 
     // Create a test ProfileIOS and an object to track the files
     // that are created by the session restoration service operations.
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindOnce(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              // Creates a FakeTabGroupSyncService, as the real implementation
+              // affects the list of created files.
+              return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+            }));
+    profile_ = std::move(builder).Build();
     file_tracker_.Start(profile_->GetStatePath());
 
     // Create the service, force enabling features support.

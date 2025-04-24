@@ -8,7 +8,9 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/types/cxx23_to_underlying.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
@@ -102,12 +104,23 @@ bool OptimizedSessionExists(const base::FilePath& root,
   return ios::sessions::ParseProto(session_path, session_storage);
 }
 
+// Creates a MockDataSharingService.
+std::unique_ptr<KeyedService> CreateMockDataSharingService(
+    web::BrowserState* context) {
+  return std::make_unique<data_sharing::MockDataSharingService>();
+}
+
 }  // namespace
 
 class SessionRestorationServiceFactoryTest : public PlatformTest {
  public:
-  SessionRestorationServiceFactoryTest()
-      : profile_(TestProfileIOS::Builder().Build()) {}
+  SessionRestorationServiceFactoryTest() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        data_sharing::DataSharingServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockDataSharingService));
+    profile_ = std::move(builder).Build();
+  }
 
   ProfileIOS* profile() { return profile_.get(); }
 
