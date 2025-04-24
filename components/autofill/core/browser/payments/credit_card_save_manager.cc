@@ -834,6 +834,13 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       GetCreditCardSaveStrikeDatabase()->ClearStrikes(
           base::UTF16ToUTF8(card_save_candidate_.LastFourDigits()));
 
+      // Clear the CVC value from the `card_save_candidate_` if CVC storage
+      // isn't enabled.
+      if (!card_save_candidate_.cvc().empty() &&
+          !payments_data_manager().IsPaymentCvcStorageEnabled()) {
+        card_save_candidate_.clear_cvc();
+      }
+
       payments_data_manager().OnAcceptedLocalCreditCardSave(
           card_save_candidate_);
       break;
