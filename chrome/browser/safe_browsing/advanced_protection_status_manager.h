@@ -16,14 +16,6 @@ namespace safe_browsing {
 // of its original profile.
 class AdvancedProtectionStatusManager : public KeyedService {
  public:
-  enum class Type {
-    kNone = 0,
-    kProfile = 1,
-#if BUILDFLAG(IS_ANDROID)
-    kAndroidOs = 2,
-#endif
-  };
-
   // Observer to track changes in the enabled/disabled status of Advanced
   // Protection. Observers must use IsUnderAdvancedProtection() to check the
   // status.
@@ -34,15 +26,11 @@ class AdvancedProtectionStatusManager : public KeyedService {
 
   AdvancedProtectionStatusManager();
 
-  // Returns the advanced protection type of the unconsented primary account of
-  // the associated profile.
-  virtual Type GetAdvancedProtectionType() const = 0;
-
   virtual void SetAdvancedProtectionStatusForTesting(bool enrolled) = 0;
 
   // Returns whether the unconsented primary account of the associated profile
   // is under Advanced Protection.
-  bool IsUnderAdvancedProtection() const;
+  virtual bool IsUnderAdvancedProtection() const = 0;
 
   // Adds and removes observers to observe enabled/disabled status changes.
   void AddObserver(StatusChangedObserver* observer);

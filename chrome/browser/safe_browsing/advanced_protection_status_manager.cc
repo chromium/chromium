@@ -8,10 +8,6 @@ namespace safe_browsing {
 
 AdvancedProtectionStatusManager::AdvancedProtectionStatusManager() = default;
 
-bool AdvancedProtectionStatusManager::IsUnderAdvancedProtection() const {
-  return GetAdvancedProtectionType() != Type::kNone;
-}
-
 void AdvancedProtectionStatusManager::AddObserver(
     StatusChangedObserver* observer) {
   observers_.AddObserver(observer);

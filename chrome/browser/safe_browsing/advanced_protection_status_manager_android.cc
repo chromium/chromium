@@ -33,9 +33,8 @@ bool AdvancedProtectionStatusManagerAndroid::QueryIsUnderAdvancedProtection() {
       env);
 }
 
-AdvancedProtectionStatusManager::Type
-AdvancedProtectionStatusManagerAndroid::GetAdvancedProtectionType() const {
-  return is_under_advanced_protection_ ? Type::kAndroidOs : Type::kNone;
+bool AdvancedProtectionStatusManagerAndroid::IsUnderAdvancedProtection() const {
+  return is_under_advanced_protection_;
 }
 
 void AdvancedProtectionStatusManagerAndroid::

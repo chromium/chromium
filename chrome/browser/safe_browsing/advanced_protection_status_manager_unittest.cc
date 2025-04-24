@@ -88,26 +88,4 @@ TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(AdvancedProtectionStatusManagerTest, AdvancedProtectionType) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kForceTreatUserAsAdvancedProtection);
-
-  base::test::TaskEnvironment task_environment;
-  signin::IdentityTestEnvironment identity_test_env(
-      /*test_url_loader_factory=*/nullptr, &pref_service_);
-
-  auto manager =
-      BuildManager(&pref_service_, identity_test_env.identity_manager());
-
-  AdvancedProtectionStatusManager::Type kExpectedType =
-#if BUILDFLAG(IS_ANDROID)
-      AdvancedProtectionStatusManager::Type::kAndroidOs;
-#else
-      AdvancedProtectionStatusManager::Type::kProfile;
-#endif
-  EXPECT_EQ(kExpectedType, manager->GetAdvancedProtectionType());
-
-  manager->Shutdown();
-}
-
 }  // namespace safe_browsing

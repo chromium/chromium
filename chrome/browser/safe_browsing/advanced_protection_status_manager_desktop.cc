@@ -95,18 +95,17 @@ void AdvancedProtectionStatusManagerDesktop::Shutdown() {
 AdvancedProtectionStatusManagerDesktop::
     ~AdvancedProtectionStatusManagerDesktop() = default;
 
-AdvancedProtectionStatusManager::Type
-AdvancedProtectionStatusManagerDesktop::GetAdvancedProtectionType() const {
+bool AdvancedProtectionStatusManagerDesktop::IsUnderAdvancedProtection() const {
   if (!pref_service_->GetBoolean(prefs::kAdvancedProtectionAllowed)) {
-    return Type::kNone;
+    return false;
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceTreatUserAsAdvancedProtection)) {
-    return Type::kProfile;
+    return true;
   }
 
-  return is_under_advanced_protection_ ? Type::kProfile : Type::kNone;
+  return is_under_advanced_protection_;
 }
 
 void AdvancedProtectionStatusManagerDesktop::
