@@ -1,5 +1,5 @@
-# Set build timeout to 4 hours rather than the default of 10 mins
-timeout: 14400s
+# Set build timeout to 5 hours rather than the default of 10 mins
+timeout: 18000s
 
 options:
   pool:
@@ -164,4 +164,4 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     id: 'upload-artifact'
     waitFor: [ 'verify-binary' ]
-    args: ['cp', '-r', '/workspace/hopium/src/out/Debug/*', 'gs://tmp-totalbrowser-build-artifacts/$TAG_NAME']
+    args: ['cp', '-m', '-r', '/workspace/hopium/src/out/Debug/*', 'gs://tmp-totalbrowser-build-artifacts/$TAG_NAME']
