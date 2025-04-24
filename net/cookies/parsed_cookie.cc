@@ -456,7 +456,7 @@ bool ParsedCookie::CookieAttributeValueHasValidCharSet(
 }
 
 // static
-bool ParsedCookie::CookieAttributeValueHasValidSize(const std::string& value) {
+bool ParsedCookie::CookieAttributeValueHasValidSize(std::string_view value) {
   return (value.size() <= kMaxCookieAttributeValueSize);
 }
 
