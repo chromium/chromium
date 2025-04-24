@@ -651,7 +651,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case PasswordDetailsItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
-        DCHECK(self.applicationCommandsHandler);
+        CHECK(self.applicationHandler);
         CredentialDetails* passwordDetails =
             self.credentials[indexPath.section];
         DCHECK(passwordDetails.changePasswordURL.has_value());
@@ -664,7 +664,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:passwordDetails.changePasswordURL.value()];
-        [self.applicationCommandsHandler closePresentedViewsAndOpenURL:command];
+        [self.applicationHandler closePresentedViewsAndOpenURL:command];
       }
       break;
     case PasswordDetailsItemTypeNote: {
@@ -1085,10 +1085,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   TriggerHapticFeedbackForNotification(success
                                            ? UINotificationFeedbackTypeSuccess
                                            : UINotificationFeedbackTypeError);
-  [self.snackbarCommandsHandler showSnackbarWithMessage:message
-                                             buttonText:nil
-                                          messageAction:nil
-                                       completionAction:nil];
+  [self.snackbarHandler showSnackbarWithMessage:message
+                                     buttonText:nil
+                                  messageAction:nil
+                               completionAction:nil];
 
   if ([self.tableView indexPathForSelectedRow]) {
     [self.tableView

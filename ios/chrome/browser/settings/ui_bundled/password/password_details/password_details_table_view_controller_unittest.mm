@@ -205,7 +205,7 @@ class PasswordDetailsTableViewControllerTest
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
-    controller.snackbarCommandsHandler = snack_bar_;
+    controller.snackbarHandler = snack_bar_;
     return controller;
   }
 
@@ -577,7 +577,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
           controller());
 
   id applicationCommandsMock = OCMProtocolMock(@protocol(ApplicationCommands));
-  password_details.applicationCommandsHandler = applicationCommandsMock;
+  password_details.applicationHandler = applicationCommandsMock;
 
   TableViewModel* model = password_details.tableViewModel;
   NSIndexPath* indexPath =
