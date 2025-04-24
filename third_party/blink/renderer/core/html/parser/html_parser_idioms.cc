@@ -79,17 +79,15 @@ Vector<String> SplitOnASCIIWhitespace(const String& input) {
     return output;
   }
   WTF::VisitCharacters(input, [&](auto chars) {
-    const auto* cursor = chars.data();
-    using CharacterType = std::decay_t<decltype(*cursor)>;
-    const CharacterType* string_start = cursor;
-    const CharacterType* string_end = cursor + chars.size();
-    SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
-    while (cursor < string_end) {
-      const CharacterType* token_start = cursor;
-      SkipUntil<CharacterType, IsHTMLSpace>(cursor, string_end);
-      output.push_back(input.Substring((unsigned)(token_start - string_start),
-                                       (unsigned)(cursor - token_start)));
-      SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
+    size_t cursor = 0;
+    using CharacterType = std::decay_t<decltype(*chars.data())>;
+    cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
+    while (cursor < chars.size()) {
+      const wtf_size_t token_start = static_cast<wtf_size_t>(cursor);
+      cursor = SkipUntil<CharacterType, IsHTMLSpace>(chars, cursor);
+      output.push_back(input.Substring(
+          token_start, static_cast<wtf_size_t>(cursor - token_start)));
+      cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
     }
   });
   return output;
