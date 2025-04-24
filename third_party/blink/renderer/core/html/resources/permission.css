@@ -15,7 +15,7 @@ permission {
   box-sizing: content-box !important;
   border-radius: 3px;
   color: #000000;
-  cursor: pointer !important;
+  cursor: pointer;
   display: inline-block;
   font-weight: normal;
   font-style: normal;

@@ -934,6 +934,13 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   if (builder.BorderRightWidth() > builder.FontSize()) {
     builder.SetBorderRightWidth(builder.FontSize());
   }
+
+  // Cursor only allows 'pointer' (default) and 'not-allowed'. No custom images.
+  builder.ClearCursorList();
+  if (builder.Cursor() != ECursor::kNotAllowed) {
+    builder.SetCursor(ECursor::kPointer);
+  }
+  builder.SetCursorIsInherited(false);
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
@@ -1454,8 +1461,6 @@ void HTMLPermissionElement::OnIntersectionChanged(
 bool HTMLPermissionElement::IsStyleValid() {
   // No computed style when using `display: none`.
   if (!GetComputedStyle()) {
-    AddConsoleWarning(WTF::StrCat(
-        {"Cannot compute style for the permission element '", GetType(), "'"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kNoComputedStyle);
     return false;
