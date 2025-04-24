@@ -51,13 +51,16 @@ public abstract class ReorderStrategyTestBase {
             new Token(/* high= */ 1L, /* low= */ 1L); // Arbitrary value.
     protected static final Token GROUP_ID2 =
             new Token(/* high= */ 2L, /* low= */ 2L); // Arbitrary value.
+    protected static final Token GROUP_ID3 =
+            new Token(/* high= */ 3L, /* low= */ 3L); // Arbitrary value.
 
     protected static final int TAB_ID1 = 1;
     protected static final int TAB_ID2 = 2;
     protected static final int TAB_ID3 = 3;
     protected static final int TAB_ID4 = 4;
     protected static final int TAB_ID5 = 5;
-    protected static final int[] TAB_IDS = {TAB_ID1, TAB_ID2, TAB_ID3, TAB_ID4, TAB_ID5};
+    protected static final int TAB_ID6 = 6;
+    protected static final int[] TAB_IDS = {TAB_ID1, TAB_ID2, TAB_ID3, TAB_ID4, TAB_ID5, TAB_ID6};
 
     // Dependencies
     private Activity mActivity;
@@ -96,6 +99,7 @@ public abstract class ReorderStrategyTestBase {
         when(mTabForInteractingView.getRootId()).thenReturn(INTERACTING_VIEW_ID);
         when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
         when(mLastReorderScrollTimeSupplier.get()).thenReturn(0L);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         setupStripViews();
     }
 
@@ -133,6 +137,7 @@ public abstract class ReorderStrategyTestBase {
             tab.setTabGroupId(groupId);
             tab.setRootId(rootId);
         }
+        when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabList.size());
     }
 
     private static class TestAnimationHost implements AnimationHost {

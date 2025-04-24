@@ -319,7 +319,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         setupForTabDrag();
         // Last tab in group. Will not skip ungrouping.
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
         when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
