@@ -6,7 +6,6 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
@@ -162,13 +161,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                        expectedEmail, primaryAccountEmail];
   EG_TEST_HELPER_ASSERT_TRUE(
       [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
-}
-
-- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
-                              consent:(signin::ConsentLevel)consent {
-  GREYAssert(consent == signin::ConsentLevel::kSignin,
-             @"Only ConsentLevel::kSignin is supported");
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:expectedEmail];
 }
 
 - (void)verifySignedOut {

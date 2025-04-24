@@ -16,9 +16,6 @@
 @protocol GREYMatcher;
 @class FakeSystemIdentity;
 
-namespace signin {
-enum class ConsentLevel;
-}
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
@@ -125,11 +122,6 @@ class GURL;
 
 // Induces a GREYAssert if the user is not signed in with `expectedEmail`.
 - (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail;
-
-// TODO(crbug.com/40066949): DO NOT USE! To be removed once internal references
-// are gone.
-- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
-                              consent:(signin::ConsentLevel)consent;
 
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
