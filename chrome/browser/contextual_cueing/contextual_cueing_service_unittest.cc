@@ -14,7 +14,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -397,7 +397,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     loading_predictor_ =
         std::make_unique<testing::NiceMock<MockLoadingPredictor>>(&profile_);
 
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     glic::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
@@ -435,7 +436,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
       mock_optimization_guide_keyed_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<testing::NiceMock<MockLoadingPredictor>> loading_predictor_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<ContextualCueingService> service_;
 };
 

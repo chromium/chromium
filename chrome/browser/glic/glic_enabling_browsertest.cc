@@ -90,12 +90,8 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
   ~GlicEnablingTieredRolloutTest() override = default;
 
   void SetTieredRolloutEligibilityForProfile(bool is_eligible) {
-    profile()->GetPrefs()->SetInteger(
-        prefs::kGlicRolloutEligibility,
-        is_eligible
-            ? static_cast<int>(
-                  prefs::RolloutEligibility::kEligibleTieredRollout)
-            : static_cast<int>(prefs::RolloutEligibility::kNotEligible));
+    profile()->GetPrefs()->SetBoolean(prefs::kGlicRolloutEligibility,
+                                      is_eligible);
   }
 };
 

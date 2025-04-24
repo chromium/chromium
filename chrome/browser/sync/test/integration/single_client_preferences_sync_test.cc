@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,6 +42,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#endif
 
 namespace {
 
@@ -1807,5 +1814,51 @@ IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTestWithAttack,
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_GLIC)
+
+class SingleClientPreferencesGlicTieredRolloutTest
+    : public SingleClientPreferencesSyncTest {
+ public:
+  SingleClientPreferencesGlicTieredRolloutTest() {
+    feature_list_.InitWithFeatures(
+        {::features::kGlic, ::features::kGlicTieredRollout,
+         ::features::kTabstripComboButton},
+        {::features::kGlicRollout});
+  }
+
+  void SetGlicTieredRolloutEligibility(bool is_eligible) {
+    InjectPreferenceToFakeServer(syncer::PRIORITY_PREFERENCES,
+                                 glic::prefs::kGlicRolloutEligibility,
+                                 base::Value(is_eligible));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Have user be eligible for Glic from an account perspective.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  glic::SetModelExecutionCapability(GetProfile(0), /*enabled=*/true);
+
+  // Should not be enabled as profile not eligible for tiered rollout.
+  EXPECT_FALSE(glic::GlicEnabling::IsEnabledForProfile(GetProfile(0)));
+
+  // Set user eligible via server.
+  SetGlicTieredRolloutEligibility(/*is_eligible=*/true);
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // User should have priority preferences synced and rollout eligibility is
+  // true.
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+  EXPECT_TRUE(GetPrefs(0)->GetBoolean(glic::prefs::kGlicRolloutEligibility));
+  EXPECT_TRUE(glic::GlicEnabling::IsEnabledForProfile(GetProfile(0)));
+}
+
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace

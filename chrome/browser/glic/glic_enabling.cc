@@ -33,8 +33,7 @@ bool IsNonEnterpriseEnabled(Profile* profile) {
 
   // Check whether profile is eligible for tiered ollout.
   if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
-      profile->GetPrefs()->GetInteger(prefs::kGlicRolloutEligibility) !=
-          static_cast<int>(prefs::RolloutEligibility::kEligibleTieredRollout)) {
+      !profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility)) {
     return false;
   }
 

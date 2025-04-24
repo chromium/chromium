@@ -5,19 +5,20 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/base/accelerators/command.h"
 
 namespace glic::prefs {
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kGlicPinnedToTabstrip, true);
   registry->RegisterBooleanPref(kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
-  registry->RegisterIntegerPref(
-      kGlicRolloutEligibility,
-      static_cast<int>(prefs::RolloutEligibility::kNotEligible));
+  registry->RegisterBooleanPref(
+      kGlicRolloutEligibility, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());

@@ -1100,6 +1100,7 @@ inline char kPerformanceInterventionNotificationAcceptHistoryDeprecated[] =
 // Deprecated 04/2025.
 inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
     "bookmarks.added_since_power_bookmarks_launch";
+inline constexpr char kGlicRolloutEligibility[] = "glic.rollout_eligibility";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1546,6 +1547,7 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2025.
   registry->RegisterBooleanPref(kAddedBookmarkSincePowerBookmarksLaunch, false);
+  registry->RegisterIntegerPref(kGlicRolloutEligibility, 0);
 }
 
 }  // namespace
@@ -2835,6 +2837,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025.
   profile_prefs->ClearPref(kAddedBookmarkSincePowerBookmarksLaunch);
+  profile_prefs->ClearPref(kGlicRolloutEligibility);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

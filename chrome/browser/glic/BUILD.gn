@@ -164,6 +164,8 @@ source_set("impl") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pdf/browser:browser",
     "//components/pdf/common:constants",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/sessions",
     "//components/variations/service",
     "//extensions/browser:browser",

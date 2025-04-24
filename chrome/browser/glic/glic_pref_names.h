@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_H_
 
 class PrefRegistrySimple;
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace glic::prefs {
 
@@ -48,15 +51,6 @@ enum class FreStatus {
   kMaxValue = kIncomplete
 };
 
-enum class RolloutEligibility {
-  kMinValue = 0,
-
-  kNotEligible = kMinValue,
-  kEligibleTieredRollout = 1,
-
-  kMaxValue = kEligibleTieredRollout,
-};
-
 // Boolean pref that determines if the glic button in tabstrip is pinned.
 inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
 
@@ -67,9 +61,9 @@ inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 
-// Integer pref that determines the rollout eligibility for the user profile.
-// Values are from the RolloutEligibility enum.
-inline constexpr char kGlicRolloutEligibility[] = "glic.rollout_eligibility";
+// Boolean pref that determines the rollout eligibility for the user profile.
+inline constexpr char kGlicRolloutEligibility[] =
+    "sync.glic_rollout_eligibility";
 
 // Integer pref that determines the Fre status for user profile. Values are from
 // the FreStatus enum.
@@ -79,7 +73,7 @@ inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 inline constexpr char kGlicWindowLastDismissedTime[] =
     "glic.window.last_dimissed_time";
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace glic::prefs
