@@ -8840,6 +8840,7 @@ from previous Chrome versions.
   <int value="-2097013050" label="WaylandTextInputV3:disabled"/>
   <int value="-2096845406" label="QuickAnswersRichCard:enabled"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
+  <int value="-2095167043" label="WebFeedKillSwitch:disabled"/>
   <int value="-2095123598" label="FastEnumeratePrinters:disabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
   <int value="-2093968325" label="FedCmAutoSelectedFlag:disabled"/>
@@ -11542,6 +11543,7 @@ from previous Chrome versions.
   <int value="-1075089382" label="enable-physical-web"/>
   <int value="-1074257709" label="ScalableAppList:enabled"/>
   <int value="-1074254048" label="ShimlessRMAHardwareValidationSkip:disabled"/>
+  <int value="-1074138544" label="WebFeedKillSwitch:enabled"/>
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1073388569" label="TerminalDev:enabled"/>

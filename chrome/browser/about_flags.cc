@@ -5988,6 +5988,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedHeaderRemoval,
                                     kFeedHeaderRemovalVariations,
                                     "FeedHeaderRemoval")},
+    {"web-feed-deprecation", flag_descriptions::kWebFeedDeprecationName,
+     flag_descriptions::kWebFeedDeprecationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kWebFeedKillSwitch)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-force-dark", flag_descriptions::kAutoWebContentsDarkModeName,
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,

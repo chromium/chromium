@@ -4809,6 +4809,9 @@ const char kFeedDynamicColorsDescription[] =
 const char kFeedHeaderRemovalName[] = "Removing feed header";
 const char kFeedHeaderRemovalDescription[] = "Stops showing the feed header.";
 
+const char kWebFeedDeprecationName[] = "Web feed deprecation";
+const char kWebFeedDeprecationDescription[] = "Deprecate the web feed.";
+
 const char kFloatingSnackbarName[] = "FloatingSnackbar";
 const char kFloatingSnackbarDescription[] =
     "Enables the snackbar to float on top of the web content.";
