@@ -461,6 +461,8 @@ class BocaAppPageHandlerTest : public testing::Test {
             });
     EXPECT_CALL(*session_manager(), GetCurrentSession())
         .WillRepeatedly(Return(current_session));
+    EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+        .WillOnce(Return(false));
   }
 
   void TestUserPref(mojom::BocaValidPref pref, base::Value value) {
@@ -836,6 +838,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
       .Times(1);
 
   CreateBocaAppHandler(/*is_producer=*/false);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
 
   auto result0 = std::move(future_1.Take()->get_session());
@@ -903,7 +907,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
-
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
 
   auto result = std::move(future_1.Take()->get_session()->config);
@@ -930,6 +935,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(0);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
@@ -954,7 +961,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
       .Times(1);
-
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
 
   auto result = future_1.Take();
@@ -980,7 +988,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
       .Times(1);
-
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
@@ -1008,10 +1017,35 @@ TEST_F(BocaAppPageHandlerTest,
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
-
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
   boca_app_handler()->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_FALSE(result->is_error());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       GetSessionWithNonManagedNetworkShouldReturnEmpty) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kTestUrlBase, false, kGaiaId,
+                            future.GetCallback());
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/false))
+      .Times(0);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
+      .Times(0);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(true));
+  boca_app_handler()->GetSession(future_1.GetCallback());
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
 }
 
 TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {

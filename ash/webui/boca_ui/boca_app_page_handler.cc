@@ -366,6 +366,13 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 }
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
+  if (BocaAppClient::Get()
+          ->GetSessionManager()
+          ->disabled_on_non_managed_network()) {
+    std::move(callback).Run(
+        mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
+    return;
+  }
   auto get_session_request = std::make_unique<GetSessionRequest>(
       session_client_impl_->sender(), base_url_, is_producer_,
       GaiaId(user_identity_.gaia_id()),
