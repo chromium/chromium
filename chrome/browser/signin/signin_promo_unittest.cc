@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -773,6 +774,8 @@ class SyncPromoIdentityPillManagerTest : public testing::Test {
 
   Profile& profile() { return *profile_.get(); }
 
+  PrefService& local_state() { return *local_state_.Get(); }
+
  private:
   ScopedTestingLocalState local_state_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -783,7 +786,7 @@ class SyncPromoIdentityPillManagerTest : public testing::Test {
 };
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
-  const AccountInfo account = MakeAccountAvailable("test@email.com");
+  MakeAccountAvailable("test@email.com");
   const int max_shown_count = 10;
   SyncPromoIdentityPillManager manager(profile(), max_shown_count,
                                        /*max_used_count=*/1);
@@ -799,7 +802,7 @@ TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
 }
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
-  const AccountInfo account = MakeAccountAvailable("test@email.com");
+  MakeAccountAvailable("test@email.com");
   const int max_used_count = 5;
   SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
                                        max_used_count);
@@ -819,6 +822,16 @@ TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfNoAccount) {
                                        /*max_used_count=*/2);
   EXPECT_FALSE(manager.ShouldShowPromo());
 }
+
+TEST_F(SyncPromoIdentityPillManagerTest,
+       ShouldNotShowPromoIfPromotionsDisabled) {
+  local_state().SetBoolean(prefs::kPromotionsEnabled, false);
+  MakeAccountAvailable("test@email.com");
+  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
+                                       /*max_used_count=*/2);
+  EXPECT_FALSE(manager.ShouldShowPromo());
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

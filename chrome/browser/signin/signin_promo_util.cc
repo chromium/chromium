@@ -4,10 +4,12 @@
 
 #include "chrome/browser/signin/signin_promo_util.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -435,6 +437,9 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
     // promo should be shown only for signed in users).
     return false;
   }
+  if (!ArePromotionsEnabled()) {
+    return false;
+  }
   const int show_count = SigninPrefs(*profile_->GetPrefs())
                              .GetSyncPromoIdentityPillShownCount(account.gaia);
   const int used_count = SigninPrefs(*profile_->GetPrefs())
@@ -465,6 +470,12 @@ void SyncPromoIdentityPillManager::RecordPromoUsed() {
   SigninPrefs(*profile_->GetPrefs())
       .IncrementSyncPromoIdentityPillUsedCount(account.gaia);
 }
+
+bool SyncPromoIdentityPillManager::ArePromotionsEnabled() const {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

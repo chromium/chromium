@@ -91,6 +91,8 @@ class SyncPromoIdentityPillManager {
   void RecordPromoUsed();
 
  private:
+  bool ArePromotionsEnabled() const;
+
   const raw_ref<Profile> profile_;
 
   const int max_shown_count_ = 0;

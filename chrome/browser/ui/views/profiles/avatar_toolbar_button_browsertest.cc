@@ -47,6 +47,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -1054,6 +1055,31 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   ClearSyncError();
   // After clearing the sync error, the history sync opt-in entry point should
   // NOT be shown.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
+  DISABLED_HistorySyncOptinNotShownWhenPromotionsDisabled
+#else
+#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
+  HistorySyncOptinNotShownWhenPromotionsDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
+                       MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled) {
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kPromotionsEnabled, false);
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const AccountInfo account = SigninWithImage(/*email=*/u"test@gmail.com");
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       base::UTF8ToUTF16(account.given_name)));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should NOT be followed by the history sync opt-in entry point
+  // if promotions are disabled.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
