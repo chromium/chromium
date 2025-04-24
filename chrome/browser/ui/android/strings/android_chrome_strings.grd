@@ -1761,10 +1761,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site.">
         Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is dangerous
       </message>
-      <!-- TODO(crbug.com/406473591): Remove translateable="false" and add the final string -->
-      <message name="IDS_SAFETY_HUB_DISRUPTIVE_NOTIFICATION_PERMISSIONS_SUBLABEL"  translateable="false" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site because user isn't interacting with the site but the site is sending a lot of notifications.">
-        Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is disruptive
-      </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" desc="Snackbar text displayed when the user clicks the Unsubscribe button for a site which sends a lot of notifications. Informs the user for which site the notifications were unsubscribed.">
        Unsubscribed from <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
       </message>
@@ -1909,7 +1905,7 @@ Your Google account may have other forms of browsing history like searches and a
         You can stop these sites from sending future notifications
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_SUMMARY" desc="Summary for the permissions module in the Safety Hub dashboard. It is displayed when the user has no automatically revoked permissions that need to be reviewed.">
-        Chrome automatically removes permissions from abusive and unused sites
+        Chrome automatically removes permissions from sites that abuse notifications or that you haven’t visited recently
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" desc="Text shown as a header at the very top of the Safety Hub permissions review subpage, or as a summary in the permissions review dashboard module. Further educates the user about why their permissions were revoked.">
         To help keep you safe, permissions were removed from some sites
