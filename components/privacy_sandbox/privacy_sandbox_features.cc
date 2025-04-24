@@ -265,7 +265,7 @@ const base::FeatureParam<int>
 
 BASE_FEATURE(kPrivacySandboxNoticeActionDebouncingAndroid,
              "PrivacySandboxNoticeActionDebouncingAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds{
     &kPrivacySandboxNoticeActionDebouncingAndroid, "debouncing-delay-ms", 200};
