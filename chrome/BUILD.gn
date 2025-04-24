@@ -307,6 +307,11 @@ if (!is_android && !is_mac) {
         # Needed to use the master_preferences functions
         "//chrome/installer/util:with_no_strings",
         "//content/public/app",
+
+        # To handle stack overflow crashes.
+        # TODO(crbug.com/42310237): Remove this once pthread_create dependency
+        # gets added to a more appropriate place.
+        "//third_party/crashpad/crashpad/client:pthread_create",
       ]
 
       public_deps = [
