@@ -75,13 +75,7 @@ if (enable_chromoting_crashpad) {
       "//remoting/base:remoting_base_version",
     ]
 
-    if (is_linux || is_chromeos) {
-      sources += [
-        "breakpad_linux.cc",
-        "breakpad_linux.h",
-      ]
-      deps += [ "//third_party/breakpad:client" ]
-    } else if (is_win) {
+    if (is_win) {
       sources += [
         "breakpad_server.cc",
         "breakpad_win.cc",

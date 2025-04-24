@@ -9,19 +9,15 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-#if defined(REMOTING_ENABLE_CRASHPAD)
 #include "remoting/base/crash/crashpad_linux.h"
-#else
-#include "remoting/base/crash/breakpad_linux.h"
-#endif  // REMOTING_ENABLE_CRASHPAD
 #endif  // BUILDFLAG(IS_LINUX)
 
 namespace remoting {
 
 void LogAndCleanupCrashDatabase() {
-#if BUILDFLAG(IS_LINUX) && defined(REMOTING_ENABLE_CRASHPAD)
+#if BUILDFLAG(IS_LINUX)
   CrashpadLinux::GetInstance().LogAndCleanupCrashpadDatabase();
-#endif  // BUILDFLAG(IS_LINUX) && REMOTING_ENABLE_CRASHPAD
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 // Not implemented for Mac, see https://crbug.com/714714
@@ -32,11 +28,7 @@ void InitializeCrashReporting() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-#if defined(REMOTING_ENABLE_CRASHPAD)
   CrashpadLinux::GetInstance().Initialize();
-#else
-  BreakpadLinux::GetInstance();
-#endif  // REMOTING_ENABLE_CRASHPAD
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
