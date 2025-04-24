@@ -2566,6 +2566,24 @@ rust_static_library("rust_logger") {
     # TODO(collinbaker): determine how to handle these cxx bindings-induced
     # circular dependencies more robustly.
     "//base/allocator/partition_allocator:raw_ptr",
+
+    # Needed because logging/rust_logger.rs contains:
+    #   include!("base/logging/rust_log_integration.h");
+    # rust_log_integration.h ends up transitively #including
+    # debug/debugging_buildflags.h, which is a generated header that needs to
+    # be written first.
+    #
+    # Technically it would be more correct to depend on :base, which is the
+    # target for rust_log_integration.h, but that's not possible due to circular
+    # dependencies.
+    #
+    # Note if this is removed the build may still work by accident because
+    # debug/debugging_buildflags.h still ends up being generated through a
+    # dependency chain via :logging_log_severity_bindgen. But we should not
+    # rely on that.
+    #
+    # See also https://crbug.com/406267472.
+    ":debugging_buildflags",
   ]
   visibility = [ ":base" ]
   sources = [ "logging/rust_logger.rs" ]
