@@ -596,6 +596,44 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest,
       "UnderBookmarksBar.ByUrlAndTitleAndPath",
       /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
       /*expected_bucket_count=*/1);
+
+  // Same as above but with the bookmark count suffix.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitle.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kExactMatchNonEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrlAndTitleAndPath."
+      "Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionBetween10And50Percent,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitle.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndUuid.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "UnderBookmarksBar.ByUrlAndTitleAndPath.Between1And19LocalUrlBookmarks",
+      /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

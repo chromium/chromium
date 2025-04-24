@@ -42,6 +42,15 @@ constexpr char16_t kMobileBookmarksFolderName[] = u"__Mobile bookmarks__";
 using RemoteForest = BookmarkModelMerger::RemoteForest;
 using RemoteTreeNode = BookmarkModelMerger::RemoteTreeNode;
 
+// Enum representing the number of URL bookmarks stored locally, bucketized into
+// a few notable ranges. This enum is used as suffix when recording metrics.
+enum BookmarkCountSuffix {
+  kZeroLocalUrlBookmarks,
+  kBetween1And19LocalUrlBookmarks,
+  kBetween20and999LocalUrlBookmarks,
+  k1000OrMoreLocalUrlBookmarks,
+};
+
 std::string_view SubtreeSelectionToInfix(SubtreeSelection value) {
   // LINT.IfChange(BookmarkComparisonSubtreeSelection)
   switch (value) {
@@ -65,6 +74,22 @@ std::string_view GroupingKeyInfixToString(GroupingKeyInfix value) {
       return "ByUrlAndTitleAndPath";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonGroupingKey)
+  NOTREACHED();
+}
+
+std::string_view BookmarkCountSuffixToString(BookmarkCountSuffix value) {
+  // LINT.IfChange(BookmarkComparisonBookmarkCount)
+  switch (value) {
+    case kZeroLocalUrlBookmarks:
+      return "ZeroLocalUrlBookmarks";
+    case kBetween1And19LocalUrlBookmarks:
+      return "Between1And19LocalUrlBookmarks";
+    case kBetween20and999LocalUrlBookmarks:
+      return "Between20and999LocalUrlBookmarks";
+    case k1000OrMoreLocalUrlBookmarks:
+      return "1000OrMoreLocalUrlBookmarks";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonBookmarkCount)
   NOTREACHED();
 }
 
@@ -157,6 +182,37 @@ std::vector<const RemoteTreeNode*> GetRelevantAccountSubtrees(
     }
   }
   return result;
+}
+
+size_t CountUrlNodesInSubtree(const bookmarks::BookmarkNode* node) {
+  CHECK(node);
+  if (node->is_url()) {
+    return 1;
+  }
+  size_t result = 0;
+  for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
+       node->children()) {
+    result += CountUrlNodesInSubtree(child.get());
+  }
+  return result;
+}
+
+BookmarkCountSuffix CountLocalBookmarks(
+    const std::vector<const bookmarks::BookmarkNode*>& local_data) {
+  size_t num_url_nodes = 0;
+  for (const bookmarks::BookmarkNode* permanent_node : local_data) {
+    num_url_nodes += CountUrlNodesInSubtree(permanent_node);
+  }
+  if (num_url_nodes == 0) {
+    return kZeroLocalUrlBookmarks;
+  }
+  if (num_url_nodes < 20) {
+    return kBetween1And19LocalUrlBookmarks;
+  }
+  if (num_url_nodes < 1000) {
+    return kBetween20and999LocalUrlBookmarks;
+  }
+  return k1000OrMoreLocalUrlBookmarks;
 }
 
 // Function template declaration that must be specialized per supported grouping
@@ -385,6 +441,7 @@ void CompareAndLogHistogramsWithKey(
     SubtreeSelection subtree_selection,
     syncer::PreviouslySyncingGaiaIdInfoForMetrics
         previously_syncing_gaia_id_info,
+    BookmarkCountSuffix bookmark_count_suffix,
     const std::vector<const bookmarks::BookmarkNode*>& relevant_local_subtrees,
     const std::vector<const RemoteTreeNode*>& relevant_account_subtrees) {
   const base::flat_set<Key> local_data_set =
@@ -392,14 +449,23 @@ void CompareAndLogHistogramsWithKey(
   const base::flat_set<Key> account_data_set =
       ExtractAccountDataSet<Key>(relevant_account_subtrees);
 
-  const std::string histogram_name = base::StrCat(
-      {"Sync.BookmarkModelMerger.Comparison.",
-       PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info), ".",
-       SubtreeSelectionToInfix(subtree_selection), ".",
-       GroupingKeyInfixToString(Key::kGroupingKeyInfix)});
+  const std::string bookmark_count_suffix_string =
+      base::StrCat({".", BookmarkCountSuffixToString(bookmark_count_suffix)});
 
-  base::UmaHistogramEnumeration(histogram_name,
-                                CompareSets(local_data_set, account_data_set));
+  // When recording the metric, always record two metrics, with and without the
+  // suffix representing the number of local URL bookmarks.
+  for (std::string_view optional_bookmark_count_suffix_string :
+       {std::string(), bookmark_count_suffix_string}) {
+    const std::string histogram_name = base::StrCat(
+        {"Sync.BookmarkModelMerger.Comparison.",
+         PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info),
+         ".", SubtreeSelectionToInfix(subtree_selection), ".",
+         GroupingKeyInfixToString(Key::kGroupingKeyInfix),
+         optional_bookmark_count_suffix_string});
+
+    base::UmaHistogramEnumeration(
+        histogram_name, CompareSets(local_data_set, account_data_set));
+  }
 }
 
 }  // namespace
@@ -470,15 +536,21 @@ void CompareBookmarkModelAndLogHistograms(
     const std::vector<const RemoteTreeNode*> relevant_account_subtrees =
         GetRelevantAccountSubtrees(all_account_data, subtree_selection);
 
+    const BookmarkCountSuffix bookmark_count_suffix =
+        CountLocalBookmarks(relevant_local_subtrees);
+
     CompareAndLogHistogramsWithKey<UrlAndTitle>(
         subtree_selection, previously_syncing_gaia_id_info,
-        relevant_local_subtrees, relevant_account_subtrees);
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
     CompareAndLogHistogramsWithKey<UrlAndUuid>(
         subtree_selection, previously_syncing_gaia_id_info,
-        relevant_local_subtrees, relevant_account_subtrees);
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
     CompareAndLogHistogramsWithKey<UrlAndTitleAndPath>(
         subtree_selection, previously_syncing_gaia_id_info,
-        relevant_local_subtrees, relevant_account_subtrees);
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
   }
 }
 
