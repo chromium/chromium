@@ -10,6 +10,16 @@
   .section {
     padding: 0 var(--cr-section-padding);
   }
+
+  .separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
+
+  #tabAccessToggleActions {
+    display: flex;
+    align-items: center;
+  }
 </style>
 
 <settings-animated-pages id="pages" section="glicSection">
@@ -132,9 +142,12 @@
               label="$i18n{glicTabAccessToggle}"
               sub-label="$i18n{glicTabAccessToggleSublabel}"
               on-settings-boolean-control-change="onTabAccessToggleChange_">
-            <cr-expand-button id="tabAccessExpandButton" no-hover
-                slot="more-actions" expanded="{{tabAccessToggleExpanded_}}">
-            </cr-expand-button>
+            <div id="tabAccessToggleActions" slot="more-actions">
+              <cr-expand-button id="tabAccessExpandButton" no-hover
+                  expanded="{{tabAccessToggleExpanded_}}">
+              </cr-expand-button>
+              <div class="separator"></div>
+            </div>
           </settings-toggle-button>
           <cr-collapse id="tabAccessInfoCollapse"
               opened="[[tabAccessToggleExpanded_]]">
