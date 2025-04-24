@@ -1211,18 +1211,16 @@ void SyncServiceImpl::OnConfigureDone(
 
   DVLOG(1) << "SyncServiceImpl::OnConfigureDone called with status: "
            << result.status;
-  // The possible status values:
-  //    ABORT - Configuration was aborted. This is not an error, if
-  //            initiated by user.
-  //    OK - Some or all types succeeded.
-
-  // First handle the abort case.
-  if (result.status == DataTypeManager::ABORTED) {
-    DVLOG(0) << "SyncServiceImpl sync configuration aborted";
-    return;
+  switch (result.status) {
+    case DataTypeManager::ABORTED:
+      // Configuration was aborted. This is not an error, if initiated by user.
+      DVLOG(0) << "SyncServiceImpl sync configuration aborted";
+      return;
+    case DataTypeManager::OK:
+      // Some or all types succeeded.
+      break;
   }
 
-  DCHECK_EQ(DataTypeManager::OK, result.status);
   base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Finished",
                             is_first_time_sync_configure_);
 
@@ -1230,6 +1228,10 @@ void SyncServiceImpl::OnConfigureDone(
   // enabled, and yet we still think we require a passphrase for decryption.
   DCHECK(!user_settings_->IsPassphraseRequiredForPreferredDataTypes() ||
          user_settings_->IsEncryptedDatatypePreferred());
+
+  if (result.sync_mode == SyncMode::kFull) {
+    sync_prefs_.SetFirstSyncCompletedInFullSyncMode();
+  }
 
   DVLOG(2) << "Notify observers OnConfigureDone";
   NotifyObservers();
@@ -2136,6 +2138,7 @@ void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   // If the migration didn't finish before StopAndClear() was called, mark it as
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();
+  sync_prefs_.ClearFirstSyncCompletedInFullSyncMode();
 
   if (reset_engine_reason == ResetEngineReason::kNotSignedIn) {
     sync_prefs_.ClearCachedPersistentAuthErrorForMetrics();
@@ -2246,6 +2249,15 @@ void SyncServiceImpl::RecordHistoryOptInStateOnSigninHistograms(
 PreviouslySyncingGaiaIdInfoForMetrics
 SyncServiceImpl::DeterminePreviouslySyncingGaiaIdInfoForMetrics() const {
   if (IsLocalSyncEnabled()) {
+    return PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
+  }
+
+  // If a configuration cycle already completed in full-sync mode, return
+  // `kUnspecified` because this field is used to record metrics that are
+  // relevant immediately when the user turns sync on. Later
+  // reconfigurations, such as when the user toggles sync settings, should be
+  // excluded from metrics.
+  if (sync_prefs_.IsFirstSyncCompletedInFullSyncMode()) {
     return PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
   }
 

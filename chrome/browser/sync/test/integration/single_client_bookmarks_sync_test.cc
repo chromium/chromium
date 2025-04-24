@@ -117,21 +117,23 @@ using testing::SizeIs;
 // All tests in this file utilize a single profile.
 // TODO(pvalenzuela): Standardize this pattern by moving this constant to
 // SyncTest and using it in all single client tests.
-const int kSingleProfileIndex = 0;
+constexpr int kSingleProfileIndex = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
 // An arbitrary GUID, to be used for injecting the same bookmark entity to the
 // fake server across PRE_MyTest and MyTest.
-const char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
+constexpr char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // A title and a URL which are used across PRE_MyTest and MyTest.
-const char16_t kBookmarkTitle[] = u"Title";
-const char kBookmarkPageUrl[] = "http://www.foo.com/";
+constexpr char16_t kBookmarkTitle[] = u"Title";
+constexpr char kBookmarkPageUrl[] = "http://www.foo.com/";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-const char kPreviouslySyncingGaiaIdMetricName[] =
+constexpr char kPreviouslySyncingGaiaIdMetricName[] =
     "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId";
+
+constexpr char kOtherEmail[] = "account2@gmail.com";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 MATCHER(HasUniquePosition, "") {
@@ -2979,8 +2981,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
 
   // Enable Sync with a different account.
   GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
-  GetClient(kSingleProfileIndex)
-      ->SetUsernameForFutureSignins("account2@gmail.com");
+  GetClient(kSingleProfileIndex)->SetUsernameForFutureSignins(kOtherEmail);
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->SetupSync());
   histogram_tester.ExpectBucketCount(
       kPreviouslySyncingGaiaIdMetricName,
@@ -3005,13 +3006,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, ComparisonMetrics) {
                          /*types=*/{syncer::UserSelectableType::kBookmarks});
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
 
-  // In this specific scenario, there is not enough information to know what
-  // the previously syncing gaia ID was, because the preference
-  // `prefs::kGoogleServicesLastSyncingGaiaId` was already updated to contain
-  // the current gaia ID upon browser startup.
-  histogram_tester.ExpectUniqueSample(
+  // No metric should be recorded, because this sync the feature was already on
+  // and toggling bookmark sync off and on shouldn't pollute metrics.
+  histogram_tester.ExpectTotalCount(kPreviouslySyncingGaiaIdMetricName, 0);
+
+  // Turn Sync off and on with the same account. Note that `kOtherEmail` needs
+  // to be specified again because it doesn't automatically carry over from the
+  // PRE_ test.
+  GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
+  GetClient(kSingleProfileIndex)->SetUsernameForFutureSignins(kOtherEmail);
+  ASSERT_TRUE(SetupSync());
+
+  // The histogram should be recorded once again.
+  histogram_tester.ExpectBucketCount(
       kPreviouslySyncingGaiaIdMetricName,
-      /*sample=*/1 /*kNotEnoughInformationToTell*/,
+      /*sample=*/3 /*kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn*/,
       /*expected_bucket_count=*/1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

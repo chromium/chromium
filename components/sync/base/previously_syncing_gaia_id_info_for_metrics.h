@@ -14,7 +14,10 @@ namespace syncer {
 // LINT.IfChange(PreviouslySyncingGaiaIdInfoForMetrics)
 enum class PreviouslySyncingGaiaIdInfoForMetrics {
   // Information not available or current state doesn't fall within any of the
-  // buckets listed below.
+  // buckets listed below. Note that this value is also used to represent
+  // irrelevant scenarios such as local sync (roaming profiles) being enabled
+  // or datatypes being reconfigured as a result of the user customizing sync
+  // settings.
   kUnspecified = 0,
   kNotEnoughInformationToTell = 1,
   kSyncFeatureNeverPreviouslyTurnedOn = 2,

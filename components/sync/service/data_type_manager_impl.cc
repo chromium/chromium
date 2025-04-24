@@ -808,7 +808,8 @@ void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
   base::TimeDelta configure_time = base::Time::Now() - last_restart_time_;
 
   ConfigureResult result = {.status = status,
-                            .requested_types = preferred_types_};
+                            .requested_types = preferred_types_,
+                            .sync_mode = last_requested_context_.sync_mode};
 
   const std::string prefix_uma =
       (last_requested_context_.reason == CONFIGURE_REASON_NEW_CLIENT)
