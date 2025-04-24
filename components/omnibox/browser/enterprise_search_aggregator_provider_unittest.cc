@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -716,6 +717,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
 // Test response is parsed accurately.
 TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
+  base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
+
   scoped_config_.Get().relevance_scoring_mode = "server";
 
   provider_->adjusted_input_ = CreateInput(u"john d", true);
