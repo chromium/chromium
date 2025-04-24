@@ -6,6 +6,7 @@ package org.chromium.components.dom_distiller.core;
 
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
+import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 
 /** Utility class for ongoing reader mode features. */
@@ -21,6 +22,12 @@ public class DomDistillerFeatures {
     public static boolean showAlwaysOnEntryPoint() {
         return sReaderModeImprovements.isEnabled()
                 && sReaderModeImprovementsAlwaysOnEntryPoint.getValue();
+    }
+
+    /** Returns whether a custom timeout for the cpa should be used. */
+    public static boolean enableCustomCpaTimeout() {
+        return sReaderModeImprovements.isEnabled()
+                && sReaderModeImprovementsEnableCustomCpaTimeout.getValue();
     }
 
     // Feature names -- alphabetical ordering.
@@ -41,6 +48,11 @@ public class DomDistillerFeatures {
     public static final MutableBooleanParamWithSafeDefault
             sReaderModeImprovementsAlwaysOnEntryPoint =
                     sReaderModeImprovements.newBooleanParam("always_on_entry_point", false);
+    public static final MutableBooleanParamWithSafeDefault
+            sReaderModeImprovementsEnableCustomCpaTimeout =
+                    sReaderModeImprovements.newBooleanParam("custom_cpa_timeout_enabled", false);
+    public static final MutableIntParamWithSafeDefault sReaderModeImprovementsCustomCpaTimeout =
+            sReaderModeImprovements.newIntParam("custom_cpa_timeout", 300);
 
     // Private functions below:
 

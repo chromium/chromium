@@ -731,9 +731,14 @@ const FeatureEntry::FeatureParam
         {"trigger_on_mobile_friendly_pages", "true"}};
 const FeatureEntry::FeatureParam kReaderModeImprovementsAlwaysOnEntryPoint[] = {
     {"always_on_entry_point", "true"}};
+const FeatureEntry::FeatureParam kReaderModeImprovementsCustomCPATimeout[] = {
+    {"custom_cpa_timeout_enabled", "true"},
+    {"custom_cpa_timeout", "300"}};
 const FeatureEntry::FeatureParam kReaderModeImprovementsAllOn[] = {
     {"trigger_on_mobile_friendly_pages", "true"},
-    {"always_on_entry_point", "true"}};
+    {"always_on_entry_point", "true"},
+    {"custom_cpa_timeout_enabled", "true"},
+    {"custom_cpa_timeout", "300"}};
 
 const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
     {"trigger on mobile-friendly pages",
@@ -741,6 +746,8 @@ const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
      std::size(kReaderModeImprovementsTriggerOnMobileFriendly), nullptr},
     {"always-on entry point", kReaderModeImprovementsAlwaysOnEntryPoint,
      std::size(kReaderModeImprovementsAlwaysOnEntryPoint), nullptr},
+    {"increased cpa timeout", kReaderModeImprovementsCustomCPATimeout,
+     std::size(kReaderModeImprovementsCustomCPATimeout), nullptr},
     {"all", kReaderModeImprovementsAllOn,
      std::size(kReaderModeImprovementsAllOn), nullptr}};
 
