@@ -46,7 +46,9 @@ void IntentPickerViewPageActionController::UpdatePageActionVisibility(
           kActionShowIntentPicker,
           l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
       page_action_controller->Show(kActionShowIntentPicker);
-      page_action_controller->ShowSuggestionChip(kActionShowIntentPicker);
+      page_action_controller->ShowSuggestionChip(kActionShowIntentPicker, {
+        .should_animate = false,
+      });
     } else {
       page_action_controller->Show(kActionShowIntentPicker);
     }
