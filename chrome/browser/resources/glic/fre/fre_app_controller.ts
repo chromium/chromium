@@ -25,8 +25,8 @@ const RELOAD_MAX_WAIT_TIME_RELOAD_MS =
 // Initial FRE width. Also used as the minimum and maximum width for FRE.
 const INITIAL_WIDTH = loadTimeData.getInteger('freInitialWidth');
 
-// Initial FRE height. Also used as the minimum height for FRE.
-const INITIAL_HEIGHT = loadTimeData.getInteger('freInitialHeight');
+// Minimum height for FRE.
+const MIN_HEIGHT = 200;
 
 interface PageElementTypes {
   webviewContainer: HTMLDivElement;
@@ -316,7 +316,7 @@ export class FreAppController {
     webview.setAttribute('autosize', 'true');
     webview.setAttribute('minwidth', INITIAL_WIDTH.toString());
     webview.setAttribute('maxwidth', INITIAL_WIDTH.toString());
-    webview.setAttribute('minheight', INITIAL_HEIGHT.toString());
+    webview.setAttribute('minheight', MIN_HEIGHT.toString());
     webview.setAttribute('maxheight', window.screen.availHeight.toString());
 
     $.webviewContainer.appendChild(webview);
