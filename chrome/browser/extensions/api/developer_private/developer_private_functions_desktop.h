@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/common/extensions/api/developer_private.h"
-#include "chrome/common/extensions/webstore_install_result.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/extension_function.h"
@@ -234,21 +233,6 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
 
   // Error string if |success_| is false.
   std::string error_;
-};
-
-class DeveloperPrivateRepairExtensionFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.repairExtension",
-                             DEVELOPERPRIVATE_REPAIREXTENSION)
-
- protected:
-  ~DeveloperPrivateRepairExtensionFunction() override;
-  ResponseAction Run() override;
-
-  void OnReinstallComplete(bool success,
-                           const std::string& error,
-                           webstore_install::Result result);
 };
 
 class DeveloperPrivateShowOptionsFunction : public DeveloperPrivateAPIFunction {

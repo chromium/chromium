@@ -392,6 +392,8 @@ void ItemStatePrefsChangedObserver::OnWillDispatchEvent(const Event& event) {
 
 }  // namespace
 
+// TODO(crbug.com/408458901): Port these tests to desktop Android when we have
+// a testing base class for extensions that doesn't use ExtensionService.
 class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
  public:
   DeveloperPrivateApiUnitTest(const DeveloperPrivateApiUnitTest&) = delete;
