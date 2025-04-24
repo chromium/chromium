@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/glic_enabling.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -13,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -60,7 +63,8 @@ bool IsNonEnterpriseEnabled(Profile* profile) {
 
 bool IsEnterpriseEnabled(Profile* profile) {
   return profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
-         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
+             static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled) &&
+         !GlicUserStatusFetcher::IsDisabled(profile);
 }
 
 bool HasConsentedForProfile(Profile* profile) {
@@ -162,6 +166,12 @@ GlicEnabling::GlicEnabling(Profile* profile,
       IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
   identity_manager_observation_.Observe(identity_manager);
+
+  if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
+    glic_user_status_fetcher_ = std::make_unique<GlicUserStatusFetcher>(
+        profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
+                                      base::Unretained(this)));
+  }
 }
 GlicEnabling::~GlicEnabling() = default;
 
@@ -192,9 +202,33 @@ void GlicEnabling::OnGlicSettingsPolicyChanged() {
   UpdateEnabledStatus();
 }
 
+void GlicEnabling::UpdateUserStatus(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (!glic_user_status_fetcher_) {
+    return;
+  }
+
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (glic_user_status_fetcher_) {
+        glic_user_status_fetcher_->UpdateUserStatus();
+      }
+      break;
+    // Ignore until primary account is set.
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (glic_user_status_fetcher_) {
+        glic_user_status_fetcher_->InvalidateCachedStatus();
+        glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
+      }
+      break;
+  }
+}
 void GlicEnabling::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   UpdateEnabledStatus();
+  UpdateUserStatus(event_details);
 }
 
 void GlicEnabling::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
@@ -208,6 +242,17 @@ void GlicEnabling::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
 void GlicEnabling::OnRefreshTokensLoaded() {
   UpdateEnabledStatus();
 }
+
+// It happens that when the request is sent upon sign-in, the refresh token is
+// not available yet, the request would hence be cancelled. In such cases, we
+// re-send the request when refresh token becomes available.
+void GlicEnabling::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (glic_user_status_fetcher_) {
+    glic_user_status_fetcher_->UpdateUserStatusIfNeeded();
+  }
+}
+
 void GlicEnabling::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
   UpdateEnabledStatus();
@@ -228,6 +273,17 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
   UpdateEnabledStatus();
+
+  if (glic_user_status_fetcher_) {
+    glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
+  }
+}
+
+void GlicEnabling::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (glic_user_status_fetcher_) {
+    glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
+  }
 }
 
 void GlicEnabling::UpdateEnabledStatus() {

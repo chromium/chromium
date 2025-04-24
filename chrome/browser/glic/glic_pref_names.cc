@@ -22,6 +22,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
+
+  // Dict pref to store GlicUserStatus information.
+  registry->RegisterDictionaryPref(prefs::kGlicUserStatus);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
