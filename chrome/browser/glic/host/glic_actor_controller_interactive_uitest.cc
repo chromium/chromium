@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -62,97 +63,93 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     actor::OverrideActionObservationDelay(base::Milliseconds(10));
   }
 
-  // This (and the below ExpectingError) step takes a proto "provider" which is
-  // a callback that returns a string which is the base-64 representation of the
-  // BrowserAction proto to invoke. This is a callback rather than a string
-  // parameter since, in some cases, the parameters in the proto may depend on
-  // test steps (such as extracting the AnnotatedPageContent, so that the
-  // provider can then find the content node id from the APC). See the Provider
-  // methods below (e.g. ClickActionProvider).
-  InteractiveTestApi::MultiStep ExecuteAction(
-      ActionProtoProvider proto_provider,
-      base::Value::Dict context_options) {
-    return Steps(InAnyContext(WithElement(
-        kGlicContentsElementId, [&, proto_provider = std::move(proto_provider),
-                                 context_options = std::move(context_options)](
-                                    ui::TrackedElement* el) mutable {
-          content::WebContents* glic_contents =
-              AsInstrumentedWebContents(el)->web_contents();
-          std::string script = content::JsReplace(
-              R"js(
-                        (() => {
-                          const base64ToArrayBuffer = (base64) => {
-                            const bytes = window.atob(base64);
-                            const len = bytes.length;
-                            const ret = new Uint8Array(len);
-                            for (var i = 0; i < len; i++) {
-                              ret[i] = bytes.charCodeAt(i);
-                            }
-                            return ret.buffer;
-                          }
-                          return client.browser.actInFocusedTab({
-                            actionProto: base64ToArrayBuffer($1),
-                            tabContextOptions: $2
-                          });
-                        })();
-                      )js",
-              std::move(proto_provider).Run(), std::move(context_options));
-          ASSERT_TRUE(content::ExecJs(glic_contents, std::move(script)));
-        })));
-  }
+  // Executes a BrowserAction and verifies it succeeds. Optionally takes an
+  // error reason which, when provided, causes failure if the action is
+  // successful or fails with an unexpected reason.
+  //
+  // The action is passed as a proto "provider" which is a callback that returns
+  // a string which is the base-64 representation of the BrowserAction proto to
+  // invoke. This is a callback rather than a BrowserAction since, in some
+  // cases, the parameters in the proto may depend on prior test steps (such as
+  // extracting the AnnotatedPageContent, so that the provider can then find the
+  // content node id from the APC). See the Provider methods below (e.g.
+  // ClickActionProvider).
+  auto ExecuteAction(ActionProtoProvider proto_provider,
+                     base::Value::Dict context_options,
+                     std::optional<glic::mojom::ActInFocusedTabErrorReason>
+                         expected_error = std::nullopt) {
+    constexpr int kResultSuccess = -1;
+    constexpr std::string kSuccessString = "<Success>";
+    CHECK_LT(kResultSuccess,
+             static_cast<int>(mojom::ActInFocusedTabErrorReason::kMinValue));
 
-  // Helper to allow passing in a BrowserAction if it doesn't depend on prior
-  // test steps.
-  InteractiveTestApi::MultiStep ExecuteAction(
-      const BrowserAction& action,
-      base::Value::Dict context_options) {
-    return ExecuteAction(PassthroughProvider(action),
-                         std::move(context_options));
-  }
-
-  // Calls actInFocusedTab() and waits until the promise rejects with an error.
-  // Note: This will fail the test if the promise succeeds.
-  InteractiveTestApi::MultiStep ExecuteActionExpectingError(
-      ActionProtoProvider proto_provider,
-      base::Value::Dict context_options,
-      glic::mojom::ActInFocusedTabErrorReason error_reason) {
+    auto result_buffer = std::make_unique<std::optional<int>>();
+    std::optional<int>* buffer_raw = result_buffer.get();
     return Steps(
-        CheckJsResult(kGlicContentsElementId,
-                      content::JsReplace(R"js(
-                        async () => {
-                          const base64ToArrayBuffer = (base64) => {
-                            const bytes = window.atob(base64);
-                            const len = bytes.length;
-                            const ret = new Uint8Array(len);
-                            for (var i = 0; i < len; i++) {
-                              ret[i] = bytes.charCodeAt(i);
-                            }
-                            return ret.buffer;
-                          }
-                          try {
-                            await client.browser.actInFocusedTab({
-                              actionProto: base64ToArrayBuffer($1),
-                              tabContextOptions: $2
-                            });
-                          } catch (err) {
-                            return err.reason;
-                          }
-                        }
-                      )js",
-                                         std::move(proto_provider).Run(),
-                                         std::move(context_options)),
-                      ::testing::Eq(static_cast<int>(error_reason))));
+        InAnyContext(WithElement(
+            kGlicContentsElementId,
+            [result_out = buffer_raw,
+             proto_provider = std::move(proto_provider),
+             context_options = std::move(context_options),
+             kResultSuccess](ui::TrackedElement* el) mutable {
+              content::WebContents* glic_contents =
+                  AsInstrumentedWebContents(el)->web_contents();
+              std::string script = content::JsReplace(
+                  R"js(
+                              (async () => {
+                                const base64ToArrayBuffer = (base64) => {
+                                  const bytes = window.atob(base64);
+                                  const len = bytes.length;
+                                  const ret = new Uint8Array(len);
+                                  for (var i = 0; i < len; i++) {
+                                    ret[i] = bytes.charCodeAt(i);
+                                  }
+                                  return ret.buffer;
+                                }
+                                try {
+                                  await client.browser.actInFocusedTab({
+                                    actionProto: base64ToArrayBuffer($1),
+                                    tabContextOptions: $2
+                                  });
+                                  // Return success.
+                                  return $3;
+                                } catch (err) {
+                                  return err.reason;
+                                }
+                              })();
+                            )js",
+                  std::move(proto_provider).Run(), std::move(context_options),
+                  kResultSuccess);
+              *result_out = content::EvalJs(glic_contents, std::move(script))
+                                .ExtractInt();
+            })),
+        CheckResult(
+            [result_in = std::move(result_buffer), &kSuccessString]() {
+              CHECK(result_in->has_value());
+
+              int result = result_in->value();
+              if (result == kResultSuccess) {
+                return kSuccessString;
+              }
+              auto result_enum =
+                  static_cast<mojom::ActInFocusedTabErrorReason>(result);
+              EXPECT_TRUE(mojom::IsKnownEnumValue(result_enum));
+              return base::ToString(result_enum);
+            },
+            expected_error.has_value() ? base::ToString(expected_error.value())
+                                       : kSuccessString,
+            "ExecuteAction"));
   }
 
-  // Helper to allow passing in a BrowserAction if it doesn't depend on prior
-  // test steps. Calls actInFocusedTab() and waits until the promise rejects
-  // with an error.  Note: This will fail the test if the promise succeeds.
-  InteractiveTestApi::MultiStep ExecuteActionExpectingError(
-      const BrowserAction& action,
-      base::Value::Dict context_options,
-      glic::mojom::ActInFocusedTabErrorReason error_reason) {
-    return ExecuteActionExpectingError(
-        PassthroughProvider(action), std::move(context_options), error_reason);
+  // Overload of the above method that allows passing a BrowserAction directly,
+  // if one can be constructed ahead of time i.e. does not depend on an
+  // observation.
+  auto ExecuteAction(const BrowserAction& action,
+                     base::Value::Dict context_options,
+                     std::optional<glic::mojom::ActInFocusedTabErrorReason>
+                         expected_error = std::nullopt) {
+    return ExecuteAction(PassthroughProvider(action),
+                         std::move(context_options), expected_error);
   }
 
   // Returns a callback that builds an encoded proto for a click action on a
@@ -270,7 +267,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     }
 
     // Tests must pass a label that matches one of the content nodes.
-    NOTREACHED();
+    NOTREACHED() << "Label [" << label << "] not found in page.";
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -328,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
                           embedded_test_server()->GetURL(
                               "/actor/page_with_clickable_element.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),
-      ExecuteActionExpectingError(
+      ExecuteAction(
           ArbitraryStringProvider(encodedProto), UpdatedContextOptions(),
           glic::mojom::ActInFocusedTabErrorReason::kInvalidActionProto));
 }
@@ -342,9 +339,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
 
   RunTestSequence(
       StartTaskInNewTab(task_url),
-      ExecuteActionExpectingError(
-          click, UpdatedContextOptions(),
-          glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+      ExecuteAction(click, UpdatedContextOptions(),
+                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
