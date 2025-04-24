@@ -344,8 +344,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual bool CanShowInterstitial(ReusedPasswordAccountType password_type,
                                    const GURL& main_frame_url) = 0;
 
-  void CheckCsdAllowlistOnIOThread(const GURL& url, bool* check_result);
-
   // Get information about Delayed Warnings and Omnibox URL display experiments.
   // This information is sent in PhishGuard pings.
   virtual LoginReputationClientRequest::UrlDisplayExperiment
