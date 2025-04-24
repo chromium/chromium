@@ -1968,22 +1968,18 @@ LocalFrame::LocalFrame(
 
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
-  std::vector<AdScriptIdentifier> ad_script_ancestry;
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     &ad_script_ancestry);
-  if (!ad_script_ancestry.empty()) {
-    DCHECK(is_frame_created_by_ad_script_);
-    ad_script_from_frame_creation_stack_ = ad_script_ancestry[0];
-  }
+                                     &provisional_ad_script_ancestry_);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
   // sink from parent if appropriate. See comment above for more details.
   if (!IsLocalRoot() && !IsProvisional()) {
     probe_sink_ = LocalFrameRoot().probe_sink_;
-    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
+    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
+    provisional_ad_script_ancestry_.clear();
   }
 }
 
@@ -3077,7 +3073,8 @@ bool LocalFrame::SwapIn() {
     probe_sink_ = LocalFrameRoot().probe_sink_;
     // For remote -> local swap, Send a frameAttached event to keep the legacy
     // behavior where we fire the frameAttached event on cross-site navigations.
-    probe::FrameAttachedToParent(this, ad_script_from_frame_creation_stack_);
+    probe::FrameAttachedToParent(this, provisional_ad_script_ancestry_);
+    provisional_ad_script_ancestry_.clear();
   }
 
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));

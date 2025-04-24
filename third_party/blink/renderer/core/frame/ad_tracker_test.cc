@@ -129,9 +129,9 @@ class TestAdTracker : public AdTracker {
 
   // Intercepts `IsAdScriptInStack` to capture and store the ad script's
   // ancestry for frame creation scenario.
-  bool IsAdScriptInStack(StackType stack_type,
-                         std::vector<AdScriptIdentifier>*
-                             out_ad_script_ancestry = nullptr) override {
+  bool IsAdScriptInStack(
+      StackType stack_type,
+      Vector<AdScriptIdentifier>* out_ad_script_ancestry = nullptr) override {
     bool result =
         AdTracker::IsAdScriptInStack(stack_type, out_ad_script_ancestry);
 
@@ -144,7 +144,7 @@ class TestAdTracker : public AdTracker {
     return result;
   }
 
-  const std::vector<AdScriptIdentifier>& last_ad_script_ancestry() const {
+  const Vector<AdScriptIdentifier>& last_ad_script_ancestry() const {
     return last_ad_script_ancestry_;
   }
 
@@ -198,7 +198,7 @@ class TestAdTracker : public AdTracker {
   Member<ExecutionContext> execution_context_;
   String ad_suffix_;
   bool sim_test_ = false;
-  std::vector<AdScriptIdentifier> last_ad_script_ancestry_;
+  Vector<AdScriptIdentifier> last_ad_script_ancestry_;
 
   base::OnceClosure quit_closure_;
   String url_to_wait_for_;
@@ -256,7 +256,7 @@ class AdTrackerTest : public testing::Test {
   }
 
   std::optional<AdScriptIdentifier> BottommostAdScript() {
-    std::vector<AdScriptIdentifier> ad_script_ancestry;
+    Vector<AdScriptIdentifier> ad_script_ancestry;
     ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomOnly,
                                    /*out_ad_script=*/&ad_script_ancestry);
 

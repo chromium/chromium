@@ -308,7 +308,7 @@ void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
 
 bool AdTracker::IsAdScriptInStack(
     StackType stack_type,
-    std::vector<AdScriptIdentifier>* out_ad_script_ancestry) {
+    Vector<AdScriptIdentifier>* out_ad_script_ancestry) {
   std::optional<AdScriptIdentifier> out_ad_script;
 
   std::optional<AdScriptIdentifier>* out_ad_script_ptr =
@@ -457,9 +457,9 @@ void AdTracker::MaybeLinkKnownAdScriptToAncestor(
   }
 }
 
-std::vector<AdScriptIdentifier> AdTracker::GetAncestryChain(
+Vector<AdScriptIdentifier> AdTracker::GetAncestryChain(
     const AdScriptIdentifier& ad_script) {
-  std::vector<AdScriptIdentifier> ancestry_chain = {ad_script};
+  Vector<AdScriptIdentifier> ancestry_chain = {ad_script};
 
   auto ancestor_it = ancestor_ad_scripts_.find(ancestry_chain.back());
   while (ancestor_it != ancestor_ad_scripts_.end()) {

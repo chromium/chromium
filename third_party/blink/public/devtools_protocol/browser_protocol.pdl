@@ -9186,13 +9186,15 @@ domain Page
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
 
-  experimental command getAdScriptId
+  experimental command getAdScriptAncestryIds
     parameters
       FrameId frameId
     returns
-      # Identifies the bottom-most script which caused the frame to be labelled
-      # as an ad. Only sent if frame is labelled as an ad and id is available.
-      optional AdScriptId adScriptId
+      # The ancestry chain of ad script identifiers leading to this frame's
+      # creation, ordered from the most immediate script (in the frame creation
+      # stack) to more distant ancestors (that created the immediately preceding
+      # script). Only sent if frame is labelled as an ad and ids are available.
+      array of AdScriptId adScriptAncestryIds
 
   # Returns present frame tree structure.
   command getFrameTree

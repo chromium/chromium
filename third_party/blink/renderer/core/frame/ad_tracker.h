@@ -95,7 +95,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   //   flagged by the subresource filter.
   virtual bool IsAdScriptInStack(
       StackType stack_type,
-      std::vector<AdScriptIdentifier>* out_ad_script_ancestry = nullptr);
+      Vector<AdScriptIdentifier>* out_ad_script_ancestry = nullptr);
 
   virtual void Trace(Visitor*) const;
 
@@ -164,7 +164,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // the script itself to the root script. The root script is guaranteed to be
   // subresource-filter-flagged, while all preceding scripts in the chain are
   // non-subresource-filter-flagged.
-  std::vector<AdScriptIdentifier> GetAncestryChain(
+  Vector<AdScriptIdentifier> GetAncestryChain(
       const AdScriptIdentifier& ad_script);
 
   Member<LocalFrame> local_root_;
