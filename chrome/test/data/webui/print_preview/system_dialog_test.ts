@@ -115,7 +115,7 @@ suite('SystemDialogTest', function() {
           const parentElement =
               sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
           const printButton =
-              parentElement.shadowRoot!.querySelector<CrButtonElement>(
+              parentElement.shadowRoot.querySelector<CrButtonElement>(
                   '.action-button')!;
           assertTrue(printButton.disabled);
           assertTrue(linkContainer.disabled);

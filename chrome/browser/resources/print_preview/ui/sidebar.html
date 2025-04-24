@@ -99,7 +99,7 @@
         hidden$="[[!settings.scaling.available]]"
         class="settings-section">
     </print-preview-scaling-settings>
-    <print-preview-duplex-settings settings="[[settings]]"
+    <print-preview-duplex-settings
         disabled="[[controlsDisabled_]]" dark="[[inDarkMode]]"
         hidden$="[[!settings.duplex.available]]"
         class="settings-section">
@@ -123,6 +123,5 @@
 </div>
 <print-preview-button-strip destination="[[destination]]"
     state="[[state]]" first-load="[[firstLoad_]]" is-pin-valid="[[isPinValid_]]"
-    sheet-count="[[sheetCount_]]" max-sheets="[[maxSheets]]"
     on-print-button-focused="onPrintButtonFocused_">
 </print-preview-button-strip>

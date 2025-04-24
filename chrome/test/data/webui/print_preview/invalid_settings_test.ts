@@ -94,9 +94,8 @@ suite('InvalidSettingsTest', function() {
         .then(() => {
           const parentElement =
               sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
-          printButton =
-              parentElement.shadowRoot!.querySelector<CrButtonElement>(
-                  '.action-button')!;
+          printButton = parentElement.shadowRoot.querySelector<CrButtonElement>(
+              '.action-button')!;
 
           return Promise.all([
             whenReady(),

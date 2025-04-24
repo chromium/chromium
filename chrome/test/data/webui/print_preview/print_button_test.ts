@@ -60,7 +60,7 @@ suite('PrintButtonTest', function() {
       assertTrue(!!buttonStrip);
       if (printBeforePreviewReady) {
         const printButton =
-            buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
+            buttonStrip.shadowRoot.querySelector<CrButtonElement>(
                 '.action-button');
         assertTrue(!!printButton);
         assertFalse(printButton.disabled);
@@ -69,7 +69,7 @@ suite('PrintButtonTest', function() {
       if (cancelBeforePreviewReady) {
         flush();
         const cancelButton =
-            buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
+            buttonStrip.shadowRoot.querySelector<CrButtonElement>(
                 '.cancel-button');
         assertTrue(!!cancelButton);
         assertFalse(cancelButton.disabled);

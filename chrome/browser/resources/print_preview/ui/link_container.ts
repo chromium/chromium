@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './print_preview_vars.css.js';
-import './throbber.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 // <if expr="is_win">
 import {DestinationOrigin, GooglePromotedDestinationId} from '../data/destination.js';
+
 // </if>
-import {getTemplate} from './link_container.html.js';
+import {getCss} from './link_container.css.js';
+import {getHtml} from './link_container.html.js';
 
 export interface PrintPreviewLinkContainerElement {
   $: {
@@ -27,54 +27,57 @@ export interface PrintPreviewLinkContainerElement {
   };
 }
 
-export class PrintPreviewLinkContainerElement extends PolymerElement {
+export class PrintPreviewLinkContainerElement extends CrLitElement {
   static get is() {
     return 'print-preview-link-container';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      appKioskMode: Boolean,
-
-      destination: Object,
-
-      disabled: Boolean,
+      appKioskMode: {type: Boolean},
+      destination: {type: Object},
+      disabled: {type: Boolean},
 
       shouldShowSystemDialogLink_: {
         type: Boolean,
-        computed:
-            'computeShouldShowSystemDialogLink_(appKioskMode, destination)',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      systemDialogLinkDisabled_: {
-        type: Boolean,
-        computed: 'computeSystemDialogLinkDisabled_(disabled)',
-      },
-
-      openingSystemDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      openingInPreview_: {
-        type: Boolean,
-        value: false,
-      },
+      systemDialogLinkDisabled_: {type: Boolean},
+      openingSystemDialog_: {type: Boolean},
+      openingInPreview_: {type: Boolean},
     };
   }
 
-  declare appKioskMode: boolean;
-  declare destination: Destination|null;
-  declare disabled: boolean;
-  declare private shouldShowSystemDialogLink_: boolean;
-  declare private systemDialogLinkDisabled_: boolean;
-  declare private openingSystemDialog_: boolean;
-  declare private openingInPreview_: boolean;
+  accessor appKioskMode: boolean;
+  accessor destination: Destination|null;
+  accessor disabled: boolean;
+  protected accessor shouldShowSystemDialogLink_: boolean;
+  protected accessor systemDialogLinkDisabled_: boolean;
+  protected accessor openingSystemDialog_: boolean = false;
+  protected accessor openingInPreview_: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      this.systemDialogLinkDisabled_ = this.computeSystemDialogLinkDisabled_();
+    }
+
+    if (changedProperties.has('appKioskMode') ||
+        changedProperties.has('destination')) {
+      this.shouldShowSystemDialogLink_ =
+          this.computeShouldShowSystemDialogLink_();
+    }
+  }
 
   /**
    * @return Whether the system dialog link should be visible.
@@ -105,27 +108,33 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     // </if>
   }
 
-  private fire_(eventName: string) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true}));
-  }
-
-
-  private onSystemDialogClick_() {
+  // <if expr="not is_win">
+  protected async onSystemDialogClick_() {
     if (!this.shouldShowSystemDialogLink_) {
       return;
     }
 
-    // <if expr="not is_win">
     this.openingSystemDialog_ = true;
-    // </if>
-    this.fire_('print-with-system-dialog');
+    await this.updateComplete;
+    this.fire('print-with-system-dialog');
   }
+  // </if>
+
+  // <if expr="is_win">
+  protected onSystemDialogClick_() {
+    if (!this.shouldShowSystemDialogLink_) {
+      return;
+    }
+
+    this.fire('print-with-system-dialog');
+  }
+  // </if>
 
   // <if expr="is_macosx">
-  private onOpenInPreviewClick_() {
+  protected async onOpenInPreviewClick_() {
     this.openingInPreview_ = true;
-    this.fire_('open-pdf-in-preview');
+    await this.updateComplete;
+    this.fire('open-pdf-in-preview');
   }
   // </if>
 
@@ -134,6 +143,8 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     return this.shouldShowSystemDialogLink_ && !this.systemDialogLinkDisabled_;
   }
 }
+
+export type LinkContainerElement = PrintPreviewLinkContainerElement;
 
 declare global {
   interface HTMLElementTagNameMap {
