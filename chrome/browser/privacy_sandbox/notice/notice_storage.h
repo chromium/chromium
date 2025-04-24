@@ -133,14 +133,6 @@ class PrivacySandboxNoticeData {
   std::optional<NoticeEventTimestampPair>
   GetNoticeActionTakenForFirstShownFromEvents() const;
 
-  // TODO(crbug.com/392088228): Remove other actions once the new event fields
-  // are written to. Stores information about profile interactions on a notice.
-  NoticeActionTaken notice_action_taken_ = NoticeActionTaken::kNotSet;
-  base::Time notice_action_taken_time_;
-  base::Time notice_first_shown_;
-  base::Time notice_last_shown_;
-  base::TimeDelta notice_shown_duration_;
-
   static void RegisterJSONConverter(
       base::JSONValueConverter<PrivacySandboxNoticeData>* converter);
 
