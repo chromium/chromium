@@ -8,13 +8,10 @@ import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.util.Base64;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +35,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,13 +64,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OfflinePageBridgeTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
@@ -81,9 +74,9 @@ public class OfflinePageBridgeTest {
             new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234");
 
     private OfflinePageBridge mOfflinePageBridge;
-    private EmbeddedTestServer mTestServer;
-    private String mTestPage;
+    private String mTestUrl;
     private Profile mProfile;
+    private WebPageStation mStartingPage;
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
@@ -160,15 +153,8 @@ public class OfflinePageBridgeTest {
         }
         deletePages(ids);
 
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        mTestPage = mTestServer.getURL(TEST_PAGE);
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
+        mStartingPage = mActivityTestRule.startOnBlankPage();
     }
 
     @Test
@@ -188,21 +174,21 @@ public class OfflinePageBridgeTest {
     @Test
     @MediumTest
     public void testAddOfflinePageAndLoad() throws Exception {
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
         OfflinePageItem offlinePage = allPages.get(0);
         Assert.assertEquals("Offline pages count incorrect.", 1, allPages.size());
-        Assert.assertEquals("Offline page item url incorrect.", mTestPage, offlinePage.getUrl());
+        Assert.assertEquals("Offline page item url incorrect.", mTestUrl, offlinePage.getUrl());
     }
 
     @Test
     @MediumTest
     public void testGetPageByBookmarkId() throws Exception {
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         OfflinePageItem offlinePage = OfflineTestUtil.getPageByClientId(TEST_CLIENT_ID);
-        Assert.assertEquals("Offline page item url incorrect.", mTestPage, offlinePage.getUrl());
+        Assert.assertEquals("Offline page item url incorrect.", mTestUrl, offlinePage.getUrl());
         Assert.assertNull(
                 "Offline page is not supposed to exist",
                 OfflineTestUtil.getPageByClientId(
@@ -213,8 +199,8 @@ public class OfflinePageBridgeTest {
     @MediumTest
     public void testDeleteOfflinePage() throws Exception {
         deletePage(TEST_CLIENT_ID, DeletePageResult.SUCCESS);
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         Assert.assertNotNull(
                 "Offline page should be available, but it is not.",
                 OfflineTestUtil.getPageByClientId(TEST_CLIENT_ID));
@@ -290,13 +276,13 @@ public class OfflinePageBridgeTest {
     public void testDeletePagesByOfflineIds() throws Exception {
         // Save 3 pages and record their offline IDs to delete later.
         Set<String> pageUrls = new HashSet<>();
-        pageUrls.add(mTestPage);
-        pageUrls.add(mTestPage + "?foo=1");
-        pageUrls.add(mTestPage + "?foo=2");
+        pageUrls.add(mTestUrl);
+        pageUrls.add(mTestUrl + "?foo=1");
+        pageUrls.add(mTestUrl + "?foo=2");
         int pagesToDeleteCount = pageUrls.size();
         List<Long> offlineIdsToDelete = new ArrayList<>();
         for (String url : pageUrls) {
-            sActivityTestRule.loadUrl(url);
+            mActivityTestRule.loadUrl(url);
             offlineIdsToDelete.add(savePage(SavePageResult.SUCCESS, url));
         }
         Assert.assertEquals(
@@ -306,11 +292,11 @@ public class OfflinePageBridgeTest {
 
         // Save one more page but don't save the offline ID, this page should not be deleted.
         Set<String> pageUrlsToSave = new HashSet<>();
-        String pageToSave = mTestPage + "?bar=1";
+        String pageToSave = mTestUrl + "?bar=1";
         pageUrlsToSave.add(pageToSave);
         int pagesToSaveCount = pageUrlsToSave.size();
         for (String url : pageUrlsToSave) {
-            sActivityTestRule.loadUrl(url);
+            mActivityTestRule.loadUrl(url);
             savePage(SavePageResult.SUCCESS, pageToSave);
         }
         Assert.assertEquals(
@@ -336,14 +322,14 @@ public class OfflinePageBridgeTest {
         // Save 3 pages and record their offline IDs to delete later.
         Set<Long> offlineIdsToFetch = new HashSet<>();
         for (int i = 0; i < 3; i++) {
-            String url = mTestPage + "?foo=" + i;
-            sActivityTestRule.loadUrl(url);
+            String url = mTestUrl + "?foo=" + i;
+            mActivityTestRule.loadUrl(url);
             offlineIdsToFetch.add(savePage(SavePageResult.SUCCESS, url));
         }
 
         // Save a page in a different namespace.
-        String urlToIgnore = mTestPage + "?bar=1";
-        sActivityTestRule.loadUrl(urlToIgnore);
+        String urlToIgnore = mTestUrl + "?bar=1";
+        mActivityTestRule.loadUrl(urlToIgnore);
         long offlineIdToIgnore =
                 savePage(
                         SavePageResult.SUCCESS,
@@ -380,18 +366,18 @@ public class OfflinePageBridgeTest {
     public void testDownloadPage() throws Exception {
         final OfflinePageOrigin origin =
                 new OfflinePageOrigin("abc.xyz", new String[] {"deadbeef"});
-        sActivityTestRule.loadUrl(mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNotNull(
-                            "Tab is null", sActivityTestRule.getActivity().getActivityTab());
+                            "Tab is null", mActivityTestRule.getActivity().getActivityTab());
                     Assert.assertEquals(
                             "URL does not match requested.",
-                            mTestPage,
-                            sActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
-                    Assert.assertNotNull("WebContents is null", sActivityTestRule.getWebContents());
+                            mTestUrl,
+                            mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
+                    Assert.assertNotNull("WebContents is null", mActivityTestRule.getWebContents());
 
                     mOfflinePageBridge.addObserver(
                             new OfflinePageModelObserver() {
@@ -403,7 +389,7 @@ public class OfflinePageBridgeTest {
                             });
 
                     OfflinePageDownloadBridge.startDownload(
-                            sActivityTestRule.getActivity().getActivityTab(), origin);
+                            mActivityTestRule.getActivity().getActivityTab(), origin);
                 });
         Assert.assertTrue(
                 "Semaphore acquire failed. Timed out.",
@@ -418,7 +404,7 @@ public class OfflinePageBridgeTest {
     public void testSavePageWithRequestOrigin() throws Exception {
         final OfflinePageOrigin origin =
                 new OfflinePageOrigin("abc.xyz", new String[] {"deadbeef"});
-        sActivityTestRule.loadUrl(mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
@@ -432,7 +418,7 @@ public class OfflinePageBridgeTest {
                                 }
                             });
                     mOfflinePageBridge.savePage(
-                            sActivityTestRule.getWebContents(),
+                            mActivityTestRule.getWebContents(),
                             TEST_CLIENT_ID,
                             origin,
                             new SavePageCallback() {
@@ -453,8 +439,8 @@ public class OfflinePageBridgeTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/842801")
     public void testSavePageNoOrigin() throws Exception {
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         List<OfflinePageItem> pages = OfflineTestUtil.getAllPages();
         Assert.assertEquals("", pages.get(0).getRequestOrigin());
     }
@@ -466,8 +452,8 @@ public class OfflinePageBridgeTest {
             reason = "OfflinePage File Path is content uri on Q+")
     // TODO: expand this test to match testGetLoadUrlParamsForOpeningMhtmlFileUrl_File.
     public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_ContentUri() throws Exception {
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
         Assert.assertEquals(1, allPages.size());
         OfflinePageItem offlinePage = allPages.get(0);
@@ -498,8 +484,8 @@ public class OfflinePageBridgeTest {
             value = VERSION_CODES.P,
             reason = "OfflinePage File Path is content uri on Q+")
     public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_File() throws Exception {
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(SavePageResult.SUCCESS, mTestPage);
+        mActivityTestRule.loadUrl(mTestUrl);
+        savePage(SavePageResult.SUCCESS, mTestUrl);
         List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
         Assert.assertEquals(1, allPages.size());
         OfflinePageItem offlinePage = allPages.get(0);
@@ -582,15 +568,15 @@ public class OfflinePageBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNotNull(
-                            "Tab is null", sActivityTestRule.getActivity().getActivityTab());
+                            "Tab is null", mActivityTestRule.getActivity().getActivityTab());
                     Assert.assertEquals(
                             "URL does not match requested.",
                             expectedUrl,
-                            sActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
-                    Assert.assertNotNull("WebContents is null", sActivityTestRule.getWebContents());
+                            mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
+                    Assert.assertNotNull("WebContents is null", mActivityTestRule.getWebContents());
 
                     mOfflinePageBridge.savePage(
-                            sActivityTestRule.getWebContents(),
+                            mActivityTestRule.getWebContents(),
                             clientId,
                             new SavePageCallback() {
                                 @Override
