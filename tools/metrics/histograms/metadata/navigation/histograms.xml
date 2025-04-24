@@ -2634,6 +2634,9 @@ chromium-metrics-reviews@google.com.
     <variant name="StartToNavigationRequestCreation"
         summary="when the navigation starts, which could be in the renderer
                  process, to when the NavigationRequest is created"/>
+    <variant name="StartToSyncRendererCommit"
+        summary="when the navigation starts in the renderer process, to when
+                 the renderer process begins a synchronous renderer commit"/>
     <variant name="Total"
         summary="when the navigation starts to when the browser process
                  finishes processing the DidCommitNavigation IPC, at which

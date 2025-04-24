@@ -6752,6 +6752,10 @@ void NavigationRequest::CommitPageActivation() {
     if (!weak_self)
       return;
 
+    // Treat this as the commit start time for the activation (i.e., after the
+    // ReadyToCommitNavigation call).
+    page_activation_commit_time_ = base::TimeTicks::Now();
+
     // Use std::exchange instead of move, so that we clear out the optional on
     // the commit_params.
     activated_entry->SetViewTransitionState(
@@ -6807,6 +6811,10 @@ void NavigationRequest::CommitPageActivation() {
     // NavigationRequest to be destroyed. Return if this is the case.
     if (!weak_self)
       return;
+
+    // Treat this as the commit start time for the activation (i.e., after the
+    // ReadyToCommitNavigation call).
+    page_activation_commit_time_ = base::TimeTicks::Now();
 
     // Use std::exchange instead of move, so that we clear out the optional on
     // the commit_params.
@@ -11536,17 +11544,30 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   timeline.common_params_start = common_params().navigation_start;
   timeline.begin_navigation = begin_navigation_time_;
   timeline.loader_start = navigation_handle_timing_.loader_start_time;
-  timeline.loader_fetch_start = first_fetch_start_time_;
-  timeline.loader_receive_headers = final_receive_headers_end_time_;
+  if (!IsPageActivation()) {
+    // Prerender and bfcache activations should not use the stale loader values
+    // from the original commit. (Note: `loader_start` and `receive_response`
+    // are both set to fresh values for page activations.)
+    timeline.loader_fetch_start = first_fetch_start_time_;
+    timeline.loader_receive_headers = final_receive_headers_end_time_;
+  }
   timeline.receive_response = receive_response_time_;
   timeline.commit_ipc_sent =
-      navigation_handle_timing_.navigation_commit_sent_time;
+      !IsPageActivation()
+          ? navigation_handle_timing_.navigation_commit_sent_time
+          : page_activation_commit_time_;
+
   // Note that we can't use NavigationRequest's
   // navigation_handle_timing_.navigation_commit_received_time because it's
   // not populated yet when this function is called.
-  timeline.renderer_commit_ipc_received = params.commit_navigation_start;
-  timeline.renderer_did_commit_ipc_sent = params.commit_reply_sent;
-  timeline.did_commit_ipc_received = did_commit_ipc_received_time;
+  if (!IsPageActivation()) {
+    timeline.renderer_commit_ipc_received = params.commit_navigation_start;
+    timeline.renderer_did_commit_ipc_sent = params.commit_reply_sent;
+    timeline.did_commit_ipc_received = did_commit_ipc_received_time;
+  } else {
+    // Page activations don't send a commit IPC, so use a zero size interval.
+    timeline.did_commit_ipc_received = timeline.commit_ipc_sent;
+  }
 
   return timeline;
 }

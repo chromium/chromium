@@ -2700,6 +2700,11 @@ class CONTENT_EXPORT NavigationRequest
   // The time WillStartRequest() was called.
   base::TimeTicks will_start_request_time_;
 
+  // For bfcache and prerender page activations, this is the time that the
+  // activation commits (after ReadyToCommitNavigation), since no commit IPC is
+  // sent to the renderer process.
+  base::TimeTicks page_activation_commit_time_;
+
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;
 
