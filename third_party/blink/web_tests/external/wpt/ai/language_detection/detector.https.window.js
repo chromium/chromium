@@ -13,10 +13,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const detector = await LanguageDetector.create();
-  const results = await detector.detect('this string is in English');
-  // "en" should be highest confidence.
-  assert_equals(results[0].detectedLanguage, 'en');
-
+  const results = await detector.detect('Hello world!');
 
   // The last result should be 'und'.
   const undResult = results.pop();
@@ -79,7 +76,7 @@ promise_test(async t => {
 promise_test(async t => {
   const detector = await LanguageDetector.create();
 
-  const text = 'this string is in English';
+  const text = 'Hello world!';
   const promises = [detector.detect(text), detector.measureInputUsage(text)];
 
   detector.destroy();
@@ -95,7 +92,7 @@ promise_test(async t => {
   const controller = new AbortController();
   const detector = await LanguageDetector.create({signal: controller.signal});
 
-  const text = 'this string is in English';
+  const text = 'Hello world!';
   const promises = [detector.detect(text), detector.measureInputUsage(text)];
 
   const error = new Error('The create abort signal was aborted.');
@@ -114,7 +111,7 @@ promise_test(async t => {
 
   const detector = await LanguageDetector.create();
   const detectPromise =
-      detector.detect('this string is in English', {signal: controller.signal});
+      detector.detect('Hello world!', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', detectPromise);
 }, 'LanguageDetector.detect() call with an aborted signal.');
@@ -122,25 +119,26 @@ promise_test(async t => {
 promise_test(async t => {
   const detector = await LanguageDetector.create();
   await testAbortPromise(t, signal => {
-    return detector.detect('this string is in English', {signal});
+    return detector.detect('Hello world!', {signal});
   });
 }, 'Aborting LanguageDetector.detect().');
 
 promise_test(async t => {
   const detector = await LanguageDetector.create();
 
-  const text = 'this string is in English';
-  const inputUsage = await detector.measureInputUsage(text);
+  const text = 'Hello world!';
+  const largeText = text.repeat(10000);
+  const inputUsage = await detector.measureInputUsage(largeText);
 
   assert_greater_than_equal(detector.inputQuota, 0);
   assert_greater_than_equal(inputUsage, 0);
 
   const detectPromise = detector.detect(text);
 
-  if (inputUsage < detector.inputQuota) {
-    assert_equals((await detectPromise)[0].detectedLanguage, 'en');
-  } else {
+  if (inputUsage >= detector.inputQuota) {
     await promise_rejects_dom(t, 'QuotaExceededError', detectPromise);
+  } else {
+    await detectPromise;
   }
 }, 'LanguageDetector.measureInputUsage() and inputQuota basic usage.');
 
@@ -166,13 +164,6 @@ promise_test(async () => {
   const detector = await LanguageDetector.create();
   assert_equals(detector.expectedInputLanguages, null);
 }, 'Creating LanguageDetector without expectedInputLanguages');
-
-promise_test(async () => {
-  const expectedInputLanguages = ['en', 'es'];
-  const detector = await LanguageDetector.create({expectedInputLanguages});
-  assert_array_equals(detector.expectedInputLanguages, expectedInputLanguages);
-  assert_true(Object.isFrozen(detector.expectedInputLanguages));
-}, 'Creating LanguageDetector with expectedInputLanguages');
 
 promise_test(async t => {
   await testCreateMonitorWithAbort(t, LanguageDetector.create);

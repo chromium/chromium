@@ -387,8 +387,8 @@ double LanguageDetector::inputQuota() const {
 
 HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
-  float last_score = 1;
-  float cumulative_confidence = 0;
+  double last_score = 1;
+  double cumulative_confidence = 0;
 
   HeapVector<Member<LanguageDetectionResult>> results;
   for (const auto& prediction : predictions) {
@@ -414,10 +414,10 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
 
   // Append "und" to end. Set it's confidence so that the total confidences add
   // up to 1.
-  auto* result = MakeGarbageCollected<LanguageDetectionResult>();
-  results.push_back(result);
-  result->setDetectedLanguage(String("und"));
-  result->setConfidence(1 - cumulative_confidence);
+  auto* und_result = MakeGarbageCollected<LanguageDetectionResult>();
+  results.push_back(und_result);
+  und_result->setDetectedLanguage(String("und"));
+  und_result->setConfidence(1 - cumulative_confidence);
 
   return results;
 }
