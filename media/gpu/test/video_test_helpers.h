@@ -115,7 +115,7 @@ class EncodedDataHelper {
       base::span<const uint8_t> stream,
       VideoCodec codec);
 
-  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
+  static bool HasConfigInfo(base::span<const uint8_t> data, VideoCodec codec);
 
   virtual ~EncodedDataHelper();
   virtual scoped_refptr<DecoderBuffer> GetNextBuffer() = 0;
@@ -138,7 +138,7 @@ class EncodedDataHelperH26x : public EncodedDataHelper {
   EncodedDataHelperH26x(base::span<const uint8_t> stream, VideoCodec codec);
   ~EncodedDataHelperH26x() override = default;
 
-  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
+  static bool HasConfigInfo(base::span<const uint8_t> data, VideoCodec codec);
 
   scoped_refptr<DecoderBuffer> GetNextBuffer() override;
 

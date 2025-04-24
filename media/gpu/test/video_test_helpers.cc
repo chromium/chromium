@@ -173,12 +173,11 @@ std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
 }
 
 // static
-bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
-                                      size_t size,
+bool EncodedDataHelper::HasConfigInfo(base::span<const uint8_t> data,
                                       VideoCodec codec) {
   CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
       << "Unsupported codec " << GetCodecName(codec);
-  return EncodedDataHelperH26x::HasConfigInfo(data, size, codec);
+  return EncodedDataHelperH26x::HasConfigInfo(data, codec);
 }
 
 EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
@@ -204,22 +203,23 @@ EncodedDataHelperH26x::EncodedDataHelperH26x(base::span<const uint8_t> stream,
     : EncodedDataHelper(std::move(stream), codec) {}
 
 // static
-bool EncodedDataHelperH26x::HasConfigInfo(const uint8_t* data,
-                                          size_t size,
+bool EncodedDataHelperH26x::HasConfigInfo(base::span<const uint8_t> data,
                                           VideoCodec codec) {
   // Check if this is an H264 SPS NALU w/ a kNALUReducedHeaderSize or
   // kNALUHeaderSize byte start code.
   if (codec == media::VideoCodec::kH264) {
-    return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-            data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
-           (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+    return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+            data[1] == 0x0 && data[2] == 0x1 &&
+            (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
+           (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
             data[2] == 0x0 && data[3] == 0x1 &&
             (data[kNALUHeaderSize] & 0x1f) == 0x7);
   }
   CHECK_EQ(codec, media::VideoCodec::kHEVC);
-  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
-         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+  return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+          data[1] == 0x0 && data[2] == 0x1 &&
+          (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
+         (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
           data[2] == 0x0 && data[3] == 0x1 &&
           (data[kNALUHeaderSize] & 0x7e) == 0x42);
 }
