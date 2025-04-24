@@ -176,20 +176,11 @@ export class RangeAutomationHandler extends BaseAutomationHandler
       return;
     }
 
-    // Don't report changes while captions are focused because such changes are
-    // incessant and reset the output on a braille display to the beginning of
-    // the text, which renders the captions unreadable.
-    //
-    // The first attribute change event is allowed to pass through so that the
-    // captions can receive focus.
+    // Don't report changes while captions are focused because CaptionsHandler
+    // handles captions bubble text changes directly.
     if (CaptionsHandler.inCaptions()) {
-      if (CaptionsHandler.hasAttributeChanged) {
-        return;
-      } else {
-        CaptionsHandler.handleAttributeChanged();
-      }
+      return;
     }
-
 
     // Report attribute changes for specific generated events.
     if (evt.type === chrome.automation.EventType.SORT_CHANGED) {
