@@ -4172,23 +4172,6 @@
     "owners": ["masonf@chromium.org", "stephanie.zhang@microsoft.com", "sajos@microsoft.com"]
   },
   {
-    "prefix": "document-isolation-policy",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/html/document-isolation-policy"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=DocumentIsolationPolicy"
-    ],
-    "expires": "Nov 16, 2024",
-    "owners": [
-      "clamy@chromium.org"
-    ]
-  },
-  {
     "prefix": "css-relative-currentcolor-disabled",
     "platforms": ["Linux"],
     "bases": [

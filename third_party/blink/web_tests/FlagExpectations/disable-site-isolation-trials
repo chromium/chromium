@@ -157,7 +157,7 @@ crbug.com/1487775 virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame
 external/wpt/webdriver/tests/* [ Skip ]
 
 # Currently, Document-Isolation-Policy relies on SiteIsolation to work.
-virtual/document-isolation-policy/* [ Skip ]
+external/wpt/html/document-isolation-policy/* [ Skip ]
 
 # All tests in isolated-context require SiteIsolation to establish an
 # IsolatedContext, so skip them here.
