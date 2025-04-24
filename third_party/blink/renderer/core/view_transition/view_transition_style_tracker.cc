@@ -591,7 +591,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   if (RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
     InvalidateHitTestingCache();
     InvalidateStyle();
-    document_->GetStyleEngine().SetViewTransitionNames({});
+    view_transition_names_.clear();
   }
 }
 
@@ -997,9 +997,7 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   }
 #endif
 
-  // This informs the style engine the set of names we have, which will be used
-  // to create the pseudo element tree.
-  document_->GetStyleEngine().SetViewTransitionNames(transition_names);
+  view_transition_names_ = std::move(transition_names);
 
   // We need a style invalidation to generate the pseudo element tree.
   InvalidateStyle();
@@ -1149,7 +1147,7 @@ bool ViewTransitionStyleTracker::Start() {
   // If this tracker was created from serialized state, transition tags are
   // initialized with the style system in the start phase.
   if (deserialized_) {
-    DCHECK(document_->GetStyleEngine().ViewTransitionTags().empty());
+    DCHECK(GetViewTransitionNames().empty());
     found_new_names = true;
   }
 
@@ -1232,7 +1230,7 @@ bool ViewTransitionStyleTracker::Start() {
     }
 #endif
 
-    document_->GetStyleEngine().SetViewTransitionNames(new_names);
+    view_transition_names_ = std::move(new_names);
   }
 
   DCHECK_GE(document_->Lifecycle().GetState(),
@@ -1280,7 +1278,7 @@ void ViewTransitionStyleTracker::EndTransition() {
   element_data_map_.clear();
   pending_transition_element_names_.clear();
   set_element_sequence_id_ = 0;
-  document_->GetStyleEngine().SetViewTransitionNames({});
+  view_transition_names_.clear();
   is_root_transitioning_ = false;
   if (auto* page = document_->GetPage())
     page->Animator().SetHasViewTransition(false);

@@ -16,6 +16,7 @@ class DOMViewTransition;
 class Document;
 class Element;
 class LayoutObject;
+class Node;
 class PseudoElement;
 class ViewTransition;
 
@@ -33,6 +34,8 @@ class CORE_EXPORT ViewTransitionUtils {
   static ViewTransition* GetTransition(const Document& document);
 
   static ViewTransition* GetTransition(const Element& element);
+
+  static ViewTransition* GetTransition(const Node& node);
 
   // Returns the view transition that the element associated with the specified
   // layout object is participating in, if one exists.

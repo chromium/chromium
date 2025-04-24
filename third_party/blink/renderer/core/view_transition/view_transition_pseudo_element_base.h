@@ -35,6 +35,8 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
   // `tracker`.
   bool IsBoundTo(const blink::ViewTransitionStyleTracker* tracker) const;
 
+  const Vector<AtomicString>& GetViewTransitionNames() const;
+
  protected:
   Vector<AtomicString> view_transition_class_;
   Member<const ViewTransitionStyleTracker> style_tracker_;

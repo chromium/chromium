@@ -3855,32 +3855,14 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
 
   ViewTransitionUtils::ForEachTransition(
       *document_, [&](ViewTransition& transition) {
-        Element* scope = transition.Scope();
-        if (!scope) {
-          scope = document_->documentElement();
-        }
-        if (!scope || !scope->InActiveDocument()) {
-          return;
-        }
-
-        // TODO(crbug.com/405117185): Use only the v-t-names inside the scope.
-        scope->RecalcTransitionPseudoTreeStyle(view_transition_names_);
+        transition.RecalcTransitionPseudoTreeStyle();
       });
 }
 
 void StyleEngine::RebuildTransitionPseudoLayoutTrees() {
   ViewTransitionUtils::ForEachTransition(
       *document_, [&](ViewTransition& transition) {
-        Element* scope = transition.Scope();
-        if (!scope) {
-          scope = document_->documentElement();
-        }
-        if (!scope || !scope->InActiveDocument()) {
-          return;
-        }
-
-        // TODO(crbug.com/405117185): Use only the v-t-names inside the scope.
-        scope->RebuildTransitionPseudoLayoutTree(view_transition_names_);
+        transition.RebuildTransitionPseudoLayoutTree();
       });
 }
 

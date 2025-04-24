@@ -222,6 +222,10 @@ class ViewTransitionStyleTracker
   const Vector<AtomicString>& GetViewTransitionClassList(
       const AtomicString& name) const;
 
+  const Vector<AtomicString>& GetViewTransitionNames() const {
+    return view_transition_names_;
+  }
+
   // This returns the resolved containing group name for a given view transition
   // name. Note that this only works once the transition starts.
   AtomicString GetContainingGroupName(const AtomicString& name) const;
@@ -450,6 +454,8 @@ class ViewTransitionStyleTracker
   base::Token token_;
 
   HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
+
+  Vector<AtomicString> view_transition_names_;
 };
 
 }  // namespace blink
