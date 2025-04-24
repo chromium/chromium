@@ -252,13 +252,12 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     ConnectCallback connect_callback) {
   DCHECK(file_system_uuid.is_valid());
 
-  // Sanitize the |file_system_path|, ensuring that it refers to an existing
-  // local folder.
+  // Make sure that |file_system_path| is a valid absolute path.
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
-  if (!path.IsAbsolute() || !base::DirectoryExists(path)) {
+  if (!path.IsAbsolute()) {
     LOG(ERROR) << "Rejected automatic file system " << file_system_path
                << " with UUID " << file_system_uuid << " because it's not"
-               << " a valid absolute path to an existing local folder.";
+               << " a valid absolute path.";
     std::move(connect_callback).Run(false);
     FailedToAddFileSystem(kIllegalPath);
     return;
@@ -288,6 +287,32 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     VLOG(1) << "Not adding automatic file system " << file_system_path
             << " with UUID " << file_system_uuid << ".";
     std::move(connect_callback).Run(false);
+    return;
+  }
+
+  // Ensure that the |path| refers to an existing directory first (since this
+  // is a blocking call, we need to perform this operation asynchronously).
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, BindOnce(&base::DirectoryExists, path),
+      BindOnce(&DevToolsFileHelper::ConnectMissingAutomaticFileSystem,
+               weak_factory_.GetWeakPtr(), std::move(file_system_path),
+               std::move(file_system_uuid),
+               std::move(handle_permissions_callback),
+               std::move(connect_callback)));
+}
+
+void DevToolsFileHelper::ConnectMissingAutomaticFileSystem(
+    const std::string& file_system_path,
+    const base::Uuid& file_system_uuid,
+    const HandlePermissionsCallback& handle_permissions_callback,
+    ConnectCallback connect_callback,
+    bool directory_exists) {
+  if (!directory_exists) {
+    LOG(ERROR) << "Rejected automatic file system " << file_system_path
+               << " with UUID " << file_system_uuid << " because that"
+               << "directory does not exist.";
+    std::move(connect_callback).Run(false);
+    FailedToAddFileSystem(kIllegalPath);
     return;
   }
 
