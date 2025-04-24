@@ -173,32 +173,31 @@ class IDBValueUnwrapperReadTestHelper {
   void ReadVarInt(const char* start, uint32_t buffer_size) {
     IDBValueUnwrapper unwrapper;
 
-    const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
-    const uint8_t* buffer_end = buffer_start + buffer_size;
-    unwrapper.current_ = buffer_start;
-    unwrapper.end_ = buffer_end;
+    base::span<const uint8_t> parse_span(
+        reinterpret_cast<const uint8_t*>(start), buffer_size);
+    unwrapper.parse_span_ = parse_span;
     success_ = unwrapper.ReadVarInt(read_varint_);
 
-    ASSERT_EQ(unwrapper.end_, buffer_end)
-        << "ReadVarInt should not change end_";
-    ASSERT_LE(unwrapper.current_, unwrapper.end_)
-        << "ReadVarInt should not move current_ past end_";
-    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
+    if (!unwrapper.parse_span_.empty()) {
+      ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
+          << "ReadVarInt should not change end of buffer";
+    }
+    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
   }
 
   void ReadBytes(const char* start, uint32_t buffer_size) {
     IDBValueUnwrapper unwrapper;
 
-    const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
-    const uint8_t* buffer_end = buffer_start + buffer_size;
-    unwrapper.current_ = buffer_start;
-    unwrapper.end_ = buffer_end;
+    base::span<const uint8_t> parse_span(
+        reinterpret_cast<const uint8_t*>(start), buffer_size);
+    unwrapper.parse_span_ = parse_span;
     success_ = unwrapper.ReadBytes(read_bytes_);
 
-    ASSERT_EQ(unwrapper.end_, buffer_end) << "ReadBytes should not change end_";
-    ASSERT_LE(unwrapper.current_, unwrapper.end_)
-        << "ReadBytes should not move current_ past end_";
-    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
+    if (!unwrapper.parse_span_.empty()) {
+      ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
+          << "ReadBytes should not change end of buffer";
+    }
+    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
   }
 
   bool success() { return success_; }

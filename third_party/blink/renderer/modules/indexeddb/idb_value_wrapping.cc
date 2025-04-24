@@ -198,9 +198,7 @@ void IDBValueWrapper::MaybeCompress() {
   wire_data_buffer_[2] = kCompressedWithSnappy;
   size_t compressed_length;
   snappy::RawCompress(reinterpret_cast<const char*>(wire_data_.data()),
-                      wire_data_size,
-                      reinterpret_cast<char*>(
-                          UNSAFE_TODO(wire_data_buffer_.data() + kHeaderSize)),
+                      wire_data_size, &wire_data_buffer_[kHeaderSize],
                       &compressed_length);
   if (ShouldTransmitCompressed(wire_data_size, compressed_length)) {
     // Truncate the excess space that was previously allocated.
@@ -211,9 +209,9 @@ void IDBValueWrapper::MaybeCompress() {
     // Compression wasn't very successful, but we still allocated a large chunk
     // of memory, so we can repurpose it. This copy saves us from making another
     // allocation later on in `MaybeStoreInBlob()`.
-    UNSAFE_TODO(
-        memcpy(wire_data_buffer_.data(), wire_data_.data(), wire_data_size));
     wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
+    base::as_writable_byte_span(wire_data_buffer_)
+        .copy_from_nonoverlapping(wire_data_.first(wire_data_size));
   }
 
   wire_data_ = base::as_byte_span(wire_data_buffer_);
@@ -367,9 +365,7 @@ bool IDBValueUnwrapper::Parse(IDBValue* value) {
   if (!IDBValueUnwrapper::IsWrapped(value))
     return false;
 
-  const uint8_t* data = value->Data().data();
-  end_ = UNSAFE_TODO(data + value->Data().size());
-  current_ = UNSAFE_TODO(data + kHeaderSize);
+  parse_span_ = value->Data().subspan(kHeaderSize);
 
   if (!ReadVarInt(blob_size_))
     return Reset();
@@ -400,13 +396,14 @@ bool IDBValueUnwrapper::ReadVarInt(unsigned& value) {
   unsigned shift = 0;
   bool has_another_byte;
   do {
-    if (current_ >= end_)
+    if (parse_span_.empty()) {
       return false;
+    }
 
     if (shift >= sizeof(unsigned) * 8)
       return false;
-    uint8_t byte = *current_;
-    UNSAFE_TODO(++current_);
+    uint8_t byte = *parse_span_.data();
+    parse_span_ = parse_span_.subspan(1U);
     value |= static_cast<unsigned>(byte & 0x7F) << shift;
     shift += 7;
 
@@ -420,22 +417,21 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
   if (!ReadVarInt(length))
     return false;
 
-  DCHECK_LE(current_, end_);
-  if (end_ - current_ < static_cast<ptrdiff_t>(length))
+  if (parse_span_.size() < length) {
     return false;
+  }
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.AppendSpan(UNSAFE_TODO(base::span(current_, end_)).first(length));
+  result.AppendSpan(parse_span_.first(length));
   value = std::move(result);
-  UNSAFE_TODO(current_ += length);
+  parse_span_ = parse_span_.subspan(length);
   return true;
 }
 
 bool IDBValueUnwrapper::Reset() {
 #if DCHECK_IS_ON()
   blob_handle_ = nullptr;
-  current_ = nullptr;
-  end_ = nullptr;
+  parse_span_ = base::span<const uint8_t>();
 #endif  // DCHECK_IS_ON()
   return false;
 }

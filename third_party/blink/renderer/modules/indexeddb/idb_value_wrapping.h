@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -221,10 +222,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Returns the size of the Blob obtained by the last Unwrap() call.
   //
   // Should only be called after a successful result from Unwrap().
-  inline unsigned WrapperBlobSize() const {
-    DCHECK(end_);
-    return blob_size_;
-  }
+  inline unsigned WrapperBlobSize() const { return blob_size_; }
 
   // Returns a handle to the Blob obtained by the last Unwrap() call.
   //
@@ -242,10 +240,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   bool Reset();
 
   // Deserialization cursor in the `data_` of the IDBValue being unwrapped.
-  const uint8_t* current_;
-
-  // Smallest invalid position_ value.
-  const uint8_t* end_;
+  base::span<const uint8_t> parse_span_;
 
   // The size of the Blob holding the data for the last unwrapped IDBValue.
   unsigned blob_size_;
