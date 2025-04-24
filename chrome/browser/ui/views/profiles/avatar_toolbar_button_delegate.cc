@@ -34,6 +34,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -642,6 +643,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
             ->Show(/*is_source_accelerator=*/false, access_point_);
         break;
     }
+    sync_promo_identity_pill_manager_.RecordPromoUsed(profile_.get());
     Clear();
   }
 
@@ -673,6 +675,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
   }
 
   void Shown() {
+    sync_promo_identity_pill_manager_.RecordPromoShown(profile_.get());
     if (HasBeenShownSinceStartup()) {
       return;
     }
@@ -688,8 +691,8 @@ class HistorySyncOptinStateProvider : public StateProvider,
     if (triggered_) {
       return;
     }
-    // Do not trigger the pill if the user is not allowed to sync.
-    if (!IsAllowedToSync()) {
+    if (!IsAllowedToSync() ||
+        !sync_promo_identity_pill_manager_.ShouldShowPromo(profile_.get())) {
       return;
     }
     triggered_ = true;
@@ -712,6 +715,8 @@ class HistorySyncOptinStateProvider : public StateProvider,
   bool triggered_ = false;
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kUnknown;
+
+  signin::SyncPromoIdentityPillManager sync_promo_identity_pill_manager_;
 
   raw_ref<Profile> profile_;
   raw_ref<signin::IdentityManager> identity_manager_;

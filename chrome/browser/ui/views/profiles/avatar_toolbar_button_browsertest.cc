@@ -1620,6 +1620,63 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached \
+  DISABLED_HistorySyncOptinNotShownIfMaxShownCountReached
+#else
+#define MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached \
+  HistorySyncOptinNotShownIfMaxShownCountReached
+#endif
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
+                       MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string account_name_1(u"Account name");
+  SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name_1));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  int shown_count = 1;
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  // The button comes back to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+  for (; shown_count < user_education::features::GetNewBadgeShowCount();
+       ++shown_count) {
+    // Simulate inactivity for enough time to trigger the new session.
+    RunTestSequence(SetLastActive(
+        shown_count * user_education::features::GetIdleTimeBetweenSessions()));
+    EXPECT_EQ(
+        avatar->GetText(),
+        l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    // The button comes back to the normal state.
+    EXPECT_TRUE(avatar->GetText().empty());
+  }
+  RunTestSequence(SetLastActive(
+      shown_count * user_education::features::GetIdleTimeBetweenSessions()));
+  // The history sync opt-in entry point should NOT be shown after the
+  // inactivity period if the max shown count has been reached.
+  EXPECT_TRUE(avatar->GetText().empty());
+
+  Signout();
+  const std::u16string account_name_2(u"Account name 2");
+  SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name_2));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point
+  // (rate limiting is per account).
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+}
+
 const HistorySyncOptinExpansionPillOptionTestCase kHistorySyncOptinTestCases[] =
     {
         {
@@ -1644,6 +1701,96 @@ INSTANTIATE_TEST_SUITE_P(
     HistorySyncOptinExpansionPillOptions,
     AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
     ValuesIn(kHistorySyncOptinTestCases));
+
+class AvatarToolbarButtonHistorySyncOptinPromoUsedRateLimitBrowserTest
+    : public AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
+      public WithParamInterface<HistorySyncOptinExpansionPillOptionTestCase> {
+ protected:
+  AvatarToolbarButtonHistorySyncOptinPromoUsedRateLimitBrowserTest()
+      : AvatarToolbarButtonHistorySyncOptinClickBrowserTest(/*feature_parameters=*/
+                                                            {{"history-sync-"
+                                                              "optin-"
+                                                              "expansion-pill-"
+                                                              "option",
+                                                              GetParam()
+                                                                  .feature_param}}) {
+  }
+};
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncOptinNotShownIfUsedLimitReached \
+  DISABLED_HistorySyncOptinNotShownIfUsedLimitReached
+#else
+#define MAYBE_HistorySyncOptinNotShownIfUsedLimitReached \
+  HistorySyncOptinNotShownIfUsedLimitReached
+#endif
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonHistorySyncOptinPromoUsedRateLimitBrowserTest,
+    MAYBE_HistorySyncOptinNotShownIfUsedLimitReached) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string account_name_1(u"Account name");
+  SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name_1));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  // The button action should be overridden.
+  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  if (switches::kHistorySyncOptinExpansionPillOption.Get() !=
+      switches::HistorySyncOptinExpansionPillOption::kSyncHistoryProfileMenu) {
+    // `StrictMock` fails on unexpected calls, need to explicitly set the
+    // expectation for the `ShowTurnSyncOnUI` call if the sync dialog opened
+    // directly from the history sync opt-in entry point (not
+    // `kSyncHistoryProfileMenu` option).
+    EXPECT_CALL(mock_signin_ui_delegate_, ShowTurnSyncOnUI)
+        .Times(user_education::features::GetNewBadgeFeatureUsedCount());
+  }
+  Click(avatar);
+  // The button comes back to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+  int used_count = 1;
+  for (; used_count < user_education::features::GetNewBadgeFeatureUsedCount();
+       ++used_count) {
+    // Simulate inactivity for enough time to trigger the new session.
+    RunTestSequence(SetLastActive(
+        used_count * user_education::features::GetIdleTimeBetweenSessions()));
+    EXPECT_EQ(
+        avatar->GetText(),
+        l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+    Click(avatar);
+    // The button comes back to the normal state.
+    EXPECT_TRUE(avatar->GetText().empty());
+  }
+  RunTestSequence(SetLastActive(
+      used_count * user_education::features::GetIdleTimeBetweenSessions()));
+  // The history sync opt-in entry point should NOT be shown after the
+  // inactivity period if the max used count has been reached.
+  EXPECT_TRUE(avatar->GetText().empty());
+
+  Signout();
+  const std::u16string account_name_2(u"Account name 2");
+  SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name_2));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point
+  // (rate limiting is per account).
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HistorySyncOptinExpansionPillOptions,
+    AvatarToolbarButtonHistorySyncOptinPromoUsedRateLimitBrowserTest,
+    ValuesIn(kHistorySyncOptinTestCases));
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Test suite for testing `AvatarToolbarButton`'s responsibility of updating
