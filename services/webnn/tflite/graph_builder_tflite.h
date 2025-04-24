@@ -707,6 +707,8 @@ class GraphBuilderTflite final {
   // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Conv2d& conv2d);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::ElementWiseBinary& binary);
   bool IsDequantizeOutput(uint64_t operand_id);
   //   Get the dequantize op by its output operand id.
   const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
