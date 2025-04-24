@@ -30,25 +30,3 @@ android_library_factory("factory_java") {
 
   sources = [ "internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerFactory.java" ]
 }
-
-robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java" ]
-
-  deps = [
-    ":factory_java",
-    ":java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//base/test:test_support_java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/tabmodel:factory_java",
-    "//chrome/browser/tabmodel:java",
-    "//chrome/test/android:chrome_java_unit_test_support",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java",
-  ]
-}

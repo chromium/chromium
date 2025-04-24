@@ -1109,7 +1109,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tab_ui/android:junit",
       "//chrome/browser/tabmodel:junit",
       "//chrome/browser/tabpersistence:junit",
-      "//chrome/browser/tabwindow:junit",
+      "//chrome/browser/tabwindow/internal:junit",
       "//chrome/browser/task_manager/internal/android:junit",
       "//chrome/browser/touch_to_fill/autofill/android/internal:junit",
       "//chrome/browser/touch_to_fill/common/android:junit",
