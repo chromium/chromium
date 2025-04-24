@@ -785,37 +785,39 @@ class SyncPromoIdentityPillManagerTest : public testing::Test {
 TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
   const AccountInfo account = MakeAccountAvailable("test@email.com");
   const int max_shown_count = 10;
-  SyncPromoIdentityPillManager manager(max_shown_count, /*max_used_count=*/1);
+  SyncPromoIdentityPillManager manager(profile(), max_shown_count,
+                                       /*max_used_count=*/1);
 
   for (int i = 0; i < max_shown_count; ++i) {
     // The promo should be shown if the shown count is below the max.
-    EXPECT_TRUE(manager.ShouldShowPromo(profile()));
-    manager.RecordPromoShown(profile());
+    EXPECT_TRUE(manager.ShouldShowPromo());
+    manager.RecordPromoShown();
   }
 
   // The promo should not be shown if the shown count is at the max.
-  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+  EXPECT_FALSE(manager.ShouldShowPromo());
 }
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
   const AccountInfo account = MakeAccountAvailable("test@email.com");
   const int max_used_count = 5;
-  SyncPromoIdentityPillManager manager(/*max_shown_count=*/10, max_used_count);
+  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
+                                       max_used_count);
 
   for (int i = 0; i < max_used_count; ++i) {
     // The promo should be shown if the used count is below the max.
-    EXPECT_TRUE(manager.ShouldShowPromo(profile()));
-    manager.RecordPromoUsed(profile());
+    EXPECT_TRUE(manager.ShouldShowPromo());
+    manager.RecordPromoUsed();
   }
 
   // The promo should not be shown if the used count is at the max.
-  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+  EXPECT_FALSE(manager.ShouldShowPromo());
 }
 
 TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfNoAccount) {
-  SyncPromoIdentityPillManager manager(/*max_shown_count=*/10,
+  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
                                        /*max_used_count=*/2);
-  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+  EXPECT_FALSE(manager.ShouldShowPromo());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

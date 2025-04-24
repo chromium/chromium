@@ -414,51 +414,55 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   }
 }
 
-SyncPromoIdentityPillManager::SyncPromoIdentityPillManager()
+SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(Profile& profile)
     : SyncPromoIdentityPillManager(
+          profile,
           user_education::features::GetNewBadgeShowCount(),
           user_education::features::GetNewBadgeFeatureUsedCount()) {}
 
-SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(int max_shown_count,
+SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(Profile& profile,
+                                                           int max_shown_count,
                                                            int max_used_count)
-    : max_shown_count_(max_shown_count), max_used_count_(max_used_count) {}
+    : profile_(profile),
+      max_shown_count_(max_shown_count),
+      max_used_count_(max_used_count) {}
 
-bool SyncPromoIdentityPillManager::ShouldShowPromo(Profile& profile) const {
+bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
   const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile));
+      IdentityManagerFactory::GetForProfile(&profile_.get()));
   if (account.gaia.empty()) {
     // If there is no account available, the promo should not be shown (the sync
     // promo should be shown only for signed in users).
     return false;
   }
-  const int show_count = SigninPrefs(*profile.GetPrefs())
+  const int show_count = SigninPrefs(*profile_->GetPrefs())
                              .GetSyncPromoIdentityPillShownCount(account.gaia);
-  const int used_count = SigninPrefs(*profile.GetPrefs())
+  const int used_count = SigninPrefs(*profile_->GetPrefs())
                              .GetSyncPromoIdentityPillUsedCount(account.gaia);
   return show_count < max_shown_count_ && used_count < max_used_count_;
 }
 
-void SyncPromoIdentityPillManager::RecordPromoShown(Profile& profile) {
+void SyncPromoIdentityPillManager::RecordPromoShown() {
   const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile));
+      IdentityManagerFactory::GetForProfile(&profile_.get()));
   if (account.gaia.empty()) {
     // If there is no account available, there is nothing to record (the sync
     // promo should be shown only for signed in users).
     return;
   }
-  SigninPrefs(*profile.GetPrefs())
+  SigninPrefs(*profile_->GetPrefs())
       .IncrementSyncPromoIdentityPillShownCount(account.gaia);
 }
 
-void SyncPromoIdentityPillManager::RecordPromoUsed(Profile& profile) {
+void SyncPromoIdentityPillManager::RecordPromoUsed() {
   const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile));
+      IdentityManagerFactory::GetForProfile(&profile_.get()));
   if (account.gaia.empty()) {
     // If there is no account available, there is nothing to record (the sync
     // promo should be shown only for signed in users).
     return;
   }
-  SigninPrefs(*profile.GetPrefs())
+  SigninPrefs(*profile_->GetPrefs())
       .IncrementSyncPromoIdentityPillUsedCount(account.gaia);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

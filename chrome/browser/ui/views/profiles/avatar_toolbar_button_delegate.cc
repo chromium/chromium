@@ -518,6 +518,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
   explicit HistorySyncOptinStateProvider(StateObserver& state_observer,
                                          Browser& browser)
       : StateProvider(state_observer),
+        sync_promo_identity_pill_manager_(*browser.profile()),
         profile_(*browser.profile()),
         identity_manager_(
             *IdentityManagerFactory::GetForProfile(browser.profile())),
@@ -643,7 +644,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
             ->Show(/*is_source_accelerator=*/false, access_point_);
         break;
     }
-    sync_promo_identity_pill_manager_.RecordPromoUsed(profile_.get());
+    sync_promo_identity_pill_manager_.RecordPromoUsed();
     Clear();
   }
 
@@ -675,7 +676,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
   }
 
   void Shown() {
-    sync_promo_identity_pill_manager_.RecordPromoShown(profile_.get());
+    sync_promo_identity_pill_manager_.RecordPromoShown();
     if (HasBeenShownSinceStartup()) {
       return;
     }
@@ -692,7 +693,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
       return;
     }
     if (!IsAllowedToSync() ||
-        !sync_promo_identity_pill_manager_.ShouldShowPromo(profile_.get())) {
+        !sync_promo_identity_pill_manager_.ShouldShowPromo()) {
       return;
     }
     triggered_ = true;
