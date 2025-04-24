@@ -52,6 +52,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace ash::boca {
 
@@ -260,7 +261,7 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
-  user_identity_.set_photo_url(user->image_url().spec());
+  SetAccountImage(user);
   pref_service_ = user->GetProfilePrefs();
   // BocaAppClient is guaranteed to be live here.
   GetSessionManager()->AddObserver(this);
@@ -1065,6 +1066,26 @@ void BocaAppHandler::OnUpdateSessionBlockingRequestCompleted() {
 
 BocaSessionManager* BocaAppHandler::GetSessionManager() {
   return session_manager_;
+}
+
+void BocaAppHandler::SetAccountImage(user_manager::User* user) {
+  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
+  if (!identity_manager) {
+    return;
+  }
+
+  auto account_id = user->GetAccountId();
+  if (account_id.GetAccountType() != AccountType::GOOGLE) {
+    // Account type might not be GOOGLE during tests.
+    return;
+  }
+
+  AccountInfo maybe_account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
+  if (!maybe_account_info.IsEmpty()) {
+    user_identity_.set_photo_url(
+        webui::GetBitmapDataUrl(maybe_account_info.account_image.AsBitmap()));
+  }
 }
 
 }  // namespace ash::boca

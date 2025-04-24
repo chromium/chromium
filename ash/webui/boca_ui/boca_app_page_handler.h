@@ -220,6 +220,8 @@ class BocaAppHandler : public mojom::PageHandler,
 
   BocaSessionManager* GetSessionManager();
 
+  void SetAccountImage(user_manager::User* user);
+
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
