@@ -21,6 +21,7 @@ per-file .rustfmt.toml=file://styleguide/rust/OWNERS
 per-file .vpython3=bpastene@chromium.org
 per-file .vpython3=dpranke@google.com
 per-file .vpython3=tikuta@chromium.org
+per-file .vpython3=file://third_party/protobuf/OWNERS  # For protobuf wheels changes
 per-file .yapfignore=*
 per-file AUTHORS=*
 per-file BUILD.gn=file://build/OWNERS
