@@ -103,7 +103,6 @@ export interface PolicySettings {
   headerFooter?: PolicyEntry;
   cssBackground?: PolicyEntry;
   mediaSize?: PolicyEntry;
-  sheets?: PolicyEntry;
   color?: PolicyEntry;
   duplex?: PolicyEntry;
   pin?: PolicyEntry;
@@ -507,12 +506,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       margins: Object,
 
       pageSize: Object,
-
-      maxSheets: {
-        type: Number,
-        value: 0,
-        notify: true,
-      },
     };
   }
 
@@ -536,7 +529,6 @@ export class PrintPreviewModelElement extends PolymerElement {
   declare documentSettings: DocumentSettings;
   declare margins: Margins;
   declare pageSize: Size;
-  declare maxSheets: number;
 
   observable: Observable<Settings>;
   private initialized_: boolean = false;

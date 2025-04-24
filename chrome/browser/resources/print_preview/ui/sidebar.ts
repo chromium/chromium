@@ -96,8 +96,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
         computed: 'computeControlsDisabled_(state)',
       },
 
-      maxSheets: Number,
-
       sheetCount_: {
         type: Number,
         computed: 'computeSheetCount_(' +
@@ -143,7 +141,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   declare private firstLoad_: boolean;
   declare private isInAppKioskMode_: boolean;
   declare private settingsExpandedByUser_: boolean;
-  declare maxSheets: number;
   declare private sheetCount_: number;
   declare private shouldShowMoreSettings_: boolean;
 
