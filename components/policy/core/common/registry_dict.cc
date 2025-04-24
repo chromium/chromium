@@ -259,7 +259,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
     switch (it.Type()) {
       case REG_EXPAND_SZ:
         if (auto expanded_path = base::win::ExpandEnvironmentVariables(
-                base::wcstring_view{it.Value(), wcslen(it.Value())})) {
+                base::wcstring_view(it.Value()))) {
           SetValue(name, base::Value(base::WideToUTF8(*expanded_path)));
           continue;
         }

@@ -66,17 +66,6 @@ void WontCompileStartsEndWithMismatch() {
 void WontCompileDanglingInput() {
   // TODO: construct from string.
   // auto v1 = cstring_view(std::string("abc"));
-
-  auto v2 = UNSAFE_BUFFERS(cstring_view( // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
-      std::vector<char>{'a', 'b', 'c', '\0'}.data(),
-      3u));
-
-  auto v3 = cstring_view();
-  {
-    std::vector<char> abc = {'a', 'b', 'c', '\0'};
-    v3 = UNSAFE_BUFFERS(cstring_view(
-        abc.data(), 3u));  // This should make a lifetime error but doesn't. :(
-  }
 }
 
 }  // namespace
