@@ -164,4 +164,4 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     id: 'upload-artifact'
     waitFor: [ 'verify-binary' ]
-    args: ['cp', '-r', '/workspace/hopium/src/out/Debug/*', 'gs://tmp_tbr_build_output_bucket/$TAG_NAME']
+    args: ['cp', '-r', '/workspace/hopium/src/out/Debug/*', 'gs://tmp-totalbrowser-build-artifacts/$TAG_NAME']
