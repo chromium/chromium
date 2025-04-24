@@ -1751,6 +1751,27 @@
             ]
         }
     ],
+    "AutofillEnableBuyNowPayLaterDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableAmountExtractionDesktop",
+                        "AutofillEnableBuyNowPayLater",
+                        "IPH_AutofillBnplAffirmOrZipSuggestion"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableCardBenefitsForAmericanExpress": [
         {
             "platforms": [
