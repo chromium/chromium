@@ -798,6 +798,10 @@ public class WindowAndroid
         return mIsTopResumedActivity;
     }
 
+    public boolean isActivityTopResumedSupported() {
+        return mActivityTopResumedSupported;
+    }
+
     /**
      * @return Current state of the associated {@link Activity}. Can be overridden to return the
      *     correct state. {@code ActivityState.DESTROYED} by default.

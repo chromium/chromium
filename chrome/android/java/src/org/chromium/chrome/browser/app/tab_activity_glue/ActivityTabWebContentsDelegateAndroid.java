@@ -293,23 +293,42 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             return;
         }
 
-        // Do nothing if the tab can currently be interacted with by the user.
-        if (mTab.isUserInteractable()) return;
+        // If the tab can currently be interacted with by the user and it's not in multi-window
+        // mode, then it is already focused so we can drop the call.
+        if (!mActivity.isInMultiWindowMode() && mTab.isUserInteractable()) {
+            return;
+        }
 
         TabModel model = mTabModelSelectorSupplier.get().getModel(mTab.isIncognito());
         int index = model.indexOf(mTab);
         if (index == TabModel.INVALID_TAB_INDEX) return;
         TabModelUtils.setIndex(model, index);
 
-        // Do nothing if the mActivity is visible (STOPPED is the only valid invisible state as we
-        // explicitly check isActivityFinishingOrDestroyed above).
-        if (ApplicationStatus.getStateForActivity(mActivity) == ActivityState.STOPPED) {
-            bringActivityToForeground();
+        WindowAndroid hostWindow = mTab.getWindowAndroid();
+
+        // If the activity is the top resumed activity, then it is already focused so we can drop
+        // the call.
+        if (hostWindow.isActivityTopResumedSupported() && hostWindow.isTopResumedActivity()) {
+            return;
         }
+
+        // If the activity is visible in fullscreen windowing mode (STOPPED is the only valid
+        // invisible state in fullscreen windowing mode as we explicitly check
+        // isActivityFinishingOrDestroyed above), then it is already focused so we can drop the
+        // call.
+        if (!hostWindow.isActivityTopResumedSupported()
+                && !mActivity.isInMultiWindowMode()
+                && ApplicationStatus.getStateForActivity(mActivity) != ActivityState.STOPPED) {
+            return;
+        }
+
+        bringActivityToForeground();
     }
 
     /** Brings chrome's Activity to foreground, if it is not so. */
     protected void bringActivityToForeground() {
+        // TODO(https://crbug.com/412888357): investigate updating the way of focusing activities.
+
         // This intent is sent in order to get the activity back to the foreground if it was
         // not already. The previous call will activate the right tab in the context of the
         // TabModel but will only show the tab to the user if Chrome was already in the
