@@ -17,10 +17,9 @@ class Crc32Hasher {
   Crc32Hasher();
   ~Crc32Hasher();
 
-  // Given a buffer containing a list of kFilePathDelimiter-separated file paths
-  // which are gzipped and base64-encoded, return the file paths as a vector.
-  std::vector<std::string> MakeFileListFromCompressedList(
-      std::string_view data);
+  // Given a list of kFilePathDelimiter-separated file paths, return the file
+  // paths as a vector.
+  std::vector<std::string> ParseFileList(const std::string& combined_paths);
   // If there is no file at the given path, return std::nullopt.
   // Otherwise, return the checksum obtained by hashing the file at that path.
   std::optional<uint32_t> HashFile(const std::string& path);

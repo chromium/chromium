@@ -124,7 +124,6 @@
 ../../third_party/catapult/devil/devil/utils/run_tests_helper.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../third_party/catapult/systrace/systrace/__init__.py
 ../../third_party/catapult/systrace/systrace/trace_result.py
 ../../third_party/catapult/systrace/systrace/tracing_agents/__init__.py
