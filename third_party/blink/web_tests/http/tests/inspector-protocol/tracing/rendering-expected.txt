@@ -131,6 +131,7 @@ Object: {
 			isPicture: boolean
 			loadingAttribute: string
 			nodeId: number
+			nodeName: string
 			srcHeight: number
 			srcWidth: number
 			srcsetAttribute: string

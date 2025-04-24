@@ -1544,7 +1544,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& src_rect,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, &layout_image, "nodeId");
+  SetGeneratingNodeInfo(dict, &layout_image, "nodeId", "nodeName");
   if (const ImageResourceContent* content = layout_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
