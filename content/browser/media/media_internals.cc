@@ -77,6 +77,8 @@ std::string EffectsToString(int effects) {
       {media::AudioParameters::NOISE_SUPPRESSION, "NOISE_SUPPRESSION"},
       {media::AudioParameters::AUTOMATIC_GAIN_CONTROL,
        "AUTOMATIC_GAIN_CONTROL"},
+      {media::AudioParameters::DEEP_NOISE_SUPPRESSION,
+       "DEEP_NOISE_SUPPRESSION"},
   });
 
   std::string ret;

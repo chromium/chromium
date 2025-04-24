@@ -1435,12 +1435,10 @@ std::pair<int, bool> CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC(
   }
 
   // Check for AEC support among the supported effects and build up the effect
-  // mask for supported voice processing effects (AEC, NS and AGC).
-  // Note that other audio effects such as beamforming, equalizer etc. are all
-  // excluded here since they are not part of the supported effects in
+  // mask for supported voice processing effects (AEC, NS, AGC, and DNS (Deep
+  // NS)). Note that other audio effects such as beamforming, equalizer etc. are
+  // all excluded here since they are not part of the supported effects in
   // AudioParameters::PlatformEffectsMask.
-  // TODO(crbug.com/399308033: should AUDIO_EFFECT_TYPE_DEEP_NOISE_SUPPRESSION
-  // be included here and if so in what format?
   int effects = AudioParameters::NO_EFFECTS;
   bool echo_cancellation_is_available = false;
   for (size_t i = 0; i < num_effects; i++) {
@@ -1456,6 +1454,9 @@ std::pair<int, bool> CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC(
     } else if (audio_effect.id == AUDIO_EFFECT_TYPE_NOISE_SUPPRESSION &&
                audio_effect.state == AUDIO_EFFECT_STATE_ON) {
       effect = AudioParameters::NOISE_SUPPRESSION;
+    } else if (audio_effect.id == AUDIO_EFFECT_TYPE_DEEP_NOISE_SUPPRESSION &&
+               audio_effect.state == AUDIO_EFFECT_STATE_ON) {
+      effect = AudioParameters::DEEP_NOISE_SUPPRESSION;
     } else if (audio_effect.id == AUDIO_EFFECT_TYPE_AUTOMATIC_GAIN_CONTROL &&
                audio_effect.state == AUDIO_EFFECT_STATE_ON) {
       effect = AudioParameters::AUTOMATIC_GAIN_CONTROL;

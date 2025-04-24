@@ -227,6 +227,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
                                 // Only meaningful when
                                 // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
+
+    DEEP_NOISE_SUPPRESSION = 1 << 21,  // Also called Voice Focus on Windows.
   };
 
   struct HardwareCapabilities {

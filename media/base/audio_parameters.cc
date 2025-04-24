@@ -206,6 +206,9 @@ std::string AudioParameters::EffectsMaskToString(int mask) {
   if (mask & AudioParameters::VOICE_ISOLATION) {
     effects.push_back("VOICE_ISOLATION");
   }
+  if (mask & AudioParameters::DEEP_NOISE_SUPPRESSION) {
+    effects.push_back("WINDOWS_DEEP_NOISE_SUPPRESSION");
+  }
 
   std::string result;
   for (size_t i = 0; i < effects.size(); ++i) {
