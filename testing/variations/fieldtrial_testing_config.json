@@ -24209,6 +24209,25 @@
             ]
         }
     ],
+    "TabGroupSuggestion": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250423",
+                    "params": {
+                        "consecutive_computation_delay_sec": "5",
+                        "create_suggestions_promotion_ui": "false"
+                    },
+                    "enable_features": [
+                        "GroupSuggestionService"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupSyncAutoOpenOffByDefault": [
         {
             "platforms": [
