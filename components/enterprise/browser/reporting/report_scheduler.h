@@ -127,8 +127,9 @@ class ReportScheduler {
   // Observes CloudReportingEnabled policy.
   void RegisterPrefObserver();
 
-  // Handles kCloudReportingEnabled policy value change, including the first
-  // policy value check during startup.
+  // Handles policy value changes for both kCloudReportingEnabled and
+  // kUserSecuritySignalsReporting, including the first policy value check
+  // during startup.
   void OnReportEnabledPrefChanged();
 
   // Stops the periodic timer and the update observer.

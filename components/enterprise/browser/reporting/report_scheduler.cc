@@ -140,6 +140,7 @@ void ReportScheduler::RegisterPrefObserver() {
       reporting_pref_name_,
       base::BindRepeating(&ReportScheduler::OnReportEnabledPrefChanged,
                           base::Unretained(this)));
+
   // Trigger first pref check during launch process.
   OnDMTokenUpdated();
 }
@@ -241,6 +242,11 @@ void ReportScheduler::Start(base::Time last_upload_time) {
 }
 
 void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
+  if (delegate_->AreSecurityReportsEnabled()) {
+    // Does nothing if client is already registered.
+    SetupBrowserPolicyClientRegistration();
+  }
+
   if (active_trigger_ != kTriggerNone) {
     // A report is already being generated. Remember this trigger to be handled
     // once the current report completes.

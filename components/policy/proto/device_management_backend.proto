@@ -2432,7 +2432,7 @@ message OSReport {
   repeated AntiVirusProduct antivirus_info = 13;
 
   // A string contains the ID of installed hotfix system updates. Windows only.
-  optional string hotfixes = 14;
+  repeated string hotfixes = 14;
 
   // The machine GUID of the device, Windows only. This field contains PII.
   optional string machine_guid = 15;
