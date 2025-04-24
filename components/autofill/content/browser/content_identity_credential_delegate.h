@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_IDENTITY_CREDENTIAL_DELEGATE_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
