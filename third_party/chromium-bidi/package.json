@@ -32,6 +32,7 @@
     },
     "./lib/cjs/*": {
       "types": "./lib/cjs/*",
+      "import": "./lib/cjs/*",
       "require": "./lib/cjs/*"
     }
   },
