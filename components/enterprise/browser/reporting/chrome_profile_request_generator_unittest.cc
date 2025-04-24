@@ -56,7 +56,8 @@ void VerifyReportContent(
   // True if a status report-exclusive field is expected to be filled correctly,
   // status reports with signals also count.
   bool expect_status_report_only_value =
-      expected_report_type != em::ChromeProfileReportRequest::PROFILE_SIGNALS;
+      expected_report_type !=
+      em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS;
   bool expect_signals_override_value =
       expected_report_type != em::ChromeProfileReportRequest::PROFILE_REPORT;
 
@@ -273,7 +274,7 @@ TEST_F(ChromeProfileRequestGeneratorTest,
 
   VerifyReportContent(
       test_future.Get(),
-      em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SIGNALS);
+      em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SECURITY_SIGNALS);
 }
 
 TEST_F(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
@@ -290,7 +291,7 @@ TEST_F(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
   VerifyReportContent(test_future.Get(),
-                      em::ChromeProfileReportRequest::PROFILE_SIGNALS);
+                      em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
 }
 
 TEST_F(ChromeProfileRequestGeneratorTest, IncorrectReportType) {

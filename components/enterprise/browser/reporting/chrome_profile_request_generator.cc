@@ -29,9 +29,10 @@ em::ChromeProfileReportRequest::ReportType GetReportTypeFromSignalsMode(
     case SecuritySignalsMode::kNoSignals:
       return em::ChromeProfileReportRequest::PROFILE_REPORT;
     case SecuritySignalsMode::kSignalsAttached:
-      return em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SIGNALS;
+      return em::ChromeProfileReportRequest::
+          PROFILE_REPORT_WITH_SECURITY_SIGNALS;
     case SecuritySignalsMode::kSignalsOnly:
-      return em::ChromeProfileReportRequest::PROFILE_SIGNALS;
+      return em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS;
   }
 }
 

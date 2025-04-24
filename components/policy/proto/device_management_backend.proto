@@ -2519,8 +2519,8 @@ message ChromeProfileReportRequest {
   enum ReportType {
     UNKNOWN = 0;
     PROFILE_REPORT = 1;
-    PROFILE_SIGNALS = 2;
-    PROFILE_REPORT_WITH_SIGNALS = 3;
+    PROFILE_SECURITY_SIGNALS = 2;
+    PROFILE_REPORT_WITH_SECURITY_SIGNALS = 3;
   }
 
   // The type of report that is being sent.
