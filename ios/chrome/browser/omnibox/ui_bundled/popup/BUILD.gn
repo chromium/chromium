@@ -6,7 +6,6 @@ source_set("popup") {
   sources = [
     "omnibox_popup_presenter.h",
     "omnibox_popup_presenter.mm",
-    "omnibox_popup_provider.h",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
   ]

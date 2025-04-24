@@ -120,6 +120,13 @@ class OmniboxViewIOS;
 /// Notifies of scroll event.
 - (void)onScroll;
 
+#pragma mark - Private event
+// Events that are private. Removed from header after refactoring
+// (crbug.com/390409559). Since these methods should be private, comments are in
+// the implementation file.
+
+- (void)updatePopupLayoutDirection;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_

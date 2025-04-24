@@ -316,8 +316,6 @@
       std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
                                             _omniboxAutocompleteController);
 
-  _editView->SetPopupProvider(popupView.get());
-
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]
          initWithBaseViewController:nil
                             browser:self.browser

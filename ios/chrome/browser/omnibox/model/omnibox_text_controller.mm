@@ -408,6 +408,15 @@
   [textModel setText:previewText userTextLength:previewText.length];
 }
 
+/// Updates the appearance of popup to have proper text alignment.
+- (void)updatePopupLayoutDirection {
+  OmniboxTextFieldIOS* textField = self.textField;
+  [self.omniboxAutocompleteController
+      setTextAlignment:[textField bestTextAlignment]];
+  [self.omniboxAutocompleteController
+      setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+}
+
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
 }

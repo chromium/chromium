@@ -58,8 +58,7 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                id<ToolbarCommands> toolbar_commands_handler)
     : OmniboxView(std::move(client)),
       field_(field),
-      ignore_popup_updates_(false),
-      popup_provider_(nullptr) {
+      ignore_popup_updates_(false) {
   DCHECK(field_);
 }
 
@@ -126,16 +125,7 @@ void OmniboxViewIOS::UpdatePopup() {
                                prevent_inline_autocomplete);
   }
 
-  UpdatePopupAppearance();
-}
-
-void OmniboxViewIOS::UpdatePopupAppearance() {
-  if (!popup_provider_) {
-    return;
-  }
-  popup_provider_->SetTextAlignment([field_ bestTextAlignment]);
-  popup_provider_->SetSemanticContentAttribute(
-      [field_ bestSemanticContentAttribute]);
+  [omnibox_text_controller_ updatePopupLayoutDirection];
 }
 
 void OmniboxViewIOS::OnTemporaryTextMaybeChanged(

@@ -52,19 +52,3 @@ void OmniboxPopupViewIOS::UpdatePopupAppearance() {
 bool OmniboxPopupViewIOS::IsOpen() const {
   return omnibox_autocomplete_controller_.hasSuggestions;
 }
-
-#pragma mark - OmniboxPopupProvider
-
-void OmniboxPopupViewIOS::SetTextAlignment(NSTextAlignment alignment) {
-  [omnibox_autocomplete_controller_ setTextAlignment:alignment];
-}
-
-void OmniboxPopupViewIOS::SetSemanticContentAttribute(
-    UISemanticContentAttribute semanticContentAttribute) {
-  [omnibox_autocomplete_controller_
-      setSemanticContentAttribute:semanticContentAttribute];
-}
-
-void OmniboxPopupViewIOS::SetHasThumbnail(bool has_thumbnail) {
-  [omnibox_autocomplete_controller_ setHasThumbnail:has_thumbnail];
-}

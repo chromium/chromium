@@ -13,7 +13,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_view.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_provider.h"
 
 struct AutocompleteMatch;
 class GURL;
@@ -37,10 +36,6 @@ class OmniboxViewIOS : public OmniboxView {
                  id<ToolbarCommands> toolbar_commands_handler);
 
   ~OmniboxViewIOS() override;
-
-  void SetPopupProvider(OmniboxPopupProvider* provider) {
-    popup_provider_ = provider;
-  }
 
   void SetOmniboxTextController(OmniboxTextController* controller) {
     omnibox_text_controller_ = controller;
@@ -105,9 +100,6 @@ class OmniboxViewIOS : public OmniboxView {
 
   void OnCallActionTap();
 
-  // Updates the appearance of popup to have proper text alignment.
-  void UpdatePopupAppearance();
-
   // Hide keyboard only.  Used when omnibox popups grab focus but editing isn't
   // complete.
   void HideKeyboard();
@@ -138,8 +130,6 @@ class OmniboxViewIOS : public OmniboxView {
   // the underlying problem, which is that textDidChange: is called when closing
   // the popup, and then remove this hack.
   BOOL ignore_popup_updates_;
-
-  raw_ptr<OmniboxPopupProvider> popup_provider_;  // weak
 
   /// Controller that will replace OmniboxViewIOS at the end of the refactoring
   /// crbug.com/390409559.
