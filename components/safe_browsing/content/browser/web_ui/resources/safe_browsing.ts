@@ -269,7 +269,7 @@ function initialize() {
 }
 
 function addExperiments(result: string[]) {
-  addContentHelper(result, 'result-template', 'experiements-list', 'span');
+  addContentHelper(result, 'result-template', 'experiments-list', 'span');
 }
 
 function addPrefs(result: string[]) {
@@ -361,17 +361,17 @@ function addContentHelper(
   for (let i = 0; i < resLength; i += 2) {
     const listTemplate = $<HTMLTemplateElement>(templateName);
     assert(listTemplate);
-    const formattedTemplated =
+    const formattedTemplate =
         listTemplate.content.cloneNode(true) as HTMLElement;
     const firstResult = result[i];
     const secondResult = result[i + 1];
     const selectedElements =
-        formattedTemplated.querySelectorAll(elementSelector);
+        formattedTemplate.querySelectorAll(elementSelector);
     const firstElement = selectedElements[0];
     const secondElement = selectedElements[1];
     const parentList = $(parentListName);
 
-    assert(firstResult);
+    assert(firstResult !== null && firstResult !== undefined);
     assert(secondResult);
     assert(firstElement);
     assert(secondElement);
@@ -379,7 +379,7 @@ function addContentHelper(
 
     firstElement.textContent = secondResult + ': ';
     secondElement.textContent = firstResult;
-    parentList.appendChild(listTemplate);
+    parentList.appendChild(formattedTemplate);
   }
 }
 
@@ -489,9 +489,10 @@ function addHPRTLookupResponse(result: string[]) {
 // A helper function that ensures there are elements within `results` before
 // adding them to a list.
 function addResultToTableHelper(
-    listName: string, result: string[], position: number) {
-  const tableId = result[0];
-  const token = result[1];
+    listName: string, result: Array<string|number>, position: number) {
+  const tableId =
+      typeof result[0] === 'number' ? (result[0]).toString() : result[0];
+  const token = result[1] as string;
   assert(tableId);
   assert(token);
 
