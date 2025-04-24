@@ -17,6 +17,9 @@
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
@@ -41,6 +44,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
     ai_manager_ = std::make_unique<AIManager>(main_rfh()->GetBrowserContext(),
                                               main_rfh());
   }
+
   void TearDown() override {
     ai_manager_.reset();
     AITestUtils::AITestBase::TearDown();
@@ -70,6 +74,11 @@ class AIManagerTest : public AITestUtils::AITestBase {
             GetOnDeviceModelEligibility(_))
         .WillByDefault(testing::Return(
             optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  }
+
+  void SetBuildInAIAPIsEnterprisePolicy(bool value) {
+    profile()->GetPrefs()->SetBoolean(
+        policy::policy_prefs::kBuiltInAIAPIsEnabled, value);
   }
 
  protected:
@@ -223,6 +232,23 @@ TEST_F(AIManagerTest, CanCreateSessionWithImageAndAudioInputCapabilities) {
   ai_manager_->CanCreateSession(key, capabilities, callback.Get());
   capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
   ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+}
+
+TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
+  SetupMockOptimizationGuideKeyedService();
+  SetBuildInAIAPIsEnterprisePolicy(false);
+  base::MockCallback<
+      base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+      callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled))
+      .Times(4);
+
+  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateWriter(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+  ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
+  SetBuildInAIAPIsEnterprisePolicy(true);
 }
 
 class AIManagerIsLanguagesSupportedTest : public AITestUtils::AITestBase {

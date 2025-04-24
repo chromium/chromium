@@ -291,6 +291,10 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableTranslationNotEligible:
       return "The on-device translation is not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableEnterprisePolicyDisabled:
+      return "The on-device model is not available because the enterprise "
+             "policy disables the feature.";
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:

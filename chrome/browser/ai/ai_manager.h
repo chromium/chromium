@@ -133,6 +133,8 @@ class AIManager : public base::SupportsUserData::Data,
                         on_device_model::Capabilities capabilities,
                         CanCreateLanguageModelCallback callback);
 
+  bool IsBuiltInAIAPIsEnabledByPolicy();
+
  private:
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);

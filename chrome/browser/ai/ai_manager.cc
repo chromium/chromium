@@ -41,6 +41,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/page_visibility_state.h"
@@ -331,6 +333,13 @@ bool AIManager::IsLanguagesSupported(
          is_language_supported(output);
 }
 
+bool AIManager::IsBuiltInAIAPIsEnabledByPolicy() {
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context_)->GetPrefs();
+  return !prefs->HasPrefPath(policy::policy_prefs::kBuiltInAIAPIsEnabled) ||
+         prefs->GetBoolean(policy::policy_prefs::kBuiltInAIAPIsEnabled);
+}
+
 void AIManager::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   receivers_.Add(this, std::move(receiver));
@@ -339,6 +348,11 @@ void AIManager::AddReceiver(
 void AIManager::CanCreateLanguageModel(
     blink::mojom::AILanguageModelCreateOptionsPtr options,
     CanCreateLanguageModelCallback callback) {
+  if (!IsBuiltInAIAPIsEnabledByPolicy()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled);
+    return;
+  }
   on_device_model::Capabilities capabilities;
   if (options && options->expected_inputs.has_value()) {
     capabilities = GetExpectedCapabilities(options->expected_inputs.value());
@@ -526,6 +540,11 @@ void AIManager::CreateLanguageModel(
 void AIManager::CanCreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options,
     CanCreateSummarizerCallback callback) {
+  if (!IsBuiltInAIAPIsEnabledByPolicy()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled);
+    return;
+  }
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {
@@ -617,6 +636,11 @@ void AIManager::GetLanguageModelParams(
 
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                 CanCreateWriterCallback callback) {
+  if (!IsBuiltInAIAPIsEnabledByPolicy()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled);
+    return;
+  }
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {
@@ -665,6 +689,11 @@ void AIManager::CreateWriter(
 void AIManager::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
+  if (!IsBuiltInAIAPIsEnabledByPolicy()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableEnterprisePolicyDisabled);
+    return;
+  }
   if (options && !IsLanguagesSupported(options->expected_input_languages,
                                        options->expected_context_languages,
                                        options->output_language)) {

@@ -89,6 +89,7 @@ extern const char kDownloadRestrictions[];
 extern const char kAlwaysOnVpnPreConnectUrlAllowlist[];
 extern const char kFloatingWorkspaceEnabled[];
 #endif
+extern const char kBuiltInAIAPIsEnabled[];
 }  // namespace policy_prefs
 }  // namespace policy
 

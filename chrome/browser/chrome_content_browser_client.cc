@@ -1665,6 +1665,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kServiceWorkerToControlSrcdocIframeEnabled, true);
   registry->RegisterBooleanPref(prefs::kReduceAcceptLanguageEnabled, true);
+  registry->RegisterBooleanPref(policy::policy_prefs::kBuiltInAIAPIsEnabled,
+                                true);
 }
 
 // static

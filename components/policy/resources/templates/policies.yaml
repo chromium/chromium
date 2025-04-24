@@ -1355,6 +1355,7 @@ policies:
   1354: EnterpriseCustomLabelForBrowser
   1355: DefaultSmartCardConnectSetting
   1356: DeviceUserInitiatedFirmwareUpdatesEnabled
+  1357: BuiltInAIAPIsEnabled
 
 atomic_groups:
   1: Homepage
