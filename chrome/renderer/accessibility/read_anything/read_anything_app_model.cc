@@ -661,7 +661,7 @@ void ReadAnythingAppModel::AdjustTextSize(int increment) {
 }
 
 void ReadAnythingAppModel::ResetTextSize() {
-  SetFontSize(1.0f);
+  SetFontSize(2.0f);
 }
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,

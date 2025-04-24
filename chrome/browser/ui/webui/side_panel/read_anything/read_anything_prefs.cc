@@ -18,7 +18,7 @@ void RegisterReadAnythingProfilePrefs(
                                // All languages use the same default font.
                                GetSupportedFonts("en").front(),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale, 1.0f,
+  registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale, 2.0f,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingColorInfo,
