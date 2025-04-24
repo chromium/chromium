@@ -521,10 +521,8 @@ std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
 
 bool RendererBlinkPlatformImpl::DecodeAudioFileData(
     blink::WebAudioBus* destination_bus,
-    const char* audio_file_data,
-    size_t data_size) {
-  return content::DecodeAudioFileData(destination_bus, audio_file_data,
-                                      data_size);
+    base::span<const char> audio_file_data) {
+  return content::DecodeAudioFileData(destination_bus, audio_file_data);
 }
 
 //------------------------------------------------------------------------------

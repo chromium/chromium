@@ -207,9 +207,7 @@ class AudioDecoderTest
   void Initialize() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
-    auto data_span = base::span(*data_);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_span.data(),
-                                                      data_span.size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
