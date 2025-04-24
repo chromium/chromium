@@ -24,7 +24,9 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink.mojom.AuthenticationExtensionsClientInputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorSelectionCriteria;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CableAuthentication;
+import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentCredentialInstrument;
@@ -821,6 +823,7 @@ public class Fido2ApiTestHelper {
         private Integer mOutcome;
         private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
         private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
+        private CredentialInfo mPasswordCredential;
         private List<byte[]> mGetMatchingCredentialIdsResponse;
 
         // Signals when request is complete.
@@ -835,7 +838,18 @@ public class Fido2ApiTestHelper {
             unblock();
         }
 
-        public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
+        public void onSignResponse(
+                @Nullable GetAssertionAuthenticatorResponse response,
+                @Nullable CredentialInfo passwordCredential) {
+            assert mStatus == null;
+            mStatus = AuthenticatorStatus.SUCCESS;
+            mGetAssertionAuthenticatorResponse = response;
+            mPasswordCredential = passwordCredential;
+            unblock();
+        }
+
+        public void onSignResponseWithStatus(
+                int status, GetAssertionAuthenticatorResponse response) {
             assert mStatus == null;
             mStatus = status;
             mGetAssertionAuthenticatorResponse = response;
@@ -872,6 +886,10 @@ public class Fido2ApiTestHelper {
 
         public GetAssertionAuthenticatorResponse getGetAssertionResponse() {
             return mGetAssertionAuthenticatorResponse;
+        }
+
+        public CredentialInfo getGetAssertionPasswordCredential() {
+            return mPasswordCredential;
         }
 
         public List<byte[]> getGetMatchingCredentialIdsResponse() {

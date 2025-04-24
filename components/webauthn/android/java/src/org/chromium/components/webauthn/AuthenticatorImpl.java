@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.GetAssertionResponse;
 import org.chromium.blink.mojom.GetCredentialResponse;
@@ -204,11 +205,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                     getCredentialResponseForAssertion(AuthenticatorStatus.PENDING_REQUEST, null));
             return;
         }
-        if (options.mediation == Mediation.IMMEDIATE) {
-            callback.call(
-                    getCredentialResponseForAssertion(AuthenticatorStatus.NOT_IMPLEMENTED, null));
-            return;
-        }
 
         mGetCredentialCallback = callback;
         mIsOperationPending = true;
@@ -389,12 +385,23 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         cleanupRequest();
     }
 
-    public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
+    public void onSignResponse(
+            @Nullable GetAssertionAuthenticatorResponse assertionResponse,
+            @Nullable CredentialInfo passwordCredential) {
+        assert assertionResponse == null ^ passwordCredential == null;
+
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
         assert mGetCredentialCallback != null;
-        mGetCredentialCallback.call(getCredentialResponseForAssertion(status, response));
+        if (assertionResponse != null) {
+            mGetCredentialCallback.call(
+                    getCredentialResponseForAssertion(
+                            AuthenticatorStatus.SUCCESS, assertionResponse));
+        } else {
+            assumeNonNull(passwordCredential);
+            mGetCredentialCallback.call(getCredentialResponseForPassword(passwordCredential));
+        }
         cleanupRequest();
     }
 
@@ -521,5 +528,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         assertionResponse.status = status;
         finalResponse.setGetAssertionResponse(assertionResponse);
         return finalResponse;
+    }
+
+    private GetCredentialResponse getCredentialResponseForPassword(
+            CredentialInfo passwordCredential) {
+        GetCredentialResponse response = new GetCredentialResponse();
+        response.setPasswordResponse(passwordCredential);
+        return response;
     }
 }

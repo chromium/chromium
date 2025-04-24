@@ -27,6 +27,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.CredentialInfo;
+import org.chromium.blink.mojom.CredentialType;
+import org.chromium.blink.mojom.CredentialTypeFlags;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
@@ -49,6 +52,7 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCre
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.mojo_base.mojom.String16;
 
 import java.nio.ByteBuffer;
 
@@ -409,6 +413,24 @@ public class CredManHelper {
                         String type = getCredentialResponse.getCredential().getType();
 
                         if (!TYPE_PASSKEY.equals(type)) {
+                            if (options.mediation == Mediation.IMMEDIATE) {
+                                CredentialInfo passwordCredential = new CredentialInfo();
+                                passwordCredential.type = CredentialType.PASSWORD;
+                                String16 name =
+                                        stringToMojoString16(
+                                                data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"));
+                                passwordCredential.name = name;
+                                passwordCredential.id = name;
+                                passwordCredential.password =
+                                        stringToMojoString16(
+                                                data.getString(
+                                                        CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
+                                assumeNonNull(getCallback);
+                                getCallback.onSignResponse(
+                                        /* assertionResponse= */ null, passwordCredential);
+                                return;
+                            }
+
                             localBridge.onPasswordCredentialReceived(
                                     frameHost,
                                     data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
@@ -473,7 +495,7 @@ public class CredManHelper {
                             frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
                         assumeNonNull(getCallback);
-                        getCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
+                        getCallback.onSignResponse(response, /* passwordCredential= */ null);
                     }
                 };
 
@@ -482,6 +504,12 @@ public class CredManHelper {
             mMetricsHelper.reportGetCredentialMetrics(
                     CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
+        }
+
+        boolean passwordCredentialsRequested =
+                (options.requestedCredentialTypeFlags & CredentialTypeFlags.PASSWORD) != 0;
+        if (options.mediation == Mediation.IMMEDIATE && passwordCredentialsRequested) {
+            mRequestPasswords = true;
         }
         mConditionalUiState =
                 options.mediation == Mediation.CONDITIONAL
@@ -545,10 +573,15 @@ public class CredManHelper {
     }
 
     boolean shouldPreferImmediatelyAvailable(@Mediation.EnumType int mediation) {
+        if (mediation == Mediation.IMMEDIATE) {
+            return true;
+        }
+
         // Chrome renders its own UI when there are no credentials when using CredMan. However, this
         // is not true for WebView or Chrome 3rd party PWM mode - there are no other UIs. Thus
         // they never ask CredMan to skip its UI.
-        if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+        if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)
+                && mPlayServicesAvailable) {
             return mediation != Mediation.CONDITIONAL;
         }
         return false;
@@ -593,7 +626,6 @@ public class CredManHelper {
                                 hasAllowCredentials,
                                 requestPasswords)
                         .setOrigin(originString)
-                        .setPlayServicesAvailable(mPlayServicesAvailable)
                         .setIgnoreGpm(ignoreGpm)
                         .setRenderFrameHost(mAuthenticationContextProvider.getRenderFrameHost())
                         .build();
@@ -614,5 +646,18 @@ public class CredManHelper {
                     + " literals for `Fido2ApiTestHelper.java`. Run against an Android target"
                     + " otherwise decoding may still fail in tests.",
                 e);
+    }
+
+    private static @Nullable String16 stringToMojoString16(@Nullable String javaString) {
+        if (javaString == null) {
+            return null;
+        }
+        short[] data = new short[javaString.length()];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (short) javaString.charAt(i);
+        }
+        String16 mojoString = new String16();
+        mojoString.data = data;
+        return mojoString;
     }
 }

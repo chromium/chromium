@@ -41,7 +41,6 @@ class CredManGetCredentialRequestHelper {
     private boolean mRequestPasswords;
 
     private @Nullable String mOrigin;
-    private boolean mPlayServicesAvailable;
     private boolean mIgnoreGpm;
     private @Nullable RenderFrameHost mRenderFrameHost;
 
@@ -64,11 +63,6 @@ class CredManGetCredentialRequestHelper {
 
         Builder setOrigin(String origin) {
             mHelper.mOrigin = origin;
-            return this;
-        }
-
-        Builder setPlayServicesAvailable(boolean playServicesAvailable) {
-            mHelper.mPlayServicesAvailable = playServicesAvailable;
             return this;
         }
 
@@ -108,10 +102,6 @@ class CredManGetCredentialRequestHelper {
 
     @Nullable String getOrigin() {
         return mOrigin;
-    }
-
-    boolean getPlayServicesAvailable() {
-        return mPlayServicesAvailable;
     }
 
     boolean getIgnoreGpm() {

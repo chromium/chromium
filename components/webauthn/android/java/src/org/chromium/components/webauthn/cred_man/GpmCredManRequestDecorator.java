@@ -93,7 +93,7 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
         // error which is handled by calling Play Services to render the error.
         getCredentialRequestBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS",
-                helper.getPreferImmediatelyAvailable() && helper.getPlayServicesAvailable());
+                helper.getPreferImmediatelyAvailable());
     }
 
     @Override
