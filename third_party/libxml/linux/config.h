@@ -1,15 +1,15 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if you have the declaration of `getentropy', and to 0 if you
+/* Define to 1 if you have the declaration of 'getentropy', and to 0 if you
    don't. */
 #define HAVE_DECL_GETENTROPY 1
 
-/* Define to 1 if you have the declaration of `glob', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'glob', and to 0 if you don't.
    */
 #define HAVE_DECL_GLOB 1
 
-/* Define to 1 if you have the declaration of `mmap', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'mmap', and to 0 if you don't.
    */
 #define HAVE_DECL_MMAP 1
 
@@ -83,7 +83,7 @@
 #define PACKAGE_NAME "libxml2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libxml2 2.14.0"
+#define PACKAGE_STRING "libxml2 2.14.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libxml2"
@@ -92,15 +92,15 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.14.0"
+#define PACKAGE_VERSION "2.14.2"
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2.14.0"
+#define VERSION "2.14.2"
 
 /* System configuration directory (/etc) */
 #define XML_SYSCONFDIR "/usr/local/etc"

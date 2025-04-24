@@ -6,7 +6,7 @@
  * http://www.unicode.org/Public/4.0-Update1/UCD-4.0.1.html
  * using the genUnicode.py Python script.
  *
- * Generation date: Mon Mar 27 11:09:52 2006
+ * Generation date: Tue Mar  4 16:29:31 2025
  * Sources: Blocks-4.0.1.txt UnicodeData-4.0.1.txt
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -14,12 +14,13 @@
 #define IN_LIBXML
 #include "libxml.h"
 
-#ifdef LIBXML_UNICODE_ENABLED
+#ifdef LIBXML_REGEXP_ENABLED
 
 #include <string.h>
 #include <libxml/xmlversion.h>
-#include <libxml/xmlunicode.h>
 #include <libxml/chvalid.h>
+
+#include "private/unicode.h"
 
 typedef int (xmlIntFunc)(int);	/* just to keep one's mind untwisted */
 
@@ -35,174 +36,6 @@ typedef struct {
 
 
 static xmlIntFunc *xmlUnicodeLookup(const xmlUnicodeNameTable *tptr, const char *tname);
-
-static const xmlUnicodeRange xmlUnicodeBlocks[] = {
-  {"AegeanNumbers", xmlUCSIsAegeanNumbers},
-  {"AlphabeticPresentationForms", xmlUCSIsAlphabeticPresentationForms},
-  {"Arabic", xmlUCSIsArabic},
-  {"ArabicPresentationForms-A", xmlUCSIsArabicPresentationFormsA},
-  {"ArabicPresentationForms-B", xmlUCSIsArabicPresentationFormsB},
-  {"Armenian", xmlUCSIsArmenian},
-  {"Arrows", xmlUCSIsArrows},
-  {"BasicLatin", xmlUCSIsBasicLatin},
-  {"Bengali", xmlUCSIsBengali},
-  {"BlockElements", xmlUCSIsBlockElements},
-  {"Bopomofo", xmlUCSIsBopomofo},
-  {"BopomofoExtended", xmlUCSIsBopomofoExtended},
-  {"BoxDrawing", xmlUCSIsBoxDrawing},
-  {"BraillePatterns", xmlUCSIsBraillePatterns},
-  {"Buhid", xmlUCSIsBuhid},
-  {"ByzantineMusicalSymbols", xmlUCSIsByzantineMusicalSymbols},
-  {"CJKCompatibility", xmlUCSIsCJKCompatibility},
-  {"CJKCompatibilityForms", xmlUCSIsCJKCompatibilityForms},
-  {"CJKCompatibilityIdeographs", xmlUCSIsCJKCompatibilityIdeographs},
-  {"CJKCompatibilityIdeographsSupplement", xmlUCSIsCJKCompatibilityIdeographsSupplement},
-  {"CJKRadicalsSupplement", xmlUCSIsCJKRadicalsSupplement},
-  {"CJKSymbolsandPunctuation", xmlUCSIsCJKSymbolsandPunctuation},
-  {"CJKUnifiedIdeographs", xmlUCSIsCJKUnifiedIdeographs},
-  {"CJKUnifiedIdeographsExtensionA", xmlUCSIsCJKUnifiedIdeographsExtensionA},
-  {"CJKUnifiedIdeographsExtensionB", xmlUCSIsCJKUnifiedIdeographsExtensionB},
-  {"Cherokee", xmlUCSIsCherokee},
-  {"CombiningDiacriticalMarks", xmlUCSIsCombiningDiacriticalMarks},
-  {"CombiningDiacriticalMarksforSymbols", xmlUCSIsCombiningDiacriticalMarksforSymbols},
-  {"CombiningHalfMarks", xmlUCSIsCombiningHalfMarks},
-  {"CombiningMarksforSymbols", xmlUCSIsCombiningMarksforSymbols},
-  {"ControlPictures", xmlUCSIsControlPictures},
-  {"CurrencySymbols", xmlUCSIsCurrencySymbols},
-  {"CypriotSyllabary", xmlUCSIsCypriotSyllabary},
-  {"Cyrillic", xmlUCSIsCyrillic},
-  {"CyrillicSupplement", xmlUCSIsCyrillicSupplement},
-  {"Deseret", xmlUCSIsDeseret},
-  {"Devanagari", xmlUCSIsDevanagari},
-  {"Dingbats", xmlUCSIsDingbats},
-  {"EnclosedAlphanumerics", xmlUCSIsEnclosedAlphanumerics},
-  {"EnclosedCJKLettersandMonths", xmlUCSIsEnclosedCJKLettersandMonths},
-  {"Ethiopic", xmlUCSIsEthiopic},
-  {"GeneralPunctuation", xmlUCSIsGeneralPunctuation},
-  {"GeometricShapes", xmlUCSIsGeometricShapes},
-  {"Georgian", xmlUCSIsGeorgian},
-  {"Gothic", xmlUCSIsGothic},
-  {"Greek", xmlUCSIsGreek},
-  {"GreekExtended", xmlUCSIsGreekExtended},
-  {"GreekandCoptic", xmlUCSIsGreekandCoptic},
-  {"Gujarati", xmlUCSIsGujarati},
-  {"Gurmukhi", xmlUCSIsGurmukhi},
-  {"HalfwidthandFullwidthForms", xmlUCSIsHalfwidthandFullwidthForms},
-  {"HangulCompatibilityJamo", xmlUCSIsHangulCompatibilityJamo},
-  {"HangulJamo", xmlUCSIsHangulJamo},
-  {"HangulSyllables", xmlUCSIsHangulSyllables},
-  {"Hanunoo", xmlUCSIsHanunoo},
-  {"Hebrew", xmlUCSIsHebrew},
-  {"HighPrivateUseSurrogates", xmlUCSIsHighPrivateUseSurrogates},
-  {"HighSurrogates", xmlUCSIsHighSurrogates},
-  {"Hiragana", xmlUCSIsHiragana},
-  {"IPAExtensions", xmlUCSIsIPAExtensions},
-  {"IdeographicDescriptionCharacters", xmlUCSIsIdeographicDescriptionCharacters},
-  {"Kanbun", xmlUCSIsKanbun},
-  {"KangxiRadicals", xmlUCSIsKangxiRadicals},
-  {"Kannada", xmlUCSIsKannada},
-  {"Katakana", xmlUCSIsKatakana},
-  {"KatakanaPhoneticExtensions", xmlUCSIsKatakanaPhoneticExtensions},
-  {"Khmer", xmlUCSIsKhmer},
-  {"KhmerSymbols", xmlUCSIsKhmerSymbols},
-  {"Lao", xmlUCSIsLao},
-  {"Latin-1Supplement", xmlUCSIsLatin1Supplement},
-  {"LatinExtended-A", xmlUCSIsLatinExtendedA},
-  {"LatinExtended-B", xmlUCSIsLatinExtendedB},
-  {"LatinExtendedAdditional", xmlUCSIsLatinExtendedAdditional},
-  {"LetterlikeSymbols", xmlUCSIsLetterlikeSymbols},
-  {"Limbu", xmlUCSIsLimbu},
-  {"LinearBIdeograms", xmlUCSIsLinearBIdeograms},
-  {"LinearBSyllabary", xmlUCSIsLinearBSyllabary},
-  {"LowSurrogates", xmlUCSIsLowSurrogates},
-  {"Malayalam", xmlUCSIsMalayalam},
-  {"MathematicalAlphanumericSymbols", xmlUCSIsMathematicalAlphanumericSymbols},
-  {"MathematicalOperators", xmlUCSIsMathematicalOperators},
-  {"MiscellaneousMathematicalSymbols-A", xmlUCSIsMiscellaneousMathematicalSymbolsA},
-  {"MiscellaneousMathematicalSymbols-B", xmlUCSIsMiscellaneousMathematicalSymbolsB},
-  {"MiscellaneousSymbols", xmlUCSIsMiscellaneousSymbols},
-  {"MiscellaneousSymbolsandArrows", xmlUCSIsMiscellaneousSymbolsandArrows},
-  {"MiscellaneousTechnical", xmlUCSIsMiscellaneousTechnical},
-  {"Mongolian", xmlUCSIsMongolian},
-  {"MusicalSymbols", xmlUCSIsMusicalSymbols},
-  {"Myanmar", xmlUCSIsMyanmar},
-  {"NumberForms", xmlUCSIsNumberForms},
-  {"Ogham", xmlUCSIsOgham},
-  {"OldItalic", xmlUCSIsOldItalic},
-  {"OpticalCharacterRecognition", xmlUCSIsOpticalCharacterRecognition},
-  {"Oriya", xmlUCSIsOriya},
-  {"Osmanya", xmlUCSIsOsmanya},
-  {"PhoneticExtensions", xmlUCSIsPhoneticExtensions},
-  {"PrivateUse", xmlUCSIsPrivateUse},
-  {"PrivateUseArea", xmlUCSIsPrivateUseArea},
-  {"Runic", xmlUCSIsRunic},
-  {"Shavian", xmlUCSIsShavian},
-  {"Sinhala", xmlUCSIsSinhala},
-  {"SmallFormVariants", xmlUCSIsSmallFormVariants},
-  {"SpacingModifierLetters", xmlUCSIsSpacingModifierLetters},
-  {"Specials", xmlUCSIsSpecials},
-  {"SuperscriptsandSubscripts", xmlUCSIsSuperscriptsandSubscripts},
-  {"SupplementalArrows-A", xmlUCSIsSupplementalArrowsA},
-  {"SupplementalArrows-B", xmlUCSIsSupplementalArrowsB},
-  {"SupplementalMathematicalOperators", xmlUCSIsSupplementalMathematicalOperators},
-  {"SupplementaryPrivateUseArea-A", xmlUCSIsSupplementaryPrivateUseAreaA},
-  {"SupplementaryPrivateUseArea-B", xmlUCSIsSupplementaryPrivateUseAreaB},
-  {"Syriac", xmlUCSIsSyriac},
-  {"Tagalog", xmlUCSIsTagalog},
-  {"Tagbanwa", xmlUCSIsTagbanwa},
-  {"Tags", xmlUCSIsTags},
-  {"TaiLe", xmlUCSIsTaiLe},
-  {"TaiXuanJingSymbols", xmlUCSIsTaiXuanJingSymbols},
-  {"Tamil", xmlUCSIsTamil},
-  {"Telugu", xmlUCSIsTelugu},
-  {"Thaana", xmlUCSIsThaana},
-  {"Thai", xmlUCSIsThai},
-  {"Tibetan", xmlUCSIsTibetan},
-  {"Ugaritic", xmlUCSIsUgaritic},
-  {"UnifiedCanadianAboriginalSyllabics", xmlUCSIsUnifiedCanadianAboriginalSyllabics},
-  {"VariationSelectors", xmlUCSIsVariationSelectors},
-  {"VariationSelectorsSupplement", xmlUCSIsVariationSelectorsSupplement},
-  {"YiRadicals", xmlUCSIsYiRadicals},
-  {"YiSyllables", xmlUCSIsYiSyllables},
-  {"YijingHexagramSymbols", xmlUCSIsYijingHexagramSymbols}};
-
-static const xmlUnicodeRange xmlUnicodeCats[] = {
-  {"C", xmlUCSIsCatC},
-  {"Cc", xmlUCSIsCatCc},
-  {"Cf", xmlUCSIsCatCf},
-  {"Co", xmlUCSIsCatCo},
-  {"Cs", xmlUCSIsCatCs},
-  {"L", xmlUCSIsCatL},
-  {"Ll", xmlUCSIsCatLl},
-  {"Lm", xmlUCSIsCatLm},
-  {"Lo", xmlUCSIsCatLo},
-  {"Lt", xmlUCSIsCatLt},
-  {"Lu", xmlUCSIsCatLu},
-  {"M", xmlUCSIsCatM},
-  {"Mc", xmlUCSIsCatMc},
-  {"Me", xmlUCSIsCatMe},
-  {"Mn", xmlUCSIsCatMn},
-  {"N", xmlUCSIsCatN},
-  {"Nd", xmlUCSIsCatNd},
-  {"Nl", xmlUCSIsCatNl},
-  {"No", xmlUCSIsCatNo},
-  {"P", xmlUCSIsCatP},
-  {"Pc", xmlUCSIsCatPc},
-  {"Pd", xmlUCSIsCatPd},
-  {"Pe", xmlUCSIsCatPe},
-  {"Pf", xmlUCSIsCatPf},
-  {"Pi", xmlUCSIsCatPi},
-  {"Po", xmlUCSIsCatPo},
-  {"Ps", xmlUCSIsCatPs},
-  {"S", xmlUCSIsCatS},
-  {"Sc", xmlUCSIsCatSc},
-  {"Sk", xmlUCSIsCatSk},
-  {"Sm", xmlUCSIsCatSm},
-  {"So", xmlUCSIsCatSo},
-  {"Z", xmlUCSIsCatZ},
-  {"Zl", xmlUCSIsCatZl},
-  {"Zp", xmlUCSIsCatZp},
-  {"Zs", xmlUCSIsCatZs}};
 
 static const xmlChSRange xmlCS[] = {{0x0, 0x1f}, {0x7f, 0x9f},
     {0xad, 0xad}, {0x600, 0x603}, {0x6dd, 0x6dd}, {0x70f, 0x70f},
@@ -930,9 +763,6 @@ static const xmlChSRange xmlZS[] = {{0x20, 0x20}, {0xa0, 0xa0},
     {0x202f, 0x202f}, {0x205f, 0x205f}, {0x3000, 0x3000} };
 static const xmlChRangeGroup xmlZG = {9,0,xmlZS,NULL};
 
-static const xmlUnicodeNameTable xmlUnicodeBlockTbl = {xmlUnicodeBlocks, 128};
-static const xmlUnicodeNameTable xmlUnicodeCatTbl = {xmlUnicodeCats, 36};
-
 /**
  * xmlUnicodeLookup:
  * @tptr: pointer to the name table
@@ -973,7 +803,7 @@ static xmlIntFunc
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsAegeanNumbers(int code) {
     return(((code >= 0x10100) && (code <= 0x1013F)));
 }
@@ -986,7 +816,7 @@ xmlUCSIsAegeanNumbers(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsAlphabeticPresentationForms(int code) {
     return(((code >= 0xFB00) && (code <= 0xFB4F)));
 }
@@ -999,7 +829,7 @@ xmlUCSIsAlphabeticPresentationForms(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsArabic(int code) {
     return(((code >= 0x0600) && (code <= 0x06FF)));
 }
@@ -1012,7 +842,7 @@ xmlUCSIsArabic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsArabicPresentationFormsA(int code) {
     return(((code >= 0xFB50) && (code <= 0xFDFF)));
 }
@@ -1025,7 +855,7 @@ xmlUCSIsArabicPresentationFormsA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsArabicPresentationFormsB(int code) {
     return(((code >= 0xFE70) && (code <= 0xFEFF)));
 }
@@ -1038,7 +868,7 @@ xmlUCSIsArabicPresentationFormsB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsArmenian(int code) {
     return(((code >= 0x0530) && (code <= 0x058F)));
 }
@@ -1051,7 +881,7 @@ xmlUCSIsArmenian(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsArrows(int code) {
     return(((code >= 0x2190) && (code <= 0x21FF)));
 }
@@ -1064,7 +894,7 @@ xmlUCSIsArrows(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBasicLatin(int code) {
     return(((code >= 0x0000) && (code <= 0x007F)));
 }
@@ -1077,7 +907,7 @@ xmlUCSIsBasicLatin(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBengali(int code) {
     return(((code >= 0x0980) && (code <= 0x09FF)));
 }
@@ -1090,7 +920,7 @@ xmlUCSIsBengali(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBlockElements(int code) {
     return(((code >= 0x2580) && (code <= 0x259F)));
 }
@@ -1103,7 +933,7 @@ xmlUCSIsBlockElements(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBopomofo(int code) {
     return(((code >= 0x3100) && (code <= 0x312F)));
 }
@@ -1116,7 +946,7 @@ xmlUCSIsBopomofo(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBopomofoExtended(int code) {
     return(((code >= 0x31A0) && (code <= 0x31BF)));
 }
@@ -1129,7 +959,7 @@ xmlUCSIsBopomofoExtended(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBoxDrawing(int code) {
     return(((code >= 0x2500) && (code <= 0x257F)));
 }
@@ -1142,7 +972,7 @@ xmlUCSIsBoxDrawing(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBraillePatterns(int code) {
     return(((code >= 0x2800) && (code <= 0x28FF)));
 }
@@ -1155,7 +985,7 @@ xmlUCSIsBraillePatterns(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsBuhid(int code) {
     return(((code >= 0x1740) && (code <= 0x175F)));
 }
@@ -1168,7 +998,7 @@ xmlUCSIsBuhid(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsByzantineMusicalSymbols(int code) {
     return(((code >= 0x1D000) && (code <= 0x1D0FF)));
 }
@@ -1181,7 +1011,7 @@ xmlUCSIsByzantineMusicalSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKCompatibility(int code) {
     return(((code >= 0x3300) && (code <= 0x33FF)));
 }
@@ -1194,7 +1024,7 @@ xmlUCSIsCJKCompatibility(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKCompatibilityForms(int code) {
     return(((code >= 0xFE30) && (code <= 0xFE4F)));
 }
@@ -1207,7 +1037,7 @@ xmlUCSIsCJKCompatibilityForms(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKCompatibilityIdeographs(int code) {
     return(((code >= 0xF900) && (code <= 0xFAFF)));
 }
@@ -1220,7 +1050,7 @@ xmlUCSIsCJKCompatibilityIdeographs(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKCompatibilityIdeographsSupplement(int code) {
     return(((code >= 0x2F800) && (code <= 0x2FA1F)));
 }
@@ -1233,7 +1063,7 @@ xmlUCSIsCJKCompatibilityIdeographsSupplement(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKRadicalsSupplement(int code) {
     return(((code >= 0x2E80) && (code <= 0x2EFF)));
 }
@@ -1246,7 +1076,7 @@ xmlUCSIsCJKRadicalsSupplement(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKSymbolsandPunctuation(int code) {
     return(((code >= 0x3000) && (code <= 0x303F)));
 }
@@ -1259,7 +1089,7 @@ xmlUCSIsCJKSymbolsandPunctuation(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKUnifiedIdeographs(int code) {
     return(((code >= 0x4E00) && (code <= 0x9FFF)));
 }
@@ -1272,7 +1102,7 @@ xmlUCSIsCJKUnifiedIdeographs(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKUnifiedIdeographsExtensionA(int code) {
     return(((code >= 0x3400) && (code <= 0x4DBF)));
 }
@@ -1285,7 +1115,7 @@ xmlUCSIsCJKUnifiedIdeographsExtensionA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCJKUnifiedIdeographsExtensionB(int code) {
     return(((code >= 0x20000) && (code <= 0x2A6DF)));
 }
@@ -1298,7 +1128,7 @@ xmlUCSIsCJKUnifiedIdeographsExtensionB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCherokee(int code) {
     return(((code >= 0x13A0) && (code <= 0x13FF)));
 }
@@ -1311,7 +1141,7 @@ xmlUCSIsCherokee(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCombiningDiacriticalMarks(int code) {
     return(((code >= 0x0300) && (code <= 0x036F)));
 }
@@ -1324,7 +1154,7 @@ xmlUCSIsCombiningDiacriticalMarks(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCombiningDiacriticalMarksforSymbols(int code) {
     return(((code >= 0x20D0) && (code <= 0x20FF)));
 }
@@ -1337,7 +1167,7 @@ xmlUCSIsCombiningDiacriticalMarksforSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCombiningHalfMarks(int code) {
     return(((code >= 0xFE20) && (code <= 0xFE2F)));
 }
@@ -1350,7 +1180,7 @@ xmlUCSIsCombiningHalfMarks(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCombiningMarksforSymbols(int code) {
     return(((code >= 0x20D0) && (code <= 0x20FF)));
 }
@@ -1363,7 +1193,7 @@ xmlUCSIsCombiningMarksforSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsControlPictures(int code) {
     return(((code >= 0x2400) && (code <= 0x243F)));
 }
@@ -1376,7 +1206,7 @@ xmlUCSIsControlPictures(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCurrencySymbols(int code) {
     return(((code >= 0x20A0) && (code <= 0x20CF)));
 }
@@ -1389,7 +1219,7 @@ xmlUCSIsCurrencySymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCypriotSyllabary(int code) {
     return(((code >= 0x10800) && (code <= 0x1083F)));
 }
@@ -1402,7 +1232,7 @@ xmlUCSIsCypriotSyllabary(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCyrillic(int code) {
     return(((code >= 0x0400) && (code <= 0x04FF)));
 }
@@ -1415,7 +1245,7 @@ xmlUCSIsCyrillic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsCyrillicSupplement(int code) {
     return(((code >= 0x0500) && (code <= 0x052F)));
 }
@@ -1428,7 +1258,7 @@ xmlUCSIsCyrillicSupplement(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsDeseret(int code) {
     return(((code >= 0x10400) && (code <= 0x1044F)));
 }
@@ -1441,7 +1271,7 @@ xmlUCSIsDeseret(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsDevanagari(int code) {
     return(((code >= 0x0900) && (code <= 0x097F)));
 }
@@ -1454,7 +1284,7 @@ xmlUCSIsDevanagari(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsDingbats(int code) {
     return(((code >= 0x2700) && (code <= 0x27BF)));
 }
@@ -1467,7 +1297,7 @@ xmlUCSIsDingbats(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsEnclosedAlphanumerics(int code) {
     return(((code >= 0x2460) && (code <= 0x24FF)));
 }
@@ -1480,7 +1310,7 @@ xmlUCSIsEnclosedAlphanumerics(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsEnclosedCJKLettersandMonths(int code) {
     return(((code >= 0x3200) && (code <= 0x32FF)));
 }
@@ -1493,7 +1323,7 @@ xmlUCSIsEnclosedCJKLettersandMonths(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsEthiopic(int code) {
     return(((code >= 0x1200) && (code <= 0x137F)));
 }
@@ -1506,7 +1336,7 @@ xmlUCSIsEthiopic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGeneralPunctuation(int code) {
     return(((code >= 0x2000) && (code <= 0x206F)));
 }
@@ -1519,7 +1349,7 @@ xmlUCSIsGeneralPunctuation(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGeometricShapes(int code) {
     return(((code >= 0x25A0) && (code <= 0x25FF)));
 }
@@ -1532,7 +1362,7 @@ xmlUCSIsGeometricShapes(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGeorgian(int code) {
     return(((code >= 0x10A0) && (code <= 0x10FF)));
 }
@@ -1545,7 +1375,7 @@ xmlUCSIsGeorgian(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGothic(int code) {
     return(((code >= 0x10330) && (code <= 0x1034F)));
 }
@@ -1558,7 +1388,7 @@ xmlUCSIsGothic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGreek(int code) {
     return(((code >= 0x0370) && (code <= 0x03FF)));
 }
@@ -1571,7 +1401,7 @@ xmlUCSIsGreek(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGreekExtended(int code) {
     return(((code >= 0x1F00) && (code <= 0x1FFF)));
 }
@@ -1584,7 +1414,7 @@ xmlUCSIsGreekExtended(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGreekandCoptic(int code) {
     return(((code >= 0x0370) && (code <= 0x03FF)));
 }
@@ -1597,7 +1427,7 @@ xmlUCSIsGreekandCoptic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGujarati(int code) {
     return(((code >= 0x0A80) && (code <= 0x0AFF)));
 }
@@ -1610,7 +1440,7 @@ xmlUCSIsGujarati(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsGurmukhi(int code) {
     return(((code >= 0x0A00) && (code <= 0x0A7F)));
 }
@@ -1623,7 +1453,7 @@ xmlUCSIsGurmukhi(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHalfwidthandFullwidthForms(int code) {
     return(((code >= 0xFF00) && (code <= 0xFFEF)));
 }
@@ -1636,7 +1466,7 @@ xmlUCSIsHalfwidthandFullwidthForms(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHangulCompatibilityJamo(int code) {
     return(((code >= 0x3130) && (code <= 0x318F)));
 }
@@ -1649,7 +1479,7 @@ xmlUCSIsHangulCompatibilityJamo(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHangulJamo(int code) {
     return(((code >= 0x1100) && (code <= 0x11FF)));
 }
@@ -1662,7 +1492,7 @@ xmlUCSIsHangulJamo(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHangulSyllables(int code) {
     return(((code >= 0xAC00) && (code <= 0xD7AF)));
 }
@@ -1675,7 +1505,7 @@ xmlUCSIsHangulSyllables(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHanunoo(int code) {
     return(((code >= 0x1720) && (code <= 0x173F)));
 }
@@ -1688,7 +1518,7 @@ xmlUCSIsHanunoo(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHebrew(int code) {
     return(((code >= 0x0590) && (code <= 0x05FF)));
 }
@@ -1701,7 +1531,7 @@ xmlUCSIsHebrew(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHighPrivateUseSurrogates(int code) {
     return(((code >= 0xDB80) && (code <= 0xDBFF)));
 }
@@ -1714,7 +1544,7 @@ xmlUCSIsHighPrivateUseSurrogates(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHighSurrogates(int code) {
     return(((code >= 0xD800) && (code <= 0xDB7F)));
 }
@@ -1727,7 +1557,7 @@ xmlUCSIsHighSurrogates(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsHiragana(int code) {
     return(((code >= 0x3040) && (code <= 0x309F)));
 }
@@ -1740,7 +1570,7 @@ xmlUCSIsHiragana(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsIPAExtensions(int code) {
     return(((code >= 0x0250) && (code <= 0x02AF)));
 }
@@ -1753,7 +1583,7 @@ xmlUCSIsIPAExtensions(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsIdeographicDescriptionCharacters(int code) {
     return(((code >= 0x2FF0) && (code <= 0x2FFF)));
 }
@@ -1766,7 +1596,7 @@ xmlUCSIsIdeographicDescriptionCharacters(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKanbun(int code) {
     return(((code >= 0x3190) && (code <= 0x319F)));
 }
@@ -1779,7 +1609,7 @@ xmlUCSIsKanbun(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKangxiRadicals(int code) {
     return(((code >= 0x2F00) && (code <= 0x2FDF)));
 }
@@ -1792,7 +1622,7 @@ xmlUCSIsKangxiRadicals(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKannada(int code) {
     return(((code >= 0x0C80) && (code <= 0x0CFF)));
 }
@@ -1805,7 +1635,7 @@ xmlUCSIsKannada(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKatakana(int code) {
     return(((code >= 0x30A0) && (code <= 0x30FF)));
 }
@@ -1818,7 +1648,7 @@ xmlUCSIsKatakana(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKatakanaPhoneticExtensions(int code) {
     return(((code >= 0x31F0) && (code <= 0x31FF)));
 }
@@ -1831,7 +1661,7 @@ xmlUCSIsKatakanaPhoneticExtensions(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKhmer(int code) {
     return(((code >= 0x1780) && (code <= 0x17FF)));
 }
@@ -1844,7 +1674,7 @@ xmlUCSIsKhmer(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsKhmerSymbols(int code) {
     return(((code >= 0x19E0) && (code <= 0x19FF)));
 }
@@ -1857,7 +1687,7 @@ xmlUCSIsKhmerSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLao(int code) {
     return(((code >= 0x0E80) && (code <= 0x0EFF)));
 }
@@ -1870,7 +1700,7 @@ xmlUCSIsLao(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLatin1Supplement(int code) {
     return(((code >= 0x0080) && (code <= 0x00FF)));
 }
@@ -1883,7 +1713,7 @@ xmlUCSIsLatin1Supplement(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLatinExtendedA(int code) {
     return(((code >= 0x0100) && (code <= 0x017F)));
 }
@@ -1896,7 +1726,7 @@ xmlUCSIsLatinExtendedA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLatinExtendedB(int code) {
     return(((code >= 0x0180) && (code <= 0x024F)));
 }
@@ -1909,7 +1739,7 @@ xmlUCSIsLatinExtendedB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLatinExtendedAdditional(int code) {
     return(((code >= 0x1E00) && (code <= 0x1EFF)));
 }
@@ -1922,7 +1752,7 @@ xmlUCSIsLatinExtendedAdditional(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLetterlikeSymbols(int code) {
     return(((code >= 0x2100) && (code <= 0x214F)));
 }
@@ -1935,7 +1765,7 @@ xmlUCSIsLetterlikeSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLimbu(int code) {
     return(((code >= 0x1900) && (code <= 0x194F)));
 }
@@ -1948,7 +1778,7 @@ xmlUCSIsLimbu(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLinearBIdeograms(int code) {
     return(((code >= 0x10080) && (code <= 0x100FF)));
 }
@@ -1961,7 +1791,7 @@ xmlUCSIsLinearBIdeograms(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLinearBSyllabary(int code) {
     return(((code >= 0x10000) && (code <= 0x1007F)));
 }
@@ -1974,7 +1804,7 @@ xmlUCSIsLinearBSyllabary(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsLowSurrogates(int code) {
     return(((code >= 0xDC00) && (code <= 0xDFFF)));
 }
@@ -1987,7 +1817,7 @@ xmlUCSIsLowSurrogates(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMalayalam(int code) {
     return(((code >= 0x0D00) && (code <= 0x0D7F)));
 }
@@ -2000,7 +1830,7 @@ xmlUCSIsMalayalam(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMathematicalAlphanumericSymbols(int code) {
     return(((code >= 0x1D400) && (code <= 0x1D7FF)));
 }
@@ -2013,7 +1843,7 @@ xmlUCSIsMathematicalAlphanumericSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMathematicalOperators(int code) {
     return(((code >= 0x2200) && (code <= 0x22FF)));
 }
@@ -2026,7 +1856,7 @@ xmlUCSIsMathematicalOperators(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMiscellaneousMathematicalSymbolsA(int code) {
     return(((code >= 0x27C0) && (code <= 0x27EF)));
 }
@@ -2039,7 +1869,7 @@ xmlUCSIsMiscellaneousMathematicalSymbolsA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMiscellaneousMathematicalSymbolsB(int code) {
     return(((code >= 0x2980) && (code <= 0x29FF)));
 }
@@ -2052,7 +1882,7 @@ xmlUCSIsMiscellaneousMathematicalSymbolsB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMiscellaneousSymbols(int code) {
     return(((code >= 0x2600) && (code <= 0x26FF)));
 }
@@ -2065,7 +1895,7 @@ xmlUCSIsMiscellaneousSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMiscellaneousSymbolsandArrows(int code) {
     return(((code >= 0x2B00) && (code <= 0x2BFF)));
 }
@@ -2078,7 +1908,7 @@ xmlUCSIsMiscellaneousSymbolsandArrows(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMiscellaneousTechnical(int code) {
     return(((code >= 0x2300) && (code <= 0x23FF)));
 }
@@ -2091,7 +1921,7 @@ xmlUCSIsMiscellaneousTechnical(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMongolian(int code) {
     return(((code >= 0x1800) && (code <= 0x18AF)));
 }
@@ -2104,7 +1934,7 @@ xmlUCSIsMongolian(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMusicalSymbols(int code) {
     return(((code >= 0x1D100) && (code <= 0x1D1FF)));
 }
@@ -2117,7 +1947,7 @@ xmlUCSIsMusicalSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsMyanmar(int code) {
     return(((code >= 0x1000) && (code <= 0x109F)));
 }
@@ -2130,7 +1960,7 @@ xmlUCSIsMyanmar(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsNumberForms(int code) {
     return(((code >= 0x2150) && (code <= 0x218F)));
 }
@@ -2143,7 +1973,7 @@ xmlUCSIsNumberForms(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsOgham(int code) {
     return(((code >= 0x1680) && (code <= 0x169F)));
 }
@@ -2156,7 +1986,7 @@ xmlUCSIsOgham(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsOldItalic(int code) {
     return(((code >= 0x10300) && (code <= 0x1032F)));
 }
@@ -2169,7 +1999,7 @@ xmlUCSIsOldItalic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsOpticalCharacterRecognition(int code) {
     return(((code >= 0x2440) && (code <= 0x245F)));
 }
@@ -2182,7 +2012,7 @@ xmlUCSIsOpticalCharacterRecognition(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsOriya(int code) {
     return(((code >= 0x0B00) && (code <= 0x0B7F)));
 }
@@ -2195,7 +2025,7 @@ xmlUCSIsOriya(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsOsmanya(int code) {
     return(((code >= 0x10480) && (code <= 0x104AF)));
 }
@@ -2208,7 +2038,7 @@ xmlUCSIsOsmanya(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsPhoneticExtensions(int code) {
     return(((code >= 0x1D00) && (code <= 0x1D7F)));
 }
@@ -2221,7 +2051,7 @@ xmlUCSIsPhoneticExtensions(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsPrivateUse(int code) {
     return(((code >= 0xE000) && (code <= 0xF8FF)) ||
            ((code >= 0xF0000) && (code <= 0xFFFFF)) ||
@@ -2236,7 +2066,7 @@ xmlUCSIsPrivateUse(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsPrivateUseArea(int code) {
     return(((code >= 0xE000) && (code <= 0xF8FF)));
 }
@@ -2249,7 +2079,7 @@ xmlUCSIsPrivateUseArea(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsRunic(int code) {
     return(((code >= 0x16A0) && (code <= 0x16FF)));
 }
@@ -2262,7 +2092,7 @@ xmlUCSIsRunic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsShavian(int code) {
     return(((code >= 0x10450) && (code <= 0x1047F)));
 }
@@ -2275,7 +2105,7 @@ xmlUCSIsShavian(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSinhala(int code) {
     return(((code >= 0x0D80) && (code <= 0x0DFF)));
 }
@@ -2288,7 +2118,7 @@ xmlUCSIsSinhala(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSmallFormVariants(int code) {
     return(((code >= 0xFE50) && (code <= 0xFE6F)));
 }
@@ -2301,7 +2131,7 @@ xmlUCSIsSmallFormVariants(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSpacingModifierLetters(int code) {
     return(((code >= 0x02B0) && (code <= 0x02FF)));
 }
@@ -2314,7 +2144,7 @@ xmlUCSIsSpacingModifierLetters(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSpecials(int code) {
     return(((code >= 0xFFF0) && (code <= 0xFFFF)));
 }
@@ -2327,7 +2157,7 @@ xmlUCSIsSpecials(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSuperscriptsandSubscripts(int code) {
     return(((code >= 0x2070) && (code <= 0x209F)));
 }
@@ -2340,7 +2170,7 @@ xmlUCSIsSuperscriptsandSubscripts(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSupplementalArrowsA(int code) {
     return(((code >= 0x27F0) && (code <= 0x27FF)));
 }
@@ -2353,7 +2183,7 @@ xmlUCSIsSupplementalArrowsA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSupplementalArrowsB(int code) {
     return(((code >= 0x2900) && (code <= 0x297F)));
 }
@@ -2366,7 +2196,7 @@ xmlUCSIsSupplementalArrowsB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSupplementalMathematicalOperators(int code) {
     return(((code >= 0x2A00) && (code <= 0x2AFF)));
 }
@@ -2379,7 +2209,7 @@ xmlUCSIsSupplementalMathematicalOperators(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSupplementaryPrivateUseAreaA(int code) {
     return(((code >= 0xF0000) && (code <= 0xFFFFF)));
 }
@@ -2392,7 +2222,7 @@ xmlUCSIsSupplementaryPrivateUseAreaA(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSupplementaryPrivateUseAreaB(int code) {
     return(((code >= 0x100000) && (code <= 0x10FFFF)));
 }
@@ -2405,7 +2235,7 @@ xmlUCSIsSupplementaryPrivateUseAreaB(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsSyriac(int code) {
     return(((code >= 0x0700) && (code <= 0x074F)));
 }
@@ -2418,7 +2248,7 @@ xmlUCSIsSyriac(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTagalog(int code) {
     return(((code >= 0x1700) && (code <= 0x171F)));
 }
@@ -2431,7 +2261,7 @@ xmlUCSIsTagalog(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTagbanwa(int code) {
     return(((code >= 0x1760) && (code <= 0x177F)));
 }
@@ -2444,7 +2274,7 @@ xmlUCSIsTagbanwa(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTags(int code) {
     return(((code >= 0xE0000) && (code <= 0xE007F)));
 }
@@ -2457,7 +2287,7 @@ xmlUCSIsTags(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTaiLe(int code) {
     return(((code >= 0x1950) && (code <= 0x197F)));
 }
@@ -2470,7 +2300,7 @@ xmlUCSIsTaiLe(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTaiXuanJingSymbols(int code) {
     return(((code >= 0x1D300) && (code <= 0x1D35F)));
 }
@@ -2483,7 +2313,7 @@ xmlUCSIsTaiXuanJingSymbols(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTamil(int code) {
     return(((code >= 0x0B80) && (code <= 0x0BFF)));
 }
@@ -2496,7 +2326,7 @@ xmlUCSIsTamil(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTelugu(int code) {
     return(((code >= 0x0C00) && (code <= 0x0C7F)));
 }
@@ -2509,7 +2339,7 @@ xmlUCSIsTelugu(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsThaana(int code) {
     return(((code >= 0x0780) && (code <= 0x07BF)));
 }
@@ -2522,7 +2352,7 @@ xmlUCSIsThaana(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsThai(int code) {
     return(((code >= 0x0E00) && (code <= 0x0E7F)));
 }
@@ -2535,7 +2365,7 @@ xmlUCSIsThai(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsTibetan(int code) {
     return(((code >= 0x0F00) && (code <= 0x0FFF)));
 }
@@ -2548,7 +2378,7 @@ xmlUCSIsTibetan(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsUgaritic(int code) {
     return(((code >= 0x10380) && (code <= 0x1039F)));
 }
@@ -2561,7 +2391,7 @@ xmlUCSIsUgaritic(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsUnifiedCanadianAboriginalSyllabics(int code) {
     return(((code >= 0x1400) && (code <= 0x167F)));
 }
@@ -2574,7 +2404,7 @@ xmlUCSIsUnifiedCanadianAboriginalSyllabics(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsVariationSelectors(int code) {
     return(((code >= 0xFE00) && (code <= 0xFE0F)));
 }
@@ -2587,7 +2417,7 @@ xmlUCSIsVariationSelectors(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsVariationSelectorsSupplement(int code) {
     return(((code >= 0xE0100) && (code <= 0xE01EF)));
 }
@@ -2600,7 +2430,7 @@ xmlUCSIsVariationSelectorsSupplement(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsYiRadicals(int code) {
     return(((code >= 0xA490) && (code <= 0xA4CF)));
 }
@@ -2613,7 +2443,7 @@ xmlUCSIsYiRadicals(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsYiSyllables(int code) {
     return(((code >= 0xA000) && (code <= 0xA48F)));
 }
@@ -2626,28 +2456,9 @@ xmlUCSIsYiSyllables(int code) {
  *
  * Returns 1 if true 0 otherwise
  */
-int
+static int
 xmlUCSIsYijingHexagramSymbols(int code) {
     return(((code >= 0x4DC0) && (code <= 0x4DFF)));
-}
-
-/**
- * xmlUCSIsBlock:
- * @code: UCS code point
- * @block: UCS block name
- *
- * Check whether the character is part of the UCS Block
- *
- * Returns 1 if true, 0 if false and -1 on unknown block
- */
-int
-xmlUCSIsBlock(int code, const char *block) {
-    xmlIntFunc *func;
-
-    func = xmlUnicodeLookup(&xmlUnicodeBlockTbl, block);
-    if (func == NULL)
-	return (-1);
-    return (func(code));
 }
 
 /**
@@ -3156,6 +2967,195 @@ xmlUCSIsCatZs(int code) {
            (code == 0x3000));
 }
 
+static const xmlUnicodeRange xmlUnicodeBlocks[] = {  {"AegeanNumbers", xmlUCSIsAegeanNumbers},
+  {"AlphabeticPresentationForms", xmlUCSIsAlphabeticPresentationForms},
+  {"Arabic", xmlUCSIsArabic},
+  {"ArabicPresentationForms-A", xmlUCSIsArabicPresentationFormsA},
+  {"ArabicPresentationForms-B", xmlUCSIsArabicPresentationFormsB},
+  {"Armenian", xmlUCSIsArmenian},
+  {"Arrows", xmlUCSIsArrows},
+  {"BasicLatin", xmlUCSIsBasicLatin},
+  {"Bengali", xmlUCSIsBengali},
+  {"BlockElements", xmlUCSIsBlockElements},
+  {"Bopomofo", xmlUCSIsBopomofo},
+  {"BopomofoExtended", xmlUCSIsBopomofoExtended},
+  {"BoxDrawing", xmlUCSIsBoxDrawing},
+  {"BraillePatterns", xmlUCSIsBraillePatterns},
+  {"Buhid", xmlUCSIsBuhid},
+  {"ByzantineMusicalSymbols", xmlUCSIsByzantineMusicalSymbols},
+  {"CJKCompatibility", xmlUCSIsCJKCompatibility},
+  {"CJKCompatibilityForms", xmlUCSIsCJKCompatibilityForms},
+  {"CJKCompatibilityIdeographs", xmlUCSIsCJKCompatibilityIdeographs},
+  {"CJKCompatibilityIdeographsSupplement", xmlUCSIsCJKCompatibilityIdeographsSupplement},
+  {"CJKRadicalsSupplement", xmlUCSIsCJKRadicalsSupplement},
+  {"CJKSymbolsandPunctuation", xmlUCSIsCJKSymbolsandPunctuation},
+  {"CJKUnifiedIdeographs", xmlUCSIsCJKUnifiedIdeographs},
+  {"CJKUnifiedIdeographsExtensionA", xmlUCSIsCJKUnifiedIdeographsExtensionA},
+  {"CJKUnifiedIdeographsExtensionB", xmlUCSIsCJKUnifiedIdeographsExtensionB},
+  {"Cherokee", xmlUCSIsCherokee},
+  {"CombiningDiacriticalMarks", xmlUCSIsCombiningDiacriticalMarks},
+  {"CombiningDiacriticalMarksforSymbols", xmlUCSIsCombiningDiacriticalMarksforSymbols},
+  {"CombiningHalfMarks", xmlUCSIsCombiningHalfMarks},
+  {"CombiningMarksforSymbols", xmlUCSIsCombiningMarksforSymbols},
+  {"ControlPictures", xmlUCSIsControlPictures},
+  {"CurrencySymbols", xmlUCSIsCurrencySymbols},
+  {"CypriotSyllabary", xmlUCSIsCypriotSyllabary},
+  {"Cyrillic", xmlUCSIsCyrillic},
+  {"CyrillicSupplement", xmlUCSIsCyrillicSupplement},
+  {"Deseret", xmlUCSIsDeseret},
+  {"Devanagari", xmlUCSIsDevanagari},
+  {"Dingbats", xmlUCSIsDingbats},
+  {"EnclosedAlphanumerics", xmlUCSIsEnclosedAlphanumerics},
+  {"EnclosedCJKLettersandMonths", xmlUCSIsEnclosedCJKLettersandMonths},
+  {"Ethiopic", xmlUCSIsEthiopic},
+  {"GeneralPunctuation", xmlUCSIsGeneralPunctuation},
+  {"GeometricShapes", xmlUCSIsGeometricShapes},
+  {"Georgian", xmlUCSIsGeorgian},
+  {"Gothic", xmlUCSIsGothic},
+  {"Greek", xmlUCSIsGreek},
+  {"GreekExtended", xmlUCSIsGreekExtended},
+  {"GreekandCoptic", xmlUCSIsGreekandCoptic},
+  {"Gujarati", xmlUCSIsGujarati},
+  {"Gurmukhi", xmlUCSIsGurmukhi},
+  {"HalfwidthandFullwidthForms", xmlUCSIsHalfwidthandFullwidthForms},
+  {"HangulCompatibilityJamo", xmlUCSIsHangulCompatibilityJamo},
+  {"HangulJamo", xmlUCSIsHangulJamo},
+  {"HangulSyllables", xmlUCSIsHangulSyllables},
+  {"Hanunoo", xmlUCSIsHanunoo},
+  {"Hebrew", xmlUCSIsHebrew},
+  {"HighPrivateUseSurrogates", xmlUCSIsHighPrivateUseSurrogates},
+  {"HighSurrogates", xmlUCSIsHighSurrogates},
+  {"Hiragana", xmlUCSIsHiragana},
+  {"IPAExtensions", xmlUCSIsIPAExtensions},
+  {"IdeographicDescriptionCharacters", xmlUCSIsIdeographicDescriptionCharacters},
+  {"Kanbun", xmlUCSIsKanbun},
+  {"KangxiRadicals", xmlUCSIsKangxiRadicals},
+  {"Kannada", xmlUCSIsKannada},
+  {"Katakana", xmlUCSIsKatakana},
+  {"KatakanaPhoneticExtensions", xmlUCSIsKatakanaPhoneticExtensions},
+  {"Khmer", xmlUCSIsKhmer},
+  {"KhmerSymbols", xmlUCSIsKhmerSymbols},
+  {"Lao", xmlUCSIsLao},
+  {"Latin-1Supplement", xmlUCSIsLatin1Supplement},
+  {"LatinExtended-A", xmlUCSIsLatinExtendedA},
+  {"LatinExtended-B", xmlUCSIsLatinExtendedB},
+  {"LatinExtendedAdditional", xmlUCSIsLatinExtendedAdditional},
+  {"LetterlikeSymbols", xmlUCSIsLetterlikeSymbols},
+  {"Limbu", xmlUCSIsLimbu},
+  {"LinearBIdeograms", xmlUCSIsLinearBIdeograms},
+  {"LinearBSyllabary", xmlUCSIsLinearBSyllabary},
+  {"LowSurrogates", xmlUCSIsLowSurrogates},
+  {"Malayalam", xmlUCSIsMalayalam},
+  {"MathematicalAlphanumericSymbols", xmlUCSIsMathematicalAlphanumericSymbols},
+  {"MathematicalOperators", xmlUCSIsMathematicalOperators},
+  {"MiscellaneousMathematicalSymbols-A", xmlUCSIsMiscellaneousMathematicalSymbolsA},
+  {"MiscellaneousMathematicalSymbols-B", xmlUCSIsMiscellaneousMathematicalSymbolsB},
+  {"MiscellaneousSymbols", xmlUCSIsMiscellaneousSymbols},
+  {"MiscellaneousSymbolsandArrows", xmlUCSIsMiscellaneousSymbolsandArrows},
+  {"MiscellaneousTechnical", xmlUCSIsMiscellaneousTechnical},
+  {"Mongolian", xmlUCSIsMongolian},
+  {"MusicalSymbols", xmlUCSIsMusicalSymbols},
+  {"Myanmar", xmlUCSIsMyanmar},
+  {"NumberForms", xmlUCSIsNumberForms},
+  {"Ogham", xmlUCSIsOgham},
+  {"OldItalic", xmlUCSIsOldItalic},
+  {"OpticalCharacterRecognition", xmlUCSIsOpticalCharacterRecognition},
+  {"Oriya", xmlUCSIsOriya},
+  {"Osmanya", xmlUCSIsOsmanya},
+  {"PhoneticExtensions", xmlUCSIsPhoneticExtensions},
+  {"PrivateUse", xmlUCSIsPrivateUse},
+  {"PrivateUseArea", xmlUCSIsPrivateUseArea},
+  {"Runic", xmlUCSIsRunic},
+  {"Shavian", xmlUCSIsShavian},
+  {"Sinhala", xmlUCSIsSinhala},
+  {"SmallFormVariants", xmlUCSIsSmallFormVariants},
+  {"SpacingModifierLetters", xmlUCSIsSpacingModifierLetters},
+  {"Specials", xmlUCSIsSpecials},
+  {"SuperscriptsandSubscripts", xmlUCSIsSuperscriptsandSubscripts},
+  {"SupplementalArrows-A", xmlUCSIsSupplementalArrowsA},
+  {"SupplementalArrows-B", xmlUCSIsSupplementalArrowsB},
+  {"SupplementalMathematicalOperators", xmlUCSIsSupplementalMathematicalOperators},
+  {"SupplementaryPrivateUseArea-A", xmlUCSIsSupplementaryPrivateUseAreaA},
+  {"SupplementaryPrivateUseArea-B", xmlUCSIsSupplementaryPrivateUseAreaB},
+  {"Syriac", xmlUCSIsSyriac},
+  {"Tagalog", xmlUCSIsTagalog},
+  {"Tagbanwa", xmlUCSIsTagbanwa},
+  {"Tags", xmlUCSIsTags},
+  {"TaiLe", xmlUCSIsTaiLe},
+  {"TaiXuanJingSymbols", xmlUCSIsTaiXuanJingSymbols},
+  {"Tamil", xmlUCSIsTamil},
+  {"Telugu", xmlUCSIsTelugu},
+  {"Thaana", xmlUCSIsThaana},
+  {"Thai", xmlUCSIsThai},
+  {"Tibetan", xmlUCSIsTibetan},
+  {"Ugaritic", xmlUCSIsUgaritic},
+  {"UnifiedCanadianAboriginalSyllabics", xmlUCSIsUnifiedCanadianAboriginalSyllabics},
+  {"VariationSelectors", xmlUCSIsVariationSelectors},
+  {"VariationSelectorsSupplement", xmlUCSIsVariationSelectorsSupplement},
+  {"YiRadicals", xmlUCSIsYiRadicals},
+  {"YiSyllables", xmlUCSIsYiSyllables},
+  {"YijingHexagramSymbols", xmlUCSIsYijingHexagramSymbols}};
+
+static const xmlUnicodeRange xmlUnicodeCats[] = {
+  {"C", xmlUCSIsCatC},
+  {"Cc", xmlUCSIsCatCc},
+  {"Cf", xmlUCSIsCatCf},
+  {"Co", xmlUCSIsCatCo},
+  {"Cs", xmlUCSIsCatCs},
+  {"L", xmlUCSIsCatL},
+  {"Ll", xmlUCSIsCatLl},
+  {"Lm", xmlUCSIsCatLm},
+  {"Lo", xmlUCSIsCatLo},
+  {"Lt", xmlUCSIsCatLt},
+  {"Lu", xmlUCSIsCatLu},
+  {"M", xmlUCSIsCatM},
+  {"Mc", xmlUCSIsCatMc},
+  {"Me", xmlUCSIsCatMe},
+  {"Mn", xmlUCSIsCatMn},
+  {"N", xmlUCSIsCatN},
+  {"Nd", xmlUCSIsCatNd},
+  {"Nl", xmlUCSIsCatNl},
+  {"No", xmlUCSIsCatNo},
+  {"P", xmlUCSIsCatP},
+  {"Pc", xmlUCSIsCatPc},
+  {"Pd", xmlUCSIsCatPd},
+  {"Pe", xmlUCSIsCatPe},
+  {"Pf", xmlUCSIsCatPf},
+  {"Pi", xmlUCSIsCatPi},
+  {"Po", xmlUCSIsCatPo},
+  {"Ps", xmlUCSIsCatPs},
+  {"S", xmlUCSIsCatS},
+  {"Sc", xmlUCSIsCatSc},
+  {"Sk", xmlUCSIsCatSk},
+  {"Sm", xmlUCSIsCatSm},
+  {"So", xmlUCSIsCatSo},
+  {"Z", xmlUCSIsCatZ},
+  {"Zl", xmlUCSIsCatZl},
+  {"Zp", xmlUCSIsCatZp},
+  {"Zs", xmlUCSIsCatZs}};
+
+static const xmlUnicodeNameTable xmlUnicodeBlockTbl = {xmlUnicodeBlocks, 128};
+static const xmlUnicodeNameTable xmlUnicodeCatTbl = {xmlUnicodeCats, 36};
+
+/**
+ * xmlUCSIsBlock:
+ * @code: UCS code point
+ * @block: UCS block name
+ *
+ * Check whether the character is part of the UCS Block
+ *
+ * Returns 1 if true, 0 if false and -1 on unknown block
+ */
+int
+xmlUCSIsBlock(int code, const char *block) {
+    xmlIntFunc *func;
+
+    func = xmlUnicodeLookup(&xmlUnicodeBlockTbl, block);
+    if (func == NULL)
+	return (-1);
+    return (func(code));
+}
+
 /**
  * xmlUCSIsCat:
  * @code: UCS code point
@@ -3175,4 +3175,4 @@ xmlUCSIsCat(int code, const char *cat) {
     return (func(code));
 }
 
-#endif /* LIBXML_UNICODE_ENABLED */
+#endif /* LIBXML_REGEXP_ENABLED */

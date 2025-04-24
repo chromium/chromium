@@ -11,4 +11,8 @@
 #ifndef __XML_SAX_H__
 #define __XML_SAX_H__
 
+#ifdef __GNUC__
+  #warning "libxml/SAX.h is deprecated"
+#endif
+
 #endif /* __XML_SAX_H__ */

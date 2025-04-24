@@ -24,6 +24,7 @@
 #include <libxml/xmlsave.h>
 
 #include "private/error.h"
+#include "private/memory.h"
 #include "private/parser.h"
 #include "private/regexp.h"
 #include "private/save.h"
@@ -204,27 +205,23 @@ typedef struct _xmlValidState {
 
 static int
 vstateVPush(xmlValidCtxtPtr ctxt, xmlElementPtr elemDecl, xmlNodePtr node) {
-    if ((ctxt->vstateMax == 0) || (ctxt->vstateTab == NULL)) {
-	ctxt->vstateMax = 10;
-	ctxt->vstateTab = (xmlValidState *) xmlMalloc(ctxt->vstateMax *
-		              sizeof(ctxt->vstateTab[0]));
-        if (ctxt->vstateTab == NULL) {
+    if (ctxt->vstateNr >= ctxt->vstateMax) {
+        xmlValidState *tmp;
+        int newSize;
+
+        newSize = xmlGrowCapacity(ctxt->vstateMax, sizeof(tmp[0]),
+                                  10, XML_MAX_ITEMS);
+        if (newSize < 0) {
 	    xmlVErrMemory(ctxt);
 	    return(-1);
 	}
-    }
-
-    if (ctxt->vstateNr >= ctxt->vstateMax) {
-        xmlValidState *tmp;
-
-	tmp = (xmlValidState *) xmlRealloc(ctxt->vstateTab,
-	             2 * ctxt->vstateMax * sizeof(ctxt->vstateTab[0]));
+	tmp = xmlRealloc(ctxt->vstateTab, newSize * sizeof(tmp[0]));
         if (tmp == NULL) {
 	    xmlVErrMemory(ctxt);
 	    return(-1);
 	}
-	ctxt->vstateMax *= 2;
 	ctxt->vstateTab = tmp;
+	ctxt->vstateMax = newSize;
     }
     ctxt->vstate = &ctxt->vstateTab[ctxt->vstateNr];
     ctxt->vstateTab[ctxt->vstateNr].elemDecl = elemDecl;
@@ -312,29 +309,23 @@ vstateVPush(xmlValidCtxtPtr ctxt, xmlElementContentPtr cont,
 	    unsigned char state) {
     int i = ctxt->vstateNr - 1;
 
-    if (ctxt->vstateNr > MAX_RECURSE) {
-	return(-1);
-    }
-    if (ctxt->vstateTab == NULL) {
-	ctxt->vstateMax = 8;
-	ctxt->vstateTab = (xmlValidState *) xmlMalloc(
-		     ctxt->vstateMax * sizeof(ctxt->vstateTab[0]));
-	if (ctxt->vstateTab == NULL) {
-	    xmlVErrMemory(ctxt);
-	    return(-1);
-	}
-    }
     if (ctxt->vstateNr >= ctxt->vstateMax) {
         xmlValidState *tmp;
+        int newSize;
 
-        tmp = (xmlValidState *) xmlRealloc(ctxt->vstateTab,
-	             2 * ctxt->vstateMax * sizeof(ctxt->vstateTab[0]));
+        newSize = xmlGrowCapacity(ctxt->vstateMax, sizeof(tmp[0]),
+                                  8, MAX_RECURSE);
+        if (newSize < 0) {
+            xmlVErrMemory(ctxt);
+            return(-1);
+        }
+        tmp = xmlRealloc(ctxt->vstateTab, newSize * sizeof(tmp[0]));
         if (tmp == NULL) {
 	    xmlVErrMemory(ctxt);
 	    return(-1);
 	}
-	ctxt->vstateMax *= 2;
 	ctxt->vstateTab = tmp;
+	ctxt->vstateMax = newSize;
 	ctxt->vstate = &ctxt->vstateTab[0];
     }
     /*
@@ -372,27 +363,23 @@ vstateVPop(xmlValidCtxtPtr ctxt) {
 static int
 nodeVPush(xmlValidCtxtPtr ctxt, xmlNodePtr value)
 {
-    if (ctxt->nodeMax <= 0) {
-        ctxt->nodeMax = 4;
-        ctxt->nodeTab =
-            (xmlNodePtr *) xmlMalloc(ctxt->nodeMax *
-                                     sizeof(ctxt->nodeTab[0]));
-        if (ctxt->nodeTab == NULL) {
-	    xmlVErrMemory(ctxt);
-            ctxt->nodeMax = 0;
-            return (0);
-        }
-    }
     if (ctxt->nodeNr >= ctxt->nodeMax) {
         xmlNodePtr *tmp;
-        tmp = (xmlNodePtr *) xmlRealloc(ctxt->nodeTab,
-			      ctxt->nodeMax * 2 * sizeof(ctxt->nodeTab[0]));
+        int newSize;
+
+        newSize = xmlGrowCapacity(ctxt->nodeMax, sizeof(tmp[0]),
+                                  4, XML_MAX_ITEMS);
+        if (newSize < 0) {
+	    xmlVErrMemory(ctxt);
+            return (-1);
+        }
+        tmp = xmlRealloc(ctxt->nodeTab, newSize * sizeof(tmp[0]));
         if (tmp == NULL) {
 	    xmlVErrMemory(ctxt);
-            return (0);
+            return (-1);
         }
-        ctxt->nodeMax *= 2;
 	ctxt->nodeTab = tmp;
+        ctxt->nodeMax = newSize;
     }
     ctxt->nodeTab[ctxt->nodeNr] = value;
     ctxt->node = value;
@@ -5010,26 +4997,26 @@ xmlSnprintfElements(char *buf, int size, xmlNodePtr node, int glob) {
 	    return;
 	}
         switch (cur->type) {
-            case XML_ELEMENT_NODE:
+            case XML_ELEMENT_NODE: {
+                int qnameLen = xmlStrlen(cur->name);
+
+                if ((cur->ns != NULL) && (cur->ns->prefix != NULL))
+                    qnameLen += xmlStrlen(cur->ns->prefix) + 1;
+                if (size - len < qnameLen + 10) {
+                    if ((size - len > 4) && (buf[len - 1] != '.'))
+                        strcat(buf, " ...");
+                    return;
+                }
 		if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
-		    if (size - len < xmlStrlen(cur->ns->prefix) + 10) {
-			if ((size - len > 4) && (buf[len - 1] != '.'))
-			    strcat(buf, " ...");
-			return;
-		    }
 		    strcat(buf, (char *) cur->ns->prefix);
 		    strcat(buf, ":");
-		}
-                if (size - len < xmlStrlen(cur->name) + 10) {
-		    if ((size - len > 4) && (buf[len - 1] != '.'))
-			strcat(buf, " ...");
-		    return;
 		}
                 if (cur->name != NULL)
 	            strcat(buf, (char *) cur->name);
 		if (cur->next != NULL)
 		    strcat(buf, " ");
 		break;
+            }
             case XML_TEXT_NODE:
 		if (xmlIsBlankNode(cur))
 		    break;
@@ -5126,7 +5113,10 @@ xmlValidateElementContent(xmlValidCtxtPtr ctxt, xmlNodePtr child,
                      */
                     if ((cur->children != NULL) &&
                         (cur->children->children != NULL)) {
-                        nodeVPush(ctxt, cur);
+                        if (nodeVPush(ctxt, cur) < 0) {
+                            ret = -1;
+                            goto fail;
+                        }
                         cur = cur->children->children;
                         continue;
                     }
@@ -5185,9 +5175,12 @@ fail:
     /*
      * Allocate the stack
      */
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     ctxt->vstateMax = 8;
-    ctxt->vstateTab = (xmlValidState *) xmlMalloc(
-		 ctxt->vstateMax * sizeof(ctxt->vstateTab[0]));
+#else
+    ctxt->vstateMax = 1;
+#endif
+    ctxt->vstateTab = xmlMalloc(ctxt->vstateMax * sizeof(ctxt->vstateTab[0]));
     if (ctxt->vstateTab == NULL) {
 	xmlVErrMemory(ctxt);
 	return(-1);
@@ -5230,7 +5223,11 @@ fail:
 		     */
 		    if ((cur->children != NULL) &&
 			(cur->children->children != NULL)) {
-			nodeVPush(ctxt, cur);
+			if (nodeVPush(ctxt, cur) < 0) {
+                            xmlFreeNodeList(repl);
+                            ret = -1;
+                            goto done;
+                        }
 			cur = cur->children->children;
 			continue;
 		    }
@@ -5238,9 +5235,8 @@ fail:
 		case XML_TEXT_NODE:
 		    if (xmlIsBlankNode(cur))
 			break;
-		    /* no break on purpose */
+		    /* falls through */
 		case XML_CDATA_SECTION_NODE:
-		    /* no break on purpose */
 		case XML_ELEMENT_NODE:
 		    /*
 		     * Allocate a new node and minimally fills in
@@ -5398,7 +5394,10 @@ xmlValidateOneCdataElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		 */
 		if ((cur->children != NULL) &&
 		    (cur->children->children != NULL)) {
-		    nodeVPush(ctxt, cur);
+		    if (nodeVPush(ctxt, cur) < 0) {
+                        ret = 0;
+                        goto done;
+                    }
 		    cur = cur->children->children;
 		    continue;
 		}
@@ -5555,12 +5554,6 @@ xmlValidGetElemDecl(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		*extsubset = 1;
 	}
     }
-    if (elemDecl == NULL) {
-	xmlErrValidNode(ctxt, elem,
-			XML_DTD_UNKNOWN_ELEM,
-	       "No declaration for element %s\n",
-	       elem->name, NULL, NULL);
-    }
     return(elemDecl);
 }
 
@@ -5603,10 +5596,6 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_EMPTY:
-		    xmlErrValidNode(ctxt, state->node,
-				    XML_DTD_NOT_EMPTY,
-	       "Element %s was declared EMPTY this one has content\n",
-			   state->node->name, NULL, NULL);
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_ANY:
@@ -5617,20 +5606,10 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		    if ((elemDecl->content != NULL) &&
 			(elemDecl->content->type ==
 			 XML_ELEMENT_CONTENT_PCDATA)) {
-			xmlErrValidNode(ctxt, state->node,
-					XML_DTD_NOT_PCDATA,
-	       "Element %s was declared #PCDATA but contains non text nodes\n",
-				state->node->name, NULL, NULL);
 			ret = 0;
 		    } else {
 			ret = xmlValidateCheckMixed(ctxt, elemDecl->content,
 				                    qname);
-			if (ret != 1) {
-			    xmlErrValidNode(ctxt, state->node,
-					    XML_DTD_INVALID_CHILD,
-	       "Element %s is not declared in %s list of possible children\n",
-				    qname, state->node->name, NULL);
-			}
 		    }
 		    break;
 		case XML_ELEMENT_TYPE_ELEMENT:
@@ -5647,10 +5626,6 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
                             return(0);
                         }
 			if (ret < 0) {
-			    xmlErrValidNode(ctxt, state->node,
-					    XML_DTD_CONTENT_MODEL,
-	       "Element %s content does not follow the DTD, Misplaced %s\n",
-				   state->node->name, qname, NULL);
 			    ret = 0;
 			} else {
 			    ret = 1;
@@ -5700,10 +5675,6 @@ xmlValidatePushCData(xmlValidCtxtPtr ctxt, const xmlChar *data, int len) {
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_EMPTY:
-		    xmlErrValidNode(ctxt, state->node,
-				    XML_DTD_NOT_EMPTY,
-	       "Element %s was declared EMPTY this one has content\n",
-			   state->node->name, NULL, NULL);
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_ANY:
@@ -5776,11 +5747,6 @@ xmlValidatePopElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc ATTRIBUTE_UNUSED,
 		    if (ret <= 0) {
                         if (ret == XML_REGEXP_OUT_OF_MEMORY)
                             xmlVErrMemory(ctxt);
-                        else
-			    xmlErrValidNode(ctxt, state->node,
-			                    XML_DTD_CONTENT_MODEL,
-	   "Element %s content does not follow the DTD, Expecting more children\n",
-			       state->node->name, NULL,NULL);
 			ret = 0;
 		    } else {
 			/*
@@ -5853,8 +5819,13 @@ xmlValidateOneElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
      * Fetch the declaration
      */
     elemDecl = xmlValidGetElemDecl(ctxt, doc, elem, &extsubset);
-    if (elemDecl == NULL)
+    if (elemDecl == NULL) {
+	xmlErrValidNode(ctxt, elem,
+			XML_DTD_UNKNOWN_ELEM,
+	       "No declaration for element %s\n",
+	       elem->name, NULL, NULL);
 	return(0);
+    }
 
     /*
      * If vstateNr is not zero that means continuous validation is
@@ -6796,7 +6767,7 @@ xmlValidateDocumentInternal(xmlParserCtxtPtr ctxt, xmlValidCtxtPtr vctxt,
 
 /**
  * xmlValidateDocument:
- * @ctxt:  the validation context
+ * @vctxt:  the validation context
  * @doc:  a document instance
  *
  * DEPRECATED: This function can't report malloc or other failures.
@@ -7030,4 +7001,3 @@ xmlValidGetValidElements(xmlNode *prev, xmlNode *next, const xmlChar **names,
     return(nb_valid_elements);
 }
 #endif /* LIBXML_VALID_ENABLED */
-

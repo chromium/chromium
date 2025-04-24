@@ -36,9 +36,6 @@ libxml2_la_LIBADD = $(XML_PRIVATE_LIBS)
 
 libxml2_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined \
 		     -version-info $(LIBXML_VERSION_INFO)
-if USE_VERSION_SCRIPT
-libxml2_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libxml2.syms
-endif
 
 libxml2_la_SOURCES = buf.c chvalid.c dict.c entities.c encoding.c error.c \
 		     globals.c hash.c list.c parser.c parserInternals.c \
@@ -68,9 +65,6 @@ endif
 if WITH_HTTP_SOURCES
 libxml2_la_SOURCES += nanohttp.c
 endif
-if WITH_LEGACY_SOURCES
-libxml2_la_SOURCES += legacy.c
-endif
 if WITH_LZMA_SOURCES
 libxml2_la_SOURCES += xzlib.c
 endif
@@ -89,8 +83,11 @@ endif
 if WITH_REGEXPS_SOURCES
 libxml2_la_SOURCES += xmlregexp.c xmlunicode.c
 endif
+if WITH_RELAXNG_SOURCES
+libxml2_la_SOURCES += relaxng.c
+endif
 if WITH_SCHEMAS_SOURCES
-libxml2_la_SOURCES += relaxng.c xmlschemas.c xmlschemastypes.c
+libxml2_la_SOURCES += xmlschemas.c xmlschemastypes.c
 endif
 if WITH_SCHEMATRON_SOURCES
 libxml2_la_SOURCES += schematron.c
@@ -139,7 +136,7 @@ runsuite_SOURCES=runsuite.c
 runsuite_DEPENDENCIES = $(DEPS)
 runsuite_LDADD= $(LDADDS)
 
-xmllint_SOURCES = xmllint.c shell.c
+xmllint_SOURCES = xmllint.c shell.c lintmain.c
 xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
 xmllint_DEPENDENCIES = $(DEPS)
 xmllint_LDADD=  $(RDL_LIBS) $(LDADDS)
@@ -148,7 +145,7 @@ testModule_SOURCES=testModule.c
 testModule_DEPENDENCIES = $(DEPS)
 testModule_LDADD= $(LDADDS)
 
-noinst_LTLIBRARIES = testdso.la
+check_LTLIBRARIES = testdso.la
 testdso_la_SOURCES = testdso.c
 testdso_la_LDFLAGS = $(AM_LDFLAGS) \
 		     -module -no-undefined -avoid-version -rpath $(libdir)
@@ -176,13 +173,15 @@ check-local:
 	$(CHECKER) ./testdict$(EXEEXT)
 	$(CHECKER) ./testparser$(EXEEXT)
 	$(CHECKER) ./testModule$(EXEEXT)
-	$(CHECKER) ./runxmlconf$(EXEEXT)
+	$(CHECKER) ./runxmlconf$(EXEEXT) -d $(srcdir)/xmlconf
 	$(CHECKER) ./runsuite$(EXEEXT)
 if WITH_DEBUG_SOURCES
 	test/scripts/test.sh ./xmllint$(EXEEXT)
 endif
 if WITH_CATALOG_SOURCES
+if WITH_OUTPUT_SOURCES
 	ASAN_OPTIONS=detect_leaks=0 test/catalogs/test.sh ./xmlcatalog$(EXEEXT)
+endif
 endif
 
 # Compatibility name of the check target
@@ -203,7 +202,7 @@ cleanup:
 	-@(find . -name \*.orig -o -name \*.rej -o -name \*.old -exec rm -f {} \;)
 
 dist-hook: cleanup
-	(cd $(srcdir) ; tar -cf - --exclude .git win32 os400 test result) | (cd $(distdir); tar xf -)
+	(cd $(srcdir) ; tar -cf - --exclude .git win32 test result) | (cd $(distdir); tar xf -)
 
 CLEANFILES = runsuite.log runxmlconf.log test.out *.gcda *.gcno *.res
 DISTCLEANFILES = COPYING missing.lst
@@ -213,10 +212,10 @@ EXTRA_DIST = Copyright libxml2-config.cmake.in autogen.sh \
 	     html5ent.inc iso8859x.inc \
 	     tools/gentest.py \
 	     tools/genChRanges.py tools/genEscape.py tools/genUnicode.py \
-	     libxml2.syms timsort.h \
+	     timsort.h \
 	     README.zOS README.md \
 	     CMakeLists.txt config.h.cmake.in libxml2-config.cmake.cmake.in \
-	     meson.build meson_options.txt
+	     meson.build meson_options.txt xml2-config-meson
 
 
 pkgconfigdir = $(libdir)/pkgconfig

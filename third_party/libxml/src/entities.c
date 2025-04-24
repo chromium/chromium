@@ -29,6 +29,10 @@
 #include "private/entities.h"
 #include "private/error.h"
 
+#ifndef SIZE_MAX
+  #define SIZE_MAX ((size_t) -1)
+#endif
+
 /*
  * The XML predefined entities.
  */
@@ -512,6 +516,17 @@ xmlGetDocEntity(const xmlDoc *doc, const xmlChar *name) {
     return(xmlGetPredefinedEntity(name));
 }
 
+/*
+ * xmlSerializeHexCharRef:
+ * @buf:  a char buffer
+ * @val:  a codepoint
+ *
+ * Serializes a hex char ref like &#xA0;
+ *
+ * Writes at most 9 bytes. Does not include a terminating zero byte.
+ *
+ * Returns the number of bytes written.
+ */
 int
 xmlSerializeHexCharRef(char *buf, int val) {
     char *out = buf;
@@ -549,6 +564,17 @@ xmlSerializeHexCharRef(char *buf, int val) {
     return(out - buf);
 }
 
+/*
+ * xmlSerializeDecCharRef:
+ * @buf:  a char buffer
+ * @val:  a codepoint
+ *
+ * Serializes a decimal char ref like &#38;
+ *
+ * Writes at most 10 bytes. Does not include a terminating zero byte.
+ *
+ * Returns the number of bytes written.
+ */
 int
 xmlSerializeDecCharRef(char *buf, int val) {
     char *out = buf;
@@ -588,6 +614,21 @@ static const char xmlEscapeSafe[128] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
+/*
+ * xmlEscapeText:
+ * @text:  input text
+ * @flags:  XML_ESCAPE flags
+ *
+ * Escapes certain characters with char refs.
+ *
+ * XML_ESCAPE_ATTR: for attribute content.
+ * XML_ESCAPE_NON_ASCII: escape non-ASCII chars.
+ * XML_ESCAPE_HTML: for HTML content.
+ * XML_ESCAPE_QUOT: escape double quotes.
+ * XML_ESCAPE_ALLOW_INVALID: allow invalid characters.
+ *
+ * Returns an escaped string or NULL if a memory allocation failed.
+ */
 xmlChar *
 xmlEscapeText(const xmlChar *text, int flags) {
     const xmlChar *cur;
@@ -710,16 +751,23 @@ xmlEscapeText(const xmlChar *text, int flags) {
 
         if (totalSize > size - used) {
             xmlChar *tmp;
+            int newSize;
 
-            size += totalSize;
+            if ((size > (SIZE_MAX - 1) / 2) ||
+                (totalSize > (SIZE_MAX - 1) / 2 - size)) {
+                xmlFree(buffer);
+                return(NULL);
+            }
+            newSize = size + totalSize;
             if (*cur != 0)
-                size *= 2;
-            tmp = xmlRealloc(buffer, size + 1);
+                newSize *= 2;
+            tmp = xmlRealloc(buffer, newSize + 1);
             if (tmp == NULL) {
                 xmlFree(buffer);
                 return(NULL);
             }
             buffer = tmp;
+            size = newSize;
             out = buffer + used;
         }
 
@@ -739,7 +787,7 @@ xmlEscapeText(const xmlChar *text, int flags) {
  * xmlEncodeEntitiesInternal:
  * @doc:  the document containing the string
  * @input:  A string to convert to XML.
- * @attr: are we handling an attribute value
+ * @flags:  XML_ESCAPE flags
  *
  * Do a global encoding of a string, replacing the predefined entities
  * and non ASCII values with their entities and CharRef counterparts.

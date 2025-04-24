@@ -1,33 +1,114 @@
 NEWS file for libxml2
 
-v2.14.0: not released yet
+v2.14.2: Apr 17 2025
+
+### Security
+
+- [CVE-2025-32415] schemas: Fix heap buffer overflow in
+  xmlSchemaIDCFillNodeTables
+- [CVE-2025-32414] python: Read at most len/4 characters. (Maks Verver)
+
+### Build
+
+- error: Fix initGenericErrorDefaultFunc compatibility macro
+- meson: don't link with pthreads on Windows (Benjamin Gilbert)
+- cmake, meson: Align Darwin version info with Autotools
+- globals: Fix --with-thread-alloc build
+- meson: ensure relaxng option supports minimum option (Lovell Fuller)
+
+
+v2.14.1: Apr 3 2025
+
+### Regressions
+
+- parser: Fix XML_PARSE_NOBLANKS dropping non-whitespace text
+
+### Build systems
+
+- win32-legacy: Fix build (ThomasK)
+- meson: Fix build from tarball
+- cmake, meson: Change library filename to libxml2.so.16.0.0
+
+
+v2.14.0: Mar 27 2025
 
 ### Major changes
 
-The HTML tokenizer now conforms fully to HTML5. Note that HTML5 tree
-construction isn't implemented yet.
+The HTML tokenizer now conforms fully to HTML5. Several non-standard
+syntax warnings were removed. Note that HTML5 tree construction isn't
+implemented yet.
 
-Input callbacks can now be set on a parser context and an improved API
-to create parser input is available.
-
-A new API function xmlCtxtParseContent to parse XML content using an
-existing parser context was added.
-
-The xmlSave API now has additional options to replace global settings.
-
-Parser options XML_PARSE_NO_UNZIP, XML_PARSE_NO_SYS_CATALOG and
-XML_PARSE_NO_CATALOG_PI were added.
+Binary compatibility is restricted to versions 2.14 or newer. On ELF
+systems, the soname was bumped from libxml2.so.2 to libxml2.so.16.
 
 The serialization API will now take user-provided or default encodings
 into account when serializing attribute values, matching the
 serialization of text and avoiding unnecessary escaping.
 
+The XML parser won't try to merge consecutive CDATA sections as before
+to align with web standards. Each CDATA section will create exactly one
+node or SAX callback.
+
+Support for RELAX NG can now be disabled with a new configuration
+option independently of XML Schemas support. It is still enabled by
+default.
+
+The "legacy" configuration option won't enable support for HTTP and
+LZMA anymore. These features will be removed in the next release.
+
+Parts of the xmllint executable were refactored, allowing the
+combination of more options. OOM errors should be reported reliably now.
+
+Several improvements were made to the build systems. Meson is fully
+supported now.
+
+Parts of the buffering code were reworked and simplified.
+
+Overflow checks before reallocations were hardenend.
+
+Some unprefixed symbols were renamed to avoid namespace pollution.
+
+### Other potentially incompatible changes
+
+Strings passed to the "characters" callback of the HTML SAX parser
+aren't null-terminated anymore, matching the behavior of the XML
+parser. Custom SAX parsers must use the "len" argument.
+
+xmlIOParseDTD doesn't allow null bytes at the end of the input anymore.
+
+Type and layout of conversion callbacks in struct xmlCharEncodingHandler
+were changed. Applications using libxml2's encoding conversion API
+should use functions xmlCharEncInFunc and xmlCharEncOutFunc instead of
+accessing the callbacks directly.
+
+### New features
+
+Input callbacks can now be set on a parser context and an improved API
+to create parser input is available. The following new functions,
+taking a parser input object, were added:
+
+- xmlCtxtParseDocument
+- xmlCtxtParseContent as replacement for xmlParseBalancedChunkMemory
+  and xmlParseInNodeContext
+- xmlCtxtParseDtd
+
+The xmlSave API now has additional options to replace global settings.
+
+Parser options XML_PARSE_UNZIP, XML_PARSE_NO_SYS_CATALOG and
+XML_PARSE_CATALOG_PI were added.
+
 An API function to install a custom character encoding converter is
 now available. This makes it possible to use ICU for encoding conversion
-even if libxml2 was complied without ICU support, see example/icu.c.
+even if libxml2 was compiled without ICU support, see example/icu.c.
+
+### Deprecations
 
 Access to many public struct members is now deprecated. Several accessor
-functions were added.
+functions were added to use instead.
+
+More internal functions were deprecated.
+
+### Removals
 
 Metadata about the HTML4 content model was removed from the htmlElemDesc
 struct and related functions were deprecated.
@@ -35,13 +116,219 @@ struct and related functions were deprecated.
 The FTP module and related functions were removed.
 
 Support for the range and point extensions of the xpointer() scheme
-were removed. The rest of the XPointer implementation isn't affected.
+was removed. The rest of the XPointer implementation isn't affected.
 The xpointer() scheme now behaves like the xpath1() scheme.
 
-Several legacy functions were removed from the header files.
+Several legacy symbols and the functions in xmlunicode.h were removed.
+
+Some unprefixed, internal macros like ATTRIBUTE_UNUSED were removed
+from public headers.
+
+ELF version information was removed.
 
 The shell was moved from libxml2 to xmllint. Several related functions
 are no longer available.
+
+The libxml.m4 file containing autoconf macros was removed.
+
+The --with-tree configuration option was removed.
+
+The hack to detect single-threaded programs under glibc was removed.
+
+### Planned removals
+
+Support for HTTP and LZMA compression is planned to be removed in the
+2.15 release.
+
+The following features are considered for removal:
+
+- Modules API (xmlmodule.h)
+- Schematron support
+- Support for zlib compressed file I/O
+- Legacy Windows build system in win32
+
+RELAX NG support is still in a bad state and a long-term removal
+candidate.
+
+### Thanks
+
+Thanks to the following contributors:
+
+- Andrew Potter
+- Benjamin Gilbert
+- Chun-wei Fan
+- correctmost
+- Daniel Cheng
+- Daniel E
+- Florin Haja
+- Grzegorz Szymaszek
+- Heiko Becker
+- Himanshibansal
+- Jan Alexander Steffens (heftig)
+- Kjell Ahlstedt
+- makise-homura
+- Markus Rickert
+- Mike Dalessio
+- Miklos Vajna
+- Rosen Penev
+- Ruslan Garipov
+- Ryan Carsten Schmidt
+- Saleem Abdulrasool
+- Sam James
+- Satadru Pramanik
+- Taylor R Campbell
+- triallax
+- Yegor Yefremov
+- Zak Ridouh
+
+
+v2.13.7: Mar 27 2025
+
+### Regressions
+
+- tree: Fix xmlTextMerge with NULL args
+- io: Fix `compressed` flag for uncompressed stdin
+- parser: Fix parsing of DTD content
+
+
+v2.13.6: Feb 18 2025
+
+### Security
+
+- [CVE-2025-24928] Fix stack-buffer-overflow in xmlSnprintfElements
+- [CVE-2024-56171] Fix use-after-free after xmlSchemaItemListAdd
+- pattern: Fix compilation of explicit child axis
+
+### Regressions
+
+- xmllint: Support compressed input from stdin
+- uri: Fix handling of Windows drive letters
+- reader: Fix return value of xmlTextReaderReadString again
+- SAX2: Fix xmlSAX2ResolveEntity if systemId is NULL
+
+### Portability
+
+- dict: Handle ENOSYS from getentropy gracefully
+- Fix compilation with uclibc (Dario Binacchi)
+- python: Declare init func with PyMODINIT_FUNC
+- tests: Fix sanitizer version check on old Apple clang
+- cmake: Work around broken sys/random.h in old macOS SDKs
+
+### Build
+
+- autotools: Set AC_CONFIG_AUX_DIR
+- cmake: Always build Python module as shared library
+- cmake: add missing `Bcrypt` link on Windows (Saleem Abdulrasool)
+- cmake: Fix compatibility in package version file
+
+
+v2.13.5: Nov 12 2024
+
+### Regressions
+
+- xmlIO: Fix reading from non-regular files like pipes
+- xmlreader: Fix return value of xmlTextReaderReadString
+- parser: Fix loading of parameter entities in external DTDs
+- parser: Fix downstream code that swaps DTDs
+- parser: Fix detection of duplicate attributes
+- string: Fix va_copy fallback
+
+### Bug fixes
+
+- xpath: Fix parsing of non-ASCII names
+
+
+v2.13.4: Sep 18 2024
+
+### Regressions
+
+- parser: Make unsupported encodings an error in declarations
+- io: don't set the executable bit when creating files (triallax)
+- xmlcatalog: Improved fix for #699
+- Revert "catalog: Fetch XML catalog before dumping"
+- io: Add missing calls to xmlInitParser
+- tree: Restore return value of xmlNodeListGetString with NULL list
+- parser: Fix error handling after reaching limit
+- parser: Make xmlParseChunk return an error if parser was stopped
+
+### Bug fixes
+
+- python: Fix SAX driver with character streams
+
+### Improvements
+
+- xpath: Make recursion check work with xmlXPathCompile
+- parser: Report at least one fatal error
+
+### Portability
+
+- include: Check whether _MSC_VER is defined
+
+
+v2.13.3: Jul 24 2024
+
+### Security
+
+- [CVE-2024-40896] Fix XXE protection in downstream code
+
+### Regressions
+
+- autotools: Use AC_CHECK_DECL to check for getentropy
+- xinclude: Fix fallback for text includes
+- io: Don't call getcwd in xmlParserGetDirectory
+- io: Fix return value of xmlFileRead
+- parser: Fix error return of xmlParseBalancedChunkMemory
+
+### Improvements
+
+- xinclude: Set error handler when parsing text
+- Undeprecate xmlKeepBlanksDefault
+
+
+v2.13.2: Jul 4 2024
+
+### Regressions
+
+- tree: Fix handling of empty strings in xmlNodeParseContent
+- valid: Restore ID lookup
+- parser: Reenable ctxt->directory
+- uri: Handle filesystem paths in xmlBuildRelativeURISafe
+- encoding: Make xmlFindCharEncodingHandler return UTF-8 handler
+- encoding: Fix encoding lookup with xmlOpenCharEncodingHandler
+- include: Define ATTRIBUTE_UNUSED for clang
+- uri: Fix xmlBuildURI with NULL base
+
+### Improvements
+
+- uri: Enable Windows paths on Cygwin
+- tests: Clarify licence of test/intsubset2.xml
+
+
+v2.13.1: Jun 19 2024
+
+### Regressions
+
+- parser: Selectively reenable reading from "-"
+- reader: Fix xmlTextReaderReadString
+- xinclude: Set XPath context doc
+- xinclude: Load included documents with XML_PARSE_DTDLOAD
+- include: Don't redefine ATTRIBUTE_UNUSED
+- include: Readd circular dependency between tree.h and parser.h
+- xinclude: Add missing include (Jan Alexander Steffens (heftig))
+- win32, msvc: fix missing linking against Bcrypt.lib (Miklos Vajna)
+- xinclude: Don't raise error on empty nodeset
+- parser: Make failure to load main document a warning
+- tree: Fix freeing entities via xmlFreeNode
+- parser: Pass global object to sax->setDocumentLocator
+
+### Improvements
+
+- io: Fix resetting xmlParserInputBufferCreateFilename hook
+
+### Documentation
+
+- Fix typo in NEWS (--with-html -> --with-http) (Ryan Carsten Schmidt)
+- doc: Don't mention xmlNewInputURL
 
 
 v2.13.0: Jun 12 2024

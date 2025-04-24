@@ -8,14 +8,15 @@ EXTRA_DIST = \
 	globals.h \
 	html.h \
 	io.h \
+	lint.h \
 	memory.h \
 	parser.h \
 	regexp.h \
 	save.h \
-	shell.h \
 	string.h \
 	threads.h \
 	tree.h \
+	unicode.h \
 	xinclude.h \
 	xpath.h \
 	xzlib.h

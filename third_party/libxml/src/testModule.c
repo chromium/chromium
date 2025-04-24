@@ -19,8 +19,8 @@
 #include <stdarg.h>
 
 #include <libxml/xmlmemory.h>
-#include <libxml/debugXML.h>
 #include <libxml/xmlmodule.h>
+#include <libxml/xmlstring.h>
 
 #ifdef _WIN32
 #define MODULE_PATH "."
@@ -81,4 +81,4 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     printf("%s : Module support not compiled in\n", argv[0]);
     return(0);
 }
-#endif /* LIBXML_SCHEMAS_ENABLED */
+#endif /* LIBXML_MODULES_ENABLED */

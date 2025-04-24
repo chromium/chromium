@@ -176,21 +176,18 @@ struct _xmlOutputBuffer {
 #endif /* LIBXML_OUTPUT_ENABLED */
 
 /** DOC_DISABLE */
-#define XML_GLOBALS_IO \
-  XML_OP(xmlParserInputBufferCreateFilenameValue, \
-           xmlParserInputBufferCreateFilenameFunc, XML_DEPRECATED) \
-  XML_OP(xmlOutputBufferCreateFilenameValue, \
-           xmlOutputBufferCreateFilenameFunc, XML_DEPRECATED)
+XML_DEPRECATED
+XMLPUBFUN xmlParserInputBufferCreateFilenameFunc *
+__xmlParserInputBufferCreateFilenameValue(void);
+XML_DEPRECATED
+XMLPUBFUN xmlOutputBufferCreateFilenameFunc *
+__xmlOutputBufferCreateFilenameValue(void);
 
-#define XML_OP XML_DECLARE_GLOBAL
-XML_GLOBALS_IO
-#undef XML_OP
-
-#if defined(LIBXML_THREAD_ENABLED) && !defined(XML_GLOBALS_NO_REDEFINITION)
+#ifndef XML_GLOBALS_NO_REDEFINITION
   #define xmlParserInputBufferCreateFilenameValue \
-    XML_GLOBAL_MACRO(xmlParserInputBufferCreateFilenameValue)
+    (*__xmlParserInputBufferCreateFilenameValue())
   #define xmlOutputBufferCreateFilenameValue \
-    XML_GLOBAL_MACRO(xmlOutputBufferCreateFilenameValue)
+    (*__xmlOutputBufferCreateFilenameValue())
 #endif
 /** DOC_ENABLE */
 

@@ -91,12 +91,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = include/private
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_append_flag.m4 \
-	$(top_srcdir)/m4/ax_append_link_flags.m4 \
-	$(top_srcdir)/m4/ax_check_link_flag.m4 \
-	$(top_srcdir)/m4/ax_gcc_func_attribute.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_gcc_func_attribute.m4 \
 	$(top_srcdir)/m4/ax_recursive_eval.m4 \
-	$(top_srcdir)/m4/ax_require_defined.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/VERSION \
@@ -231,7 +227,6 @@ STRIP = @STRIP@
 TAR = @TAR@
 THREAD_LIBS = @THREAD_LIBS@
 VERSION = @VERSION@
-VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
 WGET = @WGET@
 WITH_C14N = @WITH_C14N@
 WITH_CATALOG = @WITH_CATALOG@
@@ -241,7 +236,6 @@ WITH_HTTP = @WITH_HTTP@
 WITH_ICONV = @WITH_ICONV@
 WITH_ICU = @WITH_ICU@
 WITH_ISO8859X = @WITH_ISO8859X@
-WITH_LEGACY = @WITH_LEGACY@
 WITH_LZMA = @WITH_LZMA@
 WITH_MODULES = @WITH_MODULES@
 WITH_OUTPUT = @WITH_OUTPUT@
@@ -249,6 +243,7 @@ WITH_PATTERN = @WITH_PATTERN@
 WITH_PUSH = @WITH_PUSH@
 WITH_READER = @WITH_READER@
 WITH_REGEXPS = @WITH_REGEXPS@
+WITH_RELAXNG = @WITH_RELAXNG@
 WITH_SAX1 = @WITH_SAX1@
 WITH_SCHEMAS = @WITH_SCHEMAS@
 WITH_SCHEMATRON = @WITH_SCHEMATRON@
@@ -339,14 +334,15 @@ EXTRA_DIST = \
 	globals.h \
 	html.h \
 	io.h \
+	lint.h \
 	memory.h \
 	parser.h \
 	regexp.h \
 	save.h \
-	shell.h \
 	string.h \
 	threads.h \
 	tree.h \
+	unicode.h \
 	xinclude.h \
 	xpath.h \
 	xzlib.h

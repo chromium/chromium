@@ -23,10 +23,17 @@
 #define __XML_CHAR_ENCODING_H__
 
 #include <libxml/xmlversion.h>
+#include <libxml/xmlerror.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Backward compatibility
+ */
+#define UTF8Toisolat1 xmlUTF8ToIsolat1
+#define isolat1ToUTF8 xmlIsolat1ToUTF8
 
 typedef enum {
     XML_ENC_ERR_SUCCESS     =  0,
@@ -77,6 +84,11 @@ typedef enum {
     XML_CHAR_ENCODING_8859_16=	30 /* ISO-8859-16 */
 } xmlCharEncoding;
 
+typedef enum {
+    XML_ENC_INPUT = (1 << 0),
+    XML_ENC_OUTPUT = (1 << 1)
+} xmlCharEncFlags;
+
 /**
  * xmlCharEncodingInputFunc:
  * @out:  a pointer to an array of bytes to store the UTF-8 result
@@ -120,17 +132,22 @@ typedef int (*xmlCharEncodingOutputFunc)(unsigned char *out, int *outlen,
  * @outlen:  the length of @out
  * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
+ * @flush:  end of input
  *
  * Convert between character encodings.
  *
- * On success, the value of @inlen after return is the number of
- * bytes consumed and @outlen is the number of bytes produced.
+ * The value of @inlen after return is the number of bytes consumed
+ * and @outlen is the number of bytes produced.
  *
- * Returns the number of bytes written or an XML_ENC_ERR code.
+ * If the converter can consume partial multi-byte sequences, the
+ * @flush flag can be used to detect truncated sequences at EOF.
+ * Otherwise, the flag can be ignored.
+ *
+ * Returns an XML_ENC_ERR code.
  */
-typedef int
-(*xmlCharEncConvFunc)(unsigned char *out, int *outlen,
-                      const unsigned char *in, int *inlen, void *vctxt);
+typedef xmlCharEncError
+(*xmlCharEncConvFunc)(void *vctxt, unsigned char *out, int *outlen,
+                      const unsigned char *in, int *inlen, int flush);
 
 /**
  * xmlCharEncConvCtxtDtor:
@@ -141,30 +158,6 @@ typedef int
 typedef void
 (*xmlCharEncConvCtxtDtor)(void *vctxt);
 
-typedef struct {
-    xmlCharEncConvFunc input;
-    xmlCharEncConvFunc output;
-    xmlCharEncConvCtxtDtor ctxtDtor;
-    void *inputCtxt;
-    void *outputCtxt;
-} xmlCharEncConverter;
-
-/**
- * xmlCharEncConvImpl:
- * vctxt:  user data
- * name:  encoding name
- * conv:  pointer to xmlCharEncConverter struct
- *
- * If this function returns XML_ERR_OK, it must fill the @conv struct
- * with a conversion function, and optional destructor and optional
- * input and output conversion contexts.
- *
- * Returns an xmlParserErrors code.
- */
-typedef int
-(*xmlCharEncConvImpl)(void *vctxt, const char *name,
-                      xmlCharEncConverter *conv);
-
 /*
  * Block defining the handlers for non UTF-8 encodings.
  *
@@ -174,17 +167,38 @@ typedef struct _xmlCharEncodingHandler xmlCharEncodingHandler;
 typedef xmlCharEncodingHandler *xmlCharEncodingHandlerPtr;
 struct _xmlCharEncodingHandler {
     char *name XML_DEPRECATED_MEMBER;
-    xmlCharEncodingInputFunc input XML_DEPRECATED_MEMBER;
-    xmlCharEncodingOutputFunc output XML_DEPRECATED_MEMBER;
-#ifdef LIBXML_ICONV_ENABLED
-    void *iconv_in XML_DEPRECATED_MEMBER;
-    void *iconv_out XML_DEPRECATED_MEMBER;
-#endif /* LIBXML_ICONV_ENABLED */
+    union {
+        xmlCharEncConvFunc func;
+        xmlCharEncodingInputFunc legacyFunc;
+    } input XML_DEPRECATED_MEMBER;
+    union {
+        xmlCharEncConvFunc func;
+        xmlCharEncodingOutputFunc legacyFunc;
+    } output XML_DEPRECATED_MEMBER;
     void *inputCtxt XML_DEPRECATED_MEMBER;
     void *outputCtxt XML_DEPRECATED_MEMBER;
     xmlCharEncConvCtxtDtor ctxtDtor XML_DEPRECATED_MEMBER;
     int flags XML_DEPRECATED_MEMBER;
 };
+
+/**
+ * xmlCharEncConvImpl:
+ * @vctxt:  user data
+ * @name:  encoding name
+ * @flags:  bit mask of flags
+ * @out:  pointer to resulting handler
+ *
+ * If this function returns XML_ERR_OK, it must fill the @out
+ * pointer with an encoding handler. The handler can be obtained
+ * from xmlCharEncNewCustomHandler.
+ *
+ * @flags can contain XML_ENC_INPUT, XML_ENC_OUTPUT or both.
+ *
+ * Returns an xmlParserErrors code.
+ */
+typedef xmlParserErrors
+(*xmlCharEncConvImpl)(void *vctxt, const char *name, xmlCharEncFlags flags,
+                      xmlCharEncodingHandler **out);
 
 /*
  * Interfaces for encoding handlers.
@@ -197,18 +211,18 @@ XMLPUBFUN void
 	xmlCleanupCharEncodingHandlers	(void);
 XMLPUBFUN void
 	xmlRegisterCharEncodingHandler	(xmlCharEncodingHandlerPtr handler);
-XMLPUBFUN int
+XMLPUBFUN xmlParserErrors
 	xmlLookupCharEncodingHandler	(xmlCharEncoding enc,
 					 xmlCharEncodingHandlerPtr *out);
-XMLPUBFUN int
+XMLPUBFUN xmlParserErrors
 	xmlOpenCharEncodingHandler	(const char *name,
 					 int output,
 					 xmlCharEncodingHandlerPtr *out);
-XMLPUBFUN int
+XMLPUBFUN xmlParserErrors
 	xmlCreateCharEncodingHandler	(const char *name,
-					 int output,
+					 xmlCharEncFlags flags,
 					 xmlCharEncConvImpl impl,
-                                         void *implCtxt,
+					 void *implCtxt,
 					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN xmlCharEncodingHandlerPtr
 	xmlGetCharEncodingHandler	(xmlCharEncoding enc);
@@ -218,6 +232,14 @@ XMLPUBFUN xmlCharEncodingHandlerPtr
 	xmlNewCharEncodingHandler	(const char *name,
 					 xmlCharEncodingInputFunc input,
 					 xmlCharEncodingOutputFunc output);
+XMLPUBFUN xmlParserErrors
+	xmlCharEncNewCustomHandler	(const char *name,
+					 xmlCharEncConvFunc input,
+					 xmlCharEncConvFunc output,
+					 xmlCharEncConvCtxtDtor ctxtDtor,
+					 void *inputCtxt,
+					 void *outputCtxt,
+					 xmlCharEncodingHandler **out);
 
 /*
  * Interfaces for encoding names and aliases.
@@ -268,13 +290,13 @@ XMLPUBFUN int
  */
 #ifdef LIBXML_OUTPUT_ENABLED
 XMLPUBFUN int
-	UTF8Toisolat1			(unsigned char *out,
+	xmlUTF8ToIsolat1		(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen);
 #endif /* LIBXML_OUTPUT_ENABLED */
 XMLPUBFUN int
-	isolat1ToUTF8			(unsigned char *out,
+	xmlIsolat1ToUTF8		(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen);

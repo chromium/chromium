@@ -22,6 +22,11 @@ extern "C" {
 #endif
 
 /*
+ * Backward compatibility
+ */
+#define UTF8ToHtml htmlUTF8ToHtml
+
+/*
  * Most of the back-end structures from XML and HTML are shared.
  */
 typedef xmlParserCtxt htmlParserCtxt;
@@ -75,11 +80,6 @@ struct _htmlEntityDesc {
 
 XML_DEPRECATED
 XMLPUBVAR const xmlSAXHandlerV1 htmlDefaultSAXHandler;
-
-#ifdef LIBXML_THREAD_ENABLED
-XML_DEPRECATED
-XMLPUBFUN const xmlSAXHandlerV1 *__htmlDefaultSAXHandler(void);
-#endif
 
 #endif /* LIBXML_SAX1_ENABLED */
 
@@ -150,7 +150,7 @@ XMLPUBFUN htmlDocPtr
 			htmlParseFile	(const char *filename,
 					 const char *encoding);
 XMLPUBFUN int
-			UTF8ToHtml	(unsigned char *out,
+			htmlUTF8ToHtml	(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen);

@@ -121,14 +121,12 @@ XML_OBJS = $(XML_INTDIR)\buf.obj\
 	$(XML_INTDIR)\hash.obj\
 	$(XML_INTDIR)\HTMLparser.obj\
 	$(XML_INTDIR)\HTMLtree.obj\
-	$(XML_INTDIR)\legacy.obj\
 	$(XML_INTDIR)\list.obj\
 	$(XML_INTDIR)\nanohttp.obj\
 	$(XML_INTDIR)\parser.obj\
 	$(XML_INTDIR)\parserInternals.obj\
 	$(XML_INTDIR)\pattern.obj\
 	$(XML_INTDIR)\relaxng.obj\
-	$(XML_INTDIR)\SAX.obj\
 	$(XML_INTDIR)\SAX2.obj\
 	$(XML_INTDIR)\schematron.obj\
 	$(XML_INTDIR)\threads.obj\
@@ -165,14 +163,12 @@ XML_OBJS_A = $(XML_INTDIR_A)\buf.obj\
 	$(XML_INTDIR_A)\hash.obj\
 	$(XML_INTDIR_A)\HTMLparser.obj\
 	$(XML_INTDIR_A)\HTMLtree.obj\
-	$(XML_INTDIR_A)\legacy.obj\
 	$(XML_INTDIR_A)\list.obj\
 	$(XML_INTDIR_A)\nanohttp.obj\
 	$(XML_INTDIR_A)\parser.obj\
 	$(XML_INTDIR_A)\parserInternals.obj\
 	$(XML_INTDIR_A)\pattern.obj\
 	$(XML_INTDIR_A)\relaxng.obj\
-	$(XML_INTDIR_A)\SAX.obj\
 	$(XML_INTDIR_A)\SAX2.obj\
 	$(XML_INTDIR_A)\schematron.obj\
 	$(XML_INTDIR_A)\threads.obj\

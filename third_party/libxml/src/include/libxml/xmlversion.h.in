@@ -155,11 +155,9 @@
 /**
  * LIBXML_LEGACY_ENABLED:
  *
- * Whether the deprecated APIs are compiled in for compatibility
+ * Removed in 2.14
  */
-#if @WITH_LEGACY@
-#define LIBXML_LEGACY_ENABLED
-#endif
+#undef LIBXML_LEGACY_ENABLED
 
 /**
  * LIBXML_C14N_ENABLED:
@@ -245,11 +243,9 @@
 /**
  * LIBXML_UNICODE_ENABLED:
  *
- * Whether the Unicode related interfaces are compiled in
+ * Removed in 2.14
  */
-#if @WITH_REGEXPS@
-#define LIBXML_UNICODE_ENABLED
-#endif
+#undef LIBXML_UNICODE_ENABLED
 
 /**
  * LIBXML_REGEXP_ENABLED:
@@ -267,6 +263,15 @@
  */
 #if @WITH_REGEXPS@
 #define LIBXML_AUTOMATA_ENABLED
+#endif
+
+/**
+ * LIBXML_RELAXNG_ENABLED:
+ *
+ * Whether the RelaxNG validation interfaces are compiled in
+ */
+#if @WITH_RELAXNG@
+#define LIBXML_RELAXNG_ENABLED
 #endif
 
 /**

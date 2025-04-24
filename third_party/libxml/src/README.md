@@ -10,7 +10,9 @@ The git repository is hosted on GNOME's GitLab server:
 <https://gitlab.gnome.org/GNOME/libxml2>
 
 Bugs should be reported at
-<https://gitlab.gnome.org/GNOME/libxml2/-/issues>
+<https://gitlab.gnome.org/GNOME/libxml2/-/issues>.
+Please report *security issues* to our bug tracker as well. Make sure to
+mark the issue as *confidential*.
 
 Documentation is available at
 <https://gitlab.gnome.org/GNOME/libxml2/-/wikis>
@@ -21,8 +23,7 @@ This code is released under the MIT License, see the Copyright file.
 
 ## Build instructions
 
-libxml2 can be built with GNU Autotools, CMake, meson or several other
-build systems in platform-specific subdirectories.
+libxml2 can be built with GNU Autotools, CMake or meson.
 
 ### Autotools (for POSIX systems like Linux, BSD, macOS)
 
@@ -61,8 +62,9 @@ The following options disable or enable code modules and relevant symbols:
     --with-python           Python bindings (on)
     --with-reader           xmlReader parsing interface (on)
     --with-regexps          regular expressions support (on)
+    --with-relaxng          RELAX NG support (on)
     --with-sax1             older SAX1 interface (on)
-    --with-schemas          XML Schemas 1.0 and RELAX NG support (on)
+    --with-schemas          XML Schemas 1.0 support (on)
     --with-schematron       Schematron support (on)
     --with-threads          multithreading support (on)
     --with-thread-alloc     per-thread malloc hooks (off)
@@ -98,12 +100,13 @@ update your list of installed shared libs.
 
 ### CMake (mainly for Windows)
 
-Another option for compiling libxml is using CMake:
+Example commands:
 
-    cmake -E tar xf libxml2-xxx.tar.gz
-    cmake -S libxml2-xxx -B libxml2-xxx-build [possible options]
-    cmake --build libxml2-xxx-build
-    cmake --install libxml2-xxx-build
+    cmake -E tar xf libxml2-xxx.tar.xz
+    cmake -S libxml2-xxx -B builddir [options]
+    cmake --build builddir
+    ctest --test-dir builddir
+    cmake --install builddir
 
 Common CMake options include:
 
@@ -111,40 +114,28 @@ Common CMake options include:
     -D CMAKE_BUILD_TYPE=Release         # specify build type
     -D CMAKE_INSTALL_PREFIX=/usr/local  # specify the install path
     -D LIBXML2_WITH_ICONV=OFF           # disable iconv
-    -D LIBXML2_WITH_LZMA=OFF            # disable liblzma
     -D LIBXML2_WITH_PYTHON=OFF          # disable Python
-    -D LIBXML2_WITH_ZLIB=OFF            # disable libz
+    -D LIBXML2_WITH_ZLIB=ON             # enable zlib
 
 You can also open the libxml source directory with its CMakeLists.txt
 directly in various IDEs such as CLion, QtCreator, or Visual Studio.
 
 ### Meson
 
-Still somewhat experimental, see
-[issue 743](https://gitlab.gnome.org/GNOME/libxml2/-/issues/743).
+Example commands:
 
-Libxml can also be built with meson. Without option, simply call
-
-    meson setup builddir
+    meson setup [options] builddir
     ninja -C builddir
-
-To add options, see the meson_options.txt file. For example:
-
-    meson setup \
-        -Dprefix=$prefix \
-        -Dhistory=enabled \
-        -Dhttp=enabled \
-        -Dschematron=disabled \
-        -Dzlib=enabled \
-        builddir
-
-To install libxml:
-
+    meson test -C builddir
     ninja -C builddir install
 
-To launch tests:
+See the `meson_options.txt` file for options. For example:
 
-    meson test -C builddir
+    -Dprefix=$prefix
+    -Dhistory=enabled
+    -Dhttp=enabled
+    -Dschematron=disabled
+    -Dzlib=enabled
 
 ## Dependencies
 

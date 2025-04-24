@@ -1,0 +1,56 @@
+#!/bin/sh
+
+usage() {
+    cat <<EOF
+${2:+$2
+
+}Usage: xml2-config <OPTION...>
+
+Options:
+  --prefix              print libxml prefix
+  --prefix=DIR          change libxml prefix
+  --libs                print library linking information
+  --dynamic             skip libraries only necessary for static linking
+  --cflags              print pre-processor and compiler flags
+  --modules             module support enabled
+  --help                display this help and exit
+  --version             output version information
+EOF
+    exit "$1"
+}
+
+if [ "$#" -lt 1 ]; then
+    usage 1 "Need at least one option."
+fi
+
+prefix=0
+set_prefix=
+libs=0
+libflag=--static
+cflags=0
+modules=0
+version=0
+
+for arg in "$@"; do
+    case $arg in
+        --prefix)   prefix=1 ;;
+        --prefix=*) set_prefix="${arg#*=}" ;;
+        --libs)     libs=1 ;;
+        --dynamic)  libflag=--shared ;;
+        --cflags)   cflags=1 ;;
+        --modules)  modules=1 ;;
+        --help)     usage 0 ;;
+        --version)  version=1 ;;
+        *)          usage 1 "Unknown option: $arg" ;;
+    esac
+done
+
+set --
+[ "$prefix"  -eq 1 ] && set -- "$@" --variable=prefix
+[ -n "$set_prefix" ] && set -- "$@" --define-variable=prefix="$set_prefix"
+[ "$libs"    -eq 1 ] && set -- "$@" --libs "$libflag"
+[ "$cflags"  -eq 1 ] && set -- "$@" --cflags
+[ "$modules" -eq 1 ] && set -- "$@" --variable=modules
+[ "$version" -eq 1 ] && set -- "$@" --modversion
+
+exec ${PKG_CONFIG:-pkg-config} "$@" libxml-2.0

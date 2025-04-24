@@ -31,11 +31,11 @@
 #include <libxml/uri.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
 #include <libxml/relaxng.h>
 #endif
 
-#include "private/shell.h"
+#include "private/lint.h"
 
 #ifndef STDIN_FILENO
   #define STDIN_FILENO 0
@@ -599,7 +599,7 @@ xmllintShellSetContent(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
     return (0);
 }
 
-#if defined(LIBXML_VALID_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+#if defined(LIBXML_VALID_ENABLED) || defined(LIBXML_RELAXNG_ENABLED)
 static void
 xmllintShellPrintf(void *ctx, const char *msg, ...) {
     xmllintShellCtxtPtr sctxt = ctx;
@@ -609,9 +609,9 @@ xmllintShellPrintf(void *ctx, const char *msg, ...) {
     vfprintf(sctxt->output, msg, ap);
     va_end(ap);
 }
-#endif /* defined(LIBXML_VALID_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED) */
+#endif /* defined(LIBXML_VALID_ENABLED) || defined(LIBXML_RELAXNG_ENABLED) */
 
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
 /**
  * xmllintShellRNGValidate:
  * @ctxt:  the shell context
@@ -1096,7 +1096,6 @@ xmllintShellReadline(char *prompt) {
  * xmllintShell:
  * @doc:  the initial document
  * @filename:  the output buffer
- * @input:  the line reading function
  * @output:  the output FILE*, defaults to stdout if NULL
  *
  * Implements the XML shell
@@ -1228,7 +1227,7 @@ xmllintShell(xmlDocPtr doc, const char *filename, FILE * output)
 #ifdef LIBXML_VALID_ENABLED
 		  fprintf(ctxt->output, "\tvalidate     check the document for errors\n");
 #endif /* LIBXML_VALID_ENABLED */
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
 		  fprintf(ctxt->output, "\trelaxng rng  validate the document against the Relax-NG schemas\n");
 #endif
 		  fprintf(ctxt->output, "\tgrep string  search for a string in the subtree\n");
@@ -1238,7 +1237,7 @@ xmllintShell(xmlDocPtr doc, const char *filename, FILE * output)
 #endif /* LIBXML_VALID_ENABLED */
         } else if (!strcmp(command, "load")) {
             xmllintShellLoad(ctxt, arg, NULL, NULL);
-#ifdef LIBXML_SCHEMAS_ENABLED
+#ifdef LIBXML_RELAXNG_ENABLED
         } else if (!strcmp(command, "relaxng")) {
             xmllintShellRNGValidate(ctxt, arg, NULL, NULL);
 #endif

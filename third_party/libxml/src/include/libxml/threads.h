@@ -61,12 +61,6 @@ XMLPUBFUN void
 XMLPUBFUN void
 			xmlUnlockLibrary(void);
 XML_DEPRECATED
-XMLPUBFUN int
-			xmlGetThreadId	(void);
-XML_DEPRECATED
-XMLPUBFUN int
-			xmlIsMainThread	(void);
-XML_DEPRECATED
 XMLPUBFUN void
 			xmlCleanupThreads(void);
 
