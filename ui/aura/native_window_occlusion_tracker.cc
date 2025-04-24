@@ -60,11 +60,9 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
     return false;
   }
 
-#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion)) {
     return false;
   }
-#endif
 
   const std::string type =
       features::kApplyNativeOcclusionToCompositorType.Get();
@@ -74,7 +72,7 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
              features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace aura
