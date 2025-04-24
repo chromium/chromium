@@ -13,6 +13,7 @@ approaches.
 1. If you are adding a new client for OCR, add a new enum value to
    `screen_ai::mojom::OcrClientType`, otherwise choose an appropriate one for it
    in the next steps.
+1. Join `chrome-ocr-clients@` group to get notifications on major updates.
 1. Using `OpticalCharacterRecognizer:CreateWithStatusCallback`, create an OCR
     object, and wait until the callback is called. This will trigger download
     and startup of the service (if needed) and reports the result.\
