@@ -10,6 +10,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
@@ -21,6 +22,7 @@ import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -130,17 +132,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             isIncognito,
                             true));
             if (!isIncognito && mCollaborationService.getServiceStatus().isAllowedToCreate()) {
-                itemList.add(
-                        BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                                R.string.share_tab_group_menu_item,
-                                R.id.share_group,
-                                mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL,
-                                /* iconTintColorStateList= */ Resources.ID_NULL,
-                                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                                isIncognito,
-                                true));
+                itemList.add(buildShareMenuItem(R.string.share_tab_group_menu_item));
             }
+        } else {
+            assert !isIncognito;
+            itemList.add(buildShareMenuItem(R.string.tab_grid_manage_button_text));
         }
+
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
             itemList.add(
@@ -192,5 +190,16 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 mShouldShowIcons
                         ? R.dimen.tab_group_menu_with_icons_width
                         : R.dimen.tab_group_menu_width);
+    }
+
+    private ListItem buildShareMenuItem(@StringRes int stringId) {
+        return BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                stringId,
+                R.id.share_group,
+                mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL,
+                /* iconTintColorStateList= */ Resources.ID_NULL,
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                /* isIncognito= */ false,
+                /* enabled= */ true);
     }
 }
