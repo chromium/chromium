@@ -17,6 +17,7 @@
 #import "components/optimization_guide/core/optimization_guide_model_executor.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/constants/error_strings.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/metrics/enhanced_calendar_metrics.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -27,10 +28,6 @@
 #import "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace ai {
-
-// Error message when the service is shutting down.
-const char kServiceShutDownErrorString[] =
-    "Enhanced Calendar service is shutting down.";
 
 // TODO(crbug.com/398903376): Evaluate a good timeout when using prod-served
 // models.
@@ -64,7 +61,8 @@ EnhancedCalendarServiceImpl::~EnhancedCalendarServiceImpl() {
 
   mojom::EnhancedCalendarResponseResultPtr result_union =
       mojom::EnhancedCalendarResponseResult::NewError(
-          kServiceShutDownErrorString);
+          GetEnhancedCalendarErrorString(
+              EnhancedCalendarError::kServiceShuttingDownError));
 
   InvokePendingCallback(std::move(result_union));
 }
@@ -78,7 +76,9 @@ void EnhancedCalendarServiceImpl::ExecuteEnhancedCalendarRequest(
   if (!web_state_) {
     mojom::EnhancedCalendarResponseResultPtr result_union =
         mojom::EnhancedCalendarResponseResult::NewError(
-            "WebState destroyed before executing request");
+            GetEnhancedCalendarErrorString(
+                EnhancedCalendarError::kWebStateDestroyedBeforeRequestError));
+
     std::move(request_callback).Run(std::move(result_union));
     return;
   }
@@ -154,11 +154,13 @@ void EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse(
           mojo_base::ProtoWrapper(response_proto.value()));
     } else {
       result_union = mojom::EnhancedCalendarResponseResult::NewError(
-          "Proto unmarshalling error.");
+          GetEnhancedCalendarErrorString(
+              EnhancedCalendarError::kProtoUnmarshallingError));
     }
   } else {
     std::string error_string =
-        base::StrCat({"Server model execution error: ",
+        base::StrCat({GetEnhancedCalendarErrorString(
+                          EnhancedCalendarError::kServerModelExecutionError),
                       service_->ResponseForErrorCode(
                           static_cast<int>(result.response.error().error()))});
     result_union =
@@ -186,7 +188,9 @@ void EnhancedCalendarServiceImpl::RecordMetrics(
     return;
   }
 
-  if (error_message.value() == kServiceShutDownErrorString) {
+  if (error_message.value() ==
+      GetEnhancedCalendarErrorString(
+          EnhancedCalendarError::kServiceShuttingDownError)) {
     base::UmaHistogramEnumeration(
         kEnhancedCalendarResponseStatusHistogram,
         EnhancedCalendarResponseStatus::kCancelRequest);
@@ -212,7 +216,8 @@ void EnhancedCalendarServiceImpl::OnPrimaryAccountChanged(
   weak_ptr_factory_.InvalidateWeakPtrs();
   mojom::EnhancedCalendarResponseResultPtr result_union =
       mojom::EnhancedCalendarResponseResult::NewError(
-          "Primary account was changed.");
+          GetEnhancedCalendarErrorString(
+              EnhancedCalendarError::kPrimaryAccountChangeError));
 
   InvokePendingCallback(std::move(result_union));
 }

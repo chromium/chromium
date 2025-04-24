@@ -14,6 +14,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/constants",
     "//ios/chrome/browser/intelligence/enhanced_calendar/model",
     "//ios/chrome/browser/intelligence/enhanced_calendar/model:config",
     "//ios/chrome/browser/intelligence/enhanced_calendar/ui",

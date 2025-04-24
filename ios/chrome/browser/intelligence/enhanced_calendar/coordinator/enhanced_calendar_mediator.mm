@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/constants/error_strings.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
@@ -111,8 +112,16 @@ constexpr std::string kCalendarEventTitleTemplate = "{}{}";
     (ai::mojom::EnhancedCalendarResponseResultPtr)responseResult {
   // Present the "add to calendar" UI with default values if the response is an
   // error.
-  // TODO (crbug.com/410809676) : Handle dismissing the UI.
   if (responseResult->is_error()) {
+    std::string error = responseResult->get_error();
+
+    // If the error is due to account change, dismiss the UI.
+    if (error == ai::GetEnhancedCalendarErrorString(
+                     ai::EnhancedCalendarError::kPrimaryAccountChangeError)) {
+      [_delegate cancelRequestsAndDismissViewController:self];
+      return;
+    }
+
     [_delegate presentAddToCalendar:self config:_enhancedCalendarConfig];
     return;
   }
@@ -179,7 +188,7 @@ constexpr std::string kCalendarEventTitleTemplate = "{}{}";
   // Optionally add the confirmation code if it exists.
   NSString* confirmationCode = base::SysUTF8ToNSString(
       enhancedCalendarResponse.event_confirmation_code());
-  if (confirmationCode) {
+  if ([confirmationCode length] != 0) {
     _enhancedCalendarConfig.calendarEventConfig
         .eventDescription = [_enhancedCalendarConfig.calendarEventConfig
                                  .eventDescription
