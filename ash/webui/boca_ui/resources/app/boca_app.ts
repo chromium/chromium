@@ -399,6 +399,12 @@ export declare interface ClientApiDelegate {
    * Refresh the workbook for students.
    */
   refreshWorkbook(): Promise<void>;
+
+  /**
+   * Gets Speech Recognition DLC installation status.
+   */
+  getSpeechRecognitionInstallationStatus():
+      Promise<SpeechRecognitionInstallState>;
 }
 
 /**

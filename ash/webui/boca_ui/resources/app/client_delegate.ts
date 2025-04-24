@@ -337,6 +337,10 @@ export class ClientDelegateFactory {
       refreshWorkbook: async () => {
         await pageHandler.refreshWorkbook();
       },
+      getSpeechRecognitionInstallationStatus: async () => {
+        return getSpeechRecognitionInstallStateMojomToUI(
+            (await pageHandler.getSpeechRecognitionInstallationStatus()).state);
+      },
     };
   }
 
