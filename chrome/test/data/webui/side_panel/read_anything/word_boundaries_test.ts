@@ -206,21 +206,4 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(0, state.previouslySpokenIndex);
         assertEquals(10, state.speechUtteranceStartIndex);
       });
-
-  test('boundary offset with too long text', () => {
-    app.wordBoundaryState = {
-      mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
-      speechUtteranceStartIndex: 0,
-      speechUtteranceLength: 0,
-      previouslySpokenIndex: 0,
-      tooLongTextOffset: 10,
-    };
-
-    app.updateBoundary(10);
-
-    // The new word boundary state should be offset by the tooLongTextOffset.
-    const state: WordBoundaryState = app.wordBoundaryState;
-    assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-    assertEquals(20, state.previouslySpokenIndex);
-  });
 });

@@ -2236,7 +2236,7 @@ export class AppElement extends AppElementBase {
   }
 
 
-  isTextTooLong(textLength: number): boolean {
+  private isTextTooLong(textLength: number): boolean {
     const maxSpeechLength = this.selectedVoice_?.localService ?
         MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES :
         MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;

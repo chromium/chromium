@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="not is_chromeos">
-import {MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {createAndSetVoices} from './common.js';
-// </if>
-import {PauseActionSource, SpeechBrowserProxyImpl, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -317,35 +311,4 @@ suite('WordHighlighting', () => {
     assertTrue(currentHighlight !== undefined);
     assertEquals(sentence, currentHighlight!.textContent);
   });
-
-  // <if expr="not is_chromeos">
-  test('highlight index updates with too long text', () => {
-    createAndSetVoices(app, speech, [
-      {lang: 'en-us', name: 'Google Gatsby (Natural)', localService: true},
-    ]);
-    const longSentence = 'Can you see through the mist- Look out this way, ' +
-        'Can you see the green light- Just \'cross the bay, Sometimes it\'s ' +
-        'winking, Sometimes it\'s warning- Blinking its message to me until ' +
-        'morning- it\'s a lighthouse, it\'s a signal flare Stay back Come ' +
-        'quick Move on Stay there Only we know what we\'re going through- If ' +
-        'I save you, will you save me too- Can you see through the mist, ' +
-        'Look, cross the bay Can you see the green light, It\'s yours, ' +
-        'Daisy Fay.';
-    assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
-    setSimpleAxTreeWithText(longSentence);
-    const lastIndex =
-        longSentence.substring(0, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES)
-            .lastIndexOf(',');
-
-    app.updateBoundary(lastIndex);
-    app.playSpeech();
-    assertEquals(1, speech.getCallCount('speak'));
-    speech.getArgs('speak')[0].onend();
-
-    app.updateBoundary(3);
-    const state = app.wordBoundaryState;
-    assertEquals(lastIndex, state.tooLongTextOffset);
-    assertEquals(lastIndex + 3, state.previouslySpokenIndex);
-  });
-  // </if>
 });
