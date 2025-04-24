@@ -8,6 +8,7 @@ source_set("infobar") {
   sources = [
     "pdf_infobar_controller.h",
     "pdf_infobar_delegate.h",
+    "pdf_infobar_prefs.h",
   ]
   public_deps = [
     "//base",
@@ -27,6 +28,7 @@ source_set("impl") {
   sources = [
     "pdf_infobar_controller.cc",
     "pdf_infobar_delegate.cc",
+    "pdf_infobar_prefs.cc",
   ]
   deps = [
     ":infobar",
@@ -55,6 +57,7 @@ source_set("unit_tests") {
   sources = [
     "pdf_infobar_controller_unittest.cc",
     "pdf_infobar_delegate_unittest.cc",
+    "pdf_infobar_prefs_unittest.cc",
   ]
   deps = [
     ":infobar",

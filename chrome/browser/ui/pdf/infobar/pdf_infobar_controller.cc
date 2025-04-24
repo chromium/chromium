@@ -14,6 +14,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.h"
+#include "chrome/browser/ui/pdf/infobar/pdf_infobar_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
@@ -60,21 +61,6 @@ bool IsAppropriateForInfoBar(BrowserWindowInterface* browser) {
     return false;
   }
   return true;
-}
-
-// Returns true if the setting at `chrome://settings/content/pdfDocuments` is
-// set to "Download PDFs", which effectively disables the PDF viewer by making
-// Chrome download opened PDFs. Returns false if it's set to "Open in Chrome".
-bool IsPdfViewerDisabled(Profile* profile) {
-  PrefService* prefs = profile->GetPrefs();
-  return prefs->HasPrefPath(prefs::kPluginsAlwaysOpenPdfExternally) &&
-         prefs->GetBoolean(prefs::kPluginsAlwaysOpenPdfExternally);
-}
-
-// Returns true if the system's default browser is controlled by a policy.
-bool IsDefaultBrowserPolicyControlled() {
-  return g_browser_process->local_state()->IsManagedPreference(
-      prefs::kDefaultBrowserSettingEnabled);
 }
 
 }  // namespace
@@ -181,16 +167,20 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
     return;
   }
 
-  // Show the PDF infobar.
-  // TODO(crbug.com/396202897): don't show the PDF infobar if we already showed
-  // it recently.
+  // Don't show the infobar if it's already showing or was recently shown.
   if (infobar_) {
     return;
   }
+  if (InfoBarShownRecentlyOrMaxTimes()) {
+    return;
+  }
+
+  // Show the PDF infobar.
   content::WebContents* web_contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   infobar_manager_ =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager_->AddObserver(this);
   infobar_ = PdfInfoBarDelegate::Create(infobar_manager_);
+  SetInfoBarShownRecently();
 }
