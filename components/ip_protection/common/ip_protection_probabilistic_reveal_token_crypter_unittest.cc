@@ -39,10 +39,10 @@ using ::private_join_and_compute::elgamal::PublicKey;
 // NID_X9_62_prime256v1.
 absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
+  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   return y.ToBytesCompressed();
 }
 
@@ -50,18 +50,21 @@ absl::StatusOr<ProbabilisticRevealToken> CreateTokenFromPlaintext(
     uint64_t private_key,
     const std::string& plaintext) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint plaintext_point,
-                   group.GetPointByHashingToCurveSha256(plaintext));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint plaintext_point,
+                       group.GetPointByHashingToCurveSha256(plaintext));
 
-  ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
+  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   ElGamalEncrypter encrypter(&group, std::make_unique<PublicKey>(PublicKey{
                                          std::move(g), std::move(y)}));
-  ASSIGN_OR_RETURN(Ciphertext ciphertext, encrypter.Encrypt(plaintext_point));
-  ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
-  ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(Ciphertext ciphertext,
+                       encrypter.Encrypt(plaintext_point));
+  PJC_ASSIGN_OR_RETURN(std::string u_compressed,
+                       ciphertext.u.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(std::string e_compressed,
+                       ciphertext.e.ToBytesCompressed());
   return ProbabilisticRevealToken{1, std::move(u_compressed),
                                   std::move(e_compressed)};
 }
@@ -71,9 +74,9 @@ absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(
     std::size_t num_tokens) {
   std::vector<ProbabilisticRevealToken> tokens(num_tokens);
   for (std::size_t i = 0; i < num_tokens; ++i) {
-    ASSIGN_OR_RETURN(tokens[i],
-                     CreateTokenFromPlaintext(
-                         private_key, "token-" + base::NumberToString(i)));
+    PJC_ASSIGN_OR_RETURN(tokens[i],
+                         CreateTokenFromPlaintext(
+                             private_key, "token-" + base::NumberToString(i)));
   }
   return tokens;
 }
@@ -81,10 +84,10 @@ absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(
 absl::StatusOr<ECPoint> DecryptToken(uint64_t private_key,
                                      const ProbabilisticRevealToken& token) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint u, group.CreateECPoint(token.u));
-  ASSIGN_OR_RETURN(ECPoint e, group.CreateECPoint(token.e));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint u, group.CreateECPoint(token.u));
+  PJC_ASSIGN_OR_RETURN(ECPoint e, group.CreateECPoint(token.e));
   Ciphertext ciphertext{std::move(u), std::move(e)};
   ElGamalDecrypter decrypter(std::make_unique<PrivateKey>(
       PrivateKey{context.CreateBigNum(private_key)}));

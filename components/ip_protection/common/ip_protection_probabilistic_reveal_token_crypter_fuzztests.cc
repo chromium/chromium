@@ -32,29 +32,32 @@ namespace {
 // NID_X9_62_prime256v1.
 absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
+  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   return y.ToBytesCompressed();
 }
 
 absl::StatusOr<ip_protection::ProbabilisticRevealToken>
 CreateTokenFromPlaintext(uint64_t private_key, const std::string& plaintext) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint plaintext_point,
-                   group.GetPointByHashingToCurveSha256(plaintext));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint plaintext_point,
+                       group.GetPointByHashingToCurveSha256(plaintext));
 
-  ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
+  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   std::unique_ptr<PublicKey> public_key(
       new PublicKey{std::move(g), std::move(y)});
   ElGamalEncrypter encrypter(&group, std::move(public_key));
-  ASSIGN_OR_RETURN(Ciphertext ciphertext, encrypter.Encrypt(plaintext_point));
-  ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
-  ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(Ciphertext ciphertext,
+                       encrypter.Encrypt(plaintext_point));
+  PJC_ASSIGN_OR_RETURN(std::string u_compressed,
+                       ciphertext.u.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(std::string e_compressed,
+                       ciphertext.e.ToBytesCompressed());
   return ip_protection::ProbabilisticRevealToken{
       1, std::move(u_compressed), std::move(e_compressed)};
 }

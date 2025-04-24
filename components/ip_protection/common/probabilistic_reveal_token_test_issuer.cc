@@ -57,17 +57,17 @@ ProbabilisticRevealTokenTestIssuer::CreateInternal(uint64_t private_key) {
   auto context = std::make_unique<Context>();
   std::unique_ptr<ECGroup> group;
   {
-    ASSIGN_OR_RETURN(ECGroup local_group,
-                     ECGroup::Create(NID_X9_62_prime256v1, context.get()));
+    PJC_ASSIGN_OR_RETURN(ECGroup local_group,
+                         ECGroup::Create(NID_X9_62_prime256v1, context.get()));
     group = std::make_unique<ECGroup>(std::move(local_group));
   }
 
   std::unique_ptr<ElGamalEncrypter> encrypter;
   std::string serialized_public_key;
   {
-    ASSIGN_OR_RETURN(ECPoint g, group->GetFixedGenerator());
-    ASSIGN_OR_RETURN(ECPoint y, g.Mul(context->CreateBigNum(private_key)));
-    ASSIGN_OR_RETURN(serialized_public_key, y.ToBytesCompressed());
+    PJC_ASSIGN_OR_RETURN(ECPoint g, group->GetFixedGenerator());
+    PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context->CreateBigNum(private_key)));
+    PJC_ASSIGN_OR_RETURN(serialized_public_key, y.ToBytesCompressed());
     encrypter = std::make_unique<ElGamalEncrypter>(
         group.get(), std::make_unique<PublicKey>(std::move(g), std::move(y)));
   }
@@ -123,9 +123,9 @@ ProbabilisticRevealTokenTestIssuer::RevealToken(
 absl::StatusOr<std::string>
 ProbabilisticRevealTokenTestIssuer::RevealTokenInternal(
     const ProbabilisticRevealToken& token) const {
-  ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
-  ASSIGN_OR_RETURN(BigNum big_num, group_->RecoverXFromPaddedPoint(
-                                       point, kPaddingSize * kBitsPerByte));
+  PJC_ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
+  PJC_ASSIGN_OR_RETURN(BigNum big_num, group_->RecoverXFromPaddedPoint(
+                                           point, kPaddingSize * kBitsPerByte));
   return big_num.ToBytes();
 }
 
@@ -135,15 +135,18 @@ ProbabilisticRevealTokenTestIssuer::IssueInternal(
   if (plaintext.size() != kPlaintextSize) {
     return absl::InvalidArgumentError("plaintext size must be kPlaintextSize");
   }
-  ASSIGN_OR_RETURN(ECPoint plaintext_point,
-                   group_->GetPointByPaddingX(
-                       context_->CreateBigNum(plaintext),
-                       /*padding_bit_count=*/kPaddingSize * kBitsPerByte));
-  ASSIGN_OR_RETURN(std::string serialized_plaintext_point,
-                   plaintext_point.ToBytesCompressed());
-  ASSIGN_OR_RETURN(Ciphertext ciphertext, encrypter_->Encrypt(plaintext_point));
-  ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
-  ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(ECPoint plaintext_point,
+                       group_->GetPointByPaddingX(
+                           context_->CreateBigNum(plaintext),
+                           /*padding_bit_count=*/kPaddingSize * kBitsPerByte));
+  PJC_ASSIGN_OR_RETURN(std::string serialized_plaintext_point,
+                       plaintext_point.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(Ciphertext ciphertext,
+                       encrypter_->Encrypt(plaintext_point));
+  PJC_ASSIGN_OR_RETURN(std::string u_compressed,
+                       ciphertext.u.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(std::string e_compressed,
+                       ciphertext.e.ToBytesCompressed());
   return ProbabilisticRevealToken(1, std::move(u_compressed),
                                   std::move(e_compressed));
 }
@@ -173,8 +176,8 @@ ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncode(
 absl::StatusOr<std::string>
 ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncodeInternal(
     const ProbabilisticRevealToken& token) {
-  ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
-  ASSIGN_OR_RETURN(std::string serialized_point, point.ToBytesCompressed());
+  PJC_ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
+  PJC_ASSIGN_OR_RETURN(std::string serialized_point, point.ToBytesCompressed());
   return base::Base64Encode(serialized_point);
 }
 
@@ -183,7 +186,7 @@ ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncodeInternal(
     const std::vector<ProbabilisticRevealToken>& tokens) {
   std::vector<std::string> encoded;
   for (const auto& t : tokens) {
-    ASSIGN_OR_RETURN(std::string sp, DecryptSerializeEncodeInternal(t));
+    PJC_ASSIGN_OR_RETURN(std::string sp, DecryptSerializeEncodeInternal(t));
     encoded.push_back(std::move(sp));
   }
   return encoded;
@@ -191,8 +194,8 @@ ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncodeInternal(
 
 absl::StatusOr<ECPoint> ProbabilisticRevealTokenTestIssuer::Decrypt(
     const ProbabilisticRevealToken& token) const {
-  ASSIGN_OR_RETURN(ECPoint u, group_->CreateECPoint(token.u));
-  ASSIGN_OR_RETURN(ECPoint e, group_->CreateECPoint(token.e));
+  PJC_ASSIGN_OR_RETURN(ECPoint u, group_->CreateECPoint(token.u));
+  PJC_ASSIGN_OR_RETURN(ECPoint e, group_->CreateECPoint(token.e));
   Ciphertext ciphertext{std::move(u), std::move(e)};
   return decrypter_->Decrypt(ciphertext);
 }

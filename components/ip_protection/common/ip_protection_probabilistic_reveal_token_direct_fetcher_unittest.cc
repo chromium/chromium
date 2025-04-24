@@ -31,10 +31,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-// The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
-// the private-join-and-compute code. We need to undefine the macro here to
-// avoid compiler errors.
-#undef ASSIGN_OR_RETURN
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -61,10 +57,10 @@ constexpr char kIssuerServerUrl[] =
 
 absl::StatusOr<std::string> GetTestPublicKeyBytes(uint64_t private_key) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_X9_62_prime256v1, &context));
-  ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  PJC_ASSIGN_OR_RETURN(ECGroup group,
+                       ECGroup::Create(NID_X9_62_prime256v1, &context));
+  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
+  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   return y.ToBytesCompressed();
 }
 
