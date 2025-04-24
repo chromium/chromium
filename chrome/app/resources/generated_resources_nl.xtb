@@ -102,7 +102,7 @@
 <translation id="10619348099955377">Weergavenaam kopiëren</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1066964438793906105">Scannen op malware</translation>
-<translation id="1067661089446014701">Voor extra beveiliging kun je wachtwoorden op je apparaat versleutelen voordat ze worden opgeslagen in je Google-account</translation>
+<translation id="1067661089446014701">Voor extra beveiliging kun je wachtwoorden op je apparaat versleutelen voordat ze worden opgeslagen in je Google-account.</translation>
 <translation id="1067922213147265141">Andere Google-services</translation>
 <translation id="106814709658156573">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor linksonder op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="106855837688344862">Aanraakgebeurtenissen</translation>
@@ -4901,7 +4901,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4423525817792153232">Al je tanden laten zien</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Als je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer ChromeOS crasht, welke functies er zijn gebruikt en hoeveel geheugen er gewoonlijk wordt gebruikt.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="442528696198546304">Wachtwoorden, toegangssleutels en andere gegevens worden definitief verwijderd uit <ph name="BRAND" /></translation>
+<translation id="442528696198546304">Wachtwoorden, toegangssleutels en andere gegevens worden definitief verwijderd uit <ph name="BRAND" />.</translation>
 <translation id="4426268963847471040"><ph name="FILE_NAME" /> verwijderen</translation>
 <translation id="4426464032773610160">Als je aan de slag wilt gaan, zorg je dat je USB- of bluetooth-schakelaar is verbonden met je Chromebook. Je kunt ook de toetsen van het toetsenbord gebruiken.</translation>
 <translation id="4426490308207168518">Feedback delen of een probleem melden</translation>
@@ -5553,7 +5553,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4890585766056792498">Krijg bescherming tegen gevaarlijke sites</translation>
 <translation id="4890773143211625964">Geavanceerde printeropties bekijken</translation>
 <translation id="4891089016822695758">Bètaforum</translation>
-<translation id="4891795846939730995">Als je dit apparaat weer toegang tot je toegangssleutels wilt geven, log je in bij een site of app met een opgeslagen toegangssleutel</translation>
+<translation id="4891795846939730995">Als je dit apparaat weer toegang tot je toegangssleutels wilt geven, log je in bij een site of app met een opgeslagen toegangssleutel.</translation>
 <translation id="4892229439761351791">Site kan Bluetooth gebruiken</translation>
 <translation id="4892328231620815052">Als je klaar bent, vind je de leeslijst in Bookmarks en lijsten</translation>
 <translation id="489258173289528622">Inactieve actie op batterij</translation>
@@ -10069,7 +10069,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="815347678407292813">Je locatie is via je IP-adres misschien nog steeds zichtbaar voor apps en websites</translation>
 <translation id="8154790740888707867">Geen bestand</translation>
 <translation id="815491593104042026">De verificatie is mislukt omdat er een onbeveiligde URL (<ph name="BLOCKED_URL" />) wordt gebruikt. Neem contact op met je beheerder.</translation>
-<translation id="8155214519979960765">Als je weer wilt inloggen met een toegangssleutel op dit apparaat, moet je laten verifiëren dat jij het bent. Heb je een andere inlogoptie, zoals een wachtwoord, dan kun je daarmee inloggen.</translation>
+<translation id="8155214519979960765">Als je op dit apparaat weer wilt inloggen met een toegangssleutel, moet je laten verifiëren dat jij het bent. Heb je een andere inlogoptie, zoals een wachtwoord, dan kun je daarmee inloggen.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Geen gehackte wachtwoorden gevonden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8157248655669507702">Zet mobiele data aan om een e-simkaartprofiel te installeren</translation>
 <translation id="8157704005178149728">Toezicht instellen</translation>
@@ -10726,7 +10726,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8634703204743010992">Virtueel toetsenbord voor ChromeOS</translation>
 <translation id="8635628933471165173">Opnieuw laden...</translation>
 <translation id="8636284842992792762">Extensies initialiseren…</translation>
-<translation id="8636323803535540285">Voeg een snelkoppeling toe naar <ph name="BRAND" /> om hier sneller te komen</translation>
+<translation id="8636323803535540285">Voeg een snelkoppeling toe naar <ph name="BRAND" /> om hier sneller te komen.</translation>
 <translation id="8636500887554457830">Niet toestaan dat sites pop-ups sturen of omleidingen gebruiken</translation>
 <translation id="8636514272606969031">Zijvenster vastgezet</translation>
 <translation id="8637688295594795546">Systeemupdate beschikbaar. Download voorbereiden...</translation>
