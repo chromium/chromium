@@ -2057,7 +2057,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void onTabCountChanged(int numberOfTabs) {
-        mHomeButton.setEnabled(true);
         setTabSwitcherDrawableColorScheme();
     }
 
