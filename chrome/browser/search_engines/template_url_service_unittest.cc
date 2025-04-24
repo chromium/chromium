@@ -53,7 +53,6 @@
 using base::ASCIIToUTF16;
 using base::Time;
 using SearchPolicyConflictType = TemplateURLService::SearchPolicyConflictType;
-using KeywordType = TemplateURLService::KeywordType;
 using testing::NotNull;
 
 namespace {
@@ -175,44 +174,14 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
                     : "SearchEngineChoiceDisabled";
 }
 
-std::string KeywordTypeToString(KeywordType keyword) {
-  switch (keyword) {
-    case KeywordType::kNone:
-      return ".None";
-    case KeywordType::kStarterPack:
-      return ".StarterPack";
-    case KeywordType::kPrepopulated:
-      return ".Prepopulated";
-    case KeywordType::kSearchEngineSetByExtension:
-      return ".SearchEngineSetByExtension";
-    case KeywordType::kNonFeaturedSiteSearchSetByPolicy:
-      return ".NonFeaturedSiteSearchSetByPolicy";
-    case KeywordType::kFeaturedSiteSearchSetByPolicy:
-      return ".FeaturedSiteSearchSetByPolicy";
-    case KeywordType::kSearchAggregatorSetByPolicy:
-      return ".SearchAggregatorSetByPolicy";
-    case KeywordType::kDefaultSearchEngineSetByPolicy:
-      return ".DefaultSearchEngineSetByPolicy";
-    case KeywordType::kDefaultSearchEngineSetByUser:
-      return ".DefaultSearchEngineSetByUser";
-    case KeywordType::kSubstitutingSiteSearchSetByUser:
-      return ".SubstitutingSiteSearchSetByUser";
-    case KeywordType::kNonSubstitutingSiteSearchSetByUser:
-      return ".NonSubstitutingSiteSearchSetByUser";
-  }
-  return "";
-}
-
 void VerifyTemplateUrlCountsHistograms(
     const base::HistogramTester& histogram_tester,
-    const base::flat_map<KeywordType, int>& expected_counts) {
+    const base::flat_map<std::string, int>& expected_counts) {
   int total = 0;
   for (auto [type, count] : expected_counts) {
     total += count;
     histogram_tester.ExpectBucketCount(
-        TemplateURLService::kKeywordCountHistogramName +
-            KeywordTypeToString(type),
-        count, 1);
+        TemplateURLService::kKeywordCountHistogramName + type, count, 1);
   }
   // Verify total number of template_urls upon load time.
   histogram_tester.ExpectBucketCount(
@@ -2733,17 +2702,16 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
   base::HistogramTester histogram_tester;
   test_util()->ResetModel(true);
   VerifyTemplateUrlCountsHistograms(
-      histogram_tester,
-      {{KeywordType::kStarterPack, 5},
-       {KeywordType::kPrepopulated, 5},
-       {KeywordType::kSearchEngineSetByExtension, 0},
-       {KeywordType::kNonFeaturedSiteSearchSetByPolicy, 1},
-       {KeywordType::kFeaturedSiteSearchSetByPolicy, 1},
-       {KeywordType::kSearchAggregatorSetByPolicy, 1},
-       {KeywordType::kDefaultSearchEngineSetByPolicy, 1},
-       {KeywordType::kDefaultSearchEngineSetByUser, 1},
-       {KeywordType::kSubstitutingSiteSearchSetByUser, 1},
-       {KeywordType::kNonSubstitutingSiteSearchSetByUser, 1}});
+      histogram_tester, {{".StarterPack", 5},
+                         {".Prepopulated", 5},
+                         {".SearchEngineSetByExtension", 0},
+                         {".NonFeaturedSiteSearchSetByPolicy", 1},
+                         {".FeaturedSiteSearchSetByPolicy", 1},
+                         {".SearchAggregatorSetByPolicy", 1},
+                         {".DefaultSearchEngineSetByPolicy", 1},
+                         {".DefaultSearchEngineSetByUser", 1},
+                         {".SubstitutingSiteSearchSetByUser", 1},
+                         {".NonSubstitutingSiteSearchSetByUser", 1}});
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
