@@ -303,4 +303,14 @@
   <Type Name="base::StrongAlias&lt;*,*&gt;">
     <DisplayString>{value_}</DisplayString>
   </Type>
+  <Type Name="base::span&lt;*&gt;">
+    <Intrinsic Name="size" Expression="size_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>data_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
 </AutoVisualizer>
