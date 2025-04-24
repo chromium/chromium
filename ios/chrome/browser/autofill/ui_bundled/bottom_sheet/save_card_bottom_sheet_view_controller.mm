@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -35,7 +38,8 @@ CGFloat const kGooglePayLogoHeight = 32;
 }  // namespace
 
 @interface SaveCardBottomSheetViewController () <ConfirmationAlertActionHandler,
-                                                 UITableViewDataSource>
+                                                 UITableViewDataSource,
+                                                 UITextViewDelegate>
 @end
 
 // TODO(crbug.com/391366699): Implement SaveCardBottomSheetViewController.
@@ -44,6 +48,7 @@ CGFloat const kGooglePayLogoHeight = 32;
   NSString* _cardExpiryDate;
   UIImage* _cardIcon;
   NSString* _cardAccessibilityLabel;
+  NSArray<SaveCardMessageWithLinks*>* _legalMessages;
   // Image to be displayed above the title of the bottomsheet.
   UIImage* _aboveTitleImage;
 }
@@ -88,6 +93,10 @@ CGFloat const kGooglePayLogoHeight = 32;
 
 - (void)setCancelActionText:(NSString*)cancelActionText {
   self.secondaryActionString = cancelActionText;
+}
+
+- (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages {
+  _legalMessages = legalMessages;
 }
 
 - (void)setCardNameAndLastFourDigits:(NSString*)label
@@ -137,7 +146,12 @@ CGFloat const kGooglePayLogoHeight = 32;
 
   [underTitleView addArrangedSubview:[self createTableView]];
 
-  // TODO(crbug.com/391366699): Add subview to show legal message.
+  for (SaveCardMessageWithLinks* message in _legalMessages) {
+    UITextView* legalMessageTextView =
+        [AutofillCreditCardUtil createTextViewForLegalMessage:message];
+    legalMessageTextView.delegate = self;
+    [underTitleView addArrangedSubview:legalMessageTextView];
+  }
 
   return underTitleView;
 }
@@ -175,6 +189,30 @@ CGFloat const kGooglePayLogoHeight = 32;
 // Cancel button was pressed.
 - (void)confirmationAlertSecondaryAction {
   [self.mutator didCancel];
+}
+
+#pragma mark - UITextViewDelegate
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  // A link in legal message was clicked.
+  [self.delegate didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
+  return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  // A link in legal message was clicked.
+  __weak __typeof__(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate
+        didTapLinkURL:[[CrURL alloc] initWithNSURL:textItem.link]];
+  }];
 }
 
 #pragma mark - Private

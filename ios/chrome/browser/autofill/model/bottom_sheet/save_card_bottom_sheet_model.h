@@ -11,6 +11,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace autofill {
 
@@ -85,6 +86,11 @@ class SaveCardBottomSheetModel {
 
   // Card's issuer icon displayed in the bottomsheet for the card to be saved.
   inline int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
+
+  // The legal message with links displayed in the bottomsheet.
+  inline const LegalMessageLines& legal_messages() const {
+    return ui_info_.legal_message_lines;
+  }
 
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -5,12 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_COORDINATOR_H_
 
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // This coordinator is responsible for creating the save card bottom
 // sheet's mediator and view controller.
-@interface SaveCardBottomSheetCoordinator : ChromeCoordinator
-// TODO(crbug.com/391366601): Implement SaveCardBottomSheetCoordinator.
+@interface SaveCardBottomSheetCoordinator
+    : ChromeCoordinator <SaveCardBottomSheetDelegate>
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_COORDINATOR_H_

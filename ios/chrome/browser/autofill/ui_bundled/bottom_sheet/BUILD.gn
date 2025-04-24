@@ -6,6 +6,7 @@ group("unit_tests") {
   testonly = true
   deps = [
     ":bottom_sheet_unit_tests",
+    ":save_card_bottom_sheet_coordinator_unittest",
     ":save_card_bottom_sheet_mediator_unittest",
     ":save_card_bottom_sheet_view_controller_unittest",
     ":virtual_card_enrollment_bottom_sheet_coordinator_unittest",
@@ -189,17 +190,37 @@ source_set("save_card_bottom_sheet_coordinator") {
     "//base",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
   ]
+  public_deps = [ ":save_card_bottom_sheet_delegate" ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_coordinator_unittest") {
+  testonly = true
+  sources = [ "save_card_bottom_sheet_coordinator_unittest.mm" ]
+  deps = [
+    ":save_card_bottom_sheet_coordinator",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
 
 source_set("save_card_bottom_sheet_consumer") {
   sources = [ "save_card_bottom_sheet_consumer.h" ]
-  deps = []
+  deps = [ "//ios/chrome/browser/autofill/model/message" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -216,9 +237,13 @@ source_set("save_card_bottom_sheet_view_controller") {
   ]
   deps = [
     ":save_card_bottom_sheet_consumer",
+    ":save_card_bottom_sheet_delegate",
     ":save_card_bottom_sheet_mutator",
     "//build:branding_buildflags",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled:util",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
@@ -239,6 +264,11 @@ source_set("save_card_bottom_sheet_view_controller_unittest") {
   ]
 }
 
+source_set("save_card_bottom_sheet_delegate") {
+  sources = [ "save_card_bottom_sheet_delegate.h" ]
+  deps = []
+}
+
 source_set("save_card_bottom_sheet_mediator") {
   sources = [
     "save_card_bottom_sheet_mediator.h",
@@ -249,6 +279,7 @@ source_set("save_card_bottom_sheet_mediator") {
     ":save_card_bottom_sheet_mutator",
     "//base",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
   ]
@@ -267,6 +298,7 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//components/resources:components_scaled_resources_grit",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
     "//testing/gmock",
     "//testing/gtest",
@@ -397,6 +429,7 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:util",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet/resources",
     "//ios/chrome/browser/net/model:crurl",

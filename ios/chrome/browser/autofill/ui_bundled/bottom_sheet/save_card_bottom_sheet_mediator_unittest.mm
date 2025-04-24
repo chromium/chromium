@@ -13,10 +13,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +27,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -42,6 +45,13 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
   ui_info.card_sub_label = std::u16string(u"MM/YY");
   ui_info.card_description = std::u16string(u"Card description");
   ui_info.issuer_icon_id = IDR_AUTOFILL_METADATA_CC_VISA;
+  ui_info.legal_message_lines =
+      autofill::LegalMessageLines({autofill::TestLegalMessageLine(
+          /*ascii_text=*/"Save Card Legal Message",
+          /*links=*/{
+              autofill::LegalMessageLine::Link(
+                  /*start=*/3, /*end=*/4, /*url_spec=*/"https://savecard.test"),
+          })});
   ui_info.loading_description = std::u16string(u"Loading description");
   return ui_info;
 }
@@ -61,6 +71,7 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
 @property(nonatomic, copy) NSString* expiryDate;
 @property(nonatomic, copy) NSString* cardAccessibilityLabel;
 @property(nonatomic, strong) UIImage* issuerIcon;
+@property(nonatomic, strong) NSArray<SaveCardMessageWithLinks*>* legalMessages;
 
 @end
 
@@ -138,6 +149,16 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
       base::SysUTF16ToNSString(model_->card_accessibility_description()),
       consumer.cardAccessibilityLabel);
   EXPECT_TRUE(consumer.issuerIcon);
+  NSMutableArray<SaveCardMessageWithLinks*>* messages =
+      [SaveCardMessageWithLinks convertFrom:model_->legal_messages()];
+  for (NSUInteger index = 0; index < [messages count]; index++) {
+    EXPECT_NSEQ(messages[index].messageText,
+                (consumer.legalMessages[index]).messageText);
+    EXPECT_NSEQ(messages[index].linkRanges,
+                (consumer.legalMessages[index]).linkRanges);
+    EXPECT_EQ(messages[index].linkURLs,
+              (consumer.legalMessages[index]).linkURLs);
+  }
 }
 
 // Test that `OnAccepted` is called on the model when bottomsheet is accepted.

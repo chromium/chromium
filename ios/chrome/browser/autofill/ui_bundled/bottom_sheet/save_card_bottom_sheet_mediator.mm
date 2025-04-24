@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
@@ -55,6 +56,10 @@
   [self.consumer
       setCancelActionText:base::SysUTF16ToNSString(
                               _saveCardBottomSheetModel->cancel_button_text())];
+
+  [self.consumer setLegalMessages:[SaveCardMessageWithLinks
+                                      convertFrom:_saveCardBottomSheetModel
+                                                      ->legal_messages()]];
 
   [self.consumer
       setCardNameAndLastFourDigits:base::SysUTF16ToNSString(
