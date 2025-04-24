@@ -192,7 +192,7 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
         request_details,
     base::OnceCallback<void(PaymentsRpcResult,
                             std::string context_token,
-                            std::unique_ptr<base::Value::Dict>)> callback) {
+                            LegalMessageLines)> callback) {
   IssueRequest(
       std::make_unique<GetDetailsForCreateBnplPaymentInstrumentRequest>(
           request_details,
@@ -214,7 +214,7 @@ void PaymentsNetworkInterface::CreateBnplPaymentInstrument(
 
 void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
     GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
-    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const BnplFetchVcnResponseDetails&)> callback) {
   IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingVcnRequest>(
       request_details,
@@ -225,7 +225,7 @@ void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
 
 void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingUrl(
     GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
-    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const BnplFetchUrlResponseDetails&)> callback) {
   IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingUrlRequest>(
       request_details,

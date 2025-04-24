@@ -100,8 +100,7 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
       (const GetDetailsForCreateBnplPaymentInstrumentRequestDetails&,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                std::string context_token,
-                               std::unique_ptr<base::Value::Dict>)>));
-
+                               LegalMessageLines)>));
   MOCK_METHOD(
       void,
       GetBnplPaymentInstrumentForFetchingUrl,
@@ -248,12 +247,8 @@ class BnplManagerTest : public Test {
     bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
   }
 
-  std::unique_ptr<base::Value::Dict> GetFormattedLegalMessageResponse() {
-    auto legal_message = std::make_unique<base::Value::Dict>();
-    legal_message->Set("line",
-                       base::Value::List().Append(base::Value::Dict().Set(
-                           "template", base::UTF16ToUTF8(kLegalMessage))));
-    return legal_message;
+  LegalMessageLines GetExpectedLegalMessageLines() {
+    return {TestLegalMessageLine(base::UTF16ToUTF8(kLegalMessage))};
   }
 
   void OnIssuerSelected(const BnplIssuer& selected_issuer) {
@@ -866,7 +861,7 @@ TEST_F(
               GetDetailsForCreateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
-          GetFormattedLegalMessageResponse()));
+          GetExpectedLegalMessageLines()));
 
   BnplTosModel bnpl_tos_model;
   EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
@@ -901,17 +896,11 @@ TEST_F(
   bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
-  // Set up legal message for testing.
-  auto legal_message = std::make_unique<base::Value::Dict>();
-  legal_message->Set("line",
-                     base::Value::List().Append(base::Value::Dict().Set(
-                         "template", base::UTF16ToUTF8(kLegalMessage))));
-
   EXPECT_CALL(*payments_network_interface_,
               GetDetailsForCreateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
-          std::move(legal_message)));
+          GetExpectedLegalMessageLines()));
 
   // Cancel the ToS dialog by running the cancel callback (2nd param).
   EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
@@ -921,31 +910,6 @@ TEST_F(
 
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
-  OnIssuerSelected(unlinked_issuer);
-
-  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
-}
-
-// Tests that `OnDidGetDetailsForCreateBnplPaymentInstrument` does not show the
-// ToS dialog and resets the flow state when the legal message does not parse.
-TEST_F(BnplManagerTest,
-       OnDidGetDetailsForCreateBnplPaymentInstrument_InvalidLegalMessages) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
-  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
-
-  // Set up legal message for testing.
-  auto legal_message = std::make_unique<base::Value::Dict>();
-  legal_message->Set("line", "dummy");
-
-  EXPECT_CALL(*payments_network_interface_,
-              GetDetailsForCreateBnplPaymentInstrument)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
-          std::move(legal_message)));
-  EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
-                  autofill_client_->GetPaymentsAutofillClient()),
-              ShowBnplTos)
-      .Times(0);
   OnIssuerSelected(unlinked_issuer);
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
@@ -962,8 +926,7 @@ TEST_F(BnplManagerTest,
               GetDetailsForCreateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
-          kContextToken,
-          /*legal_message=*/nullptr));
+          kContextToken, GetExpectedLegalMessageLines()));
   OnIssuerSelected(unlinked_issuer);
 
   EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
@@ -1008,7 +971,7 @@ TEST_F(
               GetDetailsForCreateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
-          GetFormattedLegalMessageResponse()));
+          GetExpectedLegalMessageLines()));
   EXPECT_CALL(GetPaymentsAutofillClient(), DismissSelectBnplIssuerDialog);
 
   bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());

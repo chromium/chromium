@@ -252,7 +252,7 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
 void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
-    std::unique_ptr<base::Value::Dict> legal_message) {
+    LegalMessageLines legal_message) {
   // Dismiss the loading throbber in the issuer selection dialog after the
   // server call completion to show the next dialog.
   payments_autofill_client().DismissSelectBnplIssuerDialog();
@@ -260,25 +260,17 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->context_token = std::move(context_token);
 
-    // BNPL TOS should only be shown if legal messages are parsed successfully.
-    CHECK(legal_message);
-    LegalMessageLines parsed_legal_message_lines;
-    if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
-                                /*escape_apostrophes=*/true)) {
-      if (!parsed_legal_message_lines.empty()) {
-        BnplTosModel bnpl_tos_model;
-        bnpl_tos_model.legal_message_lines =
-            std::move(parsed_legal_message_lines);
-        bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
+    CHECK(!legal_message.empty());
+    BnplTosModel bnpl_tos_model;
+    bnpl_tos_model.legal_message_lines = std::move(legal_message);
+    bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
 
-        payments_autofill_client().ShowBnplTos(
-            std::move(bnpl_tos_model),
-            base::BindOnce(&BnplManager::OnTosDialogAccepted,
-                           weak_factory_.GetWeakPtr()),
-            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
-        return;
-      }
-    }
+    payments_autofill_client().ShowBnplTos(
+        std::move(bnpl_tos_model),
+        base::BindOnce(&BnplManager::OnTosDialogAccepted,
+                       weak_factory_.GetWeakPtr()),
+        base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+    return;
   }
 
   payments_autofill_client().ShowAutofillErrorDialog(
