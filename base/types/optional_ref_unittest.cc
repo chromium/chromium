@@ -4,6 +4,7 @@
 
 #include "base/types/optional_ref.h"
 
+#include <concepts>
 #include <cstddef>
 #include <optional>
 #include <type_traits>
@@ -406,6 +407,103 @@ TEST(OptionalRefTest, EqualityComparisonWithNullOpt) {
     EXPECT_NE(std::nullopt, r);
   }
 }
+
+class Comparable {
+ public:
+  explicit Comparable(bool b) : b_(b) {}
+
+  Comparable(const Comparable&) = delete;
+  Comparable(Comparable&&) = delete;
+  Comparable& operator=(const Comparable&) = delete;
+  Comparable& operator=(Comparable&&) = delete;
+
+  friend bool operator==(const Comparable&, const Comparable&) = default;
+
+ private:
+  bool b_;
+};
+
+static_assert(!std::is_copy_assignable<Comparable>());
+static_assert(!std::is_copy_constructible<Comparable>());
+static_assert(std::equality_comparable<optional_ref<Comparable>>);
+static_assert(std::equality_comparable<optional_ref<const Comparable>>);
+
+TEST(OptionalRefTest, EqualityComparison) {
+  int value = 5;
+
+  {
+    // Nulls.
+    optional_ref<int> r;
+    optional_ref<int> s;
+    EXPECT_EQ(r, s);
+    EXPECT_EQ(s, r);
+    EXPECT_EQ(r, r);
+    EXPECT_EQ(s, s);
+
+    std::optional<int> opt = 5;
+
+    EXPECT_NE(r, value);
+    EXPECT_NE(r, opt);
+    EXPECT_NE(value, r);
+    EXPECT_NE(opt, r);
+  }
+
+  {
+    // Populated values.
+    int other_value = 5;
+    std::optional<int> opt = 7;
+
+    optional_ref<int> r(value);
+    optional_ref<int> s(other_value);
+    EXPECT_EQ(r, s);
+    EXPECT_EQ(s, r);
+    EXPECT_EQ(r, r);
+    EXPECT_EQ(s, s);
+
+    EXPECT_EQ(s, 5);
+    EXPECT_EQ(s, value);
+
+    EXPECT_NE(s, 6);
+    EXPECT_NE(s, opt);
+  }
+
+  {
+    // Mismatched const-qualification.
+    optional_ref<int> r(value);
+    optional_ref<const int> s(value);
+    EXPECT_EQ(r, s);
+    EXPECT_EQ(s, r);
+    EXPECT_EQ(r, r);
+    EXPECT_EQ(s, s);
+  }
+
+  {
+    // Use with references.
+    Comparable comp(true);
+    optional_ref<Comparable> r(comp);
+    optional_ref<const Comparable> s(comp);
+
+    EXPECT_EQ(comp, r);
+    EXPECT_EQ(r, comp);
+    EXPECT_EQ(comp, s);
+    EXPECT_EQ(s, comp);
+
+    EXPECT_EQ(r, s);
+    EXPECT_EQ(s, r);
+    EXPECT_EQ(r, r);
+    EXPECT_EQ(s, s);
+
+    EXPECT_NE(Comparable(false), r);
+    EXPECT_NE(r, Comparable(false));
+    EXPECT_NE(Comparable(false), s);
+    EXPECT_NE(s, Comparable(false));
+  }
+}
+
+class Noncomparable {};
+
+static_assert(!std::equality_comparable<Noncomparable>);
+static_assert(!std::equality_comparable<optional_ref<Noncomparable>>);
 
 TEST(OptionalRefTest, CompatibilityWithOptionalMatcher) {
   using ::testing::Optional;
