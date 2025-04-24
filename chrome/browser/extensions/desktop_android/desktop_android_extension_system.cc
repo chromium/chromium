@@ -15,6 +15,8 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
@@ -29,6 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/null_app_sorting.h"
@@ -134,17 +137,37 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
   quota_service_ = std::make_unique<QuotaService>();
   user_script_manager_ = std::make_unique<UserScriptManager>(browser_context_);
 
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
   if (!browser_context_->IsOffTheRecord()) {
     // Make the chrome://extension-icon/ resource available. Only do this for
     // non-incognito profiles because OffTheRecordProfileImpl adds its own.
     // Also, this mimics the behavior of ChromeExtensionSystem.
-    Profile* profile = Profile::FromBrowserContext(browser_context_);
+
     content::URLDataSource::Add(browser_context_,
                                 std::make_unique<ExtensionIconSource>(profile));
 
     // Register the source for the chrome://extensions-internals page.
     content::URLDataSource::Add(
         profile, std::make_unique<ExtensionsInternalsSource>(profile));
+  }
+
+  bool autoupdate_enabled =
+      !profile->IsGuestSession() && !profile->IsSystemProfile();
+  if (autoupdate_enabled) {
+    auto* updater = ExtensionUpdater::Get(browser_context_);
+    // Note, if `updater` has already been initialized and started for regular
+    // profile, do not do this again for incognito profile.
+    if (!updater->enabled()) {
+      updater->InitAndEnable(
+          ExtensionPrefs::Get(browser_context_), profile->GetPrefs(),
+          kDefaultUpdateFrequency,
+          ExtensionsBrowserClient::Get()->GetExtensionCache(),
+          base::BindRepeating(
+              ChromeExtensionDownloaderFactory::CreateForProfile, profile));
+      if (updater && updater->enabled()) {
+        updater->Start();
+      }
+    }
   }
 
   ready_.Signal();
