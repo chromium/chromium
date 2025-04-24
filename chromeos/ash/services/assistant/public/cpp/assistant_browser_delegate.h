@@ -114,9 +114,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
   // Opens the new entry point.
   virtual void OpenNewEntryPoint() = 0;
 
-  // Returns resource id of Assistant new entry point icon.
-  virtual int GetNewEntryPointIconResourceId() = 0;
-
   // Returns name of the new entry point. `std::nullopt` is returned for any
   // error cases, e.g., the new entry point is not installed.
   virtual std::optional<std::string> GetNewEntryPointName() = 0;

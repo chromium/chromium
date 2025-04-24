@@ -61,7 +61,6 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
   base::expected<bool, AssistantBrowserDelegate::Error>
   IsNewEntryPointEligibleForPrimaryProfile() override;
   void OpenNewEntryPoint() override;
-  int GetNewEntryPointIconResourceId() override;
   std::optional<std::string> GetNewEntryPointName() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
