@@ -91,7 +91,7 @@ class ExtensionNavigationThrottleUnitTest
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    ExtensionRegistrar::Get(profile())->AddExtension(extension_.get());
+    ExtensionRegistrar::Get(profile())->AddExtension(extension_);
   }
 
   void TearDown() override {

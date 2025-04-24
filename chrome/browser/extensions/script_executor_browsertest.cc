@@ -84,7 +84,7 @@ class ScriptExecutorBrowserTest : public ExtensionBrowserTest {
         ExtensionBuilder("extension")
             .AddHostPermission(host_permission)
             .Build();
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     EXPECT_TRUE(
         extension_registry()->enabled_extensions().GetByID(extension->id()));
     return extension.get();

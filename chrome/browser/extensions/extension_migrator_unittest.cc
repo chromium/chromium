@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_builder.h"
@@ -67,7 +68,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
       const std::string& id,
       mojom::ManifestLocation location) {
     scoped_refptr<const Extension> fake_app = CreateExtension(id, location);
-    registrar()->AddExtension(fake_app.get());
+    registrar()->AddExtension(fake_app);
     return fake_app;
   }
 

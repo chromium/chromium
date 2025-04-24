@@ -115,7 +115,7 @@ ExtensionsToolbarUnitTest::InstallExtension(
           .AddHostPermissions(host_permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
-  extension_registrar()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   // Force the container to re-layout, since a new extension was added.
   LayoutContainerIfNecessary();

@@ -58,7 +58,7 @@ class ExtensionSettingsOverriddenDialogUnitTest
       builder.AddAPIPermission("storage");
     }
     scoped_refptr<const extensions::Extension> extension = builder.Build();
-    registrar()->AddExtension(extension.get());
+    registrar()->AddExtension(extension);
     return extension.get();
   }
 

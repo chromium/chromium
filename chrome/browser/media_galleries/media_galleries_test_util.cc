@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,7 +84,7 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
       std::string());
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
-  extension_service->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(extension);
   extension_service->EnableExtension(extension->id());
 
   return extension;

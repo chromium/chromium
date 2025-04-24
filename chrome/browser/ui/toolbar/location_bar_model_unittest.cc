@@ -182,7 +182,7 @@ void LocationBarModelTest::SetUp() {
       extensions::ExtensionBuilder("Test")
           .SetID("fooooooooooooooooooooooooooooooo")
           .Build();
-  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
 #endif
 }
 

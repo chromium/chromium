@@ -714,10 +714,6 @@ void ExtensionService::SetReadyAndNotifyListeners() {
   ready_->Signal();
 }
 
-void ExtensionService::AddExtension(const Extension* extension) {
-  extension_registrar_->AddExtension(extension);
-}
-
 void ExtensionService::OnExtensionManagementSettingsChanged() {
   error_controller_->ShowErrorIfNeeded();
 

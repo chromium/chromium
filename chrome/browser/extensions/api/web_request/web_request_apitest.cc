@@ -1919,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
                            "launch", base::Value::Dict().Set(
                                          "web_url", hosted_app_url.spec()))))
           .Build();
-  extension_registrar()->AddExtension(hosted_app.get());
+  extension_registrar()->AddExtension(hosted_app);
 
   ExtensionTestMessageListener listener1("main_frame");
   ExtensionTestMessageListener listener2("xmlhttprequest");

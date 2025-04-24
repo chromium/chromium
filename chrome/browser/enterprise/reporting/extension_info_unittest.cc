@@ -68,7 +68,7 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
       extensionBuilder.AddFlags(extensions::Extension::FROM_WEBSTORE);
     }
     auto extension = extensionBuilder.Build();
-    registrar()->AddExtension(extension.get());
+    registrar()->AddExtension(extension);
     return extension;
   }
 };

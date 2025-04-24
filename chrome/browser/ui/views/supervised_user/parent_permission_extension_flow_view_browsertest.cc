@@ -124,7 +124,7 @@ class ExtensionEnableFlowTestSupervised
             browser()->profile());
 
     test_extension_ = extensions::ExtensionBuilder("test extension").Build();
-    extension_registrar()->AddExtension(test_extension_.get());
+    extension_registrar()->AddExtension(test_extension_);
     extension_service()->DisableExtension(
         test_extension_->id(),
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);

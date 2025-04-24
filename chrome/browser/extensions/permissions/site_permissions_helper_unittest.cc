@@ -80,7 +80,7 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
                        .AddAPIPermissions(permissions)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   return extension;
 }

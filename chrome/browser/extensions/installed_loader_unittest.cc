@@ -134,7 +134,7 @@ const Extension* InstalledLoaderUnitTest::AddExtension(
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   return extension.get();
 }

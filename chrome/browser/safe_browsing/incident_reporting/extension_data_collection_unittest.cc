@@ -102,7 +102,7 @@ void ExtensionTestingProfile::AddExtension(
           .Build();
 
   // Install the extension.
-  extensions::ExtensionRegistrar::Get(profile_)->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile_)->AddExtension(extension);
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",

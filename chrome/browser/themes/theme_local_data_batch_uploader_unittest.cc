@@ -111,7 +111,7 @@ class ThemeLocalDataBatchUploaderTestBase
         extensions::mojom::ManifestLocation::kInternal, kCustomThemeUrl);
     extensions::ExtensionPrefs::Get(profile())->AddGrantedPermissions(
         theme_extension_->id(), extensions::PermissionSet());
-    registrar()->AddExtension(theme_extension_.get());
+    registrar()->AddExtension(theme_extension_);
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());

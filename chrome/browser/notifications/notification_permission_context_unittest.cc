@@ -132,8 +132,8 @@ class NotificationPermissionContextTest
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Registers the given |extension| with the extension service and returns the
-  // extension if it could be registered appropriately.
+  // Registers the given |extension| with the extension registrar and returns
+  // the extension if it could be registered appropriately.
   scoped_refptr<const extensions::Extension> RegisterExtension(
       scoped_refptr<const extensions::Extension> extension) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -145,8 +145,7 @@ class NotificationPermissionContextTest
         &command_line, base::FilePath() /* install_directory */,
         false /* autoupdate_enabled */);
 
-    extensions::ExtensionRegistrar::Get(profile())->AddExtension(
-        extension.get());
+    extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
 
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile());

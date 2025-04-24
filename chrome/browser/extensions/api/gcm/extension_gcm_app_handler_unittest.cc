@@ -349,7 +349,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     return ExtensionRegistrar::Get(profile());
   }
 
-  void LoadExtension(const Extension* extension) {
+  void LoadExtension(scoped_refptr<const Extension> extension) {
     extension_registrar()->AddExtension(extension);
   }
 
@@ -459,7 +459,7 @@ TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {
   scoped_refptr<const Extension> extension(CreateExtension());
 
   // App handler is added when extension is loaded.
-  LoadExtension(extension.get());
+  LoadExtension(extension);
   waiter()->PumpUILoop();
   EXPECT_TRUE(HasAppHandlers(extension->id()));
 
@@ -481,7 +481,7 @@ TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {
 
 TEST_F(ExtensionGCMAppHandlerTest, UnregisterOnExtensionUninstall) {
   scoped_refptr<const Extension> extension(CreateExtension());
-  LoadExtension(extension.get());
+  LoadExtension(extension);
 
   // Kick off registration.
   std::vector<std::string> sender_ids;
@@ -504,7 +504,7 @@ TEST_F(ExtensionGCMAppHandlerTest, UpdateExtensionWithGcmPermissionKept) {
   scoped_refptr<const Extension> extension(CreateExtension());
 
   // App handler is added when the extension is loaded.
-  LoadExtension(extension.get());
+  LoadExtension(extension);
   waiter()->PumpUILoop();
   EXPECT_TRUE(HasAppHandlers(extension->id()));
 
@@ -519,7 +519,7 @@ TEST_F(ExtensionGCMAppHandlerTest, UpdateExtensionWithGcmPermissionRemoved) {
   scoped_refptr<const Extension> extension(CreateExtension());
 
   // App handler is added when the extension is loaded.
-  LoadExtension(extension.get());
+  LoadExtension(extension);
   waiter()->PumpUILoop();
   EXPECT_TRUE(HasAppHandlers(extension->id()));
 

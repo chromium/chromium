@@ -88,7 +88,7 @@ TEST_F(ChromeExtensionFunctionUnitTest, BrowserShutdownValidationFunctionTest) {
 TEST_F(ChromeExtensionFunctionUnitTest, DestructionWithoutResponseOnUnload) {
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   auto function = base::MakeRefCounted<ValidationFunction>(false);
@@ -120,7 +120,7 @@ TEST_F(ChromeExtensionFunctionDeathTest, MAYBE_DestructionWithoutResponse) {
         InitializeEmptyExtensionService();
         scoped_refptr<const Extension> extension =
             ExtensionBuilder("foo").Build();
-        registrar()->AddExtension(extension.get());
+        registrar()->AddExtension(extension);
 
         ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 

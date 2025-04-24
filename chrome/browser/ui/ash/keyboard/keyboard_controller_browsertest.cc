@@ -277,7 +277,7 @@ class KeyboardControllerAppWindowTest
                                       "scripts", base::Value::List().Append(
                                                      "background.js"))))
             .Build();
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 };

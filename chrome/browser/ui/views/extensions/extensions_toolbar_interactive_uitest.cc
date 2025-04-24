@@ -65,7 +65,7 @@ ExtensionsToolbarUITest::ForceInstallExtension(const std::string& name) {
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extensions::ExtensionRegistrar::Get(browser()->profile())
-      ->AddExtension(extension.get());
+      ->AddExtension(extension);
   return extension;
 }
 

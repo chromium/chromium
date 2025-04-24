@@ -76,7 +76,7 @@ HostAccessRequestsHelperUnittest::InstallExtensionAndWithholdHostPermissions(
                        .AddHostPermission(host_permission)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
@@ -92,7 +92,7 @@ HostAccessRequestsHelperUnittest::InstallExtensionWithActiveTab(
                        .SetID(crx_file::id_util::GenerateId(name))
                        .AddAPIPermission("activeTab")
                        .Build();
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   return extension;
 }
@@ -392,7 +392,7 @@ TEST_F(HostAccessRequestsHelperUnittest,
                        .AddAPIPermission("activeTab")
                        .SetID(crx_file::id_util::GenerateId(extension_name))
                        .Build();
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 

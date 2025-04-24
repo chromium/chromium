@@ -343,7 +343,7 @@ class ParentPermissionDialogViewTest
       const std::string& extension_name) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(extension_name).Build();
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     extension_service()->DisableExtension(
         extension->id(),
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);

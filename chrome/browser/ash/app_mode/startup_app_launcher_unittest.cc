@@ -63,6 +63,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -668,7 +669,7 @@ class StartupAppLauncherNoCreateTest
     return CreateStartupAppLauncherInternal(/*should_skip_install=*/true);
   }
 
-  void PreinstallApp(const Extension& app) { service()->AddExtension(&app); }
+  void PreinstallApp(const Extension& app) { registrar()->AddExtension(&app); }
 
   TestAppLaunchDelegate startup_launch_delegate_;
 

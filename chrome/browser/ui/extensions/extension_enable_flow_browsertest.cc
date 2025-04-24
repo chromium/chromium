@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTest,
                        TryEnablingPolicyForbiddenExtension) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension").Build();
-  extension_registrar()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   {
     extensions::ScopedTestDialogAutoConfirm auto_confirm(

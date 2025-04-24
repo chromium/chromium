@@ -33,8 +33,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
 
-  void AddExtension(const extensions::Extension* extension) override;
-
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;
 

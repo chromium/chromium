@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -39,6 +40,7 @@
 
 using extensions::APIPermission;
 using extensions::Extension;
+using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionSystem;
 using extensions::mojom::APIPermissionID;
@@ -323,12 +325,13 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
 typedef std::set<scoped_refptr<Extension>> ExtensionCollection;
 
 namespace {
-void AddExtension(extensions::ExtensionService* service,
+void AddExtension(Profile* profile,
                   ExtensionCollection* extensions,
                   BackgroundApplicationListModel* model,
                   size_t* expected,
                   size_t* count) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(profile);
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   bool create_background = false;
   if (rand() % 2) {
     create_background = true;
@@ -337,12 +340,12 @@ void AddExtension(extensions::ExtensionService* service,
   scoped_refptr<Extension> extension =
       CreateExtension(GenerateUniqueExtensionName(), create_background);
   ASSERT_EQ(BackgroundApplicationListModel::IsBackgroundApp(*extension.get(),
-                                                            service->profile()),
+                                                            profile),
             create_background);
   extensions->insert(extension);
   ++*count;
   ASSERT_EQ(*count, extensions->size());
-  service->AddExtension(extension.get());
+  registrar->AddExtension(extension);
   ASSERT_EQ(*count, registry->enabled_extensions().size());
   ASSERT_EQ(*expected, model->size());
 }
@@ -443,7 +446,7 @@ TEST_F(BackgroundApplicationListModelTest, RandomTest) {
   for (int index = 0; index < kIterations; ++index) {
     switch (rand() % 3) {
       case 0:
-        AddExtension(service(), &extensions, model(), &expected, &count);
+        AddExtension(profile(), &extensions, model(), &expected, &count);
         break;
       case 1:
         RemoveExtension(service(), registrar(), &extensions, model(), &expected,

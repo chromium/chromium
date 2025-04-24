@@ -242,7 +242,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     extensions::PermissionsUpdater(browser()->profile())
         .GrantActivePermissions(extension.get());
     extensions::ExtensionRegistrar::Get(browser()->profile())
-        ->AddExtension(extension.get());
+        ->AddExtension(extension);
 
     return extension;
   }

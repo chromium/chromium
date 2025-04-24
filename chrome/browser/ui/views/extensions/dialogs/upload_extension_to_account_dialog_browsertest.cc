@@ -17,7 +17,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom.h"
@@ -81,8 +80,7 @@ class UploadExtensionToAccountDialogBrowserTest
                     .Build();
 
     ASSERT_TRUE(extension);
-    ExtensionRegistrar::Get(browser()->profile())
-        ->AddExtension(extension.get());
+    ExtensionRegistrar::Get(browser()->profile())->AddExtension(extension);
 
     // Sign in AFTER the extension has been added so there is an active account
     // for extensions to be uploaded to.

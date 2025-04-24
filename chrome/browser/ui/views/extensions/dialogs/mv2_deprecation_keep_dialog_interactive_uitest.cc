@@ -38,7 +38,7 @@ class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();
 
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 

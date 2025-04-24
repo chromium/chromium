@@ -77,7 +77,7 @@ class MockExtensionService : public TestExtensionService {
 
   ~MockExtensionService() override = default;
 
-  void AddExtension(const extensions::Extension* extension) override {
+  void AddExtension(const extensions::Extension* extension) {
     registry_->AddEnabled(base::WrapRefCounted(extension));
   }
 

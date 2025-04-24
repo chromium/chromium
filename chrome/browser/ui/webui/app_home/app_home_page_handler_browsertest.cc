@@ -225,7 +225,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
             manifest, 0, &error);
 
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 
@@ -242,7 +242,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
             manifest, 0, &error);
 
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 

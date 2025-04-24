@@ -97,7 +97,7 @@ TEST_F(MetricsWebContentsObserverTest,
           extensions::ExtensionSystem::Get(profile()));
   extension_system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
 
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents());

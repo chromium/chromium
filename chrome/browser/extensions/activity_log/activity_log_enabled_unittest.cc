@@ -147,7 +147,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_registrar1->AddExtension(extension.get());
+  extension_registrar1->AddExtension(extension);
 
   EXPECT_EQ(1,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
@@ -206,8 +206,8 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID("fpofdchlamddhnajleknffcbmnjfahpg")
           .Build();
-  extension_registrar1->AddExtension(extension.get());
-  extension_registrar1->AddExtension(extension2.get());
+  extension_registrar1->AddExtension(extension);
+  extension_registrar1->AddExtension(extension2);
   EXPECT_EQ(2,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
   EXPECT_TRUE(activity_log1->IsDatabaseEnabled());
@@ -252,7 +252,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_registrar->AddExtension(extension.get());
+  extension_registrar->AddExtension(extension);
 
   EXPECT_TRUE(activity_log->IsDatabaseEnabled());
   EXPECT_EQ(1,
@@ -306,7 +306,7 @@ TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  ExtensionRegistrar::Get(profile.get())->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile.get())->AddExtension(extension);
 
   EXPECT_EQ(
       1, profile->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));

@@ -109,10 +109,6 @@ class ExtensionServiceInterface {
   // themes sync to not use it directly.
   virtual void CheckForUpdatesSoon() = 0;
 
-  // Adds |extension| to this ExtensionService and notifies observers that the
-  // extension has been loaded.
-  virtual void AddExtension(const Extension* extension) = 0;
-
   // Whether a user is able to disable a given extension.
   virtual bool UserCanDisableInstalledExtension(
       const std::string& extension_id) = 0;
@@ -152,7 +148,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  void AddExtension(const Extension* extension) override;
   const Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,

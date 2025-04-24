@@ -58,7 +58,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
             .Build();
     extensions::PermissionsUpdater(profile()).GrantActivePermissions(
         extension.get());
-    extension_registrar()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
 
     return extension;
   }
