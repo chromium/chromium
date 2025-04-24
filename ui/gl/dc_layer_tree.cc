@@ -480,18 +480,6 @@ DCLayerTree::GetLayerSwapChainForTesting(size_t index) const {
   return nullptr;
 }
 
-// Return properties of non root swap chain at given index.
-void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
-                                                   gfx::Transform* transform,
-                                                   gfx::Point* offset,
-                                                   gfx::Rect* clip_rect) const {
-  CHECK_IS_TEST();
-  if (visual_tree_) {
-    visual_tree_->GetSwapChainVisualInfoForTesting(index, transform,  // IN-TEST
-                                                   offset, clip_rect);
-  }
-}
-
 DCLayerTree::VisualTree::VisualSubtree::VisualSubtree() = default;
 DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() {
   if (content_visual_) {
@@ -823,13 +811,13 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
 }
 
 void DCLayerTree::VisualTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
   CHECK_IS_TEST();
-  *transform = quad_to_root_transform_;
-  *offset = quad_rect_.origin();
-  *clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
+  *out_transform = quad_to_root_transform_;
+  *out_offset = quad_rect_.origin();
+  *out_clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
 }
 
 DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
@@ -859,6 +847,9 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
   // |visual_subtrees| will become |visual_subtrees_| of the current frame;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
   visual_subtrees.resize(overlays.size());
+
+  decltype(layer_ids_for_testing_) layer_ids_for_testing;
+  layer_ids_for_testing.reserve(overlays.size());
 
   // Populate the map with visual content and assign matching subtrees to the
   // overlays.
@@ -977,11 +968,14 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
       needs_commit = true;
     }
     left_sibling_visual = visual_subtree->container_visual();
+
+    layer_ids_for_testing.push_back(overlays[i].layer_id);
   }
 
   // Update subtree_map_ and visual_subtrees_ with new values.
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
+  layer_ids_for_testing_ = std::move(layer_ids_for_testing);
 
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
@@ -1159,27 +1153,6 @@ void DCLayerTree::VisualTree::DetachSubtreeFromRoot(VisualSubtree* subtree) {
   CHECK_EQ(hr, S_OK);
 }
 
-void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
-    size_t index,
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
-  CHECK_IS_TEST();
-  for (size_t i = 0, swapchain_i = 0; i < visual_subtrees_.size(); ++i) {
-    // Skip root layer.
-    if (visual_subtrees_[i]->z_order() == 0) {
-      continue;
-    }
-
-    if (swapchain_i == index) {
-      visual_subtrees_[i]->GetSwapChainVisualInfoForTesting(  // IN-TEST
-          transform, offset, clip_rect);
-      return;
-    }
-    swapchain_i++;
-  }
-}
-
 base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     std::vector<DCLayerOverlayParams> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
@@ -1283,24 +1256,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   return status;
 }
 
-size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
-  CHECK_IS_TEST();
-  return solid_color_surface_pool_
-      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
-}
-
-#if DCHECK_IS_ON()
-bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
-    size_t index) const {
-  CHECK_IS_TEST();
-  return visual_tree_
-             ? visual_tree_
-                   ->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
-                       index)
-             : false;
-}
-#endif  // DCHECK_IS_ON()
-
 bool DCLayerTree::SupportsDelegatedInk() {
   return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);
 }
@@ -1318,5 +1273,106 @@ void DCLayerTree::InitDelegatedInkPointRendererReceiver(
 
   ink_renderer_->InitMessagePipeline(std::move(pending_receiver));
 }
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  visual_tree_->GetSwapChainVisualInfoForTesting(  // IN-TEST
+      layer_id, out_transform, out_offset, out_clip_rect);
+}
+
+size_t DCLayerTree::GetSwapChainPresenterCountForTesting() const {
+  CHECK_IS_TEST();
+  return video_swap_chains_.size();
+}
+
+size_t DCLayerTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetDcompLayerCountForTesting();  // IN-TEST
+}
+
+IDCompositionVisual2* DCLayerTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetContentVisualForTesting(layer_id);  // IN-TEST
+}
+
+IDCompositionSurface* DCLayerTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetBackgroundColorSurfaceForTesting(  // IN-TEST
+      layer_id);
+}
+
+size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
+  CHECK_IS_TEST();
+  return solid_color_surface_pool_
+      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
+      layer_id);
+}
+#endif  // DCHECK_IS_ON()
+
+const DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::VisualTree::GetSubtreeFromLayerIdForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  const auto it = std::ranges::find(layer_ids_for_testing_, layer_id);
+  CHECK(it != layer_ids_for_testing_.end());
+  const size_t index =
+      std::ranges::distance(layer_ids_for_testing_.begin(), it);
+  return visual_subtrees_.at(index).get();
+}
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)                   // IN-TEST
+      ->GetSwapChainVisualInfoForTesting(out_transform, out_offset,  // IN-TEST
+                                         out_clip_rect);
+}
+
+size_t DCLayerTree::VisualTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_subtrees_.size();
+}
+
+IDCompositionVisual2* DCLayerTree::VisualTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->container_visual();
+}
+
+IDCompositionSurface*
+DCLayerTree::VisualTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->background_color_surface_for_testing();     // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::VisualTree::GetAttachedToRootFromPreviousFrameForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)       // IN-TEST
+      ->GetAttachedToRootFromPreviousFrameForTesting();  // IN-TEST
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace gl
