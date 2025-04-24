@@ -128,6 +128,10 @@ public class NtpCustomizationMediator {
             mCurrentBottomSheet = null;
         } else {
             showBottomSheet(MAIN);
+
+            // Updates the visibility status (on or off) of the feeds section in the main bottom
+            // sheet.
+            updateFeedSectionSubtitle(getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE));
         }
     }
 
@@ -269,7 +273,7 @@ public class NtpCustomizationMediator {
     }
 
     @NtpCustomizationCoordinator.BottomSheetType
-    Integer getCurrentBottomSheetForTesting() {
+    Integer getCurrentBottomSheetType() {
         return mCurrentBottomSheet;
     }
 

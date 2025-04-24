@@ -166,7 +166,7 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.showBottomSheet(bottomSheetType);
 
         verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(viewFlipperIndex));
-        assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetForTesting());
+        assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetType());
     }
 
     @Test
@@ -214,7 +214,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         // Verifies that hideContent() is called and mCurrentBottomSheet is set to null.
         verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
-        assertNull(mMediator.getCurrentBottomSheetForTesting());
+        assertNull(mMediator.getCurrentBottomSheetType());
 
         // Verifies that showBottomSheet() is not called.
         verify(mViewFlipperPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
@@ -225,14 +225,25 @@ public class NtpCustomizationMediatorUnitTest {
         mViewFlipperMap.put(BottomSheetType.MAIN, 10);
         mMediator.setCurrentBottomSheetForTesting(BottomSheetType.NTP_CARDS);
 
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         mMediator.backPressOnCurrentBottomSheet();
 
         // Verifies that hideContent() is not called and showBottomSheet() is called to change the
         // value of mCurrentBottomSheet and to set the value of mPropertyModel.
         verify(mBottomSheetController, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
-        assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetForTesting());
+        assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetType());
         verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(10));
+
+        // Verifies that the subtitle of the feed item in the main bottom sheet is updated properly.
+        verify(mContainerPropertyModel)
+                .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_on));
+
+        mMediator.setCurrentBottomSheetForTesting(BottomSheetType.NTP_CARDS);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+        mMediator.backPressOnCurrentBottomSheet();
+        verify(mContainerPropertyModel)
+                .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_off));
     }
 
     @Test

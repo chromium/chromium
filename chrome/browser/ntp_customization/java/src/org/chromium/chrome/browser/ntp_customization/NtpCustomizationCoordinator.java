@@ -72,12 +72,14 @@ public class NtpCustomizationCoordinator {
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
         mViewFlipperView = contentView.findViewById(R.id.ntp_customization_view_flipper);
+        contentView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
 
         NtpCustomizationBottomSheetContent bottomSheetContent =
                 new NtpCustomizationBottomSheetContent(
                         contentView,
                         /* backPressRunnable= */ () -> mMediator.backPressOnCurrentBottomSheet(),
-                        this::destroy);
+                        this::destroy,
+                        () -> mMediator.getCurrentBottomSheetType());
 
         // The containerPropertyModel is responsible for managing a BottomSheetDelegate which
         // provides list content and event handlers to a list container view in the bottom sheet.
@@ -165,11 +167,6 @@ public class NtpCustomizationCoordinator {
             @Override
             public void backPressOnCurrentBottomSheet() {
                 mMediator.backPressOnCurrentBottomSheet();
-            }
-
-            @Override
-            public void onFeedStatusChanged(boolean isVisible) {
-                mMediator.updateFeedSectionSubtitle(isVisible);
             }
         };
     }

@@ -135,7 +135,6 @@ public class FeedSettingsMediator {
     void updateFeedSwitch() {
         boolean isFeedTurnedOn = isFeedTurnedOn();
         mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn);
-        mBottomSheetDelegate.onFeedStatusChanged(isFeedTurnedOn);
     }
 
     /**
