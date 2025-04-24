@@ -89,9 +89,18 @@ public class AutofillImageFetcher {
                 GURL urlToFetch =
                         AutofillUiUtils.getFifeIconUrlWithParams(
                                 url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-                fetchImage(
-                        urlToFetch.getSpec(),
-                        bitmap -> treatAndCacheImage(bitmap, url, cardIconSpecs));
+                Function<Bitmap, Bitmap> treatImageFunction =
+                        bitmap ->
+                                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                                        bitmap, cardIconSpecs, true);
+                Callback<@Nullable Bitmap> onImageFetched =
+                        bitmap ->
+                                treatAndCacheImage(
+                                        bitmap,
+                                        urlToFetch.getSpec(),
+                                        treatImageFunction,
+                                        CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM);
+                fetchImage(urlToFetch.getSpec(), onImageFetched);
             }
         }
     }
@@ -112,15 +121,14 @@ public class AutofillImageFetcher {
             GURL urlWithParams = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
             Function<Bitmap, Bitmap> treatImageFunction =
                     bitmap -> AutofillImageFetcherUtils.treatPixAccountImage(bitmap);
-
-            fetchImage(
-                    urlWithParams.getSpec(),
+            Callback<@Nullable Bitmap> onImageFetched =
                     bitmap ->
                             treatAndCacheImage(
                                     bitmap,
                                     urlWithParams.getSpec(),
                                     treatImageFunction,
-                                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM));
+                                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
+            fetchImage(urlWithParams.getSpec(), onImageFetched);
         }
     }
 
@@ -159,53 +167,6 @@ public class AutofillImageFetcher {
         }
 
         return Optional.empty();
-    }
-
-    /**
-     * Treats and caches the fetched image. If image fetching fails, retries fetching {@code
-     * MAX_FETCH_ATTEMPTS - 1} times with a delay of {@code REFETCH_DELAY_MS} between each attempt.
-     *
-     * @param bitmap Fetched image.
-     * @param url URL for the stored image in the server.
-     * @param cardIconSpecs The sizing specifications for the image.
-     */
-    private void treatAndCacheImage(
-            @Nullable Bitmap bitmap, GURL url, CardIconSpecs cardIconSpecs) {
-        RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
-
-        GURL urlToCache =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-
-        if (bitmap != null) {
-            RecordHistogram.recordBooleanHistogram(
-                    CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ true);
-
-            // When adding new sizes for card icons, check if the corner radius needs to be added as
-            // a suffix for caching (crbug.com/1431283).
-            mImagesCache.put(
-                    urlToCache.getSpec(),
-                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                            bitmap, cardIconSpecs, true));
-            return;
-        }
-
-        // Image fetching failed, and max retry attempts reached.
-        if (mFetchAttemptCounter.getOrDefault(urlToCache.getSpec(), 0) >= MAX_FETCH_ATTEMPTS) {
-            RecordHistogram.recordBooleanHistogram(
-                    CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ false);
-            return;
-        }
-
-        // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
-        Handler handler = new Handler();
-        handler.postDelayed(
-                () ->
-                        fetchImage(
-                                urlToCache.getSpec(),
-                                fetchedImage ->
-                                        treatAndCacheImage(fetchedImage, url, cardIconSpecs)),
-                REFETCH_DELAY_MS);
     }
 
     /**
@@ -263,18 +224,15 @@ public class AutofillImageFetcher {
         }
 
         // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
-        Handler handler = new Handler();
-        handler.postDelayed(
-                () ->
-                        fetchImage(
+        Callback<@Nullable Bitmap> onImageFetched =
+                fetchedBitmap ->
+                        treatAndCacheImage(
+                                fetchedBitmap,
                                 urlToCache,
-                                fetchedImage ->
-                                        treatAndCacheImage(
-                                                fetchedImage,
-                                                urlToCache,
-                                                treatImageFunction,
-                                                overallSuccessHistogramName)),
-                REFETCH_DELAY_MS);
+                                treatImageFunction,
+                                overallSuccessHistogramName);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> fetchImage(urlToCache, onImageFetched), REFETCH_DELAY_MS);
     }
 
     /**
