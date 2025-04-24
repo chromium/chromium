@@ -141,8 +141,6 @@ public class WebExposedTest extends AwParameterizedTest {
                     settings.setAllowFileAccessFromFileUrls(true);
                     settings.setJavaScriptEnabled(true);
 
-                    // Exposes window.openDatabase
-                    settings.setDatabaseEnabled(true);
                     // Exposes Payment APIs
                     settings.setPaymentRequestEnabled(true);
 

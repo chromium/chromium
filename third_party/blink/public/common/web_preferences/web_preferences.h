@@ -75,7 +75,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // 'Save-Data: on'.
   bool data_saver_enabled = false;
   bool local_storage_enabled = false;
-  bool databases_enabled = false;
   bool tabs_to_links = true;
   bool disable_ipc_flooding_protection = false;
   bool hyperlink_auditing_enabled = true;

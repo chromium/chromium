@@ -664,9 +664,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->local_storage_enabled =
       Java_AwSettings_getDomStorageEnabledLocked(env, obj);
 
-  web_prefs->databases_enabled =
-      Java_AwSettings_getDatabaseEnabledLocked(env, obj);
-
   web_prefs->wide_viewport_quirk = true;
   web_prefs->use_wide_viewport =
       Java_AwSettings_getUseWideViewportLocked(env, obj);

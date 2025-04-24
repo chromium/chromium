@@ -73,7 +73,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->dns_prefetching_enabled = data.dns_prefetching_enabled();
   out->data_saver_enabled = data.data_saver_enabled();
   out->local_storage_enabled = data.local_storage_enabled();
-  out->databases_enabled = data.databases_enabled();
   out->tabs_to_links = data.tabs_to_links();
   out->disable_ipc_flooding_protection = data.disable_ipc_flooding_protection();
   out->hyperlink_auditing_enabled = data.hyperlink_auditing_enabled();
