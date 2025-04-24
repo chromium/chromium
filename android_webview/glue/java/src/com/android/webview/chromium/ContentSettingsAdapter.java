@@ -712,7 +712,11 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDatabaseEnabled(boolean flag) {
-        // Intentional no-op.
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_DATABASE_ENABLED")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED);
+            mAwSettings.setDatabaseEnabled(flag);
+        }
     }
 
     @Override
@@ -743,8 +747,11 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getDatabaseEnabled() {
-        // Intentional no-op.
-        return false;
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_DATABASE_ENABLED")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED);
+            return mAwSettings.getDatabaseEnabled();
+        }
     }
 
     @Override
