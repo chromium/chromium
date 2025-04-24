@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -165,6 +166,31 @@ bool IsWidgetLocationAllowed(const gfx::Rect& bounds) {
     return display::FindDisplayContainingPoint(displays, p) != displays.end();
   });
 }
+
+std::optional<int> GetOptionalIntPreference(PrefService* prefs,
+                                            std::string_view path) {
+  const PrefService::Preference& pref =
+      CHECK_DEREF(prefs->FindPreference(path));
+  if (pref.IsDefaultValue()) {
+    return std::nullopt;
+  }
+  return pref.GetValue()->GetInt();
+}
+
+// Get the previous position or none if the window has not been dragged before.
+std::optional<gfx::Point> GetPreviousPositionFromPrefs(PrefService* prefs) {
+  if (!prefs) {
+    return std::nullopt;
+  }
+
+  auto x_pos = GetOptionalIntPreference(prefs, prefs::kGlicPreviousPositionX);
+  auto y_pos = GetOptionalIntPreference(prefs, prefs::kGlicPreviousPositionY);
+
+  if (!x_pos.has_value() || !y_pos.has_value()) {
+    return std::nullopt;
+  }
+  return gfx::Point(x_pos.value(), y_pos.value());
+}
 }  // namespace
 
 // Helper class for observing mouse and key events from native window.
@@ -298,7 +324,9 @@ GlicWindowController::GlicWindowController(
       window_finder_(std::make_unique<WindowFinder>()),
       glic_modal_manager_(std::make_unique<GlicModalManager>()),
       glic_service_(glic_service),
-      enabling_(enabling) {}
+      enabling_(enabling) {
+  previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
+}
 
 GlicWindowController::~GlicWindowController() = default;
 
@@ -1146,11 +1174,8 @@ void GlicWindowController::CloseInternal(
     return;
   }
 
-  // If the default location is not being used save the final position since it
-  // may have moved without a drag event.
-  if (previous_position_.has_value()) {
-    SaveWidgetPosition();
-  }
+  // The widget may have moved without a drag event so save the final position.
+  SaveWidgetPosition();
 
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
   DCHECK(!reopen_detached || reopen_detached_source.has_value());
@@ -1218,7 +1243,13 @@ void GlicWindowController::CloseAndReopenDetached(
 }
 
 void GlicWindowController::SaveWidgetPosition() {
-  previous_position_ = GetGlicWidget()->GetWindowBoundsInScreen().origin();
+  if (GetGlicWidget() && GetGlicWidget()->IsVisible()) {
+    previous_position_ = GetGlicWidget()->GetWindowBoundsInScreen().origin();
+    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                     previous_position_->x());
+    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                     previous_position_->y());
+  }
 }
 
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {

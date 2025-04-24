@@ -281,6 +281,8 @@ class GlicWindowController : public views::WidgetObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
+  FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerWithPreviousPostionUiTest,
+                           TestInitialBounds);
 
   Host& host() const;
 

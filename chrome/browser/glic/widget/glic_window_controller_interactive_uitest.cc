@@ -572,6 +572,27 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   }
 }
 
+class GlicWindowControllerWithPreviousPostionUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    // Set initial bounds via pref and check that they are used.
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionX, 20);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionY, 10);
+    test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
+                       TestInitialBounds) {
+  // Check that the saved initial bounds are used.
+  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
+}
+
 class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:

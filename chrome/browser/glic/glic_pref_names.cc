@@ -6,6 +6,7 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/base/accelerators/command.h"
 
@@ -25,6 +26,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Dict pref to store GlicUserStatus information.
   registry->RegisterDictionaryPref(prefs::kGlicUserStatus);
+
+  // The default value is not used. If not set the default position is
+  // calculated based on the entrypoint and current active browser.
+  registry->RegisterIntegerPref(kGlicPreviousPositionX, 0,
+                                PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(kGlicPreviousPositionY, 0,
+                                PrefRegistry::LOSSY_PREF);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
