@@ -35,6 +35,10 @@ class ToastService;
 class DataSharingOpenGroupHelper;
 class DownloadToolbarUIController;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class PdfInfoBarController;
+#endif
+
 namespace extensions {
 class ExtensionSidePanelManager;
 class Mv2DisabledDialogController;
@@ -137,6 +141,12 @@ class BrowserWindowFeatures {
   BookmarksSidePanelCoordinator* bookmarks_side_panel_coordinator() {
     return bookmarks_side_panel_coordinator_.get();
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  PdfInfoBarController* pdf_infobar_controller() {
+    return pdf_infobar_controller_.get();
+  }
+#endif
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
   // abstract base class that contains some, but not all of the public interface
@@ -258,6 +268,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<BookmarksSidePanelCoordinator>
       bookmarks_side_panel_coordinator_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  std::unique_ptr<PdfInfoBarController> pdf_infobar_controller_;
+#endif
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

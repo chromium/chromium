@@ -6110,10 +6110,12 @@ static_library("browser") {
     ]
 
     deps += [
+      "//chrome/browser/ui/pdf/infobar:impl",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/ui/pdf/infobar:impl" ]
 
     # Support for the recovery improved component.
     sources += [

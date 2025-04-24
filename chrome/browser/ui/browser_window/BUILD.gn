@@ -52,6 +52,10 @@ source_set("impl") {
     "//components/saved_tab_groups/public",
   ]
 
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/ui/pdf/infobar" ]
+  }
+
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }

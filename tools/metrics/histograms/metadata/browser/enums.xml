@@ -323,6 +323,7 @@ chromium-metrics-reviews@google.com.
   <int value="120" label="DEV_TOOLS_SHARED_PROCESS_DELEGATE"/>
   <int value="121" label="ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE"/>
   <int value="122" label="CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS"/>
+  <int value="123" label="PDF_INFOBAR_DELEGATE"/>
 </enum>
 
 <!-- LINT.IfChange(NoSpareRendererReason) -->

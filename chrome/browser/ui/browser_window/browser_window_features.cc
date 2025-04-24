@@ -64,12 +64,17 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser window
@@ -176,6 +181,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   cookie_controls_bubble_coordinator_ =
       std::make_unique<CookieControlsBubbleCoordinator>();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
+    pdf_infobar_controller_ = std::make_unique<PdfInfoBarController>(browser);
+  }
+#endif
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

@@ -187,6 +187,7 @@ class InfoBarDelegate {
     DEV_TOOLS_SHARED_PROCESS_DELEGATE = 120,
     ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE = 121,
     CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS = 122,
+    PDF_INFOBAR_DELEGATE = 123,
   };
 
   // Describes navigation events, used to decide whether infobars should be

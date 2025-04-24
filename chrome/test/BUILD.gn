@@ -7095,18 +7095,13 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
-    ]
-
-    deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
-  }
-
-  if (is_win || is_mac) {
-    sources += [
       "../browser/updater/browser_updater_client_testutils.cc",
       "../browser/updater/browser_updater_client_testutils.h",
       "../browser/updater/browser_updater_client_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/enterprise/platform_auth:test_utils",
+      "//chrome/browser/ui/pdf/infobar:unit_tests",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
     ]
