@@ -38,6 +38,9 @@
 using tab_groups::SharingState;
 
 namespace {
+// Animation.
+constexpr CGFloat kSwipeAnimationDuration = 0.1;
+
 // Background.
 constexpr CGFloat kBackgroundAlpha = 0.6;
 
@@ -107,6 +110,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }  // namespace
 
 @interface TabGroupViewController () <TabGridToolbarsGridDelegate,
+                                      UIGestureRecognizerDelegate,
                                       UINavigationBarDelegate>
 @end
 
@@ -152,6 +156,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* _facePileView;
   // Container for the content of the ViewController.
   UIView* _container;
+  // The gesture recognizer to swipe to dismiss the tab group view.
+  UIPanGestureRecognizer* _swipeDownGestureRecognizer;
 }
 
 #pragma mark - Public
@@ -267,6 +273,15 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   self.view.accessibilityIdentifier = kTabGroupViewIdentifier;
   self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.clearColor;
+
+  if (IsContainedTabGroupEnabled()) {
+    _swipeDownGestureRecognizer =
+        [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handlePan:)];
+    _swipeDownGestureRecognizer.delegate = self;
+    _swipeDownGestureRecognizer.cancelsTouchesInView = NO;
+    [self.view addGestureRecognizer:_swipeDownGestureRecognizer];
+  }
 
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
@@ -446,8 +461,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     return;
   }
 
-  if (_facePileView.superview == self.view) {
-    [_facePileView removeFromSuperview];
+  if (IsContainedTabGroupEnabled()) {
+    if (_facePileView.superview == _topToolbarButtonsStackView) {
+      [_facePileView removeFromSuperview];
+    }
+  } else {
+    if (_facePileView.superview == self.view) {
+      [_facePileView removeFromSuperview];
+    }
   }
 
   _facePileView = facePileView;
@@ -1047,6 +1068,76 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(!_gridViewController.shared);
   CHECK(_shareAvailable);
   [_handler showShareForGroup:_tabGroup->GetWeakPtr()];
+}
+
+// Called when the gesture recognizer has an update.
+- (void)handlePan:(UIPanGestureRecognizer*)gesture {
+  CGFloat translation = [gesture translationInView:self.view].y;
+  translation = MAX(0, translation);
+  switch (gesture.state) {
+    case UIGestureRecognizerStateBegan:
+      _gridViewController.collectionView.bounces = NO;
+      break;
+    case UIGestureRecognizerStateChanged: {
+      _container.transform = CGAffineTransformMakeTranslation(0, translation);
+      break;
+    }
+    case UIGestureRecognizerStateEnded: {
+      CGFloat velocity = [gesture velocityInView:self.view].y;
+      _gridViewController.collectionView.bounces = YES;
+      __weak UIView* container = _container;
+      __weak __typeof(self) weakSelf = self;
+      if (translation + velocity > _container.bounds.size.height / 2) {
+        CGFloat endPosition =
+            (self.view.bounds.size.height + _container.bounds.size.height) /
+            2.0;
+        [UIView animateWithDuration:kSwipeAnimationDuration
+            animations:^{
+              container.transform =
+                  CGAffineTransformMakeTranslation(0, endPosition);
+            }
+            completion:^(BOOL finished) {
+              [weakSelf didTapCloseButton];
+            }];
+      } else {
+        [UIView animateWithDuration:kSwipeAnimationDuration
+                         animations:^{
+                           container.transform = CGAffineTransformIdentity;
+                         }];
+      }
+      break;
+    }
+    default:
+      _gridViewController.collectionView.bounces = YES;
+      _container.transform = CGAffineTransformIdentity;
+      break;
+  }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  CGPoint location = [touch locationInView:_container];
+  CGRect gridFrame = _container.bounds;
+  // Only consider touches in the grid, not on the top toolbar.
+  gridFrame.origin.y += kTopToolbarHeight;
+  gridFrame.size.height -= kTopToolbarHeight;
+
+  if (!CGRectContainsPoint(gridFrame, location)) {
+    return YES;
+  }
+
+  BOOL collectionViewScrolled =
+      _gridViewController.collectionView.contentOffset.y ==
+      -_gridViewController.collectionView.adjustedContentInset.top;
+  return collectionViewScrolled;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
 }
 
 #pragma mark - UIResponder
