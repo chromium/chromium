@@ -932,7 +932,7 @@ public class UrlBar extends AutocompleteEditText {
             if (visibleUrlContainsRtl) {
                 // getOffsetForAdvance does not calculate the correct index if there is RTL
                 // text before finalVisibleCharIndex, so clear the visible text hint. If RTL
-                // or Bi-Di URLs become more prevalant, update this to correctly calculate
+                // or Bi-Di URLs become more prevalent, update this to correctly calculate
                 // the hint.
                 return null;
             } else {
@@ -1042,7 +1042,7 @@ public class UrlBar extends AutocompleteEditText {
         } else {
             // RTL
             // Clear the visible text hint due to the complexities of Bi-Di text handling. If
-            // RTL or Bi-Di URLs become more prevalant, update this to correctly calculate the
+            // RTL or Bi-Di URLs become more prevalent, update this to correctly calculate the
             // hint.
             mVisibleTextPrefixHint = null;
 
