@@ -43,7 +43,12 @@ class PasswordChangeDelegate {
 
     // Password change failed.
     kPasswordChangeFailed = 6,
-    kMaxValue = kPasswordChangeFailed,
+
+    // One time password (OTP) was detected on a page. The flow is stopped, user
+    // input is required.
+    kOtpDetected = 7,
+
+    kMaxValue = kOtpDetected,
   };
 
   // An interface used to notify clients (observers) of delegate state. Register

@@ -349,6 +349,7 @@ void PasswordChangeDelegateImpl::UpdateState(
     case State::kOfferingPasswordChange:
     case State::kWaitingForAgreement:
     case State::kPasswordChangeFailed:
+    case State::kOtpDetected:
       DisplayChangePasswordBubbleAutomatically(originator_, executor_);
       break;
   }
