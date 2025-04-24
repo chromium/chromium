@@ -231,7 +231,7 @@ class GL_EXPORT DCLayerTree {
       const gfx::OverlayLayerId& layer_id) const;
   size_t GetNumSurfacesInPoolForTesting() const;
 #if DCHECK_IS_ON()
-  bool GetAttachedToRootFromPreviousFrameForTesting(
+  bool DcompVisualContentChangedFromPreviousFrameForTesting(
       const gfx::OverlayLayerId& layer_id) const;
 #endif  // DCHECK_IS_ON()
 
@@ -280,7 +280,7 @@ class GL_EXPORT DCLayerTree {
     IDCompositionSurface* GetBackgroundColorSurfaceForTesting(
         const gfx::OverlayLayerId& layer_id) const;
 #if DCHECK_IS_ON()
-    bool GetAttachedToRootFromPreviousFrameForTesting(
+    bool DcompVisualContentChangedFromPreviousFrameForTesting(
         const gfx::OverlayLayerId& layer_id) const;
 #endif  // DCHECK_IS_ON()
     // Maps the visual content to its corresponding subtree index.
@@ -336,9 +336,9 @@ class GL_EXPORT DCLayerTree {
                                             gfx::Point* out_offset,
                                             gfx::Rect* out_clip_rect) const;
 #if DCHECK_IS_ON()
-      bool GetAttachedToRootFromPreviousFrameForTesting() const {
+      bool DcompVisualContentChangedFromPreviousFrameForTesting() const {
         CHECK_IS_TEST();
-        return attached_to_root_from_previous_frame_;
+        return dcomp_visual_content_changed_from_previous_frame_;
       }
 #endif  // DCHECK_IS_ON()
 
@@ -428,9 +428,9 @@ class GL_EXPORT DCLayerTree {
       int z_order_ = 0;
 
 #if DCHECK_IS_ON()
-      // True if the subtree is reused from the previous frame and keeps its
-      // attachment to the root from the previous frame. Used for testing.
-      bool attached_to_root_from_previous_frame_ = false;
+      // True if the content of the dcomp visual changed from the previous
+      // frame. Used for testing.
+      bool dcomp_visual_content_changed_from_previous_frame_ = false;
 #endif  // DCHECK_IS_ON()
     };
 

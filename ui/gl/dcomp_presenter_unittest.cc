@@ -819,6 +819,12 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dcLayerTree = presenter_->GetLayerTreeForTesting();
+
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(dcLayerTree->DcompVisualContentChangedFromPreviousFrameForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0)));
+#endif  // DCHECK_IS_ON()
+
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visual0 =
       dcLayerTree->GetContentVisualForTesting(
@@ -855,11 +861,9 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(
                                gfx::OverlayLayerId::MakeForTesting(0)));
 #if DCHECK_IS_ON()
-  EXPECT_TRUE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(0)));
-  EXPECT_FALSE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeVizInternal(
-          gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)));
+  EXPECT_FALSE(
+      dcLayerTree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0)));
 #endif  // DCHECK_IS_ON()
 }
 
@@ -960,6 +964,15 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dc_layer_tree = presenter_->GetLayerTreeForTesting();
+
+#if DCHECK_IS_ON()
+  for (int i = 1; i <= 6; i++) {
+    EXPECT_TRUE(
+        dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+            gfx::OverlayLayerId::MakeForTesting(i)));
+  }
+#endif  // DCHECK_IS_ON()
+
   EXPECT_EQ(7u, dc_layer_tree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualRS =
       dc_layer_tree->GetContentVisualForTesting(
@@ -1025,19 +1038,21 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(
                                gfx::OverlayLayerId::MakeForTesting(5)) /*M*/);
 #if DCHECK_IS_ON()
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeVizInternal(
-          gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(1)));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(2)));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(3)));
-  EXPECT_FALSE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(4)));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(
-      gfx::OverlayLayerId::MakeForTesting(5)));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(1)));
+  EXPECT_TRUE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(2)));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(3)));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(4)));
+  EXPECT_TRUE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(5)));
 #endif  // DCHECK_IS_ON()
 }
 

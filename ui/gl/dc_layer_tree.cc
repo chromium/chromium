@@ -759,6 +759,10 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     hr = content_visual_->SetContent(dcomp_visual_content_.Get());
     CHECK_EQ(hr, S_OK);
   }
+#if DCHECK_IS_ON()
+  dcomp_visual_content_changed_from_previous_frame_ =
+      dcomp_visual_content_changed;
+#endif
 
   if (dcomp_surface_serial_changed) {
     // The DComp surface has been drawn to and needs a commit to show its
@@ -1139,10 +1143,6 @@ bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
     if (reused_subtree_index == prev_frame_subtree_index) {
       ++prev_frame_subtree_index;
     }
-#if DCHECK_IS_ON()
-    new_visual_subtrees[i]->attached_to_root_from_previous_frame_ =
-        prev_subtree_is_attached_to_root[reused_subtree_index];
-#endif  // DCHECK_IS_ON()
   }
   return needs_commit;
 }
@@ -1315,11 +1315,12 @@ size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
 }
 
 #if DCHECK_IS_ON()
-bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
+bool DCLayerTree::DcompVisualContentChangedFromPreviousFrameForTesting(
     const gfx::OverlayLayerId& layer_id) const {
   CHECK_IS_TEST();
-  return visual_tree_->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
-      layer_id);
+  return visual_tree_
+      ->DcompVisualContentChangedFromPreviousFrameForTesting(  // IN-TEST
+          layer_id);
 }
 #endif  // DCHECK_IS_ON()
 
@@ -1367,11 +1368,12 @@ DCLayerTree::VisualTree::GetBackgroundColorSurfaceForTesting(
 }
 
 #if DCHECK_IS_ON()
-bool DCLayerTree::VisualTree::GetAttachedToRootFromPreviousFrameForTesting(
-    const gfx::OverlayLayerId& layer_id) const {
+bool DCLayerTree::VisualTree::
+    DcompVisualContentChangedFromPreviousFrameForTesting(
+        const gfx::OverlayLayerId& layer_id) const {
   CHECK_IS_TEST();
-  return GetSubtreeFromLayerIdForTesting(layer_id)       // IN-TEST
-      ->GetAttachedToRootFromPreviousFrameForTesting();  // IN-TEST
+  return GetSubtreeFromLayerIdForTesting(layer_id)               // IN-TEST
+      ->DcompVisualContentChangedFromPreviousFrameForTesting();  // IN-TEST
 }
 #endif  // DCHECK_IS_ON()
 
