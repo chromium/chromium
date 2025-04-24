@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.Accelerators.Actions.{ActionName}" units="Shortcuts"
-    expires_after="2025-09-14">
+    expires_after="2026-05-11">
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.ActivateDeskByIndex"
-    enum="ActivateDeskByIndex" expires_after="2025-04-27">
+    enum="ActivateDeskByIndex" expires_after="2026-05-11">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -514,14 +514,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.TogglePicker.Action"
-    enum="TogglePickerAction" expires_after="2025-08-14">
+    enum="TogglePickerAction" expires_after="2026-05-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Action triggered by pressing toggle picker accelerator.</summary>
 </histogram>
 
 <histogram name="Ash.Accelerators.WindowSnap"
-    enum="WindowSnapAcceleratorAction" expires_after="2025-04-13">
+    enum="WindowSnapAcceleratorAction" expires_after="2026-05-11">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>Captures usage of Alt+[ and Alt+].</summary>
