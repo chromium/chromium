@@ -17,6 +17,7 @@
 #import "components/optimization_guide/core/optimization_guide_test_util.h"
 #import "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/test_hints_component_creator.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -24,6 +25,7 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -106,6 +108,14 @@ class OptimizationGuideServiceTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindOnce(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              // Creates a FakeTabGroupSyncService, as the real implementation
+              // registers some optimization types.
+              return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+            }));
     builder.SetPrefService(std::move(testing_prefs));
     profile_ = std::move(builder).Build();
     optimization_guide_service_ =
@@ -244,10 +254,11 @@ TEST_F(OptimizationGuideServiceTest,
   histogram_tester()->ExpectTotalCount("OptimizationGuide.LoadedHint.Result",
                                        0);
 
-  // Navigate away so UKM get recorded.
+  // Navigate away.
   context_and_data = NavigationContextAndData(kHintsURL);
   SimulateNavigation(&context_and_data);
 
+  // Expect that no UKM is recorded.
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide::kEntryName);
   EXPECT_EQ(0u, entries.size());

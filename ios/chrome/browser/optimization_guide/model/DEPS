@@ -1,6 +1,7 @@
 include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/ai_prototyping/coordinator",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/push_notification/model",
