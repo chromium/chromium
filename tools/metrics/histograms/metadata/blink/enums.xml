@@ -8171,6 +8171,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="316" label="Http3"/>
   <int value="317" label="SpeculationRules"/>
   <int value="318" label="TextBox"/>
+  <int value="319" label="ScrollInitialTarget"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

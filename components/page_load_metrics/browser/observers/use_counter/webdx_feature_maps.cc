@@ -423,6 +423,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
             {CSSSampleId::kScrollbarGutter, WebDXFeature::kScrollbarGutter},
             {CSSSampleId::kScrollbarWidth, WebDXFeature::kScrollbarWidth},
             {CSSSampleId::kScrollSnapType, WebDXFeature::kScrollSnap},
+            {CSSSampleId::kScrollInitialTarget,
+             WebDXFeature::kScrollInitialTarget},
             {CSSSampleId::kTextBox, WebDXFeature::kTextBox},
             {CSSSampleId::kTextBoxEdge, WebDXFeature::kTextBox},
             {CSSSampleId::kTextBoxTrim, WebDXFeature::kTextBox},
