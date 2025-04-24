@@ -212,6 +212,9 @@ class WTF_EXPORT StringImpl {
     return {reinterpret_cast<const uint8_t*>(this + 1),
             CharactersSizeInBytes()};
   }
+  // Create a new std::u16string based on this.
+  // The character content is always copied.
+  std::u16string ToU16String() const;
 
   template <typename CharType>
   ALWAYS_INLINE const CharType* GetCharacters() const;
@@ -613,8 +616,6 @@ class WTF_EXPORT StringImpl {
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
   unsigned ComputeASCIIFlags() const;
-
-  std::u16string ToU16String() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
