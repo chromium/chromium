@@ -23,7 +23,6 @@ import android.widget.RemoteViews;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.customtabs.CustomTabsCallback;
@@ -31,7 +30,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
-import androidx.browser.customtabs.ExperimentalMinimizationCallback;
 import androidx.browser.customtabs.ExperimentalPrefetch;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 import androidx.browser.customtabs.PrefetchOptions;
@@ -1496,7 +1494,6 @@ public class CustomTabsConnection {
     }
 
     /** Called when a Custom Tab is unminimized. */
-    @OptIn(markerClass = ExperimentalMinimizationCallback.class)
     public void onUnminimized(@Nullable SessionHolder<?> session) {
         Bundle args = new Bundle();
 
@@ -1514,7 +1511,6 @@ public class CustomTabsConnection {
     }
 
     /** Called when a Custom Tab is minimized. */
-    @OptIn(markerClass = ExperimentalMinimizationCallback.class)
     public void onMinimized(@Nullable SessionHolder<?> session) {
         Bundle args = new Bundle();
 

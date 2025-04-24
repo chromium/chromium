@@ -1,7 +1,7 @@
 Name: Leanback Grid
 Short Name: leanback-grid
-URL: https://developer.android.com/jetpack/androidx/releases/leanback#1.0.0-SNAPSHOT
-Version: 1.0.0-SNAPSHOT
+URL: https://developer.android.com/jetpack/androidx/releases/leanback#1.0.0
+Version: 1.0.0
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -7,18 +7,15 @@ package org.chromium.chrome.browser.browserservices.intents;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabCallback;
 import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.browser.customtabs.ExperimentalMinimizationCallback;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Class that holds either a {@link CustomTabsSessionToken} or {@link AuthTabSessionToken}. */
-@OptIn(markerClass = {ExperimentalMinimizationCallback.class})
 @NullMarked
 public class BrowserCallbackWrapper {
     private final @Nullable CustomTabsCallback mCustomTabsCallback;

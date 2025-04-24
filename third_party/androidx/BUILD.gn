@@ -585,7 +585,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_customview_customview_java") {
-    aar_path = "../androidx/cipd/libs/androidx_customview_customview/customview-1.2.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_customview_customview/customview-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_customview_customview/androidx_customview_customview.info"
     enable_bytecode_checks = false
     deps = [
@@ -669,7 +669,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_exifinterface_exifinterface_java") {
-    aar_path = "../androidx/cipd/libs/androidx_exifinterface_exifinterface/exifinterface-1.4.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_exifinterface_exifinterface/exifinterface-1.4.1.aar"
     info_path = "../androidx/committed/libs/androidx_exifinterface_exifinterface/androidx_exifinterface_exifinterface.info"
     enable_bytecode_checks = false
     deps = [
@@ -756,7 +756,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback/leanback-1.2.0-SNAPSHOT.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_leanback_leanback/leanback-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback/androidx_leanback_leanback.info"
     enable_bytecode_checks = false
     deps = [
@@ -775,7 +776,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_preference/leanback-preference-1.2.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_preference/leanback-preference-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback_preference/androidx_leanback_leanback_preference.info"
     enable_bytecode_checks = false
     deps = [
@@ -1147,8 +1148,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_print_print_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_print_print/print-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_print_print/print-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_print_print/androidx_print_print.info"
     enable_bytecode_checks = false
     deps = [
@@ -1581,7 +1581,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_window_window/window-1.7.0-SNAPSHOT.aar"
+        "../androidx/cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_window_window/androidx_window_window.info"
     enable_bytecode_checks = false
     deps = [
@@ -2361,7 +2361,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_customview_customview_poolingcontainer_java") {
-    aar_path = "../androidx/cipd/libs/androidx_customview_customview_poolingcontainer/customview-poolingcontainer-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_customview_customview_poolingcontainer/customview-poolingcontainer-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_customview_customview_poolingcontainer/androidx_customview_customview_poolingcontainer.info"
     enable_bytecode_checks = false
 
@@ -2571,7 +2571,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_grid_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_grid/leanback-grid-1.0.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_grid/leanback-grid-1.0.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback_grid/androidx_leanback_leanback_grid.info"
     enable_bytecode_checks = false
 
@@ -3370,7 +3370,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_tracing_tracing_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_android/tracing-android-1.3.0-SNAPSHOT.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_tracing_tracing_android/tracing.aar"
     info_path = "../androidx/committed/libs/androidx_tracing_tracing_android/androidx_tracing_tracing_android.info"
     enable_bytecode_checks = false
 
@@ -3388,7 +3389,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_tracing_tracing_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_ktx/tracing-ktx-1.3.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_ktx/tracing-ktx-1.3.0.aar"
     info_path = "../androidx/committed/libs/androidx_tracing_tracing_ktx/androidx_tracing_tracing_ktx.info"
     enable_bytecode_checks = false
 
@@ -3489,7 +3490,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core-android-1.7.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
     enable_bytecode_checks = false
 
