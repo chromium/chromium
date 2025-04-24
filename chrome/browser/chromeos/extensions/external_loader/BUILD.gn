@@ -15,5 +15,12 @@ static_library("external_loader") {
     "device_local_account_external_policy_loader.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//extensions/buildflags",
+  ]
+
+  # TODO(crbug.com/413050705): Fix longstanding circular dependency between this
+  # target and //chrome/browser/extensions. For now, continue to omit deps on
+  # //chrome/browser/extensions.
 }

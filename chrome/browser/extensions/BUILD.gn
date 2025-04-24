@@ -450,7 +450,6 @@ source_set("extensions") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/updater",
-    "//extensions/buildflags",
     "//extensions/common",
     "//extensions/strings",
     "//google_apis/common:request_util",
@@ -460,7 +459,10 @@ source_set("extensions") {
     "//third_party/zlib/google:zip",
     "//ui/shell_dialogs",
   ]
-  public_deps = [ "//components/safe_browsing/core/browser/db:util" ]
+  public_deps = [
+    "//components/safe_browsing/core/browser/db:util",
+    "//extensions/buildflags",
+  ]
   defines = []
 
   if (is_android) {

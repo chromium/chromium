@@ -8,6 +8,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/favicon_base/favicon_types.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 
