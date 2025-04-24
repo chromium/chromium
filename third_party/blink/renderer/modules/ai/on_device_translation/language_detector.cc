@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
@@ -202,6 +203,33 @@ void OnGotStatus(
   resolver->Resolve(AvailabilityToV8(availability));
 }
 
+bool ValidateAndCanonicalizeExpectedInputLanguages(
+    v8::Isolate* isolate,
+    LanguageDetectorCreateCoreOptions* options) {
+  if (!options->hasExpectedInputLanguages()) {
+    return true;
+  }
+
+  Vector<String> expected_input_languages;
+  for (const String& language : options->expectedInputLanguages()) {
+    // Throws RangeError if `language` is not a valid language tag.
+    v8::Maybe<std::string> maybe_canonical_language =
+        isolate->ValidateAndCanonicalizeUnicodeLocaleId(language.Ascii());
+    if (maybe_canonical_language.IsNothing()) {
+      return false;
+    }
+
+    String canonical_language(maybe_canonical_language.FromJust());
+
+    if (!expected_input_languages.Contains(canonical_language)) {
+      expected_input_languages.emplace_back(std::move(canonical_language));
+    }
+  }
+
+  options->setExpectedInputLanguages(expected_input_languages);
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -213,8 +241,10 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/409848465): Validate and canonicalize
-  // expectedInputLanguages.
+  if (!ValidateAndCanonicalizeExpectedInputLanguages(script_state->GetIsolate(),
+                                                     options)) {
+    return EmptyPromise();
+  }
 
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
@@ -249,8 +279,10 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/409848465): Validate and canonicalize
-  // expectedInputLanguages.
+  if (!ValidateAndCanonicalizeExpectedInputLanguages(script_state->GetIsolate(),
+                                                     options)) {
+    return EmptyPromise();
+  }
 
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);

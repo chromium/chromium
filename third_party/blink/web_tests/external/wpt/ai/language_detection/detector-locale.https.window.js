@@ -85,3 +85,26 @@ promise_test(async t => {
     }
   }
 }, 'LanguageDetector has valid expectedInputLanguages');
+
+function assert_rejects_invalid_expected_input_languages(
+    t, method, expectedInputLanguages) {
+  return promise_rejects_js(t, RangeError, method({expectedInputLanguages}));
+}
+
+promise_test(async t => {
+  for (const languageTag of invalid_language_tags) {
+    assert_rejects_invalid_expected_input_languages(
+        t, LanguageDetector.create, [languageTag]);
+  }
+  assert_rejects_invalid_expected_input_languages(
+      t, LanguageDetector.create, invalid_language_tags);
+}, 'LanguageDetector.create() throws RangeError for invalid language tags');
+
+promise_test(async t => {
+  for (const languageTag of invalid_language_tags) {
+    assert_rejects_invalid_expected_input_languages(
+        t, LanguageDetector.availability, [languageTag]);
+  }
+  assert_rejects_invalid_expected_input_languages(
+      t, LanguageDetector.availability, invalid_language_tags);
+}, 'LanguageDetector.availability() throws RangeError for invalid language tags');
