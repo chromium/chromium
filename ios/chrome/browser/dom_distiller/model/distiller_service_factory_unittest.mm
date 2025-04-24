@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class DistillerServiceFactoryTest : public PlatformTest {
  protected:
   DistillerServiceFactoryTest() : profile_(TestProfileIOS::Builder().Build()) {}
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
