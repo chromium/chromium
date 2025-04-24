@@ -171,10 +171,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   virtual int GetOutstandingThrottledLimit() const;
 
-  // TODO(crbug.com/1146824): Remove this once PlzDedicatedWorker and
-  // PlzServiceWorker ship.
-  virtual bool IsInitialized() const = 0;
-
   // TODO(crbug/964467): Currently all workers fetch cached code but only
   // services workers use them. Dedicated / Shared workers don't use the cached
   // code since we don't create a CachedMetadataHandler. We need to fix this by
