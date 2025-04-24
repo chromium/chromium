@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"

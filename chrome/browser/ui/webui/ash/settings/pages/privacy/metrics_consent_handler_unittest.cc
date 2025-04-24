@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"

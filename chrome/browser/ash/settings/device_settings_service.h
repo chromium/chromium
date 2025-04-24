@@ -326,20 +326,6 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
 std::ostream& operator<<(std::ostream&, DeviceSettingsService::OwnershipStatus);
 
-// Helper class for tests. Initializes the DeviceSettingsService singleton on
-// construction and tears it down again on destruction.
-class ScopedTestDeviceSettingsService {
- public:
-  ScopedTestDeviceSettingsService();
-
-  ScopedTestDeviceSettingsService(const ScopedTestDeviceSettingsService&) =
-      delete;
-  ScopedTestDeviceSettingsService& operator=(
-      const ScopedTestDeviceSettingsService&) = delete;
-
-  ~ScopedTestDeviceSettingsService();
-};
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_DEVICE_SETTINGS_SERVICE_H_

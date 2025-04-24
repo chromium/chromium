@@ -493,14 +493,4 @@ std::ostream& operator<<(std::ostream& ostream,
   }
 }
 
-ScopedTestDeviceSettingsService::ScopedTestDeviceSettingsService() {
-  DeviceSettingsService::Initialize();
-}
-
-ScopedTestDeviceSettingsService::~ScopedTestDeviceSettingsService() {
-  // Clean pending operations.
-  DeviceSettingsService::Get()->UnsetSessionManager();
-  DeviceSettingsService::Shutdown();
-}
-
 }  // namespace ash

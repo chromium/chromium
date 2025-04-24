@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/mock_personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_google_photos_wallpaper_handlers.h"

@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"

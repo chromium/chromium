@@ -79,6 +79,8 @@ static_library("test_support") {
     "device_settings_test_helper.h",
     "scoped_cros_settings_test_helper.cc",
     "scoped_cros_settings_test_helper.h",
+    "scoped_test_device_settings_service.cc",
+    "scoped_test_device_settings_service.h",
     "scoped_testing_cros_settings.cc",
     "scoped_testing_cros_settings.h",
   ]

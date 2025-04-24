@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes:test_support",
