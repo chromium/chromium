@@ -727,6 +727,7 @@ class GSL_POINTER span {
                          StrictNumeric<size_type> count) const {
     DCHECK(size_type{count} != dynamic_extent)
         << "base does not allow dynamic_extent in two-arg subspan()";
+    // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
     // SAFETY: `data()` points to at least `extent` elements, so `offset`
@@ -1173,6 +1174,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
                          StrictNumeric<size_type> count) const {
     DCHECK(size_type{count} != dynamic_extent)
         << "base does not allow dynamic_extent in two-arg subspan()";
+    // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
     // SAFETY: `data()` points to at least `size()` elements, so `offset`
