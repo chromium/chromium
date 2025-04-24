@@ -1019,6 +1019,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view_ =
       contents_container->AddChildView(std::move(devtools_web_view));
 
+  devtools_scrim_view_ =
+      contents_container->AddChildView(std::make_unique<ScrimView>());
+
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto multi_contents_view = std::make_unique<MultiContentsView>(
@@ -1077,12 +1080,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, lens_overlay_view_,
-      contents_scrim_view_, glic_border_, watermark_view_));
+      devtools_web_view_, devtools_scrim_view_, contents_view,
+      lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, lens_overlay_view_,
-      contents_scrim_view_, nullptr, watermark_view_));
+      devtools_web_view_, devtools_scrim_view_, contents_view,
+      lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1213,6 +1216,7 @@ BrowserView::~BrowserView() {
   contents_web_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
+  devtools_scrim_view_ = nullptr;
   contents_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
@@ -2523,6 +2527,12 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 void BrowserView::SetContentScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
     contents_scrim_view()->SetVisible(visible);
+  }
+}
+
+void BrowserView::SetDevToolsScrimVisibility(bool visible) {
+  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+    devtools_scrim_view()->SetVisible(visible);
   }
 }
 
@@ -4797,6 +4807,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   }
   if (devtools_web_view_->GetVisible()) {
     panes->push_back(devtools_web_view_);
+  }
+  if (devtools_scrim_view_->GetVisible()) {
+    panes->push_back(devtools_scrim_view_);
   }
 }
 

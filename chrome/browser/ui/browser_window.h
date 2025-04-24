@@ -343,6 +343,9 @@ class BrowserWindow : public ui::BaseWindow,
   // Updates the visibility of the scrim that covers the content area.
   virtual void SetContentScrimVisibility(bool visible) = 0;
 
+  // Updates the visibility of the scrim that covers the devtools area.
+  virtual void SetDevToolsScrimVisibility(bool visible) = 0;
+
   // Resets the toolbar's tab state for |contents|.
   virtual void ResetToolbarTabState(content::WebContents* contents) = 0;
 

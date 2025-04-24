@@ -130,6 +130,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override {}
   void SetContentScrimVisibility(bool visible) override {}
+  void SetDevToolsScrimVisibility(bool visible) override {}
   void ResetToolbarTabState(content::WebContents* contents) override {}
   void FocusToolbar() override {}
   ExtensionsContainer* GetExtensionsContainer() override;

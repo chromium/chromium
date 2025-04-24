@@ -298,6 +298,8 @@ class BrowserView : public BrowserWindow,
 
   ScrimView* contents_scrim_view() { return contents_scrim_view_; }
 
+  ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
+
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicBorderView* glic_border() const { return glic_border_; }
 #endif
@@ -570,6 +572,7 @@ class BrowserView : public BrowserWindow,
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override;
   void SetContentScrimVisibility(bool visible) override;
+  void SetDevToolsScrimVisibility(bool visible) override;
   void ResetToolbarTabState(content::WebContents* contents) override;
   void FocusToolbar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
@@ -1285,6 +1288,10 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
+
+  // The scrim view that covers the devtools area when a tab-modal dialog is
+  // open.
+  raw_ptr<ScrimView> devtools_scrim_view_ = nullptr;
 
   // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
   // that is shown on top of the web contents. It therefore must always have the

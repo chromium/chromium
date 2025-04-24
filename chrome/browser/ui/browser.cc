@@ -2822,6 +2822,11 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
     // Removal of tabs from the TabStripModel can cause observer callbacks to
     // invoke this method. The WebContents may no longer exist in the
     // TabStripModel.
+    // If the WebContents has a DevTools window,
+    // the call is meant for the DevTools area.
+    if (DevToolsWindow::AsDevToolsWindow(web_contents)) {
+      window_->SetDevToolsScrimVisibility(blocked);
+    }
     return;
   }
 

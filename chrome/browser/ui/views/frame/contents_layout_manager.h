@@ -14,6 +14,7 @@
 class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
   ContentsLayoutManager(views::View* devtools_view,
+                        views::View* devtools_scrim_view,
                         views::View* contents_view,
                         views::View* lens_overlay_view,
                         views::View* scrim_view,
@@ -36,6 +37,7 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
 
  private:
   const raw_ptr<views::View> devtools_view_;
+  const raw_ptr<views::View> devtools_scrim_view_;
   const raw_ptr<views::View> contents_view_;
   const raw_ptr<views::View> lens_overlay_view_;
   const raw_ptr<views::View> scrim_view_;

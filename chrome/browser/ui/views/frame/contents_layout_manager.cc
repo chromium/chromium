@@ -8,12 +8,14 @@
 #include "ui/views/view.h"
 
 ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
+                                             views::View* devtools_scrim_view,
                                              views::View* contents_view,
                                              views::View* lens_overlay_view,
                                              views::View* scrim_view,
                                              views::View* border_view,
                                              views::View* watermark_view)
     : devtools_view_(devtools_view),
+      devtools_scrim_view_(devtools_scrim_view),
       contents_view_(contents_view),
       lens_overlay_view_(lens_overlay_view),
       scrim_view_(scrim_view),
@@ -54,6 +56,10 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   // layout here.
   layouts.child_layouts.emplace_back(
       devtools_view_.get(), devtools_view_->GetVisible(),
+      host_view()->GetMirroredRect(new_devtools_bounds),
+      views::SizeBounds(container_size));
+  layouts.child_layouts.emplace_back(
+      devtools_scrim_view_.get(), devtools_scrim_view_->GetVisible(),
       host_view()->GetMirroredRect(new_devtools_bounds),
       views::SizeBounds(container_size));
   const auto& contents_rect = host_view()->GetMirroredRect(new_contents_bounds);
