@@ -6,11 +6,11 @@ import("//build/config/c++/c++.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("crash_tools") {
-  if (is_linux && enable_chromoting_crashpad) {
-    public_deps = [
-      ":remoting_crashpad_db",
-      ":remoting_crashpad_handler",
-    ]
+  if (enable_chromoting_crashpad) {
+    public_deps = [ ":remoting_crashpad_handler" ]
+    if (is_linux) {
+      public_deps += [ ":remoting_crashpad_db" ]
+    }
   } else {
     public_deps = [ ":remoting_crash_uploader" ]
   }
@@ -58,20 +58,7 @@ source_set("crash_uploader_main") {
   ]
 }
 
-# For Linux we've completely moved to Crashpad,
-# so no need to build old crash uploader. crbug.com/398957315
-if (!is_linux || !enable_chromoting_crashpad) {
-  executable("remoting_crash_uploader") {
-    sources = [ "crash_uploader_entry_point.cc" ]
-
-    deps = [
-      ":crash_uploader_main_headers",
-      "//remoting/host:remoting_core",
-    ]
-  }
-}
-
-if (is_linux && enable_chromoting_crashpad) {
+if (enable_chromoting_crashpad) {
   executable("remoting_crashpad_handler") {
     sources = [ "crashpad_handler.cc" ]
 
@@ -91,6 +78,15 @@ if (is_linux && enable_chromoting_crashpad) {
       "//remoting/base/crash:crashpad_db_mgr",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/util",
+    ]
+  }
+} else {
+  executable("remoting_crash_uploader") {
+    sources = [ "crash_uploader_entry_point.cc" ]
+
+    deps = [
+      ":crash_uploader_main_headers",
+      "//remoting/host:remoting_core",
     ]
   }
 }

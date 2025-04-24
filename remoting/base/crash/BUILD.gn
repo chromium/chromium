@@ -6,7 +6,7 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("crash") {
   public_deps = [ ":breakpad_utils" ]
-  if (is_linux && enable_chromoting_crashpad) {
+  if (enable_chromoting_crashpad) {
     public_deps += [ ":crashpad" ]
   } else {
     public_deps += [ ":breakpad" ]
@@ -24,7 +24,7 @@ source_set("breakpad_utils") {
   ]
 }
 
-if (is_linux && enable_chromoting_crashpad) {
+if (enable_chromoting_crashpad) {
   source_set("crashpad_db_mgr") {
     sources = [
       "crashpad_database_manager.cc",
