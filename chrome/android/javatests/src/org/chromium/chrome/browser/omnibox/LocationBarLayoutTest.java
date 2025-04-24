@@ -54,8 +54,10 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -72,11 +74,13 @@ public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS_URL = "testing.com";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock AndroidPermissionDelegate mAndroidPermissionDelegate;
+    private WebPageStation mStartingPage;
 
     private OmniboxTestUtils mOmnibox;
 
@@ -95,7 +99,7 @@ public class LocationBarLayoutTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());

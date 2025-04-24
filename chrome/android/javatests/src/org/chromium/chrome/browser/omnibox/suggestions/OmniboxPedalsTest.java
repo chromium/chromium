@@ -26,8 +26,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,8 +57,10 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
@@ -88,26 +88,20 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OmniboxPedalsTest {
-    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock OmniboxActionJni mOmniboxActionJni;
 
+    private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
     private SettingsActivity mTargetActivity;
-
-    @BeforeClass
-    public static void beforeClass() {
-        sActivityTestRule.startMainActivityOnBlankPage();
-        sActivityTestRule.waitForActivityNativeInitializationComplete();
-        sActivityTestRule.waitForDeferredStartup();
-    }
 
     @Before
     public void setUp() throws InterruptedException {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        sActivityTestRule.loadUrl("about:blank");
-        mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
+        mStartingPage = mActivityTestRule.start();
+        mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
         OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
     }
 
@@ -122,7 +116,7 @@ public class OmniboxPedalsTest {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        sActivityTestRule
+                        mActivityTestRule
                                 .getActivity()
                                 .getModalDialogManager()
                                 .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
@@ -202,7 +196,7 @@ public class OmniboxPedalsTest {
     public void testManagePasswordsNoUpmFlow() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(sActivityTestRule.getProfile(false));
+                    PrefService prefService = UserPrefs.get(mActivityTestRule.getProfile(false));
                     prefService.setInteger(
                             "passwords_use_upm_local_and_separate_stores",
                             /*UseUpmLocalAndSeparateStoresState = Off*/ 0);
@@ -236,7 +230,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
                 });
@@ -319,7 +313,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(
                             tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
@@ -376,7 +370,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(
                             tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));

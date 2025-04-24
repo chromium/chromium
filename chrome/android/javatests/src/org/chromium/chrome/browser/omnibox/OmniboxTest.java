@@ -37,11 +37,11 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -61,7 +61,8 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class OmniboxTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private void clearUrlBar() {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
@@ -76,15 +77,11 @@ public class OmniboxTest {
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
             (result, isFinal) -> {};
 
-    /**
-     * Sanity check of Omnibox. The problem in http://b/5021723 would cause this to fail (hang or
-     * crash).
-     */
     @Test
     @EnormousTest
     @Feature({"Omnibox"})
     public void testSimpleUse() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
         omnibox.typeText("aaaaaaa", false);
@@ -97,13 +94,15 @@ public class OmniboxTest {
                 20L);
     }
 
-    // Sanity check that no text is displayed in the omnibox when on the NTP page and that the hint
-    // text is correct.
+    /**
+     * Check that no text is displayed in the omnibox when on the NTP page and that the hint text is
+     * correct.
+     */
     @Test
     @MediumTest
     @Feature({"Omnibox"})
     public void testDefaultText() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mActivityTestRule.startOnNtp();
 
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
 
@@ -133,7 +132,7 @@ public class OmniboxTest {
     @MediumTest
     @Feature({"Omnibox"})
     public void testAltEnterOpensSearchResultInNewTab() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         int tabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
         Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -171,7 +170,7 @@ public class OmniboxTest {
 
         for (int i = 0; i < 2; ++i) {
             boolean instantOn = (i == 1);
-            mActivityTestRule.setNetworkPredictionEnabled(instantOn);
+            mActivityTestRule.getActivityTestRule().setNetworkPredictionEnabled(instantOn);
 
             for (int j = 0; j < 10; ++j) {
                 long before = System.currentTimeMillis();
@@ -198,7 +197,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTP() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -218,7 +217,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPS() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer httpsTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
@@ -269,7 +268,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         setNonDefaultSearchEngine();
 
         EmbeddedTestServer httpsTestServer =
@@ -374,7 +373,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     public void testHttpsLocationBarColor() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
