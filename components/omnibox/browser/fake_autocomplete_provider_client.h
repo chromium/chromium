@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search_engines/search_engines_test_environment.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -74,6 +75,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
+  tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   std::string ProfileUserName() const override;
@@ -134,6 +136,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_;
+  std::unique_ptr<tab_groups::FakeTabGroupSyncService>
+      fake_tab_group_sync_service_;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;

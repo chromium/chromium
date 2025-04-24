@@ -97,7 +97,8 @@ struct AutocompleteMatchType {
                                        // similar embeddings to the query.
     FEATURED_ENTERPRISE_SEARCH  = 37,  // Site search engines featured by
                                        // Enterprise policy.
-    HISTORY_EMBEDDINGS_ANSWER = 38,
+    HISTORY_EMBEDDINGS_ANSWER   = 38,
+    TAB_GROUP                   = 39,  // A tab group match.
     NUM_TYPES,
   };
   // clang-format on

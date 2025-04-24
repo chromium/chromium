@@ -1,9 +1,11 @@
 include_rules = [
   "+components/omnibox/resources",
+  "+components/saved_tab_groups",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/saved_tab_groups",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/optimization_guide/model",
 ]

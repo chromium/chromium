@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
+#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
@@ -562,6 +563,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
+
+  raw_ptr<TabGroupProvider> tab_group_provider_;
 
   raw_ptr<FeaturedSearchProvider> featured_search_provider_;
 

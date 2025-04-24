@@ -1482,6 +1482,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::NULL_RESULT_MESSAGE;
     case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
       return OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER;
+    case AutocompleteMatchType::TAB_GROUP:
+      return OmniboxEventProto::Suggestion::TAB_GROUP;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:

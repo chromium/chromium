@@ -26,6 +26,8 @@ MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
   omnibox_triggered_feature_service_ =
       std::make_unique<OmniboxTriggeredFeatureService>();
   provider_state_service_ = std::make_unique<ProviderStateService>();
+  mock_tab_group_sync_service_ =
+      std::make_unique<tab_groups::MockTabGroupSyncService>();
 }
 
 MockAutocompleteProviderClient::~MockAutocompleteProviderClient() = default;

@@ -24,6 +24,10 @@ namespace component_updater {
 class ComponentUpdateService;
 }
 
+namespace tab_groups {
+class TabGroupSyncService;
+}
+
 // AutocompleteProviderClientImpl provides iOS-specific implementation of
 // AutocompleteProviderClient interface.
 class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
@@ -78,6 +82,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   signin::IdentityManager* GetIdentityManager() const override;
+  tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
   bool IsOffTheRecord() const override;
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;

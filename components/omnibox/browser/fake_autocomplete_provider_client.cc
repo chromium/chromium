@@ -30,6 +30,9 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   scoring_model_service_ =
       std::make_unique<FakeAutocompleteScoringModelService>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+  fake_tab_group_sync_service_ =
+      std::make_unique<tab_groups::FakeTabGroupSyncService>();
 }
 
 FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
@@ -98,6 +101,11 @@ FakeAutocompleteProviderClient::GetShortcutsBackend() {
 scoped_refptr<ShortcutsBackend>
 FakeAutocompleteProviderClient::GetShortcutsBackendIfExists() {
   return shortcuts_backend_;
+}
+
+tab_groups::TabGroupSyncService*
+FakeAutocompleteProviderClient::GetTabGroupSyncService() const {
+  return fake_tab_group_sync_service_.get();
 }
 
 const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {

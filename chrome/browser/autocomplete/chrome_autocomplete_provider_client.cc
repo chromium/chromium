@@ -37,6 +37,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -62,6 +63,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -393,6 +395,11 @@ ChromeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
 ProviderStateService*
 ChromeAutocompleteProviderClient::GetProviderStateService() const {
   return ProviderStateServiceFactory::GetForProfile(profile_);
+}
+
+tab_groups::TabGroupSyncService*
+ChromeAutocompleteProviderClient::GetTabGroupSyncService() const {
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
 }
 
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {

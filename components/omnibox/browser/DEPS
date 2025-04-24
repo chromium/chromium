@@ -34,6 +34,7 @@ include_rules = [
   "+components/query_parser",
   "+components/query_tiles",
   "+components/safe_browsing/core/common",
+  "+components/saved_tab_groups",
   "+components/search",
   "+components/search_engines",
   "+components/security_state",

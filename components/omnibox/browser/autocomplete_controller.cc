@@ -76,6 +76,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
@@ -1356,6 +1357,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     providers_.push_back(
         new RecentlyClosedTabsProvider(provider_client_.get(), this));
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (provider_types & AutocompleteProvider::TYPE_TAB_GROUP) {
+    providers_.push_back(new TabGroupProvider(provider_client_.get()));
+  }
+#endif
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type,

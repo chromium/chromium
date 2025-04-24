@@ -181,6 +181,7 @@ class AutocompleteProvider
     TYPE_UNSCOPED_EXTENSION = 1 << 23,
     TYPE_RECENTLY_CLOSED_TABS = 1 << 24,
     TYPE_CONTEXTUAL_SEARCH = 1 << 25,
+    TYPE_TAB_GROUP = 1 << 26,
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`

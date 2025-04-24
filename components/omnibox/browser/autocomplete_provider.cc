@@ -92,6 +92,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "RecentlyClosedTabs";
     case TYPE_CONTEXTUAL_SEARCH:
       return "ContextualSearch";
+    case TYPE_TAB_GROUP:
+      return "TabGroup";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -204,6 +206,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::RECENTLY_CLOSED_TABS;
     case TYPE_CONTEXTUAL_SEARCH:
       return metrics::OmniboxEventProto::CONTEXTUAL_SEARCH_PROVIDER;
+    case TYPE_TAB_GROUP:
+      return metrics::OmniboxEventProto::TAB_GROUP_PROVIDER;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their

@@ -62,6 +62,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "history-embeddings",
     "featured-enterprise-search",
     "history-embeddings-answer",
+    "tab-group",
   });
   // clang-format on
   static_assert(strings.size() == AutocompleteMatchType::NUM_TYPES,
@@ -159,6 +160,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       IDS_ACC_AUTOCOMPLETE_HISTORY,          // HISTORY_EMBEDDINGS
       0,                                     // FEATURED_ENTERPRISE_SEARCH
       0,                                     // HISTORY_EMBEDDINGS_ANSWER
+      0,                                     // TAB_GROUP
   });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
