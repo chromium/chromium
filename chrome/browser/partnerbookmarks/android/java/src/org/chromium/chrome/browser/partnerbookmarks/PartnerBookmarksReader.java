@@ -39,7 +39,7 @@ public class PartnerBookmarksReader {
     /** ID used to indicate an invalid bookmark node. */
     static final long INVALID_BOOKMARK_ID = -1;
 
-    /** Storage for failed favicon retrieval attempts to throttle future requests. * */
+    /** Storage for failed favicon retrieval attempts to throttle future requests. */
     private @Nullable PartnerBookmarksFaviconThrottle mFaviconThrottle;
 
     // JNI c++ pointer

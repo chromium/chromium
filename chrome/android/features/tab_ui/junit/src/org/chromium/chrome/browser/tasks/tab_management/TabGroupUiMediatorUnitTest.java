@@ -394,7 +394,7 @@ public class TabGroupUiMediatorUnitTest {
         mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
     }
 
-    /*********************** Tab group related tests *************************/
+    // *********************** Tab group related tests *************************
 
     @Test
     public void verifyInitialization_NoTab_TabGroup() {

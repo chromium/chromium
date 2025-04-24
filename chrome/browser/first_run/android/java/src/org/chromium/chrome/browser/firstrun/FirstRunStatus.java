@@ -107,7 +107,7 @@ public class FirstRunStatus {
     /**
      * @return Whether the First Run Experience is skipped by policy.
      * @see #setFirstRunSkippedByPolicy
-     * */
+     */
     public static boolean isFirstRunSkippedByPolicy() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, false);

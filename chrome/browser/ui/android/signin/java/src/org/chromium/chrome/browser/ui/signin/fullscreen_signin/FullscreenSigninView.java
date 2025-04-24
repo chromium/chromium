@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View that wraps the fullscreen signin promo and caches references to UI elements. * */
+/** View that wraps the fullscreen signin promo and caches references to UI elements. */
 public class FullscreenSigninView extends RelativeLayout {
     private ImageView mLogo;
     private TextView mTitle;

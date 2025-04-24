@@ -215,8 +215,8 @@ public class IntentHandler {
 
     /**
      * Interested entities within Chrome relying on launching Incognito CCT should set this in their
-     *{@link CustomTabIntent} in order to identify themselves for metric purposes.
-     **/
+     * {@link CustomTabIntent} in order to identify themselves for metric purposes.
+     */
     public static final String EXTRA_INCOGNITO_CCT_CALLER_ID =
             "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
 

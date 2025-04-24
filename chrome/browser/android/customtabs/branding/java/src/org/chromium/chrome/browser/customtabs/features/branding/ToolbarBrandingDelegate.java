@@ -12,9 +12,9 @@ public interface ToolbarBrandingDelegate {
     /**
      * Show an empty location bar. Used when waiting for whether to show branding.
      *
-     * The implementation of this method should be fast so that it will not cause any UI janks when
-     * switching state quickly into either branding location bar or regular toolbar.
-     * */
+     * <p>The implementation of this method should be fast so that it will not cause any UI janks
+     * when switching state quickly into either branding location bar or regular toolbar.
+     */
     void showEmptyLocationBar();
 
     /** Show the regular location with URL and Title, with start transition. */

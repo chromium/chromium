@@ -1147,8 +1147,8 @@ public class RootUiCoordinator
 
     /**
      * @return Whether the {@link MerchantTrustSignalsCoordinator} should be initialized in the
-     * context of this coordinator's UI.
-     **/
+     *     context of this coordinator's UI.
+     */
     protected boolean shouldInitializeMerchantTrustSignals() {
         return false;
     }

@@ -527,7 +527,7 @@ public class CreatorCoordinator
 
     /**
      * @return The maximum base view height for sheet content view.
-     * */
+     */
     private int getMaxViewHeight() {
         return mCreatorViewGroup.getHeight();
     }

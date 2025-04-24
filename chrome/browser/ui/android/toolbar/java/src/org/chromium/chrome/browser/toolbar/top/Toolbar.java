@@ -86,8 +86,9 @@ public interface Toolbar {
 
     /**
      * Updates the visibility of the toolbar hairline.
+     *
      * @param isVisible whether or not the hairline should be visible.
-     * */
+     */
     void setBrowsingModeHairlineVisibility(boolean isVisible);
 
     /**

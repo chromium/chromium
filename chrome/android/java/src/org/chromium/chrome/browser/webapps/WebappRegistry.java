@@ -355,11 +355,12 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns the WebAPK PackageName whose manifestId matches the provided one. Returns null
-     * if no matches.
+     * Returns the WebAPK PackageName whose manifestId matches the provided one. Returns null if no
+     * matches.
+     *
      * @param manifestId The manifestId to search for.
      * @return The package name for the WebAPK, or null if one cannot be found.
-     **/
+     */
     public @Nullable String findWebApkWithManifestId(String manifestId) {
         WebappDataStorage storage = getWebappDataStorageForManifestId(manifestId);
         if (storage != null) {

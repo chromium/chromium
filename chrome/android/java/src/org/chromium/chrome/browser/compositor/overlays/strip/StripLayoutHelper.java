@@ -2741,7 +2741,7 @@ public class StripLayoutHelper
         resetDelayedReorderState();
     }
 
-    /** Handle view click * */
+    /** Handle view click */
     @Override
     public void onClick(long time, StripLayoutView view) {
         if (view instanceof StripLayoutTab tab) {

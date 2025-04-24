@@ -52,7 +52,7 @@ public class CompositorAnimator extends Animator {
     /**
      * The scale honoring Settings.Global.ANIMATOR_DURATION_SCALE. Use static to reduce updating.
      * See {@link ValueAnimator}.
-     **/
+     */
     @VisibleForTesting public static float sDurationScale = 1;
 
     /** The {@link CompositorAnimationHandler} running the animation. */

@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.tab_ui.R;
 
-/** Shared utils for {@code Tab<Type>ViewBinder} such as List, Grid, Strip, etc. * */
+/** Shared utils for {@code Tab<Type>ViewBinder} such as List, Grid, Strip, etc. */
 class TabCardViewBinderUtils {
     /**
      * Returns the checkmark level for selection mode.

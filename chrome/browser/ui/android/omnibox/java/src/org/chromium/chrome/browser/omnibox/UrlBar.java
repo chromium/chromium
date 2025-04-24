@@ -141,7 +141,7 @@ public class UrlBar extends AutocompleteEditText {
      */
     private int mOriginEndIndex;
 
-    /** What scrolling action should be taken after the URL bar text changes. * */
+    /** What scrolling action should be taken after the URL bar text changes. */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrollType {

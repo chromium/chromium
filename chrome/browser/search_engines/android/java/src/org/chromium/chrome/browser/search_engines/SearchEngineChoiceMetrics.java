@@ -98,8 +98,9 @@ public class SearchEngineChoiceMetrics {
 
     /**
      * Records the search engine type after the user chooses a different search engine.
+     *
      * @return Whether the search engine was changed.
-     **/
+     */
     public static boolean recordSearchEngineTypeAfterChoice() {
         if (!isSearchEnginePossiblyDifferent()) return false;
 

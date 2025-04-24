@@ -165,7 +165,7 @@ public class CompositorViewHolder extends FrameLayout
     private View mAccessibilityView;
     private CompositorAccessibilityProvider mNodeProvider;
 
-    /** The toolbar control container. **/
+    /** The toolbar control container. */
     private @Nullable ControlContainer mControlContainer;
 
     private boolean mShowingFullscreen;

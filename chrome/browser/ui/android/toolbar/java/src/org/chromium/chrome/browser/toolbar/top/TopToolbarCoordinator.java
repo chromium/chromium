@@ -92,7 +92,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
-    /** Null until {@link #initializeWithNative} is called. * */
+    /** Null until {@link #initializeWithNative} is called. */
     private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
 
     private ToolbarControlContainer mControlContainer;

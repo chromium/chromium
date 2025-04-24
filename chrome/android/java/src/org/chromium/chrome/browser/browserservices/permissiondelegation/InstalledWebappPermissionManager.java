@@ -225,7 +225,7 @@ public class InstalledWebappPermissionManager {
     /**
      * Returns whether the delegate application for the origin has Android location permission, or
      * {@code null} if it does not exist or did not request location permission.
-     **/
+     */
     public static @Nullable Boolean hasAndroidLocationPermission(String packageName) {
         if (packageName == null) return null;
 

@@ -17,8 +17,9 @@ public class TabStateExtractor {
 
     /**
      * Returns an opaque "state" object that can be persisted to storage.
+     *
      * @param tab The {@link Tab} from which to extract the state.
-     **/
+     */
     public static TabState from(Tab tab) {
         if (sTabStatesForTesting != null && sTabStatesForTesting.containsKey(tab.getId())) {
             return sTabStatesForTesting.get(tab.getId());
@@ -48,8 +49,9 @@ public class TabStateExtractor {
 
     /**
      * Returns an object representing the state of the Tab's WebContents.
+     *
      * @param tab The {@link Tab} from which to extract the WebContents state.
-     **/
+     */
     public static WebContentsState getWebContentsState(Tab tab) {
         if (tab.getWebContentsState() != null) {
             return tab.getWebContentsState();

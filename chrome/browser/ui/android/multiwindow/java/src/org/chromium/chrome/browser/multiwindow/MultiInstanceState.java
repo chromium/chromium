@@ -28,10 +28,11 @@ import java.util.List;
 public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListener {
     private static @Nullable MultiInstanceState sInstance;
 
-    /** Observer used to notify multi-instance state change. **/
+    /** Observer used to notify multi-instance state change. */
     public interface MultiInstanceStateObserver {
         /**
          * Called whenever multi-instance state is flipped.
+         *
          * @param inMultiInstanceMode Whether multiple instances are visible on screen.
          */
         void onMultiInstanceStateChanged(boolean inMultiInstanceMode);
