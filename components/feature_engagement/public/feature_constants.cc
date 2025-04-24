@@ -419,6 +419,9 @@ BASE_FEATURE(kIPHLowUserEngagementDetectorFeature,
 BASE_FEATURE(kIPHMicToolbarFeature,
              "IPH_MicToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHMenuAddToGroup,
+             "IPH_MenuAddToGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPageInfoFeature,
              "IPH_PageInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);

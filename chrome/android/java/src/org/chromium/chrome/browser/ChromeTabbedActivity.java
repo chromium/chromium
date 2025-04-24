@@ -3199,11 +3199,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 || id == R.id.add_tab_to_new_group_menu_id) {
             if (!mTabModelSelector.isTabStateInitialized()) return false;
 
+            Profile profile = mTabModelProfileSupplier.get();
             TabGroupModelFilter filter =
                     mTabModelSelector
                             .getTabGroupModelFilterProvider()
                             .getCurrentTabGroupModelFilter();
             if (id == R.id.add_to_group_menu_id) {
+                TrackerFactory.getTrackerForProfile(profile)
+                        .notifyEvent("menu_add_to_group_clicked");
                 if (filter.getTabGroupCount() == 0) {
                     RecordUserAction.record("MobileMenuAddToNewGroup");
                 } else {
@@ -3216,7 +3219,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             filter,
                             mRootUiCoordinator.getBottomSheetController(),
                             getModalDialogManager(),
-                            mTabModelProfileSupplier.get())
+                            profile)
                     .handleAddToGroupAction(currentTab);
         } else if (id == R.id.all_bookmarks_menu_id) {
             getCompositorViewHolderSupplier()

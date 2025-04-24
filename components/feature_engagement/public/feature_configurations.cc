@@ -1004,6 +1004,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 3), 90, 360));
     return config;
   }
+  if (kIPHMenuAddToGroup.name == feature->name) {
+    // Allows an IPH for the main app menu 'Add to Group' entry:
+    // * Only once per year.
+    // * If the user has used chrome for more than 14 days.
+    // * And only if the menu option hasn't been opened in that time.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.trigger = EventConfig("menu_add_to_group_iph_triggered",
+                                 Comparator(EQUAL, 0), 360, 360);
+    config.used = EventConfig("menu_add_to_group_clicked", Comparator(EQUAL, 0),
+                              360, 360);
+    return config;
+  }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
     // A config that allows the web page summary menu item IPH to be shown:
     // * Once per day. 3 times max in 90 days
@@ -1213,10 +1228,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHTabSwitcherAddToGroup.name == feature->name) {
     // Allows an IPH for the 'Add to Group' 3-dot menu entry:
     // * Only once per year.
+    // * If the user has used chrome for more than 14 days.
     // * And only if the menu option hasn't been opened in that time.
     FeatureConfig config;
     config.valid = true;
-    config.availability = Comparator(ANY, 0);
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
     config.session_rate = Comparator(LESS_THAN, 1);
     config.trigger = EventConfig("tab_switcher_add_to_group_iph_triggered",
                                  Comparator(EQUAL, 0), 360, 360);
