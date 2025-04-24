@@ -209,4 +209,75 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterForDeferred) {
             1);
 }
 
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       UseCounterForMultipleRequestsOnePage) {
+  WebFeatureHistogramTester histograms;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Make several requests with JS
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+
+  // Navigate away in order to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  // Expect only one use counter
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestInScope),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       UseCounterForMultipleRequestsTwoPages) {
+  WebFeatureHistogramTester histograms;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Make several requests with JS
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+
+  // Navigate again
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/ensure_authenticated")));
+
+  // Make several more in-scope requests
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+  ASSERT_TRUE(content::ExecJs(web_contents, "fetch('/ensure_authenticated')"));
+
+  // Navigate away in order to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  // Expect two use counters, one for each page load
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestInScope),
+            2);
+}
+
 }  // namespace
