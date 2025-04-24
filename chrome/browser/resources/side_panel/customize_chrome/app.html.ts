@@ -33,14 +33,14 @@ export function getHtml(this: AppElement) {
       </sp-heading>
       <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
     </cr-button>
-     ${this.isSourceTabFirstPartyNtp_ ? html`<hr class="sp-cards-separator">
+     ${this.isSourceTabFirstPartyNtp_() ? html`<hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>
         <h2 slot="heading">$i18n{shortcutsHeader}</h2>
       </sp-heading>
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>`: ''}
-    ${(this.modulesEnabled_ && this.isSourceTabFirstPartyNtp_) ? html`
+    ${(this.modulesEnabled_ && this.isSourceTabFirstPartyNtp_()) ? html`
       <hr class="sp-cards-separator">
       <div id="modules" class="section sp-card">
         <sp-heading hide-back-button>
@@ -77,7 +77,7 @@ export function getHtml(this: AppElement) {
         </div>
       </div>
     ` : ''}
-    ${this.footerEnabled_ ? html`
+    ${(this.footerEnabled_ && this.isSourceTabExtension_()) ? html`
       <hr class="sp-cards-separator">
       <div id="footer" class="section sp-card">
         <sp-heading hide-back-button>

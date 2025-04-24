@@ -72,7 +72,7 @@ class CustomizeChromeInteractiveTest
     extension_loader.LoadExtension(extension_dir.Pack()).get();
   }
 
-  void OpenExtensionNewTabPage() {
+  void OpenNewTabPage() {
     chrome::NewTab(browser());
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -98,8 +98,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
   InstallExtension(browser()->profile());
   RunTestSequence(
       // 2. Open extension new tab page.
-      Do(base::BindLambdaForTesting(
-          [&, this]() { OpenExtensionNewTabPage(); })),
+      Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
       // 3. Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // 4. Check edit theme is enabled in customize chrome side panel.
@@ -107,4 +106,39 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                                  kEditThemeButton),
             WaitForElementToRender(kLocalCustomizeChromeElementId,
                                    kEditThemeButton)));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
+                       ShowsFooterSectionForExtensionNtp) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
+                                    "customize-chrome-footer",
+                                    "#showToggleContainer"};
+  // 1. Load extension that overrides NTP.
+  InstallExtension(browser()->profile());
+  RunTestSequence(
+      // 2. Open extension new tab page.
+      Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
+      // 3. Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // 4. Check that the footer section exists.
+      Steps(
+          WaitForElementExists(kLocalCustomizeChromeElementId, kFooterSection),
+          WaitForElementToRender(kLocalCustomizeChromeElementId,
+                                 kFooterSection)));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
+                       FooterSectionNotShownForNonExtensionNtp) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
+                                    "customize-chrome-footer",
+                                    "#showToggleContainer"};
+  RunTestSequence(
+      // 1. Open non-extension new tab page.
+      Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
+      // 2. Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // 3. Check that the footer section does not exist.
+      EnsureNotPresent(kLocalCustomizeChromeElementId, kFooterSection));
 }
