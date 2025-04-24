@@ -34,7 +34,7 @@ promise_test(async t => {
   const win = await spawnWindow(t, { protocol: 'https', hostname: hostname });
   const nextUrl = win.getExecutorURL({ executor: 'counting-executor.py', protocol: 'https', page: 2 });
 
-  const swUrl = '../../resources/basic-service-worker.js?sw=' + swOption;
+  const swUrl = new URL('../../resources/basic-service-worker.js?sw=' + swOption, location.href).href;
 
   // Register a SW not controlling any pages below, just to confirm such
   // unrelated SWs in the same-origin doesn't affect the behavior.
@@ -61,6 +61,18 @@ promise_test(async t => {
   const headers = await win.execute_script(() => {
     return requestHeaders;
   }, []);
+
+  const controllerUrl = await win.execute_script(() => {
+    return navigator.serviceWorker.controller?.scriptURL;
+  }, []);
+
+  if (swOption === 'no-controller') {
+    assert_equals(controllerUrl, undefined);
+  } else {
+    // The navigated page should be controlled by the ServiceWorker,
+    // regardless of whether prefetch is performed/used.
+    assert_equals(controllerUrl, swUrl);
+  }
 
   // Current Chromium's expected behavior:
   // prefetch works when
