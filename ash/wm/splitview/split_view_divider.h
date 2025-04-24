@@ -148,10 +148,6 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 

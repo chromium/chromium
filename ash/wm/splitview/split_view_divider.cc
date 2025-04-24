@@ -26,6 +26,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -42,9 +43,7 @@ namespace ash {
 
 namespace {
 
-// Inset value for the transient parent, ensuring the divider remains visible
-// and clear of the window resizer border.
-constexpr int kTransientParentInset = chromeos::kResizeOutsideBoundsSize + 1;
+constexpr float kOpacityForTransientDuringResize = 0.5f;
 
 // Returns the allowed range of `divider_position` within `windows`,
 // accounting for the windows' minimum sizes.
@@ -288,6 +287,7 @@ void SplitViewDivider::StartResizeWithDivider(
   }
 
   is_resizing_with_divider_ = true;
+
   EnlargeOrShrinkDivider(/*should_enlarge=*/true);
   previous_event_location_ = location_in_screen;
 
@@ -308,6 +308,12 @@ void SplitViewDivider::StartResizeWithDivider(
                                     wm::WINDOW_MOVE_SOURCE_TOUCH);
 
     window_state->OnDragStarted(window_component);
+  }
+
+  for (auto transient_window : transient_windows_observations_.sources()) {
+    ui::ScopedLayerAnimationSettings settings(
+        transient_window->layer()->GetAnimator());
+    transient_window->layer()->SetOpacity(kOpacityForTransientDuringResize);
   }
 }
 
@@ -495,65 +501,16 @@ void SplitViewDivider::OnWindowDestroying(aura::Window* window) {
   MaybeRemoveObservedWindow(window);
 }
 
-void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
-                                             const gfx::Rect& old_bounds,
-                                             const gfx::Rect& new_bounds,
-                                             ui::PropertyChangeReason reason) {
-  if (is_resizing_with_divider_ &&
-      display::Screen::GetScreen()->InTabletMode() &&
-      base::Contains(observed_windows_, window)) {
-    // Bounds may be changed while we are processing a resize event. In this
-    // case, we don't update the windows transform here, since it will be done
-    // soon anyway. If we are *not* currently processing a resize, it means the
-    // bounds of a window have been updated "async", and we need to update the
-    // window's transform.
-    if (!processing_resize_event_) {
-      // TODO(b/308819668): Remove this reference to `SplitViewController` when
-      // we move `divider_position` to here.
-      const int divider_position =
-          SplitViewController::Get(GetRootWindow())->GetDividerPosition();
-      for (aura::Window* window_to_transform : observed_windows_) {
-        SetWindowTransformDuringResizing(window_to_transform, divider_position);
-      }
-    }
-  }
-
-  // We only care about the bounds change of windows in
-  // |transient_windows_observations_|.
-  if (!transient_windows_observations_.IsObservingSource(window))
-    return;
-
-  // |window|'s transient parent must be one of the windows in
-  // |observed_windows_|.
-  aura::Window* transient_parent = nullptr;
-  for (aura::Window* observed_window : observed_windows_) {
-    if (wm::HasTransientAncestor(window, observed_window)) {
-      transient_parent = observed_window;
-      break;
-    }
-  }
-  DCHECK(transient_parent);
-
-  // Inset the bounds of the `transient_parent` by `kTransientParentInset`
-  // to prevent the snapped window's resize border from obscuring the divider.
-  // This simplifies resizing when a transient window is present.
-  gfx::Rect adjusted_transient_parent_bounds =
-      transient_parent->GetBoundsInScreen();
-  adjusted_transient_parent_bounds.Inset(gfx::Insets(kTransientParentInset));
-  gfx::Rect transient_bounds = window->GetBoundsInScreen();
-  transient_bounds.AdjustToFit(adjusted_transient_parent_bounds);
-
-  window->SetBoundsInScreen(
-      transient_bounds,
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
-}
-
 void SplitViewDivider::OnWindowStackingChanged(aura::Window* window) {
   RefreshStackingOrder();
 }
 
 void SplitViewDivider::OnWindowVisibilityChanged(aura::Window* window,
                                                  bool visible) {
+  if (transient_windows_observations_.IsObservingSource(window) && visible &&
+      is_resizing_with_divider_) {
+    window->layer()->SetOpacity(kOpacityForTransientDuringResize);
+  }
   RefreshStackingOrder();
 }
 
@@ -838,8 +795,15 @@ void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
 }
 
 void SplitViewDivider::StopObservingTransientChild(aura::Window* transient) {
-  if (transient_windows_observations_.IsObservingSource(transient))
+  if (transient_windows_observations_.IsObservingSource(transient)) {
     transient_windows_observations_.RemoveObservation(transient);
+    // Set the opacity back to 1.0f unless the layer's opacity was updated
+    // during resize/removal.
+    if (is_resizing_with_divider_ && transient->layer()->GetTargetOpacity() ==
+                                         kOpacityForTransientDuringResize) {
+      transient->layer()->SetOpacity(1.0f);
+    }
+  }
 }
 
 gfx::Point SplitViewDivider::GetEndDragLocationInScreen(
@@ -871,6 +835,11 @@ void SplitViewDivider::FinishWindowResizing() {
           gfx::PointF(GetEndDragLocationInScreen(window)));
       window_state->DeleteDragDetails();
     }
+  }
+  for (auto transient_window : transient_windows_observations_.sources()) {
+    ui::ScopedLayerAnimationSettings settings(
+        transient_window->layer()->GetAnimator());
+    transient_window->layer()->SetOpacity(1.0f);
   }
 }
 

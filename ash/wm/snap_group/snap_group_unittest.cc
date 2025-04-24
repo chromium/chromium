@@ -5950,10 +5950,6 @@ TEST_F(SnapGroupOverviewTest, BubbleTransientIsVisibleInOverview) {
   bubble_widget0->Show();
   EXPECT_TRUE(wm::HasTransientAncestor(bubble_window0, w0.get()));
 
-  // Verify that the bubble is created inside its anchor widget.
-  EXPECT_TRUE(
-      w0->GetBoundsInScreen().Contains(bubble_window0->GetBoundsInScreen()));
-
   // By default `w1_transient` is `ModalType::kNone`.
   std::unique_ptr<aura::Window> w1_transient(
       CreateTransientChildWindow(w1.get(), gfx::Rect(510, 30, 50, 30)));
@@ -6099,10 +6095,6 @@ TEST_F(SnapGroupDesksTest,
 
   bubble_widget->Show();
   EXPECT_TRUE(wm::HasTransientAncestor(bubble_window, w0.get()));
-
-  // Verify that the bubble is created inside its anchor widget.
-  EXPECT_TRUE(
-      w0->GetBoundsInScreen().Contains(bubble_window->GetBoundsInScreen()));
 
   ASSERT_TRUE(EnterOverview(OverviewEnterExitType::kImmediateEnter));
 
