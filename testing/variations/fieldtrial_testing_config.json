@@ -11562,6 +11562,64 @@
             ]
         }
     ],
+    "HistoryOptInEducationalTip": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithTurnOn",
+                    "params": {
+                        "history_opt_in_educational_tip_param": "0"
+                    },
+                    "enable_features": [
+                        "HistoryOptInEducationalTip"
+                    ]
+                },
+                {
+                    "name": "EnabledWithLetsGo",
+                    "params": {
+                        "history_opt_in_educational_tip_param": "1"
+                    },
+                    "enable_features": [
+                        "HistoryOptInEducationalTip"
+                    ]
+                },
+                {
+                    "name": "EnabledWithContinue",
+                    "params": {
+                        "history_opt_in_educational_tip_param": "2"
+                    },
+                    "enable_features": [
+                        "HistoryOptInEducationalTip"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HistoryPageHistorySyncPromo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithContinue",
+                    "enable_features": [
+                        "HistoryPageHistorySyncPromo",
+                        "HistoryPagePromoCtaStringVariation"
+                    ]
+                },
+                {
+                    "name": "EnabledWithTurnOn",
+                    "enable_features": [
+                        "HistoryPageHistorySyncPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistorySyncAlternativeIllustration": [
         {
             "platforms": [
