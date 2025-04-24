@@ -89,15 +89,19 @@ class PageHandler : public DevToolsDomainHandler,
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
   void DidRunJavaScriptDialog(const GURL& url,
+                              const base::UnguessableToken& frame_id,
                               const std::u16string& message,
                               const std::u16string& default_prompt,
                               JavaScriptDialogType dialog_type,
                               bool has_non_devtools_handlers,
                               JavaScriptDialogCallback callback);
   void DidRunBeforeUnloadConfirm(const GURL& url,
+                                 const base::UnguessableToken& frame_id,
                                  bool has_non_devtools_handlers,
                                  JavaScriptDialogCallback callback);
-  void DidCloseJavaScriptDialog(bool success, const std::u16string& user_input);
+  void DidCloseJavaScriptDialog(const base::UnguessableToken& frame_id,
+                                bool success,
+                                const std::u16string& user_input);
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
   void DidStartNavigating(FrameTreeNode& ftn,

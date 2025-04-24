@@ -9804,6 +9804,8 @@ domain Page
   # closed.
   event javascriptDialogClosed
     parameters
+      # Frame id.
+      experimental FrameId frameId
       # Whether dialog was confirmed.
       boolean result
       # User input in case of prompt.
@@ -9815,6 +9817,8 @@ domain Page
     parameters
       # Frame url.
       string url
+      # Frame id.
+      experimental FrameId frameId
       # Message that will be displayed by the dialog.
       string message
       # Dialog type.

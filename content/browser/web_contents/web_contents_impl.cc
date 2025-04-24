@@ -8646,7 +8646,8 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   for (auto* handler : page_handlers) {
     handler->DidRunJavaScriptDialog(
-        render_frame_host->GetLastCommittedURL(), normalized_message,
+        render_frame_host->GetLastCommittedURL(),
+        render_frame_host->devtools_frame_token(), normalized_message,
         default_prompt, dialog_type, has_non_devtools_handlers,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
@@ -8749,7 +8750,8 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   GURL frame_url = render_frame_host->GetLastCommittedURL();
   for (auto* handler : page_handlers) {
     handler->DidRunBeforeUnloadConfirm(
-        frame_url, has_non_devtools_handlers,
+        frame_url, render_frame_host->devtools_frame_token(),
+        has_non_devtools_handlers,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
 
@@ -10510,7 +10512,8 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
   for (auto* handler : page_handlers) {
-    handler->DidCloseJavaScriptDialog(success, user_input);
+    handler->DidCloseJavaScriptDialog(rfh->devtools_frame_token(),
+                                      success, user_input);
   }
 
   is_showing_javascript_dialog_ = false;
