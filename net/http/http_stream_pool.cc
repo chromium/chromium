@@ -27,6 +27,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/base/session_usage.h"
+#include "net/base/tracing.h"
 #include "net/http/alternative_service.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
@@ -232,31 +233,43 @@ bool HttpStreamPool::EnsureTotalActiveStreamCountBelowLimit() const {
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
   CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_idle_stream_count_;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalIdleStreams",
+                total_idle_stream_count_);
 }
 
 void HttpStreamPool::DecrementTotalIdleStreamCount() {
   CHECK_GT(total_idle_stream_count_, 0u);
   --total_idle_stream_count_;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalIdleStreams",
+                total_idle_stream_count_);
 }
 
 void HttpStreamPool::IncrementTotalHandedOutStreamCount() {
   CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_handed_out_stream_count_;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalHandedOutStreams",
+                total_handed_out_stream_count_);
 }
 
 void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
   CHECK_GT(total_handed_out_stream_count_, 0u);
   --total_handed_out_stream_count_;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalHandedOutStreams",
+                total_handed_out_stream_count_);
 }
 
 void HttpStreamPool::IncrementTotalConnectingStreamCount() {
   CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_connecting_stream_count_;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalConnectingStreams",
+                total_connecting_stream_count_);
 }
 
 void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
   CHECK_GE(total_connecting_stream_count_, amount);
   total_connecting_stream_count_ -= amount;
+  TRACE_COUNTER("net.stream", "HttpStreamPoolTotalConnectingStreams",
+                total_connecting_stream_count_);
 }
 
 void HttpStreamPool::OnIPAddressChanged() {
