@@ -12,7 +12,8 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+class BrowserWindowInterface;
 
 namespace privacy_sandbox {
 
@@ -31,7 +32,8 @@ class DesktopViewManagerInterface {
   virtual NavigationHandler* GetNavigationHandler() = 0;
   // Called by navigation handler when a suitable URL has
   // been found. All suitable URLs are chrome-owned.
-  virtual void HandleChromeOwnedPageNavigation() = 0;
+  virtual void HandleChromeOwnedPageNavigation(
+      BrowserWindowInterface* browser_interface) = 0;
 };
 
 class DesktopViewManager : public DesktopViewManagerInterface {
@@ -59,7 +61,8 @@ class DesktopViewManager : public DesktopViewManagerInterface {
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
   // DesktopViewManagerInterface
   NavigationHandler* GetNavigationHandler() override;
-  void HandleChromeOwnedPageNavigation() override;
+  void HandleChromeOwnedPageNavigation(
+      BrowserWindowInterface* browser_interface) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -76,6 +76,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window:browser_window",
+      "//components/tabs:public",
       "//content/public/browser",
     ]
   }
@@ -151,10 +152,7 @@ source_set("unit_tests") {
 
   # (Desktop Only)
   if (!is_android) {
-    sources += [
-      "desktop_entrypoint_handlers_unittest.cc",
-      "desktop_view_manager_unittest.cc",
-    ]
+    sources += [ "desktop_view_manager_unittest.cc" ]
     deps += [ ":desktop_view_manager" ]
   }
 }

@@ -8,6 +8,7 @@
 
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace privacy_sandbox {
 
@@ -109,7 +110,8 @@ NavigationHandler* DesktopViewManager::GetNavigationHandler() {
   return navigation_handler_.get();
 }
 
-void DesktopViewManager::HandleChromeOwnedPageNavigation() {
+void DesktopViewManager::HandleChromeOwnedPageNavigation(
+    BrowserWindowInterface* browser_interface) {
   // TODO(crbug.com/408016824): Call MaybeShowView.
 }
 
