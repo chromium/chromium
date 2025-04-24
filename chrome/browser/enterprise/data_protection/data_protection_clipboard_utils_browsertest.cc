@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -50,7 +52,11 @@ class DataControlsClipboardUtilsBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  DataControlsClipboardUtilsBrowserTest() = default;
+  DataControlsClipboardUtilsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kLocalIpAddressInEvents);
+  }
+
   ~DataControlsClipboardUtilsBrowserTest() override = default;
 
   bool machine_scope() const { return GetParam(); }
@@ -72,6 +78,7 @@ class DataControlsClipboardUtilsBrowserTest
  protected:
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       event_report_validator_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -110,7 +117,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_SameSource) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -165,11 +174,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.WaitForDialogToInitialize();
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteBlockedByDataControls_DestinationRule) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -224,11 +236,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.WaitForDialogToInitialize();
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteWarnedByDataControls_BypassedDestinationRule) {
+  base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -278,11 +293,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       MakeClipboardPasteData("text", "image", {}), future.GetCallback());
 
   helper.WaitForDialogToInitialize();
+  run_loop_warn.Run();
 
   // The first warn event should already be reported before the dialog has been
   // initialized, so it can be reassigned so that the bypass event can be
   // validated.
+  base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -313,11 +331,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_EQ(paste_data->text, u"text");
   EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
             "image");
+  run_loop_bypass.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteWarnedByDataControls_CanceledDestinationRule) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -377,6 +398,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
+  run_loop.Run();
 }
 
 // ChromeOS requires extra boilerplate to run this test, and since copy-pasting
@@ -564,7 +586,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteReportedByDataControls_DestinationRule) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -619,6 +643,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_EQ(paste_data->text, u"text");
   EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
             "image");
+  run_loop.Run();
 }
 
 // ChromeOS requires extra boilerplate to run this test, and since copy-pasting
@@ -708,7 +733,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -761,10 +788,13 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -819,11 +849,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
   helper.WaitForDialogToClose();
 
   EXPECT_FALSE(future.IsReady());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyWarnedThenCanceled) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -887,11 +920,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyWarnedThenCanceled_OsClipboardDestination) {
+  base::RunLoop run_loop;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -958,11 +994,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyWarnedThenBypassed) {
+  base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -1014,6 +1053,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   helper.WaitForDialogToInitialize();
 
+  run_loop_warn.Run();
+
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
@@ -1021,7 +1062,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // The first warn event should already be reported before the dialog has been
   // initialized, so it can be reassigned so that the bypass event can be
   // validated.
+  base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -1048,11 +1091,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop_bypass.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        CopyWarnedThenBypassed_OsClipboardDestination) {
+  base::RunLoop run_loop_warn;
   auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -1110,11 +1156,14 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
+  run_loop_warn.Run();
 
   // The first warn event should already be reported before the dialog has been
   // initialized, so it can be reassigned so that the bypass event can be
   // validated.
+  base::RunLoop run_loop_bypass;
   event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
   event_validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
       kGoogleUrl,
@@ -1141,6 +1190,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop_bypass.Run();
 }
 
 }  // namespace enterprise_data_protection
