@@ -11,8 +11,12 @@ if (is_linux) {
     deps = [
       "//base",
       "//mojo/public/cpp/system",
+      "//net",
+      "//remoting/base",
       "//remoting/client/common",
       "//remoting/resources",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
     ]
   }
 }

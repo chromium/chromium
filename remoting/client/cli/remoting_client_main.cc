@@ -9,10 +9,16 @@
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
+#include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/url_request_context_getter.h"
 #include "remoting/client/common/remoting_client.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/transitional_url_loader_factory_owner.h"
 
 int main(int argc, char const* argv[]) {
   base::AtExitManager exitManager;
@@ -45,13 +51,28 @@ int main(int argc, char const* argv[]) {
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 
-  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
-  remoting::RemotingClient remoting_client;
-
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("RemotingClient");
   mojo::core::Init();
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("RemotingClient");
+
+  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
+      new remoting::URLRequestContextGetter(io_task_executor.task_runner()));
+  network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
+      url_request_context_getter, /*is_trusted=*/false);
+
+  base::RunLoop run_loop;
+
+  remoting::RemotingClient remoting_client(
+      base::BindPostTask(io_task_executor.task_runner(),
+                         run_loop.QuitClosure()),
+      url_loader_factory_owner.GetURLLoaderFactory());
 
   remoting_client.StartSession(support_id, access_token);
+
+  run_loop.Run();
+
+  // Block until tasks blocking shutdown have completed their execution.
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return 0;
 }
