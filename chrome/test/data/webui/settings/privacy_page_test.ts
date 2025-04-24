@@ -524,6 +524,9 @@ suite(`IncognitoTrackingProtectionsSubpage`, function() {
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableIncognitoTrackingProtections: true,
+    });
     resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');

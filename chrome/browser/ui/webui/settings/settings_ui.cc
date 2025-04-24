@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -517,9 +518,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
 
   // ACT UX
-  bool ipp_ux = base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
-  bool fpp_ux = base::FeatureList::IsEnabled(
-      privacy_sandbox::kFingerprintingProtectionUx);
+  bool is_canary = chrome::GetChannel() == version_info::Channel::CANARY;
+  bool ipp_ux = is_canary &&
+                base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
+  bool fpp_ux = is_canary && base::FeatureList::IsEnabled(
+                                 privacy_sandbox::kFingerprintingProtectionUx);
   html_source->AddBoolean("isIpProtectionUxEnabled", ipp_ux);
   html_source->AddBoolean("isFingerprintingProtectionUxEnabled", fpp_ux);
   html_source->AddBoolean("enableIncognitoTrackingProtections",

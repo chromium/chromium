@@ -28,6 +28,9 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
   }
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isFingerprintingProtectionUxEnabled: true,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
