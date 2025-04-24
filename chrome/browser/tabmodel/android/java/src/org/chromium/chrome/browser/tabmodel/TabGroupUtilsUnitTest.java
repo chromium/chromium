@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -205,6 +207,35 @@ public class TabGroupUtilsUnitTest {
     @Test
     public void testRegroupTabs_CollapseStateNotApplied() {
         verifyRegroupTabs(/* shouldApplyCollapse= */ false);
+    }
+
+    @Test
+    public void testFindSingleTabGroupIfPresent_oneTabNotInGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        assertNull(TabGroupUtils.findSingleTabGroupIfPresent(List.of(mTab1)));
+    }
+
+    @Test
+    public void testFindSingleTabGroupIfPresent_oneTabInGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        assertEquals(TAB_GROUP_ID1, TabGroupUtils.findSingleTabGroupIfPresent(List.of(mTab1)));
+    }
+
+    @Test
+    public void testFindSingleTabGroupIfPresent_sameGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+
+        assertEquals(
+                TAB_GROUP_ID1, TabGroupUtils.findSingleTabGroupIfPresent(List.of(mTab1, mTab2)));
+    }
+
+    @Test
+    public void testFindSingleTabGroupIfPresent_notInSameGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID2);
+
+        assertNull(TabGroupUtils.findSingleTabGroupIfPresent(List.of(mTab1, mTab2)));
     }
 
     private void verifyRegroupTabs(boolean shouldApplyCollapse) {

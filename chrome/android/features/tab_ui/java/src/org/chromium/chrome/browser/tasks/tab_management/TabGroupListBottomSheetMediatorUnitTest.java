@@ -300,6 +300,27 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     }
 
     @Test
+    public void testPopulateList_tabsAreSubsetOfSameGroup() {
+        mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
+
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(mToken1);
+
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        verify(mTabGroupSyncService).getAllGroupIds();
+
+        // New group row, plus one row representing an existing group. The rest are filtered out.
+        assertEquals(2, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(1).type);
+
+        assertEquals(
+                mSavedTabGroup3.updateTimeMs,
+                mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+    }
+
+    @Test
     public void testCreateNewGroup() {
         when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
         when(mDelegate.requestShowContent()).thenReturn(true);
@@ -373,7 +394,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabGroupSyncService,
                         mBottomSheetController,
                         mDelegate,
-                        /* supportsShowNewGroup= */ false);
+                        /* supportsShowNewGroup= */ true);
         when(mDelegate.requestShowContent()).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(mToken1);
         when(mTab2.getTabGroupId()).thenReturn(mToken1);
@@ -402,7 +423,8 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         List<Tab> list = List.of(mTab1);
         mMediator.requestShowContent(list);
-        assertEquals(2, mModelList.size());
+        assertEquals(1, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
     }
 
     @Test
@@ -425,5 +447,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         List<Tab> list = Arrays.asList(mTab1, mTab2);
         mMediator.requestShowContent(list);
         assertEquals(3, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
     }
 }

@@ -201,4 +201,21 @@ public class TabGroupUtils {
             return selectedTab != null;
         }
     }
+
+    /**
+     * Checks to see if the tabs in a list of tabs are a subset of the same tab group.
+     *
+     * @return The tab group id if they are, null otherwise.
+     */
+    public static @Nullable Token findSingleTabGroupIfPresent(List<Tab> tabs) {
+        @Nullable Token tabGroupId = null;
+        for (Tab tab : tabs) {
+            if (tabGroupId == null) {
+                tabGroupId = tab.getTabGroupId();
+            } else if (!Objects.equals(tabGroupId, tab.getTabGroupId())) {
+                return null;
+            }
+        }
+        return tabGroupId;
+    }
 }

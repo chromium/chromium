@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.findSingleTabGroupIfPresent;
+
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -27,6 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -119,19 +122,24 @@ public class TabGroupListBottomSheetMediator {
      */
     private void populateList(List<Tab> tabs) {
         mModelList.clear();
-        if (shouldShowNewGroupRow(tabs)) {
+        @Nullable Token groupToNotBeIncluded = findSingleTabGroupIfPresent(tabs);
+        if (shouldShowNewGroupRow(tabs, groupToNotBeIncluded)) {
             insertNewGroupRow(tabs);
         }
 
         if (mTabGroupSyncService != null) {
-            populateRegularTabGroups(tabs);
+            populateRegularTabGroups(tabs, groupToNotBeIncluded);
         } else {
-            populateIncognitoTabGroups(tabs);
+            populateIncognitoTabGroups(tabs, groupToNotBeIncluded);
         }
     }
 
-    private void populateIncognitoTabGroups(List<Tab> tabs) {
+    private void populateIncognitoTabGroups(List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         for (Token groupId : mFilter.getAllTabGroupIds()) {
+            if (Objects.equals(groupToNotBeIncluded, groupId)) {
+                continue;
+            }
+
             LocalTabGroupListBottomSheetRowMediator rowMediator =
                     new LocalTabGroupListBottomSheetRowMediator(
                             groupId,
@@ -145,13 +153,19 @@ public class TabGroupListBottomSheetMediator {
         }
     }
 
-    private void populateRegularTabGroups(List<Tab> tabs) {
+    private void populateRegularTabGroups(List<Tab> tabs, @Nullable Token groupToFilter) {
         GroupWindowChecker windowChecker = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =
                 windowChecker.getSortedGroupList(
                         this::shouldShowGroupByState,
                         (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
+
         for (SavedTabGroup tabGroup : sortedTabGroups) {
+            if (tabGroup.localId != null
+                    && Objects.equals(groupToFilter, tabGroup.localId.tabGroupId)) {
+                continue;
+            }
+
             TabGroupListBottomSheetRowMediator rowMediator =
                     new TabGroupListBottomSheetRowMediator(
                             tabGroup,
@@ -199,16 +213,35 @@ public class TabGroupListBottomSheetMediator {
         mTabGroupCreationCallback.onTabGroupCreated(tabGroupId);
     }
 
-    private boolean shouldShowNewGroupRow(List<Tab> tabs) {
+    /**
+     * Whether to show the new group row.
+     *
+     * <p>Returns true if {@code mShowNewGroup} is true and if:
+     *
+     * <ul>
+     *   <li>None of the tabs are grouped.
+     *   <li>There is a single tab to be moved and it is not already in a group or said tab is being
+     *       filtered.
+     *   <li>The tabs are members of multiple groups.
+     * </ul>
+     *
+     * @param tabs The tabs to be added to a tab group.
+     * @param groupToNotBeIncluded The group to not be included in the final tab group list.
+     */
+    private boolean shouldShowNewGroupRow(List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         Set<Token> groupIds = new HashSet<>();
         for (Tab tab : tabs) {
             if (tab.getTabGroupId() != null) {
                 groupIds.add(tab.getTabGroupId());
             }
         }
+
         int numGroups = groupIds.size();
-        return (numGroups == 0 || (numGroups == 1 && tabs.size() <= 1) || numGroups > 1)
-                && mShowNewGroup;
+        boolean isSingleTabToBeMoved = tabs.size() == 1;
+        boolean singleGroupPredicate =
+                numGroups == 1 && (isSingleTabToBeMoved || groupToNotBeIncluded != null);
+
+        return (numGroups == 0 || singleGroupPredicate || numGroups > 1) && mShowNewGroup;
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
