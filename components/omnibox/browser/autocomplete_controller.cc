@@ -1820,7 +1820,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
         if (template_url) {
           i->description_class.emplace_back(ACMatchClassification(
               (i->description).size(), ACMatchClassification::DIM));
-          // TODO(crbug.com/407610885): Localize the people suggestion metadata.
           i->description +=
               u" - " + l10n_util::GetStringFUTF16(
                            IDS_PERSON_SUGGESTION_DESCRIPTION,
