@@ -604,6 +604,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       summary="Standalone CVC form for a card saved on file"/>
 </variants>
 
+<variants name="AutofillImage">
+  <variant name="CreditCardImage" summary="credit card image"/>
+  <variant name="PixAccountImage" summary="Pix account image"/>
+</variants>
+
 <variants name="AutofillPopupInteractionLevel">
   <variant name="0"
       summary="a root popup suggestion(s) was either shown or interacted with
@@ -3548,20 +3553,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="Autofill.PaymentsSigninState"/>
 </histogram>
 
-<histogram name="Autofill.ImageFetcher.CreditCardArt.Result"
-    enum="BooleanSuccess" expires_after="2025-07-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>vishwasuppoor@google.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the image fetching result for a credit card with card art. Logged
-    once for each credit card with card art either when the fetching was
-    successful or when a preset maximum number of fetching attempts were made.
-    Logs true if the image was fetched successfully, and false if the image
-    fetching was unsuccessful after a preset maximum number of attempts.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"
     expires_after="2025-10-19">
   <owner>vishwasuppoor@chromium.org</owner>
@@ -3581,6 +3572,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Record the image fetch result of one image. If true, then the image was
     fetched successfully.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ImageFetcher.{AutofillImage}.OverallResultOnBrowserStart"
+    enum="BooleanSuccess" expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>vishwasuppoor@google.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the image fetching overall result for a {AutofillImage} on browser
+    startup. Logged once for each {AutofillImage} either when the fetching was
+    successful or when a preset maximum number of fetching attempts were made.
+    Logs true if the image was fetched successfully, and false if the image
+    fetching was unsuccessful after a preset maximum number of attempts.
+  </summary>
+  <token key="AutofillImage" variants="AutofillImage"/>
 </histogram>
 
 <histogram name="Autofill.iOS.FormActivity.SendRatio" units="%"

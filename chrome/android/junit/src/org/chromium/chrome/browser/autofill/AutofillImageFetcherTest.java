@@ -114,14 +114,14 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImageLarge =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecsLarge, true);
-        // Both generic and credit card art image fetcher histograms should log success twice (once
-        // for each size).
+        // Both generic and credit card art specific histograms should log success twice (once for
+        // each size).
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 2)
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart",
                                 /* value= */ true,
                                 /* times= */ 2)
                         .build();
@@ -182,14 +182,14 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        // Both generic and credit card art image fetcher histograms should log failure. Since
-        // fetching is attempted again, the generic histogram should log failure twice.
+        // Both generic and credit card art specific histograms should log failure. Since fetching
+        // is attempted again, the generic histogram should log failure twice.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart",
                                 /* value= */ false,
                                 /* times= */ 1)
                         .build();
@@ -237,8 +237,8 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecs, true);
-        // The credit card art image fetcher histogram should log success. Since image fetching
-        // succeeded after initially failing, the generic histogram should log both failure and
+        // The credit card art specific histogram should log success. Since image fetching succeeded
+        // after initially failing, the generic histogram should log both failure and
         // success.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
@@ -247,7 +247,7 @@ public class AutofillImageFetcherTest {
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart",
                                 /* value= */ true,
                                 /* times= */ 1)
                         .build();
@@ -321,11 +321,15 @@ public class AutofillImageFetcherTest {
         GURL imageCacheKey =
                 AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(TEST_IMAGE_URL);
         Bitmap treatedImage = AutofillImageFetcherUtils.treatPixAccountImage(TEST_IMAGE);
-        // Success histograms should be logged for both images.
+        // Both generic and Pix account image specific histograms should log success.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart",
+                                /* value= */ true,
+                                /* times= */ 1)
                         .build();
 
         mAutofillImageFetcher.prefetchPixAccountImages(new GURL[] {TEST_IMAGE_URL});
@@ -377,11 +381,16 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        // Failure histogram should be logged twice since fetching is attempted again.
+        // Both generic and Pix account image specific histograms should log failure. Since fetching
+        // is attempted again, the generic histogram should log failure twice.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart",
+                                /* value= */ false,
+                                /* times= */ 1)
                         .build();
 
         mAutofillImageFetcher.prefetchPixAccountImages(new GURL[] {TEST_IMAGE_URL});
@@ -421,14 +430,19 @@ public class AutofillImageFetcherTest {
         GURL imageCacheKey =
                 AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(TEST_IMAGE_URL);
         Bitmap treatedImage = AutofillImageFetcherUtils.treatPixAccountImage(TEST_IMAGE);
-        // Failure and success histogram should be logged once each since fetching is successful on
-        // retry.
+        // The Pix account image specific histogram should log success. Since image fetching
+        // succeeded after initially failing, the generic histogram should log both failure and
+        // success.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart",
+                                /* value= */ true,
+                                /* times= */ 1)
                         .build();
 
         mAutofillImageFetcher.prefetchPixAccountImages(new GURL[] {TEST_IMAGE_URL});

@@ -42,7 +42,12 @@ public class AutofillImageFetcher {
     // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link
     // #MAX_FETCH_ATTEMPTS} attempts.
     private static final String CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM =
-            "Autofill.ImageFetcher.CreditCardArt.Result";
+            "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart";
+    // Logs the overall success rate of fetching Pix account images. For a given Pix account image
+    // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link
+    // #MAX_FETCH_ATTEMPTS} attempts.
+    private static final String PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
+            "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart";
 
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
@@ -241,12 +246,17 @@ public class AutofillImageFetcher {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
         if (bitmap != null) {
+            RecordHistogram.recordBooleanHistogram(
+                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ true);
+
             mImagesCache.put(urlToCache, AutofillImageFetcherUtils.treatPixAccountImage(bitmap));
             return;
         }
 
         // Image fetching failed, and max retry attempts reached.
         if (mFetchAttemptCounter.getOrDefault(urlToCache, 0) >= MAX_FETCH_ATTEMPTS) {
+            RecordHistogram.recordBooleanHistogram(
+                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ false);
             return;
         }
 
