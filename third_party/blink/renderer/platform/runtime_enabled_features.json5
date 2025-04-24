@@ -4459,7 +4459,7 @@
     },
     {
       name: "SvgTransformOnNestedSvgElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
