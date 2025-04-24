@@ -26,7 +26,7 @@
 <translation id="1011003645819296594">Gestoorde toestelle</translation>
 <translation id="1011355516189274711">Teks-na-spraak-volume</translation>
 <translation id="1011431628606634753">Verander jou terugstel-PIN vir Google Wagwoordbestuurder</translation>
-<translation id="1012794136286421601">Jou Dokumente-, Blaaie-, Skyfies- en Sketse-lêers word tans gesinkroniseer. Maak die Google Drive-program oop om hulle aanlyn of vanlyn te gebruik.</translation>
+<translation id="1012794136286421601">Jou Dokumente-, Blaaie-, Skyfies- en Sketse-lêers word tans gesinkroniseer. Maak die Google Drive-app oop om hulle aanlyn of vanlyn te gebruik.</translation>
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Wysig vouernaam</translation>
@@ -1950,7 +1950,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2326583548923775947">Dit is nie ’n Google-rekening nie. Items wat jy in Chrome stoor, sal nie op ander toestelle beskikbaar wees nie.</translation>
 <translation id="2326906096734221931">Maak appinstellings oop</translation>
 <translation id="2326931316514688470">Herlaai program</translation>
-<translation id="2327492829706409234">Aktiveer program</translation>
+<translation id="2327492829706409234">Aktiveer app</translation>
 <translation id="2327920026543055248">Voer karakter <ph name="CHARACTER" /> van <ph name="TOTAL" /> in</translation>
 <translation id="2328137272841210255">Stel jou PIN terug</translation>
 <translation id="2328474416100889417">Almal sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en alle uitnodigingskakels sal afgeskakel word</translation>
@@ -1983,7 +1983,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2349610121459545414">Hou aan om vir hierdie werf toegang tot jou ligging te gee</translation>
 <translation id="2349896577940037438">As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word. By account.google.com kan jy jou data sien, dit uitvee en jou rekeninginstellings verander.</translation>
 <translation id="2350133097354918058">Is herlaai</translation>
-<translation id="2350182423316644347">Begin tans program …</translation>
+<translation id="2350182423316644347">Begin tans app …</translation>
 <translation id="235028206512346451">Jou skerm sal outomaties sluit wanneer jy van jou skerm af wegbeweeg. Jou skerm sal langer wakker bly wanneer jy voor jou toestel is. Jou skerm sal slaap pleks van sluit as jy nie ’n sluitskerm gebruik nie.</translation>
 <translation id="2351923523007389195">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel <ph name="LINK_BEGIN" />stelselliggingtoegang<ph name="LINK_END" /> aan.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
@@ -3399,7 +3399,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3371140690572404006">USB C-toestel (voorste poort aan regterkant)</translation>
 <translation id="3371351218553893534">Reël is te lank: <ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">Op ander toestelle</translation>
-<translation id="337286756654493126">Lees vouers wat jy in die program oopmaak</translation>
+<translation id="337286756654493126">Lees vouers wat jy in die app oopmaak</translation>
 <translation id="3373059063088819384">Maak in leesmodus oop</translation>
 <translation id="3373196968211632036">Steam vir Chromebook (Beta) is nie vir kinders se Google-rekeninge beskikbaar nie</translation>
 <translation id="3373701465337594448">Indien dit aan is, verskyn ’n lys werwe wat jy besoek wat jou belangstellings raai hier</translation>
@@ -3846,7 +3846,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3685598397738512288">USB-voorkeure in Linux</translation>
 <translation id="3687598459967813435">Laat altyd kennisgewings van <ph name="WEBSITE" /> af toe</translation>
 <translation id="368789413795732264">Kon nie die lêer skryf nie: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688507211863392146">Skryf na lêers en vouers wat jy in die program oopmaak</translation>
+<translation id="3688507211863392146">Skryf na lêers en vouers wat jy in die app oopmaak</translation>
 <translation id="3688526734140524629">Verander kanaal</translation>
 <translation id="3688578402379768763">Op datum</translation>
 <translation id="3688794912214798596">Verander tale …</translation>
@@ -4955,7 +4955,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4437947179446780764">Voeg gepasmaakte DNS-diensverskaffer by</translation>
 <translation id="4438043733494739848">Deursigtig</translation>
 <translation id="4439157218765614426">Verbied deur beleid.</translation>
-<translation id="4441124369922430666">Wil jy hierdie program outomaties begin wanneer die masjien aanskakel?</translation>
+<translation id="4441124369922430666">Wil jy hierdie app outomaties begin wanneer die masjien aanskakel?</translation>
 <translation id="4441147046941420429">Verwyder jou sekuriteitsleutel uit jou toestel, sit dit weer in en raak daaraan om voort te gaan</translation>
 <translation id="444134486829715816">Vou uit …</translation>
 <translation id="4441928470323187829">Vasgespeld deur jou administrateur</translation>
@@ -6070,7 +6070,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5244466461749935369">Hou dit vir eers</translation>
 <translation id="5244474230056479698">Sinkroniseer tans na <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Begin met 'n skoolrekening</translation>
-<translation id="5246282308050205996"><ph name="APP_NAME" /> het omgeval. Klik hierdie ballon om die program te herbegin.</translation>
+<translation id="5246282308050205996"><ph name="APP_NAME" /> het omgeval. Klik hierdie ballon om die app te herbegin.</translation>
 <translation id="5247051749037287028">Toestelnaam (opsioneel)</translation>
 <translation id="5247243947166567755">Kies <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Die blaaier het ineengestort voordat die aflaai voltooi is.</translation>
@@ -6097,7 +6097,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5262784498883614021">Koppel outomaties aan netwerk</translation>
 <translation id="5263656105659419083">Klik Speld vas bo regs om maklik na die kantpaneel toe terug te gaan</translation>
 <translation id="5264148714798105376">Dit kan 'n minuut of wat neem.</translation>
-<translation id="5264252276333215551">Koppel asseblief aan die internet om jou program in kioskmodus te begin.</translation>
+<translation id="5264252276333215551">Koppel asseblief aan die internet om jou app in kioskmodus te begin.</translation>
 <translation id="5265797726250773323">Kon nie installeer nie</translation>
 <translation id="5266113311903163739">Sertifiseringoutoriteit-invoerfout</translation>
 <translation id="526622169288322445">Meer handelinge vir <ph name="ADDRESS_SUMMARY" /></translation>
@@ -6774,7 +6774,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5773047469207327552">Verstel helderheid op grond van jou omgewing</translation>
 <translation id="577313026359983030">My uitbreidings</translation>
 <translation id="5773628847865626753">lanseerder + ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="5774295353725270860">Maak Lêers-program oop</translation>
+<translation id="5774295353725270860">Maak Lêers-app oop</translation>
 <translation id="5775777649329475570">Verwyder Google Play- en Android-apps?</translation>
 <translation id="5775863968701268310">Bestuur Google Play-voorkeure</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Stelselverstek)</translation>
@@ -7236,7 +7236,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="609942571968311933">Teks is van <ph name="DEVICE_NAME" /> af gekopieer</translation>
 <translation id="6099766472403716061">Laat <ph name="HOST" /> altyd toe om jou MIDI-toestelle te beheer en te herprogrammeer</translation>
 <translation id="6100736666660498114">Begin kieslys</translation>
-<translation id="6101226222197207147">Nuwe program bygevoeg (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="6101226222197207147">Nuwe app bygevoeg (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Hierdie lêer is deur Gevorderde Beskerming geblokkeer.</translation>
 <translation id="6103681770816982672">Waarskuwing: jy skakel tans na ontwikkelaarkanaal oor</translation>
 <translation id="610395411842312282">Groepeer twee vensters langs mekaar</translation>
@@ -7778,7 +7778,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-handtekening met SHA-256</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />” wil die volgende app op hierdie toestel installeer:}other{“<ph name="APP_NAME" />” wil die volgende apps op hierdie toestel installeer:}}</translation>
 <translation id="6508248480704296122">Soortgelyk aan <ph name="NAME_PH" /></translation>
-<translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
+<translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">Herbegin jou Chromebook en probeer weer</translation>
 <translation id="6511827214781912955">Oorweeg dit om <ph name="FILENAME" /> uit te vee sodat ander wat hierdie toestel gebruik, nie jou wagwoorde kan sien nie</translation>
 <translation id="6512759338201777379">Gegenereerde prent <ph name="INDEX" /> van <ph name="SUBJECT" />, met <ph name="MOOD" />-luim.</translation>
@@ -10698,7 +10698,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8563043098557365232">Word net vir stelseldienste toegelaat</translation>
 <translation id="8564220755011656606">Kan nie toegang tot mikrofoon verkry nie</translation>
 <translation id="8565021320663436446">Verwyder <ph name="MEMBER_FULL_NAME" />?</translation>
-<translation id="8565650234829130278">Het probeer om program af te gradeer.</translation>
+<translation id="8565650234829130278">Het probeer om app af te gradeer.</translation>
 <translation id="8566916288687510520">Nuwe wagwoord ontvang</translation>
 <translation id="8569673829373920831">Meer oor <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Geen bestemmings gevind nie</translation>
@@ -10741,7 +10741,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8600362954032151088">Bestuur jou wagwoorde en toegangsleutels in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8601206103050338563">TLS WWW-kliëntstawing</translation>
 <translation id="8602674530529411098">Apps (Beta)</translation>
-<translation id="8602851771975208551">'n Ander program op jou rekenaar het 'n program bygevoeg wat Chrome se werkwyse kan verander.</translation>
+<translation id="8602851771975208551">'n Ander program op jou rekenaar het 'n app bygevoeg wat Chrome se werkwyse kan verander.</translation>
 <translation id="8605428685123651449">SQLite-geheue</translation>
 <translation id="8607171490667464784">Terwyl onaktief en battery gebruik word</translation>
 <translation id="8607828412110648570">Maak seker dat jou Bluetooth-toestel in saambindmodus en naby is. Bind net saam met toestelle wat jy vertrou. Saamgebinde toestelle is vir alle rekeninge op hierdie Chromebook sigbaar. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10753,7 +10753,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8613504115484579584">Aanmeldmetodes</translation>
 <translation id="8613645710357126807">Mag nie uitbreidings gebruik nie</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> is te groot vir 'n sekuriteitkontrole. Jy kan lêers van tot 50 MB oopmaak.</translation>
-<translation id="8615618338313291042">Incognito-program: <ph name="APP_NAME" /></translation>
+<translation id="8615618338313291042">Incognito-app: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Voeg <ph name="CONTACT_NAME" /> by jou kontakte</translation>
 <translation id="8617601976406256334">Vee werfdata en toestemmings uit vir <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Veiligeverbinding-ID: <ph name="CONNECTION_ID" /></translation>
@@ -11478,7 +11478,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="910000385680858937">Toegelaat – <ph name="PERMISSION_DETAILS" />. Koppel ’n mikrofoon aan jou toestel.</translation>
 <translation id="9100416672768993722">Druk <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Spasiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> om oor te skakel na die invoermetode wat laaste gebruik is</translation>
 <translation id="9100765901046053179">Gevorderde instellings</translation>
-<translation id="9101691533782776290">Begin program</translation>
+<translation id="9101691533782776290">Begin app</translation>
 <translation id="9102610709270966160">Aktiveer uitbreiding</translation>
 <translation id="9102864637938129124">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is aan.</translation>
 <translation id="9103341231213089378">Gee vir Chrome toegang in: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Plaaslike netwerk &gt; Chrome om uit te saai</translation>

@@ -10106,7 +10106,7 @@
 <translation id="8158117992543756526">Бұл құрылғы <ph name="MONTH_AND_YEAR" /> бері бағдарламалық құралдың және қауіпсіздік жүйесінің автоматты жаңартуларын алмаған. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Экранды бөлу және жұмыс үстелдерін ауыстыру сияқты әрекеттер орындағанда, діріл арқылы растау беріледі. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Сенімді сертификатты орнату қатесі</translation>
-<translation id="8160775796528709999">Параметрлерден Live Caption функциясын қосу арқылы аудио мен бейненің субтитрін көріңіз.</translation>
+<translation id="8160775796528709999">Параметрлерден автоматты субтитр функциясын қосу арқылы аудиоконтент пен бейнелердің субтитрін көріңіз.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Шолуды жалғастыру</translation>
 <translation id="8161604891089629425">Контурлық қаріп</translation>
