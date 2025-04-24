@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <limits>
+#include <set>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -41,6 +41,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -226,8 +227,8 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
   return scheduled_removals_settings;
 }
 
-base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
-  base::flat_set<GURL> result;
+std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
+  std::set<GURL> result;
   // TODO (crbug/1288416): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
   for (Browser* browser : *BrowserList::GetInstance()) {
@@ -247,6 +248,18 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
     }
   }
 #endif
+
+  download::SimpleDownloadManager::DownloadVector downloads;
+  if (auto* download_manager = profile->GetDownloadManager()) {
+    download_manager->GetAllDownloads(&downloads);
+  }
+  for (const download::DownloadItem* download : downloads) {
+    auto state = download->GetState();
+    if (state != download::DownloadItem::DownloadState::IN_PROGRESS) {
+      continue;
+    }
+    result.insert(download->GetURL());
+  }
   return result;
 }
 
@@ -386,7 +399,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
     if (filterable_remove_mask) {
       auto filter_builder = content::BrowsingDataFilterBuilder::Create(
           content::BrowsingDataFilterBuilder::Mode::kPreserve);
-      for (const auto& url : GetOpenedUrls(profile_)) {
+      for (const auto& url : GetOpenedUrlsAndOngoingDownloads(profile_)) {
         std::string domain = GetDomainAndRegistry(
             url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
         if (domain.empty()) {

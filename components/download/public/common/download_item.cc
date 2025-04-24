@@ -10,4 +10,12 @@ DownloadItem::Observer::~Observer() {
   CHECK(!IsInObserverList());
 }
 
+void DownloadItem::SetStateForTesting(DownloadState state) {
+  NOTREACHED();
+}
+
+void DownloadItem::SetDownloadUrlForTesting(GURL url) {
+  NOTREACHED();
+}
+
 }  // namespace download

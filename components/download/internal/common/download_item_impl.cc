@@ -28,6 +28,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -815,6 +816,15 @@ const std::string& DownloadItemImpl::GetGuid() const {
 
 DownloadItem::DownloadState DownloadItemImpl::GetState() const {
   return InternalToExternalState(state_);
+}
+
+void DownloadItemImpl::SetStateForTesting(DownloadItem::DownloadState state) {
+  CHECK_IS_TEST();
+  state_ = ExternalToInternalState(state);
+}
+
+void DownloadItemImpl::SetDownloadUrlForTesting(GURL url) {
+  request_info_.url_chain.push_back(url);
 }
 
 DownloadInterruptReason DownloadItemImpl::GetLastReason() const {
