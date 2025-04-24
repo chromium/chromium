@@ -59,12 +59,24 @@ void LayoutSVGEllipse::StyleDidChange(StyleDifference diff,
   }
 }
 
+bool LayoutSVGEllipse::CalculateGeometryDependsOnViewport() const {
+  const ComputedStyle& style = StyleRef();
+  if (style.Cx().HasPercent() || style.Cy().HasPercent()) {
+    return true;
+  }
+  if (IsA<SVGCircleElement>(*GetElement())) {
+    return style.R().HasPercent();
+  }
+  return style.Rx().HasPercent() || style.Ry().HasPercent();
+}
+
 gfx::RectF LayoutSVGEllipse::UpdateShapeFromElement() {
   NOT_DESTROYED();
 
   // Reset shape state.
   ClearPath();
   SetGeometryType(GeometryType::kEmpty);
+  SetGeometryDependsOnViewport(CalculateGeometryDependsOnViewport());
 
   // This will always update/reset |center_| and |radii_|.
   CalculateRadiiAndCenter();

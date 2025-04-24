@@ -36,6 +36,7 @@ class SVGLineElement final : public SVGGeometryElement {
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;
+  bool PathDependsOnViewport() const;
 
   SVGAnimatedLength* x1() const { return x1_.Get(); }
   SVGAnimatedLength* y1() const { return y1_.Get(); }
@@ -46,8 +47,6 @@ class SVGLineElement final : public SVGGeometryElement {
 
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
-
-  bool SelfHasRelativeLengths() const override;
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;

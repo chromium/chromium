@@ -49,6 +49,7 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
   bool ShapeDependentStrokeContains(const HitTestLocation&) override;
   bool ShapeDependentFillContains(const HitTestLocation&,
                                   const WindRule) const override;
+  bool CalculateGeometryDependsOnViewport() const;
   void CalculateRadiiAndCenter();
   bool CanUseStrokeHitTestFastPath() const;
   bool HasContinuousStroke() const;

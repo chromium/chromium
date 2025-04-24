@@ -49,8 +49,6 @@ class SVGRectElement final : public SVGGeometryElement {
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
-  bool SelfHasRelativeLengths() const override;
-
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
