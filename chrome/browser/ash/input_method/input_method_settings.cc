@@ -11,7 +11,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
@@ -451,8 +450,8 @@ void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
 }
 
 bool IsAutocorrectSupported(const std::string& engine_id) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      enabledInputMethods({
+  static constexpr auto kEnabledInputMethods =
+      base::MakeFixedFlatSet<std::string_view>({
           "xkb:be::fra",        "xkb:be::ger",
           "xkb:be::nld",        "xkb:br::por",
           "xkb:ca::fra",        "xkb:ca:eng:eng",
@@ -475,7 +474,7 @@ bool IsAutocorrectSupported(const std::string& engine_id) {
           "xkb:us:workman:eng",
       });
 
-  return enabledInputMethods->find(engine_id) != enabledInputMethods->end();
+  return kEnabledInputMethods.contains(engine_id);
 }
 
 bool IsPhysicalKeyboardAutocorrectAllowed(const PrefService& prefs) {

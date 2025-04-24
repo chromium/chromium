@@ -29,6 +29,7 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -122,24 +123,21 @@ GURL GetPerksMinecraftRealmsUrl(std::string_view country_code) {
                                    kChromebookPerksUrlQueryNameId, it->second);
 }
 
-const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
-  static const base::NoDestructor<base::flat_map<ActionType, std::string>>
-      action_type_urls(
-          {{ActionType::kOpenChrome, "chrome://new-tab-page/"},
-           {ActionType::kOpenPlayStore,
-            "https://play.google.com/store/games?device=chromebook"},
-           {ActionType::kOpenGoogleDocs,
-            "https://docs.google.com/document/?usp=installed_webapp/"},
-           {ActionType::kOpenGooglePhotos, "https://photos.google.com/"},
-           {ActionType::kOpenYouTube, "https://www.youtube.com/"},
-           {ActionType::kOpenChromebookPerksWeb,
-            "https://www.google.com/chromebook/perks/"},
-           {ActionType::kOpenChromebookPerksGfnPriority2022,
-            "https://www.google.com/chromebook/perks/?id=gfn.priority.2022"},
-           {ActionType::kOpenChromebookPerksMinecraft2023,
-            "https://www.google.com/chromebook/perks/?id=minecraft.2023"}});
-  return *action_type_urls;
-}
+constexpr auto kActionTypeUrls =
+    base::MakeFixedFlatMap<ActionType, std::string_view>(
+        {{ActionType::kOpenChrome, "chrome://new-tab-page/"},
+         {ActionType::kOpenPlayStore,
+          "https://play.google.com/store/games?device=chromebook"},
+         {ActionType::kOpenGoogleDocs,
+          "https://docs.google.com/document/?usp=installed_webapp/"},
+         {ActionType::kOpenGooglePhotos, "https://photos.google.com/"},
+         {ActionType::kOpenYouTube, "https://www.youtube.com/"},
+         {ActionType::kOpenChromebookPerksWeb,
+          "https://www.google.com/chromebook/perks/"},
+         {ActionType::kOpenChromebookPerksGfnPriority2022,
+          "https://www.google.com/chromebook/perks/?id=gfn.priority.2022"},
+         {ActionType::kOpenChromebookPerksMinecraft2023,
+          "https://www.google.com/chromebook/perks/?id=minecraft.2023"}});
 
 std::string ToString(ConnectionStateType connection_state_type) {
   switch (connection_state_type) {
@@ -560,7 +558,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
   switch (action_type) {
     case ActionType::kOpenChrome: {
       OpenUrlForProfile(profile_,
-                        GURL(GetActionTypeURLs().at(ActionType::kOpenChrome)),
+                        GURL(kActionTypeUrls.at(ActionType::kOpenChrome)),
                         GetLogger());
       break;
     }
@@ -582,16 +580,16 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
             << "Opening Play Store Android app. App launched: " << app_launched;
       }
       if (!app_launched) {
-        OpenUrlForProfile(
-            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenPlayStore)),
-            GetLogger());
+        OpenUrlForProfile(profile_,
+                          GURL(kActionTypeUrls.at(ActionType::kOpenPlayStore)),
+                          GetLogger());
       }
       break;
     }
     case ActionType::kOpenGoogleDocs: {
-      OpenUrlForProfile(
-          profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenGoogleDocs)),
-          GetLogger());
+      OpenUrlForProfile(profile_,
+                        GURL(kActionTypeUrls.at(ActionType::kOpenGoogleDocs)),
+                        GetLogger());
       break;
     }
     case ActionType::kOpenGooglePhotos: {
@@ -606,8 +604,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       }
       if (!app_launched) {
         OpenUrlForProfile(
-            profile_,
-            GURL(GetActionTypeURLs().at(ActionType::kOpenGooglePhotos)),
+            profile_, GURL(kActionTypeUrls.at(ActionType::kOpenGooglePhotos)),
             GetLogger());
       }
       break;
@@ -635,14 +632,14 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
             extension_misc::kYoutubePwaAppId,
             apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                 /*prefer_container=*/true),
-            GURL(GetActionTypeURLs().at(ActionType::kOpenYouTube)),
+            GURL(kActionTypeUrls.at(ActionType::kOpenYouTube)),
             apps::LaunchSource::kFromOtherApp,
             std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
         SCALABLE_IPH_LOG(GetLogger()) << "Opening YouTube app via AppService.";
       } else {
-        OpenUrlForProfile(
-            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenYouTube)),
-            GetLogger());
+        OpenUrlForProfile(profile_,
+                          GURL(kActionTypeUrls.at(ActionType::kOpenYouTube)),
+                          GetLogger());
       }
       break;
     }
@@ -666,20 +663,20 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
     case ActionType::kOpenChromebookPerksWeb: {
       OpenUrlForProfile(
           profile_,
-          GURL(GetActionTypeURLs().at(ActionType::kOpenChromebookPerksWeb)),
+          GURL(kActionTypeUrls.at(ActionType::kOpenChromebookPerksWeb)),
           GetLogger());
       break;
     }
     case ActionType::kOpenChromebookPerksGfnPriority2022: {
       OpenUrlForProfile(profile_,
-                        GURL(GetActionTypeURLs().at(
+                        GURL(kActionTypeUrls.at(
                             ActionType::kOpenChromebookPerksGfnPriority2022)),
                         GetLogger());
       break;
     }
     case ActionType::kOpenChromebookPerksMinecraft2023: {
       OpenUrlForProfile(profile_,
-                        GURL(GetActionTypeURLs().at(
+                        GURL(kActionTypeUrls.at(
                             ActionType::kOpenChromebookPerksMinecraft2023)),
                         GetLogger());
       break;
