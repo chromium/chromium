@@ -593,7 +593,9 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="From Collaboration Background In Group"/>
   <int value="26" label="From Bookmark Bar Background"/>
   <int value="27" label="From Reparenting Background"/>
-  <int value="28" label="Size"/>
+  <int value="28" label="From History Navigation Background"/>
+  <int value="29" label="From History Navigation Foreground"/>
+  <int value="30" label="Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->

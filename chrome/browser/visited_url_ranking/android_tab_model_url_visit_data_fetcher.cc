@@ -55,6 +55,8 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_OMNIBOX:
     case TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND:
     case TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND:
+    case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_FOREGROUND:
       return TabMetadata::TabOrigin::kOpenedByUserAction;
 
     case TabModel::TabLaunchType::FROM_RESTORE:

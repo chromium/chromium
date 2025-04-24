@@ -135,6 +135,12 @@ class TabModel {
     // in the background. Use FROM_REPARENTING above to open the re-parented tab
     // in the foreground.
     FROM_REPARENTING_BACKGROUND,
+    // From history navigation (back / forward) when opening a new tab/window in
+    // the background.
+    FROM_HISTORY_NAVIGATION_BACKGROUND,
+    // From history navigation (back / forward) when opening a new tab/window in
+    // the foreground.
+    FROM_HISTORY_NAVIGATION_FOREGROUND,
     // Must be last.
     SIZE
   };

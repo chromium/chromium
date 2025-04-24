@@ -258,6 +258,10 @@ chromium-metrics-reviews@google.com.
   <variant name="CollaborationBackgroundInGroup"
       summary="tabs opened from collaboration protection mechanism"/>
   <variant name="ExternalApp" summary="tabs opened from an external app"/>
+  <variant name="HistoryNavigationBackground"
+      summary="tabs opened in background from back/forward history navigation"/>
+  <variant name="HistoryNavigationForeground"
+      summary="tabs opened in foreground from back/forward history navigation"/>
   <variant name="LauncherShortcut"
       summary="tabs opened from launcher shortcut"/>
   <variant name="Link" summary="tabs opened from a link"/>
@@ -5043,7 +5047,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Tab.CreateNewTabDuration.{TabLaunchType}" units="ms"
+<histogram name="Android.Tab.CreateNewTabDuration.{TabLaunchType}2" units="ms"
     expires_after="2025-09-14">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
@@ -5053,20 +5057,6 @@ chromium-metrics-reviews@google.com.
     everytime a new tab is finished being created. Take into account that
     low-end devices create tabs more slowly, so adjust your analysis
     accordingly.
-  </summary>
-  <token key="TabLaunchType" variants="TabLaunchType"/>
-</histogram>
-
-<histogram
-    name="Android.Tab.CreateNewTabDuration.{TabLaunchType}.WithExistingWebContents"
-    units="ms" expires_after="2023-07-10">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Records the duration of the creation of a new tab from an existing
-    WebContents for {TabLaunchType}. A record is made each time a tab is created
-    using an existing WebContents.
   </summary>
   <token key="TabLaunchType" variants="TabLaunchType"/>
 </histogram>
