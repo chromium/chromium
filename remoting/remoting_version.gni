@@ -5,6 +5,8 @@
 import("//build/config/chrome_build.gni")
 import("//chrome/version.gni")
 
+assert(!is_android)  # Not needed on Android
+
 remoting_version_file = "//remoting/VERSION"
 
 _version_py_abspath = "//build/util/version.py"
