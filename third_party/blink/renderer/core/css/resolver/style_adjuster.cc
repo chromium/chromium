@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
-#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
@@ -974,60 +973,6 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   }
 }
 
-static void AdjustStyleForInert(ComputedStyleBuilder& builder,
-                                Element* element) {
-  if (RuntimeEnabledFeatures::CSSInertEnabled()) {
-    if (builder.Interactivity() == EInteractivity::kInert &&
-        !builder.InteractivityIsInherited()) {
-      // If the computed value of 'interactivity' is 'inert', set the internal
-      // inertness flag to true. With this flag set, it is not possible to
-      // escape the inertness in the subtree, even if 'interactivity' is set to
-      // 'auto' in a descendant. This is not in line with the current spec.
-      builder.SetIsInert(true);
-      builder.SetIsInertIsInherited(false);
-      return;
-    }
-  }
-
-  if (!element) {
-    return;
-  }
-
-  if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
-    if (element->IsInertRoot()) {
-      builder.SetIsInert(true);
-      builder.SetIsInertIsInherited(false);
-      return;
-    }
-  }
-
-  Document& document = element->GetDocument();
-  const Element* modal_element = document.ActiveModalDialog();
-  if (!modal_element) {
-    modal_element = Fullscreen::FullscreenElementFrom(document);
-  }
-  if (modal_element == element) {
-    builder.SetIsInert(false);
-    builder.SetIsInertIsInherited(false);
-    return;
-  }
-  if (modal_element && element == document.documentElement()) {
-    builder.SetIsInert(true);
-    builder.SetIsInertIsInherited(false);
-    return;
-  }
-
-  if (StyleBaseData* base_data = builder.BaseData()) {
-    if (base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
-      // Elements which are transitioning to display:none should become inert:
-      // https://github.com/w3c/csswg-drafts/issues/8389
-      builder.SetIsInert(true);
-      builder.SetIsInertIsInherited(false);
-      return;
-    }
-  }
-}
-
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
                                               Document& document) {
   if (!builder.InForcedColorsMode() ||
@@ -1264,8 +1209,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(
       element ? element : state.GetPseudoElement(), builder);
-
-  AdjustStyleForInert(builder, element);
 
   AdjustStyleForEditing(builder, element);
 

@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -337,6 +338,15 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
   // RecalcOwnStyle, regardless of how ResolveStyle produces its result.
   exclusions.insert(DebugField::highlight_data_);
 
+  // IsCSSInert and IsHTMLInert flags are updated at the end of ResolveStyle,
+  // which means the freshly resolved style will not have these flags updated
+  // yet. Animations may affect inertness, yet they don't need to know whether
+  // inertness has been applied in the base style.
+  exclusions.insert(DebugField::is_css_inert_);
+  exclusions.insert(DebugField::is_css_inert_is_inherited_);
+  exclusions.insert(DebugField::is_html_inert_);
+  exclusions.insert(DebugField::is_html_inert_is_inherited_);
+
   Vector<DebugDiff> diff = base_computed_style->DebugDiffFields(computed_style);
 
   StringBuilder builder;
@@ -482,6 +492,66 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   }
   if (flags & static_cast<Flags>(Flag::kSiblingRelative)) {
     builder.SetHasSiblingFunctions();
+  }
+}
+
+void ApplyInertness(StyleResolverState& state) {
+  std::optional<bool> html_inert;
+  std::optional<bool> css_inert;
+
+  if (RuntimeEnabledFeatures::CSSInertEnabled()) {
+    if (state.StyleBuilder().Interactivity() == EInteractivity::kInert &&
+        !state.StyleBuilder().InteractivityIsInherited() &&
+        !state.StyleBuilder().IsCSSInert()) {
+      // If the computed value of 'interactivity' is 'inert', set the internal
+      // CSS inertness flag to true. With this flag set, it is not possible to
+      // escape CSS inertness in the subtree with 'interactivity' set to 'auto'
+      // in a descendant.
+      // TODO(crbug.com/413291835): This is not in line with the current spec.
+      css_inert = true;
+    }
+  } else if (state.GetElement().IsInertRoot()) {
+    html_inert = true;
+  }
+
+  const Element& element = state.GetElement();
+  Document& document = element.GetDocument();
+  const Element* modal_element = document.ActiveModalDialog();
+  if (!modal_element) {
+    modal_element = Fullscreen::FullscreenElementFrom(document);
+  }
+  if (modal_element) {
+    if (modal_element == element) {
+      // Modal elements escape inertness unless the element itself is inerted by
+      // an inert attribute or interactivity style.
+      if (!html_inert.has_value()) {
+        html_inert = false;
+      }
+      if (!css_inert.has_value()) {
+        css_inert = false;
+      }
+    } else if (element == document.documentElement()) {
+      // The rest of the document is inerted by modal dialogs and fullscreen'ed
+      // elements.
+      html_inert = true;
+    }
+  }
+
+  if (StyleBaseData* base_data = state.StyleBuilder().BaseData()) {
+    if (base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
+      // Elements which are transitioning to display:none should become inert:
+      // https://github.com/w3c/csswg-drafts/issues/8389
+      html_inert = true;
+    }
+  }
+
+  if (html_inert.has_value()) {
+    state.StyleBuilder().SetIsHTMLInert(html_inert.value());
+    state.StyleBuilder().SetIsHTMLInertIsInherited(false);
+  }
+  if (css_inert.has_value()) {
+    state.StyleBuilder().SetIsCSSInert(css_inert.value());
+    state.StyleBuilder().SetIsCSSInertIsInherited(false);
   }
 }
 
@@ -1319,6 +1389,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   }
 
   ApplyAnchorData(state);
+  ApplyInertness(state);
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
 

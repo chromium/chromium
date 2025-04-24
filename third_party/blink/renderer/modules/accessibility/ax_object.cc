@@ -3969,7 +3969,7 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
       if (ignored_reasons) {
         if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
           // With CSSInert disabled, the inert attribute causes the style to be
-          // IsInert. With CSSInert enabled, the inert attribute instead has
+          // IsHTMLInert. With CSSInert enabled, the inert attribute instead has
           // a UA style rule that sets the interactivity property, which
           // cascades along interactivity declarations from other sources, so it
           // does not make sense to look for InertRoot() separately. The
@@ -3986,8 +3986,7 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
             return true;
           }
         }
-        if (style->IsInert() &&
-            style->Interactivity() == EInteractivity::kAuto) {
+        if (style->IsHTMLInert()) {
           // HTML inertness is either forced by a modal dialog or a fullscreen
           // element (see AdjustStyleForInert).
           Document& document = GetNode()->GetDocument();
