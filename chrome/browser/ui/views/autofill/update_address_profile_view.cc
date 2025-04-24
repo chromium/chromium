@@ -36,8 +36,10 @@ namespace {
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
-const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
+base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
   switch (GetAddressUIComponentIconTypeForFieldType(type)) {
+    case AddressUIComponentIconType::kNoIcon:
+      return std::nullopt;
     case AddressUIComponentIconType::kName:
       return kAccountCircleIcon;
     case AddressUIComponentIconType::kAddress:
@@ -46,8 +48,6 @@ const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
       return vector_icons::kEmailIcon;
     case AddressUIComponentIconType::kPhone:
       return vector_icons::kCallIcon;
-    case AddressUIComponentIconType::kNoIcon:
-      NOTREACHED();
   }
 }
 
@@ -95,8 +95,13 @@ std::unique_ptr<views::View> CreateValuesView(
     label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
     auto icon_view = std::make_unique<views::ImageView>();
-    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GetVectorIconForType(diff_entry.type), icon_color, kIconSize));
+    base::optional_ref<const gfx::VectorIcon> icon_ref =
+        GetVectorIconForType(diff_entry.type);
+
+    if (icon_ref.has_value()) {
+      icon_view->SetImage(
+          ui::ImageModel::FromVectorIcon(*icon_ref, icon_color, kIconSize));
+    }
 
     // The container aligns the icon vertically in the middle of the first label
     // line, the icon size is expected to be smaller than the label height.
