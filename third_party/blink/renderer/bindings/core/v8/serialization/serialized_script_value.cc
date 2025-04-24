@@ -253,6 +253,14 @@ SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
       buffer_size));
 }
 
+SerializedScriptValue::DataBufferPtr
+SerializedScriptValue::ConsumeAndTakeBuffer() && {
+  CHECK(HasOneRef());
+  auto buffer = std::move(data_buffer_);
+  Release();
+  return buffer;
+}
+
 SerializedScriptValue::~SerializedScriptValue() {
   // If the allocated memory was not registered before, then this class is
   // likely used in a context other than Worker's onmessage environment and the

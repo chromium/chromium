@@ -63,8 +63,8 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   ASSERT_EQ(test_data.size(), test_data_size);
 
   // Create IDBValue mojom message.
-  auto input =
-      std::make_unique<IDBValue>(std::move(input_data), Vector<WebBlobInfo>());
+  auto input = std::make_unique<IDBValue>();
+  input->SetData(std::move(input_data));
   mojo::Message mojo_message =
       mojom::blink::IDBValue::SerializeAsMessage(&input);
 
@@ -72,12 +72,12 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   std::unique_ptr<IDBValue> output;
   ASSERT_TRUE(mojom::blink::IDBValue::DeserializeFromMessage(
       std::move(mojo_message), &output));
-  const std::optional<Vector<char>>& output_data = output->Data();
+  base::span<const uint8_t> output_data = output->Data();
 
   // Verify expectations.
-  ASSERT_TRUE(output_data);
-  ASSERT_EQ(output_data->size(), test_data_size);
-  ASSERT_EQ(test_data, *output_data);
+  ASSERT_TRUE(output_data.data());
+  ASSERT_EQ(output_data.size(), test_data_size);
+  ASSERT_EQ(base::as_byte_span(test_data), output_data);
 }
 
 }  // namespace blink

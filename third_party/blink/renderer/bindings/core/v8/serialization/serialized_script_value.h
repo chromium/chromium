@@ -364,6 +364,10 @@ class CORE_EXPORT SerializedScriptValue
 
   static DataBufferPtr AllocateBuffer(size_t);
 
+  // Called to take ownership of `data_buffer_` and destroy `this`.
+  // This enforces that there are no other references to `this`.
+  DataBufferPtr ConsumeAndTakeBuffer() &&;
+
  private:
   friend class ScriptValueSerializer;
   friend class V8ScriptValueSerializer;

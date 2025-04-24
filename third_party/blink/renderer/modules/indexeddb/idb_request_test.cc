@@ -108,8 +108,8 @@ mojom::blink::IDBReturnValuePtr CreateIDBReturnValuePtrWithBlob(
 
   mojom::blink::IDBReturnValuePtr idb_return_value =
       mojom::blink::IDBReturnValue::New();
-  idb_return_value->value = std::make_unique<IDBValue>(wrapper.TakeWireBytes(),
-                                                       wrapper.TakeBlobInfo());
+  idb_return_value->value = std::move(wrapper).Build();
+
   idb_return_value->primary_key = IDBKey::CreateNone();
   return idb_return_value;
 }
@@ -123,8 +123,7 @@ std::unique_ptr<IDBValue> CreateIDBValueWithV8Value(
                           SerializedScriptValue::SerializeOptions::kSerialize,
                           non_throwable_exception_state);
   wrapper.DoneCloning();
-  return std::make_unique<IDBValue>(wrapper.TakeWireBytes(),
-                                    wrapper.TakeBlobInfo());
+  return std::move(wrapper).Build();
 }
 
 // Generates a batch of records to stream for a get all request.  Use the bool
@@ -153,8 +152,8 @@ Vector<mojom::blink::IDBRecordPtr> GenerateGetAllResults(
       String value_string = u"value_" + String::Number(next_id);
       Vector<char> value_bytes(value_string.Utf8());
       return_value = mojom::blink::IDBReturnValue::New();
-      return_value->value = std::make_unique<IDBValue>(std::move(value_bytes),
-                                                       Vector<WebBlobInfo>());
+      (return_value->value = std::make_unique<IDBValue>())
+          ->SetData(std::move(value_bytes));
       return_value->primary_key = IDBKey::CreateNone();
     }
 
@@ -185,8 +184,8 @@ IDBRecordArray ToIDBRecordArray(
         mojom::blink::IDBReturnValuePtr& idb_return_value =
             record->return_value;
         Vector<char> expected_value_bytes(idb_return_value->value->Data());
-        std::unique_ptr<IDBValue> expected_value = std::make_unique<IDBValue>(
-            std::move(expected_value_bytes), Vector<WebBlobInfo>());
+        std::unique_ptr<IDBValue> expected_value = std::make_unique<IDBValue>();
+        expected_value->SetData(std::move(expected_value_bytes));
 
         // Copy the injected primary key when it exists.
         if (idb_return_value->primary_key->IsValid()) {
@@ -195,7 +194,7 @@ IDBRecordArray ToIDBRecordArray(
               idb_return_value->key_path);
         }
 
-        record_array.values.emplace_back(std::move(expected_value));
+        record_array.values.push_back(std::move(expected_value));
       }
 
       if (record->index_key) {

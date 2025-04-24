@@ -389,8 +389,8 @@ TEST_F(IDBTransactionTest, ValueSizeTest) {
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
 
   const Vector<char> value_data(kMaxValueSizeForTesting + 1);
-  const Vector<WebBlobInfo> blob_info;
-  auto value = std::make_unique<IDBValue>(Vector<char>(value_data), blob_info);
+  auto value = std::make_unique<IDBValue>();
+  value->SetData(Vector<char>(value_data));
   std::unique_ptr<IDBKey> key = IDBKey::CreateNumber(0);
   const int64_t object_store_id = 2;
 
@@ -423,8 +423,8 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   const size_t kKeySize = 1024 * 1024;
 
   const Vector<char> value_data(kMaxValueSizeForTesting - kKeySize);
-  const Vector<WebBlobInfo> blob_info;
-  auto value = std::make_unique<IDBValue>(Vector<char>(value_data), blob_info);
+  auto value = std::make_unique<IDBValue>();
+  value->SetData(Vector<char>(value_data));
   const int64_t object_store_id = 2;
 
   // For this test, we want IDBKey::SizeEstimate() minus kKeySize to be the

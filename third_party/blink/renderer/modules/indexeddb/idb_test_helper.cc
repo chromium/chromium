@@ -20,10 +20,10 @@ std::unique_ptr<IDBValue> CreateNullIDBValueForTesting(v8::Isolate* isolate) {
   scoped_refptr<SerializedScriptValue> null_ssv =
       SerializedScriptValue::NullValue();
 
-  base::span<const uint8_t> ssv_wire_bytes = null_ssv->GetWireData();
+  Vector<char> ssv_wire_bytes(null_ssv->GetWireData());
 
-  auto idb_value = std::make_unique<IDBValue>(Vector<char>(ssv_wire_bytes),
-                                              Vector<WebBlobInfo>());
+  auto idb_value = std::make_unique<IDBValue>();
+  idb_value->SetData(std::move(ssv_wire_bytes));
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
   return idb_value;
@@ -45,10 +45,7 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
       create_wrapped_value ? 0 : 1024 * element_count);
   wrapper.DoneCloning();
 
-  Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
-
-  auto idb_value = std::make_unique<IDBValue>(wrapper.TakeWireBytes(),
-                                              std::move(blob_infos));
+  auto idb_value = std::move(wrapper).Build();
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
 

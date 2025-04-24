@@ -487,9 +487,7 @@ void IDBRequest::HandleResponseAdvanceCursor(
     std::unique_ptr<IDBKey> primary_key,
     std::unique_ptr<IDBValue> optional_value) {
   std::unique_ptr<IDBValue> value =
-      optional_value
-          ? std::move(optional_value)
-          : std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>());
+      optional_value ? std::move(optional_value) : std::make_unique<IDBValue>();
   value->SetIsolate(GetIsolate());
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, std::move(key), std::move(primary_key), std::move(value),
@@ -581,7 +579,7 @@ void IDBRequest::OnOpenCursor(
   if (result->get_value()->value) {
     value = std::move(*result->get_value()->value);
   } else {
-    value = std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>());
+    value = std::make_unique<IDBValue>();
   }
 
   value->SetIsolate(GetIsolate());
@@ -786,7 +784,7 @@ void IDBRequest::SendResultValue(std::unique_ptr<IDBValue> value) {
 
   if (pending_cursor_) {
     // Value should be empty, signifying the end of the cursor's range.
-    DCHECK(!value->DataSize());
+    DCHECK(!value->Data().size());
     DCHECK(!value->BlobInfo().size());
     pending_cursor_->Close();
     pending_cursor_.Clear();
