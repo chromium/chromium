@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 
 #include <hb.h>
@@ -485,7 +480,7 @@ bool ShapeResult::IsStartSafeToBreak() const {
 }
 
 unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
-  for (auto it = runs_.begin(); it != runs_.end(); ++it) {
+  for (auto it = runs_.begin(); it != runs_.end(); UNSAFE_TODO(++it)) {
     const auto& run = *it;
     if (!run)
       continue;
@@ -499,7 +494,7 @@ unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
       if (IsRtl()) {
         if (it == runs_.begin())
           return run_start + run->num_characters_;
-        const auto& previous_run = *--it;
+        const auto& previous_run = *UNSAFE_TODO(--it);
         return previous_run->start_index_;
       }
     } else if (IsLtr()) {
@@ -1144,7 +1139,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
     if (Direction() == TextDirection::kRtl) {
       // TODO(https://crbug.com/1463890): Here should be item's direction !=
       // base direction .
-      current_offset++;
+      UNSAFE_TODO(current_offset++);
     } else {
       for (auto& run : runs_) {
         if (!run) [[unlikely]] {
@@ -1168,7 +1163,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
         run->glyph_data_[last_glyph_of_first_char].AddAdvance(uni_dim_offset);
         has_vertical_offsets_ |= (glyph_offset.y() != 0);
         run->width_ += uni_dim_offset;
-        current_offset++;
+        UNSAFE_TODO(current_offset++);
         break;
       }
     }
@@ -1229,7 +1224,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
         DCHECK(!data.has_auto_spacing_after);
         data.has_auto_spacing_after = true;
 
-        if (++current_offset == offset_end) {
+        if (UNSAFE_TODO(++current_offset) == offset_end) {
           break;
         }
         offset = current_offset->offset;
@@ -1333,8 +1328,9 @@ SafeToBreak SafeToBreakBefore(const hb_glyph_info_t* glyph_infos,
       return SafeToBreak::kSafe;
 
     // Not at a cluster boundary.
-    if (glyph_infos[i].cluster == glyph_infos[i - 1].cluster)
+    if (UNSAFE_TODO(glyph_infos[i].cluster == glyph_infos[i - 1].cluster)) {
       return SafeToBreak::kUnsafe;
+    }
   } else {
     DCHECK_EQ(direction, TextDirection::kRtl);
     // Before the first glyph is safe to break.
@@ -1342,13 +1338,15 @@ SafeToBreak SafeToBreakBefore(const hb_glyph_info_t* glyph_infos,
       return SafeToBreak::kSafe;
 
     // Not at a cluster boundary.
-    if (glyph_infos[i].cluster == glyph_infos[i + 1].cluster)
+    if (UNSAFE_TODO(glyph_infos[i].cluster == glyph_infos[i + 1].cluster)) {
       return SafeToBreak::kUnsafe;
+    }
   }
 
   // The HB_GLYPH_FLAG_UNSAFE_TO_BREAK flag is set for all glyphs in a
   // given cluster so we only need to check the last one.
-  hb_glyph_flags_t flags = hb_glyph_info_get_glyph_flags(glyph_infos + i);
+  hb_glyph_flags_t flags =
+      hb_glyph_info_get_glyph_flags(UNSAFE_TODO(glyph_infos + i));
   return (flags & HB_GLYPH_FLAG_UNSAFE_TO_BREAK) ? SafeToBreak::kUnsafe
                                                  : SafeToBreak::kSafe;
 }
@@ -1373,8 +1371,10 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
   // num_glyphs so that all character indexes can fit to kMaxCharacterIndex.
   // Because code points and glyphs are not always 1:1, we need to check the
   // first and the last cluster.
-  const hb_glyph_info_t* left_glyph_info = &glyph_infos[start_glyph];
-  const hb_glyph_info_t* right_glyph_info = &left_glyph_info[num_glyphs - 1];
+  const hb_glyph_info_t* left_glyph_info =
+      &UNSAFE_TODO(glyph_infos[start_glyph]);
+  const hb_glyph_info_t* right_glyph_info =
+      &UNSAFE_TODO(left_glyph_info[num_glyphs - 1]);
   unsigned start_cluster;
   if (is_ltr) {
     start_cluster = left_glyph_info->cluster;
@@ -1387,11 +1387,11 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
       //                     ^ limit here.
       // Find |glyph_info| where |cluster| <= |max_cluster|.
       const hb_glyph_info_t* limit_glyph_info = std::upper_bound(
-          left_glyph_info, right_glyph_info + 1, max_cluster,
+          left_glyph_info, UNSAFE_TODO(right_glyph_info + 1), max_cluster,
           [](unsigned cluster, const hb_glyph_info_t& glyph_info) {
             return cluster < glyph_info.cluster;
           });
-      --limit_glyph_info;
+      UNSAFE_TODO(--limit_glyph_info);
       CHECK_GT(limit_glyph_info, left_glyph_info);
       CHECK_LT(limit_glyph_info, right_glyph_info);
       DCHECK_LE(limit_glyph_info->cluster, max_cluster);
@@ -1399,7 +1399,8 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
       right_glyph_info = limit_glyph_info;
       num_glyphs =
           base::checked_cast<unsigned>(right_glyph_info - left_glyph_info + 1);
-      num_characters_ = right_glyph_info[1].cluster - start_cluster;
+      num_characters_ =
+          UNSAFE_TODO(right_glyph_info[1].cluster) - start_cluster;
     }
   } else {
     start_cluster = right_glyph_info->cluster;
@@ -1416,11 +1417,11 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
           last_cluster - HarfBuzzRunGlyphData::kMaxCharacterIndex;
       DCHECK_LT(start_cluster, min_cluster);
       const hb_glyph_info_t* limit_glyph_info = std::upper_bound(
-          left_glyph_info, right_glyph_info + 1, min_cluster,
+          left_glyph_info, UNSAFE_TODO(right_glyph_info + 1), min_cluster,
           [](unsigned cluster, const hb_glyph_info_t& glyph_info) {
             return cluster > glyph_info.cluster;
           });
-      --limit_glyph_info;
+      UNSAFE_TODO(--limit_glyph_info);
       CHECK_GT(limit_glyph_info, left_glyph_info);
       CHECK_LT(limit_glyph_info, right_glyph_info);
       DCHECK_GE(limit_glyph_info->cluster, min_cluster);
@@ -1430,7 +1431,7 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
       num_glyphs =
           base::checked_cast<unsigned>(right_glyph_info - left_glyph_info + 1);
       start_index_ = start_cluster;
-      num_characters_ = last_cluster - right_glyph_info[1].cluster;
+      num_characters_ = last_cluster - UNSAFE_TODO(right_glyph_info[1].cluster);
     }
   }
 
@@ -1443,10 +1444,13 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
 
     // If kMaxGlyphs is not a cluster boundary, reduce further until the last
     // boundary.
-    const unsigned end_cluster = glyph_infos[start_glyph + num_glyphs].cluster;
+    const unsigned end_cluster =
+        UNSAFE_TODO(glyph_infos[start_glyph + num_glyphs].cluster);
     for (; num_glyphs; num_glyphs--) {
-      if (glyph_infos[start_glyph + num_glyphs - 1].cluster != end_cluster)
+      if (UNSAFE_TODO(glyph_infos[start_glyph + num_glyphs - 1].cluster) !=
+          end_cluster) {
         break;
+      }
     }
 
     if (!num_glyphs) {
@@ -1458,9 +1462,11 @@ void ShapeResultRun::LimitNumGlyphs(unsigned start_glyph,
       num_characters_ = end_cluster - start_cluster;
       DCHECK(num_characters_);
     } else {
-      num_characters_ = glyph_infos[start_glyph].cluster - end_cluster;
+      num_characters_ =
+          UNSAFE_TODO(glyph_infos[start_glyph].cluster) - end_cluster;
       // Cutting the right end glyphs means cutting the start characters.
-      start_index_ = glyph_infos[start_glyph + num_glyphs - 1].cluster;
+      start_index_ =
+          UNSAFE_TODO(glyph_infos[start_glyph + num_glyphs - 1].cluster);
       DCHECK(num_characters_);
     }
   }
@@ -1495,8 +1501,9 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
 
   // HarfBuzz returns result in visual order, no need to flip for RTL.
   for (unsigned i = 0; i < num_glyphs; ++i) {
-    const hb_glyph_info_t glyph = glyph_infos[start_glyph + i];
-    const hb_glyph_position_t& pos = glyph_positions[start_glyph + i];
+    const hb_glyph_info_t glyph = UNSAFE_TODO(glyph_infos[start_glyph + i]);
+    const hb_glyph_position_t& pos =
+        UNSAFE_TODO(glyph_positions[start_glyph + i]);
 
     // One out of x_advance and y_advance is zero, depending on
     // whether the buffer direction is horizontal or vertical.
@@ -1509,10 +1516,11 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
     const uint16_t character_index = glyph.cluster - start_cluster;
     DCHECK_LE(character_index, HarfBuzzRunGlyphData::kMaxCharacterIndex);
     DCHECK_LT(character_index, run->num_characters_);
-    run->glyph_data_[i] = {glyph.codepoint, character_index,
-                           SafeToBreakBefore(glyph_infos + start_glyph, i,
-                                             num_glyphs, Direction()),
-                           advance};
+    run->glyph_data_[i] = {
+        glyph.codepoint, character_index,
+        SafeToBreakBefore(UNSAFE_TODO(glyph_infos + start_glyph), i, num_glyphs,
+                          Direction()),
+        advance};
 
     // Offset is primarily used when painting glyphs. Keep it in physical.
     if (pos.x_offset || pos.y_offset) [[unlikely]] {
@@ -1658,11 +1666,11 @@ void ShapeResult::CopyRanges(const ShapeRange* ranges,
     unsigned run_index = 0;
     unsigned last_range = num_ranges - 1;
     for (unsigned i = 0; i < num_ranges; i++) {
-      const ShapeRange& range = ranges[last_range - i];
+      const ShapeRange& range = UNSAFE_TODO(ranges[last_range - i]);
 #if DCHECK_IS_ON()
       DCHECK_GE(range.end, range.start);
       if (i != last_range)
-        DCHECK_GE(range.start, ranges[last_range - (i + 1)].end);
+        DCHECK_GE(range.start, UNSAFE_TODO(ranges[last_range - (i + 1)].end));
 #endif
       run_index =
           CopyRangeInternal(run_index, range.start, range.end, range.target);
@@ -1672,11 +1680,11 @@ void ShapeResult::CopyRanges(const ShapeRange* ranges,
 
   unsigned run_index = 0;
   for (unsigned i = 0; i < num_ranges; i++) {
-    const ShapeRange& range = ranges[i];
+    const ShapeRange& range = UNSAFE_TODO(ranges[i]);
 #if DCHECK_IS_ON()
     DCHECK_GE(range.end, range.start);
     if (i)
-      DCHECK_GE(range.start, ranges[i - 1].end);
+      DCHECK_GE(range.start, UNSAFE_TODO(ranges[i - 1].end));
 #endif
     run_index =
         CopyRangeInternal(run_index, range.start, range.end, range.target);

@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 
 #include <hb.h>
@@ -358,7 +353,7 @@ void RoundHarfBuzzBufferPositions(hb_buffer_t* buffer) {
   hb_glyph_position_t* glyph_positions =
       hb_buffer_get_glyph_positions(buffer, &len);
   for (unsigned int i = 0; i < len; i++) {
-    hb_glyph_position_t* pos = &glyph_positions[i];
+    hb_glyph_position_t* pos = &UNSAFE_TODO(glyph_positions[i]);
     RoundHarfBuzzPosition(&pos->x_offset);
     RoundHarfBuzzPosition(&pos->y_offset);
     RoundHarfBuzzPosition(&pos->x_advance);
@@ -430,7 +425,8 @@ BufferSlice ComputeSlice(RangeContext* range_data,
 
   if (HB_DIRECTION_IS_FORWARD(
           hb_buffer_get_direction(range_data->buffer.Get()))) {
-    result.start_character_index = glyph_info[old_glyph_index].cluster;
+    result.start_character_index =
+        UNSAFE_TODO(glyph_info[old_glyph_index].cluster);
     if (new_glyph_index == num_glyphs) {
       // Clamp the end offsets of the queue item to the offsets representing
       // the shaping window.
@@ -439,12 +435,13 @@ BufferSlice ComputeSlice(RangeContext* range_data,
                                         current_queue_item.num_characters_);
       result.num_characters = shape_end - result.start_character_index;
     } else {
-      result.num_characters =
-          glyph_info[new_glyph_index].cluster - result.start_character_index;
+      result.num_characters = UNSAFE_TODO(glyph_info[new_glyph_index].cluster -
+                                          result.start_character_index);
     }
   } else {
     // Direction Backwards
-    result.start_character_index = glyph_info[new_glyph_index - 1].cluster;
+    result.start_character_index =
+        UNSAFE_TODO(glyph_info[new_glyph_index - 1].cluster);
     if (old_glyph_index == 0) {
       // Clamp the end offsets of the queue item to the offsets representing
       // the shaping window.
@@ -453,8 +450,9 @@ BufferSlice ComputeSlice(RangeContext* range_data,
                                         current_queue_item.num_characters_);
       result.num_characters = shape_end - result.start_character_index;
     } else {
-      result.num_characters = glyph_info[old_glyph_index - 1].cluster -
-                              glyph_info[new_glyph_index - 1].cluster;
+      result.num_characters =
+          UNSAFE_TODO(glyph_info[old_glyph_index - 1].cluster -
+                      glyph_info[new_glyph_index - 1].cluster);
     }
   }
 
@@ -641,7 +639,7 @@ void HarfBuzzShaper::ExtractShapeResults(
   for (unsigned glyph_index = 0; glyph_index < num_glyphs; ++glyph_index) {
     // We proceed by full clusters and determine a shaping result - either
     // kShaped or kNotDef for each cluster.
-    const hb_glyph_info_t& glyph = glyph_info[glyph_index];
+    const hb_glyph_info_t& glyph = UNSAFE_TODO(glyph_info[glyph_index]);
     previous_cluster = current_cluster;
     current_cluster = glyph.cluster;
     const hb_codepoint_t glyph_id = glyph.codepoint;
@@ -1213,9 +1211,8 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
                           is_horizontal ? HB_DIRECTION_LTR : HB_DIRECTION_TTB);
   CHECK(!text_.Is8Bit());
   static_assert(sizeof(uint16_t) == sizeof(UChar));
-  hb_buffer_add_utf16(hb_buffer,
-                      reinterpret_cast<const uint16_t*>(text_.Characters16()),
-                      text_.length(), 0, text_.length());
+  auto span = text_.SpanUint16();
+  hb_buffer_add_utf16(hb_buffer, span.data(), span.size(), 0, text_.length());
 
   const FontPlatformData& platform_data = font_data.PlatformData();
   HarfBuzzFace* const hb_face = platform_data.GetHarfBuzzFace();
@@ -1235,7 +1232,8 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
   hb_glyph_position_t* glyph_position =
       hb_buffer_get_glyph_positions(hb_buffer, nullptr);
   glyphs.reserve(num_glyphs);
-  for (; num_glyphs; --num_glyphs, ++glyph_info, ++glyph_position) {
+  for (; num_glyphs;
+       --num_glyphs, UNSAFE_TODO(++glyph_info), UNSAFE_TODO(++glyph_position)) {
     glyphs.push_back(GlyphData{
         .cluster = glyph_info->cluster,
         .glyph = static_cast<Glyph>(glyph_info->codepoint),

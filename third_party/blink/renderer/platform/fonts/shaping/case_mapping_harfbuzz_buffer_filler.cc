@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
 
 #include <unicode/utf16.h>
@@ -35,11 +30,13 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     : harfbuzz_buffer_(harfbuzz_buffer) {
   if (case_map_intend == CaseMapIntend::kKeepSameCase) {
     if (text.Is8Bit()) {
-      hb_buffer_add_latin1(harfbuzz_buffer_, text.Characters8(), text.length(),
+      auto span = text.Span8();
+      hb_buffer_add_latin1(harfbuzz_buffer_, span.data(), span.size(),
                            start_index, num_characters);
     } else {
-      hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(text.Characters16()),
-                          text.length(), start_index, num_characters);
+      auto span = text.SpanUint16();
+      hb_buffer_add_utf16(harfbuzz_buffer_, span.data(), span.size(),
+                          start_index, num_characters);
     }
   } else {
     CaseMap case_map(locale);
@@ -58,9 +55,9 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
 
     DCHECK_EQ(case_mapped_text.length(), text.length());
     DCHECK(!case_mapped_text.Is8Bit());
-    hb_buffer_add_utf16(harfbuzz_buffer_,
-                        ToUint16(case_mapped_text.Characters16()),
-                        text.length(), start_index, num_characters);
+    auto span = case_mapped_text.SpanUint16();
+    hb_buffer_add_utf16(harfbuzz_buffer_, span.data(), span.size(), start_index,
+                        num_characters);
   }
 }
 
@@ -80,7 +77,7 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
   for (unsigned char_index = start_index;
        char_index < start_index + num_characters;) {
     unsigned new_char_index = char_index;
-    U16_FWD_1(buffer.data(), new_char_index, num_characters);
+    UNSAFE_TODO(U16_FWD_1(buffer.data(), new_char_index, num_characters));
     String char_by_char(
         buffer.subspan(char_index, new_char_index - char_index));
     String case_mapped_char;

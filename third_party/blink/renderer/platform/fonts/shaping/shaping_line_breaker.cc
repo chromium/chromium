@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
 #include <array>
@@ -600,7 +595,8 @@ const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
   if (line_end_result) {
     segments[count++] = {line_end_result, last_safe, max_length};
   }
-  auto* line_result = ShapeResultView::Create({&segments[0], count});
+  auto* line_result =
+      ShapeResultView::Create(UNSAFE_TODO({&segments[0], count}));
   DCHECK_EQ(end - start, line_result->NumCharacters());
   return line_result;
 }

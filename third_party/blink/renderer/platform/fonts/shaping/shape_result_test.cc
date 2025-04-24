@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 #include "base/containers/span.h"
@@ -87,7 +82,7 @@ class ShapeResultTest : public FontTestBase {
   }
 
   const Font* GetFont(FontType type) const {
-    return fonts_holder->fonts[static_cast<size_t>(type)];
+    return UNSAFE_TODO(fonts_holder->fonts[static_cast<size_t>(type)]);
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
