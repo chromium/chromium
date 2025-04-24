@@ -1798,6 +1798,11 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    /** Returns the coordinator that manages the overflow menu for tab group cards in the GTS. */
+    public TabListGroupMenuCoordinator getTabListGroupMenuCoordinator() {
+        return mTabListGroupMenuCoordinator;
+    }
+
     private TabListMediator.TabActionListener getTabLongClickListener(
             @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {

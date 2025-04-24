@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -44,6 +48,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
 
@@ -123,6 +128,26 @@ public class TabListGroupMenuCoordinatorUnitTest {
                         R.id.ungroup_tab,
                         R.id.delete_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
+    }
+
+    @Test
+    public void testBuildMenuItems_WithIcons() {
+        ModelList modelList = new ModelList();
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+
+        RectProvider viewRectProvider = mock();
+        when(viewRectProvider.getRect()).thenReturn(new Rect());
+
+        // Turns on mShouldShowIcons
+        mMenuCoordinator.showMenuWithIcons(viewRectProvider, TAB_GROUP_TOKEN);
+        mMenuCoordinator.destroyMenuForTesting();
+        mMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_TOKEN);
+
+        for (int i = 0; i < modelList.size(); i++) {
+            PropertyModel propertyModel = modelList.get(i).model;
+            assertNotEquals(
+                    Resources.ID_NULL, propertyModel.get(ListMenuItemProperties.START_ICON_ID));
+        }
     }
 
     @Test

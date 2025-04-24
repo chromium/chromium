@@ -931,4 +931,9 @@ public class TabListCoordinator
                             }
                         });
     }
+
+    /** Returns the coordinator that manages the overflow menu for tab group cards in the GTS. */
+    public TabListGroupMenuCoordinator getTabListGroupMenuCoordinator() {
+        return mMediator.getTabListGroupMenuCoordinator();
+    }
 }

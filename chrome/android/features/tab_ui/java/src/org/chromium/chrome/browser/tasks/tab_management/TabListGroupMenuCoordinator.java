@@ -10,6 +10,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
@@ -21,31 +22,37 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 /**
  * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of
  * menu items, setting up the menu and displaying the menu.
  */
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
+    private final Activity mActivity;
+    private boolean mShouldShowIcons;
+
     /**
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Context} that the coordinator resides in.
      */
     public TabListGroupMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull CollaborationService collaborationService,
-            @NonNull Context context) {
+            @NonNull Activity activity) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
+        mActivity = activity;
     }
 
     /**
@@ -63,8 +70,28 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null) return;
 
+            mShouldShowIcons = false;
             createAndShowMenu(view, tabGroupId, (Activity) view.getContext());
         };
+    }
+
+    /**
+     * Show the context menu of the tab group with visible icons.
+     *
+     * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
+     *     coordinates.
+     * @param tabGroupId The tab group ID of the interacting tab group.
+     */
+    public void showMenuWithIcons(RectProvider anchorViewRectProvider, Token tabGroupId) {
+        mShouldShowIcons = true;
+        createAndShowMenu(
+                anchorViewRectProvider,
+                tabGroupId,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ false,
+                /* animStyle= */ ResourcesCompat.ID_NULL,
+                AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION,
+                mActivity);
     }
 
     @Override
@@ -78,7 +105,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.close_tab_group_menu_item,
                         R.id.close_tab_group,
-                        /* startIconId= */ Resources.ID_NULL,
+                        mShouldShowIcons ? R.drawable.ic_tab_close_24dp : Resources.ID_NULL,
                         /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
@@ -87,7 +114,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.rename_tab_group_menu_item,
                         R.id.edit_group_name,
-                        /* startIconId= */ Resources.ID_NULL,
+                        mShouldShowIcons ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
                         /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
@@ -97,7 +124,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.ungroup_tab_group_menu_item,
                             R.id.ungroup_tab,
-                            /* startIconId= */ Resources.ID_NULL,
+                            mShouldShowIcons ? R.drawable.ic_ungroup_tabs_24dp : Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
@@ -107,7 +134,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                                 R.string.share_tab_group_menu_item,
                                 R.id.share_group,
-                                /* startIconId= */ Resources.ID_NULL,
+                                mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL,
                                 /* iconTintColorStateList= */ Resources.ID_NULL,
                                 R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                                 isIncognito,
@@ -120,7 +147,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_tab_group,
-                            /* startIconId= */ Resources.ID_NULL,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
@@ -135,7 +164,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_shared_group,
-                            /* startIconId= */ Resources.ID_NULL,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             /* isIncognito= */ false,
@@ -146,7 +177,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             R.string.leave_tab_group_menu_item,
                             R.id.leave_group,
                             /* startIconId= */ Resources.ID_NULL,
-                            /* iconTintColorStateList= */ Resources.ID_NULL,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             /* isIncognito= */ false,
                             /* enabled= */ true));
@@ -155,6 +188,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        return getDimensionPixelSize(R.dimen.tab_group_menu_width);
+        return getDimensionPixelSize(
+                mShouldShowIcons
+                        ? R.dimen.tab_group_menu_with_icons_width
+                        : R.dimen.tab_group_menu_width);
     }
 }
