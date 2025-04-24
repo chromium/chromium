@@ -154,6 +154,9 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   TabGridBottomToolbar* _bottomToolbar;
   // The face pile view that displays the share button or the face pile.
   UIView* _facePileView;
+  // Constraints for the container on narrow vs large windows.
+  NSArray<NSLayoutConstraint*>* _narrowWidthConstraints;
+  NSArray<NSLayoutConstraint*>* _largeWidthConstraints;
   // Container for the content of the ViewController.
   UIView* _container;
   // The background of the container, for animations.
@@ -321,6 +324,20 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     _container.layer.cornerRadius = kContainerCornerRadius;
     _container.layer.masksToBounds = YES;
 
+    _narrowWidthConstraints = @[
+      [self.view.trailingAnchor
+          constraintEqualToAnchor:_container.trailingAnchor
+                         constant:kContainerMargin],
+      [self.view.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor
+                                              constant:-kContainerMargin],
+    ];
+    _largeWidthConstraints = @[
+      [_container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                           multiplier:kContainerMultiplier],
+    ];
+
+    [self updateContainerConstraints];
+
     [NSLayoutConstraint activateConstraints:@[
       [self.view.centerXAnchor
           constraintEqualToAnchor:_container.centerXAnchor],
@@ -328,11 +345,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
           constraintEqualToAnchor:_container.centerYAnchor],
       [_container.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
                                             multiplier:kContainerMultiplier],
-      [self.view.trailingAnchor
-          constraintEqualToAnchor:_container.trailingAnchor
-                         constant:kContainerMargin],
-      [self.view.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor
-                                              constant:-kContainerMargin],
     ]];
   } else {
     AddSameConstraints(self.view, _container);
@@ -385,9 +397,9 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector(updateGridInsets)];
+                       withAction:@selector(sizeClassDidChange)];
     [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
-                       withAction:@selector(updateGridInsets)];
+                       withAction:@selector(sizeClassDidChange)];
   }
 }
 
@@ -411,7 +423,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
           self.traitCollection.verticalSizeClass ||
       previousTraitCollection.horizontalSizeClass !=
           self.traitCollection.horizontalSizeClass) {
-    [self updateGridInsets];
+    [self sizeClassDidChange];
   }
 }
 #endif
@@ -1051,6 +1063,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
                                         .rightBarButtonItems[0]];
 }
 
+// Called when the size class changed.
+- (void)sizeClassDidChange {
+  [self updateGridInsets];
+  [self updateContainerConstraints];
+}
+
 // Updates the safe area inset of the grid based on this VC safe areas and the
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
@@ -1074,6 +1092,24 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   safeAreaInsets.top = 0;
   safeAreaInsets.bottom += bottomToolbarInset;
   _gridViewController.contentInsets = safeAreaInsets;
+}
+
+// Updates the constraints of the container based on the size class.
+- (void)updateContainerConstraints {
+  if (!IsContainedTabGroupEnabled()) {
+    return;
+  }
+  BOOL isNarrowWidth =
+      self.traitCollection.horizontalSizeClass ==
+          UIUserInterfaceSizeClassCompact &&
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
+  if (isNarrowWidth) {
+    [NSLayoutConstraint deactivateConstraints:_largeWidthConstraints];
+    [NSLayoutConstraint activateConstraints:_narrowWidthConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_narrowWidthConstraints];
+    [NSLayoutConstraint activateConstraints:_largeWidthConstraints];
+  }
 }
 
 // Starts managing the shared group.
