@@ -14,7 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -74,7 +74,7 @@ class ARQuickLookCoordinatorTest : public PlatformTest {
   }
 
   // Needed for test profile created by TestBrowser().
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;

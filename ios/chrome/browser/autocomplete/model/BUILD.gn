@@ -71,6 +71,7 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/family_picker_coordinator.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/family_picker_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/fakes/fake_ui_navigation_controller.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -67,7 +67,7 @@ class FamilyPickerCoordinatorTest : public PlatformTest {
             @protocol(FamilyPickerViewControllerPresentationDelegate)]);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
   FamilyPickerCoordinator* coordinator_;
   FamilyPickerViewController* view_controller_;

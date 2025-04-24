@@ -6,7 +6,6 @@
 
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -26,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -113,7 +113,7 @@ class ToolbarCoordinatorTest : public PlatformTest {
 
   void TearDown() override { [coordinator_ stop]; }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;

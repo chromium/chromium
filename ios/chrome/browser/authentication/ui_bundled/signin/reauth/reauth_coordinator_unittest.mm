@@ -12,7 +12,6 @@
 #import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/web/common/uikit_ui_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -102,7 +102,7 @@ class ReauthCoordinatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   OCMockObject<SystemIdentityInteractionManager>* mock_interaction_manager_ =

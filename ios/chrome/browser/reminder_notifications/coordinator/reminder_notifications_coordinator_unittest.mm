@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -49,7 +49,7 @@ class ReminderNotificationsCoordinatorTest : public PlatformTest {
     return coordinator_;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ReminderNotificationsCoordinator* coordinator_;

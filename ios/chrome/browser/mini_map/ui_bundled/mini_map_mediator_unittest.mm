@@ -6,13 +6,13 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -48,7 +48,7 @@ class MiniMapMediatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment environment_;
+  web::WebTaskEnvironment environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   id delegate_;
   MiniMapMediator* mediator_;

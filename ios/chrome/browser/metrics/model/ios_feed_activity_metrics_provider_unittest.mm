@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -36,7 +36,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;

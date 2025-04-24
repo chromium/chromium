@@ -139,6 +139,7 @@ source_set("unit_tests") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/security",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",

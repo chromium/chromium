@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -29,6 +28,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest_mac.h"
@@ -316,7 +316,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  using TaskEnvironment = base::test::TaskEnvironment;
+  using TaskEnvironment = web::WebTaskEnvironment;
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   NSMutableSet<NSString*>* images_pending_;

@@ -9,7 +9,6 @@
 #import "base/functional/overloaded.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
@@ -129,7 +129,7 @@ class IOSFeedEnabledMetricsProviderTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;

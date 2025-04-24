@@ -9,7 +9,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/sequence_checker.h"
-#include "base/test/task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -46,7 +45,6 @@ class BackgroundDownloadTestBase : public PlatformTest {
   std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse(
       const net::test_server::HttpRequest& request);
 
-  base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer server_;
   net::test_server::EmbeddedTestServerHandle server_handle_;
   std::unique_ptr<net::test_server::HttpRequest> request_sent_;

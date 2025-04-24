@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]

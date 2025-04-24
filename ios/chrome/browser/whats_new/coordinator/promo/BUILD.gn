@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/browser/whats_new/public:constants",
+    "//ios/web/public/test",
     "//third_party/ocmock",
   ]
 }

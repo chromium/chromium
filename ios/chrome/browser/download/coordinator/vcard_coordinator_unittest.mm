@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/download/coordinator/vcard_coordinator.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -13,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 // Test fixture for VcardCoordinatorTest class.
@@ -32,7 +32,7 @@ class VcardCoordinatorTest : public PlatformTest {
   ~VcardCoordinatorTest() override { [coordinator_ stop]; }
 
   // Needed for test profile created by TestBrowser().
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   VcardCoordinator* coordinator_;

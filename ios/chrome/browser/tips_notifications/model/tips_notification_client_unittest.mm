@@ -9,7 +9,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
-#import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -38,6 +37,7 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -245,7 +245,7 @@ class TipsNotificationClientTest : public PlatformTest {
         local_state->GetInteger(kTipsNotificationsUserType));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;

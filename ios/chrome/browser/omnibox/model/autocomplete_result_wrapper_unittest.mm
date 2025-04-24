@@ -63,7 +63,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
 
   ~AutocompleteResultWrapperTest() override { [wrapper_ disconnect]; }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
 
   AutocompleteResultWrapper* wrapper_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;

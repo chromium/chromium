@@ -8,7 +8,6 @@
 #import "base/ios/ios_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
@@ -38,6 +37,7 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -175,7 +175,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;

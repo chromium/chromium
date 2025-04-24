@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -112,7 +112,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
         DownloadManagerTabHelper::FromWebState(web_state_.get()));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;

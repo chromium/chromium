@@ -96,16 +96,9 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-BrowserStateKeyedServiceFactory::TestingFactory
-TabGroupSyncServiceFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildService, nullptr);
-}
-
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests),
+                                    ServiceCreation::kCreateWithProfile),
       synthetic_field_trial_helper_(std::make_unique<SyntheticFieldTrialHelper>(
           base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSyncedTabGroup),
           base::BindRepeating(

@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -20,6 +19,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -96,7 +96,7 @@ class SadTabTabHelperTest : public PlatformTest {
 
   ~SadTabTabHelperTest() override { [application_ stopMocking]; }
 
-  base::test::TaskEnvironment environment_;
+  web::WebTaskEnvironment environment_;
   ScopedKeyWindow scoped_key_window_;
   UIView* web_state_view_;
   std::unique_ptr<ProfileIOS> profile_;

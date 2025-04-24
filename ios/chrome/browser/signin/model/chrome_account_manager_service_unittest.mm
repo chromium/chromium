@@ -79,7 +79,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_;
 };

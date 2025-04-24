@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
@@ -29,6 +28,7 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -93,7 +93,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NSString* test_title_;
   std::unique_ptr<TestProfileIOS> profile_;

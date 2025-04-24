@@ -6,7 +6,6 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/test/task_environment.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -26,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -138,7 +138,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<enterprise_idle::IdleService> idle_service_;
   AppState* app_state_;

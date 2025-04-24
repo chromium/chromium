@@ -131,7 +131,9 @@ TabGroupChangeNotifierImpl::TabGroupChangeNotifierImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     signin::IdentityManager* identity_manager)
     : tab_group_sync_service_(tab_group_sync_service),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager) {
+  CHECK(tab_group_sync_service_);
+}
 
 TabGroupChangeNotifierImpl::~TabGroupChangeNotifierImpl() = default;
 

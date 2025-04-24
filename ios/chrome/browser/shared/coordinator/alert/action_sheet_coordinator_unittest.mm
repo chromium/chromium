@@ -7,10 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -49,7 +49,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
         base_view_controller_.presentedViewController);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
 
   ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<TestProfileIOS> profile_;

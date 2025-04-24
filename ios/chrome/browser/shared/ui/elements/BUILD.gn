@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_coordinator.h"
 
-#import "base/test/task_environment.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -106,7 +106,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
   }
 
   // Needed for test profile created by TestBrowser().
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;

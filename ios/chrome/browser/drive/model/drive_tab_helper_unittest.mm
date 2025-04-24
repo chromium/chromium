@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -36,7 +36,7 @@ class DriveTabHelperTest : public PlatformTest {
     helper_ = DriveTabHelper::GetOrCreateForWebState(web_state_.get());
   }
 
-  base::test::TaskEnvironment task_environment;
+  web::WebTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;

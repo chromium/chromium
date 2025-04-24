@@ -145,9 +145,6 @@ class TabsCloserTest : public PlatformTest {
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    builder.AddTestingFactory(
-        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
     builder.AddTestingFactory(

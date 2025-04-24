@@ -196,6 +196,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:block_cleanup_test",
     "//ios/testing:nserror_support",
     "//ios/web/common:uikit",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

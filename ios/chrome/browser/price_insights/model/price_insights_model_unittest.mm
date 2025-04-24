@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -22,6 +21,7 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -94,7 +94,7 @@ class PriceInsightsModelTest : public PlatformTest {
 
  protected:
   base::test::ScopedFeatureList features_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;

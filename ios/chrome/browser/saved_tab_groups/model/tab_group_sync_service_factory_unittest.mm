@@ -25,8 +25,6 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
         },
         /*disable_features=*/{});
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
-                              TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
   }
 

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -123,7 +123,7 @@ class IncognitoSessionTrackerTest : public PlatformTest {
   ProfileManagerIOS* profile_manager() { return &profile_manager_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_local_state_;
   TestProfileManagerIOS profile_manager_;
 };
