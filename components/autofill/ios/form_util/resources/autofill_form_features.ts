@@ -65,6 +65,13 @@ content.
 let autofillAllowDefaultPreventedSubmission: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_allow_default_prevented_submission)
 
+// LINT.IfChange(autofill_dedupe_form_submission)
+/**
+Dedupes form submission by only allowing one submission per form.
+*/
+let autofillDedupeFormSubmission: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_dedupe_form_submission)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -164,6 +171,20 @@ function isAutofillAllowDefaultPreventedSubmission(): boolean {
   return autofillAllowDefaultPreventedSubmission;
 }
 
+/**
+ * @see autofillDedupeFormSubmission
+ */
+function setAutofillDedupeFormSubmission(enabled: boolean): void {
+  autofillDedupeFormSubmission = enabled;
+}
+
+/**
+ * @see autofillDedupeFormSubmission
+ */
+function isAutofillDedupeFormSubmissionEnabled(): boolean {
+  return autofillDedupeFormSubmission;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWebLegacy.autofill_form_features = {
@@ -181,4 +202,6 @@ gCrWebLegacy.autofill_form_features = {
   isAutofillCorrectUserEditedBitInParsedField,
   setAutofillAllowDefaultPreventedSubmission,
   isAutofillAllowDefaultPreventedSubmission,
+  setAutofillDedupeFormSubmission,
+  isAutofillDedupeFormSubmissionEnabled,
 };

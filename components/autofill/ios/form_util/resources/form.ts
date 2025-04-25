@@ -30,6 +30,15 @@ const kNamelessFieldIDPrefix = 'gChrome~field~';
 const wasEditedByUser: WeakMap<any, any> = new WeakMap();
 
 /**
+ * Registry that tracks the forms that were submitted during the frame's
+ * lifetime. Elements that are garbage collected will be removed from the
+ * registry so this can't memory leak. In the worst case the registry will get
+ * as big as the number of submitted forms that aren't yet deleted and we don't
+ * expect a lot of those.
+ */
+const formSubmissionRegistry: WeakSet<any> = new WeakSet();
+
+/**
  * Based on Element::isFormControlElement() (WebKit)
  * @param element A DOM element.
  * @return true if the `element` is a form control element.
@@ -322,6 +331,16 @@ function formSubmitted(
     programmaticSubmission: boolean,
     includeRemoteFrameToken: boolean = false,
     ): void {
+  if (gCrWebLegacy.autofill_form_features
+          .isAutofillDedupeFormSubmissionEnabled()) {
+    // Handle deduping when the feature allows it.
+    if (formSubmissionRegistry.has(form)) {
+      // Do not double submit the same form.
+      return;
+    }
+    formSubmissionRegistry.add(form);
+  }
+
   // Default URL for action is the document's URL.
   const action = form.getAttribute('action') || document.URL;
 

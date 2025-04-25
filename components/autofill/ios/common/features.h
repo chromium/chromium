@@ -25,6 +25,13 @@ BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);
 // instead of using true by default.
 BASE_DECLARE_FEATURE(kAutofillCorrectUserEditedBitInParsedField);
 
+// Dedupes form submission by only allowing one submission per form element.
+// This feature is meant to be used when preventDefault()ed submit events are
+// allowed (i.e. AutofillAllowDefaultPreventedSubmission enabled) which can
+// allow submitting the form multiple times as post-submit navigation can be
+// prevented.
+BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
+
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
 // TODO(crbug.com/40281788): Remove once launched.

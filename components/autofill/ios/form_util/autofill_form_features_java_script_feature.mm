@@ -97,4 +97,13 @@ void AutofillFormFeaturesJavaScriptFeature::
       base::Value::List().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::SetAutofillDedupeFormSubmission(
+    web::WebFrame* frame,
+    bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillDedupeFormSubmission",
+      base::Value::List().Append(enabled));
+}
+
 }  // namespace autofill

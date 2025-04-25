@@ -68,6 +68,11 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
       ->SetAutofillAllowDefaultPreventedFormSubmission(
           web_frame, base::FeatureList::IsEnabled(
                          kAutofillAllowDefaultPreventedSubmission));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillDedupeFormSubmission(
+          web_frame,
+          base::FeatureList::IsEnabled(kAutofillDedupeFormSubmission));
 }
 
 AutofillFormFeaturesInjector::~AutofillFormFeaturesInjector() = default;

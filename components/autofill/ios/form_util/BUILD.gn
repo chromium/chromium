@@ -338,6 +338,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
+    "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
