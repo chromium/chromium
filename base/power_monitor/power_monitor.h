@@ -66,9 +66,7 @@ class BASE_EXPORT PowerMonitor {
   // Returns true if the system is currently suspended.
   bool AddPowerSuspendObserverAndReturnSuspendedState(
       PowerSuspendObserver* observer);
-  // Returns true if the system is on-battery.
-  bool AddPowerStateObserverAndReturnOnBatteryState(
-      PowerStateObserver* observer);
+  // Returns the battery power status (battery power, external power, unknown).
   PowerStateObserver::BatteryPowerStatus
   AddPowerStateObserverAndReturnBatteryPowerStatus(
       PowerStateObserver* observer);

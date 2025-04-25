@@ -622,7 +622,8 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
-              ->AddPowerStateObserverAndReturnOnBatteryState(this)),
+              ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
+          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower),
       no_undamaged_overlay_promotion_(
           base::FeatureList::IsEnabled(features::kNoUndamagedOverlayPromotion)),
       disable_video_overlay_if_moving_(disable_video_overlay_if_moving) {

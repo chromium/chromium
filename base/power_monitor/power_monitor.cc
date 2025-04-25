@@ -63,13 +63,6 @@ bool PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
   return is_system_suspended_;
 }
 
-// static
-bool PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
-    PowerStateObserver* obs) {
-  return AddPowerStateObserverAndReturnBatteryPowerStatus(obs) ==
-         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
-}
-
 PowerStateObserver::BatteryPowerStatus
 PowerMonitor::AddPowerStateObserverAndReturnBatteryPowerStatus(
     PowerStateObserver* obs) {
