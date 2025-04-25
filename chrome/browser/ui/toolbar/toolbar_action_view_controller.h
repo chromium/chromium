@@ -47,7 +47,7 @@ class ToolbarActionViewController {
     // the entry in the Extensions Menu.
     kMenuEntry = 2,
 
-    // The action was invoked by the user activiating (via mouse or keyboard)
+    // The action was invoked by the user activating (via mouse or keyboard)
     // the entry in the legacy overflow (3-dot) menu.
     // Removed 2021/04.
     // kLegacyOverflowedEntry = 3,
