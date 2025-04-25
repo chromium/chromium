@@ -389,7 +389,8 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
   column_spanner_path_ = previous.column_spanner_path_;
 
   if (relayout_type == kRelayoutIgnoringLineClamp) {
-    line_clamp_data_.data.state = LineClampData::kDontTruncate;
+    line_clamp_data_.data.state = LineClampData::kDisabled;
+    line_clamp_data_.ignore_line_clamp = true;
   } else if (relayout_type == kRelayoutWithLineClampBlockSize) {
     line_clamp_data_.data.state = LineClampData::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
@@ -401,9 +402,6 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.initial_lines_until_clamp;
-  } else if (previous.line_clamp_data_.data.state ==
-             LineClampData::kDontTruncate) {
-    line_clamp_data_.data.state = LineClampData::kDontTruncate;
   }
 
   if (relayout_type == kRelayoutForTextBoxTrim) {

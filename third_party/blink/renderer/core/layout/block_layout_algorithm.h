@@ -88,7 +88,8 @@ struct BlockLineClampData {
 
   void UpdateClampOffsetFromStyle(LayoutUnit clamp_bfc_offset,
                                   LayoutUnit content_edge) {
-    if (data.state == LineClampData::kDontTruncate) {
+    if (ignore_line_clamp) {
+      DCHECK_EQ(data.state, LineClampData::kDisabled);
       return;
     }
 
@@ -102,7 +103,7 @@ struct BlockLineClampData {
 
     DCHECK_EQ(data.state, LineClampData::kDisabled);
     if (clamp_bfc_offset == kIndefiniteSize) {
-      data.state = LineClampData::kDontTruncate;
+      data.state = LineClampData::kDisabled;
     } else {
       data.state = LineClampData::kMeasureLinesUntilBfcOffset;
       data.lines_until_clamp = 0;
@@ -111,7 +112,8 @@ struct BlockLineClampData {
   }
 
   void UpdateLinesFromStyle(int lines_until_clamp) {
-    if (data.state == LineClampData::kDontTruncate) {
+    if (ignore_line_clamp) {
+      DCHECK_EQ(data.state, LineClampData::kDisabled);
       return;
     }
 
@@ -184,6 +186,9 @@ struct BlockLineClampData {
   }
 
   LineClampData data;
+
+  // Set to true when we relayout ignoring line clamp.
+  bool ignore_line_clamp = false;
 
   // TODO(abotella): Make the following fields into a union.
 
