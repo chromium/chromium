@@ -3,6 +3,11 @@
         white-space: nowrap;
       }
 
+      :host-context([dir=rtl]) cr-input.phone-number-input::part(input) {
+        direction: ltr;
+        text-align: end;
+      }
+
       .address-row {
         display: flex;
       }
@@ -103,7 +108,8 @@
                 <cr-input type="text" label="[[item.label]]"
                     value="{{item.value}}" spellcheck="false"
                     maxlength="1000"
-                    class$="address-column [[item.additionalClassName]]"
+                    class$="address-column [[item.additionalClassName]]
+                    [[getPhoneNumberInputClass_(item.fieldType)]]"
                     required="[[item.isRequired]]"
                     invalid="[[isVisuallyInvalid_(item.isValidatable,
                                                   item.isValid)]]">

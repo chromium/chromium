@@ -292,6 +292,15 @@ export class SettingsAddressEditDialogElement extends
     return !country.countryCode;
   }
 
+  private getPhoneNumberInputClass_(
+    fieldType: chrome.autofillPrivate.FieldType): string {
+  if (fieldType ===
+      chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER) {
+    return 'phone-number-input';
+  }
+  return '';
+}
+
   private isAddressStoredInAccount_(): boolean {
     if (this.address.guid) {
       return this.address.metadata !== undefined &&
