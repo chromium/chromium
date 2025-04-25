@@ -166,7 +166,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
     case DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING:
-      return 12;
+      return 4;
     case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
       return 20;
     case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH:
