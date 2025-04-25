@@ -89,7 +89,7 @@ class AttributionDataHostManager {
   virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      GURL reporting_url) = 0;
+      const GURL& reporting_url) = 0;
 
   // Notifies the manager whenever an attribution-enabled navigation request
   // completes. Should be called even for navigations when

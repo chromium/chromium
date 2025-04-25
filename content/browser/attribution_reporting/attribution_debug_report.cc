@@ -71,16 +71,16 @@ base::Value GetLimit(T limit) {
 
 std::optional<DebugDataTypeAndBody> GetReportDataBody(
     const StoreSourceResult& result) {
-  base::Value::Dict additional_fields;
-  if (result.destination_limit().has_value()) {
-    additional_fields.Set("source_destination_limit",
-                          GetLimit(result.destination_limit().value()));
-  }
-
   const auto make_report_body = [&](DebugDataType type,
                                     base::Value limit = base::Value()) {
-    return std::make_optional(DebugDataTypeAndBody(
-        type, std::move(limit), std::move(additional_fields)));
+    base::Value::Dict additional_fields;
+    if (result.destination_limit().has_value()) {
+      additional_fields.Set("source_destination_limit",
+                            GetLimit(result.destination_limit().value()));
+    }
+
+    return std::make_optional<DebugDataTypeAndBody>(
+        type, std::move(limit), std::move(additional_fields));
   };
 
   return std::visit(
@@ -164,66 +164,66 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
             return std::optional<DebugDataTypeAndBody>();
           },
           [](CreateReportResult::InternalError) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerUnknownError);
           },
           [](CreateReportResult::NoCapacityForConversionDestination v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventStorageLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventStorageLimit, GetLimit(v.max));
           },
           [](CreateReportResult::ExcessiveReportingOrigins v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingImpressions) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingSource);
           },
           [](CreateReportResult::ExcessiveAttributions v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::
                     kTriggerEventAttributionsPerSourceDestinationLimit,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingSourceFilterData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerNoMatchingFilterData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingFilterData);
           },
           [](CreateReportResult::Deduplicated) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventDeduplicated));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventDeduplicated);
           },
           [](CreateReportResult::NoMatchingConfigurations) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventNoMatchingConfigurations));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoMatchingConfigurations);
           },
           [](CreateReportResult::NeverAttributedSource) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventNoise));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoise);
           },
           [](CreateReportResult::FalselyAttributedSource) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventNoise));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoise);
           },
           [](const CreateReportResult::PriorityTooLow&) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerEventLowPriority));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventLowPriority);
           },
           [](const CreateReportResult::ExcessiveEventLevelReports&) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventExcessiveReports));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventExcessiveReports);
           },
           [](CreateReportResult::ReportWindowNotStarted) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventReportWindowNotStarted));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventReportWindowNotStarted);
           },
           [](CreateReportResult::ReportWindowPassed) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventReportWindowPassed));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventReportWindowPassed);
           },
           [](CreateReportResult::NoMatchingTriggerData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerEventNoMatchingTriggerData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerEventNoMatchingTriggerData);
           },
       },
       result);
@@ -243,57 +243,57 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
             return std::optional<DebugDataTypeAndBody>();
           },
           [](CreateReportResult::InternalError) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerUnknownError);
           },
           [](CreateReportResult::NoCapacityForConversionDestination v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateStorageLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateStorageLimit, GetLimit(v.max));
           },
           [](CreateReportResult::ExcessiveReportingOrigins v) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max)));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerReportingOriginLimit, GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingImpressions) {
-            return std::make_optional(
-                DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingSource);
           },
           [](CreateReportResult::ExcessiveAttributions v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::
                     kTriggerAggregateAttributionsPerSourceDestinationLimit,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
           [](CreateReportResult::NoMatchingSourceFilterData) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerNoMatchingFilterData));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerNoMatchingFilterData);
           },
           [](CreateReportResult::Deduplicated) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateDeduplicated));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateDeduplicated);
           },
           [](CreateReportResult::NoHistograms) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateNoContributions));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateNoContributions);
           },
           [](CreateReportResult::InsufficientBudget) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateInsufficientBudget,
-                GetLimit(attribution_reporting::kMaxAggregatableValue)));
+                GetLimit(attribution_reporting::kMaxAggregatableValue));
           },
           [](const CreateReportResult::InsufficientNamedBudget& v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateInsufficientNamedBudget,
-                GetLimit(v.budget), base::Value::Dict().Set("name", v.name)));
+                GetLimit(v.budget), base::Value::Dict().Set("name", v.name));
           },
           [](CreateReportResult::ReportWindowPassed) {
-            return std::make_optional(DebugDataTypeAndBody(
-                DebugDataType::kTriggerAggregateReportWindowPassed));
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kTriggerAggregateReportWindowPassed);
           },
           [](CreateReportResult::ExcessiveAggregatableReports v) {
-            return std::make_optional(DebugDataTypeAndBody(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateExcessiveReports,
-                GetLimit(v.max)));
+                GetLimit(v.max));
           },
       },
       result);

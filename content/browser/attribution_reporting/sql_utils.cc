@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -483,12 +484,9 @@ std::optional<TriggerSpecs> DeserializeTriggerSpecs(
     return TriggerSpecs();
   }
 
-  std::vector<base::TimeDelta> end_times;
-  end_times.reserve(msg.event_level_report_window_end_times_size());
-
-  for (int64_t time : msg.event_level_report_window_end_times()) {
-    end_times.push_back(base::Microseconds(time));
-  }
+  std::vector<base::TimeDelta> end_times =
+      base::ToVector(msg.event_level_report_window_end_times(),
+                     [](int64_t time) { return base::Microseconds(time); });
 
   auto event_report_windows = EventReportWindows::Create(
       base::Microseconds(msg.event_level_report_window_start_time()),

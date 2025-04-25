@@ -337,7 +337,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   if (redirect_chain.size() < offset) {
     return;
   }
-  GURL reporting_url = redirect_chain[redirect_chain.size() - offset];
+  const GURL& reporting_url = redirect_chain[redirect_chain.size() - offset];
   // Pass the suitability as a proxy for the potentially trustworthy check, as
   // redirects should only happen for HTTP-based navigations.
   auto* tracker =
@@ -354,7 +354,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   bool had_header =
       attribution_manager->GetDataHostManager()
           ->NotifyNavigationRegistrationData(impression->attribution_src_token,
-                                             headers, std::move(reporting_url));
+                                             headers, reporting_url);
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();

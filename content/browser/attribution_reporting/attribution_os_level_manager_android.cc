@@ -17,6 +17,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -180,9 +181,8 @@ void AttributionOsLevelManagerAndroid::Register(
 
   Registrar registrar = registration.registrar;
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
-  std::vector<ScopedJavaLocalRef<jobject>> registration_urls;
-  std::ranges::transform(
-      registration.registration_items, std::back_inserter(registration_urls),
+  std::vector<ScopedJavaLocalRef<jobject>> registration_urls = base::ToVector(
+      registration.registration_items,
       [env](const attribution_reporting::OsRegistrationItem& item) {
         return url::GURLAndroid::FromNativeGURL(env, item.url);
       });
@@ -280,9 +280,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
 
   JNIEnv* env = AttachCurrentThread();
 
-  std::vector<ScopedJavaLocalRef<jobject>> j_origins;
-  std::ranges::transform(
-      origins, std::back_inserter(j_origins), [env](const url::Origin& origin) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_origins =
+      base::ToVector(origins, [env](const url::Origin& origin) {
         return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
       });
 
@@ -292,8 +291,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
   Java_AttributionOsLevelManager_deleteRegistrations(
       env, jobj_, request_id, delete_begin.InMillisecondsSinceUnixEpoch(),
       delete_end.InMillisecondsSinceUnixEpoch(), j_origins,
-      std::vector<std::string>(domains.begin(), domains.end()),
-      GetDeletionMode(delete_rate_limit_data), GetMatchBehavior(mode));
+      base::ToVector(domains), GetDeletionMode(delete_rate_limit_data),
+      GetMatchBehavior(mode));
 }
 
 void AttributionOsLevelManagerAndroid::OnRegistrationCompleted(JNIEnv* env,

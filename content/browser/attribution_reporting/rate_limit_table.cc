@@ -23,6 +23,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -592,19 +593,12 @@ RateLimitTable::SourceAllowedForDestinationRateLimit(
   // Value is true if the reporting site matched, false otherwise.
   using DestinationSiteMap = base::flat_map<net::SchemefulSite, bool>;
 
-  DestinationSiteMap destination_sites = [&]() {
-    const base::flat_set<net::SchemefulSite>& destinations =
-        source.registration().destination_set.destinations();
-
-    DestinationSiteMap::container_type pairs;
-    pairs.reserve(destinations.size());
-
-    for (const net::SchemefulSite& site : destinations) {
-      pairs.emplace_back(site, true);
-    }
-
-    return DestinationSiteMap(base::sorted_unique, std::move(pairs));
-  }();
+  DestinationSiteMap destination_sites(
+      base::sorted_unique,
+      base::ToVector(source.registration().destination_set.destinations(),
+                     [](const net::SchemefulSite& site) {
+                       return std::make_pair(site, true);
+                     }));
 
   size_t num_with_same_reporting_site = destination_sites.size();
 
