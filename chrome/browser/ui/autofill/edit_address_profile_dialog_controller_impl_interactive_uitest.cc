@@ -7,6 +7,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -89,6 +90,8 @@ class EditAddressProfileDialogControllerImplTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+    features::kAutofillSupportLastNamePrefix};
   // The latest user decisive interaction with the editor, e.g. Save or Cancel
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.
