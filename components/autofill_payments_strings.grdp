@@ -964,7 +964,7 @@
     Pay over time
   </message>
   <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay over time. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
-    Show <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN">&lt;a href="$1"&gt;</ph>pay over time<ph name="PAY_OVER_TIME_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
+    Show <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN">&lt;a href="$1" aria-description="$2"&gt;</ph>pay over time<ph name="PAY_OVER_TIME_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
   </message>
   <message name="IDS_AUTOFILL_BNPL_AFFIRM" desc="Name of Buy Now Pay Later provider Affirm.">
     Affirm
