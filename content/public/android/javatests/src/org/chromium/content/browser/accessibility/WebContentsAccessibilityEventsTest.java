@@ -215,13 +215,15 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_addHiddenAttributeSubtree() {
-        performTest("add-hidden-attribute-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "add-hidden-attribute-subtree.html",
+                "add-hidden-attribute-subtree-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_addSubtree() {
-        performTest("add-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("add-subtree.html", "add-subtree-expected-android.txt");
     }
 
     @Test
@@ -666,7 +668,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_deleteSubtree() {
-        performTest("delete-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("delete-subtree.html", "delete-subtree-expected-android.txt");
     }
 
     @Test
@@ -686,7 +688,9 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_descriptionChangedSubtree() {
-        performTest("description-changed-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "description-changed-subtree.html",
+                "description-changed-subtree-expected-android.txt");
     }
 
     @Test
@@ -1036,13 +1040,15 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_removeHiddenAttributeSubtree() {
-        performTest("remove-hidden-attribute-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "remove-hidden-attribute-subtree.html",
+                "remove-hidden-attribute-subtree-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_removeSubtree() {
-        performTest("remove-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("remove-subtree.html", "remove-subtree-expected-android.txt");
     }
 
     @Test
@@ -1101,19 +1107,25 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_subtreeReparentedIgnoredChanged() {
-        performTest("subtree-reparented-ignored-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "subtree-reparented-ignored-changed.html",
+                "subtree-reparented-ignored-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_subtreeReparentedViaAppendChild() {
-        performTest("subtree-reparented-via-append-child.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "subtree-reparented-via-append-child.html",
+                "subtree-reparented-via-append-child-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_subtreeReparentedViaAriaOwns() {
-        performTest("subtree-reparented-via-aria-owns.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "subtree-reparented-via-aria-owns.html",
+                "subtree-reparented-via-aria-owns-expected-android.txt");
     }
 
     @Test
