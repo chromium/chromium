@@ -2646,29 +2646,27 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    std::optional<LayoutUnit> line_cross_size_for_stretch =
-        DoesItemStretch(flex_item->block_node, flex_item->alignment)
-            ? std::optional<LayoutUnit>(flex_line.line_cross_size)
-            : std::nullopt;
+    LayoutUnit line_cross_size = flex_line.line_cross_size;
 
     // If an item broke, its offset may have expanded (as the result of a
     // current or previous break before), in which case, we shouldn't expand by
     // the total line cross size. Otherwise, we would continue to expand the row
     // past the block-size of its items.
-    if (line_cross_size_for_stretch && !is_column_ && item_break_token) {
-      LayoutUnit updated_cross_size_for_stretch =
-          line_cross_size_for_stretch.value();
-      updated_cross_size_for_stretch -=
+    if (!is_column_ && item_break_token) {
+      line_cross_size -=
           offset_in_stitched_container -
           (original_offset.block_offset + flex_line.item_offset_adjustment) -
           item_break_token->ConsumedBlockSize();
-
-      line_cross_size_for_stretch = updated_cross_size_for_stretch;
     }
 
     const bool min_block_size_should_encompass_intrinsic_size =
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
-    ConstraintSpace child_space = BuildSpaceForLayout(
+
+    const std::optional<LayoutUnit> line_cross_size_for_stretch =
+        DoesItemStretch(flex_item->block_node, flex_item->alignment)
+            ? std::optional<LayoutUnit>(line_cross_size)
+            : std::nullopt;
+    const ConstraintSpace child_space = BuildSpaceForLayout(
         flex_item->block_node, flex_item->alignment,
         flex_item->main_axis_final_size,
         flex_item->is_initial_block_size_indefinite,
