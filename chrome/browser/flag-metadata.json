@@ -186,6 +186,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "android-adaptive-frame-rate",
+    "owners": [ "boliu@chromium.org", "//components/viz/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-app-integration",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 150

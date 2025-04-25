@@ -95,6 +95,15 @@ const char kAllowLegacyMV2ExtensionsDescription[] =
     "extensions and will be removed in the future.";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidAdaptiveFrameRateName[] =
+    "Android Adaptive Refresh Rate features";
+const char kAndroidAdaptiveFrameRateDescription[] =
+    "Enable adaptive  refresh rate features on supported devices. Feature "
+    "include lowering frame rate for low speed scroll. Has no effect if device "
+    "does not support adaptive refresh rate.";
+#endif
+
 const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";

@@ -77,6 +77,11 @@ extern const char kAllowInsecureLocalhostDescription[];
 extern const char kAllowLegacyMV2ExtensionsName[];
 extern const char kAllowLegacyMV2ExtensionsDescription[];
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+        //
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidAdaptiveFrameRateName[];
+extern const char kAndroidAdaptiveFrameRateDescription[];
+#endif
 
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];

@@ -10722,6 +10722,8 @@ from previous Chrome versions.
   <int value="-1388956102" label="OmniboxTouchDownTriggerForPrefetch:disabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
   <int value="-1388546778" label="WebAppManifestImmediateUpdating:disabled"/>
+  <int value="-1388233453"
+      label="UseFrameIntervalDeciderAdaptiveFrameRate:enabled"/>
   <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
   <int value="-1387498034"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:enabled"/>
@@ -11722,6 +11724,8 @@ from previous Chrome versions.
   <int value="-1007267652"
       label="NtpPhotosModuleCustomizedOptInArtWork:disabled"/>
   <int value="-1007219628" label="IncreasedCmdBufferParseSlice:enabled"/>
+  <int value="-1006553558"
+      label="UseFrameIntervalDeciderAdaptiveFrameRate:disabled"/>
   <int value="-1006508846" label="AutofillEnableCardBenefitsForBmo:disabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>

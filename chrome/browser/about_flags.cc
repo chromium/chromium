@@ -12312,6 +12312,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kMediaPlaybackWhileNotVisiblePermissionPolicy)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-adaptive-frame-rate",
+     flag_descriptions::kAndroidAdaptiveFrameRateName,
+     flag_descriptions::kAndroidAdaptiveFrameRateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
