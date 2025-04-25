@@ -67,6 +67,7 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -110,6 +111,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Whether the context menu is presented in the lens overlay.
   BOOL _isLensOverlay;
+
+  // Image transcoder to locally re-encode images to search.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -143,6 +147,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   _imageSaver = nil;
   [_imageCopier stop];
   _imageCopier = nil;
+  _imageTranscoder = nullptr;
   _baseWebState = nullptr;
 }
 
@@ -540,14 +545,38 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   ImageFetchTabHelper* imageFetcher =
       ImageFetchTabHelper::FromWebState(self.webState);
   DCHECK(imageFetcher);
+
   __weak ContextMenuConfigurationProvider* weakSelf = self;
-  imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
-    if (usingLens) {
-      [weakSelf searchImageUsingLensWithData:data];
-    } else {
-      [weakSelf searchByImageData:data imageURL:imageURL];
-    }
+  imageFetcher->GetImageData(imageURL, referrer, ^(NSData* rawData) {
+    // Arbitrary web image data requires sanitization before use.
+    [weakSelf sanitizeImageData:rawData
+                     completion:^(NSData* transcodedData) {
+                       if (usingLens) {
+                         [weakSelf searchImageUsingLensWithData:transcodedData];
+                       } else {
+                         [weakSelf searchByImageData:transcodedData
+                                            imageURL:imageURL];
+                       }
+                     }];
   });
+}
+
+// Sanitizes a web image data before use by passing it through the transcoder.
+- (void)sanitizeImageData:(NSData*)imageData
+               completion:(void (^)(NSData*))completion {
+  if (!_imageTranscoder) {
+    _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
+  }
+  _imageTranscoder->TranscodeImage(
+      imageData, @"image/jpeg", nil, nil, nil,
+      base::BindOnce(^(NSData* result, NSError* error) {
+        if (error) {
+          completion(nil);
+          return;
+        }
+
+        completion(result);
+      }));
 }
 
 // Starts a reverse image search based on `imageData` and `imageURL` in a new
