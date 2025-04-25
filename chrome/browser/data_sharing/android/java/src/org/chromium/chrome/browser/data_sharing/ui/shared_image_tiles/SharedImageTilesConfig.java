@@ -105,13 +105,25 @@ public class SharedImageTilesConfig {
         }
 
         /**
-         * Creates a builder with preset values for a tab group thumbnail.
+         * Creates a builder with preset values for a button.
+         *
+         * @param context The Android context.
+         * @return A builder instance configured for a button.
+         */
+        public static Builder createForButton(Context context) {
+            return new Builder(context)
+                    .setTextColor(SemanticColorUtils.getDefaultTextColorAccent1(context))
+                    .setTextStyle(R.style.TextAppearance_TextAccentMediumThick_Primary);
+        }
+
+        /**
+         * Creates a builder with preset values for being drawn on a tab group color.
          *
          * @param context The Android context.
          * @param tabGroupColorId The color id of the tab group.
-         * @return A builder instance configured for a tab group thumbnail.
+         * @return A builder instance configured for a tab group favicon.
          */
-        public static Builder createThumbnail(
+        public static Builder createForTabGroupColorContext(
                 Context context, @TabGroupColorId int tabGroupColorId) {
             return new Builder(context)
                     .setIconSizeDp(R.dimen.small_shared_image_tiles_icon_height)

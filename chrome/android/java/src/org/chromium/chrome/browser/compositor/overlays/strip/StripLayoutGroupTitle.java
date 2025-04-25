@@ -348,7 +348,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         // Initialize the shared image tiles coordinator if it doesn't exist.
         if (mSharedImageTilesCoordinator == null) {
             mSharedImageTilesConfigBuilder =
-                    SharedImageTilesConfig.Builder.createThumbnail(mContext, mColorId);
+                    SharedImageTilesConfig.Builder.createForTabGroupColorContext(
+                            mContext, mColorId);
             mSharedImageTilesCoordinator =
                     new SharedImageTilesCoordinator(
                             mContext,

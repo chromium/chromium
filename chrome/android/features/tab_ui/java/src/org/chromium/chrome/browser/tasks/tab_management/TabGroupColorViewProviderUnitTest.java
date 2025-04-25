@@ -291,7 +291,9 @@ public class TabGroupColorViewProviderUnitTest {
         assertEquals(stroke, params.topMargin);
 
         SharedImageTilesConfig config =
-                SharedImageTilesConfig.Builder.createThumbnail(mContext, currentColorId).build();
+                SharedImageTilesConfig.Builder.createForTabGroupColorContext(
+                                mContext, currentColorId)
+                        .build();
         final @Px int size = config.getBorderAndTotalIconSizes(res).second + 2 * stroke;
         assertEquals(size, colorView.getMinimumWidth());
         assertEquals(size, colorView.getMinimumHeight());

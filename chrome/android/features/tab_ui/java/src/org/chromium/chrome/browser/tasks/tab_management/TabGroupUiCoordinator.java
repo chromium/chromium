@@ -255,7 +255,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(profile);
                 sharedImageTilesConfigBuilder =
-                        new SharedImageTilesConfig.Builder(mActivity)
+                        SharedImageTilesConfig.Builder.createForButton(mActivity)
                                 .setIconSizeDp(R.dimen.tab_strip_shared_image_tiles_size);
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(

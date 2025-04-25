@@ -224,7 +224,7 @@ public class TabGroupColorViewProvider implements Destroyable {
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
         mSharedImageTilesConfigBuilder =
-                SharedImageTilesConfig.Builder.createThumbnail(mContext, mColorId);
+                SharedImageTilesConfig.Builder.createForTabGroupColorContext(mContext, mColorId);
 
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
