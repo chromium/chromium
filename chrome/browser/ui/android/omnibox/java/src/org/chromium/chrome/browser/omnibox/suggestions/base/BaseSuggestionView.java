@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -32,7 +31,6 @@ import java.util.Optional;
  *
  * @param <T> The type of View being wrapped by this container.
  */
-@MockedInTests
 @NullMarked
 public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final ImageView decorationIcon;

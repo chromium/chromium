@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -19,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
  *
  * <p>Note: currently dynamic spacing is activated in portrait mode only.
  */
-@MockedInTests
 @NullMarked
 public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerViewItemDecoration {
     private final @Px int mMinElementSpace;

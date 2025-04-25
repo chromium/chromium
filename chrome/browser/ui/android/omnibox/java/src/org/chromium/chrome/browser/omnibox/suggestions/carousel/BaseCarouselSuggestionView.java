@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** View for Carousel Suggestions. */
-@MockedInTests
 @NullMarked
 public class BaseCarouselSuggestionView extends RecyclerView {
     private RecyclerViewSelectionController mSelectionController;

@@ -6,7 +6,6 @@ package org.chromium.components.search_engines;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.Locale;
@@ -16,7 +15,6 @@ import java.util.Locale;
  * from native side. Any class uses this need to register a {@link TemplateUrlServiceObserver} on
  * {@link TemplatUrlService} to listen the native changes in case the native pointer is destroyed.
  */
-@MockedInTests
 @NullMarked
 public class TemplateUrl {
     private final long mTemplateUrlPtr;

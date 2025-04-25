@@ -12,7 +12,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
@@ -24,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 /** AutocompleteResult encompasses and manages autocomplete results. */
-@MockedInTests
 @NullMarked
 public class AutocompleteResult {
     @IntDef({
