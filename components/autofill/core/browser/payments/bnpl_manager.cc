@@ -41,8 +41,7 @@ bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
                                    uint64_t extracted_amount_in_micros) {
   // For MVP, BNPL will only target US users and support USD.
   return bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
-                                      /*currency=*/"USD") &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
+                                      /*currency=*/"USD");
 }
 
 bool ShouldShowPermanentErrorDialog(
@@ -105,6 +104,10 @@ void BnplManager::InitBnplFlow(
 
 void BnplManager::NotifyOfSuggestionGeneration(
     const AutofillSuggestionTriggerSource trigger_source) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
+    return;
+  }
+
   update_suggestions_barrier_callback_ = base::BarrierCallback<
       std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateSuggestionsWithBnpl,
@@ -114,6 +117,10 @@ void BnplManager::NotifyOfSuggestionGeneration(
 void BnplManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  if (!update_suggestions_barrier_callback_.has_value()) {
+    return;
+  }
+
   // Do not proceed to calling the barrier callback, if the suggestion list
   // already contains a buy-now-pay-later-entry (which is triggered after
   // updating the original suggestion list).
@@ -131,6 +138,10 @@ void BnplManager::OnSuggestionsShown(
 
 void BnplManager::OnAmountExtractionReturned(
     const std::optional<uint64_t>& extracted_amount) {
+  if (!update_suggestions_barrier_callback_.has_value()) {
+    return;
+  }
+
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(extracted_amount);
   }

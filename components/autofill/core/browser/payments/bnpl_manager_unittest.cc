@@ -1091,6 +1091,33 @@ TEST_F(BnplManagerTest,
       1);
 }
 
+// Tests that BnplSuggestionNotShownReason will not be logged if BNPL feature
+// flag is disabled and the amount extraction engine fails to pass in a valid
+// value.
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionNotShownReasonNotLogged_BnplDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
+
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+      0);
+}
+
 // Tests that update suggestions callback will not be called if the extracted
 // amount is not supported by available BNPL issuers.
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
@@ -1172,6 +1199,35 @@ TEST_F(BnplManagerTest,
       autofill_metrics::BnplSuggestionNotShownReason::
           kCheckoutAmountNotSupported,
       1);
+}
+
+// Tests that BnplSuggestionNotShownReason will not be logged if BNPL feature
+// flag is disabled and the extracted amount is not supported by available
+// BNPL issuers.
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_AmountNotSupported_BnplSuggestionNotShownReasonNotLogged_BnplDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
+
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/30'000'000ULL);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::
+          kCheckoutAmountNotSupported,
+      0);
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
