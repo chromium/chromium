@@ -101,6 +101,7 @@ source_set("feedback_impl") {
       "//chrome/browser/crash_upload_list",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sync",

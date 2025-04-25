@@ -1696,6 +1696,7 @@ static_library("ui") {
       "//chrome/browser/background:background",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
+      "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/privacy_sandbox",
 
