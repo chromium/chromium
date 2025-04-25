@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -128,9 +129,7 @@ class ComponentLoader : public KeyedService {
       const base::FilePath::CharType* manifest_file_name,
       const base::FilePath::CharType* guest_manifest_file_name,
       base::OnceClosure done_cb);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
   // and that the manifest file lives in |root_directory|. Calls |done_cb|
@@ -149,7 +148,7 @@ class ComponentLoader : public KeyedService {
                                         const std::string& description_string);
 
   void AddChromeOsSpeechSynthesisExtensions();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void set_ignore_allowlist_for_testing(bool value) {
     ignore_allowlist_for_testing_ = value;
@@ -219,6 +218,13 @@ class ComponentLoader : public KeyedService {
   void AddWebStoreApp();
 
 #if BUILDFLAG(IS_CHROMEOS)
+  void AddChromeApp();
+  void AddFileManagerExtension();
+  void AddGalleryExtension();
+  void AddImageLoaderExtension();
+  void AddGuestModeTestExtension(const base::FilePath& path);
+  void AddKeyboardApp();
+
   // Used as a reply callback by |AddComponentFromDir|.
   // Called with a |root_directory| and parsed |manifest| and invokes
   // |done_cb| after adding the extension.
@@ -229,15 +235,13 @@ class ComponentLoader : public KeyedService {
       const std::optional<std::string>& description_string,
       base::OnceClosure done_cb,
       std::optional<base::Value::Dict> manifest);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void AddChromeApp();
-  void AddFileManagerExtension();
-  void AddGalleryExtension();
-  void AddImageLoaderExtension();
-  void AddGuestModeTestExtension(const base::FilePath& path);
-  void AddKeyboardApp();
+  // Finishes loading an extension tts engine.
+  void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
+
+  // Grant ContentSettingsType permissions to Extension.
+  void GrantPermissions(const ExtensionId& extension_id,
+                        std::initializer_list<ContentSettingsType> permissions);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(
@@ -245,9 +249,6 @@ class ComponentLoader : public KeyedService {
 
   // Unloads |component| from the memory.
   void UnloadComponent(ComponentExtensionInfo* component);
-
-  // Finishes loading an extension tts engine.
-  void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
 
   raw_ptr<Profile> profile_;
 

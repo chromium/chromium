@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/component_loader.h"
 
+#include <initializer_list>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -64,6 +65,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
@@ -562,11 +564,18 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    std::initializer_list<ContentSettingsType> system_permissions = {
+        ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD};
+
     AddComponentFromDirWithManifestFilename(
         base::FilePath("/usr/share/chromeos-assets/quickoffice"),
         extension_misc::kQuickOfficeComponentExtensionId,
         extensions::kManifestFilename, extensions::kManifestFilename,
-        base::DoNothing());
+        base::BindOnce(&ComponentLoader::GrantPermissions,
+                       weak_factory_.GetWeakPtr(),
+                       extension_misc::kQuickOfficeComponentExtensionId,
+                       std::move(system_permissions)));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -724,6 +733,22 @@ void ComponentLoader::FinishLoadSpeechSynthesisExtension(
   extensions::ProcessManager::Get(profile_)->WakeEventPage(extension_id,
                                                            base::DoNothing());
 }
+
+// TODO(crbug.com/413451043): move permission granting for component extensions
+// to ComponentExtensionContentSettingsAllowlist.
+void ComponentLoader::GrantPermissions(
+    const ExtensionId& extension_id,
+    std::initializer_list<ContentSettingsType> permissions) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* component_extension_content_settings_allowlist =
+      ComponentExtensionContentSettingsAllowlist::Get(profile_);
+  const url::Origin host_origin = url::Origin::Create(GURL(base::StrCat(
+      {kExtensionScheme, url::kStandardSchemeSeparator, extension_id})));
+  component_extension_content_settings_allowlist
+      ->RegisterAutoGrantedPermissions(host_origin, std::move(permissions));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
