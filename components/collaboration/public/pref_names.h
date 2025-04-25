@@ -12,6 +12,11 @@ namespace collaboration::prefs {
 // Whether to allow shared tab group features for managed account.
 extern const char kSharedTabGroupsManagedAccountSetting[];
 
+enum class SharedTabGroupsManagedAccountSetting {
+  kEnabled = 0,
+  kDisabled = 1,
+};
+
 // Registers user preferences related to permissions.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

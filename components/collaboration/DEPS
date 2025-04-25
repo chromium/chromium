@@ -2,6 +2,7 @@ include_rules = [
   "+components/data_sharing/public",
   "+components/data_sharing/test_support",
   "+components/keyed_service",
+  "+components/prefs/pref_change_registrar.h",
   "+components/prefs/pref_service.h",
   "+components/prefs/pref_registry_simple.h",
   "+components/saved_tab_groups/public",

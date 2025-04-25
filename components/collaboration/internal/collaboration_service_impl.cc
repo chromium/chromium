@@ -10,6 +10,7 @@
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_utils.h"
+#include "components/collaboration/public/pref_names.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -54,10 +55,16 @@ CollaborationServiceImpl::CollaborationServiceImpl(
   identity_manager_observer_.Observe(identity_manager_);
 
   current_status_.collaboration_status = GetCollaborationStatus();
+
+  registrar_.Init(profile_prefs_);
+  registrar_.Add(prefs::kSharedTabGroupsManagedAccountSetting,
+                 base::BindRepeating(&CollaborationServiceImpl::OnPrefChanged,
+                                     base::Unretained(this)));
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
   join_controllers_.clear();
+  registrar_.RemoveAll();
 }
 
 bool CollaborationServiceImpl::IsEmptyService() {
@@ -340,7 +347,7 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
 
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   // Check if device policy allow signin.
-  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed)) {
     return CollaborationStatus::kDisabledForPolicy;
   }
 
@@ -365,9 +372,6 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
     return status;
   }
 
-  // Figure out if collaboration feature is disabled by account policy. This
-  // early check allows to not disable collaboration feature when the user need
-  // to refresh their account (refresh tokens unavailable).
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
@@ -375,6 +379,7 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
     return status;
   }
 
+  // Enterprise account handling.
   if (!account_managed_status_finder_) {
     account_managed_status_finder_ =
         std::make_unique<signin::AccountManagedStatusFinder>(
@@ -384,6 +389,30 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
             base::Seconds(5));
   }
 
+  // Enterprise V2: Check enterprise policy to allow/disallow collaboration
+  // feature.
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kCollaborationEntrepriseV2)) {
+    switch (account_managed_status_finder_->GetOutcome()) {
+      case Outcome::kConsumerGmail:
+      case Outcome::kConsumerWellKnown:
+      case Outcome::kConsumerNotWellKnown:
+        break;
+      default:
+        if (profile_prefs_->GetInteger(
+                collaboration::prefs::kSharedTabGroupsManagedAccountSetting) ==
+            static_cast<int>(
+                prefs::SharedTabGroupsManagedAccountSetting::kDisabled)) {
+          return CollaborationStatus::kDisabledForPolicy;
+        }
+    }
+
+    return status;
+  }
+
+  // Enterprise V1: Figure out if collaboration feature is disabled by account
+  // policy. This early check allows to not disable collaboration feature when
+  // the user need to refresh their account (refresh tokens unavailable).
   switch (account_managed_status_finder_->GetOutcome()) {
     case Outcome::kPending:
       status = CollaborationStatus::kDisabledPending;
@@ -462,6 +491,10 @@ void CollaborationServiceImpl::OnCollaborationGroupRemoved(
   }
 
   std::move(callback).Run(/*success=*/false);
+}
+
+void CollaborationServiceImpl::OnPrefChanged() {
+  RefreshServiceStatus();
 }
 
 }  // namespace collaboration

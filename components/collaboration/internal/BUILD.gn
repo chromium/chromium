@@ -45,6 +45,7 @@ static_library("core_internal") {
   public_deps = [
     "//base",
     "//components/collaboration/public",
+    "//components/collaboration/public:prefs",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
   ]
