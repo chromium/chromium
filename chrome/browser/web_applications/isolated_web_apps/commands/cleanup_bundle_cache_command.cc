@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 
 #include <string>
 #include <vector>
@@ -22,8 +22,8 @@ namespace web_app {
 namespace {
 
 // This function is blocking, should be called only by
-// `CleanupCacheForManagedGuestSessionCommand::StartWithLock`.
-CleanupCacheForManagedGuestSessionResult CleanupCacheForManagedGuestSessionImpl(
+// `CleanupBundleCacheCommand::StartWithLock`.
+CleanupBundleCacheResult CleanupBundleCacheImpl(
     const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache) {
   const base::FilePath cache_dir = GetManagedGuestSessionBundleCacheDirectory();
 
@@ -53,24 +53,22 @@ CleanupCacheForManagedGuestSessionResult CleanupCacheForManagedGuestSessionImpl(
     }
   }
   if (failed_to_cleaned_up_directories == 0) {
-    return base::ok(
-        CleanupCacheForManagedGuestSessionSuccess{dirs_to_delete.size()});
+    return base::ok(CleanupBundleCacheSuccess{dirs_to_delete.size()});
   }
 
-  return base::unexpected(CleanupCacheForManagedGuestSessionError{
-      CleanupCacheForManagedGuestSessionError::Type::kCouldNotDeleteAllBundles,
+  return base::unexpected(CleanupBundleCacheError{
+      CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles,
       failed_to_cleaned_up_directories});
 }
 
 std::string CleanupCacheForManagedGuestSessionCommandErrorToString(
-    const CleanupCacheForManagedGuestSessionError& error) {
+    const CleanupBundleCacheError& error) {
   switch (error.type()) {
-    case CleanupCacheForManagedGuestSessionError::Type::
-        kCouldNotDeleteAllBundles:
+    case CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles:
       return "Could not delete bundles, number of failed directories: " +
              base::NumberToString(
                  error.number_of_failed_to_cleaned_up_directories());
-    case CleanupCacheForManagedGuestSessionError::Type::kSystemShutdown:
+    case CleanupBundleCacheError::Type::kSystemShutdown:
       return "System is shutting down";
   }
 }
@@ -81,26 +79,23 @@ bool ShouldCleanupManagedGuestSessionCache() {
   return IsIwaBundleCacheEnabled() && chromeos::IsManagedGuestSession();
 }
 
-CleanupCacheForManagedGuestSessionCommand::
-    CleanupCacheForManagedGuestSessionCommand(
-        const std::vector<web_package::SignedWebBundleId>&
-            iwas_to_keep_in_cache,
-        Callback callback)
-    : WebAppCommand<AllAppsLock, CleanupCacheForManagedGuestSessionResult>(
+CleanupBundleCacheCommand::CleanupBundleCacheCommand(
+    const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+    Callback callback)
+    : WebAppCommand<AllAppsLock, CleanupBundleCacheResult>(
           "CleanupCacheForManagedGuestSessionCommand",
           AllAppsLockDescription(),
           std::move(callback),
           /*args_for_shutdown=*/
-          base::unexpected(CleanupCacheForManagedGuestSessionError{
-              CleanupCacheForManagedGuestSessionError::Type::kSystemShutdown})),
+          base::unexpected(CleanupBundleCacheError{
+              CleanupBundleCacheError::Type::kSystemShutdown})),
       iwas_to_keep_in_cache_(iwas_to_keep_in_cache) {
   CHECK(ShouldCleanupManagedGuestSessionCache());
 }
 
-CleanupCacheForManagedGuestSessionCommand::
-    ~CleanupCacheForManagedGuestSessionCommand() = default;
+CleanupBundleCacheCommand::~CleanupBundleCacheCommand() = default;
 
-void CleanupCacheForManagedGuestSessionCommand::StartWithLock(
+void CleanupBundleCacheCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   CHECK(lock);
   lock_ = std::move(lock);
@@ -108,15 +103,13 @@ void CleanupCacheForManagedGuestSessionCommand::StartWithLock(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CleanupCacheForManagedGuestSessionImpl,
-                     iwas_to_keep_in_cache_),
-      base::BindOnce(
-          &CleanupCacheForManagedGuestSessionCommand::CommandComplete,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CleanupBundleCacheImpl, iwas_to_keep_in_cache_),
+      base::BindOnce(&CleanupBundleCacheCommand::CommandComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CleanupCacheForManagedGuestSessionCommand::CommandComplete(
-    const CleanupCacheForManagedGuestSessionResult& result) {
+void CleanupBundleCacheCommand::CommandComplete(
+    const CleanupBundleCacheResult& result) {
   if (!result.has_value()) {
     LOG(ERROR) << "Cleanup cache for Managed Guest Session failed: "
                << CleanupCacheForManagedGuestSessionCommandErrorToString(

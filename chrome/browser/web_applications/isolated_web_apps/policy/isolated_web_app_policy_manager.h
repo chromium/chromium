@@ -26,8 +26,8 @@
 namespace web_app {
 
 #if BUILDFLAG(IS_CHROMEOS)
-class CleanupCacheForManagedGuestSessionSuccess;
-class CleanupCacheForManagedGuestSessionError;
+class CleanupBundleCacheSuccess;
+class CleanupBundleCacheError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Controls whether we attempt to fetch latest component data before processing
@@ -74,8 +74,8 @@ class IsolatedWebAppPolicyManager
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnCleanIsolatedWebAppCacheForManagedGuestSession(
-      base::expected<CleanupCacheForManagedGuestSessionSuccess,
-                     CleanupCacheForManagedGuestSessionError> result);
+      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
+          result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void LogAddPolicyInstallSourceResult(

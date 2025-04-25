@@ -74,8 +74,8 @@ struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
 
 #if BUILDFLAG(IS_CHROMEOS)
-class CleanupCacheForManagedGuestSessionSuccess;
-class CleanupCacheForManagedGuestSessionError;
+class CleanupBundleCacheSuccess;
+class CleanupBundleCacheError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The command scheduler is the main API to access the web app system. The
@@ -287,8 +287,8 @@ class WebAppCommandScheduler {
   void CleanupIsolatedWebAppCacheForManagedGuestSession(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
       base::OnceCallback<void(
-          base::expected<CleanupCacheForManagedGuestSessionSuccess,
-                         CleanupCacheForManagedGuestSessionError>)> callback,
+          base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>)>
+          callback,
       const base::Location& call_location = FROM_HERE);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

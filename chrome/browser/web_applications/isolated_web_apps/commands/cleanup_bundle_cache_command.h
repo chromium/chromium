@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_CACHE_FOR_MANAGED_GUEST_SESSION_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_CACHE_FOR_MANAGED_GUEST_SESSION_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_BUNDLE_CACHE_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_BUNDLE_CACHE_COMMAND_H_
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -16,18 +16,15 @@ namespace web_app {
 // inside the Managed Guest Session.
 bool ShouldCleanupManagedGuestSessionCache();
 
-class CleanupCacheForManagedGuestSessionSuccess {
+class CleanupBundleCacheSuccess {
  public:
-  explicit CleanupCacheForManagedGuestSessionSuccess(
-      size_t number_of_cleaned_up_directories)
+  explicit CleanupBundleCacheSuccess(size_t number_of_cleaned_up_directories)
       : number_of_cleaned_up_directories_(number_of_cleaned_up_directories) {}
 
-  CleanupCacheForManagedGuestSessionSuccess(
-      const CleanupCacheForManagedGuestSessionSuccess& other) = default;
-  ~CleanupCacheForManagedGuestSessionSuccess() = default;
+  CleanupBundleCacheSuccess(const CleanupBundleCacheSuccess& other) = default;
+  ~CleanupBundleCacheSuccess() = default;
 
-  bool operator==(
-      const CleanupCacheForManagedGuestSessionSuccess& other) const = default;
+  bool operator==(const CleanupBundleCacheSuccess& other) const = default;
 
   size_t number_of_cleaned_up_directories() const {
     return number_of_cleaned_up_directories_;
@@ -37,23 +34,21 @@ class CleanupCacheForManagedGuestSessionSuccess {
   size_t number_of_cleaned_up_directories_ = 0;
 };
 
-class CleanupCacheForManagedGuestSessionError {
+class CleanupBundleCacheError {
  public:
   enum class Type { kCouldNotDeleteAllBundles, kSystemShutdown };
 
-  explicit CleanupCacheForManagedGuestSessionError(
+  explicit CleanupBundleCacheError(
       Type type,
       size_t number_of_failed_to_cleaned_up_directories = 0)
       : type_(type),
         number_of_failed_to_cleaned_up_directories_(
             number_of_failed_to_cleaned_up_directories) {}
 
-  CleanupCacheForManagedGuestSessionError(
-      const CleanupCacheForManagedGuestSessionError& other) = default;
-  ~CleanupCacheForManagedGuestSessionError() = default;
+  CleanupBundleCacheError(const CleanupBundleCacheError& other) = default;
+  ~CleanupBundleCacheError() = default;
 
-  bool operator==(const CleanupCacheForManagedGuestSessionError& other) const =
-      default;
+  bool operator==(const CleanupBundleCacheError& other) const = default;
 
   Type type() const { return type_; }
 
@@ -67,9 +62,8 @@ class CleanupCacheForManagedGuestSessionError {
   size_t number_of_failed_to_cleaned_up_directories_ = 0;
 };
 
-using CleanupCacheForManagedGuestSessionResult =
-    base::expected<CleanupCacheForManagedGuestSessionSuccess,
-                   CleanupCacheForManagedGuestSessionError>;
+using CleanupBundleCacheResult =
+    base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>;
 
 // Cleans all IWA cached bundles for Managed Guest Session which are not in
 // the `iwas_to_keep_in_cache`.
@@ -79,37 +73,33 @@ using CleanupCacheForManagedGuestSessionResult =
 // This command will CHECK that `ShouldCleanupManagedGuestSessionCache` is true.
 // TODO(crbug.com/388729037): rename or update this class to unify with kiosk
 // implementation.
-class CleanupCacheForManagedGuestSessionCommand
-    : public WebAppCommand<AllAppsLock,
-                           CleanupCacheForManagedGuestSessionResult> {
+class CleanupBundleCacheCommand
+    : public WebAppCommand<AllAppsLock, CleanupBundleCacheResult> {
  public:
-  using Callback =
-      base::OnceCallback<void(CleanupCacheForManagedGuestSessionResult)>;
+  using Callback = base::OnceCallback<void(CleanupBundleCacheResult)>;
 
-  CleanupCacheForManagedGuestSessionCommand(
+  CleanupBundleCacheCommand(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
       Callback callback);
-  CleanupCacheForManagedGuestSessionCommand(
-      const CleanupCacheForManagedGuestSessionCommand&) = delete;
-  CleanupCacheForManagedGuestSessionCommand& operator=(
-      const CleanupCacheForManagedGuestSessionCommand&) = delete;
+  CleanupBundleCacheCommand(const CleanupBundleCacheCommand&) = delete;
+  CleanupBundleCacheCommand& operator=(const CleanupBundleCacheCommand&) =
+      delete;
 
-  ~CleanupCacheForManagedGuestSessionCommand() override;
+  ~CleanupBundleCacheCommand() override;
 
  protected:
   // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
 
  private:
-  void CommandComplete(const CleanupCacheForManagedGuestSessionResult& result);
+  void CommandComplete(const CleanupBundleCacheResult& result);
 
   std::unique_ptr<AllAppsLock> lock_;
   const std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache_;
 
-  base::WeakPtrFactory<CleanupCacheForManagedGuestSessionCommand>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<CleanupBundleCacheCommand> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_CACHE_FOR_MANAGED_GUEST_SESSION_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CLEANUP_BUNDLE_CACHE_COMMAND_H_

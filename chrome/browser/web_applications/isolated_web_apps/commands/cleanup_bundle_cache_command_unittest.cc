@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 
 #include "ash/constants/ash_paths.h"
 #include "base/files/file_util.h"
@@ -28,7 +28,7 @@ using base::test::ErrorIs;
 using base::test::TestFuture;
 using base::test::ValueIs;
 using web_package::SignedWebBundleId;
-using CleanupResult = CleanupCacheForManagedGuestSessionResult;
+using CleanupResult = CleanupBundleCacheResult;
 using Callback = base::OnceCallback<void(CleanupResult)>;
 
 const SignedWebBundleId kMainBundleId = test::GetDefaultEd25519WebBundleId();
@@ -37,7 +37,7 @@ const base::Version kVersion = base::Version("0.0.1");
 
 }  // namespace
 
-class CleanupCacheForManagedGuestSessionCommandTest : public WebAppTest {
+class CleanupBundleCacheCommandTest : public WebAppTest {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
@@ -103,16 +103,16 @@ class CleanupCacheForManagedGuestSessionCommandTest : public WebAppTest {
       test_managed_guest_session_;
 };
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, NoBundles) {
+TEST_F(CleanupBundleCacheCommandTest, NoBundles) {
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/0}));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, KeepTheOnlyApp) {
+TEST_F(CleanupBundleCacheCommandTest, KeepTheOnlyApp) {
   const base::FilePath bundle_path =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
 
@@ -121,12 +121,12 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest, KeepTheOnlyApp) {
                   cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/0}));
   EXPECT_TRUE(base::PathExists(bundle_path));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, KeepTwoApps) {
+TEST_F(CleanupBundleCacheCommandTest, KeepTwoApps) {
   const base::FilePath bundle_path1 =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
   const base::FilePath bundle_path2 =
@@ -137,13 +137,13 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest, KeepTwoApps) {
                   cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/0}));
   EXPECT_TRUE(base::PathExists(bundle_path1));
   EXPECT_TRUE(base::PathExists(bundle_path2));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, RemoveTheOnlyApp) {
+TEST_F(CleanupBundleCacheCommandTest, RemoveTheOnlyApp) {
   const base::FilePath bundle_path =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
 
@@ -151,12 +151,12 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest, RemoveTheOnlyApp) {
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/1}));
   EXPECT_FALSE(base::PathExists(bundle_path));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, RemoveCorrectBundle) {
+TEST_F(CleanupBundleCacheCommandTest, RemoveCorrectBundle) {
   const base::FilePath bundle_path1 =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
   const base::FilePath bundle_path2 =
@@ -167,24 +167,24 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest, RemoveCorrectBundle) {
                   cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/1}));
   EXPECT_FALSE(base::PathExists(bundle_path1));
   EXPECT_TRUE(base::PathExists(bundle_path2));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, IwaNotCached) {
+TEST_F(CleanupBundleCacheCommandTest, IwaNotCached) {
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {kMainBundleId},
                   cleanup_future.GetCallback());
 
   // `kMainBundleId` is not cached, but it still should finish with success.
   EXPECT_THAT(cleanup_future.Get(),
-              ValueIs(CleanupCacheForManagedGuestSessionSuccess{
+              ValueIs(CleanupBundleCacheSuccess{
                   /*number_of_cleaned_up_directories=*/0}));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest, FailedToDeleteOneDir) {
+TEST_F(CleanupBundleCacheCommandTest, FailedToDeleteOneDir) {
   const base::FilePath bundle_path =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
   const base::FilePath bundle_dir = GetBundleDir(kMainBundleId);
@@ -196,15 +196,13 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest, FailedToDeleteOneDir) {
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ErrorIs(CleanupCacheForManagedGuestSessionError{
-                  CleanupCacheForManagedGuestSessionError::Type::
-                      kCouldNotDeleteAllBundles,
+              ErrorIs(CleanupBundleCacheError{
+                  CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles,
                   /*number_of_failed_to_cleaned_up_directories=*/1}));
   EXPECT_TRUE(base::PathExists(bundle_path));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest,
-       FailedToDeleteMultipleDirs) {
+TEST_F(CleanupBundleCacheCommandTest, FailedToDeleteMultipleDirs) {
   const base::FilePath bundle_path1 =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
   const base::FilePath bundle_dir1 = GetBundleDir(kMainBundleId);
@@ -220,9 +218,8 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest,
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
   ASSERT_FALSE(cleanup_future.Get().has_value());
-  EXPECT_THAT(
-      cleanup_future.Get().error().type(),
-      CleanupCacheForManagedGuestSessionError::Type::kCouldNotDeleteAllBundles);
+  EXPECT_THAT(cleanup_future.Get().error().type(),
+              CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles);
   EXPECT_THAT(
       cleanup_future.Get().error().number_of_failed_to_cleaned_up_directories(),
       2);
@@ -230,8 +227,7 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest,
   EXPECT_TRUE(base::PathExists(bundle_path2));
 }
 
-TEST_F(CleanupCacheForManagedGuestSessionCommandTest,
-       PartiallyFailedToDeleteDirs) {
+TEST_F(CleanupBundleCacheCommandTest, PartiallyFailedToDeleteDirs) {
   const base::FilePath bundle_path1 =
       CreateBundleInCacheDir(kMainBundleId, kVersion);
   const base::FilePath bundle_dir1 = GetBundleDir(kMainBundleId);
@@ -246,9 +242,8 @@ TEST_F(CleanupCacheForManagedGuestSessionCommandTest,
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
   EXPECT_THAT(cleanup_future.Get(),
-              ErrorIs(CleanupCacheForManagedGuestSessionError{
-                  CleanupCacheForManagedGuestSessionError::Type::
-                      kCouldNotDeleteAllBundles,
+              ErrorIs(CleanupBundleCacheError{
+                  CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles,
                   /*number_of_failed_to_cleaned_up_directories=*/1}));
   EXPECT_FALSE(base::PathExists(bundle_path1));
   EXPECT_TRUE(base::PathExists(bundle_path2));

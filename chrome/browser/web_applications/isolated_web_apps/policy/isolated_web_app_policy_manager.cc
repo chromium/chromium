@@ -60,7 +60,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -636,7 +636,7 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed(
 #if BUILDFLAG(IS_CHROMEOS)
 void IsolatedWebAppPolicyManager::
     OnCleanIsolatedWebAppCacheForManagedGuestSession(
-        CleanupCacheForManagedGuestSessionResult result) {
+        CleanupBundleCacheResult result) {
   // TODO(crbug.com/388728155): add result to log.
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
