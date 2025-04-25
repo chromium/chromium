@@ -151,25 +151,19 @@ public class MyPTTest {
 ```
 
 We need the View instance to pass to `mRenderTestRule.render()`. The View can be
-retrieved from the Element declared in `PageStation#declareElements()`:
+retrieved from the Element already declared in `PageStation#declareElements()`:
 
 ```java
 public class PageStation extends Station {
-    public static final ViewElement TAB_SWITCHER_BUTTON =
-             unscopedViewElement(withId(R.id.tab_switcher_button));
-
-+   ViewElement mTabSwitcherButton;
+    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
 
     public void declareElements(Elements.Builder elements) {
         [...]
--       elements.declareView(TAB_SWITCHER_BUTTON);
-+       mTabSwitcherButton = elements.declareView(TAB_SWITCHER_BUTTON);
+        tabSwitcherButtonElement =
+                elements.declareView(
+                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
         [...]
     }
-
-+   public ImageButton getTabSwitcherButton() {
-+       return (ImageButton) mTabSwitcherButton.get();
-+   }
 }
 ```
 
@@ -192,7 +186,7 @@ public class MyPTTest {
     public void testOneTab_I() {
         PageStation page = mCtaTestRule.start();
 
-        ImageButton tabSwitcherButton = page.getTabSwitcherButton();
+        ImageButton tabSwitcherButton = page.tabSwitcherButtonElement.get();
         TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) tabSwitcherButton.getDrawable();
         assertEquals("I", tabSwitcherDrawable.getTextRenderedForTesting());
         TransitAsserts.assertFinalDestination(page);
@@ -210,7 +204,7 @@ public class MyPTTest {
         PageStation page = mCtaTestRule.start();
         NewTabPageStation ntp = page.openGenericAppMenu().openNewTab();
 
-        ImageButton tabSwitcherButton = ntp.getTabSwitcherButton();
+        ImageButton tabSwitcherButton = ntp.tabSwitcherButtonElement.get();
         TabSwitcherDrawable tabSwitcherDrawable =
                 (TabSwitcherDrawable) tabSwitcherButton.getDrawable();
         assertEquals("II", tabSwitcherDrawable.getTextRenderedForTesting());
@@ -290,7 +284,7 @@ public class MyPTTest {
         PageStation page = mCtaTestRule.startOnBlankPage();
         page = Journeys.prepareTabs(page, 5, 0, "about:blank");
 
-        ImageButton tabSwitcherButton = page.getTabSwitcherButton();
+        ImageButton tabSwitcherButton = page.tabSwitcherButtonElement.get();
         TabSwitcherDrawable tabSwitcherDrawable =
             (TabSwitcherDrawable) tabSwitcherButton.getDrawable();
         assertEquals("V", tabSwitcherDrawable.getTextRenderedForTesting());
@@ -305,7 +299,8 @@ Facilities are a way to model parts of the app without changing `Stations`. They
 are useful when the state they model is optional, or when the state is
 interesting to only a small number of tests.
 
-Let's make a `TabSwitcherButtonFacility` representing the button we're testing.
+Just for the sake of this guide, let's make a `TabSwitcherButtonFacility`
+representing the button we're testing.
 `chrome/test/android/javatests/src/org/chromium/chrome/test/transit/` is where
 Chrome's Transit Layer is located, so create `TabSwitcherButtonFacility.java`
 there:
@@ -316,19 +311,18 @@ package org.chromium.chrome.test.transit;
 [imports]
 
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
-    private Supplier<View> mTabSwitcherButton;
+    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mTabSwitcherButton = elements.declareView(PageStation.TAB_SWITCHER_BUTTON);
-    }
-
-    public ImageButton getView() {
-        return (ImageButton) mTabSwitcherButton.get();
+        tabSwitcherButtonElement =
+                elements.declareView(
+                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
     }
 
     public String getTextRendered() {
-        TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) getView().getDrawable();
+        TabSwitcherDrawable tabSwitcherDrawable =
+                (TabSwitcherDrawable) tabSwitcherButtonElement.get().getDrawable();
         return tabSwitcherDrawable.getTextRenderedForTesting();
     }
 }
@@ -347,10 +341,6 @@ after all its Enter Conditions are met:
 
 ```java
 public class PageStation extends Station {
--   public ImageButton getTabSwitcherButton() {
--       return (ImageButton) mTabSwitcherButton.get();
--   }
-
 +   public TabSwitcherButtonFacility focusOnTabSwitcherButton() {
 +       return enterFacilitySync(new TabSwitcherButtonFacility(), /* trigger= */ null);
 +   }
@@ -376,16 +366,18 @@ public class MyPTTest {
 }
 ```
 
-It's debatable if the Facility is warranted here just to encapsulate the logic
-of getting the rendered text. To wait on the rendered text with a Condition,
-though, a Facility is necessary. Let's create this Condition.
+The Facility is not really warranted here just to encapsulate the logic of
+getting the rendered text. To wait on the rendered text with a Condition, you
+can subclass Condition or use SimpleConditions. For illustration, let's create a
+subclass, which is recommended for more complex Conditions:
 
 ## Adding a Custom Condition
 
 ```java
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
+    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+
 +   private final String mExpectedText;
-    private Supplier<View> mTabSwitcherButton;
 
 +   public TabSwitcherButtonFacility(String expectedText) {
 +       mExpectedText = expectedText;
@@ -393,22 +385,24 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mTabSwitcherButton = elements.declareView(PageStation.TAB_SWITCHER_BUTTON);
+        tabSwitcherButtonElement =
+                elements.declareView(
+                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
 +       elements.declareEnterCondition(new TextRenderedCondition());
     }
 
 +   private class TextRenderedCondition extends Condition {
 +       public TextRenderedCondition() {
 +           super(/* isRunOnUiThread= */ true);
-+           dependOnSupplier(mTabSwitcherButton, "ButtonView");
++           dependOnSupplier(tabSwitcherButtonElement, "ButtonView");
 +       }
 +
 +       @Override
 +       protected ConditionStatus checkWithSuppliers() {
-+           ImageButton button = (ImageButton) mTabSwitcherButton.get();
++           ImageButton button = (ImageButton) tabSwitcherButtonElement.get();
 +           TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) button.getDrawable();
 +           String renderedText = tabSwitcherDrawable.getTextRenderedForTesting();
-+           return whether(mExpectedText.equals(renderedText), "expected=%s actual=%s", mExpectedText, renderedText);
++           return whetherEquals(mExpectedText, renderedText);
 +       }
 +
 +       @Override
@@ -436,8 +430,7 @@ assert:
 public class MyPTTest {
     public void testOneTab_I() {
         PageStation page = mCtaTestRule.startOnBlankPage();
-        TabSwitcherButtonFacility tabSwitcherButton = page.focusOnTabSwitcherButton("I");
-+       TransitAsserts.assertFinalDestination(page);
+        page.focusOnTabSwitcherButton("I");
     }
 }
 ```
@@ -461,11 +454,12 @@ case where Facilities have transition methods:
 ```java
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   public HubTabSwitcherStation clickToOpenHub() {
-+       return mHostStation.travelToSync(new HubTabSwitcherStation(), () -> PageStation.TAB_SWITCHER_BUTTON.perform(click()));
++       return mHostStation.travelToSync(new HubTabSwitcherStation(), tabSwitcherButtonElement.clickTrigger());
 +   }
 +
 +   public TabSwitcherActionMenuFacility longClickToOpenActionMenu() {
-+       return mHostStation.enterFacilitySync(new TabSwitcherActionMenuFacility(), () -> PageStation.TAB_SWITCHER_BUTTON.perform(longClick()));
++       return mHostStation.enterFacilitySync(
++               new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.longClickTrigger());
 +   }
 }
 ```

@@ -349,20 +349,20 @@ Example of a concrete `Station`:
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
 public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
-    public static final ViewSpec NEW_TAB_BUTTON =
-            viewSpec(withId(R.id.new_tab_button));
-    public static final ViewSpec INCOGNITO_TOGGLE_TABS =
-            viewSpec(withId(R.id.incognito_toggle_tabs));
+    public ViewElement<View> newTabButtonElement;
+    public ViewElement<View> incognitoToggleTabsElement;
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(NEW_TAB_BUTTON);
-        elements.declareView(INCOGNITO_TOGGLE_TABS);
+        newTabButtonElement =
+                elements.declareView(viewSpec(withId(R.id.new_tab_button)));
+        incognitoToggleTabsElement =
+                elements.declareView(viewSpec(withId(R.id.incognito_toggle_tabs)));
     }
 
     public NewTabPageStation openNewTabFromButton() {
         NewTabPageStation newTab = new NewTabPageStation();
-        return travelToSync(this, newTab, () -> NEW_TAB_BUTTON.perform(click()))
+        return travelToSync(this, newTab, newTabButtonElement.clickTrigger())
     }
 }
 ```
