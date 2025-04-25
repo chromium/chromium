@@ -25,6 +25,6 @@ void Func() {
   // With an offset (subspan) in play, we need to also wrap the array
   // declref in a `base::span()`.
   // Expected rewrite:
-  // UseBufferUnsafely(base::span<int>(array).subspan(1));
+  // UseBufferUnsafely(base::span<int>(array).subspan(1u));
   UseBufferUnsafely(&array[1]);
 }

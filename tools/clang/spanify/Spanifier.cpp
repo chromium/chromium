@@ -284,7 +284,7 @@ void Emit(const std::string& line) {
 // - include-system-header:::<file path>:::-1:::-1:::<include text>
 //
 // It is associated with a "Node", which is a unique identifier.
-void EmitReplacement(const std::string& node, const std::string& replacement) {
+void EmitReplacement(std::string_view node, std::string_view replacement) {
   Emit(llvm::formatv("r {0} {1}\n", node, replacement));
 }
 
@@ -905,6 +905,44 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
       GetReplacementDirective(rep_range, replacement_text, source_manager));
 }
 
+// Given that we want to emit `.subspan(expr)`,
+// *  if `expr` is observably unsigned, does nothing.
+// *  if `expr` is a signed int literal, appends `u`.
+// *  otherwise, wraps `expr` with `checked_cast`.
+void RewriteExprForSubspan(const clang::Expr* expr,
+                           const MatchFinder::MatchResult& result,
+                           std::string_view key) {
+  clang::QualType type = expr->getType();
+  const clang::ASTContext& ast_context = *result.Context;
+
+  // This logic isn't perfect: an unsigned type wider than `size_t`
+  // will pop us out of this function, but will fail the `strict_cast`
+  // imposed by `subspan()`.
+  if (type == ast_context.getCorrespondingUnsignedType(type)) {
+    return;
+  }
+
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::SourceRange range =
+      getExprRange(expr, source_manager, result.Context->getLangOpts());
+
+  if (clang::dyn_cast<clang::IntegerLiteral>(expr)) {
+    EmitReplacement(
+        key, GetReplacementDirective(range.getEnd(), "u", source_manager));
+    return;
+  }
+
+  EmitReplacement(key, GetReplacementDirective(range.getBegin(),
+                                               "base::checked_cast<size_t>(",
+                                               source_manager));
+  EmitReplacement(key,
+                  GetReplacementDirective(range.getEnd(), ")", source_manager));
+  EmitReplacement(key, GetIncludeDirective(range, source_manager,
+                                           "base/numerics/safe_conversions.h"));
+  EmitReplacement(key, GetIncludeDirective(range, source_manager, "cstdint",
+                                           /*is_system_include_path=*/true));
+}
+
 // Handle the case where we match `&container[<offset>]` being used as a buffer.
 void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
                                   const std::string& key) {
@@ -962,6 +1000,10 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
       replacement_range = {
           c_style_array_with_subscript.getEndLoc(),
           c_style_array_with_subscript.getEndLoc().getLocWithOffset(1)};
+      const auto* subscript = GetNodeOrCrash<clang::Expr>(
+          result, "c_style_array_subscript",
+          "expected when `container_subscript` is not bound");
+      RewriteExprForSubspan(subscript, result, key);
     }
     // Close the call to `.subspan()`.
     replacement_text = ")";
@@ -2199,7 +2241,7 @@ class Spanifier {
                         declRefExpr(to(varDecl(hasType(arrayType(hasElementType(
                                         qualType().bind("contained_type")))))))
                             .bind("container_decl_ref")),
-                    hasIndex(expr()),
+                    hasIndex(expr().bind("c_style_array_subscript")),
                     optionally(hasIndex(integerLiteral(equals(0u))
                                             .bind("zero_container_offset"))))
                     .bind("c_style_array_with_subscript"))))
