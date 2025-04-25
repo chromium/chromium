@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -21,15 +23,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-constexpr int kMinWebContentsWidth = 20;
-constexpr int kContentCornerRadius = 6;
-constexpr int kContentOutlineCornerRadius = 8;
-constexpr int kContentOutlineThickness = 1;
-constexpr int kSplitViewContentInset = 8;
-constexpr int kSplitViewContentPadding = 4;
-}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
@@ -247,17 +240,23 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     ViewWidths widths) {
+  const int min_percentage =
+      kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
+  const int min_fixed_value = min_contents_width_for_testing_.has_value()
+                                  ? min_contents_width_for_testing_.value()
+                                  : kMinWebContentsWidth;
+  const int min_width = std::min(min_fixed_value, min_percentage);
   if (!IsInSplitView()) {
     // Don't clamp if in a single-view state, where other views should be 0
     // width.
     return widths;
   }
-  if (widths.start_width < kMinWebContentsWidth) {
-    const double diff = kMinWebContentsWidth - widths.start_width;
+  if (widths.start_width < min_width) {
+    const double diff = min_width - widths.start_width;
     widths.start_width += diff;
     widths.end_width -= diff;
-  } else if (widths.end_width < kMinWebContentsWidth) {
-    const double diff = kMinWebContentsWidth - widths.end_width;
+  } else if (widths.end_width < min_width) {
+    const double diff = min_width - widths.end_width;
     widths.end_width += diff;
     widths.start_width -= diff;
   }

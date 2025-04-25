@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/numerics/clamped_math.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -40,8 +41,7 @@ class MultiContentsViewUiTest
     return result;
   }
 
-  auto CheckResizeKey(ui::KeyboardCode key_code,
-                      base::RepeatingCallback<bool(double, double)> check) {
+  auto CheckResizeValues(base::RepeatingCallback<bool(double, double)> check) {
     // MultiContentsView overrides Layout, causing an edge case where resizes
     // don't take effect until the next layout pass. Use PollView and
     // WaitForState to wait for the expected layout pass to be completed.
@@ -51,26 +51,66 @@ class MultiContentsViewUiTest
                                         kMultiContentsViewLayoutObserver);
 
     auto result = Steps(
-        FocusElement(
-            MultiContentsResizeHandle::kMultiContentsResizeHandleElementId),
-        SendKeyPress(
-            MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
-            key_code),
         PollView(kMultiContentsViewLayoutObserver,
                  MultiContentsView::kMultiContentsViewElementId,
                  [check](const MultiContentsView* multi_contents_view) -> bool {
                    double start_width =
                        multi_contents_view->start_contents_view_for_testing()
+                           ->parent()
                            ->size()
                            .width();
                    double end_width =
                        multi_contents_view->end_contents_view_for_testing()
+                           ->parent()
                            ->size()
                            .width();
                    return check.Run(start_width, end_width);
                  }),
         WaitForState(kMultiContentsViewLayoutObserver, true));
+    AddDescriptionPrefix(result, "CheckResizeValues()");
+    return result;
+  }
+
+  // Perform a check on the contents view sizes following a direct resize call
+  auto CheckResize(int resize_amount,
+                   base::RepeatingCallback<bool(double, double)> check) {
+    auto result = Steps(Do([resize_amount, this]() {
+                          multi_contents_view()->OnResize(resize_amount, true);
+                        }),
+                        CheckResizeValues(check));
+    AddDescriptionPrefix(result, "CheckResize()");
+    return result;
+  }
+
+  // Perform a check on the contents view sizes following a keyboard-triggered
+  // resize
+  auto CheckResizeKey(ui::KeyboardCode key_code,
+                      base::RepeatingCallback<bool(double, double)> check) {
+    auto result = Steps(
+        FocusElement(
+            MultiContentsResizeHandle::kMultiContentsResizeHandleElementId),
+        SendKeyPress(
+            MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
+            key_code),
+        CheckResizeValues(check));
     AddDescriptionPrefix(result, "CheckResizeKey()");
+    return result;
+  }
+
+  auto ResizeWindow(int width) {
+    auto result = Steps(Do([width, this]() {
+      BrowserView::GetBrowserViewForBrowser(browser())->SetContentsSize(
+          gfx::Size(width, 1000));
+    }));
+    AddDescriptionPrefix(result, "ResizeWindow()");
+    return result;
+  }
+
+  auto SetMinWidth(int width) {
+    auto result = Steps(Do([width, this]() {
+      multi_contents_view()->SetMinWidthForTesting(width);
+    }));
+    AddDescriptionPrefix(result, "SetMinWidth()");
     return result;
   }
 
@@ -137,6 +177,41 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActiveContentsViewHasFocus) {
       FocusWebContents(kSecondTab),
       CheckResult([this]() { return tab_strip_model()->count(); }, 3u),
       EnterSplitView(2, 0), CheckTabIsActive(2), CheckActiveContentsHasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesToMinWidth) {
+  RunTestSequence(
+      CreateTabsAndEnterSplitView(), ResizeWindow(1000),
+      // Artificially lower min width so that testing on smaller devices does
+      // not affect results.
+      SetMinWidth(60),
+      CheckResize(10000,
+                  base::BindRepeating([](double start_width, double end_width) {
+                    // On large window, uses flat min width.
+                    return end_width ==
+                           60 - MultiContentsView::contents_inset_for_testing();
+                  })));
+}
+
+// TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng, linux-rel
+// and linux-chromeos-rel.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_ResizesToMinWidthPercentage DISABLED_ResizesToMinWidthPercentage
+#else
+#define MAYBE_ResizesToMinWidthPercentage ResizesToMinWidthPercentage
+#endif
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       MAYBE_ResizesToMinWidthPercentage) {
+  RunTestSequence(
+      CreateTabsAndEnterSplitView(), ResizeWindow(500), SetMinWidth(60),
+      CheckResize(
+          10000, base::BindRepeating([](double start_width, double end_width) {
+            // On small window, uses percentage of window size vs. flat width
+            // for min. Don't check exact number to avoid rounding issues.
+            return end_width <
+                       (60 - MultiContentsView::contents_inset_for_testing()) &&
+                   end_width > 0;
+          })));
 }
 
 // TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng and
