@@ -10830,9 +10830,6 @@ void Element::ScheduleInterestGainedTask(InterestState new_state) {
 }
 
 void Element::ScheduleInterestLostTask() {
-  // This should be called on an interest invoker only.
-  auto* target = InterestTargetElement();
-  CHECK(target);
   const ComputedStyle* style =
       ComputedStyle::NullifyEnsured(GetComputedStyle());
   if (!style) {
@@ -10855,7 +10852,8 @@ void Element::ScheduleInterestLostTask() {
           [](Element* invoker, Element* target) {
             GainOrLoseInterest(invoker, target, InterestState::kNoInterest);
           },
-          WrapWeakPersistent(this), WrapWeakPersistent(target)),
+          WrapWeakPersistent(this),
+          WrapWeakPersistent(InterestTargetElement())),
       base::Seconds(hide_delay_seconds)));
 }
 
@@ -10958,13 +10956,14 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
   } else {
     DCHECK(source == InterestTargetSource::kDeHover ||
            source == InterestTargetSource::kBlurElementChain);
-    if (invoker_data && invoker_data->GetInterestState() !=
-                            InterestState::kNoInterest) [[unlikely]] {
-      // This is an active interest invoker which was just de-hovered or
-      // blurred. Cancel any pending InterestGained tasks, and schedule an
-      // InterestLost task if needed.
+    if (invoker_data) [[unlikely]] {
+      // This is an interest invoker which was just de-hovered or blurred.
+      // Cancel any pending InterestGained tasks, and (if the invoker already
+      // has interest) schedule an InterestLost task.
       invoker_data->CancelInterestGainedTask();
-      ScheduleInterestLostTask();
+      if (invoker_data->GetInterestState() != InterestState::kNoInterest) {
+        ScheduleInterestLostTask();
+      }
     }
     if (upstream_invoker) [[unlikely]] {
       // This is the target of an interest invoker, which was just de-hovered or
