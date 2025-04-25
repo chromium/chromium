@@ -38,12 +38,15 @@ def ReadProguardConfigsPath(build_config_path):
   proguard_configs_path = set()
   with open(build_config_path, 'r') as f:
     build_config = json.load(f)
-    proguard_configs_path.update(build_config["deps_info"].get(
-        "proguard_all_configs", set()))
+    proguard_configs_path.update(build_config.get("proguard_all_configs",
+                                                  set()))
+
+  params_path = build_config_path.replace('.build_config.json', '.params.json')
+  with open(params_path, 'r') as f:
+    params_json = json.load(f)
     # java_library targets don't have `proguard_all_configs` so we need
     # to look at `proguard_configs` field instead.
-    proguard_configs_path.update(build_config["deps_info"].get(
-        "proguard_configs", set()))
+    proguard_configs_path.update(params_json.get("proguard_configs", set()))
   return proguard_configs_path
 
 def main():
