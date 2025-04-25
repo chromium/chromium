@@ -142,8 +142,21 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool noise_suppressor_enabled : {true, false}) {
     SCOPED_TRACE(noise_suppressor_enabled);
-    auto config = CreateApmGetConfig(
-        /*settings=*/{.noise_suppression = noise_suppressor_enabled});
+
+    const auto settings =
+        AudioProcessingSettings{.noise_suppression = noise_suppressor_enabled};
+
+    // On iOS-blink and tvOS, AudioProcessingModule is only created when
+    // noise_suppression is enabled. Attempting to create or configure APM when
+    // noise_suppression is false leads to a crash on these platforms.
+    //
+    // This check ensures we only run the test when APM is expected to be
+    // created.
+    if (!settings.NeedWebrtcAudioProcessing()) {
+      continue;
+    }
+
+    auto config = CreateApmGetConfig(settings);
 
     EXPECT_EQ(config.noise_suppression.enabled, noise_suppressor_enabled);
     EXPECT_EQ(config.noise_suppression.level,
