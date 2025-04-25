@@ -1043,12 +1043,14 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
   // If the canvas is gpu composited, it has another way of getting to screen
   if (!PaintsIntoCanvasBuffer()) {
     // For click-and-drag or printing we still want to draw
-    if (!(flatten_composited_layers || GetDocument().Printing()))
+    if (!(flatten_composited_layers ||
+          GetDocument().IsPrintingOrPaintingPreview())) {
       return;
+    }
   }
 
   if (OffscreenCanvasFrame()) {
-    DCHECK(GetDocument().Printing());
+    DCHECK(GetDocument().IsPrintingOrPaintingPreview());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
     if (!image_for_printing)
