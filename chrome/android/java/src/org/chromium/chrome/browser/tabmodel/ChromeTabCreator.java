@@ -148,6 +148,10 @@ public class ChromeTabCreator extends TabCreator
                 return "BookmarkBarBackground";
             case TabLaunchType.FROM_REPARENTING_BACKGROUND:
                 return "ReparentingBackground";
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                return "HistoryNavigationBackground";
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
+                return "HistoryNavigationBackground";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -438,12 +442,7 @@ public class ChromeTabCreator extends TabCreator
 
         // Measure tab creation duration for different launch types to understand tab creation
         // performance using an existing WebContents.
-        try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents");
-                TimingMetric unused =
-                        TimingMetric.mediumUptime(
-                                "Android.Tab.CreateNewTabDuration."
-                                        + tabLaunchTypeToHistogramKey(type)
-                                        + ".WithExistingWebContents")) {
+        try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents")) {
             // If parent is in the same tab model, place the new tab next to it.
             int position = TabModel.INVALID_TAB_INDEX;
             int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
@@ -674,6 +673,7 @@ public class ChromeTabCreator extends TabCreator
                 break;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
             case TabLaunchType.FROM_LONGPRESS_INCOGNITO:
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
                 transition = PageTransition.LINK;
                 break;
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
@@ -682,6 +682,7 @@ public class ChromeTabCreator extends TabCreator
             case TabLaunchType.FROM_RECENT_TABS:
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
             case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
                 // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
                 // (https://crbug.com/758027)
