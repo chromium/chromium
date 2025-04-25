@@ -12170,6 +12170,21 @@
             ]
         }
     ],
+    "IOSEnterpriseRealtimeEventReporting": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseRealtimeEventReportingOnIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExplicitUITraitRegistration": [
         {
             "platforms": [
