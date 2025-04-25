@@ -104,8 +104,6 @@ blink_modules_sources("webgl") {
     "webgl_context_attribute_helpers.h",
     "webgl_context_event.cc",
     "webgl_context_event.h",
-    "webgl_context_group.cc",
-    "webgl_context_group.h",
     "webgl_debug_renderer_info.cc",
     "webgl_debug_renderer_info.h",
     "webgl_debug_shaders.cc",
