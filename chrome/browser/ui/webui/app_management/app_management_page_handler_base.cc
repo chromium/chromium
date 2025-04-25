@@ -26,7 +26,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -50,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

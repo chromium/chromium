@@ -25,7 +25,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -35,6 +34,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
 
 namespace safe_browsing {
 namespace {

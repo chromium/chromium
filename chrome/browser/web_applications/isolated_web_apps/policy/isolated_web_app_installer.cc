@@ -20,11 +20,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
