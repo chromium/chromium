@@ -49,8 +49,6 @@ class WebGLBuffer final : public WebGLSharedPlatform3DObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  bool IsBuffer() const override { return true; }
-
   GLenum initial_target_;
   int64_t size_;
 };

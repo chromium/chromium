@@ -40,8 +40,6 @@ class WebGLQuery : public WebGLSharedPlatform3DObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  bool IsQuery() const override { return true; }
-
   void ScheduleAllowAvailabilityUpdate();
   void AllowAvailabilityUpdate();
 

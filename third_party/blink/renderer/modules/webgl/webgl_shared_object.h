@@ -39,15 +39,6 @@ class WebGLSharedObject : public WebGLObject {
  public:
   WebGLContextGroup* ContextGroup() const { return context_group_.Get(); }
 
-  virtual bool IsBuffer() const { return false; }
-  virtual bool IsProgram() const { return false; }
-  virtual bool IsQuery() const { return false; }
-  virtual bool IsRenderbuffer() const { return false; }
-  virtual bool IsSampler() const { return false; }
-  virtual bool IsShader() const { return false; }
-  virtual bool IsSync() const { return false; }
-  virtual bool IsTexture() const { return false; }
-
   bool Validate(const WebGLContextGroup* context_group,
                 const WebGLRenderingContextBase*) const final;
 

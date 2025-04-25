@@ -76,8 +76,6 @@ class WebGLProgram final : public WebGLSharedPlatform3DObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  bool IsProgram() const override { return true; }
-
   void CacheInfoIfNeeded(WebGLRenderingContextBase*);
 
   GLint link_status_;

@@ -21,8 +21,7 @@ WebGLSampler::WebGLSampler(WebGL2RenderingContextBase* ctx)
 WebGLSampler::~WebGLSampler() = default;
 
 void WebGLSampler::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteSamplers(1, &object_);
-  object_ = 0;
+  gl->DeleteSamplers(1, &Object());
 }
 
 }  // namespace blink

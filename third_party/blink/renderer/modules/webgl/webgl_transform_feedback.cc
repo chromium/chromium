@@ -14,7 +14,6 @@ WebGLTransformFeedback::WebGLTransformFeedback(
     TFType type,
     GLint max_transform_feedback_separate_attribs)
     : WebGLContextObject(ctx),
-      object_(0),
       type_(type),
       target_(0),
       program_(nullptr),
@@ -34,7 +33,7 @@ WebGLTransformFeedback::WebGLTransformFeedback(
     case TFType::kUser: {
       GLuint tf;
       ctx->ContextGL()->GenTransformFeedbacks(1, &tf);
-      object_ = tf;
+      SetObject(tf);
       break;
     }
   }
@@ -56,8 +55,7 @@ void WebGLTransformFeedback::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
     case TFType::kDefault:
       break;
     case TFType::kUser:
-      gl->DeleteTransformFeedbacks(1, &object_);
-      object_ = 0;
+      gl->DeleteTransformFeedbacks(1, &Object());
       break;
   }
 
