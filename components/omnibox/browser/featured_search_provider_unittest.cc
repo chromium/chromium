@@ -295,7 +295,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
   RunTest(typing_scheme_cases);
 }
 
-TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
+// TODO(crbug.com/413598265): Fix flaky test.
+TEST_F(FeaturedSearchProviderTest, FLAKY_StarterPackExpansionRelevance) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {omnibox::kStarterPackExpansion,
