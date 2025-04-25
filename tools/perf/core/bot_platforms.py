@@ -658,6 +658,7 @@ _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'speedometer2-minorms',
     'speedometer3-minorms',
 ])
+_MAC_M3_PRO_BENCHMARK_CONFIGS = PerfSuite([])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
@@ -844,7 +845,12 @@ MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',
                           20,
                           'mac',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-
+MAC_M3_PRO = PerfPlatform('mac-m3-pro-perf',
+                          'Mac M3 PRO ARM',
+                          _MAC_M3_PRO_BENCHMARK_CONFIGS,
+                          4,
+                          'mac',
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 # Win
 WIN_10_LOW_END = PerfPlatform(
     'win-10_laptop_low_end-perf',

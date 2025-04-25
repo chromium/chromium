@@ -306,4 +306,7 @@ TARGET_DEVICES = {
         'speedometer3.crossbench': 4,
         'speedometer3.1.crossbench': 4,
     },
+     'mac-m3-pro-perf': {
+        'speedometer3.1.crossbench': 4,
+    },
 }

@@ -138,6 +138,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'mac-m1_mini_2020-perf',
     'mac-m1_mini_2020-perf-pgo',
     'mac-m2-pro-perf',
+    'mac-m3-pro-perf',
     'win-10-processor-perf',
     'win-10_amd_laptop-perf',
     'win-10_laptop_low_end-processor-perf',
@@ -989,6 +990,30 @@ BUILDERS = {
             'chrome.tests.perf',
             'synthetic_product_name':
             'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
+        },
+    },
+    'mac-m3-pro-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'arm',
+            'mac_model':
+            'Mac15,3',
+            'os':
+            'Mac',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'Mac15,3_arm64-64-Apple_M3_apple m3_8192_APPLE SSD AP0512Z',
         },
     },
     'win-10_amd_laptop-perf': {
