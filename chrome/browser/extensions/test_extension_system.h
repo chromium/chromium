@@ -37,7 +37,6 @@ class TestValueStoreFactory;
 }  // namespace value_store
 
 namespace extensions {
-class ChromeExtensionRegistrarDelegate;
 
 // Test ExtensionSystem, for use with TestingProfile.
 class TestExtensionSystem : public ExtensionSystem {
@@ -78,12 +77,9 @@ class TestExtensionSystem : public ExtensionSystem {
   void Init();
   void Init(const InitParams& init_params);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // NOTE: Please don't use these in new code. Prefer using `Init()`, which will
-  // work on builds that don't support ExtensionService.
-
   // Creates an ExtensionService initialized with the testing profile and
   // returns it, and creates ExtensionPrefs if it hasn't been created yet.
+  // DEPRECATED: Prefer Init().
   ExtensionService* CreateExtensionService(
       const base::CommandLine* command_line,
       const base::FilePath& install_directory,
@@ -91,13 +87,13 @@ class TestExtensionSystem : public ExtensionSystem {
       bool enable_extensions = true);
   // Similar to the above, but also allows specifying unpacked install directory
   // if needed.
+  // DEPRECATED: Prefer Init().
   ExtensionService* CreateExtensionService(
       const base::CommandLine* command_line,
       const base::FilePath& install_directory,
       const base::FilePath& unpacked_install_directory,
       bool autoupdate_enabled,
       bool enable_extensions = true);
-#endif
 
   void CreateSocketManager();
 
@@ -155,11 +151,7 @@ class TestExtensionSystem : public ExtensionSystem {
   std::unique_ptr<StateStore> state_store_;
   std::unique_ptr<ManagementPolicy> management_policy_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<ExtensionService> extension_service_;
-#else
-  std::unique_ptr<ChromeExtensionRegistrarDelegate> registrar_delegate_;
-#endif
 
   std::unique_ptr<AppSorting> app_sorting_;
 

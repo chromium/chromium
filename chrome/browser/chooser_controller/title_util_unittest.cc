@@ -14,7 +14,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service.h"  // nogncheck
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"

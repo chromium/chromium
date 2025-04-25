@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +48,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_sorting.h"
-#include "chrome/browser/extensions/extension_service.h"
 #else
 #include "extensions/browser/null_app_sorting.h"
 #endif
@@ -91,13 +91,11 @@ std::optional<CWSInfoServiceInterface::CWSInfo> FakeCWSInfoService::GetCWSInfo(
   return CWSInfoServiceInterface::CWSInfo();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<KeyedService> BuildFakeCWSService(
     content::BrowserContext* context) {
   return std::make_unique<FakeCWSInfoService>(
       Profile::FromBrowserContext(context));
 }
-#endif
 
 }  // namespace
 
@@ -140,13 +138,9 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
 TestExtensionSystem::~TestExtensionSystem() = default;
 
 void TestExtensionSystem::Shutdown() {
-#if BUILDFLAG(IS_ANDROID)
-  registrar_delegate_.reset();
-#else
   if (extension_service_) {
     extension_service_->Shutdown();
   }
-#endif
 
   in_process_data_decoder_.reset();
 }
@@ -165,21 +159,11 @@ void TestExtensionSystem::Init(const InitParams& params) {
       params.unpacked_install_directory.value_or(
           profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 
-#if BUILDFLAG(IS_ANDROID)
-  registrar_delegate_ =
-      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());
-  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(profile_.get());
-  registrar->Init(registrar_delegate_.get(), params.enable_extensions,
-                  command_line, install_directory, unpacked_install_directory);
-  registrar_delegate_->Init(registrar);
-#else
   CreateExtensionService(command_line, install_directory,
                          unpacked_install_directory, params.autoupdate_enabled,
                          params.enable_extensions);
-#endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::CommandLine* command_line,
     const base::FilePath& install_directory,
@@ -223,7 +207,6 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   ExternalProviderManager::Get(profile_)->ClearProvidersForTesting();
   return extension_service_.get();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void TestExtensionSystem::CreateUserScriptManager() {
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);

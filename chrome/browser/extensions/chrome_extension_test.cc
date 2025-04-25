@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/chrome_extension_test.h"
 
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,7 +18,12 @@ ChromeExtensionTest::ChromeExtensionTest() = default;
 ChromeExtensionTest::~ChromeExtensionTest() = default;
 
 void ChromeExtensionTest::SetUp() {
-  profile_ = TestingProfile::Builder().Build();
+  // Ensure the profile uses a TestExtensionSystem.
+  profile_ =
+      TestingProfile::Builder()
+          .AddTestingFactory(ChromeExtensionSystemFactory::GetInstance(),
+                             base::BindRepeating(&TestExtensionSystem::Build))
+          .Build();
 
   TestExtensionSystem* test_extension_system =
       static_cast<TestExtensionSystem*>(

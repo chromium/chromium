@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -61,7 +62,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #else
@@ -215,7 +215,6 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
 
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool autoupdate_enabled =
       !profile_->IsGuestSession() && !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -232,22 +231,10 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
       ExtensionErrorController::Get(profile_), autoupdate_enabled,
       extensions_enabled, &ready_);
 
-  // TODO(crbug.com/413460628): This depends on the initialization of
-  // ExtensionUpdater by ExtensionService.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
       ExtensionRegistry::Get(profile_),
       base::BindRepeating(&ShouldSendUninstallPing, profile_));
-#else
-  // Perform initialization usually handled by ExtensionService.
-  registrar_delegate_ =
-      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_);
-  auto* registrar = ExtensionRegistrar::Get(profile_);
-  registrar->Init(
-      registrar_delegate_.get(), extensions_enabled,
-      base::CommandLine::ForCurrentProcess(),
-      profile_->GetPath().AppendASCII(kInstallDirectoryName),
-      profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
-  registrar_delegate_->Init(registrar);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // These services must be registered before the ExtensionService tries to
@@ -312,12 +299,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
 
   InitInstallGates();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_service_->Init();
-#else
-  // This is usually handled by ExtensionSystem::Init().
-  ready_.Signal();
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Make sure ExtensionSyncService is created.
@@ -338,12 +320,10 @@ void ChromeExtensionSystem::Shared::Shutdown() {
   if (content_verifier_.get()) {
     content_verifier_->Shutdown();
   }
+#endif
   if (extension_service_) {
     extension_service_->Shutdown();
   }
-#else
-  registrar_delegate_.reset();
-#endif
 }
 
 ServiceWorkerManager* ChromeExtensionSystem::Shared::service_worker_manager() {
@@ -368,11 +348,7 @@ ChromeExtensionSystem::Shared::store_factory() const {
 }
 
 ExtensionService* ChromeExtensionSystem::Shared::extension_service() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extension_service_.get();
-#else
-  return nullptr;
-#endif
 }
 
 ManagementPolicy* ChromeExtensionSystem::Shared::management_policy() {
