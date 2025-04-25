@@ -641,6 +641,12 @@ ci.thin_tester(
                     "--jobs=1",
                 ],
             ),
+            "unit_tests": targets.mixin(
+                # The suite runs signficantly slower on linux dbg, so increase shards.
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "webdriver_wpt_tests": targets.mixin(
                 args = [
                     "--debug",
