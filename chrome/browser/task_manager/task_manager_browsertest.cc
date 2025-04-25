@@ -1029,12 +1029,13 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
 IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   ShowTaskManager();
 
+  // Navigate to a page A(B,C).
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   GURL main_url(embedded_test_server()->GetURL(
       "/cross-site/a.com/iframe_cross_site.html"));
   int expected_c_subframes = 1;
-  if (content::IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+  if (!content::AreAllSitesIsolatedForTesting()) {
     // Isolate b.com so that it will be forced into a separate process. This
     // will prevent the main frame and c.com subframe from being placed in the
     // the process that gets killed by this test.

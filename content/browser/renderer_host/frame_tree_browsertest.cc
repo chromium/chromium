@@ -2073,7 +2073,7 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
 
   // Make sure we did a process transfer back to "b.is".
   const std::string kExpectedSiteURL =
-      AreAllSitesIsolatedForTesting()
+      AreStrictSiteInstancesEnabled()
           ? "http://a.com/"
           : SiteInstanceImpl::GetDefaultSiteURL().spec();
   const std::string kExpectedSubframeSiteURL =

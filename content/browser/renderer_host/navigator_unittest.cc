@@ -131,7 +131,7 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
   EXPECT_TRUE(main_test_rfh()->IsActive());
   EXPECT_EQ(main_test_rfh()->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kActive);
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   } else {
@@ -199,7 +199,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
   // Commit the navigation.
   navigation->Commit();
   EXPECT_TRUE(main_test_rfh()->IsActive());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl2),
               main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   } else {
@@ -727,7 +727,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   TestRenderFrameHost* speculative_rfh = GetSpeculativeRenderFrameHost(node);
   ASSERT_TRUE(speculative_rfh);
   auto site_instance_id_1 = speculative_rfh->GetSiteInstance()->GetId();
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(kUrl1SiteInfo, speculative_rfh->GetSiteInstance()->GetSiteInfo());
   } else {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
@@ -751,7 +751,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   ASSERT_TRUE(speculative_rfh);
   auto site_instance_id_2 = speculative_rfh->GetSiteInstance()->GetId();
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(site_instance_id_1, site_instance_id_2);
   } else {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
@@ -767,7 +767,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
 
   // Confirm that the commit corresponds to the new request.
   ASSERT_TRUE(main_test_rfh());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(kUrl2SiteInfo, main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   } else {
     EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
@@ -1070,7 +1070,7 @@ TEST_F(NavigatorTest, SpeculativeRendererWorksBaseCase) {
   auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
   ASSERT_TRUE(speculative_rfh);
   EXPECT_NE(speculative_rfh, main_test_rfh());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
   } else {
@@ -1110,7 +1110,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   EXPECT_EQ(init_site_instance_id, main_test_rfh()->GetSiteInstance()->GetId());
   EXPECT_NE(speculative_rfh, main_test_rfh());
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
   } else {
@@ -1148,7 +1148,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   // they should be associated with different BrowsingInstances.
   EXPECT_NE(init_site_instance_id, redirect_site_instance_id);
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrlRedirect),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
     EXPECT_NE(site_instance_id, redirect_site_instance_id);
@@ -1296,7 +1296,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(current_instance, related_instance.get());
     EXPECT_NE(unrelated_instance.get(), related_instance.get());
 
-    if (AreAllSitesIsolatedForTesting()) {
+    if (AreStrictSiteInstancesEnabled()) {
       EXPECT_EQ(SiteInfo::CreateForTesting(
                     current_instance->GetIsolationContext(), kUrlSameSiteAs2),
                 related_instance->GetSiteInfo());
@@ -1359,7 +1359,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(related_instance.get(), converted_instance_1.get());
     EXPECT_NE(unrelated_instance.get(), converted_instance_1.get());
 
-    if (AreAllSitesIsolatedForTesting()) {
+    if (AreStrictSiteInstancesEnabled()) {
       EXPECT_EQ(CreateExpectedSiteInfo(kUrlSameSiteAs2),
                 converted_instance_1->GetSiteInfo());
     } else {
