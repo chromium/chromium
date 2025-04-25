@@ -159,7 +159,8 @@ class RevokedPermissionsServiceTest
     : public ChromeRenderViewHostTestHarness,
       public testing::WithParamInterface<
           std::tuple</*should_setup_abusive_notification_sites*/ bool,
-                     /*should_setup_unused_sites*/ bool>> {
+                     /*should_setup_unused_sites*/ bool,
+                     /*should_setup_disruptive_sites*/ bool>> {
  public:
   RevokedPermissionsServiceTest() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -173,8 +174,10 @@ class RevokedPermissionsServiceTest
       enabled_features.push_back(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation);
     }
-    enabled_features.push_back(
-        safe_browsing::kSafetyHubDisruptiveNotificationRevocation);
+    if (ShouldSetupDisruptiveSites()) {
+      enabled_features.push_back(
+          safe_browsing::kSafetyHubDisruptiveNotificationRevocation);
+    }
     feature_list_.InitWithFeatures(
         /*enabled_features=*/enabled_features,
         /*disabled_features=*/{});
@@ -223,6 +226,7 @@ class RevokedPermissionsServiceTest
 
   bool ShouldSetupAbusiveNotificationSites() { return get<0>(GetParam()); }
   bool ShouldSetupUnusedSites() { return get<1>(GetParam()); }
+  bool ShouldSetupDisruptiveSites() { return get<2>(GetParam()); }
 
   void ResetService() {
     // Setting the factory has the side effect of resetting the service
@@ -317,6 +321,13 @@ class RevokedPermissionsServiceTest
     ContentSettingsForOneType revoked_permissions_list =
         safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
     EXPECT_EQ(expected_size, revoked_permissions_list.size());
+  }
+
+  void ExpectRevokedDisruptiveNotificationPermissionSize(size_t expected_size) {
+    ContentSettingsForOneType revoked_permissions =
+        hcsm()->GetSettingsForOneType(
+            ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+    EXPECT_EQ(expected_size, revoked_permissions.size());
   }
 
   void SetupRevokedUnusedPermissionSite(
@@ -435,6 +446,42 @@ class RevokedPermissionsServiceTest
         url));
     EXPECT_FALSE(
         safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm(), GURL(url)));
+    EXPECT_EQ(
+        hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
+        is_regranted ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_ASK);
+  }
+
+  void ExpectRevokedDisruptiveNotificationSettingValues(std::string url) {
+    base::Value stored_value = hcsm()->GetWebsiteSetting(
+        GURL(url), GURL(url),
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+    EXPECT_FALSE(stored_value.is_none());
+    ASSERT_TRUE(stored_value.is_dict());
+    EXPECT_EQ(safety_hub::kRevokeStr,
+              stored_value.GetDict()
+                  .Find(safety_hub::kRevokedStatusDictKeyStr)
+                  ->GetString());
+    EXPECT_TRUE(
+        safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
+    EXPECT_EQ(
+        hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
+        CONTENT_SETTING_ASK);
+  }
+
+  void ExpectCleanedUpDisruptiveNotificationSettingValues(
+      std::string url,
+      bool is_regranted = false) {
+    base::Value stored_value = hcsm()->GetWebsiteSetting(
+        GURL(url), GURL(url),
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+    EXPECT_FALSE(stored_value.is_none());
+    ASSERT_TRUE(stored_value.is_dict());
+    EXPECT_NE(safety_hub::kRevokeStr,
+              stored_value.GetDict()
+                  .Find(safety_hub::kRevokedStatusDictKeyStr)
+                  ->GetString());
+    EXPECT_FALSE(
+        safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
     EXPECT_EQ(
         hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
         is_regranted ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_ASK);
@@ -849,13 +896,18 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   if (ShouldSetupUnusedSites()) {
     SetupRevokedUnusedPermissionSite(url1);
     SetupRevokedUnusedPermissionSite(url2);
-    EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
+    SetupRevokedUnusedPermissionSite(url5);
+    EXPECT_EQ(3U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url4);
+    SetupRevokedDisruptiveNotificationSite(url5);
   }
 
   // Allow the permission for `url1` again, which is unused.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
   if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+    EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
     // Check if the permissions of `url1` is regranted.
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ALLOW,
@@ -872,7 +924,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Allow the permission for `url2`, which is both abusive and unused.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url2)));
   if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
     // Check if the permissions of `url2` is regranted.
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ALLOW,
@@ -890,7 +942,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Allow the permission for `url3`, which is abusive.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url3)));
   if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
@@ -898,6 +950,29 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
                                                     /*is_regranted=*/true);
     ExpectCleanedUpAbusiveNotificationSettingValues(url3,
                                                     /*is_regranted=*/true);
+  }
+
+  // Allow the permission for `url4`, which is disruptive.
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url4)));
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectCleanedUpDisruptiveNotificationSettingValues(url4,
+                                                       /*is_regranted=*/true);
+  }
+
+  // Allow the permission for `url5`, which is unused and disruptive.
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url5)));
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
+    // Check if the permissions of `url5` is regranted.
+    EXPECT_EQ(
+        ContentSetting::CONTENT_SETTING_ALLOW,
+        hcsm()->GetContentSetting(GURL(url1), GURL(url5), geolocation_type));
+    EXPECT_EQ(base::Value::Dict().Set("foo", "bar"),
+              hcsm()->GetWebsiteSetting(GURL(url1), GURL(url5), chooser_type));
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectCleanedUpDisruptiveNotificationSettingValues(url5,
+                                                       /*is_regranted=*/true);
   }
 
   // Undoing the changes should add `url1` back to the list of revoked
@@ -951,6 +1026,28 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
     ExpectRevokedAbusiveNotificationPermissionSize(2U);
     ExpectRevokedAbusiveNotificationSettingValues(url2);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
+  }
+
+  // Undoing `url4` adds it back to the revoked disruptive notification
+  // permissions list.
+  UndoRegrantPermissionsForUrl(url4, {notifications_type});
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectRevokedDisruptiveNotificationSettingValues(url4);
+  }
+
+  // Undoing `url5` adds it back to the revoked permissions lists.
+  UndoRegrantPermissionsForUrl(
+      url5, {notifications_type, geolocation_type, chooser_type});
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(3U, GetRevokedUnusedPermissions(hcsm()).size());
+    EXPECT_EQ(
+        ContentSetting::CONTENT_SETTING_ASK,
+        hcsm()->GetContentSetting(GURL(url5), GURL(url5), geolocation_type));
+    EXPECT_EQ(base::Value(),
+              hcsm()->GetWebsiteSetting(GURL(url5), GURL(url5), chooser_type));
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectRevokedDisruptiveNotificationSettingValues(url5);
   }
 }
 
@@ -1095,12 +1192,16 @@ TEST_P(RevokedPermissionsServiceTest, ClearRevokedPermissionsList) {
     SetupRevokedUnusedPermissionSite(url2);
     EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
   }
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url4);
+  }
 
   // Revoked permissions list should be empty after clearing the revoked
   // permissions list.
   service()->ClearRevokedPermissionsList();
   EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   ExpectRevokedAbusiveNotificationPermissionSize(0U);
+  ExpectRevokedDisruptiveNotificationPermissionSize(0U);
 }
 
 TEST_P(RevokedPermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
@@ -1210,9 +1311,10 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
     SetupRevokedUnusedPermissionSite(url5, longer_lifetime);
     SetupRevokedUnusedPermissionSite(url6, shorter_lifetime);
   }
-
-  SetupRevokedDisruptiveNotificationSite(url5, shorter_lifetime);
-  SetupRevokedDisruptiveNotificationSite(url6, longer_lifetime);
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url5, shorter_lifetime);
+    SetupRevokedDisruptiveNotificationSite(url6, longer_lifetime);
+  }
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
@@ -1225,46 +1327,84 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
       static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
           opt_result.value().get());
   auto revoked_permissions = result->GetRevokedPermissions();
-  if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(6U, revoked_permissions.size());
-    // Verify the constraints are merged properly when there are multiple
-    // revocation types.
-    auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
-    EXPECT_EQ(permission_1.constraints.lifetime(), default_lifetime);
+  if (ShouldSetupDisruptiveSites()) {
+    if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
+      EXPECT_EQ(6U, revoked_permissions.size());
+      // Verify the constraints are merged properly when there are multiple
+      // revocation types.
+      auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
+      EXPECT_EQ(permission_1.constraints.lifetime(), default_lifetime);
 
-    auto permission_2 = GetPermissionsDataByUrl(revoked_permissions, url2);
-    EXPECT_EQ(permission_2.constraints.lifetime(), longer_lifetime);
+      auto permission_2 = GetPermissionsDataByUrl(revoked_permissions, url2);
+      EXPECT_EQ(permission_2.constraints.lifetime(), longer_lifetime);
 
-    auto permission_3 = GetPermissionsDataByUrl(revoked_permissions, url3);
-    EXPECT_EQ(permission_3.constraints.lifetime(), default_lifetime);
+      auto permission_3 = GetPermissionsDataByUrl(revoked_permissions, url3);
+      EXPECT_EQ(permission_3.constraints.lifetime(), default_lifetime);
 
-    auto permission_4 = GetPermissionsDataByUrl(revoked_permissions, url4);
-    EXPECT_EQ(permission_4.constraints.lifetime(), longer_lifetime);
+      auto permission_4 = GetPermissionsDataByUrl(revoked_permissions, url4);
+      EXPECT_EQ(permission_4.constraints.lifetime(), longer_lifetime);
 
-    auto permission_5 = GetPermissionsDataByUrl(revoked_permissions, url5);
-    EXPECT_EQ(permission_5.constraints.lifetime(), longer_lifetime);
+      auto permission_5 = GetPermissionsDataByUrl(revoked_permissions, url5);
+      EXPECT_EQ(permission_5.constraints.lifetime(), longer_lifetime);
 
-    auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
-    EXPECT_EQ(permission_6.constraints.lifetime(), longer_lifetime);
-  } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(5U, revoked_permissions.size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
-  } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(5U, revoked_permissions.size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url3));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
-    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
+      auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
+      EXPECT_EQ(permission_6.constraints.lifetime(), longer_lifetime);
+    } else if (ShouldSetupUnusedSites()) {
+      EXPECT_EQ(5U, revoked_permissions.size());
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
+    } else if (ShouldSetupAbusiveNotificationSites()) {
+      EXPECT_EQ(5U, revoked_permissions.size());
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url3));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
+    }
+  } else {
+    if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
+      EXPECT_EQ(6U, revoked_permissions.size());
+      // Verify the constraints are merged properly when there are multiple
+      // revocation types.
+      auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
+      EXPECT_EQ(permission_1.constraints.lifetime(), default_lifetime);
+
+      auto permission_2 = GetPermissionsDataByUrl(revoked_permissions, url2);
+      EXPECT_EQ(permission_2.constraints.lifetime(), longer_lifetime);
+
+      auto permission_3 = GetPermissionsDataByUrl(revoked_permissions, url3);
+      EXPECT_EQ(permission_3.constraints.lifetime(), default_lifetime);
+
+      auto permission_4 = GetPermissionsDataByUrl(revoked_permissions, url4);
+      EXPECT_EQ(permission_4.constraints.lifetime(), longer_lifetime);
+
+      auto permission_5 = GetPermissionsDataByUrl(revoked_permissions, url5);
+      EXPECT_EQ(permission_5.constraints.lifetime(), longer_lifetime);
+
+      auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
+      EXPECT_EQ(permission_6.constraints.lifetime(), shorter_lifetime);
+    } else if (ShouldSetupUnusedSites()) {
+      EXPECT_EQ(5U, revoked_permissions.size());
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
+    } else if (ShouldSetupAbusiveNotificationSites()) {
+      EXPECT_EQ(3U, revoked_permissions.size());
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url3));
+      EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+    }
   }
 }
 
 TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
-  if (!ShouldSetupAbusiveNotificationSites() || !ShouldSetupUnusedSites()) {
+  if (!ShouldSetupAbusiveNotificationSites() || !ShouldSetupUnusedSites() ||
+      !ShouldSetupDisruptiveSites()) {
     return;
   }
 
@@ -1728,7 +1868,8 @@ INSTANTIATE_TEST_SUITE_P(
     RevokedPermissionsServiceTest,
     testing::Combine(
         /*should_setup_abusive_notification_sites=*/testing::Bool(),
-        /*should_setup_unused_sites=*/testing::Bool()));
+        /*should_setup_unused_sites=*/testing::Bool(),
+        /*should_setup_disruptive_sites=*/testing::Bool()));
 
 class RevokedPermissionsServiceStartUpTest
     : public ChromeRenderViewHostTestHarness {

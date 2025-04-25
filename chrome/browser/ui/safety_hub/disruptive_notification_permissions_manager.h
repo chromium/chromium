@@ -41,6 +41,9 @@ class DisruptiveNotificationPermissionsManager {
   // kRevoke). After the permission is revoked, the content setting is removed
   // so the site won't be reported anymore.
   //
+  // Undo: If the user has undone the revocation, the site is marked as "ignore"
+  // so it won't be revoked on the next runs.
+  //
   // LINT.IfChange(RevocationResult)
   enum class RevocationResult {
     kNotAllowedContentSetting = 0,
@@ -54,7 +57,8 @@ class DisruptiveNotificationPermissionsManager {
     kNoRevokeDefaultBlock = 8,
     kAlreadyFalsePositive = 9,
     kRevoke = 10,
-    kMaxValue = kRevoke,
+    kIgnore = 11,
+    kMaxValue = kIgnore,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 
@@ -79,6 +83,30 @@ class DisruptiveNotificationPermissionsManager {
 
   // Returns true if settings are being changed due to auto revocation;
   bool IsRevocationRunning();
+
+  // If the url has a revoked disruptive notification permission, this method
+  // allows the notification permissions again and adds a constraint so that
+  // this permission is not auto-revoked during future Safety Hub checks.
+  void RegrantPermissionForUrl(const GURL& url);
+
+  // If `permission_types` includes notifications, undo the actions from
+  // `RegrantPermissionForUrl` by changing the `NOTIFICATIONS` setting back
+  // to `CONTENT_SETTING_ASK` and the
+  // `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` status value back to
+  // `safety_hub::kRevokeStr`.
+  void UndoRegrantPermissionForUrl(
+      const GURL& url,
+      std::set<ContentSettingsType> permission_types,
+      content_settings::ContentSettingConstraints constraints);
+
+  // Clear the list of revoked notification permissions so they will no longer
+  // be shown to the user. Does not change permissions themselves.
+  void ClearRevokedPermissionsList();
+
+  // Removes the `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` setting.
+  void DeleteRevokedPermissionContentSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
 
   // Logs metrics for proposed disruptive notification revocation, to be called
   // when displaying a persistent notification.

@@ -17,6 +17,7 @@
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "safety_hub_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
 
@@ -208,6 +209,12 @@ void DisruptiveNotificationPermissionsManager::HandleExistingValue(
     return;
   }
 
+  if (*revoked_status == safety_hub::kIgnoreStr) {
+    base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                  RevocationResult::kIgnore);
+    return;
+  }
+
   if (*revoked_status != safety_hub::kProposedStr) {
     return;
   }
@@ -291,6 +298,93 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
 
 bool DisruptiveNotificationPermissionsManager::IsRevocationRunning() {
   return is_revocation_running_;
+}
+
+void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
+    const GURL& url) {
+  // If the user decides to regrant permissions for `url`, check if it has
+  // revoked disruptive notification permissions. If so, allow notification
+  // permissions and ignore the `url` from future auto-revocation.
+  if (!safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm_.get(), url)) {
+    return;
+  }
+  is_revocation_running_ = true;
+
+  UpdateNotificationPermission(hcsm_.get(), url,
+                               ContentSetting::CONTENT_SETTING_ALLOW);
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kIgnoreStr);
+  // Update the stored status value to "ignore" while clearing the constraints
+  // so the value won't expire.
+  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
+                            /*constraints*/ {});
+
+  is_revocation_running_ = false;
+}
+
+void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
+    const GURL& url,
+    std::set<ContentSettingsType> permission_types,
+    content_settings::ContentSettingConstraints constraints) {
+  // The user has decided to undo the regranted permission revocation for `url`.
+  // Only update the `NOTIFICATIONS` and
+  // `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` settings if the url had
+  // revoked notification permissions.
+  if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
+    return;
+  }
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
+  if (stored_value.is_none()) {
+    return;
+  }
+
+  is_revocation_running_ = true;
+  UpdateNotificationPermission(hcsm_.get(), url,
+                               ContentSetting::CONTENT_SETTING_DEFAULT);
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
+  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict), constraints);
+
+  is_revocation_running_ = false;
+}
+
+void DisruptiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
+  ContentSettingsForOneType revoked_permissions = hcsm_->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+  for (const auto& revoked_permission : revoked_permissions) {
+    const GURL& url = revoked_permission.primary_pattern.ToRepresentativeUrl();
+    base::Value stored_value(hcsm_->GetWebsiteSetting(
+        url, url,
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
+    if (stored_value.is_none()) {
+      continue;
+    }
+    CHECK(stored_value.is_dict());
+    const std::string& setting_val =
+        stored_value.GetDict()
+            .Find(safety_hub::kRevokedStatusDictKeyStr)
+            ->GetString();
+    if (setting_val != safety_hub::kRevokeStr) {
+      continue;
+    }
+
+    DeleteRevokedPermissionContentSetting(revoked_permission.primary_pattern,
+                                          revoked_permission.secondary_pattern);
+  }
+}
+
+void DisruptiveNotificationPermissionsManager::
+    DeleteRevokedPermissionContentSetting(
+        const ContentSettingsPattern& primary_pattern,
+        const ContentSettingsPattern& secondary_pattern) {
+  hcsm_->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
 bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(

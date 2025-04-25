@@ -99,6 +99,11 @@ void AbusiveNotificationPermissionsManager::
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      url, url, ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS));
+  if (stored_value.is_none()) {
+    return;
+  }
   // Set this to true to prevent removal of revoked setting values.
   is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,

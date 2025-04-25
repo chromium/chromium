@@ -391,20 +391,20 @@ RevokedPermissionsService::RevokedPermissionsService(
 #endif
             hcsm());
 
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
-      disruptive_notification_manager_ =
-          std::make_unique<DisruptiveNotificationPermissionsManager>(
-              hcsm(),
-              site_engagement::SiteEngagementServiceFactory::GetForProfile(
-                  browser_context_));
-    }
-
     pref_change_registrar_->Add(
         prefs::kSafeBrowsingEnabled,
         base::BindRepeating(&RevokedPermissionsService::
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
+    disruptive_notification_manager_ =
+        std::make_unique<DisruptiveNotificationPermissionsManager>(
+            hcsm(),
+            site_engagement::SiteEngagementServiceFactory::GetForProfile(
+                browser_context_));
   }
 
   bool migration_completed = pref_change_registrar_->prefs()->GetBoolean(
@@ -484,6 +484,10 @@ void RevokedPermissionsService::OnContentSettingChanged(
           ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
                                                             secondary_pattern);
     }
+    if (disruptive_notification_manager_) {
+      disruptive_notification_manager_->DeleteRevokedPermissionContentSetting(
+          primary_pattern, secondary_pattern);
+    }
   }
 }
 
@@ -496,6 +500,10 @@ void RevokedPermissionsService::RegrantPermissionsForOrigin(
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->RegrantPermissionForOriginIfNecessary(
         origin.GetURL());
+  }
+
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->RegrantPermissionForUrl(origin.GetURL());
   }
 
   content_settings::SettingInfo info;
@@ -574,6 +582,13 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
         permissions_data.constraints.Clone());
   }
 
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->UndoRegrantPermissionForUrl(
+        GURL(permissions_data.primary_pattern.ToString()),
+        permissions_data.permission_types,
+        permissions_data.constraints.Clone());
+  }
+
   // If `permissions_data` had abusive notifications revoked, remove the
   // `NOTIFICATIONS` setting from the list of permission types to handle below,
   // since these were already handled. If there are no unused site permissions
@@ -615,6 +630,10 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
 void RevokedPermissionsService::ClearRevokedPermissionsList() {
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->ClearRevokedPermissionsList();
+  }
+
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->ClearRevokedPermissionsList();
   }
 
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
