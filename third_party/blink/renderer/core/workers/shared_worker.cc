@@ -204,6 +204,12 @@ SharedWorker* SharedWorker::CreateImpl(
       }
       if (worker_options->hasExtendedLifetime()) {
         extended_lifetime = worker_options->extendedLifetime();
+        UseCounter::Count(
+            window, WebFeature::kSharedWorkerExtendedLifetimeFeatureEnabled);
+        if (extended_lifetime) {
+          UseCounter::Count(window,
+                            WebFeature::kSharedWorkerExtendedLifetimeIsTrue);
+        }
       }
       break;
     }

@@ -4851,6 +4851,8 @@ enum WebFeature {
   kInputParsedAncestorSelect = 5547,
   kCSSSelectorPseudoHasSlotted = 5548,
   kSelectMultipleShowPopup = 5549,
+  kSharedWorkerExtendedLifetimeFeatureEnabled = 5550,
+  kSharedWorkerExtendedLifetimeIsTrue = 5551,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
