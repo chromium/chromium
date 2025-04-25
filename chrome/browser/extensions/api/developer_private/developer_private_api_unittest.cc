@@ -3274,24 +3274,9 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
 }
 
 class DeveloperPrivateApiSupervisedUserUnitTest
-    : public DeveloperPrivateApiUnitTest,
-      public testing::WithParamInterface<bool> {
+    : public DeveloperPrivateApiUnitTest {
  public:
-  DeveloperPrivateApiSupervisedUserUnitTest() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    if (extensions_permissions_for_supervised_users_on_desktop()) {
-      feature_list_.InitAndEnableFeature(
-          supervised_user::
-              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-
-    } else {
-      feature_list_.InitAndDisableFeature(
-          supervised_user::
-              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-    }
-#endif
-  }
-
+  DeveloperPrivateApiSupervisedUserUnitTest() = default;
   DeveloperPrivateApiSupervisedUserUnitTest(
       const DeveloperPrivateApiSupervisedUserUnitTest&) = delete;
   DeveloperPrivateApiSupervisedUserUnitTest& operator=(
@@ -3300,23 +3285,15 @@ class DeveloperPrivateApiSupervisedUserUnitTest
   ~DeveloperPrivateApiSupervisedUserUnitTest() override = default;
 
   bool ProfileIsSupervised() const override { return true; }
-
-  bool extensions_permissions_for_supervised_users_on_desktop() const {
-    return GetParam();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.
-TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
+TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
        LoadUnpackedFailsForSupervisedUsers) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
 
-  if (extensions_permissions_for_supervised_users_on_desktop()) {
     EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
@@ -3324,25 +3301,7 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
-  } else {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
-    auto function =
-        base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
-    function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-    std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), "[]", profile());
-    EXPECT_THAT(error, testing::HasSubstr("Child account"));
-#else
-    EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
-#endif
-  }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ExtensionsPermissionsForSupervisedUsersOnDesktopFeature,
-    DeveloperPrivateApiSupervisedUserUnitTest,
-    testing::Bool());
 
 // Test suite for cases where the user is in the  MV2 deprecation "warning"
 // experiment phase.

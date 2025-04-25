@@ -87,20 +87,9 @@ void ExtensionInfoGenerator::FillExtensionInfo(
       info.dependent_extensions.push_back(std::move(dependent_extension));
     }
   }
-
-  DisableReasonSet disable_reasons =
-      extension_prefs_->GetDisableReasons(extension.id());
-  bool custodian_approval_required = disable_reasons.contains(
-      disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
-  bool permissions_increase =
-      disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE);
-  info.disable_reasons.parent_disabled_permissions =
-      supervised_user::AreExtensionsPermissionsEnabled(profile) &&
-      !supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-      !profile->GetPrefs()->GetBoolean(
-          prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
-      (custodian_approval_required || permissions_increase);
+  // TODO(crbug.com/413650880): Investigate if `parent_disabled_permissions`
+  // can be removed.
+  info.disable_reasons.parent_disabled_permissions = false;
 
   // Location.
   bool updates_from_web_store =
