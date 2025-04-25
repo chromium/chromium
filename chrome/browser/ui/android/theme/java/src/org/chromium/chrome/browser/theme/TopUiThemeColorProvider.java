@@ -40,6 +40,9 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     /** Whether bright theme colors are allowed. */
     private final boolean mAllowBrightThemeColors;
 
+    /** Whether tab theming is allowed on large screens */
+    private final boolean mAllowThemingOnTablets;
+
     /** Whether or not the default color is used. */
     private boolean mIsDefaultColorUsed;
 
@@ -51,6 +54,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @param allowThemingInNightMode Whether the tab theme should be used when the device is in
      *     night mode.
      * @param allowBrightThemeColors Whether the tab allows bright theme colors.
+     * @param allowThemingOnTablets Whether the tab them should be used on large form-factors.
      */
     public TopUiThemeColorProvider(
             Context context,
@@ -58,7 +62,8 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
             Supplier<Integer> activityThemeColorSupplier,
             boolean isTablet,
             boolean allowThemingInNightMode,
-            boolean allowBrightThemeColors) {
+            boolean allowBrightThemeColors,
+            boolean allowThemingOnTablets) {
         super(context);
         mContext = context;
         mTabObserver =
@@ -77,6 +82,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         mIsTablet = isTablet;
         mAllowThemingInNightMode = allowThemingInNightMode;
         mAllowBrightThemeColors = allowBrightThemeColors;
+        mAllowThemingOnTablets = allowThemingOnTablets;
     }
 
     /**
@@ -170,9 +176,10 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     private boolean isThemingAllowed(Tab tab) {
         boolean disallowDueToNightMode =
                 !mAllowThemingInNightMode && ColorUtils.inNightMode(tab.getContext());
+        final boolean isEligibleFormFactor = mAllowThemingOnTablets || !mIsTablet;
 
         return tab.isThemingAllowed()
-                && !mIsTablet
+                && isEligibleFormFactor
                 && !disallowDueToNightMode
                 && !tab.isNativePage()
                 && !tab.isIncognito();
