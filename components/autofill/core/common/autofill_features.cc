@@ -497,9 +497,10 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using a custom address model for France, overriding the legacy one.
+// TODO(crbug.com/347859030): Delete after M139.
 BASE_FEATURE(kAutofillUseFRAddressModel,
              "AutofillUseFRAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel,
