@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -116,6 +117,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_CHROME_UI);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         if (componentName != null) {
