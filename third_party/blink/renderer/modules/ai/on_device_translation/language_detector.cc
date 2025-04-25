@@ -441,6 +441,16 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
   double last_score = 1;
   double cumulative_confidence = 0;
 
+  const WTF::UncheckedIterator<LanguageDetectionModel::LanguagePrediction>&
+      unknown_iter = std::find_if(
+          predictions.begin(), predictions.end(),
+          [](const LanguageDetectionModel::LanguagePrediction& prediction) {
+            return prediction.language == "unknown";
+          });
+
+  CHECK_NE(unknown_iter, predictions.end());
+  double unknown = unknown_iter->score;
+
   HeapVector<Member<LanguageDetectionResult>> results;
   for (const auto& prediction : predictions) {
     CHECK_GE(prediction.score, 0);
@@ -448,9 +458,10 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     CHECK_LE(prediction.score, last_score);
     last_score = prediction.score;
 
-    if (prediction.score == 0 || prediction.language == "unknown") {
+    if (prediction.score == 0 || prediction.score < unknown) {
       break;
     }
+
     auto* result = MakeGarbageCollected<LanguageDetectionResult>();
     results.push_back(result);
     result->setDetectedLanguage(String(prediction.language));
@@ -463,12 +474,17 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     }
   }
 
+  CHECK_GE(1 - cumulative_confidence, unknown);
+  if (!results.empty()) {
+    CHECK_GE(results.back()->confidence(), unknown);
+  }
+
   // Append "und" to end. Set it's confidence so that the total confidences add
   // up to 1.
   auto* und_result = MakeGarbageCollected<LanguageDetectionResult>();
   results.push_back(und_result);
   und_result->setDetectedLanguage(String("und"));
-  und_result->setConfidence(1 - cumulative_confidence);
+  und_result->setConfidence(unknown);
 
   return results;
 }

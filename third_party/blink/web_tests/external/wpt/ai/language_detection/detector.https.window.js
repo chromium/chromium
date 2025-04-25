@@ -1,6 +1,7 @@
 // META: title=Detect english
 // META: global=window
 // META: script=../resources/util.js
+// META: script=../resources/locale-util.js
 
 'use strict';
 
@@ -15,6 +16,9 @@ promise_test(async t => {
   const detector = await LanguageDetector.create();
   const results = await detector.detect('Hello world!');
 
+  // must at least have the 'und' result.
+  assert_greater_than_equal(results.length, 1);
+
   // The last result should be 'und'.
   const undResult = results.pop();
   assert_equals(undResult.detectedLanguage, 'und');
@@ -22,24 +26,31 @@ promise_test(async t => {
 
   let total_confidence_without_und = 0;
   let last_confidence = 1;
-  for (const {confidence} of results) {
+  for (const {detectedLanguage, confidence} of results) {
+    // All results must be in canonical form.
+    assert_is_canonical(detectedLanguage);
+
     assert_greater_than(confidence, 0);
+    assert_greater_than(confidence, undResult.confidence);
 
     total_confidence_without_und += confidence;
 
-    // Except for 'und', results should be from high to low confidence.
+    // Except for 'und', results must be from high to low confidence.
     assert_greater_than_equal(last_confidence, confidence);
     last_confidence = confidence;
   }
 
-  // Confidences, excluding both 'und' and the last non-'und' result, should be
-  // less than 0.99.
-  assert_less_than(
-      total_confidence_without_und - results.at(-1).confidence, 0.99);
+  // If we have non-und results, their confidences, excluding the last non-'und'
+  // result, must be less than 0.99.
+  if (results.length > 0) {
+    assert_less_than(
+        total_confidence_without_und - results.at(-1).confidence, 0.99);
+  }
 
-  // Confidences, including 'und', should add up to 1.
-  assert_equals(total_confidence_without_und + undResult.confidence, 1);
-}, 'Simple LanguageDetector.detect() call');
+  // Confidences, including 'und', should be less than or equal to one.
+  assert_less_than_equal(
+      total_confidence_without_und + undResult.confidence, 1);
+}, 'LanguageDetector.detect() returns valid results');
 
 promise_test(async t => {
   const error = new Error('CreateMonitorCallback threw an error');
