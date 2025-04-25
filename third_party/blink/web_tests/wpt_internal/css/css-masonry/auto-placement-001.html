@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
 <link href="resources/masonry.css" rel="stylesheet">
+<link rel="match" href="auto-placement-001-ref.html">
+<link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
 .masonry {
-    grid-template-columns: repeat(3, 100px);
-    width: 400px;
+    grid-template-columns: auto auto auto;
+    width: 340px;
     padding: 20px;
-    gap: 10px 50px;
+    gap: 20px;
 }
 </style>
 <body>

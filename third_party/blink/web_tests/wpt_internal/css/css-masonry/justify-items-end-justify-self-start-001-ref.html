@@ -2,19 +2,20 @@
 <html>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
 <link href="resources/masonry.css" rel="stylesheet">
+<link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 100px);
     background: gray;
     width: 300px;
-    justify-items: center;
+    justify-items: end;
 }
 .flex {
     display: flex;
     flex-direction: column;
     width: 100%;
-    align-items: center;
+    align-items: flex-end;
 }
 .two-span-item {
     background-color: lightpink;
@@ -22,7 +23,8 @@
 }
 </style>
 <body>
-  <p>Test that using justify-items centers each item to the grid-axis track it is on.</p>
+  <p>Test that using justify-items moves each masonry item to the end of the grid-axis track it is on</p>
+  <p>and that justify-self overrides justify-items.</p>
   <div class="grid">
     <div class="flex">
       <div class="fifty-width" style="grid-column: 1; height: 54px;">
@@ -35,8 +37,10 @@
         This is some text
       </div>
     </div>
-    <div class="fifty-width" style="height: 100px;">
-      Some larger words in this sentence
+    <div class="flex" style="align-items: flex-start;">
+      <div class="fifty-width" style="height: 100px;">
+        Some larger words in this sentence
+      </div>
     </div>
     <div class="fifty-width" style="grid-column: 3; height: 108px;">
       The cat cannot be taken from milk
