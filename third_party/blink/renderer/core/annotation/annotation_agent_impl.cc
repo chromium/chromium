@@ -176,6 +176,11 @@ std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
   }
 }
 
+bool AlmostEqual(const ScrollOffset& a, const ScrollOffset& b) {
+  float length = (a - b).Length();
+  return length <= 1.f;
+}
+
 }  // namespace
 
 AnnotationAgentImpl::AnnotationAgentImpl(
@@ -367,6 +372,30 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   // start the search to find the next focusable element from this element.
   document.SetSequentialFocusNavigationStartingPoint(&first_node);
 
+  if (type_ == mojom::blink::AnnotationType::kGlic) {
+    auto* scrollable_area =
+        first_node.GetLayoutObject()->GetFrameView()->GetScrollableArea();
+    CHECK(scrollable_area);
+    ScrollOffset scroll_offset = scroll_into_view_util::GetScrollOffsetToExpose(
+        *scrollable_area, bounding_box, PhysicalBoxStrut(), *params->align_x,
+        *params->align_y);
+    // Removes any negative offset from the `ScrollAlignment::CenterAlways()`.
+    scroll_offset = scrollable_area->ClampScrollOffset(scroll_offset);
+    ScrollOffset current_scroll_offset = scrollable_area->GetScrollOffset();
+    if (AlmostEqual(scroll_offset, current_scroll_offset)) {
+      document.Markers().StartGlicMarkerAnimationIfNeeded();
+    } else {
+      // Scroll is guaranteed to happen. `ScrollableArea::OnScrollFinished()`
+      // will call `StartGlicMarkerAnimation()`. This is a near-term solution
+      // due to the re-arch work in crbug.com/41406914. It means in the nested
+      // multiple scollers case, the first ever `OnScrollFinished()` starts the
+      // animation, regardless if the actual scroll has finished or not.
+      //
+      // TODO(https://crbug.com/41406914): Migrate from `OnScrollFinished()` to
+      // the scroll-promises.
+    }
+  }
+
   scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
                                              bounding_box, std::move(params));
 }
@@ -482,9 +511,6 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
       }
       case mojom::blink::AnnotationType::kGlic: {
         document->Markers().AddGlicMarker(dom_range);
-        // TODO(crbug.com/407967372): Should only start the animation after the
-        // annotated target is scrolled into the viewport.
-        document->Markers().StartGlicMarkerAnimation();
         break;
       }
       case mojom::blink::AnnotationType::kTextFinder: {

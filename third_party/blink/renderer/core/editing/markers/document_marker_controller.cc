@@ -509,6 +509,9 @@ void DocumentMarkerController::DidRemoveNodeFromMap(
     possibly_existing_marker_types_ = possibly_existing_marker_types_.Subtract(
         DocumentMarker::MarkerTypes(type));
   }
+  if (type == DocumentMarker::kGlic) {
+    glic_animation_state_ = GlicAnimationState::kNotStarted;
+  }
 }
 
 void DocumentMarkerController::RemoveMarkersInternal(
@@ -1390,13 +1393,15 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
   InvalidatePaintForNode(*node);
 }
 
-void DocumentMarkerController::StartGlicMarkerAnimation() {
+void DocumentMarkerController::StartGlicMarkerAnimationIfNeeded() {
   CHECK(document_);
-  if (!PossiblyHasMarkers(DocumentMarker::kGlic)) {
+  if (!PossiblyHasMarkers(DocumentMarker::kGlic) ||
+      glic_animation_state_ != GlicAnimationState::kNotStarted) {
     return;
   }
   // Always make sure we start from a clean state.
   glic_marker_animation_start_ = std::nullopt;
+  glic_animation_state_ = GlicAnimationState::kRunning;
   auto* callback = MakeGarbageCollected<RequestAnimationFrameCallback>(this);
   document_->RequestAnimationFrame(callback);
 }
@@ -1408,6 +1413,8 @@ void DocumentMarkerController::ContinueGlicMarkerAnimation(
     // The value here can become stale: if before the previous animation
     // finishes, glic removes the highlight.
     glic_marker_animation_start_ = std::nullopt;
+    // Reset when the glic markers are removed.
+    CHECK_EQ(glic_animation_state_, GlicAnimationState::kNotStarted);
     return;
   }
   if (!glic_marker_animation_start_) {
@@ -1422,6 +1429,7 @@ void DocumentMarkerController::ContinueGlicMarkerAnimation(
 
   if (is_last_frame) {
     glic_marker_animation_start_ = std::nullopt;
+    glic_animation_state_ = GlicAnimationState::kFinished;
     return;
   }
 

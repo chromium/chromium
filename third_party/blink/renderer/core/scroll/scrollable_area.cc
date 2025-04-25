@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -1158,6 +1159,9 @@ void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
                     node->GetDocument())) {
           viewport_position_tracker->OnScrollEnd();
         }
+        // TODO(https://crbug.com/41406914): This is temporary. Remove once we
+        // start to migrate to scroll-promises.
+        node->GetDocument().Markers().StartGlicMarkerAnimationIfNeeded();
         if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
           node->GetDocument().EnqueueScrollEndEventForNode(node);
         }
