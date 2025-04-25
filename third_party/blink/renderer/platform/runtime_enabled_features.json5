@@ -5160,7 +5160,7 @@
     },
     {
       name: "WebCodecsOrientation",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "WebCodecsVideoEncoderBuffers",
