@@ -173,18 +173,8 @@ void HatsServiceDesktop::DelayedSurveyTask::Launch() {
 
 void HatsServiceDesktop::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_behaviour_ == NavigationBehaviour::ALLOW_ANY ||
-      !navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-
-  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_DOCUMENT &&
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_ORIGIN &&
-      navigation_handle->HasCommitted() && navigation_handle->IsSameOrigin()) {
+  if (hats_service_->IsNavigationAllowed(navigation_handle,
+                                         navigation_behaviour_)) {
     return;
   }
 

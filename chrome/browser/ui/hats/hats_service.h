@@ -227,6 +227,12 @@ class HatsService : public KeyedService {
 
   Profile* profile() const { return profile_; }
 
+  // Checks whether the navigation is allowed under the given navigation
+  // behavior.
+  bool IsNavigationAllowed(
+      content::NavigationHandle* navigation_handle,
+      HatsService::NavigationBehaviour navigation_behaviour);
+
  private:
   friend class DelayedSurveyTask;
   FRIEND_TEST_ALL_PREFIXES(HatsServiceProbabilityOne, SingleHatsNextDialog);
