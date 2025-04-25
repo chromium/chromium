@@ -11451,6 +11451,21 @@
             ]
         }
     ],
+    "HeadlessTabModel": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HeadlessTabModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeapProfilerExcludeChromeOSRenderers": [
         {
             "platforms": [
