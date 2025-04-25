@@ -330,7 +330,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1559528461873125649">Daar is geen so 'n lêer of gids nie</translation>
 <translation id="1559572115229829303">&lt;p&gt;'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kon nie gevestig word nie omdat jou toestel se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.&lt;/p&gt;
 
-          &lt;p&gt;Stel asseblief die datum en tyd reg in die &lt;strong&gt;Algemeen&lt;/strong&gt;-afdeling van die &lt;strong&gt;Instellings&lt;/strong&gt;-program.&lt;/p&gt;</translation>
+          &lt;p&gt;Stel asseblief die datum en tyd reg in die &lt;strong&gt;Algemeen&lt;/strong&gt;-afdeling van die &lt;strong&gt;Instellings&lt;/strong&gt;-app.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Jou administrateur sal jou toestel om <ph name="TIME" /> op <ph name="DATE" /> herbegin</translation>
 <translation id="1562805467275776390">Motorwedrenne</translation>
 <translation id="1563137369682381456">Vervaldatum</translation>

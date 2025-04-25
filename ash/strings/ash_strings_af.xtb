@@ -438,7 +438,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2473177541599297363">Bevestig resolusie</translation>
 <translation id="2475783092753560388">Voeg <ph name="SEARCH_RESULT_TEXT" /> in</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
-<translation id="2478076885740497414">Installeer program</translation>
+<translation id="2478076885740497414">Installeer app</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2484513351006226581">Druk <ph name="KEYBOARD_SHORTCUT" /> om sleutelborduitleg te wissel.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-voorskou. Aktiewe lessenaar.</translation>
@@ -1005,7 +1005,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4291322857434980285">{NUM_APPS,plural, =1{Volume van mikrofoon word beheer deur <ph name="APP_NAME" />}other{Volume van mikrofoon word beheer deur # apps}}</translation>
 <translation id="4294319844246081198">Goeiemôre <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Vee al <ph name="COUNT" /> kennisgewings uit</translation>
-<translation id="4300272766492248925">Maak program oop</translation>
+<translation id="4300272766492248925">Maak app oop</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> is geskuif na vouer <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Nie beskikbaar nie</translation>
 <translation id="4303223480529385476">Vou statusarea uit</translation>
@@ -1526,7 +1526,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
-<translation id="5955304353782037793">program</translation>
+<translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Gebruiker onder toesig</translation>
 <translation id="596035801491797438">Skakel gesigbeheer af</translation>
 <translation id="5960410286721553511">Bekyk jou foon se onlangse foto's en media</translation>

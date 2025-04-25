@@ -4021,7 +4021,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3783889407390048282">Libera spazio per evitare di perdere l'accesso ad Android.</translation>
 <translation id="3785308913036335955">Mostra scorciatoia app</translation>
 <translation id="3785727820640310185">Password salvate per questo sito</translation>
-<translation id="3785748905555897481">PIN cambiato correttamente</translation>
+<translation id="3785748905555897481">PIN modificato correttamente</translation>
 <translation id="3786224729726357296">Elimina le autorizzazioni e i dati del sito <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Mostra sottolineatura per testo della composizione</translation>
 <translation id="3787434344076711519">In attesa di traduzione</translation>
@@ -5593,7 +5593,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4890585766056792498">Ricevi protezione da siti pericolosi</translation>
 <translation id="4890773143211625964">Mostra impostazioni avanzate della stampante</translation>
 <translation id="4891089016822695758">Forum per la versione Beta</translation>
-<translation id="4891795846939730995">Per consentire di nuovo a questo dispositivo di accedere alle tue passkey, accedi a un sito o a un'app con una passkey salvata.</translation>
+<translation id="4891795846939730995">Per consentire di nuovo a questo dispositivo di accedere alle tue passkey, accedi a un sito o a un'app con una passkey salvata</translation>
 <translation id="4892229439761351791">Il sito può usare il Bluetooth</translation>
 <translation id="4892328231620815052">Quando vorrai, trova il tuo elenco di lettura in Preferiti ed elenchi</translation>
 <translation id="489258173289528622">Azione stabilita in caso di inattività durante l'utilizzo della batteria</translation>
@@ -10640,7 +10640,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>
-<translation id="8513357934662532537">Seleziona un file CSV per importare password in <ph name="BRAND" /> per <ph name="USER_EMAIL" />.</translation>
+<translation id="8513357934662532537">Seleziona un file CSV per importare password in <ph name="BRAND" /> per <ph name="USER_EMAIL" /></translation>
 <translation id="8514746246728959655">Prova a usare un altro token di sicurezza</translation>
 <translation id="8514828975162859845">Cake pop</translation>
 <translation id="8514955299594277296">Non consentire ai siti di salvare dati sul dispositivo (opzione non consigliata)</translation>
