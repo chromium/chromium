@@ -4,6 +4,9 @@
 
 #include "net/http/proxy_fallback.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -14,9 +17,20 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
                                        bool is_for_ip_protection) {
+  if (is_for_ip_protection) {
+    // Log the error.
+    // Useful to know if errors not handled below are passed to this function.
+    if (const int chain_id = proxy_chain.ip_protection_chain_id();
+        chain_id != ProxyChain::kNotIpProtectionChainId) {
+      base::UmaHistogramSparse(
+          base::StrCat({"Net.IpProtection.CanFalloverToNextProxy.Error.Chain",
+                        base::NumberToString(chain_id)}),
+          error);
+    }
+  }
   *final_error = error;
   const auto& proxy_servers = proxy_chain.proxy_servers();
-  bool has_quic_proxy = std::any_of(
+  const bool has_quic_proxy = std::any_of(
       proxy_servers.begin(), proxy_servers.end(),
       [](const ProxyServer& proxy_server) { return proxy_server.is_quic(); });
   if (!proxy_chain.is_direct() && has_quic_proxy) {

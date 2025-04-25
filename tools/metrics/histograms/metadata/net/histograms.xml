@@ -3243,6 +3243,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.IpProtection.CanFalloverToNextProxy.Error.{Chain}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-28">
+  <owner>rsailer@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the error code passed to CanFalloverToNextProxy() for IP Protection
+    proxy chains. This function is called when a proxy fails, and the error code
+    is used to determine whether to try the next proxy in the chain or not.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1"/>
+    <variant name="Chain2"/>
+    <variant name="Chain3"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
     expires_after="2024-06-30">
   <owner>davidben@chromium.org</owner>
