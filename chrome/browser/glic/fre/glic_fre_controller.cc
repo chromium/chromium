@@ -143,6 +143,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
       tab_interface->GetTabFeatures()
           ->tab_dialog_manager()
           ->CreateShowDialogAndBlockTabInteraction(fre_view_.release());
+  GetWebContents()->Focus();
   tab_showing_modal_ = tab_interface;
   will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
