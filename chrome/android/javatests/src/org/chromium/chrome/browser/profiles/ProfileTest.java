@@ -8,7 +8,6 @@ import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +18,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
 /** This test class checks if incognito and non-incognito OTR profiles can be distinctly created. */
@@ -28,40 +28,32 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ProfileTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     public Profile mRegularProfile;
+    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mRegularProfile =
-                            sActivityTestRule
-                                    .getActivity()
-                                    .getTabModelSelector()
-                                    .getModel(false)
-                                    .getProfile();
-                });
+        mStartingPage = mActivityTestRule.startOnBlankPage();
+        mRegularProfile = mStartingPage.loadedTabElement.get().getProfile();
     }
 
     /** Test if two calls for incognito profile return the same object. */
     @Test
     @LargeTest
-    public void testIncognitoProfileConsistency() throws Exception {
+    public void testIncognitoProfileConsistency() {
         Assert.assertNull(mRegularProfile.getOtrProfileId());
         // Open an new Incognito Tab page to create a new primary OTR profile.
-        sActivityTestRule.loadUrlInNewTab("about:blank", true);
+        WebPageStation incognitoPage =
+                mStartingPage.openRegularTabAppMenu().openNewIncognitoTab().loadAboutBlank();
 
-        Profile incognitoProfile1 =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
+        Profile incognitoProfile1 = incognitoPage.loadedTabElement.get().getProfile();
+        Assert.assertSame(
+                incognitoProfile1,
+                mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertTrue(
                 "isOffTheRecord should be true for Incognito profiles",
                 incognitoProfile1.isOffTheRecord());
@@ -90,7 +82,7 @@ public class ProfileTest {
     /** Test if two calls to get non-primary profile with the same id return the same object. */
     @Test
     @LargeTest
-    public void testNonPrimaryProfileConsistency() throws Exception {
+    public void testNonPrimaryProfileConsistency() {
         OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -139,7 +131,7 @@ public class ProfileTest {
     /** Test if creating two non-primary profiles result in different objects. */
     @Test
     @LargeTest
-    public void testCreatingTwoNonPrimaryProfiles() throws Exception {
+    public void testCreatingTwoNonPrimaryProfiles() {
         OtrProfileId profileId1 = new OtrProfileId("test::OtrProfile-1");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -196,7 +188,7 @@ public class ProfileTest {
     /** Test if creating unique otr profile ids works as expected. */
     @Test
     @LargeTest
-    public void testCreatingUniqueOtrProfileIds() throws Exception {
+    public void testCreatingUniqueOtrProfileIds() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId profileId1 = OtrProfileId.createUnique("test::OtrProfile");
@@ -213,7 +205,7 @@ public class ProfileTest {
     /** Test if creating unique iCCT profile ids works as expected. */
     @Test
     @LargeTest
-    public void testCreatingUniqueIncognitoCCTOtrProfileIds() throws Exception {
+    public void testCreatingUniqueIncognitoCCTOtrProfileIds() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId incognitoCctId1 = OtrProfileId.createUniqueIncognitoCctId();
@@ -232,7 +224,7 @@ public class ProfileTest {
     /** Tests creating iCCT profile. */
     @Test
     @LargeTest
-    public void testIncognitoCctProfileCreation() throws Exception {
+    public void testIncognitoCctProfileCreation() {
         OtrProfileId incognitoCctId = OtrProfileId.createUniqueIncognitoCctId();
         Profile incognitoCctProfile =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -260,7 +252,7 @@ public class ProfileTest {
 
     @Test
     @LargeTest
-    public void testBrowserProfileTypeFromRegularProfile() throws Exception {
+    public void testBrowserProfileTypeFromRegularProfile() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -271,9 +263,9 @@ public class ProfileTest {
 
     @Test
     @LargeTest
-    public void testBrowserProfileTypeFromPrimaryOtrProfile() throws Exception {
+    public void testBrowserProfileTypeFromPrimaryOtrProfile() {
         // Open an new Incognito Tab page to create a new primary OTR profile.
-        sActivityTestRule.loadUrlInNewTab("about:blank", true);
+        mStartingPage.openRegularTabAppMenu().openNewIncognitoTab().loadAboutBlank();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -287,7 +279,7 @@ public class ProfileTest {
 
     @Test
     @LargeTest
-    public void testBrowserProfileTypeFromNonPrimaryOtrProfile() throws Exception {
+    public void testBrowserProfileTypeFromNonPrimaryOtrProfile() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId otrProfileId = new OtrProfileId("test::OtrProfile");
@@ -305,7 +297,7 @@ public class ProfileTest {
     @LargeTest
     @RequiresRestart(
             "crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
-    public void testGetOffTheRecordProfile() throws Exception {
+    public void testGetOffTheRecordProfile() {
         OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
 
         // Ask for a non-existing profile with createIfNeeded set to false, and expect null.
@@ -350,7 +342,7 @@ public class ProfileTest {
     /** Tests createIfNeeded parameter of getPrimaryOtrProfile. */
     @Test
     @LargeTest
-    public void testGetPrimaryOtrProfile() throws Exception {
+    public void testGetPrimaryOtrProfile() {
         // Ask for a non-existing profile with createIfNeeded set to false, and expect null.
         Profile profile1 =
                 ThreadUtils.runOnUiThreadBlocking(
