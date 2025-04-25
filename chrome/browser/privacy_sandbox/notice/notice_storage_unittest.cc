@@ -564,7 +564,7 @@ std::vector<std::unique_ptr<NoticeEventTimestampPair>> BuildEvents(
 class PrivacySandboxNoticeDataTest : public testing::Test {};
 
 TEST_F(PrivacySandboxNoticeDataTest, NoPrivacySandboxNoticeDataReturnsNothing) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   EXPECT_EQ(data.GetNoticeFirstShownFromEvents(), std::nullopt);
   EXPECT_EQ(data.GetNoticeLastShownFromEvents(), std::nullopt);
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), std::nullopt);
@@ -572,7 +572,7 @@ TEST_F(PrivacySandboxNoticeDataTest, NoPrivacySandboxNoticeDataReturnsNothing) {
 
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeShownEvent_AccessorReturnsFirstShownSuccessfully) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kAck, 150},
@@ -585,7 +585,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
 
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeShownEvent_AccessorReturnsLastShownSuccessfully) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kAck, 150},
@@ -598,7 +598,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
 
 TEST_F(PrivacySandboxNoticeDataTest,
        NoNoticeActionTakenEvent_AccessorReturnsNoValue) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kShown, 200},
@@ -609,7 +609,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
 
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeActionTakenEvent_AccessorReturnsActionSuccessfully) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kAck, 120},
@@ -625,7 +625,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
 TEST_F(
     PrivacySandboxNoticeDataTest,
     NoticeActionTakenEvent_AccessorReturnsActionSuccessfullyMultipleActions) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kAck, 120},
@@ -642,7 +642,7 @@ TEST_F(
 TEST_F(
     PrivacySandboxNoticeDataTest,
     NoticeActionTakenEvent_AccessorReturnsActionSuccessfullyWithMultipleShownValues) {
-  PrivacySandboxNoticeData data;
+  NoticeStorageData data;
   data.SetNoticeEvents(BuildEvents({
       {kShown, 100},
       {kShown, 110},

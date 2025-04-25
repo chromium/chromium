@@ -26,40 +26,35 @@ namespace {
 using notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 
+constexpr int kCurrentSchemaVersion = 2;
+
 // Notice data will be saved as a dictionary in the PrefService of a profile.
 
 // PrefService path.
-constexpr char kPrivacySandboxNoticeDataPath[] = "privacy_sandbox.notices";
+constexpr char kNoticeDataPath[] = "privacy_sandbox.notices";
 
 // Unsynced pref that indicates the schema version this profile is using in
 // regards to the data model.
-constexpr char kPrivacySandboxSchemaVersion[] = "schema_version";
+constexpr char kSchemaVersionKey[] = "schema_version";
 
 // Unsynced pref that indicates the chrome version this profile was initially
 // shown the notice at. For migrated notices, this pref is empty.
-constexpr char kPrivacySandboxChromeVersion[] = "chrome_version";
+constexpr char kChromeVersionKey[] = "chrome_version";
 
 // Unsynced pref that indicates the events taken on the notice. Stored as a
 // sorted list in order of event performed containing dict entries.
-constexpr char kPrivacySandboxEvents[] = "events";
-
-// Deprecated. Do not use for new values.
-constexpr char kPrivacySandboxNoticeActionTaken[] = "notice_action_taken";
-
-// Deprecated. Do not use for new values.
-constexpr char kPrivacySandboxNoticeActionTakenTime[] =
-    "notice_action_taken_time";
-
-// Deprecated. Do not use for new values.
-constexpr char kPrivacySandboxNoticeLastShown[] = "notice_last_shown";
+constexpr char kEventsKey[] = "events";
 
 // Key value in the dict entry contained within `events`
-constexpr char kPrivacySandboxNoticeEvent[] = "event";
+constexpr char kEventKey[] = "event";
 
 // Key value in the dict entry contained within `events`
-constexpr char kPrivacySandboxNoticeEventTime[] = "timestamp";
+constexpr char kTimestampKey[] = "timestamp";
 
-constexpr int kPrivacySandboxNoticeSchemaVersion = 2;
+// V1 Fields - DEPRECATED
+constexpr char kNoticeActionTakenKey[] = "notice_action_taken";
+constexpr char kNoticeActionTakenTimeKey[] = "notice_action_taken_time";
+constexpr char kNoticeLastShownKey[] = "notice_last_shown";
 
 std::string CreatePrefPath(std::string_view notice,
                            std::string_view pref_name) {
@@ -107,25 +102,23 @@ NoticeActionTaken NoticeEventToNoticeAction(PrivacySandboxNoticeEvent action) {
 }
 
 void SetSchemaVersion(PrefService* pref_service, std::string_view notice) {
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  update.Get().SetByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxSchemaVersion),
-      kPrivacySandboxNoticeSchemaVersion);
+  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
+  update.Get().SetByDottedPath(CreatePrefPath(notice, kSchemaVersionKey),
+                               kCurrentSchemaVersion);
 }
 
 base::Value::Dict BuildDictEntryEvent(PrivacySandboxNoticeEvent event,
                                       base::Time event_time) {
   base::Value::Dict params;
-  params.Set(kPrivacySandboxNoticeEvent, static_cast<int>(event));
-  params.Set(kPrivacySandboxNoticeEventTime, base::TimeToValue(event_time));
+  params.Set(kEventKey, static_cast<int>(event));
+  params.Set(kTimestampKey, base::TimeToValue(event_time));
   return params;
 }
 
 void SetChromeVersion(PrefService* pref_service, std::string_view notice) {
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  update.Get().SetByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxChromeVersion),
-      version_info::GetVersionNumber());
+  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
+  update.Get().SetByDottedPath(CreatePrefPath(notice, kChromeVersionKey),
+                               version_info::GetVersionNumber());
 }
 
 const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
@@ -165,16 +158,15 @@ bool MaybeValueToEnum(const base::Value* value, T* output) {
 
 void PopulateV2NoticeData(PrefService* pref_service,
                           std::string_view notice,
-                          const PrivacySandboxNoticeData& data) {
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  update.Get().SetByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxSchemaVersion),
-      data.GetSchemaVersion());
+                          const NoticeStorageData& data) {
+  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
+  update.Get().SetByDottedPath(CreatePrefPath(notice, kSchemaVersionKey),
+                               data.GetSchemaVersion());
 
   for (const auto& event : data.GetNoticeEvents()) {
     update.Get()
         .EnsureDict(notice)
-        ->EnsureList(kPrivacySandboxEvents)
+        ->EnsureList(kEventsKey)
         ->Append(
             BuildDictEntryEvent(event.get()->event, event.get()->timestamp));
   }
@@ -185,50 +177,47 @@ void PopulateV2NoticeData(PrefService* pref_service,
 void NoticeEventTimestampPair::RegisterJSONConverter(
     base::JSONValueConverter<NoticeEventTimestampPair>* converter) {
   converter->RegisterCustomValueField<PrivacySandboxNoticeEvent>(
-      kPrivacySandboxNoticeEvent, &NoticeEventTimestampPair::event,
+      kEventKey, &NoticeEventTimestampPair::event,
       &MaybeValueToEnum<PrivacySandboxNoticeEvent>);
   converter->RegisterCustomValueField<base::Time>(
-      kPrivacySandboxNoticeEventTime, &NoticeEventTimestampPair::timestamp,
-      &MaybeValueToTime);
+      kTimestampKey, &NoticeEventTimestampPair::timestamp, &MaybeValueToTime);
 }
 
 // PrivacySandboxNoticeData definitions.
-PrivacySandboxNoticeData::PrivacySandboxNoticeData() = default;
+NoticeStorageData::NoticeStorageData() = default;
 
-PrivacySandboxNoticeData::~PrivacySandboxNoticeData() = default;
+NoticeStorageData::~NoticeStorageData() = default;
 
-PrivacySandboxNoticeData::PrivacySandboxNoticeData(
-    PrivacySandboxNoticeData&& data) = default;
-PrivacySandboxNoticeData& PrivacySandboxNoticeData::operator=(
-    PrivacySandboxNoticeData&& data) = default;
+NoticeStorageData::NoticeStorageData(NoticeStorageData&& data) = default;
+NoticeStorageData& NoticeStorageData::operator=(NoticeStorageData&& data) =
+    default;
 
-int PrivacySandboxNoticeData::GetSchemaVersion() const {
+int NoticeStorageData::GetSchemaVersion() const {
   return schema_version_;
 }
-std::string PrivacySandboxNoticeData::GetChromeVersion() const {
+std::string NoticeStorageData::GetChromeVersion() const {
   return chrome_version_;
 }
 base::span<const std::unique_ptr<NoticeEventTimestampPair>>
-PrivacySandboxNoticeData::GetNoticeEvents() const {
+NoticeStorageData::GetNoticeEvents() const {
   return notice_events_;
 }
 
-void PrivacySandboxNoticeData::SetSchemaVersion(int schema_version) {
+void NoticeStorageData::SetSchemaVersion(int schema_version) {
   schema_version_ = schema_version;
 }
 
-void PrivacySandboxNoticeData::SetChromeVersion(
-    std::string_view chrome_version) {
+void NoticeStorageData::SetChromeVersion(std::string_view chrome_version) {
   chrome_version_ = chrome_version;
 }
 
-void PrivacySandboxNoticeData::SetNoticeEvents(
+void NoticeStorageData::SetNoticeEvents(
     std::vector<std::unique_ptr<NoticeEventTimestampPair>>&& events) {
   notice_events_ = std::move(events);
 }
 
-std::optional<base::Time>
-PrivacySandboxNoticeData::GetNoticeFirstShownFromEvents() const {
+std::optional<base::Time> NoticeStorageData::GetNoticeFirstShownFromEvents()
+    const {
   for (const auto& notice_event : notice_events_) {
     if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
       return notice_event->timestamp;
@@ -237,8 +226,8 @@ PrivacySandboxNoticeData::GetNoticeFirstShownFromEvents() const {
   return std::nullopt;
 }
 
-std::optional<base::Time>
-PrivacySandboxNoticeData::GetNoticeLastShownFromEvents() const {
+std::optional<base::Time> NoticeStorageData::GetNoticeLastShownFromEvents()
+    const {
   for (const auto& notice_event : base::Reversed(notice_events_)) {
     if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
       return notice_event->timestamp;
@@ -248,7 +237,7 @@ PrivacySandboxNoticeData::GetNoticeLastShownFromEvents() const {
 }
 
 std::optional<NoticeEventTimestampPair>
-PrivacySandboxNoticeData::GetNoticeActionTakenForFirstShownFromEvents() const {
+NoticeStorageData::GetNoticeActionTakenForFirstShownFromEvents() const {
   std::optional<NoticeEventTimestampPair> notice_event_data;
   int last_shown_idx = 0;
   int first_notice_idx = 0;
@@ -264,35 +253,35 @@ PrivacySandboxNoticeData::GetNoticeActionTakenForFirstShownFromEvents() const {
   return notice_event_data;
 }
 
-void PrivacySandboxNoticeData::RegisterJSONConverter(
-    base::JSONValueConverter<PrivacySandboxNoticeData>* converter) {
-  converter->RegisterIntField(kPrivacySandboxSchemaVersion,
-                              &PrivacySandboxNoticeData::schema_version_);
-  converter->RegisterStringField(kPrivacySandboxChromeVersion,
-                                 &PrivacySandboxNoticeData::chrome_version_);
+void NoticeStorageData::RegisterJSONConverter(
+    base::JSONValueConverter<NoticeStorageData>* converter) {
+  converter->RegisterIntField(kSchemaVersionKey,
+                              &NoticeStorageData::schema_version_);
+  converter->RegisterStringField(kChromeVersionKey,
+                                 &NoticeStorageData::chrome_version_);
   converter->RegisterRepeatedMessage<NoticeEventTimestampPair>(
-      kPrivacySandboxEvents, &PrivacySandboxNoticeData::notice_events_);
+      kEventsKey, &NoticeStorageData::notice_events_);
 }
 
 void V1MigrationData::RegisterJSONConverter(
     base::JSONValueConverter<V1MigrationData>* converter) {
-  converter->RegisterIntField(kPrivacySandboxSchemaVersion,
+  converter->RegisterIntField(kSchemaVersionKey,
                               &V1MigrationData::schema_version);
   converter->RegisterCustomValueField<NoticeActionTaken>(
-      kPrivacySandboxNoticeActionTaken, &V1MigrationData::notice_action_taken,
+      kNoticeActionTakenKey, &V1MigrationData::notice_action_taken,
       &MaybeValueToEnum<NoticeActionTaken>);
   converter->RegisterCustomValueField<base::Time>(
-      kPrivacySandboxNoticeActionTakenTime,
-      &V1MigrationData::notice_action_taken_time, &MaybeValueToTime);
+      kNoticeActionTakenTimeKey, &V1MigrationData::notice_action_taken_time,
+      &MaybeValueToTime);
   converter->RegisterCustomValueField<base::Time>(
-      kPrivacySandboxNoticeLastShown, &V1MigrationData::notice_last_shown,
+      kNoticeLastShownKey, &V1MigrationData::notice_last_shown,
       &MaybeValueToTime);
 }
 
 // PrivacySandboxNoticeStorage definitions.
 void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kPrivacySandboxNoticeDataPath);
+  registry->RegisterDictionaryPref(kNoticeDataPath);
 }
 
 // static
@@ -335,9 +324,9 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
 }
 
 // static
-PrivacySandboxNoticeData PrivacySandboxNoticeStorage::ToV2Schema(
+NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
     const V1MigrationData& data_v1) {
-  PrivacySandboxNoticeData data_v2;
+  NoticeStorageData data_v2;
   std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
   data_v2.SetSchemaVersion(2);
 
@@ -365,7 +354,7 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
     return;
   }
   const auto* notice_data_pref =
-      pref_service->GetUserPrefValue(kPrivacySandboxNoticeDataPath);
+      pref_service->GetUserPrefValue(kNoticeDataPath);
   if (!notice_data_pref) {
     return;
   }
@@ -401,8 +390,8 @@ PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
 
 void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
   for (const auto [notice, notice_value] :
-       pref_service_->GetDict(kPrivacySandboxNoticeDataPath)) {
-    auto notice_data = ConvertTo<PrivacySandboxNoticeData>(&notice_value);
+       pref_service_->GetDict(kNoticeDataPath)) {
+    auto notice_data = ConvertTo<NoticeStorageData>(&notice_value);
 
     NoticeStartupState startup_state;
 
@@ -443,11 +432,10 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
   }
 }
 
-std::optional<PrivacySandboxNoticeData>
-PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
-  const base::Value::Dict& pref_data =
-      pref_service_->GetDict(kPrivacySandboxNoticeDataPath);
-  return ConvertTo<PrivacySandboxNoticeData>(pref_data.FindDict(notice));
+std::optional<NoticeStorageData> PrivacySandboxNoticeStorage::ReadNoticeData(
+    std::string_view notice) const {
+  const base::Value::Dict& pref_data = pref_service_->GetDict(kNoticeDataPath);
+  return ConvertTo<NoticeStorageData>(pref_data.FindDict(notice));
 }
 
 void PrivacySandboxNoticeStorage::RecordEvent(
@@ -469,7 +457,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   CHECK(notice_action_taken != PrivacySandboxNoticeEvent::kShown)
       << "Use `SetNoticeShown` to set a kShown PrivacySandboxNoticeEvent "
          "instead.";
-  ScopedDictPrefUpdate update(pref_service_, kPrivacySandboxNoticeDataPath);
+  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
   auto notice_data = ReadNoticeData(notice);
 
   // The notice should be shown first before action can be taken on it.
@@ -506,7 +494,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
       BuildDictEntryEvent(notice_action_taken, notice_action_taken_time);
   update.Get()
       .EnsureDict(notice)
-      ->EnsureList(kPrivacySandboxEvents)
+      ->EnsureList(kEventsKey)
       ->Append(std::move(entry));
 
   base::UmaHistogramEnumeration(
@@ -543,7 +531,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
 }
 void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
                                                  base::Time notice_shown_time) {
-  ScopedDictPrefUpdate update(pref_service_, kPrivacySandboxNoticeDataPath);
+  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
   SetSchemaVersion(pref_service_, notice);
   SetChromeVersion(pref_service_, notice);
 
@@ -551,7 +539,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
       BuildDictEntryEvent(PrivacySandboxNoticeEvent::kShown, notice_shown_time);
   update.Get()
       .EnsureDict(notice)
-      ->EnsureList(kPrivacySandboxEvents)
+      ->EnsureList(kEventsKey)
       ->Append(std::move(entry));
 
   // TODO(chrstne): Deprecate NoticeShown histogram once it is no longer used

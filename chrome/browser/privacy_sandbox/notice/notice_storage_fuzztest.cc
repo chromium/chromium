@@ -24,8 +24,7 @@ void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
   data_v1.notice_action_taken = notice_action_taken;
   data_v1.notice_action_taken_time = notice_taken_time;
   data_v1.notice_last_shown = notice_last_shown;
-  PrivacySandboxNoticeData data_v2 =
-      PrivacySandboxNoticeStorage::ToV2Schema(data_v1);
+  NoticeStorageData data_v2 = PrivacySandboxNoticeStorage::ToV2Schema(data_v1);
   EXPECT_EQ(data_v2.GetSchemaVersion(), 2);
   auto notice_event = PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
       notice_action_taken);

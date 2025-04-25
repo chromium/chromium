@@ -100,14 +100,14 @@ struct NoticeEventTimestampPair {
   base::Time timestamp;
 };
 
-class PrivacySandboxNoticeData {
+class NoticeStorageData {
  public:
-  PrivacySandboxNoticeData();
-  ~PrivacySandboxNoticeData();
-  PrivacySandboxNoticeData& operator=(const PrivacySandboxNoticeData&) = delete;
-  PrivacySandboxNoticeData(const PrivacySandboxNoticeData& data) = delete;
-  PrivacySandboxNoticeData(PrivacySandboxNoticeData&& data);
-  PrivacySandboxNoticeData& operator=(PrivacySandboxNoticeData&& data);
+  NoticeStorageData();
+  ~NoticeStorageData();
+  NoticeStorageData& operator=(const NoticeStorageData&) = delete;
+  NoticeStorageData(const NoticeStorageData& data) = delete;
+  NoticeStorageData(NoticeStorageData&& data);
+  NoticeStorageData& operator=(NoticeStorageData&& data);
 
   int GetSchemaVersion() const;
   std::string GetChromeVersion() const;
@@ -135,7 +135,7 @@ class PrivacySandboxNoticeData {
   GetNoticeActionTakenForFirstShownFromEvents() const;
 
   static void RegisterJSONConverter(
-      base::JSONValueConverter<PrivacySandboxNoticeData>* converter);
+      base::JSONValueConverter<NoticeStorageData>* converter);
 
  private:
   int schema_version_ = 0;
@@ -162,7 +162,7 @@ class NoticeStorage {
   // prefs aren't set. If an event is tracked but the event timestamp is
   // missing, return base::Time(). If an event timestamp is tracked but the
   // event itself is missing, return PrivacySandboxNoticeEvent::kUnknownAction.
-  virtual std::optional<PrivacySandboxNoticeData> ReadNoticeData(
+  virtual std::optional<NoticeStorageData> ReadNoticeData(
       std::string_view notice) const = 0;
 
   // Records histograms tracking the state of all notices.
@@ -182,7 +182,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  std::optional<PrivacySandboxNoticeData> ReadNoticeData(
+  std::optional<NoticeStorageData> ReadNoticeData(
       std::string_view notice) const override;
 
   void RecordStartupHistograms() const override;
@@ -199,7 +199,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   static void UpdateNoticeSchemaV2(PrefService* pref_service);
 
   // Migrates fields in the notice data v1 schema to the notice data v2 schema.
-  static PrivacySandboxNoticeData ToV2Schema(const V1MigrationData& data_v1);
+  static NoticeStorageData ToV2Schema(const V1MigrationData& data_v1);
 
   // Converts the schema v1 NoticeActionTaken to the schema v2
   // PrivacySandboxNoticeEvent.
