@@ -109,23 +109,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_observer.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/switches.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "components/guest_view/browser/guest_view_manager.h"
+#include "extensions/browser/extension_system.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -417,7 +417,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
     extensions_path_ = profile_path_.AppendASCII("Extensions");
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Note that the GetPrefs() creates a TestingPrefService, therefore
     // the extension controlled pref values set in ExtensionPrefs
     // are not reflected in the pref service. One would need to
@@ -436,7 +436,9 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
     extensions::ChromeExtensionSystemFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
