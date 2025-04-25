@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -38,6 +39,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kGlicLauncherHotkey,
       ui::Command::AcceleratorToString(
           GlicLauncherConfiguration::GetDefaultHotkey()));
+  registry->RegisterStringPref(
+      prefs::kGlicFocusToggleHotkey,
+      ui::Command::AcceleratorToString(
+          LocalHotkeyManager::GetDefaultAccelerator(
+              LocalHotkeyManager::Hotkey::kFocusToggle)));
 }
 
 }  // namespace glic::prefs

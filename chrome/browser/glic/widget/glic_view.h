@@ -59,6 +59,10 @@ class GlicView : public views::View {
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
+  base::WeakPtr<GlicView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::optional<SkColor> GetClientBackgroundColor();
 
@@ -67,6 +71,7 @@ class GlicView : public views::View {
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
+  base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

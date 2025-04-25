@@ -37,10 +37,13 @@ source_set("glic") {
     "host/glic_ui.h",
     "host/glic_web_client_access.h",
     "host/guest_util.h",
+    "widget/application_hotkey_delegate.h",
     "widget/glic_modal_manager.h",
     "widget/glic_modal_view.h",
     "widget/glic_view.h",
     "widget/glic_window_controller.h",
+    "widget/glic_window_hotkey_delegate.h",
+    "widget/local_hotkey_manager.h",
   ]
   public_deps = [
     ":enum",
@@ -127,6 +130,7 @@ source_set("impl") {
     "host/webui_contents_container.h",
     "media/glic_media_integration.cc",
     "media/glic_media_integration.h",
+    "widget/application_hotkey_delegate.cc",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
     "widget/glic_modal_manager.cc",
@@ -137,8 +141,10 @@ source_set("impl") {
     "widget/glic_window_animator.cc",
     "widget/glic_window_animator.h",
     "widget/glic_window_controller.cc",
+    "widget/glic_window_hotkey_delegate.cc",
     "widget/glic_window_resize_animation.cc",
     "widget/glic_window_resize_animation.h",
+    "widget/local_hotkey_manager.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
