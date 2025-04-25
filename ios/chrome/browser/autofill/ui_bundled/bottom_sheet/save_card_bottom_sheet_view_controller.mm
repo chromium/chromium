@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 
 #import "build/branding_buildflags.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -66,6 +68,11 @@ CGFloat const kGooglePayLogoHeight = 32;
   [super viewDidLoad];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  [self.delegate onViewDisappeared];
+}
+
 #pragma mark - SaveCardBottomSheetConsumer
 
 - (void)setAboveTitleImage:(UIImage*)logoImage {
@@ -114,6 +121,21 @@ CGFloat const kGooglePayLogoHeight = 32;
   self.primaryActionButton.accessibilityLabel = accessibilityLabel;
   self.isLoading = YES;
   self.isConfirmed = NO;
+}
+
+- (void)showConfirmationState {
+  self.isLoading = NO;
+  self.isConfirmed = YES;
+  self.primaryActionButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME);
+  // Accessibility announcement needs to posted here since VoiceOver wouldn't
+  // announce button's accessibility label as button's state does not change.
+  // For confirmation state, the button's state is already disabled from
+  // previously showing loading state.
+  UIAccessibilityPostNotification(
+      UIAccessibilityAnnouncementNotification,
+      l10n_util::GetNSString(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
 }
 
 #pragma mark - UITableViewDataSource

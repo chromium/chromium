@@ -18,7 +18,7 @@
 @property(nonatomic, weak) id<SaveCardBottomSheetMutator> mutator;
 
 // Delegate to handle navigational events (e.g tap on legal message link opens
-// url in a new tab).
+// url in a new tab, bottomsheet gets swiped or a new tab is opened).
 @property(nonatomic, weak) id<SaveCardBottomSheetDelegate> delegate;
 
 @end

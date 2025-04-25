@@ -49,6 +49,9 @@
 // label for the accept button to indicate loading.
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel;
 
+// Updates bottomsheet to show card upload is successful.
+- (void)showConfirmationState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_CONSUMER_H_

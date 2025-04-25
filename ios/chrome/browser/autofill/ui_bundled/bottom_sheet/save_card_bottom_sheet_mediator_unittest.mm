@@ -11,6 +11,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -19,8 +20,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -90,6 +93,9 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
 }
 
+- (void)showConfirmationState {
+}
+
 @end
 
 class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
@@ -111,6 +117,8 @@ class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
 class SaveCardBottomSheetMediatorTest : public PlatformTest {
  public:
   SaveCardBottomSheetMediatorTest() {
+    task_environment_ = std::make_unique<web::WebTaskEnvironment>(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     mock_autofill_commands_handler_ =
         OCMProtocolMock(@protocol(AutofillCommands));
     std::unique_ptr<MockSaveCardBottomSheetModel> model =
@@ -122,7 +130,14 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
         autofillCommandsHandler:mock_autofill_commands_handler_];
   }
 
+  ~SaveCardBottomSheetMediatorTest() override { [mediator_ disconnect]; }
+
+  web::WebTaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
+
  protected:
+  std::unique_ptr<web::WebTaskEnvironment> task_environment_;
   id<AutofillCommands> mock_autofill_commands_handler_;
   raw_ptr<MockSaveCardBottomSheetModel> model_ = nil;
   SaveCardBottomSheetMediator* mediator_ = nil;
@@ -184,6 +199,65 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnAcceptShowLoadingState) {
   [mediator_ didAccept];
 
   EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+}
+
+// Test that successful credit card upload completion calls the consumer to show
+// the confirmation state.
+TEST_F(SaveCardBottomSheetMediatorTest, OnSuccessShowConfirmationState) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showConfirmationState]);
+  [mediator_ onCreditCardUploadCompleted:YES];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+}
+
+// Test that unsuccessful credit card upload completion dismisses the
+// bottomsheet.
+TEST_F(SaveCardBottomSheetMediatorTest, OnFailureDismissBottomSheet) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMReject([mock_consumer showConfirmationState]);
+  OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
+  [mediator_ onCreditCardUploadCompleted:NO];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+}
+
+// Tests that bottomsheet is auto-dismissed when the timer for confirmation
+// state times out.
+TEST_F(SaveCardBottomSheetMediatorTest, ConfirmationAutoDismissed_OnTimeOut) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showConfirmationState]);
+  [mediator_ onCreditCardUploadCompleted:YES];
+
+  OCMExpect([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
+}
+
+// Tests that bottomsheet is not auto-dismissed before the timer for
+// confirmation state times out.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       ConfirmationNotAutoDismissed_BeforeTimeout) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showConfirmationState]);
+  [mediator_ onCreditCardUploadCompleted:YES];
+
+  OCMReject([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
+
+  // Advance timer slightly less than the actual timeout duration i.e
+  // `kConfirmationDismissDelay`.
+  task_environment()->FastForwardBy(kConfirmationDismissDelay * 0.99);
 }
 
 // Test that `OnCanceled` is called on the model and bottomsheet is dismissed

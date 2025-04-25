@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -84,6 +85,12 @@ class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
   MOCK_METHOD(void, OnUiCanceled, (), (override));
 };
 
+class MockSaveCardBottomSheetModelObserver
+    : public SaveCardBottomSheetModel::Observer {
+ public:
+  MOCK_METHOD(void, OnCreditCardUploadCompleted, (bool card_saved), (override));
+};
+
 class SaveCardBottomSheetModelTest : public PlatformTest {
  public:
   SaveCardBottomSheetModelTest() {
@@ -94,9 +101,14 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
         AutofillSaveCardUiInfo(), std::move(delegate));
   }
 
+  void OnConfirmationClosedCallbackFn() {
+    ran_on_confirmation_closed_callback_ = true;
+  }
+
  protected:
   raw_ptr<MockAutofillSaveCardDelegate> save_card_delegate_ = nil;
   std::unique_ptr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
+  bool ran_on_confirmation_closed_callback_ = false;
 };
 
 TEST_F(SaveCardBottomSheetModelTest, OnAccepted) {
@@ -107,6 +119,51 @@ TEST_F(SaveCardBottomSheetModelTest, OnAccepted) {
 TEST_F(SaveCardBottomSheetModelTest, OnCanceled) {
   EXPECT_CALL(*save_card_delegate_, OnUiCanceled);
   save_card_bottom_sheet_model_->OnCanceled();
+}
+
+// Test that on successful credit card upload completion, observer is updated
+// with the result and save card state is set to kSaved.
+TEST_F(SaveCardBottomSheetModelTest, OnCreditCardUploadCompleted_Success) {
+  MockSaveCardBottomSheetModelObserver observer;
+  save_card_bottom_sheet_model_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnCreditCardUploadCompleted(true));
+  save_card_bottom_sheet_model_->CreditCardUploadCompleted(
+      /*card_saved=*/true,
+      /*on_confirmation_closed_callback=*/base::DoNothing());
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kSaved);
+  save_card_bottom_sheet_model_->RemoveObserver(&observer);
+}
+
+// Test that on unsuccessful credit card upload completion, observer is updated
+// with the result and save card state is set to kFailed.
+TEST_F(SaveCardBottomSheetModelTest, OnCreditCardUploadCompleted_Failed) {
+  MockSaveCardBottomSheetModelObserver observer;
+  save_card_bottom_sheet_model_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnCreditCardUploadCompleted(false));
+  save_card_bottom_sheet_model_->CreditCardUploadCompleted(
+      /*card_saved=*/false,
+      /*on_confirmation_closed_callback=*/base::DoNothing());
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kFailed);
+  save_card_bottom_sheet_model_->RemoveObserver(&observer);
+}
+
+// Test that `on_confirmation_closed_callback` callback is executed when present
+// on model's reset.
+TEST_F(SaveCardBottomSheetModelTest, OnConfirmationDismissed) {
+  save_card_bottom_sheet_model_->CreditCardUploadCompleted(
+      /*card_saved=*/true, /*on_confirmation_closed_callback=*/
+      base::BindOnce(
+          &SaveCardBottomSheetModelTest::OnConfirmationClosedCallbackFn,
+          base::Unretained(this)));
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kSaved);
+
+  save_card_bottom_sheet_model_.reset();
+  EXPECT_TRUE(ran_on_confirmation_closed_callback_);
 }
 
 }  // namespace autofill

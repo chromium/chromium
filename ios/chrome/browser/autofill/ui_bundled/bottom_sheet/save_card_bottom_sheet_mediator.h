@@ -28,6 +28,10 @@
 
 - (void)disconnect;
 
+#pragma mark - SaveCardBottomSheetModel Observer methods
+
+- (void)onCreditCardUploadCompleted:(BOOL)cardSaved;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_MEDIATOR_H_

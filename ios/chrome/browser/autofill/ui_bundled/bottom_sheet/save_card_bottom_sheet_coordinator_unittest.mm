@@ -111,3 +111,13 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OpensNewTabForLinkClicked) {
 
   [coordinator_ stop];
 }
+
+TEST_F(SaveCardBottomSheetCoordinatorTest, OnViewDisappeared) {
+  [coordinator_ start];
+
+  OCMExpect([autofill_commands_handler_ dismissSaveCardBottomSheet]);
+
+  [coordinator_ onViewDisappeared];
+
+  [coordinator_ stop];
+}

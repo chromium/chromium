@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_MODEL_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_MODEL_H_
 
+#import <base/observer_list.h>
+#import <base/observer_list_types.h>
+
 #import <memory>
 #import <string>
 
@@ -12,6 +15,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
@@ -21,6 +25,27 @@ namespace autofill {
 // the bottomsheet).
 class SaveCardBottomSheetModel {
  public:
+  // Save card flow states.
+  enum class SaveCardState {
+    // Save card is offered to the user.
+    kOffered,
+    // User accepted the bottomsheet and save card is in progress.
+    kSaveInProgress,
+    // Save card has succeeded.
+    kSaved,
+    // Save card has failed.
+    kFailed,
+    kMaxValue = kFailed,
+  };
+
+  // Interface for observer of this model.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+    // Called when card upload request is completed.
+    virtual void OnCreditCardUploadCompleted(bool card_saved) = 0;
+  };
+
   SaveCardBottomSheetModel(
       AutofillSaveCardUiInfo ui_info,
       std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate);
@@ -34,6 +59,19 @@ class SaveCardBottomSheetModel {
 
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
   virtual void OnCanceled();
+
+  // Updates observer with save card result and sets the callback to be run
+  // after bottomsheet is closed upon showing the success confirmation.
+  virtual void CreditCardUploadCompleted(
+      bool card_saved,
+      autofill::payments::PaymentsAutofillClient::OnConfirmationClosedCallback
+          on_confirmation_closed_callback);
+
+  void AddObserver(Observer* observer) { observer_list_.AddObserver(observer); }
+
+  void RemoveObserver(Observer* observer) {
+    observer_list_.RemoveObserver(observer);
+  }
 
   // Logo to be displayed above the title in the bottomsheet.
   inline int logo_icon_id() const { return ui_info_.logo_icon_id; }
@@ -92,6 +130,8 @@ class SaveCardBottomSheetModel {
     return ui_info_.legal_message_lines;
   }
 
+  inline SaveCardState save_card_state() const { return save_card_state_; }
+
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -106,6 +146,17 @@ class SaveCardBottomSheetModel {
 
   // Provides callbacks to handle user interactions with the UI.
   std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate_;
+
+  // Callback to be called after credit card upload is complete and bottomsheet
+  // has been closed.
+  payments::PaymentsAutofillClient::OnConfirmationClosedCallback
+      on_confirmation_closed_callback_;
+
+  // TODO(crbug.com/412631591): Use SaveCardState to log result metrics for the
+  // bottomsheet's state.
+  SaveCardState save_card_state_{SaveCardState::kOffered};
+
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<SaveCardBottomSheetModel> weak_ptr_factory_{this};
 };

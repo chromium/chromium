@@ -8,6 +8,7 @@
 
 #import "base/check_deref.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
@@ -125,8 +126,8 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
   // Delegate providing callbacks for the save card UI.
   std::unique_ptr<AutofillSaveCardDelegate> common_delegate =
       std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
-
-  if (ShowSaveCardBottomSheet(options)) {
+  show_save_card_bottom_sheet_ = ShowSaveCardBottomSheet(options);
+  if (show_save_card_bottom_sheet_) {
     AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
         AutofillBottomSheetTabHelper::FromWebState(web_state_);
     std::unique_ptr<SaveCardBottomSheetModel> model =
@@ -142,23 +143,37 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
           std::move(ui_info), std::move(common_delegate))));
 }
 
+// TODO(crbug.com/413418918): Remove optional from
+// `on_confirmation_closed_callback`.
 void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
-  // TODO(crbug.com/402134138): Use `save_card_bottom_sheet_model_` to update
-  // the SaveCardBottomSheetModel on credit card upload completion for it to be
-  // observed by the mediator.
   const bool card_saved = result == PaymentsRpcResult::kSuccess;
+  OnConfirmationClosedCallback callback =
+      on_confirmation_closed_callback
+          ? *std::exchange(on_confirmation_closed_callback, std::nullopt)
+          : base::DoNothing();
   if (client_->GetAutofillSaveCardInfoBarDelegateIOS()) {
     client_->GetAutofillSaveCardInfoBarDelegateIOS()->CreditCardUploadCompleted(
-        card_saved, std::move(on_confirmation_closed_callback));
+        card_saved, std::move(callback));
+  } else if (save_card_bottom_sheet_model_) {
+    save_card_bottom_sheet_model_->CreditCardUploadCompleted(
+        card_saved, std::move(callback));
+  } else if (show_save_card_bottom_sheet_) {
+    // If a bottomsheet was showing before and was dismissed before getting the
+    // save card result, the weak ref to save card bottomsheet model would be
+    // invalid since model's lifecycle is same as the UI's and, the callback
+    // would never be executed. Ensure callback runs if it is still pending.
+    std::move(callback).Run();
   }
+
   if (!card_saved) {
-    // At this point, infobar would be dismissed but the omnibox icon could
-    // still be tapped to re-show the infobar. Since the card upload has
-    // failed, the save card infobar should not be re-shown, so the infobar is
-    // removed here to remove the associated omnibox icon.
+    // At this point, infobar would be dismissed (if showing earlier) but the
+    // omnibox icon could still be tapped to re-show the infobar. Since the card
+    // upload has failed, the save card infobar should not be re-shown, so the
+    // infobar is removed here to remove the associated omnibox icon. If a
+    // bottomsheet was showing before, there wouldn't be an omnibox icon at all.
     client_->RemoveAutofillSaveCardInfoBar();
 
     // Here, `PaymentsRpcResult::kClientSideTimeout` indicates that the card

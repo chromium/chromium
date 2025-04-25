@@ -188,6 +188,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   base::WeakPtr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
+
+  // Indicates whether the save card bottom sheet should be presented instead of
+  // the infobar.
+  bool show_save_card_bottom_sheet_;
 };
 
 }  // namespace payments

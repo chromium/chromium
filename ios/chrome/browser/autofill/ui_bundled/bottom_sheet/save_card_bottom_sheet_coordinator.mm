@@ -82,6 +82,12 @@
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL.gurl]];
 }
 
+- (void)onViewDisappeared {
+  id<AutofillCommands> autofillHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AutofillCommands);
+  [autofillHandler dismissSaveCardBottomSheet];
+}
+
 #pragma mark - Private
 
 - (void)setInitialVoiceOverFocus {
