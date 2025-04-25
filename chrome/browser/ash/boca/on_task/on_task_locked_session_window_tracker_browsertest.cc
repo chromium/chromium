@@ -894,18 +894,29 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Set up window tracker to track the app window.
   const SessionID window_id = boca_app_browser->session_id();
   ASSERT_TRUE(window_id.is_valid());
+  MockBocaWindowObserver window_observer;
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
-      window_id, /*observers=*/{});
+      window_id, /*observers=*/{&window_observer});
   system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
                                                              window_id);
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
 
+  // The first one triggered by boca no longer set active. The second triggered
+  // due to browser closing.
+  EXPECT_CALL(
+      window_observer,
+      OnActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS)))
+      .Times(2);
+  EXPECT_CALL(window_observer, OnWindowTrackerCleanedup).Times(1);
+
   // Close the app and verify the window tracker stops tracking it.
   boca_app_browser->window()->Close();
   content::RunAllTasksUntilIdle();
+
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
+
   EXPECT_THAT(window_tracker->browser(), IsNull());
 }
 

@@ -374,6 +374,11 @@ void LockedSessionWindowTracker::WillCloseAllTabs(
 // BrowserListObserver Implementation
 void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
   if (browser == browser_) {
+    // Notify not in workbook when boca closed.
+    for (auto& observer : observers_) {
+      observer.OnActiveTabChanged(
+          l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
+    }
     CleanupWindowTracker();
   }
   if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
