@@ -336,9 +336,24 @@ class WrappedOverlayCompoundImageRepresentation
   void EndReadAccess(gfx::GpuFenceHandle release_fence) final {
     return wrapped_->EndReadAccess(std::move(release_fence));
   }
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+  AHardwareBuffer* GetAHardwareBuffer() final {
+    return wrapped_->GetAHardwareBuffer();
+  }
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBufferFenceSync() final {
+    return wrapped_->GetAHardwareBufferFenceSync();
+  }
+#elif BUILDFLAG(IS_WIN)
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() final {
     return wrapped_->GetDCLayerOverlayImage();
+  }
+#elif BUILDFLAG(IS_APPLE)
+  gfx::ScopedIOSurface GetIOSurface() const final {
+    return wrapped_->GetIOSurface();
+  }
+  bool IsInUseByWindowServer() const final {
+    return wrapped_->IsInUseByWindowServer();
   }
 #endif
 
