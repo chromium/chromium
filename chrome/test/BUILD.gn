@@ -9483,6 +9483,7 @@ test("unit_tests") {
       "../browser/safe_browsing/download_protection/download_request_maker_unittest.cc",
       "../browser/safe_browsing/download_protection/file_analyzer_unittest.cc",
       "../browser/safe_browsing/download_protection/file_system_access_metadata_unittest.cc",
+      "../browser/safe_browsing/notification_content_detection/notification_content_detection_util_unittest.cc",
       "../browser/safe_browsing/threat_details_unittest.cc",
       "../common/safe_browsing/binary_feature_extractor_unittest.cc",
       "../common/safe_browsing/download_type_util_unittest.cc",

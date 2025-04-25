@@ -279,6 +279,66 @@ void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
   test_is_suspicious_value_ = is_suspicious;
 }
 
+void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    std::string& notification_id,
+    std::string& origin,
+    std::string& profile_id,
+    jboolean incognito) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kReportAsSafe,
+                     NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
+                     notification_id, std::nullopt /* action index */,
+                     std::nullopt /* reply */, std::nullopt /* by_user */,
+                     base::DoNothing()));
+}
+
+void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    std::string& notification_id,
+    std::string& origin,
+    std::string& profile_id,
+    jboolean incognito) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kReportWarnedAsSpam,
+                     NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
+                     notification_id, std::nullopt /* action index */,
+                     std::nullopt /* reply */, std::nullopt /* by_user */,
+                     base::DoNothing()));
+}
+
+void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    std::string& notification_id,
+    std::string& origin,
+    std::string& profile_id,
+    jboolean incognito) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kReportUnwarnedAsSpam,
+                     NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
+                     notification_id, std::nullopt /* action index */,
+                     std::nullopt /* reply */, std::nullopt /* by_user */,
+                     base::DoNothing()));
+}
+
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_object,

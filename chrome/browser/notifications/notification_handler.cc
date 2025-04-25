@@ -38,3 +38,24 @@ void NotificationHandler::OpenSettings(Profile* profile, const GURL& origin) {
   // to handle user interaction with it.
   NOTREACHED();
 }
+
+void NotificationHandler::ReportNotificationAsSafe(
+    const std::string& notification_id,
+    const GURL& url,
+    Profile* profile) {
+  NOTREACHED();
+}
+
+void NotificationHandler::ReportWarnedNotificationAsSpam(
+    const std::string& notification_id,
+    const GURL& url,
+    Profile* profile) {
+  NOTREACHED();
+}
+
+void NotificationHandler::ReportUnwarnedNotificationAsSpam(
+    const std::string& notification_id,
+    const GURL& url,
+    Profile* profile) {
+  NOTREACHED();
+}

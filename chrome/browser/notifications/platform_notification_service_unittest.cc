@@ -146,11 +146,8 @@ class PlatformNotificationServiceTest : public testing::Test {
   }
 
   content::PlatformNotificationContext* GetPlatformNotificationContext(
-      std::string origin_host) {
-    auto storage_partition_config = content::StoragePartitionConfig::Create(
-        profile_.get(), origin_host, /*partition_name=*/"",
-        /*in_memory=*/false);
-    return profile_->GetStoragePartition(storage_partition_config, true)
+      GURL origin) {
+    return profile_->GetStoragePartitionForUrl(origin)
         ->GetPlatformNotificationContext();
   }
 
@@ -1058,10 +1055,9 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
   GURL origin("https://example.com");
   NotificationDatabaseData notification_database_data;
   notification_database_data.origin = origin;
-  GetPlatformNotificationContext(origin.host())
-      ->WriteNotificationData(notification_id, kFakeServiceWorkerRegistrationId,
-                              origin, notification_database_data,
-                              base::DoNothing());
+  GetPlatformNotificationContext(origin)->WriteNotificationData(
+      notification_id, kFakeServiceWorkerRegistrationId, origin,
+      notification_database_data, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   // Update `NotificationDatabase` entry with metadata.
   Notification notification = message_center::Notification(
@@ -1082,7 +1078,7 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
   // Read and check the entry from `NotificationDatabase`.
   NotificationDatabaseData data =
       ReadNotificationDataAndRecordInteractionSynchronous(
-          GetPlatformNotificationContext(origin.host()),
+          GetPlatformNotificationContext(origin),
           base::NumberToString(notification_id), origin);
   ASSERT_TRUE(
       data.serialized_metadata.contains(safe_browsing::kMetadataDictionaryKey));

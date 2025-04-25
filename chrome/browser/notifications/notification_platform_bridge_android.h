@@ -93,6 +93,36 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       const base::android::JavaParamRef<jobject>& java_object,
       bool is_suspicious);
 
+  // Called by the Java implementation when the user decides they want to report
+  // their notification contents as safe to the server.
+  void OnReportNotificationAsSafe(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  // Called by the Java implementation when the user decides they want to report
+  // their warned notification contents as spam to the server.
+  void OnReportWarnedNotificationAsSpam(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  // Called by the Java implementation when the user decides they want to report
+  // their unwarned notification contents as spam to the server.
+  void OnReportUnwarnedNotificationAsSpam(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
   // Called by the Java implementation when the user decides they no longer want
   // to receive warnings for suspicious notifications that come from `origin`.
   void OnNotificationAlwaysAllowFromOrigin(
