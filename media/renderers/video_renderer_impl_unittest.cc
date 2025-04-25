@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -924,6 +925,50 @@ TEST_F(VideoRendererImplTest, RenderingStartedThenStopped) {
   // Memory usage is relative, so the prior lines increased memory usage to
   // 4 * 115200, so this last one should show we only have 1 frame left.
   EXPECT_EQ(-3 * 115200, last_pipeline_statistics.video_memory_usage);
+
+  Destroy();
+}
+
+// Ensures background rendering will try to signal underflow if no new decoded
+// frames arrive since the last Render() call.
+TEST_F(VideoRendererImplTest, BackgroundRenderingStillUnderflows) {
+  Initialize();
+  QueueFrames("0 30 60 90");
+
+  // Start the sink and wait for the first callback.
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(5);
+    EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    StartPlayingFrom(0);
+    event.RunAndWait();
+    Mock::VerifyAndClearExpectations(&mock_cb_);
+  }
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(testing::AnyNumber());
+
+  bool background_rendering = true;
+  null_video_sink_->set_render_cb(
+      base::BindRepeating(base::BindLambdaForTesting([&] {
+        null_video_sink_->set_background_render(background_rendering);
+        background_rendering = !background_rendering;
+      })));
+
+  // Advance enough that none of the queued frames are effective.
+  AdvanceWallclockTimeInMs(120);
+
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
 
   Destroy();
 }
