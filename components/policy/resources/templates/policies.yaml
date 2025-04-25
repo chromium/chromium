@@ -1356,6 +1356,7 @@ policies:
   1355: DefaultSmartCardConnectSetting
   1356: DeviceUserInitiatedFirmwareUpdatesEnabled
   1357: BuiltInAIAPIsEnabled
+  1358: TabGroupSharingSettings
 
 atomic_groups:
   1: Homepage

@@ -68,6 +68,7 @@ source_set("model") {
     "//components/autofill/core/browser",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
+    "//components/collaboration/public:prefs",
     "//components/commerce/core:pref_names",
     "//components/component_updater",
     "//components/enterprise",

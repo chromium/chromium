@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "shared_tab_groups.managed_account_setting",
+      "pref_location": "user_profile",
+      "default_value": 0,
+      "values_to_test": [
+        0, 1
+      ]
+    }
+  }
+]

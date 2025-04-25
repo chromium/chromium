@@ -2084,6 +2084,7 @@ static_library("browser") {
     "//components/collaboration/internal",
     "//components/collaboration/internal:collaboration_finder",
     "//components/collaboration/public",
+    "//components/collaboration/public:prefs",
     "//components/color",
     "//components/commerce/content/browser:browser",
     "//components/commerce/core:commerce_heuristics_data",

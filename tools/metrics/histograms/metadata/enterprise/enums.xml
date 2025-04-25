@@ -2226,6 +2226,7 @@ chromium-metrics-reviews@google.com.
   <int value="1355" label="DefaultSmartCardConnectSetting"/>
   <int value="1356" label="DeviceUserInitiatedFirmwareUpdate"/>
   <int value="1357" label="BuiltInAIAPIsEnabled"/>
+  <int value="1358" label="TabGroupSharingSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

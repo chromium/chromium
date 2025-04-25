@@ -106,6 +106,18 @@ static_library("messaging_public") {
   ]
 }
 
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
 group("unit_tests") {
   testonly = true
 
