@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -148,6 +149,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuOpenNewTabGroup", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP},
       {"menuOpenNewTabGroupWithCount",
        IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP_WITH_COUNT},
+      {"menuOpenSplitView", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW},
       {"menuMoveToBookmarksBar", IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR},
       {"menuMoveToAllBookmarks", IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS},
       {"menuTrackPrice", IDS_SIDE_PANEL_TRACK_BUTTON},
@@ -210,6 +212,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksTreeViewEnabled",
       base::FeatureList::IsEnabled(features::kBookmarksTreeView));
+  source->AddBoolean("splitViewEnabled",
+                     base::FeatureList::IsEnabled(features::kSideBySide));
   // TODO(crbug.com/380818698): Replace this with the flag which will be used to
   // launch account storage for bookmarks.
   source->AddBoolean("isBookmarksInTransportModeEnabled",

@@ -463,6 +463,9 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP" desc="Menu description for opening a bookmark in a new tab group">
     Open in new tab group
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW" desc="Menu description for opening a bookmark in a split view">
+    Open in split view
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_RENAME" desc="Title of the bookmark list dropdown menu item that renames folders.">
     Rename
   </message>
