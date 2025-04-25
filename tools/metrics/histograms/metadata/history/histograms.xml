@@ -2430,6 +2430,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.StaleComputedEmbeddings" units="counts"
+    expires_after="2025-10-12">
+  <owner>wittman@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of embeddings that were computed for a tab that were stale by the
+    time the computation completed, because the tab navigated away from the page
+    in the mean time.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.UserActions{UiSurface}"
     enum="EmbeddingsUserActions" expires_after="2025-10-05">
   <owner>orinj@chromium.org</owner>
