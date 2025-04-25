@@ -7,23 +7,33 @@ package org.chromium.chrome.browser.educational_tip.cards;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 /**
  * A coordinator that is responsible for displaying the history sync education tip that is show on
  * the NTP in the magic stack if the user is eligible.
  */
-public class HistorySyncPromoCoordinator implements EducationalTipCardProvider {
+@NullMarked
+public class HistorySyncPromoCoordinator
+        implements EducationalTipCardProvider, IdentityManager.Observer {
 
     private static final String HISTORY_OPT_IN_EDUCATIONAL_TIP_PARAM =
             "history_opt_in_educational_tip_param";
 
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Runnable mOnClickedRunnable;
+    private final Runnable mRemoveModuleRunnable;
+    private final @Nullable IdentityManager mIdentityManager;
 
     public HistorySyncPromoCoordinator(
             Runnable onModuleClickedCallback,
@@ -32,12 +42,29 @@ public class HistorySyncPromoCoordinator implements EducationalTipCardProvider {
             Runnable removeModuleCallback) {
         mActionDelegate = actionDelegate;
 
+        mRemoveModuleRunnable =
+                callbackController.makeCancelable(
+                        () -> {
+                            removeModuleCallback.run();
+                        });
+
         mOnClickedRunnable =
                 callbackController.makeCancelable(
                         () -> {
+                            // removeModuleCallback is passed as a callable to ChromeTabbedActivity
+                            // so that the promo is dismssed only after the history sync activity is
+                            // complete. Otherwise the promo will be dismissed too early.
                             mActionDelegate.showHistorySyncOptIn(removeModuleCallback);
                             onModuleClickedCallback.run();
                         });
+
+        assert mActionDelegate.getProfileSupplier().hasValue();
+        mIdentityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(mActionDelegate.getProfileSupplier().get());
+
+        assert mIdentityManager != null;
+        mIdentityManager.addObserver(this);
     }
 
     @Override
@@ -88,5 +115,20 @@ public class HistorySyncPromoCoordinator implements EducationalTipCardProvider {
     @Override
     public void onCardClicked() {
         mOnClickedRunnable.run();
+    }
+
+    /** Implements {@link IdentityManager.Observer}. */
+    @Override
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
+                == PrimaryAccountChangeEvent.Type.CLEARED) {
+            mRemoveModuleRunnable.run();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        assert mIdentityManager != null;
+        mIdentityManager.removeObserver(this);
     }
 }
