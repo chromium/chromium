@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import androidx.browser.trusted.FileHandlingData;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,14 +29,20 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabObserver mCustomTabObserver;
+    private final Verifier mVerifier;
+    private final CurrentPageVerifier mCurrentPageVerfier;
 
     public DefaultCustomTabIntentHandlingStrategy(
             CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
-            CustomTabObserver customTabObserver) {
+            CustomTabObserver customTabObserver,
+            Verifier verifier,
+            CurrentPageVerifier currentPageVerfier) {
         mTabProvider = tabProvider;
         mNavigationController = navigationController;
         mCustomTabObserver = customTabObserver;
+        mVerifier = verifier;
+        mCurrentPageVerfier = currentPageVerfier;
     }
 
     @Override
@@ -106,9 +114,23 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         if (launchHandler.getStartNewNavigation() && !isInitialIntent) {
             loadUrl(intentDataProvider);
+        } else {
+            // Check if the URL of the current page is in the web app scope.
+            // Launch params should not be sent to a not verified origin.
+            CurrentPageVerifier.VerificationState state = mCurrentPageVerfier.getState();
+            if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
+                return;
+            }
         }
 
-        launchHandler.notifyLaunchQueue(mTabProvider.getTab().getWebContents());
+        // Check if the URL sent in launch params is in the web app scope.
+        mVerifier
+                .verify(intentDataProvider.getUrlToLoad())
+                .then(
+                        (verified) -> {
+                            if (!verified) return;
+                            launchHandler.notifyLaunchQueue(mTabProvider.getTab().getWebContents());
+                        });
     }
 
     private void loadUrl(BrowserServicesIntentDataProvider intentDataProvider) {

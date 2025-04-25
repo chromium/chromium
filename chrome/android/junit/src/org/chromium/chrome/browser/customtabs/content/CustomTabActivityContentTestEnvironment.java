@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -37,6 +38,8 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.content.WebContentsFactoryJni;
@@ -115,6 +118,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock private Profile mIncognitoProfile;
     @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
     @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
+    @Mock public Verifier verifier;
+    @Mock public CurrentPageVerifier currentPageVerifier;
 
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
@@ -164,6 +169,11 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(verifier.verify(any())).thenReturn(Promise.fulfilled(true));
+        when(currentPageVerifier.getState())
+                .thenReturn(
+                        new CurrentPageVerifier.VerificationState(
+                                "", "", CurrentPageVerifier.VerificationStatus.SUCCESS));
     }
 
     @Override
@@ -216,7 +226,11 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 tabProvider,
                 intentDataProvider,
                 new DefaultCustomTabIntentHandlingStrategy(
-                        tabProvider, navigationController, customTabObserver),
+                        tabProvider,
+                        navigationController,
+                        customTabObserver,
+                        verifier,
+                        currentPageVerifier),
                 activity,
                 mMinimizationManagerHolder);
     }

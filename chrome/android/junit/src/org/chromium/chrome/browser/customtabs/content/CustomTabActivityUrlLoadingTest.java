@@ -13,6 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.CONTENT_URI;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.INITIAL_URL;
@@ -21,6 +22,7 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityCo
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Looper;
 
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -202,6 +204,7 @@ public class CustomTabActivityUrlLoadingTest {
             int expectedLoadUrlNumber,
             boolean expectedStartNewNavigation) {
         mIntentHandler.onNewIntent(intentDataProvider);
+        shadowOf(Looper.getMainLooper()).idle();
         verify(env.tabFromFactory, times(expectedLoadUrlNumber))
                 .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
         verify(mWebAppLaunchHandlerJniMock, times(1))
@@ -301,6 +304,7 @@ public class CustomTabActivityUrlLoadingTest {
         when(intentDataProvider.getFileHandlingData()).thenReturn(createFileHandlingData());
 
         mIntentHandler.onNewIntent(intentDataProvider);
+        shadowOf(Looper.getMainLooper()).idle();
         verify(env.tabFromFactory, times(1))
                 .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
         verify(mWebAppLaunchHandlerJniMock, times(1))
