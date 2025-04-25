@@ -3951,40 +3951,35 @@ public class StripLayoutHelper
 
     /**
      * @param tab The tab to make fully visible.
-     * @return Scroll delta to make the tab fully visible.
+     * @return a 1-D vector on the X axis of the window coordinate system that can make the tab
+     *     fully visible.
      */
     private float calculateDeltaToMakeTabVisible(StripLayoutTab tab) {
         if (tab == null) return 0.f;
 
-        // 1. Calculate offsets to fully show the tab at the start and end of the strip.
-        final boolean isRtl = LocalizationUtils.isLayoutRtl();
+        // 1. Calculate offsets to fully show the tab on the left/right side of the
+        // strip. These offsets are scalars.
         // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
         final float rightOffset = mRightFadeWidth + mRightMargin;
         final float leftOffset = mLeftFadeWidth + mLeftMargin;
 
-        // Offsets where tab content is not drawn.
-        final float startOffset = isRtl ? rightOffset : leftOffset;
-        final float endOffset = isRtl ? leftOffset : rightOffset;
-        final float scrollOffset = mScrollDelegate.getScrollOffset();
-        // Tab position in visible area not accounting for any fades.
-        final float tabPosition = tab.getIdealX() - scrollOffset;
+        // 2. Calculate vectors from the tab's ideal position to the farthest left/right point where
+        // the tab can be visible.
+        // These are 1-D vectors on the X axis of the window coordinate system.
+        final float deltaToFarLeft = leftOffset - tab.getIdealX();
+        final float deltaToFarRight =
+                mWidth - rightOffset - mCachedTabWidthSupplier.get() - tab.getIdealX();
 
-        final float optimalStart = startOffset - tabPosition;
-        // Also account for mCachedTabWidth to allocate space to show tab at the end.
-        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidthSupplier.get();
+        // 3. The following case means the tab is already completely in the visible area of the
+        // strip, i.e., it needs to be:
+        // moved left to reach the far left point, and
+        // moved right to reach the far right point.
+        if (deltaToFarLeft < 0 && deltaToFarRight > 0) return 0.f;
 
-        // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
-        // This will result in the tab being at either the start or end of the strip.
-        final float deltaToOptimalStart = optimalStart - scrollOffset;
-        final float deltaToOptimalEnd = optimalEnd - scrollOffset;
-
-        // 3. If the delta to the optimal start is negative and the delta to the optimal end is
-        // positive, the given index is already completely in the visible area of the strip.
-        if ((deltaToOptimalStart < 0) && (deltaToOptimalEnd > 0)) return 0.f;
-
-        return Math.abs(deltaToOptimalStart) < Math.abs(deltaToOptimalEnd)
-                ? deltaToOptimalStart
-                : deltaToOptimalEnd;
+        // 4. Return the vector with less distance for the tab to travel.
+        return Math.abs(deltaToFarLeft) < Math.abs(deltaToFarRight)
+                ? deltaToFarLeft
+                : deltaToFarRight;
     }
 
     /**
