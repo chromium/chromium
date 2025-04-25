@@ -399,6 +399,8 @@ chromium-metrics-reviews@google.com.
   <int value="81" label="AutofillBnplEnabled"/>
   <int value="82" label="AutofillHasSeenBnpl"/>
   <int value="83" label="AutomaticPasskeyUpgrades"/>
+  <int value="84" label="(test) SyncablePriorityPrefForTesting"/>
+  <int value="85" label="(test) SyncableAlwaysSyncingPriorityPrefForTesting"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

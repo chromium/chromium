@@ -46,6 +46,7 @@ source_set("unit_tests") {
     ":prefs",
     ":test_data",
     "//base/test:test_support",
+    "//components/sync/base:features",
     "//testing/gtest",
   ]
 }

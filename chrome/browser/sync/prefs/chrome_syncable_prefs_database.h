@@ -24,6 +24,8 @@ class ChromeSyncablePrefsDatabase
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
   GetAllSyncablePrefsForTest() const;
 
+  bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const override;
+
  private:
   // This defines the list of preferences that are syncable across all
   // platforms.
