@@ -150,6 +150,10 @@ constexpr char kDeviceId[] = "myDevice";
 constexpr char kTestDefaultUrl[] = "https://test";
 constexpr char kDefaultLanguage[] = "en-US";
 constexpr char kBadLanguage[] = "unknown language";
+constexpr char kUpdateStudentActivitiesErrorCodeUmaPath[] =
+    "Ash.Boca.UpdateStudentActivities.ErrorCode";
+constexpr char kStudentHeartbeatErrorCodeUmaPath[] =
+    "Ash.Boca.StudentHeartbeat.ErrorCode";
 
 ::boca::Session GetInitialSession(base::Time inital_time) {
   ::boca::Session session_1;
@@ -936,6 +940,7 @@ TEST_F(BocaSessionManagerTest, NotifyAppReloadEvent) {
 }
 
 TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
+  base::HistogramTester histogram_tester;
   std::u16string kTab(u"google.com");
   ::boca::Session session = GetInitialSession(session_start_time_);
 
@@ -953,6 +958,32 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
   boca_session_manager()->UpdateTabActivity(kTab);
+  histogram_tester.ExpectTotalCount(kUpdateStudentActivitiesErrorCodeUmaPath,
+                                    0);
+}
+
+TEST_F(BocaSessionManagerTest, UpdateTabActivityFailed) {
+  base::HistogramTester histogram_tester;
+  std::u16string kTab(u"google.com");
+  ::boca::Session session = GetInitialSession(session_start_time_);
+
+  EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            request->callback().Run(base::unexpected<google_apis::ApiErrorCode>(
+                google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR));
+          })));
+
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+  boca_session_manager()->UpdateTabActivity(kTab);
+  histogram_tester.ExpectTotalCount(kUpdateStudentActivitiesErrorCodeUmaPath,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      kUpdateStudentActivitiesErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 1);
 }
 
 TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
@@ -1992,6 +2023,7 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
 
 TEST_F(BocaSessionManagerStudentHeartbeatTest,
        StudentHeartbeatCalledWhenSessionIsActive) {
+  base::HistogramTester histogram_tester;
   ::boca::Session session_1;
   session_1.set_session_id(kInitialSessionId);
   session_1.set_session_state(::boca::Session::ACTIVE);
@@ -2004,6 +2036,8 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
       std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
 
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+
+  histogram_tester.ExpectTotalCount(kStudentHeartbeatErrorCodeUmaPath, 0);
 }
 
 TEST_F(BocaSessionManagerStudentHeartbeatTest,
@@ -2029,6 +2063,7 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
 
 TEST_F(BocaSessionManagerStudentHeartbeatTest,
        StudentHeartbeatCallFailedWithRetryBackoff) {
+  base::HistogramTester histogram_tester;
   ::boca::Session session_1;
   session_1.set_session_id(kInitialSessionId);
   session_1.set_session_state(::boca::Session::ACTIVE);
@@ -2051,10 +2086,16 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
       kDefaultStudentHeartbeatInterval +
       base::Seconds(30) +        // Initial backoff delay.
       base::Seconds(30 * 1.2));  // Second backoff delay.
+
+  histogram_tester.ExpectTotalCount(kStudentHeartbeatErrorCodeUmaPath, 3);
+  histogram_tester.ExpectBucketCount(
+      kStudentHeartbeatErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 3);
 }
 
 TEST_F(BocaSessionManagerStudentHeartbeatTest,
        StudentHeartbeatCallFailedWithRetryBackoffThenSucceeded) {
+  base::HistogramTester histogram_tester;
   ::boca::Session session_1;
   session_1.set_session_id(kInitialSessionId);
   session_1.set_session_state(::boca::Session::ACTIVE);
@@ -2089,10 +2130,16 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
       base::Seconds(30) +        // Initial backoff delay.
       base::Seconds(30 * 1.2) +  // Second backoff delay.
       base::Seconds(30));        // Default heartbeat interval.
+
+  histogram_tester.ExpectTotalCount(kStudentHeartbeatErrorCodeUmaPath, 2);
+  histogram_tester.ExpectBucketCount(
+      kStudentHeartbeatErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 2);
 }
 
 TEST_F(BocaSessionManagerStudentHeartbeatTest,
        StudentHeartbeatCallFailedWithRetryBackoffWithNewSession) {
+  base::HistogramTester histogram_tester;
   ::boca::Session session_1;
   session_1.set_session_id(kInitialSessionId);
   session_1.set_session_state(::boca::Session::ACTIVE);
@@ -2127,6 +2174,10 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
       std::make_unique<::boca::Session>(session_2), /*dispatch_event=*/true);
 
   task_environment()->FastForwardBy(base::Seconds(30 * 1.2));
+  histogram_tester.ExpectTotalCount(kStudentHeartbeatErrorCodeUmaPath, 3);
+  histogram_tester.ExpectBucketCount(
+      kStudentHeartbeatErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 3);
 }
 
 class BocaSessionManagerStudentHeartbeatCustomPollingTest

@@ -43,6 +43,11 @@ inline constexpr char kBocaSpotlightGoogleApiCallErrorCodeTemplate[] =
     "Ash.Boca.Spotlight.$1.ErrorCode";
 inline constexpr char kBocaSpotlightOnRegisterScreenRequestSent[] =
     "RegisterScreen";
+inline constexpr char kBocaGoogleApiCallErrorCodeTemplate[] =
+    "Ash.Boca.$1.ErrorCode";
+inline constexpr char kBocaUpdateStudentActivities[] =
+    "UpdateStudentActivities";
+inline constexpr char kBocaStudentHeartbeat[] = "StudentHeartbeat";
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -97,6 +102,17 @@ void RecordOnRegisterScreenRequestSentErrorCode(
 // Records the error code of the spotlight Google Api calls.
 void RecordSpotlightGoogleApiErrorCode(const std::string& name,
                                        google_apis::ApiErrorCode error_code);
+
+// Records the error code of the UpdateStudentActivities calls.
+void RecordUpdateStudentActivitiesErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the StudentHeartBeat calls.
+void RecordStudentHeartBeatErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the Google Api calls.
+void RecordGoogleApiErrorCode(const std::string& name,
+                              google_apis::ApiErrorCode error_code);
 
 }  // namespace ash::boca
 

@@ -1356,6 +1356,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.{Request}.ErrorCode" enum="ApiErrorCode"
+    expires_after="2025-10-23">
+  <owner>zifanzhang@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records HTTP response code of the {Request} request needed to send/receive
+    captions in a Class Tools.
+  </summary>
+  <token key="Request">
+    <variant name="StudentHeartbeat"/>
+    <variant name="UpdateStudentActivities"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="2024-11-03">
   <owner>hidehiko@chromium.org</owner>

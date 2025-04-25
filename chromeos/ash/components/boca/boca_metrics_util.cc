@@ -109,4 +109,21 @@ void RecordSpotlightGoogleApiErrorCode(const std::string& name,
       error_code);
 }
 
+void RecordUpdateStudentActivitiesErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaUpdateStudentActivities, error_code);
+}
+
+void RecordStudentHeartBeatErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaStudentHeartbeat, error_code);
+}
+
+void RecordGoogleApiErrorCode(const std::string& name,
+                              google_apis::ApiErrorCode error_code) {
+  base::UmaHistogramSparse(base::ReplaceStringPlaceholders(
+                               kBocaGoogleApiCallErrorCodeTemplate, {name},
+                               /*=offsets*/ nullptr),
+                           error_code);
+}
+
 }  // namespace ash::boca

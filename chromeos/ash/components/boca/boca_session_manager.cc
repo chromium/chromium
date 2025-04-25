@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
@@ -289,8 +290,10 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
-              // TODO: crbug.com/366316261 - Add metrics for update failure.
-              LOG(WARNING) << "[Boca]Failed to update student activity.";
+              boca::RecordUpdateStudentActivitiesErrorCode(result.error());
+              LOG(WARNING)
+                  << "[Boca]Failed to update student activity with error code: "
+                  << result.error();
             }
           }));
 
@@ -738,8 +741,8 @@ void BocaSessionManager::SendStudentHeartbeatRequest() {
 void BocaSessionManager::OnStudentHeartbeat(
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
-    // TODO: crbug.com/366316261 - Add metrics for update failure.
-    LOG(WARNING) << "[Boca]Failed to call student heartbeat with error code: ."
+    boca::RecordStudentHeartBeatErrorCode(result.error());
+    LOG(WARNING) << "[Boca]Failed to call student heartbeat with error code: "
                  << result.error();
     if ((result.error() >= 500 && result.error() < 600) ||
         result.error() == 429) {
