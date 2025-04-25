@@ -873,10 +873,20 @@ class CONTENT_EXPORT PrefetchContainer {
   void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
 
   // Returns a suffix for UMAs.
-  const char* GetMetricsSuffixTriggerTypeAndEagerness();
+  // TODO(crbug.com/379140429): Migrate to use
+  // `GetMetricsSuffixTriggerTypeAndEagerness()`.
+  constexpr const char*
+  GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix();
 
   // Records `Prefetch.PrefetchContainer.DurationAdded*` UMAs.
   void RecordDurationFromAdded();
+  // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
+  void RecordPrefetchMatchingBlockedNavigationHistogram(
+      bool blocked_until_head);
+  // Records `Prefetch.BlockUntilHeadDuration.*` UMAs.
+  void RecordBlockUntilHeadDurationHistogram(
+      const std::optional<base::TimeDelta>& blocked_duration,
+      bool served);
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
