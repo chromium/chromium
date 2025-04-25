@@ -101,15 +101,15 @@ public interface BackPressHandler {
      * The modern way to handle back press. This method is only called when {@link
      * #getHandleBackPressChangedSupplier()} returns true; i.e. the back press has been intercepted
      * by chrome and the client must do something to consume the back press. So ideally, this is
-     * **always** expected to return {@link BackPressResult#SUCCESS}.
-     * A {@link BackPressResult#FAILURE} means the back press is intercepted but somehow the client
-     * does not consume; i.e. makes no change. This is usually because the client didn't update
-     * {@link #getHandleBackPressChangedSupplier()} such that this method is called even when the
-     * client does not want. A Failure means Chrome is now incorrectly working and should be
-     * fixed ASAP.
+     * **always** expected to return {@link BackPressResult#SUCCESS}. A {@link
+     * BackPressResult#FAILURE} means the back press is intercepted but somehow the client does not
+     * consume; i.e. makes no change. This is usually because the client didn't update {@link
+     * #getHandleBackPressChangedSupplier()} such that this method is called even when the client
+     * does not want. A Failure means Chrome is now incorrectly working and should be fixed ASAP.
      * The difference between this and the traditional way {@code boolean #onBackPressed} is that
      * the traditional one gives the client an opportunity to test if the client wants to intercept.
      * If it returns false, the tradition way will simply test other clients.
+     *
      * @return Whether the back press has been correctly handled.
      */
     default @BackPressResult int handleBackPress() {

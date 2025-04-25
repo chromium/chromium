@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.ui.KeyboardUtils.ALT;
+import static org.chromium.ui.KeyboardUtils.CTRL;
+import static org.chromium.ui.KeyboardUtils.NO_MODIFIER;
+import static org.chromium.ui.KeyboardUtils.SHIFT;
+
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
@@ -30,6 +35,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -41,10 +47,6 @@ import java.util.List;
 /** Implements app-level keyboard shortcuts for ChromeTabbedActivity and DocumentActivity. */
 public class KeyboardShortcuts {
 
-    private static final int CTRL = 1 << 31;
-    private static final int ALT = 1 << 30;
-    private static final int SHIFT = 1 << 29;
-    private static final int NO_MODIFIER = 0;
     private static final LinkedHashMap<Integer, KeyboardShortcutDefinition>
             KEYBOARD_SHORTCUT_DEFINITION_MAP = new LinkedHashMap<>();
     private static final HashMap<Integer, Integer> KEYBOARD_SHORTCUT_SEMANTIC_MAP = new HashMap<>();
@@ -667,12 +669,6 @@ public class KeyboardShortcuts {
         }
     }
 
-    private static int getMetaState(KeyEvent event) {
-        return (event.isCtrlPressed() ? CTRL : 0)
-                | (event.isAltPressed() ? ALT : 0)
-                | (event.isShiftPressed() ? SHIFT : 0);
-    }
-
     /**
      * This should be called from the Activity's dispatchKeyEvent() to handle keyboard shortcuts.
      *
@@ -717,17 +713,23 @@ public class KeyboardShortcuts {
                 }
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
-                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    if (fullscreenManager.getPersistentFullscreenMode()) {
-                        fullscreenManager.exitPersistentFullscreenMode();
-                        return true;
-                    }
-                    if (getMetaState(event) == CTRL
-                            && ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
-                        TaskManager taskManager = TaskManagerFactory.createTaskManager();
-                        taskManager.launch(context);
-                        return true;
-                    }
+                if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0) {
+                    break;
+                }
+
+                // Exiting full screen takes priority over other actions when Escape is pressed,
+                // regardless of modifier keys. This means for example that you cannot open the task
+                // manager in full screen mode.
+                if (fullscreenManager.getPersistentFullscreenMode()) {
+                    fullscreenManager.exitPersistentFullscreenMode();
+                    return true;
+                }
+
+                if (KeyboardUtils.getMetaState(event) == CTRL
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
+                    TaskManager taskManager = TaskManagerFactory.createTaskManager();
+                    taskManager.launch(context);
+                    return true;
                 }
                 break;
             case KeyEvent.KEYCODE_TV:
@@ -907,7 +909,7 @@ public class KeyboardShortcuts {
         WebContents currentWebContents = currentTab == null ? null : currentTab.getWebContents();
 
         int tabCount = currentTabModel.getCount();
-        int metaState = getMetaState(event);
+        int metaState = KeyboardUtils.getMetaState(event);
         int keyCodeAndMeta = keyCode | metaState;
         @KeyboardShortcutsSemanticMeaning
         int semanticMeaning = getKeyboardSemanticMeaning(keyCodeAndMeta);
