@@ -659,10 +659,10 @@ void CSSBasicShapeXYWHValue::Validate() const {
   // The spec requires non-negative width and height but we can only validate
   // numeric literals here.
   if (width_->IsNumericLiteralValue()) {
-    DCHECK_GE(To<CSSNumericLiteralValue>(*width_).GetFloatValue(), 0);
+    DCHECK_GE(To<CSSNumericLiteralValue>(*width_).GetDoubleValue(), 0);
   }
   if (height_->IsNumericLiteralValue()) {
-    DCHECK_GE(To<CSSNumericLiteralValue>(*height_).GetFloatValue(), 0);
+    DCHECK_GE(To<CSSNumericLiteralValue>(*height_).GetDoubleValue(), 0);
   }
 }
 
