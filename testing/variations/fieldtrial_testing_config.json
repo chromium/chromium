@@ -264,6 +264,21 @@
             ]
         }
     ],
+    "AddSuggestStrongPasswordFromAddPassword": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SuggestStrongPasswordInAddPassword"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddressInfobarDisplayLength": [
         {
             "platforms": [
