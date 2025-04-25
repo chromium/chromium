@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/service/variations_service.h"
@@ -30,11 +30,8 @@ struct PrivacySandboxCountriesTestData {
 class PrivacySandboxCountriesBrowserTestBase : public InProcessBrowserTest {
  public:
   PrivacySandboxCountriesBrowserTestBase() {
-    privacy_sandbox_countries_ =
-        std::make_unique<PrivacySandboxCountriesImpl>();
+    privacy_sandbox_countries_ = GetSingletonPrivacySandboxCountries();
   }
-
-  void TearDown() override { privacy_sandbox_countries_.reset(); }
 
   PrivacySandboxCountries* privacy_sandbox_countries() {
     return privacy_sandbox_countries_.get();
@@ -42,7 +39,7 @@ class PrivacySandboxCountriesBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<PrivacySandboxCountriesImpl> privacy_sandbox_countries_;
+  raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 };
 
 class PrivacySandboxCountriesBrowserTest
