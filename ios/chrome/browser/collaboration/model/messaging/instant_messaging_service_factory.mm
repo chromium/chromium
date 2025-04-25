@@ -49,7 +49,7 @@ InstantMessagingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<InstantMessagingService>();
+  return std::make_unique<InstantMessagingService>(profile);
 }
 
 }  // namespace collaboration::messaging

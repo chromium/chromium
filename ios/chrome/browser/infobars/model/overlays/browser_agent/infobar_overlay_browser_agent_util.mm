@@ -39,6 +39,9 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypeEnhancedSafeBrowsing);
 
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypeCollaborationGroup);
+
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<InfobarInteractionHandler>(
           InfobarType::kInfobarTypeConfirm,
