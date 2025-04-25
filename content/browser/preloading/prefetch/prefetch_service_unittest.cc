@@ -8003,20 +8003,24 @@ TEST_P(PrefetchServiceTest,
   handle.reset();
 
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder."
-      "NoEmbedderSuffix",
+      base::StrCat(
+          {"Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder_",
+           test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder."
-      "NoEmbedderSuffix",
+      base::StrCat(
+          {"Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder_",
+           test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully."
-      "Embedder.NoEmbedderSuffix",
+      base::StrCat({"Prefetch.PrefetchContainer."
+                    "AddedToHeaderDeterminedSuccessfully.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       kHeaderLatency, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully."
-      "Embedder.NoEmbedderSuffix",
+      base::StrCat({"Prefetch.PrefetchContainer."
+                    "AddedToPrefetchCompletedSuccessfully.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       kHeaderLatency, 1);
 }
 
@@ -8039,20 +8043,24 @@ TEST_P(PrefetchServiceTest,
   handle.reset();
 
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder."
-      "NoEmbedderSuffix",
+      base::StrCat(
+          {"Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder_",
+           test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder."
-      "NoEmbedderSuffix",
+      base::StrCat(
+          {"Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder_",
+           test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectTotalCount(
-      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccesfully."
-      "Embedder.NoEmbedderSuffix",
+      base::StrCat({"Prefetch.PrefetchContainer."
+                    "AddedToHeaderDeterminedSuccesfully.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0);
   histogram_tester.ExpectTotalCount(
-      "Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully."
-      "Embedder.NoEmbedderSuffix",
+      base::StrCat({"Prefetch.PrefetchContainer."
+                    "AddedToPrefetchCompletedSuccessfully.Embedder_",
+                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
       0);
 }
 

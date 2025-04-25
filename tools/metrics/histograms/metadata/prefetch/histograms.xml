@@ -57,28 +57,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_params.cc:GetMetricsSuffixTriggerTypeAndEagerness) -->
 
-<variants name="TriggerTypeAndEagernessNoEmbedderSuffix">
-  <variant name="Embedder" summary="Embedder trigger"/>
-  <variant name="SpeculationRule_Conservative"
-      summary="SpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRule_Eager"
-      summary="SpeculationRules trigger, Eager"/>
-  <variant name="SpeculationRule_Moderate"
-      summary="SpeculationRules trigger, Moderate"/>
-  <variant name="SpeculationRuleFromAutoSpeculationRules_Conservative"
-      summary="SpeculationRulesFromAutoSpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRuleFromAutoSpeculationRules_Eager"
-      summary="SpeculationRulesFromAutoSpeculationRules trigger, Eager"/>
-  <variant name="SpeculationRuleFromAutoSpeculationRules_Moderate"
-      summary="SpeculationRulesFromAutoSpeculationRules trigger, Moderate"/>
-  <variant name="SpeculationRuleFromIsolatedWorld_Conservative"
-      summary="SpeculationRulesFromIsolatedWorld trigger, Conservative"/>
-  <variant name="SpeculationRuleFromIsolatedWorld_Eager"
-      summary="SpeculationRulesFromIsolatedWorld trigger, Eager"/>
-  <variant name="SpeculationRuleFromIsolatedWorld_Moderate"
-      summary="SpeculationRulesFromIsolatedWorld trigger, Moderate"/>
-</variants>
-
 <variants name="WasServed">
   <variant name="NotServed" summary="not served"/>
   <variant name="Served" summary="served"/>
@@ -114,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagernessNoEmbedderSuffix}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -125,15 +103,13 @@ chromium-metrics-reviews@google.com.
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     received non-redirect header.
 
-    This histgram is only recorded for prefetches of
-    {TriggerTypeAndEagernessNoEmbedderSuffix}.
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
-  <token key="TriggerTypeAndEagernessNoEmbedderSuffix"
-      variants="TriggerTypeAndEagernessNoEmbedderSuffix"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagernessNoEmbedderSuffix}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -144,15 +120,13 @@ chromium-metrics-reviews@google.com.
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     passed initial eligibility check.
 
-    This histgram is only recorded for prefetches of
-    {TriggerTypeAndEagernessNoEmbedderSuffix}.
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
-  <token key="TriggerTypeAndEagernessNoEmbedderSuffix"
-      variants="TriggerTypeAndEagernessNoEmbedderSuffix"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagernessNoEmbedderSuffix}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -163,15 +137,13 @@ chromium-metrics-reviews@google.com.
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     completed the load successfully.
 
-    This histgram is only recorded for prefetches of
-    {TriggerTypeAndEagernessNoEmbedderSuffix}.
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
-  <token key="TriggerTypeAndEagernessNoEmbedderSuffix"
-      variants="TriggerTypeAndEagernessNoEmbedderSuffix"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagernessNoEmbedderSuffix}.NoEmbedderSuffix"
+    name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2025-10-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -182,11 +154,9 @@ chromium-metrics-reviews@google.com.
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
-    This histgram is only recorded for prefetches of
-    {TriggerTypeAndEagernessNoEmbedderSuffix}.
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
-  <token key="TriggerTypeAndEagernessNoEmbedderSuffix"
-      variants="TriggerTypeAndEagernessNoEmbedderSuffix"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
 <histogram

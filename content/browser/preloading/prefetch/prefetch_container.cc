@@ -2203,47 +2203,7 @@ void PrefetchContainer::OnServiceWorkerStateDetermined(
   }
 }
 
-constexpr const char*
-PrefetchContainer::GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix() {
-  switch (prefetch_type_.trigger_type()) {
-    case PreloadingTriggerType::kSpeculationRule:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRule_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRule_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRule_Conservative";
-      }
-    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromIsolatedWorld_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRuleFromIsolatedWorld_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRuleFromIsolatedWorld_Conservative";
-      }
-    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
-      switch (prefetch_type_.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromAutoSpeculationRules_Eager";
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return "SpeculationRuleFromAutoSpeculationRules_Moderate";
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return "SpeculationRuleFromAutoSpeculationRules_Conservative";
-      }
-    case PreloadingTriggerType::kEmbedder:
-      return "Embedder";
-  }
-}
-
 void PrefetchContainer::RecordDurationFromAdded() {
-  // TODO(crbug.com/379140429): Update histograms to use
-  // `GetMetricsSuffixTriggerTypeAndEagerness()` that provides the embedder
-  // suffix, and remove suffix
-  // `.NoEmbedderSuffix`.
-
   if (!time_added_to_prefetch_service_.has_value()) {
     return;
   }
@@ -2255,8 +2215,8 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToInitialEligibility.",
-          GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix(),
-          ".NoEmbedderSuffix",
+          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
+                                                  embedder_histogram_suffix_),
       }),
       time_initial_eligibility_got_.value() -
           time_added_to_prefetch_service_.value());
@@ -2268,8 +2228,8 @@ void PrefetchContainer::RecordDurationFromAdded() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToPrefetchStarted.",
-          GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix(),
-          ".NoEmbedderSuffix",
+          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
+                                                  embedder_histogram_suffix_),
       }),
       time_prefetch_started_.value() - time_added_to_prefetch_service_.value());
 
@@ -2277,29 +2237,27 @@ void PrefetchContainer::RecordDurationFromAdded() {
     return;
   }
 
-  base::UmaHistogramTimes(
-      base::StrCat({
-          "Prefetch.PrefetchContainer."
-          "AddedToHeaderDeterminedSuccessfully.",
-          GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix(),
-          ".NoEmbedderSuffix",
-      }),
-      time_header_determined_successfully_.value() -
-          time_added_to_prefetch_service_.value());
+  base::UmaHistogramTimes(base::StrCat({
+                              "Prefetch.PrefetchContainer."
+                              "AddedToHeaderDeterminedSuccessfully.",
+                              GetMetricsSuffixTriggerTypeAndEagerness(
+                                  prefetch_type_, embedder_histogram_suffix_),
+                          }),
+                          time_header_determined_successfully_.value() -
+                              time_added_to_prefetch_service_.value());
 
   if (!time_prefetch_completed_successfully_.has_value()) {
     return;
   }
 
-  base::UmaHistogramTimes(
-      base::StrCat({
-          "Prefetch.PrefetchContainer."
-          "AddedToPrefetchCompletedSuccessfully.",
-          GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix(),
-          ".NoEmbedderSuffix",
-      }),
-      time_prefetch_completed_successfully_.value() -
-          time_added_to_prefetch_service_.value());
+  base::UmaHistogramTimes(base::StrCat({
+                              "Prefetch.PrefetchContainer."
+                              "AddedToPrefetchCompletedSuccessfully.",
+                              GetMetricsSuffixTriggerTypeAndEagerness(
+                                  prefetch_type_, embedder_histogram_suffix_),
+                          }),
+                          time_prefetch_completed_successfully_.value() -
+                              time_added_to_prefetch_service_.value());
 }
 
 void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(

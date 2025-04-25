@@ -872,12 +872,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // be updated to the latest value when this method is called.
   void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
 
-  // Returns a suffix for UMAs.
-  // TODO(crbug.com/379140429): Migrate to use
-  // `GetMetricsSuffixTriggerTypeAndEagerness()`.
-  constexpr const char*
-  GetMetricsSuffixTriggerTypeAndEagernessNoEmbedderSuffix();
-
   // Records `Prefetch.PrefetchContainer.DurationAdded*` UMAs.
   void RecordDurationFromAdded();
   // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
