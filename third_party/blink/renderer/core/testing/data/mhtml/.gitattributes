@@ -2,5 +2,6 @@
 * text=auto
 
 # MHTML files in general should only have CRLF line endings
-# (see RFC2557, section 10).
-*.mht text eol=crlf
+# (see RFC2557, section 10). So treat them as binary as
+# GOB needs them as such.
+*.mht binary
