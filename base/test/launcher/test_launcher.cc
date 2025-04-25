@@ -326,7 +326,7 @@ void KillSpawnedTestProcesses() {
 // Parses the environment variable var as an Int32.  If it is unset, returns
 // true.  If it is set, unsets it then converts it to Int32 before
 // returning it in |result|.  Returns true on success.
-bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
+bool TakeInt32FromEnvironment(cstring_view var, int32_t* result) {
   std::unique_ptr<Environment> env(Environment::Create());
   std::optional<std::string> str_val = env->GetVar(var);
 
