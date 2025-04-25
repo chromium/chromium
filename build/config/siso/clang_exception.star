@@ -46,6 +46,17 @@ def __step_config(ctx, step_config):
             # need 9G for debug build
             "use_large": True,
         },
+        {
+            # TODO: crbug.com/413423339 - improve compile speed
+            "name": "slow_compile",
+            "action_outs": [
+                # keep-sorted start
+                "./obj/content/test/content_unittests/auction_runner_unittest.o",
+                "./obj/v8/v8_compiler/csa-optimize-phase.o",
+                # keep-sorted end
+            ],
+            "timeout": "4m",
+        },
     ]
     cc_exceptions = []
     new_rules = []
