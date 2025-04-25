@@ -417,6 +417,24 @@
   }
 }
 
+- (void)refineWithText:(const std::u16string&)text {
+  OmniboxTextFieldIOS* textField = self.textField;
+  if (!_omniboxViewIOS) {
+    return;
+  }
+  // Exit preedit state and append the match. Refocus if necessary.
+  [textField exitPreEditState];
+  _omniboxViewIOS->SetUserText(text);
+  // Calling setText: does not trigger UIControlEventEditingChanged, so
+  // trigger that manually.
+  [textField sendActionsForControlEvents:UIControlEventEditingChanged];
+  [textField becomeFirstResponder];
+  if (@available(iOS 17, *)) {
+    // Set the caret pos to the end of the text (crbug.com/331622199).
+    _omniboxViewIOS->SetCaretPos(text.length());
+  }
+}
+
 #pragma mark - Private
 
 /// Previews `suggestion` in the Omnibox. Called when a suggestion is

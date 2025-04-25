@@ -123,6 +123,9 @@ class OmniboxViewIOS;
 /// Hides the keyboard.
 - (void)hideKeyboard;
 
+/// Refines omnibox content with `text`.
+- (void)refineWithText:(const std::u16string&)text;
+
 #pragma mark - Private event
 // Events that are private. Removed from header after refactoring
 // (crbug.com/390409559). Since these methods should be private, comments are in

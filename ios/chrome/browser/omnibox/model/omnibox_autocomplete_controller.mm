@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -48,8 +47,6 @@ using base::UserMetricsAction;
 @implementation OmniboxAutocompleteController {
   /// Controller of the omnibox.
   raw_ptr<OmniboxController> _omniboxController;
-  /// Controller of the omnibox view.
-  raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for autocomplete interactions.
   raw_ptr<OmniboxEditModel> _omniboxEditModel;
 
@@ -59,12 +56,11 @@ using base::UserMetricsAction;
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
 }
 
-- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS {
+- (instancetype)initWithOmniboxController:
+    (OmniboxController*)omniboxController {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
-    _omniboxViewIOS = omniboxViewIOS;
     _omniboxEditModel = omniboxController->edit_model();
 
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
@@ -86,7 +82,6 @@ using base::UserMetricsAction;
   _autocompleteResultWrapper = nil;
   _omniboxEditModel = nullptr;
   _omniboxController = nullptr;
-  _omniboxViewIOS = nullptr;
 }
 
 - (AutocompleteController*)autocompleteController {
@@ -212,9 +207,7 @@ using base::UserMetricsAction;
     fill_into_edit.append(1, ' ');
   }
 
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnSelectedMatchForAppending(fill_into_edit);
-  }
+  [self.omniboxTextController refineWithText:fill_into_edit];
 }
 
 - (void)selectMatchForDeletion:(const AutocompleteMatch&)match {

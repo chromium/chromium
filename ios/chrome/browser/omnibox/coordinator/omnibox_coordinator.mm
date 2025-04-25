@@ -195,8 +195,7 @@
                 controller:_editView->controller()];
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
-      initWithOmniboxController:_editView->controller()
-                 omniboxViewIOS:_editView.get()];
+      initWithOmniboxController:_editView->controller()];
 
   _omniboxTextController = [[OmniboxTextController alloc]
       initWithOmniboxController:_editView->controller()

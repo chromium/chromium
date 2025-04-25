@@ -126,8 +126,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxController:omnibox_controller_.get()
-                   omniboxViewIOS:nullptr];
+        initWithOmniboxController:omnibox_controller_.get()];
     controller_.delegate = controller_delegate_;
   }
 

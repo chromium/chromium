@@ -18,7 +18,6 @@ class AutocompleteResult;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 class OmniboxController;
 @class OmniboxTextController;
-class OmniboxViewIOS;
 
 /// Controller for the omnibox autocomplete system. Handles interactions with
 /// the autocomplete system and dispatches results.
@@ -44,7 +43,6 @@ class OmniboxViewIOS;
 
 /// Initializes with an OmniboxController.
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

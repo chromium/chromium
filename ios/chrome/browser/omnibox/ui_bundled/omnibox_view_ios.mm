@@ -352,28 +352,6 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
-void OmniboxViewIOS::FocusOmnibox() {
-  [field_ becomeFirstResponder];
-}
-
 int OmniboxViewIOS::GetOmniboxTextLength() const {
   return [field_ displayedText].length;
-}
-
-#pragma mark - OmniboxAutocompleteController interactions
-
-void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
-  // Exit preedit state and append the match. Refocus if necessary.
-  if ([field_ isPreEditing]) {
-    [field_ exitPreEditState];
-  }
-  this->SetUserText(str);
-  // Calling setText: does not trigger UIControlEventEditingChanged, so
-  // trigger that manually.
-  [field_ sendActionsForControlEvents:UIControlEventEditingChanged];
-  this->FocusOmnibox();
-  if (@available(iOS 17, *)) {
-    // Set the caret pos to the end of the text (crbug.com/331622199).
-    this->SetCaretPos(str.length());
-  }
 }

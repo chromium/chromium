@@ -93,15 +93,6 @@ class OmniboxViewIOS : public OmniboxView {
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
 
-  // OmniboxAutocompleteController interactions.
-  void OnSelectedMatchForAppending(const std::u16string& str);
-
-  // Focus the omnibox field.  This is used when the omnibox popup copies a
-  // search query to the omnibox so the user can modify it further.
-  // This does not affect the popup state and is a NOOP if the omnibox is
-  // already focused.
-  void FocusOmnibox();
-
  protected:
   int GetOmniboxTextLength() const override;
   void EmphasizeURLComponents() override {}
