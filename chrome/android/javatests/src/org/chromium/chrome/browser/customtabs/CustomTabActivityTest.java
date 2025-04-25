@@ -1140,53 +1140,6 @@ public class CustomTabActivityTest {
         checkPageLoadMetrics(false);
     }
 
-    private static void assertSuffixedHistogramTotalCount(long expected, String histogramPrefix) {
-        for (String suffix : new String[] {".ZoomedIn", ".ZoomedOut"}) {
-            assertEquals(
-                    expected,
-                    RecordHistogram.getHistogramTotalCountForTesting(histogramPrefix + suffix));
-        }
-    }
-
-    /**
-     * Tests that one navigation in a custom tab records the histograms reflecting time from intent
-     * to first navigation start/commit.
-     */
-    @Test
-    @SmallTest
-    public void testNavigationHistogramsRecorded() throws Exception {
-        String startHistogramPrefix = "CustomTabs.IntentToFirstNavigationStartTime";
-        String commitHistogramPrefix = "CustomTabs.IntentToFirstCommitNavigationTime3";
-        assertSuffixedHistogramTotalCount(0, startHistogramPrefix);
-        assertSuffixedHistogramTotalCount(0, commitHistogramPrefix);
-
-        final Semaphore semaphore = new Semaphore(0);
-        CustomTabsSession session =
-                CustomTabsTestUtils.bindWithCallback(
-                                new CustomTabsCallback() {
-                                    @Override
-                                    public void onNavigationEvent(
-                                            int navigationEvent, Bundle extras) {
-                                        if (navigationEvent
-                                                == CustomTabsCallback.NAVIGATION_FINISHED) {
-                                            semaphore.release();
-                                        }
-                                    }
-                                })
-                        .session;
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.setData(Uri.parse(mTestPage));
-        intent.setComponent(
-                new ComponentName(
-                        ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
-
-        assertSuffixedHistogramTotalCount(1, startHistogramPrefix);
-        assertSuffixedHistogramTotalCount(1, commitHistogramPrefix);
-    }
-
     /** Tests that TITLE_ONLY state works as expected with a title getting set onload. */
     @Test
     @SmallTest

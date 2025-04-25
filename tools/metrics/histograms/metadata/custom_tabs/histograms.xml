@@ -476,34 +476,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="CustomTabs.IntentToFirstCommitNavigationTime3{IntentToFirstCommitZoom}"
-    units="ms" expires_after="2024-09-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Time between the intent arrival to a Custom Tab and the first navigation
-    commit. Recorded for every custom tabs intent when the page has finished
-    loading. {IntentToFirstCommitZoom}
-  </summary>
-  <token key="IntentToFirstCommitZoom" variants="IntentToFirstCommitZoom">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="CustomTabs.IntentToFirstNavigationStartTime{IntentToFirstCommitZoom}"
-    units="ms" expires_after="2024-09-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Time between the intent arrival to a Custom Tab and the navigation start.
-    Recorded when the page has finished loading. Non-&quot;Herb&quot; mode.
-    {IntentToFirstCommitZoom}
-  </summary>
-  <token key="IntentToFirstCommitZoom" variants="IntentToFirstCommitZoom">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="CustomTabs.MayLaunchUrlType" enum="MayLaunchUrlType"
     expires_after="2025-08-24">
   <owner>lizeb@chromium.org</owner>
@@ -915,11 +887,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.WebContentsStateOnLaunch" enum="WebContentsState"
-    expires_after="2025-04-13">
+    expires_after="2026-04-13">
   <owner>lizeb@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
   <summary>
     Android: When a CustomTabActivity creates its Tab, whether we use a
     prerendered WebContents, a spare renderer or create a new WebContents.
+
+    Note: Expired from April 13-25, 2025.
   </summary>
 </histogram>
 
