@@ -54,8 +54,6 @@ This documentation assumes familiarity with computer science
 [4]: https://source.chromium.org/chromium/chromium/src/+/main:base/sequence_checker.h
 [5]: https://source.chromium.org/chromium/chromium/src/+/main:base/threading/sequence_bound.h
 
-### Nomenclature
-
 ## Core Concepts
  * **Task**: A unit of work to be processed. Effectively a function pointer with
    optionally associated state. In Chrome this is `base::OnceCallback` and
