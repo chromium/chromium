@@ -20,6 +20,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
+NewTabFooterUIConfig::NewTabFooterUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUINewTabFooterHost) {}
+
 bool NewTabFooterUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(ntp_features::kNtpFooter);

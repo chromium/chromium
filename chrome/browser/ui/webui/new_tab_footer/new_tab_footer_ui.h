@@ -11,8 +11,6 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
-#include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/webui_config.h"
 
 class NewTabFooterHandler;
 class NewTabFooterUI;
@@ -21,9 +19,7 @@ class Profile;
 class NewTabFooterUIConfig
     : public DefaultTopChromeWebUIConfig<NewTabFooterUI> {
  public:
-  NewTabFooterUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    chrome::kChromeUINewTabFooterHost) {}
+  NewTabFooterUIConfig();
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
