@@ -797,7 +797,7 @@ ScopedFocusNavigation ScopedFocusNavigation::OwnedByReadingFlow(
     const Element& owner,
     FocusController::OwnerMap& owner_map) {
   DCHECK(IsReadingFlowScopeOwner(&owner));
-  HTMLElement& element = const_cast<HTMLElement&>(To<HTMLElement>(owner));
+  Element& element = const_cast<Element&>(owner);
   return ScopedFocusNavigation(element, nullptr, owner_map);
 }
 

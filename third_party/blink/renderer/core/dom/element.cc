@@ -670,7 +670,10 @@ const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
     }
   }
   // Add all non-reading flow items at the end of the reading flow.
-  for (Node& child : FlatTreeTraversal::ChildrenOf(*this)) {
+  // We use LayoutTreeBuilder traversal to make sure all pseudo elements
+  // (including scroll markers) are accounted for.
+  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*this); child;
+       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     // TODO(dizhangg) this check is O(n^2)
     if (!children.Contains(child)) {
       children.push_back(child);
