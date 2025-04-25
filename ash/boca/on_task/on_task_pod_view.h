@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/tab_slider_button.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,6 +45,10 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   OnTaskPodView& operator=(const OnTaskPodView) = delete;
   ~OnTaskPodView() override;
 
+  // views::BoxLayoutView:
+  void AddedToWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
   // Test element accessors:
   IconButton* get_back_button_for_testing() { return back_button_; }
   IconButton* get_forward_button_for_testing() { return forward_button_; }
@@ -74,6 +79,9 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
 
   // Pointer to the pod controller that outlives the `OnTaskPodView`.
   const raw_ptr<OnTaskPodController> pod_controller_;
+
+  // Pointer to the shadow under the pod.
+  const std::unique_ptr<SystemShadow> shadow_;
 
   // Pointers to components hosted by the OnTask pod view.
   raw_ptr<TabSlider> pod_position_slider_;
