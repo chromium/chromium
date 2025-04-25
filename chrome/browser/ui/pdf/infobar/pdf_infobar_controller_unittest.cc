@@ -144,6 +144,7 @@ class PdfInfoBarControllerStartupTest : public PdfInfoBarControllerTest {
   void SetUp() override {
     feature_list().InitAndEnableFeatureWithParameters(features::kPdfInfoBar,
                                                       {{"trigger", "startup"}});
+    PdfInfoBarController::SetDefaultBrowserPromptShownForTesting(false);
     PdfInfoBarControllerTest::SetUp();
   }
 };
@@ -185,6 +186,14 @@ TEST_F(PdfInfoBarControllerStartupTest,
        DontShowInfoBarIfDefaultIsPolicyControlled) {
   local_state()->SetManagedPref(prefs::kDefaultBrowserSettingEnabled,
                                 base::Value(true));
+  EXPECT_FALSE(
+      DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
+                     shell_integration::DefaultWebClientState::NOT_DEFAULT));
+}
+
+TEST_F(PdfInfoBarControllerStartupTest,
+       DontShowInfoBarIfDefaultBrowserPromptShown) {
+  PdfInfoBarController::SetDefaultBrowserPromptShownForTesting(true);
   EXPECT_FALSE(
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));

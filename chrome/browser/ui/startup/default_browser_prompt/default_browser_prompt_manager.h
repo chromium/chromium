@@ -43,7 +43,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // This will trigger the showing of the info bar.
   void InitTabStripTracker();
 
-  void MaybeShowPrompt();
+  // Returns true if the prompt was shown, false if not.
+  bool MaybeShowPrompt();
 
   void CloseAllPrompts(CloseReason close_reason);
 

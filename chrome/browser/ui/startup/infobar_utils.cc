@@ -178,19 +178,20 @@ void AddInfoBarsIfNecessary(Browser* browser,
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     if (!is_web_app &&
         !startup_command_line.HasSwitch(switches::kNoDefaultBrowserCheck)) {
+      base::OnceCallback<void(bool)> default_browser_prompt_shown_callback =
+          base::DoNothing();
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
+        default_browser_prompt_shown_callback =
+            base::BindOnce(&PdfInfoBarController::MaybeShowInfoBarAtStartup,
+                           browser->GetWeakPtr());
+      }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
       // The default browser prompt should only be shown after the first run.
       if (is_first_run == chrome::startup::IsFirstRun::kNo) {
-        ShowDefaultBrowserPrompt(profile);
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        // TODO(crbug.com/396202897): don't show the PDF infobar if the default-
-        // browser infobar is showing.
-        if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
-          browser->browser_window_features()
-              ->pdf_infobar_controller()
-              ->ShowAtStartup();
-        }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        ShowDefaultBrowserPrompt(
+            profile, std::move(default_browser_prompt_shown_callback));
       }
     }
 #endif

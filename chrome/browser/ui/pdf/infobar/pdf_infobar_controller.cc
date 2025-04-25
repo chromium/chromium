@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.h"
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_prefs.h"
@@ -65,6 +68,8 @@ bool IsAppropriateForInfoBar(BrowserWindowInterface* browser) {
 
 }  // namespace
 
+std::optional<bool> PdfInfoBarController::default_browser_prompt_shown_;
+
 PdfInfoBarController::PdfInfoBarController(BrowserWindowInterface* browser)
     : browser_(browser) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInfoBar));
@@ -88,14 +93,21 @@ PdfInfoBarController::PdfInfoBarController(BrowserWindowInterface* browser)
 
 PdfInfoBarController::~PdfInfoBarController() = default;
 
-void PdfInfoBarController::ShowAtStartup() {
-  // This is the entry point to the PDF infobar if it shows at startup.
-  if (!IsAppropriateForInfoBar(browser_)) {
+// static
+void PdfInfoBarController::MaybeShowInfoBarAtStartup(
+    base::WeakPtr<BrowserWindowInterface> startup_browser,
+    bool default_browser_prompt_shown) {
+  default_browser_prompt_shown_ = default_browser_prompt_shown;
+  if (!startup_browser) {
     return;
   }
+  if (!IsAppropriateForInfoBar(startup_browser.get())) {
+    return;
+  }
+  // This is the entry point to the PDF infobar if it shows at startup.
   if (features::kPdfInfoBarTrigger.Get() ==
       features::PdfInfoBarTrigger::kStartup) {
-    MaybeShowInfoBar();
+    startup_browser->GetFeatures().pdf_infobar_controller()->MaybeShowInfoBar();
   }
 }
 
@@ -166,12 +178,18 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
   if (IsDefaultBrowserPolicyControlled()) {
     return;
   }
-
   // Don't show the infobar if it's already showing or was recently shown.
   if (infobar_) {
     return;
   }
   if (InfoBarShownRecentlyOrMaxTimes()) {
+    return;
+  }
+  // Don't show the infobar if the default-browser prompt has been shown or
+  // might be about to show, to avoid asking too many similar questions in a
+  // session.
+  if (!default_browser_prompt_shown_.has_value() ||
+      default_browser_prompt_shown_.value()) {
     return;
   }
 
@@ -183,4 +201,10 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
   infobar_manager_->AddObserver(this);
   infobar_ = PdfInfoBarDelegate::Create(infobar_manager_);
   SetInfoBarShownRecently();
+}
+
+// static
+void PdfInfoBarController::SetDefaultBrowserPromptShownForTesting(
+    bool default_browser_prompt_shown) {
+  default_browser_prompt_shown_ = default_browser_prompt_shown;
 }
