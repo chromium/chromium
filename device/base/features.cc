@@ -44,5 +44,13 @@ BASE_FEATURE(kBluetoothRfcommAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether to override LocationRequest parameters in
+// LocationProviderGmsCore
+BASE_FEATURE(kGmsCoreLocationRequestParamOverride,
+             "GmsCoreLocationRequestParamOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 }  // namespace device

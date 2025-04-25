@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
@@ -82,6 +83,18 @@ public class LocationProviderGmsCore implements LocationProvider {
             locationRequest
                     .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                     .setInterval(UPDATE_INTERVAL_MS);
+        }
+
+        if (DeviceFeatureList.sGmsCoreLocationRequestParamOverride.isEnabled()) {
+            locationRequest =
+                    new LocationRequest.Builder(locationRequest)
+                            .setIntervalMillis(
+                                    DeviceFeatureList.sGmsCoreLocationRequestUpdateInterval
+                                            .getValue())
+                            .setMaxUpdateAgeMillis(
+                                    DeviceFeatureList.sGmsCoreLocationRequestMaxLocationAge
+                                            .getValue())
+                            .build();
         }
 
         stop();

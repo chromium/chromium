@@ -34,6 +34,10 @@ DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kBluetoothRfcommAndroid);
 DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kSerial);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kGmsCoreLocationRequestParamOverride);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 }  // namespace device
 
