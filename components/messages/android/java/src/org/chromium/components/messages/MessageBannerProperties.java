@@ -149,6 +149,11 @@ public class MessageBannerProperties {
     // ON_SECONDARY_BUTTON_CLICK is SingleActionMessage's handler that calls ON_SECONDARY_ACTION.
     static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_BUTTON_CLICK =
             new WritableObjectPropertyKey<>();
+    // CLOSE_BUTTON_CLICK_LISTENER is the handler when the mouse clicks the close button.
+    static final WritableObjectPropertyKey<OnClickListener> CLOSE_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    // Whether to show the close button when the mouse hovers over the message.
+    static final WritableBooleanPropertyKey ENABLE_CLOSE_BUTTON = new WritableBooleanPropertyKey();
 
     // Supplier of whether the view is under tap protection.
     static final WritableObjectPropertyKey<Supplier<Boolean>>
@@ -192,6 +197,8 @@ public class MessageBannerProperties {
                 ELEVATION,
                 MARGIN_TOP,
                 VISUAL_HEIGHT,
-                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER
+                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                CLOSE_BUTTON_CLICK_LISTENER,
+                ENABLE_CLOSE_BUTTON
             };
 }

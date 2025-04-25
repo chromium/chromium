@@ -253,10 +253,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m2, view2, Position.FRONT, Position.BACK);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view1.getElevation()
+                        + view1.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view1.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view1.getElevationForTesting() > view2.getElevationForTesting());
 
         PropertyModel m3 = createBasicSingleActionMessageModel();
         final MessageBannerView view3 = createMessageBannerView(container);
@@ -264,10 +264,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m3, view3, Position.INVISIBLE, Position.FRONT);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view3.getElevation()
+                        + view3.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view3.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view3.getElevationForTesting() > view2.getElevationForTesting());
     }
 
     @Test(expected = IllegalStateException.class)

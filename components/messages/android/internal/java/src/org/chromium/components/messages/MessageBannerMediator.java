@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.DOWN;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.UP;
 import static org.chromium.components.messages.MessageBannerProperties.CONTENT_ALPHA;
+import static org.chromium.components.messages.MessageBannerProperties.ENABLE_CLOSE_BUTTON;
 import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
@@ -107,7 +108,7 @@ class MessageBannerMediator implements SwipeHandler {
         mMaxHorizontalTranslationPx = resources.getDisplayMetrics().widthPixels;
         mMessageDismissed = messageDismissed;
         mSwipeAnimationHandler = swipeAnimationHandler;
-        mDefaultMarginTop = resources.getDimensionPixelSize(R.dimen.message_shadow_top_margin);
+        mDefaultMarginTop = 0;
         mPeekingMarginTop =
                 resources.getDimensionPixelSize(R.dimen.message_peeking_layer_height)
                         + mDefaultMarginTop;
@@ -154,6 +155,9 @@ class MessageBannerMediator implements SwipeHandler {
                                 < ENTER_DURATION_MS / 2 + protectionDuration + startTimestamp;
                     });
         }
+        mModel.set(
+                ENABLE_CLOSE_BUTTON,
+                MessageFeatureList.isCloseButtonEnabled() && toIndex == Position.FRONT);
         cancelAnyAnimations();
         return startAnimation(
                 true,

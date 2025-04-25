@@ -142,10 +142,6 @@ public class MessageContainer extends FrameLayout {
         return getChildAt(0).getHeight();
     }
 
-    public int getMessageShadowTopMargin() {
-        return getResources().getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
-    }
-
     @Override
     public void setLayoutParams(ViewGroup.LayoutParams params) {
         try (TraceEvent e = TraceEvent.scoped("MessageContainer.setLayoutParams")) {

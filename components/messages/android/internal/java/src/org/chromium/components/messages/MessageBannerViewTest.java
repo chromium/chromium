@@ -12,7 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -96,6 +98,68 @@ public class MessageBannerViewTest {
                                                     false);
                     sContentView.addView(mMessageBannerView);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseButton() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                            android.R.drawable.ic_menu_add)
+                                    .with(
+                                            MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
+                                            mSecondaryActionCallback)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                });
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        MotionEvent.PointerCoords pointerFirstCoords = new MotionEvent.PointerCoords();
+        MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[1];
+        pointerFirstCoords.x = 0;
+        pointerFirstCoords.y = 0;
+        pointerCoords[0] = pointerFirstCoords;
+
+        properties.id = 0;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        SystemClock.uptimeMillis(),
+                        0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        1,
+                        new MotionEvent.PointerProperties[] {properties},
+                        pointerCoords,
+                        0,
+                        0,
+                        0f,
+                        0f,
+                        0,
+                        0,
+                        2,
+                        0);
+        mMessageBannerView.enableCloseButton(false);
+        ThreadUtils.runOnUiThreadBlocking(() -> mMessageBannerView.dispatchHoverEvent(mouseEvent));
+        mMessageBannerView.dispatchHoverEvent(mouseEvent);
+        Assert.assertEquals(
+                "Close button should be invisible when disabled",
+                View.GONE,
+                mMessageBannerView.findViewById(R.id.message_close_button).getVisibility());
+
+        mMessageBannerView.enableCloseButton(true);
+        ThreadUtils.runOnUiThreadBlocking(() -> mMessageBannerView.dispatchHoverEvent(mouseEvent));
+        Assert.assertEquals(
+                "Close button should be visible when hovered",
+                View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_close_button).getVisibility());
     }
 
     /**
