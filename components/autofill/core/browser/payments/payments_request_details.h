@@ -345,6 +345,9 @@ enum UploadCardSource {
   UPSTREAM_SETTINGS_PAGE,
   // Single card is being uploaded after being scanned by OCR.
   UPSTREAM_CARD_OCR,
+  // Single card is being uploaded from the Save and Fill dialog during a
+  // non-post-checkout flow.
+  UPSTREAM_SAVE_AND_FILL,
 };
 
 // A collection of information received in the response for an

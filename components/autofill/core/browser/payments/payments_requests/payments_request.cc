@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -77,8 +78,15 @@ base::Value::Dict PaymentsRequest::BuildCustomerContextDictionary(
 base::Value::Dict PaymentsRequest::BuildChromeUserContext(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     bool full_sync_enabled) {
-  base::Value::Dict chrome_user_context;
+  base::Value::Dict chrome_user_context =
+      BuildChromeUserContext(client_behavior_signals);
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
+  return chrome_user_context;
+}
+
+base::Value::Dict PaymentsRequest::BuildChromeUserContext(
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals) {
+  base::Value::Dict chrome_user_context;
   if (!client_behavior_signals.empty()) {
     base::Value::List active_client_signals;
     for (ClientBehaviorConstants signal : client_behavior_signals) {
@@ -180,6 +188,32 @@ void PaymentsRequest::SetStringIfNotEmpty(const FormGroup& form_group,
   std::u16string value = form_group.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
+}
+
+std::vector<std::pair<int, int>>
+PaymentsRequest::ParseSupportedCardBinRangesString(
+    const std::string& supported_card_bin_ranges_string) {
+  std::vector<std::pair<int, int>> supported_card_bin_ranges;
+  std::vector<std::string> range_strings =
+      base::SplitString(supported_card_bin_ranges_string, ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (std::string& range_string : range_strings) {
+    std::vector<std::string> range = base::SplitString(
+        range_string, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    DCHECK(range.size() <= 2);
+    int start;
+    base::StringToInt(range[0], &start);
+    if (range.size() == 1) {
+      supported_card_bin_ranges.emplace_back(start, start);
+    } else {
+      int end;
+      base::StringToInt(range[1], &end);
+      DCHECK_LE(start, end);
+      supported_card_bin_ranges.emplace_back(start, end);
+    }
+  }
+  return supported_card_bin_ranges;
 }
 
 }  // namespace autofill::payments
