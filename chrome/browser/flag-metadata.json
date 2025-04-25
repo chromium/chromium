@@ -7670,15 +7670,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "privacy-sandbox-privacy-policy",
-    "owners": [
-      "jacobstanley@google.com",
-      "chrstne@google.com",
-      "koilos@google.com"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "probabilistic-memory-saver",
     "owners": ["chrome-performance-ui-team@google.com"],
     "expiry_milestone": 125

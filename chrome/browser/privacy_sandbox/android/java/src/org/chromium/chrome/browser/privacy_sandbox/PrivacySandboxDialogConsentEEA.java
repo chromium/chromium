@@ -200,6 +200,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             description2.setText(
                     context.getString(
                             R.string.privacy_sandbox_m1_consent_description_1_content_parity));
+            mLearnMoreLinkString =
+                    R.string
+                            .privacy_sandbox_m1_consent_learn_more_bullet_2_description_content_parity_clank;
         }
     }
 
@@ -277,21 +280,12 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                             .findViewById(R.id.privacy_sandbox_learn_more_text)
                             .setVisibility(View.GONE);
                 }
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
-                    mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
-                    mLearnMoreText.setText(
-                            getContext()
-                                    .getString(
-                                            R.string
-                                                    .privacy_sandbox_m1_consent_learn_more_bullet_2_description_no_link_content_parity));
-                }
 
                 mScrollView.post(
                         () -> {
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
-                handlePrivacyPolicyFeature();
+                handlePrivacyPolicyLink();
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -317,62 +311,45 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mConsentViewContainer.setVisibility(View.VISIBLE);
     }
 
-    // If all Ad Topics Content Parity, Ads API UX Enhancements and Privacy Policy features are
-    // enabled, we want to show the new ad topics content parity learn more bullet description with
-    // the privacy policy link.
-    private void handleAdTopicsContentParityPrivacyPolicyEnabled() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
-            mLearnMoreLinkString =
-                    R.string
-                            .privacy_sandbox_m1_consent_learn_more_bullet_2_description_content_parity_clank;
-        }
-    }
-
-    private void handlePrivacyPolicyFeature() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
-            handleAdTopicsContentParityPrivacyPolicyEnabled();
-            mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
-            mLearnMoreText.setText(
-                    SpanApplier.applySpans(
-                            getContext().getString(mLearnMoreLinkString),
-                            new SpanApplier.SpanInfo(
-                                    "<link>",
-                                    "</link>",
-                                    new ChromeClickableSpan(
-                                            getContext(), this::onPrivacyPolicyClicked))));
-            mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
-            if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
-                mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
-                mWebContentsObserver =
-                        new WebContentsObserver(mWebContents) {
-                            @Override
-                            public void didFirstVisuallyNonEmptyPaint() {
-                                if (!mIsPrivacyPageLoaded) {
-                                    RecordHistogram.recordTimesHistogram(
-                                            "PrivacySandbox.PrivacyPolicy.LoadingTime",
-                                            System.currentTimeMillis()
-                                                    - mPrivacyPolicyClickedTimestamp);
-                                    mIsPrivacyPageLoaded = true;
-                                }
+    private void handlePrivacyPolicyLink() {
+        mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
+        mLearnMoreText.setText(
+                SpanApplier.applySpans(
+                        getContext().getString(mLearnMoreLinkString),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(), this::onPrivacyPolicyClicked))));
+        mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
+        if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
+            mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+            mWebContentsObserver =
+                    new WebContentsObserver(mWebContents) {
+                        @Override
+                        public void didFirstVisuallyNonEmptyPaint() {
+                            if (!mIsPrivacyPageLoaded) {
+                                RecordHistogram.recordTimesHistogram(
+                                        "PrivacySandbox.PrivacyPolicy.LoadingTime",
+                                        System.currentTimeMillis()
+                                                - mPrivacyPolicyClickedTimestamp);
+                                mIsPrivacyPageLoaded = true;
                             }
+                        }
 
-                            @Override
-                            public void didFailLoad(
-                                    boolean isInPrimaryMainFrame,
-                                    int errorCode,
-                                    GURL failingUrl,
-                                    @LifecycleState int rfhLifecycleState) {
-                                RecordHistogram.recordSparseHistogram(
-                                        "PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode",
-                                        errorCode);
-                            }
-                        };
-                mThinWebView =
-                        PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
-                                mWebContents, mProfile, mActivityWindowAndroid);
-            }
+                        @Override
+                        public void didFailLoad(
+                                boolean isInPrimaryMainFrame,
+                                int errorCode,
+                                GURL failingUrl,
+                                @LifecycleState int rfhLifecycleState) {
+                            RecordHistogram.recordSparseHistogram(
+                                    "PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode", errorCode);
+                        }
+                    };
+            mThinWebView =
+                    PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
+                            mWebContents, mProfile, mActivityWindowAndroid);
         }
     }
 

@@ -11483,11 +11483,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-    {"privacy-sandbox-privacy-policy",
-     flag_descriptions::kPrivacySandboxPrivacyPolicyName,
-     flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxPrivacyPolicy)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"support-multiple-server-requests-for-pix-payments",
      flag_descriptions::kSupportMultipleServerRequestsForPixPaymentsName,
