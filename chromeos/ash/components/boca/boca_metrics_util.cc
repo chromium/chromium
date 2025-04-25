@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
 
@@ -90,6 +92,21 @@ void RecordOnTaskPodSetSnapLocationClicked(bool is_left) {
     base::RecordAction(base::UserMetricsAction(
         kBocaOnTaskActionOfStudentSetSnapLocationToRight));
   }
+}
+
+void RecordOnRegisterScreenRequestSentErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordSpotlightGoogleApiErrorCode(kBocaSpotlightOnRegisterScreenRequestSent,
+                                    error_code);
+}
+
+void RecordSpotlightGoogleApiErrorCode(const std::string& name,
+                                       google_apis::ApiErrorCode error_code) {
+  base::UmaHistogramSparse(
+      base::ReplaceStringPlaceholders(
+          kBocaSpotlightGoogleApiCallErrorCodeTemplate, {name},
+          /*=offsets*/ nullptr),
+      error_code);
 }
 
 }  // namespace ash::boca

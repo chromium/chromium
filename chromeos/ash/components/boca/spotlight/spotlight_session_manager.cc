@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
@@ -116,8 +117,10 @@ void SpotlightSessionManager::OnRegisterScreenRequestSent(
     base::expected<bool, google_apis::ApiErrorCode> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
-    // TODO: crbug.com/366316261 - Add metrics for Spotlight failure.
-    LOG(WARNING) << "[Boca]Failed to send Spotlight connection code.";
+    boca::RecordOnRegisterScreenRequestSentErrorCode(result.error());
+    LOG(WARNING)
+        << "[Boca]Failed to send Spotlight connection code with error code: "
+        << result.error();
   }
   request_in_progress_ = false;
 

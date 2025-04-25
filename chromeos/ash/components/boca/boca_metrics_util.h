@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_UTIL_H_
 
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
 inline constexpr char kBocaActionOfStudentJoinedSession[] =
@@ -38,6 +39,10 @@ inline constexpr char kBocaOnTaskNumOfTabsWhenSessionEnded[] =
     "Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded";
 inline constexpr char kBocaOnTaskMaxNumOfTabsDuringSession[] =
     "Ash.Boca.OnTask.MaxNumberOfTabsDuringSession";
+inline constexpr char kBocaSpotlightGoogleApiCallErrorCodeTemplate[] =
+    "Ash.Boca.Spotlight.$1.ErrorCode";
+inline constexpr char kBocaSpotlightOnRegisterScreenRequestSent[] =
+    "RegisterScreen";
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -84,6 +89,14 @@ void RecordOnTaskPodToggleTabStripVisibilityClicked();
 // Records the action of a student clicks move left or move right buttons in
 // OnTask pod.
 void RecordOnTaskPodSetSnapLocationClicked(bool is_left);
+
+// Records the error code of the spotlight OnRegisterScreenRequestSent calls.
+void RecordOnRegisterScreenRequestSentErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the spotlight Google Api calls.
+void RecordSpotlightGoogleApiErrorCode(const std::string& name,
+                                       google_apis::ApiErrorCode error_code);
 
 }  // namespace ash::boca
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -44,6 +45,8 @@ constexpr char kSpotlightConnectionCode[] = "456";
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kUserFullName[] = "Best Teacher";
 constexpr char kTestBaseUrl[] = "https://test";
+constexpr char kOnRegisterScreenRequestSentErrorCodeUmaPath[] =
+    "Ash.Boca.Spotlight.RegisterScreen.ErrorCode";
 // Length of the notification duration and one extra interval for the
 // notification to start.
 constexpr base::TimeDelta kTestNotificationDuration =
@@ -190,6 +193,8 @@ TEST_F(SpotlightSessionManagerTest, OnSessionEnded) {
 }
 
 TEST_F(SpotlightSessionManagerTest, IniatesSpotlightSessionWhenRequested) {
+  base::HistogramTester histograms;
+
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -221,6 +226,8 @@ TEST_F(SpotlightSessionManagerTest, IniatesSpotlightSessionWhenRequested) {
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
   task_environment_.FastForwardBy(kTestNotificationDuration);
+
+  histograms.ExpectTotalCount(kOnRegisterScreenRequestSentErrorCodeUmaPath, 0);
 }
 
 TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithInactiveSession) {
@@ -279,6 +286,8 @@ TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightIfNotRequested) {
 }
 
 TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
+  base::HistogramTester histograms;
+
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -308,6 +317,8 @@ TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
   spotlight_session_manager_->OnSessionEnded(kSessionId);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+
+  histograms.ExpectTotalCount(kOnRegisterScreenRequestSentErrorCodeUmaPath, 0);
 }
 
 }  // namespace
