@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_coordinator.h"
 
 #import "base/notreached.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -38,6 +40,7 @@ constexpr CGFloat kLogoSize = 22;
   NonModalSignInPromoMediator* _mediator;
   // The type of promo to be displayed.
   SignInPromoType _promoType;
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 // Synthesize because readonly property from superclass is changed to readwrite.
@@ -54,6 +57,7 @@ constexpr CGFloat kLogoSize = 22;
     self.browser = browser;
     self.shouldUseDefaultDismissal = NO;
     _promoType = promoType;
+    _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
   }
   return self;
 }
@@ -69,7 +73,9 @@ constexpr CGFloat kLogoSize = 22;
 
   _mediator = [[NonModalSignInPromoMediator alloc]
       initWithAuthenticationService:authService
-                    identityManager:identityManager];
+                    identityManager:identityManager
+           featureEngagementTracker:_tracker
+                          promoType:_promoType];
 
   _mediator.delegate = self;
 
@@ -87,6 +93,17 @@ constexpr CGFloat kLogoSize = 22;
 #pragma mark - Private Methods
 
 - (void)sendPromoDismissalNotification {
+  switch (_promoType) {
+    case SignInPromoType::kPassword:
+      _tracker->Dismissed(
+          feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
+      break;
+    case SignInPromoType::kBookmark:
+      _tracker->Dismissed(
+          feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
+      break;
+  }
+
   [_mediator stopTimeOutTimers];
 
   id<NonModalSignInPromoCommands> nonModalSignInPromoHandler =

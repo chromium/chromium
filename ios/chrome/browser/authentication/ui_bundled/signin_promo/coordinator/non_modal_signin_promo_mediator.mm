@@ -4,7 +4,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
 
 #import "base/timer/timer.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 namespace {
@@ -31,14 +35,24 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 
   // The AuthenticationService used by the mediator to monitor sign-in status.
   raw_ptr<AuthenticationService> _authService;
+
+  // Feature engagement tracker for determining if the promo can be shown.
+  raw_ptr<feature_engagement::Tracker> _tracker;
+
+  // The type of promo (password or bookmark) being shown.
+  SignInPromoType _promoType;
 }
 
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authService
-                  identityManager:(signin::IdentityManager*)identityManager {
+                  identityManager:(signin::IdentityManager*)identityManager
+         featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                        promoType:(SignInPromoType)promoType {
   self = [super init];
   if (self) {
     _authService = authService;
+    _tracker = tracker;
+    _promoType = promoType;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -57,7 +71,21 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
     return;
   }
 
-  // TODO(crbug.com/405135960): query tracker.
+  // Check with the feature engagement tracker if promo should be shown.
+  bool wouldShowPromo = false;
+
+  if (_promoType == SignInPromoType::kPassword) {
+    wouldShowPromo = _tracker->WouldTriggerHelpUI(
+        feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
+  } else if (_promoType == SignInPromoType::kBookmark) {
+    wouldShowPromo = _tracker->WouldTriggerHelpUI(
+        feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
+  }
+
+  if (!wouldShowPromo) {
+    [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
+    return;
+  }
 
   __weak __typeof(self) weakSelf = self;
   _displayTimer = std::make_unique<base::OneShotTimer>();
@@ -73,6 +101,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 - (void)disconnect {
   _identityManagerObserver.reset();
   _authService = nil;
+  _tracker = nil;
 }
 
 #pragma mark - Private
@@ -92,6 +121,23 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 // Called when the display timer fires.
 - (void)displayTimerFired {
   _displayTimer = nullptr;
+
+  bool shouldShowPromo = false;
+
+  if (_promoType == SignInPromoType::kPassword) {
+    shouldShowPromo = _tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
+  } else if (_promoType == SignInPromoType::kBookmark) {
+    shouldShowPromo = _tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
+  }
+
+  if (!shouldShowPromo) {
+    // Inform coordinator to dismiss UI and clean up.
+    [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
+    return;
+  }
+
   // Call the delegate to show the promo.
   [self.delegate nonModalSignInPromoMediatorTimerExpired:self];
 
