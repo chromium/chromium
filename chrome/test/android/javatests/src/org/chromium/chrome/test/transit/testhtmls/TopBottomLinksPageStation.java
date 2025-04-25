@@ -81,7 +81,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         /** Open context menu on the top link. */
         public LinkContextMenuFacility openContextMenuOnTopLink() {
             return mHostStation.enterFacilitySync(
-                    new LinkContextMenuFacility(), mTopElement::longPress);
+                    new LinkContextMenuFacility(), mTopElement.getLongPressTrigger());
         }
 
         /** Scroll to the bottom of the page. */
@@ -107,7 +107,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         /** Open context menu on the bottom link. */
         public LinkContextMenuFacility openContextMenuOnBottomLink() {
             return mHostStation.enterFacilitySync(
-                    new LinkContextMenuFacility(), mBottomElement::longPress);
+                    new LinkContextMenuFacility(), mBottomElement.getLongPressTrigger());
         }
     }
 }

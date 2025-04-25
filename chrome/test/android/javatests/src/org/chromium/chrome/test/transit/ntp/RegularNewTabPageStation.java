@@ -79,7 +79,7 @@ public class RegularNewTabPageStation extends PageStation {
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new RegularNewTabPageAppMenuFacility(), menuButtonElement.clickTrigger());
+                new RegularNewTabPageAppMenuFacility(), menuButtonElement.getClickTrigger());
     }
 
     /**
@@ -101,7 +101,7 @@ public class RegularNewTabPageStation extends PageStation {
                 new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         enterFacilitiesSync(
-                List.of(omniboxFacility, softKeyboard), searchBoxElement.clickTrigger());
+                List.of(omniboxFacility, softKeyboard), searchBoxElement.getClickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

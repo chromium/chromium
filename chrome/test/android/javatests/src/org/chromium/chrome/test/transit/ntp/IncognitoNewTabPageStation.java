@@ -66,7 +66,7 @@ public class IncognitoNewTabPageStation extends PageStation {
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(), menuButtonElement.clickTrigger());
+                new IncognitoNewTabPageAppMenuFacility(), menuButtonElement.getClickTrigger());
     }
 
     /** Click the URL bar to enter the Omnibox. */
@@ -75,7 +75,8 @@ public class IncognitoNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), urlBarElement.clickTrigger());
+        enterFacilitiesSync(
+                List.of(omniboxFacility, softKeyboard), urlBarElement.getClickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

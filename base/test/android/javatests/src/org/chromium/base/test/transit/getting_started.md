@@ -454,12 +454,13 @@ case where Facilities have transition methods:
 ```java
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   public HubTabSwitcherStation clickToOpenHub() {
-+       return mHostStation.travelToSync(new HubTabSwitcherStation(), tabSwitcherButtonElement.clickTrigger());
++       return mHostStation.travelToSync(
++               new HubTabSwitcherStation(), tabSwitcherButtonElement.getClickTrigger());
 +   }
 +
 +   public TabSwitcherActionMenuFacility longClickToOpenActionMenu() {
 +       return mHostStation.enterFacilitySync(
-+               new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.longClickTrigger());
++               new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.getLongPressTrigger());
 +   }
 }
 ```

@@ -135,7 +135,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(mHostStation.isIncognito(), -1)),
-                closeTabMenuItemElement.clickTrigger());
+                closeTabMenuItemElement.getClickTrigger());
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -149,7 +149,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ false, +1)),
-                newTabMenuItemElement.clickTrigger());
+                newTabMenuItemElement.getClickTrigger());
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -163,7 +163,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ true, +1)),
-                newIncognitoTabMenuItemElement.clickTrigger());
+                newIncognitoTabMenuItemElement.getClickTrigger());
     }
 
     /** Switches out of incognito tab model to regular tab model */
@@ -174,7 +174,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return mHostStation.travelToSync(
                 destination,
                 Transition.conditionOption(createTabModelChangedCondition()),
-                switchOutOfIncognitoMenuItemElement.clickTrigger());
+                switchOutOfIncognitoMenuItemElement.getClickTrigger());
     }
 
     /** Switches to incognito tab model from regular tab model */
@@ -185,7 +185,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return mHostStation.travelToSync(
                 destination,
                 Transition.conditionOption(createTabModelChangedCondition()),
-                switchToIncognitoMenuItemElement.clickTrigger());
+                switchToIncognitoMenuItemElement.getClickTrigger());
     }
 
     private Condition createTabCountChangedCondition(boolean incognito, int change) {

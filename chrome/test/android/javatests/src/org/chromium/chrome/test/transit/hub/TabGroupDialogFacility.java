@@ -144,7 +144,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                 this,
                 new TabGroupDialogFacility<>(
                         mTabIdsInGroup, newTabGroupName, mSelectedColor, mIsIncognito),
-                titleInputElement.performTrigger(replaceText(newTabGroupName)));
+                titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
     }
 
     /** Create a new tab and transition to the associated RegularNewTabPageStation. */
@@ -156,7 +156,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.clickTrigger());
+        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
     }
 
     /** Create a new incognito tab and transition to the associated IncognitoNewTabPageStation. */
@@ -168,11 +168,11 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.clickTrigger());
+        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
     }
 
     /** Press back to exit the facility. */
     public void pressBackArrowToExit() {
-        mHostStation.exitFacilitySync(this, backButtonElement.clickTrigger());
+        mHostStation.exitFacilitySync(this, backButtonElement.getClickTrigger());
     }
 }

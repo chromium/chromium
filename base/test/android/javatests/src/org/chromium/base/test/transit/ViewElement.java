@@ -107,7 +107,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     /** Trigger an Espresso action on this View. */
-    public Transition.Trigger performTrigger(ViewAction action) {
+    public Transition.Trigger getPerformTrigger(ViewAction action) {
         return () -> {
             View view = get();
             Espresso.onView(is(view)).perform(action);
@@ -119,29 +119,34 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
      *
      * <p>Requires it to be >90% displayed.
      */
+    public Transition.Trigger getClickTrigger() {
+        return getPerformTrigger(ViewActions.click());
+    }
+
+    @Deprecated
     public Transition.Trigger clickTrigger() {
-        return performTrigger(ViewActions.click());
+        return getClickTrigger();
     }
 
     /**
      * Trigger an Espresso click on this View.
      *
-     * <p>Does not require the View to be > 90% displayed like {@link #clickTrigger()}.
+     * <p>Does not require the View to be > 90% displayed like {@link #getClickTrigger()}.
      *
      * <p>TODO(crbug.com/411140394): Rename clickTrigger() to strictClickTrigger() and rename this
      * to clickTrigger().
      */
-    public Transition.Trigger forgivingClickTrigger() {
-        return performTrigger(ForgivingClickAction.forgivingClick());
+    public Transition.Trigger getForgivingClickTrigger() {
+        return getPerformTrigger(ForgivingClickAction.forgivingClick());
     }
 
     /**
-     * Trigger an Espresso long click on this View.
+     * Trigger an Espresso long press on this View.
      *
      * <p>Requires it to be >90% displayed.
      */
-    public Transition.Trigger longClickTrigger() {
-        return performTrigger(ViewActions.longClick());
+    public Transition.Trigger getLongPressTrigger() {
+        return getPerformTrigger(ViewActions.longClick());
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */

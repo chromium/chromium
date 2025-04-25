@@ -84,7 +84,7 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
         } else {
             mHostStation.exitFacilitySync(
                     this,
-                    bannerElement.performTrigger(
+                    bannerElement.getPerformTrigger(
                             ViewActions.actionWithAssertions(
                                     new GeneralSwipeAction(
                                             Swipe.FAST,

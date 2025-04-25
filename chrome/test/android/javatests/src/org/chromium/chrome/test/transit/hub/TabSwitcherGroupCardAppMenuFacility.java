@@ -59,7 +59,8 @@ public class TabSwitcherGroupCardAppMenuFacility extends ScrollableFacility<TabS
             ItemOnScreenFacility<UndoSnackbarFacility> itemOnScreen) {
         String snackbarMessage = TabGroupUtil.getUndoCloseGroupSnackbarMessageString(mTitle);
         UndoSnackbarFacility undoSnackbar = new UndoSnackbarFacility(snackbarMessage);
-        mHostStation.swapFacilitySync(this, undoSnackbar, itemOnScreen.viewElement.clickTrigger());
+        mHostStation.swapFacilitySync(
+                this, undoSnackbar, itemOnScreen.viewElement.getClickTrigger());
         return undoSnackbar;
     }
 }

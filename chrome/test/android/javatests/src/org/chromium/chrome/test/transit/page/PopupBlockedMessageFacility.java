@@ -46,6 +46,6 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(popupPage, alwaysShowButtonElement.clickTrigger());
+        return mHostStation.travelToSync(popupPage, alwaysShowButtonElement.getClickTrigger());
     }
 }

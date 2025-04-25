@@ -69,7 +69,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
         boolean isIncognito = mHostStation.isIncognito();
         return mHostStation.enterFacilitySync(
                 new TabGroupDialogFacility<>(mTabIdsToGroup, isIncognito),
-                titleElement.clickTrigger());
+                titleElement.getClickTrigger());
     }
 
     /** Clicks the ("...") action button on a tab group to open the overflow menu. */
@@ -77,6 +77,6 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
         boolean isIncognito = mHostStation.isIncognito();
         return mHostStation.enterFacilitySync(
                 new TabSwitcherGroupCardAppMenuFacility(isIncognito, mTitle),
-                menuButtonElement.clickTrigger());
+                menuButtonElement.getClickTrigger());
     }
 }

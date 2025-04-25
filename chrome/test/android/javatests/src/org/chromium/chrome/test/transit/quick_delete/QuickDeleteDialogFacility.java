@@ -93,7 +93,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     /** Click Cancel to close the dialog with no action. */
     public void clickCancel() {
-        mHostStation.exitFacilitySync(this, cancelButtonElement.clickTrigger());
+        mHostStation.exitFacilitySync(this, cancelButtonElement.getClickTrigger());
     }
 
     /**
@@ -106,7 +106,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         QuickDeleteSnackbarFacility snackbar = new QuickDeleteSnackbarFacility(mTimePeriod);
         tabSwitcher.addInitialFacility(snackbar);
 
-        mHostStation.travelToSync(tabSwitcher, deleteButtonElement.clickTrigger());
+        mHostStation.travelToSync(tabSwitcher, deleteButtonElement.getClickTrigger());
 
         return Pair.create(tabSwitcher, snackbar);
     }
@@ -145,7 +145,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
     public SettingsStation<ClearBrowsingDataFragment> clickMoreOptions() {
         return mHostStation.travelToSync(
                 new SettingsStation<>(ClearBrowsingDataFragment.class),
-                moreOptionsElement.clickTrigger());
+                moreOptionsElement.getClickTrigger());
     }
 
     public SearchHistoryDisambiguiationFacility expectSearchHistoryDisambiguation(boolean shown) {

@@ -120,7 +120,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new TabSwitcherAppMenuFacility(mIsIncognito), menuButtonElement.clickTrigger());
+                new TabSwitcherAppMenuFacility(mIsIncognito), menuButtonElement.getClickTrigger());
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     public TabSwitcherSearchStation openTabSwitcherSearch() {
         TabSwitcherSearchStation searchStation = new TabSwitcherSearchStation(mIsIncognito);
-        travelToSync(searchStation, searchElement.clickTrigger());
+        travelToSync(searchStation, searchElement.getClickTrigger());
         searchStation.focusAndDropSoftKeyboard();
         return searchStation;
     }

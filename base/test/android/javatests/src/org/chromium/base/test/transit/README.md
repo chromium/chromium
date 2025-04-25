@@ -362,7 +362,7 @@ public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
 
     public NewTabPageStation openNewTabFromButton() {
         NewTabPageStation newTab = new NewTabPageStation();
-        return travelToSync(this, newTab, newTabButtonElement.clickTrigger())
+        return travelToSync(this, newTab, newTabButtonElement.getClickTrigger())
     }
 }
 ```

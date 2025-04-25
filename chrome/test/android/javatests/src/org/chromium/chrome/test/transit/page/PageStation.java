@@ -345,7 +345,8 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
         recheckActiveConditions();
         return enterFacilitySync(
-                new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.longClickTrigger());
+                new TabSwitcherActionMenuFacility(),
+                tabSwitcherButtonElement.getLongPressTrigger());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
@@ -353,7 +354,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new PageAppMenuFacility<PageStation>(), menuButtonElement.clickTrigger());
+                new PageAppMenuFacility<PageStation>(), menuButtonElement.getClickTrigger());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
@@ -410,7 +411,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert !mIncognito;
         return travelToSync(
                 RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                tabSwitcherButtonElement.clickTrigger());
+                tabSwitcherButtonElement.getClickTrigger());
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
@@ -418,7 +419,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert mIncognito;
         return travelToSync(
                 IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                tabSwitcherButtonElement.clickTrigger());
+                tabSwitcherButtonElement.getClickTrigger());
     }
 
     /** Loads a |url| in the same tab and waits to transition. */

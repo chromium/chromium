@@ -61,6 +61,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return travelToSync(page, newTabButtonElement.clickTrigger());
+        return travelToSync(page, newTabButtonElement.getClickTrigger());
     }
 }
