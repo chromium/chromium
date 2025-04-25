@@ -76,8 +76,6 @@ class GlicKeyedService : public KeyedService {
   // manager.
   void CloseUI();
 
-  void FocusUI();
-
   // The user has performed an action suggesting that they made open the UI
   // soon.
   void PrepareForOpen();

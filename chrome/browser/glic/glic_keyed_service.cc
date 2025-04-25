@@ -158,10 +158,6 @@ void GlicKeyedService::CloseUI() {
   SetContextAccessIndicator(false);
 }
 
-void GlicKeyedService::FocusUI() {
-  window_controller_->FocusIfOpen();
-}
-
 void GlicKeyedService::PrepareForOpen() {
   window_controller_->fre_controller()->MaybePreconnect();
 
