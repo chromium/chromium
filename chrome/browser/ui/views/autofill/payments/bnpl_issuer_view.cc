@@ -30,6 +30,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -155,6 +156,8 @@ void BnplIssuerView::AddedToWidget() {
                                    views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
                                0, 0))
               .Build());
+      issuer_button->GetViewAccessibility().SetDescription(
+          linked_pill->GetAccessibilityDescription());
     }
     issuer_button->AddChildView(
         views::Builder<views::ImageView>()

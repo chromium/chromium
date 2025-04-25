@@ -45,6 +45,11 @@ void BnplLinkedIssuerPill::AddedToWidget() {
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(size.height() / 2));
 }
 
+std::u16string BnplLinkedIssuerPill::GetAccessibilityDescription() {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL);
+}
+
 BEGIN_METADATA(BnplLinkedIssuerPill)
 END_METADATA
 
