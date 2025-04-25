@@ -126,7 +126,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   void LockOrUnlockWindow(bool lock_window);
 
   // Internal helper used to pause or unpause the boca app.
-  void PauseOrUnpauseApp(bool pause_app);
+  void PauseOrUnpauseApp();
 
   // Show enter locked mode notification and lock the Boca SWA window.
   void EnterLockedMode();
@@ -157,6 +157,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   GURL active_tab_url_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool should_lock_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool lock_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool enter_pause_mode_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Maps the url that providers send to the tab ids spawned from the url. This
   // map allows to remove all the related tabs to the url.

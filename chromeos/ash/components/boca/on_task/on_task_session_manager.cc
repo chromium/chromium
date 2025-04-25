@@ -203,8 +203,9 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
   }
 
+  enter_pause_mode_ = bundle.lock_to_app_home();
   LockOrUnlockWindow(bundle.locked());
-  PauseOrUnpauseApp(bundle.lock_to_app_home());
+  PauseOrUnpauseApp();
 
   // Show relevant notifications if content was added or deleted.
   if (has_new_content) {
@@ -302,7 +303,7 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   if (should_lock_window_) {
     system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/true);
     extensions_manager_->DisableExtensions();
-    if (locked_mode_state_changed) {
+    if (locked_mode_state_changed && !enter_pause_mode_) {
       // Show notification before locking the window.
       int message_id =
           (features::IsBocaLockedModeCustomCountdownDurationEnabled())
@@ -378,21 +379,21 @@ void OnTaskSessionManager::SetNotificationManagerForTesting(
   notifications_manager_ = std::move(notifications_manager);
 }
 
-void OnTaskSessionManager::PauseOrUnpauseApp(bool pause_app) {
+void OnTaskSessionManager::PauseOrUnpauseApp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (lock_in_progress_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&OnTaskSessionManager::PauseOrUnpauseApp,
-                       weak_ptr_factory_.GetWeakPtr(), pause_app),
+                       weak_ptr_factory_.GetWeakPtr()),
         kSetPausedStateDelay);
     return;
   }
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
-    system_web_app_manager_->SetPauseStateForSystemWebAppWindow(pause_app,
-                                                                window_id);
+    system_web_app_manager_->SetPauseStateForSystemWebAppWindow(
+        enter_pause_mode_, window_id);
   }
 }
 
