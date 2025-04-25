@@ -337,12 +337,21 @@ bool IsPrivateAggregateDevice(AudioObjectID device_id) {
   CFTypeRef value = CFDictionaryGetValue(
       dictionary, CFSTR(kAudioAggregateDeviceIsPrivateKey));
 
-  if (value && CFGetTypeID(value) == CFNumberGetTypeID()) {
+  if (value && CFGetTypeID(value) == CFBooleanGetTypeID()) {
+    CFBooleanRef boolean_ref = static_cast<CFBooleanRef>(value);
+    is_private = CFBooleanGetValue(boolean_ref);
+    base::UmaHistogramBoolean("Media.Audio.Mac.AggregateDeviceIsPrivateBoolean",
+                              is_private);
+  } else if (value && CFGetTypeID(value) == CFNumberGetTypeID()) {
+    // TODO(413285324): Remove this and the UMA if we can confirm that the new
+    // CFBoolean property is covering all cases. Otherwise, just remove the UMA.
     int number = 0;
     if (CFNumberGetValue(reinterpret_cast<CFNumberRef>(value), kCFNumberIntType,
                          &number)) {
       is_private = number != 0;
     }
+    base::UmaHistogramBoolean("Media.Audio.Mac.AggregateDeviceIsPrivateNumber",
+                              is_private);
   }
   CFRelease(dictionary);
 

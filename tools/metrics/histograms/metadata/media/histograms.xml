@@ -966,6 +966,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Mac.AggregateDeviceIsPrivate{Type}" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the number of occurences of private aggregate devices where the
+    dictionary entry for kAudioAggregateDeviceIsPrivateKey is successfully
+    interpreted as a {Type}. Recorded for each call to
+    IsPrivateAggregateDevice() if the AudioObjectID is of type
+    kAudioDeviceTransportTypeAggregate and there is a dictionary. This histogram
+    is used to determine the type of the value in the dictionary for
+    kAudioAggregateDeviceIsPrivateKey. If no occurences of type Number are
+    detected, we can remove the code path that parses the dictionary as a
+    number.
+  </summary>
+  <token key="Type">
+    <variant name="Boolean"/>
+    <variant name="Number"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.Mac.HardwareLatency.{Direction}.{Component}"
     units="misses" expires_after="2025-09-14">
   <owner>tguilbert@chromium.org</owner>
