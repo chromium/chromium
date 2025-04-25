@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Collection of Chrome branding-related data read from/written to storage. */
+@NullMarked
 class BrandingInfo {
     public static final BrandingInfo EMPTY =
             new BrandingInfo(null, BrandingChecker.BRANDING_TIME_NOT_FOUND, null);
@@ -12,14 +16,14 @@ class BrandingInfo {
     /** The last time any branding/mismatch notification UI was shown. */
     public final long lastShowTime;
 
-    public final MismatchNotificationData mimData;
+    public final @Nullable MismatchNotificationData mimData;
 
-    private @BrandingDecision Integer mDecision; // May be updated, thus not final
+    private @BrandingDecision @Nullable Integer mDecision; // May be updated, thus not final
 
     public BrandingInfo(
-            @BrandingDecision Integer decision,
+            @BrandingDecision @Nullable Integer decision,
             long lastShowTime,
-            MismatchNotificationData mimData) {
+            @Nullable MismatchNotificationData mimData) {
         mDecision = decision;
         this.lastShowTime = lastShowTime;
         this.mimData = mimData;
@@ -31,6 +35,8 @@ class BrandingInfo {
     }
 
     /** Returns branding decision. */
+    @BrandingDecision
+    @Nullable
     public Integer getDecision() {
         return mDecision;
     }

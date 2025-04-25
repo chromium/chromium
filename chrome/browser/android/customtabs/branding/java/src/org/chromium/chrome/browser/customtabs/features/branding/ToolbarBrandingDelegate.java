@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate class for Toolbar strategy to control location bar UI elements. */
+@NullMarked
 public interface ToolbarBrandingDelegate {
     /** Show the branding information on location bar, with start & end transition. */
     void showBrandingLocationBar();

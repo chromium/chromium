@@ -17,6 +17,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.HashUtil;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.Map;
  * Shared preference that stores the last branding time for CCT client apps. When recording, the
  * instance uses {@link SharedPreferences.Editor#commit()}.
  */
+@NullMarked
 class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLaunchTimeStorage {
     private static final String KEY_SHARED_PREF = "pref_cct_brand_show_time";
     private static final String NON_PACKAGE_PREFIX = "REFERRER_";
@@ -32,10 +35,10 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
     private static final String KEY_MIM_DATA = "MIM_DATA";
     @VisibleForTesting static final int MAX_NON_PACKAGE_ENTRIES = 50;
 
-    private static SharedPreferencesBrandingTimeStorage sInstance;
+    private static @Nullable SharedPreferencesBrandingTimeStorage sInstance;
 
     /** Shared pref that must be read / write on background thread. */
-    private SharedPreferences mSharedPref;
+    private @Nullable SharedPreferences mSharedPref;
 
     private SharedPreferencesBrandingTimeStorage() {}
 
@@ -71,7 +74,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
                 });
     }
 
-    private String getKey(String appId) {
+    private @Nullable String getKey(String appId) {
         assert !TextUtils.isEmpty(appId);
         String key = hash(appId);
         // Keys will have a prefix if they are not a valid package name. They are likely
@@ -82,7 +85,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
     }
 
     @WorkerThread
-    private String getOldEntryToTrim() {
+    private @Nullable String getOldEntryToTrim() {
         String oldEntry = null;
         long oldTime = -1;
         int count = 0;
@@ -120,7 +123,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
 
     @WorkerThread
     @Override
-    public MismatchNotificationData getMimData() {
+    public @Nullable MismatchNotificationData getMimData() {
         String str = getSharedPref().getString(KEY_MIM_DATA, null);
         return str != null ? MismatchNotificationData.fromBase64(str) : null;
     }
@@ -153,7 +156,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
         return size;
     }
 
-    private String hash(String packageName) {
+    private @Nullable String hash(String packageName) {
         return HashUtil.getMd5Hash(new HashUtil.Params(packageName));
     }
 

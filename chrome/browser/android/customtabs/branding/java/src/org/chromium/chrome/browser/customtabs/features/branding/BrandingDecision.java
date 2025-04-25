@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs.features.branding;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -18,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
     BrandingDecision.MIM,
     BrandingDecision.NUM_ENTRIES
 })
+@NullMarked
 @interface BrandingDecision {
     int NONE = 0;
     int TOOLBAR = 1;
