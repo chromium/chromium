@@ -756,11 +756,12 @@ RevokedPermissionsService::UpdateOnUIThread(
       static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
           result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
-  RevokeUnusedPermissions();
-  if (disruptive_notification_manager_) {
-    disruptive_notification_manager_->RevokeDisruptiveNotifications();
+  if (IsUnusedSiteAutoRevocationEnabled()) {
+    RevokeUnusedPermissions();
+    if (disruptive_notification_manager_) {
+      disruptive_notification_manager_->RevokeDisruptiveNotifications();
+    }
   }
-  // TODO(crbug.com/40250875): Clean up these checks.
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->CheckNotificationPermissionOrigins();
   }
@@ -919,9 +920,7 @@ RevokedPermissionsService::GetRevokedPermissions() {
 }
 
 void RevokedPermissionsService::RevokeUnusedPermissions() {
-  if (!IsUnusedSiteAutoRevocationEnabled()) {
-    return;
-  }
+  CHECK(IsUnusedSiteAutoRevocationEnabled());
 
   // Set this to true to prevent `OnContentSettingChanged` from removing
   // revoked setting values during auto-revocation.

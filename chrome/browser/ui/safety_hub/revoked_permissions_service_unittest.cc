@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
@@ -399,6 +400,22 @@ class RevokedPermissionsServiceTest
         constraint);
   }
 
+  void SetupProposedRevokedDisruptiveNotificationSite(
+      std::string url,
+      base::TimeDelta lifetime =
+          content_settings::features::
+              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
+                  .Get()) {
+    content_settings::ContentSettingConstraints constraint(clock()->Now());
+    constraint.set_lifetime(lifetime);
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(url), GURL(url),
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+        base::Value(base::Value::Dict().Set(
+            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr)),
+        constraint);
+  }
+
   void UndoRegrantPermissionsForUrl(
       std::string url,
       std::set<ContentSettingsType> permission_types,
@@ -466,6 +483,19 @@ class RevokedPermissionsServiceTest
     EXPECT_EQ(
         hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
         CONTENT_SETTING_ASK);
+  }
+
+  void ExpectProposedRevokedDisruptiveNotificationSettingValues(
+      std::string url) {
+    base::Value stored_value = hcsm()->GetWebsiteSetting(
+        GURL(url), GURL(url),
+        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+    EXPECT_FALSE(stored_value.is_none());
+    ASSERT_TRUE(stored_value.is_dict());
+    EXPECT_EQ(safety_hub::kProposedStr,
+              stored_value.GetDict()
+                  .Find(safety_hub::kRevokedStatusDictKeyStr)
+                  ->GetString());
   }
 
   void ExpectCleanedUpDisruptiveNotificationSettingValues(
@@ -710,6 +740,56 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
     ExpectCleanedUpAbusiveNotificationSettingValues(url2);
     ExpectCleanedUpAbusiveNotificationSettingValues(url3);
     ExpectSafeNotificationSettingValues(url4);
+  }
+}
+
+TEST_P(RevokedPermissionsServiceTest,
+       UnusedSitePermissionsRevocationDisabledTest) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  // Disable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
+  // pref to false and turning off safe browsing. This should stop the repeated
+  // timer.
+  prefs()->SetBoolean(safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
+                      false);
+
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPage(GURL(url1), clock()->Now(),
+                           history::VisitSource::SOURCE_BROWSED);
+  if (ShouldSetupUnusedSites()) {
+    SetTrackedContentSettingForType(url1, geolocation_type);
+  }
+
+  // Travel through time for 70 days so that permissions would be revoked (if
+  // the check was enabled).
+  clock()->Advance(base::Days(70));
+
+  if (ShouldSetupAbusiveNotificationSites()) {
+    SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+  if (ShouldSetupDisruptiveSites()) {
+    SetupProposedRevokedDisruptiveNotificationSite(url3);
+  }
+
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+
+  // Abusive notification permissions should be revoked (the setting doesn't
+  // change that).
+  if (ShouldSetupAbusiveNotificationSites()) {
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+    ExpectRevokedAbusiveNotificationSettingValues(url2);
+  } else {
+    ExpectRevokedAbusiveNotificationPermissionSize(0U);
+  }
+
+  // Permissions should not be revoked.
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectProposedRevokedDisruptiveNotificationSettingValues(url3);
   }
 }
 
