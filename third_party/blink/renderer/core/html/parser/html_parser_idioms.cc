@@ -183,27 +183,23 @@ bool ParseHTMLInteger(const String& input, int& value) {
     return false;
 
   return WTF::VisitCharacters(input, [&](auto chars) {
-    const auto* position = chars.data();
-    using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + chars.size();
+    using CharacterType = std::decay_t<decltype(chars[0])>;
 
     // Step 4
-    SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+    size_t position =
+        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(chars, 0);
 
     // Step 5
-    if (position == end) {
+    if (position == chars.size()) {
       return false;
     }
-    DCHECK_LT(position, end);
+    DCHECK_LT(position, chars.size());
 
     bool ok;
     constexpr auto kOptions = WTF::NumberParsingOptions()
                                   .SetAcceptTrailingGarbage()
                                   .SetAcceptLeadingPlus();
-    int wtf_value =
-        CharactersToInt(base::span<const CharacterType>(
-                            position, static_cast<size_t>(end - position)),
-                        kOptions, &ok);
+    int wtf_value = CharactersToInt(chars.subspan(position), kOptions, &ok);
     if (ok) {
       value = wtf_value;
     }
@@ -220,9 +216,7 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
 
   return WTF::VisitCharacters(
       input, [&](auto chars) {
-        const auto* position = chars.data();
-        using CharacterType = std::decay_t<decltype(*position)>;
-        const auto* end = position + chars.size();
+        using CharacterType = std::decay_t<decltype(chars[0])>;
 
         // This function is an implementation of the following algorithm:
         // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
@@ -233,20 +227,22 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
         // https://html.spec.whatwg.org/C/#rules-for-parsing-integers
 
         // Step 4: Skip whitespace.
-        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+        size_t position =
+            SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(chars, 0);
 
         // Step 5: If position is past the end of input, return an error.
-        if (position == end)
+        if (position == chars.size()) {
           return WTF::NumberParsingResult::kError;
-        DCHECK_LT(position, end);
+        }
+        DCHECK_LT(position, chars.size());
 
         WTF::NumberParsingResult result;
         constexpr auto kOptions = WTF::NumberParsingOptions()
                                       .SetAcceptTrailingGarbage()
                                       .SetAcceptLeadingPlus()
                                       .SetAcceptMinusZeroForUnsigned();
-        unsigned wtf_value = CharactersToUInt(
-            {position, static_cast<size_t>(end - position)}, kOptions, &result);
+        unsigned wtf_value =
+            CharactersToUInt(chars.subspan(position), kOptions, &result);
         if (result == WTF::NumberParsingResult::kSuccess)
           value = wtf_value;
         return result;

@@ -121,12 +121,6 @@ template <typename CharType, bool predicate(CharType)>
   return position;
 }
 
-template <typename CharType, bool characterPredicate(CharType)>
-void SkipWhile(const CharType*& position, const CharType* end) {
-  while (position < end && characterPredicate(*position))
-    ++position;
-}
-
 template <typename CharType, bool predicate(CharType)>
 [[nodiscard]] size_t SkipWhile(base::span<const CharType> chars,
                                size_t position) {
