@@ -326,13 +326,14 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   std::unique_ptr<ToolbarActionHoverCardController>
       action_hover_card_controller_;
 
-  // TODO(pbos): Create actions and icons only for pinned pinned / popped out
-  // actions (lazily). Currently code expects GetActionForId() to return
-  // actions for extensions that aren't visible.
+  // TODO(pbos): Create actions and icons only for pinned / popped out actions
+  // (lazily). Currently code expects GetActionForId() to return actions for
+  // extensions that aren't visible.
   // Actions for all extensions.
   std::vector<std::unique_ptr<ToolbarActionViewController>> actions_;
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
+
   // Popped-out extension, if any.
   std::optional<extensions::ExtensionId> popped_out_action_;
   // The action that triggered the current popup, if any.
