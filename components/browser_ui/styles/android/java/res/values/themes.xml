@@ -49,6 +49,7 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
         <item name="colorPrimary">@color/baseline_primary_80</item>
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>

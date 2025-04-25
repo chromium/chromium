@@ -226,4 +226,9 @@ public class SemanticColorUtils {
     public static @ColorInt int getColorSurfaceContainerHighest(Context context) {
         return resolve(R.attr.colorSurfaceContainerHighest, context);
     }
+
+    /** Returns the semantic color values that correspond to colorSurfaceDim. */
+    public static @ColorInt int getColorSurfaceDim(Context context) {
+        return resolve(R.attr.colorSurfaceDim, context);
+    }
 }
