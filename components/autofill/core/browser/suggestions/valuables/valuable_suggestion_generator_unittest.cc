@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +23,7 @@ using testing::Matcher;
 
 TEST(ValuableSuggestionGeneratorTest,
      GetLoyaltyCardSuggestions_ReturnMatchingSuggestions) {
-  std::vector<LoyaltyCard> loyalty_cards = {
+  const std::vector<LoyaltyCard> loyalty_cards = {
       LoyaltyCard(
           /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
           /*merchant_name=*/"CVS Pharmacy",
@@ -89,5 +90,24 @@ TEST(ValuableSuggestionGeneratorTest,
                            manageLoyaltyCardsMatcher));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST(ValuableSuggestionGeneratorTest,
+     GetLoyaltyCardSuggestions_SuggestionsIPH) {
+  const std::vector<LoyaltyCard> loyalty_cards = {LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL("https://empty.url.com"),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://domain1.example")})};
+
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature;
+  EXPECT_THAT(GetLoyaltyCardSuggestions(
+                  loyalty_cards, GURL("https://common-domain.example/test")),
+              testing::ElementsAre(HasIphFeature(kIphFeature),
+                                   HasNoIphFeature(), HasNoIphFeature()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 }  // namespace autofill

@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -36,6 +37,11 @@ Suggestion CreateLoyaltyCardSuggestion(const LoyaltyCard& loyalty_card) {
       base::UTF8ToUTF16(loyalty_card.merchant_name());
   suggestion.labels.push_back({Suggestion::Text(merchant_name)});
   suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
+#if !BUILDFLAG(IS_ANDROID)
+  // The IPH is only available on Desktop.
+  suggestion.iph_metadata = Suggestion::IPHMetadata(
+      &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
+#endif  // BUILDFLAG(IS_ANDROID)
   return suggestion;
 }
 
