@@ -8327,10 +8327,11 @@ class LensOverlayControllerIPHWithPathMatchBrowserTest
          {feature_engagement::kIPHLensOverlayFeature,
           {
               {"x_url_allow_filters", "[\"*\"]"},
-              {"x_url_block_filters", "[\"a.com/login\",\"d.com\"]"},
+              {"x_url_block_filters", "[\"a.com/login\",\"d.com\",\"e.edu\"]"},
               {"x_url_path_match_allow_patterns",
                "[\"assignment\",\"homework\"]"},
               {"x_url_path_match_block_patterns", "[\"tutor\"]"},
+              {"x_url_forced_allowed_match_patterns", "[\"edu/.+\"]"},
           }}},
         /*disabled_features=*/{});
   }
@@ -8372,6 +8373,23 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHWithPathMatchBrowserTest,
       GURL("https://www.a.com/login/assignments")));
   EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.d.com/homework")));
+
+  // x_url_forced_allowed_match_patterns is blocked by the block url filters.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.e.edu/tutor")));
+  // x_url_forced_allowed_match_patterns is blocked by the block path filters.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.edu/tutor")));
+  // x_url_forced_allowed_match_patterns skips the allowed path filters.
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.edu/something")));
+  // URL not in x_url_forced_allowed_match_patterns and not in allowed path
+  // filters.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.edu/")));
+  // URL in x_url_forced_allowed_match_patterns and in allowed path filters.
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.edu/homework")));
 }
 
 class LensOverlayControllerBrowserSimplifiedSelectionTest

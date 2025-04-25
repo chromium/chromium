@@ -1411,6 +1411,11 @@ class LensOverlayController : public LensSearchboxClient,
   // Matcher for URLs that are eligible to have the tutorial IPH shown.
   std::unique_ptr<url_matcher::URLMatcher> tutorial_iph_url_matcher_;
 
+  // Matcher for URLs that are do not need to pass the check for allowed paths.
+  // Instead, if they match the tutorial_iph_url_matcher_` and do not contain
+  // any of the blocked paths, they are considered matches.
+  std::unique_ptr<url_matcher::RegexSetMatcher> forced_url_matcher_;
+
   // Matcher for URL paths that are eligible to have the tutorial IPH shown.
   std::unique_ptr<url_matcher::RegexSetMatcher> page_path_allow_matcher_;
 

@@ -106,6 +106,10 @@ const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters{
 const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchAllowPatterns{
     &feature_engagement::kIPHLensOverlayFeature,
     "x_url_path_match_allow_patterns", "[]"};
+const base::FeatureParam<std::string>
+    kIPHLensOverlayUrlForceAllowedUrlMatchPatterns{
+        &feature_engagement::kIPHLensOverlayFeature,
+        "x_url_forced_allowed_match_patterns", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchBlockPatterns{
     &feature_engagement::kIPHLensOverlayFeature,
     "x_url_path_match_block_patterns", "[]"};

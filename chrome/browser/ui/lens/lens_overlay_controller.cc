@@ -3641,6 +3641,20 @@ void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
           feature_engagement::kIPHLensOverlayUrlBlockFilters.Get()),
       &iph_url_filters_);
 
+  auto force_allow_url_strings = JSONArrayToVector(
+      feature_engagement::kIPHLensOverlayUrlForceAllowedUrlMatchPatterns.Get());
+  std::vector<base::MatcherStringPattern> force_allow_url_patterns;
+  std::vector<const base::MatcherStringPattern*> force_allow_url_pointers;
+  force_allow_url_patterns.reserve(force_allow_url_strings.size());
+  force_allow_url_pointers.reserve(force_allow_url_strings.size());
+  for (const std::string& entry : force_allow_url_strings) {
+    force_allow_url_patterns.emplace_back(entry, ++id);
+    force_allow_url_pointers.push_back(&force_allow_url_patterns.back());
+  }
+  forced_url_matcher_ = std::make_unique<url_matcher::RegexSetMatcher>();
+  // Pointers will not be referenced after AddPatterns() completes.
+  forced_url_matcher_->AddPatterns(force_allow_url_pointers);
+
   auto allow_strings = JSONArrayToVector(
       feature_engagement::kIPHLensOverlayUrlPathMatchAllowPatterns.Get());
   std::vector<base::MatcherStringPattern> allow_patterns;
@@ -3701,10 +3715,16 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
   if (!tutorial_iph_url_matcher_) {
     return false;
   }
+
+  // Check if the URL matches any of the allow filters. If it does not,
+  // return false immediately as this should not be a shown match.
   auto matches = tutorial_iph_url_matcher_.get()->MatchURL(url);
   if (!matches.size()) {
     return false;
   }
+
+  // Now that the URL is allowed, check if it matches any of the block filters.
+  // If it does, return false as to block this URL from showing the IPH.
   for (auto match : matches) {
     // Blocks take precedence over allows.
     if (!iph_url_filters_[match].allow) {
@@ -3712,14 +3732,34 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
     }
   }
 
+  // Now that the URL is an allowed URL, verify the match is not blocked by
+  // the block matcher. If it does contain blocked words in its path, return
+  // false to prevent the IPH from being shown.
   if (page_path_block_matcher_ && !page_path_block_matcher_->IsEmpty() &&
       page_path_block_matcher_->Match(url.path(), &matches)) {
     return false;
   }
+
+  // Check if the URL matches any of the forced allowed URLs. If it does, return
+  // true as this should be a shown match even if the path does not contain an
+  // allowlisted pattern (below).
+  if (forced_url_matcher_ && !forced_url_matcher_->IsEmpty() &&
+      forced_url_matcher_->Match(url.spec(), &matches)) {
+    return true;
+  }
+
+  // Finally, check if the URL matches any of the allowed patterns. If it
+  // doesn't, return false to prevent the IPH from being shown.
   if (page_path_allow_matcher_ && !page_path_allow_matcher_->IsEmpty() &&
       !page_path_allow_matcher_->Match(url.path(), &matches)) {
     return false;
   }
+
+  // Finally if all checks pass, this must be a valid match. I.e.:
+  // 1. The URL matches at least one of the allowed URLs.
+  // 2. The URL does not match any of the blocked URLs.
+  // 3. The URL does not match any of the block path patterns.
+  // 4. The URL matches at least one of the allowed path patterns.
   return true;
 }
 

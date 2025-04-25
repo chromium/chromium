@@ -65,6 +65,9 @@ extern const base::FeatureParam<std::string>
     kIPHLensOverlayUrlPathMatchAllowPatterns;
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<std::string>
+    kIPHLensOverlayUrlForceAllowedUrlMatchPatterns;
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string>
     kIPHLensOverlayUrlPathMatchBlockPatterns;
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime;
