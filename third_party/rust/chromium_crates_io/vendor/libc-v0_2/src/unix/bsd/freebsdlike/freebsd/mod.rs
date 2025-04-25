@@ -1357,6 +1357,47 @@ s! {
         pub strchange_instrms: u16,
         pub strchange_outstrms: u16,
     }
+
+    pub struct filedesc {
+        pub fd_files: *mut fdescenttbl,
+        pub fd_map: *mut c_ulong,
+        pub fd_freefile: c_int,
+        pub fd_refcnt: c_int,
+        pub fd_holdcnt: c_int,
+        fd_sx: sx,
+        fd_kqlist: kqlist,
+        pub fd_holdleaderscount: c_int,
+        pub fd_holdleaderswakeup: c_int,
+    }
+
+    pub struct fdescenttbl {
+        pub fdt_nfiles: c_int,
+        fdt_ofiles: [*mut c_void; 0],
+    }
+
+    // FIXME: Should be private.
+    #[doc(hidden)]
+    pub struct sx {
+        lock_object: lock_object,
+        sx_lock: crate::uintptr_t,
+    }
+
+    // FIXME: Should be private.
+    #[doc(hidden)]
+    pub struct lock_object {
+        lo_name: *const c_char,
+        lo_flags: c_uint,
+        lo_data: c_uint,
+        // This is normally `struct  witness`.
+        lo_witness: *mut c_void,
+    }
+
+    // FIXME: Should be private.
+    #[doc(hidden)]
+    pub struct kqlist {
+        tqh_first: *mut c_void,
+        tqh_last: *mut *mut c_void,
+    }
 }
 
 s_no_extra_traits! {
@@ -3771,7 +3812,9 @@ pub const TCP_PERF_INFO: c_int = 78;
 pub const TCP_LRD: c_int = 79;
 pub const TCP_KEEPINIT: c_int = 128;
 pub const TCP_FASTOPEN: c_int = 1025;
+#[deprecated(since = "0.2.171", note = "removed in FreeBSD 15")]
 pub const TCP_PCAP_OUT: c_int = 2048;
+#[deprecated(since = "0.2.171", note = "removed in FreeBSD 15")]
 pub const TCP_PCAP_IN: c_int = 4096;
 pub const TCP_FUNCTION_BLK: c_int = 8192;
 pub const TCP_FUNCTION_ALIAS: c_int = 8193;

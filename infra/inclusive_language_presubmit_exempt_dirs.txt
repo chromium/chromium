@@ -123,7 +123,7 @@ components/enterprise/obfuscation/core 3 1
 components/gcm_driver 1 1
 components/infobars/android/java/src/org/chromium/components/infobars 1 1
 components/input 2 1
-components/media_router/common/providers/cast/channel 1 1
+components/media_router/common/providers/cast/channel 3 2
 components/metrics 1 1
 components/metrics/debug 2 1
 components/omnibox/browser 1 1
@@ -275,7 +275,6 @@ services/service_manager/tests/connect 3 1
 services/test/data/passage_embeddings 5 1
 services/tracing/perfetto 1 1
 services/tracing/public/mojom 1 1
-storage/browser/database 1 1
 styleguide 8 2
 styleguide/web 1 1
 testing 2 2
@@ -391,7 +390,7 @@ third_party/blink/renderer/platform/wtf 2 2
 third_party/blink/tools/blinkpy 1 1
 third_party/blink/tools/blinkpy/common 1 1
 third_party/blink/tools/blinkpy/common/checkout 1 1
-third_party/blink/tools/blinkpy/common/net 3 2
+third_party/blink/tools/blinkpy/common/net 4 2
 third_party/blink/tools/blinkpy/common/system 2 1
 third_party/blink/tools/blinkpy/style/checkers 1 1
 third_party/blink/tools/blinkpy/w3c 20 7
@@ -670,7 +669,6 @@ third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src 2 1
 third_party/rust/chromium_crates_io/vendor/either-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/equivalent-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/flate2-v1 1 1
-third_party/rust/chromium_crates_io/vendor/getrandom-v0_2 5 1
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15 1 1
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src 1 1
 third_party/rust/chromium_crates_io/vendor/hex-v0_4 1 1
@@ -697,13 +695,10 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_13 2 1
 third_party/rust/chromium_crates_io/vendor/qr_code-v2 1 1
 third_party/rust/chromium_crates_io/vendor/quote-v1 1 1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/rand_chacha-v0_3 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_6 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_6/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9/src 3 1
-third_party/rust/chromium_crates_io/vendor/rand_pcg-v0_3 4 1
-third_party/rust/chromium_crates_io/vendor/rand-v0_8 9 2
 third_party/rust/chromium_crates_io/vendor/read-fonts-v0_27/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4 2 2
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util 1 1
@@ -750,8 +745,6 @@ third_party/rust/chromium_crates_io/vendor/windows-strings-v0_4 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering 2 1
-third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8 1 1
-third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src 1 1
 third_party/screen-ai 2 1
 third_party/sentencepiece/src 2 2
 third_party/sentencepiece/src/doc 3 1

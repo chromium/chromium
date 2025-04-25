@@ -286,6 +286,12 @@ pub const B4000000: crate::speed_t = 31;
 // sys/systeminfo.h
 pub const SI_ADDRESS_WIDTH: c_int = 520;
 
+// sys/timerfd.h
+pub const TFD_CLOEXEC: i32 = 0o2000000;
+pub const TFD_NONBLOCK: i32 = 0o4000;
+pub const TFD_TIMER_ABSTIME: i32 = 1 << 0;
+pub const TFD_TIMER_CANCEL_ON_SET: i32 = 1 << 1;
+
 extern "C" {
     pub fn eventfd(init: c_uint, flags: c_int) -> c_int;
 
@@ -352,5 +358,14 @@ extern "C" {
         s2: *const c_char,
         n: size_t,
         loc: crate::locale_t,
+    ) -> c_int;
+
+    pub fn timerfd_create(clockid: c_int, flags: c_int) -> c_int;
+    pub fn timerfd_gettime(fd: c_int, curr_value: *mut crate::itimerspec) -> c_int;
+    pub fn timerfd_settime(
+        fd: c_int,
+        flags: c_int,
+        new_value: *const crate::itimerspec,
+        old_value: *mut crate::itimerspec,
     ) -> c_int;
 }

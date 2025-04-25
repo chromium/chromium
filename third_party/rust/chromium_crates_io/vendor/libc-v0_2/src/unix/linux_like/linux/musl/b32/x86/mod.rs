@@ -913,7 +913,3 @@ pub const CS: c_int = 13;
 pub const EFL: c_int = 14;
 pub const UESP: c_int = 15;
 pub const SS: c_int = 16;
-
-extern "C" {
-    pub fn getrandom(buf: *mut c_void, buflen: size_t, flags: c_uint) -> ssize_t;
-}
