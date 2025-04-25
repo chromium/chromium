@@ -29,6 +29,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -65,6 +66,7 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
+  command_service_observation_.Observe(CommandService::Get(profile));
 
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
@@ -248,6 +250,19 @@ void DeveloperPrivateEventRouterShared::OnExtensionAllowlistWarningStateChanged(
     const ExtensionId& extension_id,
     bool show_warning) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionCommandAdded(
+    const ExtensionId& extension_id,
+    const Command& added_command) {
+  BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionCommandRemoved(
+    const ExtensionId& extension_id,
+    const Command& removed_command) {
+  BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
+                            extension_id);
 }
 
 void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {

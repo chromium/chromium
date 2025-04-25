@@ -18,7 +18,6 @@ namespace developer = api::developer_private;
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
-  command_service_observation_.Observe(CommandService::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
@@ -37,19 +36,6 @@ void DeveloperPrivateEventRouter::OnAppWindowAdded(AppWindow* window) {
 void DeveloperPrivateEventRouter::OnAppWindowRemoved(AppWindow* window) {
   BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             window->extension_id());
-}
-
-void DeveloperPrivateEventRouter::OnExtensionCommandAdded(
-    const ExtensionId& extension_id,
-    const Command& added_command) {
-  BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
-    const ExtensionId& extension_id,
-    const Command& removed_command) {
-  BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
-                            extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {

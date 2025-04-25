@@ -146,6 +146,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   base::Value::List args;
   args.Append(command);
 
+// TODO(crbug.com/406136564): Support tab parameter for commands.onCommand.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   base::Value tab_value;
   if (delegate_) {
     content::WebContents* web_contents =
@@ -178,6 +180,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   }
 
   args.Append(std::move(tab_value));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,

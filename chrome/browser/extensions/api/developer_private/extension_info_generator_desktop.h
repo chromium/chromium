@@ -12,10 +12,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class CommandService;
-}
-
-namespace extensions {
 
 // Generates the developerPrivate api's specification for ExtensionInfo.
 // This class is designed to only have one generation running at a time!
@@ -31,18 +27,12 @@ class ExtensionInfoGenerator : public ExtensionInfoGeneratorShared {
 
   ~ExtensionInfoGenerator() override;
 
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
-
  protected:
   // Fills an ExtensionInfo for the given `extension` and `state`, and
   // asynchronously adds it to the `list`.
   void FillExtensionInfo(const Extension& extension,
                          api::developer_private::ExtensionState state,
                          api::developer_private::ExtensionInfo info) override;
-
- private:
-  raw_ptr<CommandService> command_service_;
 };
 
 }  // namespace extensions

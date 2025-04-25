@@ -25,6 +25,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace extensions {
+class CommandService;
+}
+
 namespace gfx {
 class Image;
 }
@@ -132,6 +136,8 @@ class ExtensionInfoGeneratorShared : public ProfileObserver {
   ExtensionInfosCallback callback_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  raw_ptr<CommandService> command_service_;
 
   base::WeakPtrFactory<ExtensionInfoGeneratorShared> weak_factory_{this};
 
