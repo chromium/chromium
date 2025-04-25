@@ -562,6 +562,16 @@ lens::Payload CreatePageContentPayload(
   return payload;
 }
 
+std::string Base64EncodeRequestId(lens::LensOverlayRequestId request_id) {
+  std::string serialized_request_id;
+  CHECK(request_id.SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  return encoded_request_id;
+}
+
 }  // namespace
 
 PageContent::PageContent() : content_type_(lens::MimeType::kUnknown) {}
@@ -875,6 +885,23 @@ void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
   SendSemanticEventGen204IfEnabled(event, request_id);
 }
 
+void LensOverlayQueryController::RunSuggestInputsCallback() {
+  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(
+      lens::features::GetLensOverlaySendLensInputsForContextualSuggest());
+  suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
+      lens::features::GetLensOverlaySendLensInputsForLensSuggest());
+  suggest_inputs_.set_send_vsint_for_lens_suggest(
+      lens::features::
+          GetLensOverlaySendLensVisualInteractionDataForLensSuggest());
+  if (cluster_info_.has_value()) {
+    suggest_inputs_.set_search_session_id(cluster_info_->search_session_id());
+  } else {
+    suggest_inputs_.clear_search_session_id();
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(suggest_inputs_callback_, suggest_inputs_));
+}
+
 void LensOverlayQueryController::ResetRequestClusterInfoStateForTesting() {
   ResetRequestClusterInfoState();
 }
@@ -945,13 +972,7 @@ std::string LensOverlayQueryController::GetVsridForNewTab() {
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator_->GetNextRequestId(
           RequestIdUpdateMode::kOpenInNewTab);
-  std::string serialized_request_id;
-  CHECK(request_id->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
-  return encoded_request_id;
+  return Base64EncodeRequestId(*request_id);
 }
 
 std::unique_ptr<lens::LensOverlayRequestId>
@@ -961,12 +982,7 @@ LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
   latest_request_id_ = *request_id.get();
   latest_encoded_analytics_id_ =
       request_id_generator_->GetBase32EncodedAnalyticsId();
-  std::string serialized_request_id;
-  CHECK(request_id->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = Base64EncodeRequestId(*request_id);
   suggest_inputs_.set_encoded_request_id(encoded_request_id);
   RunSuggestInputsCallback();
   return request_id;
@@ -1050,16 +1066,18 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
 
-  // Update the suggest inputs with the cluster info's search session id.
-  RunSuggestInputsCallback();
-
   // If routing info is enabled, store the routing info to be included in
   // followup requests.
   if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
       server_response.has_routing_info() &&
       !request_id_generator_->HasRoutingInfo()) {
-    request_id_generator_->SetRoutingInfo(server_response.routing_info());
+    std::unique_ptr<lens::LensOverlayRequestId> request_id =
+        request_id_generator_->SetRoutingInfo(server_response.routing_info());
+    suggest_inputs_.set_encoded_request_id(Base64EncodeRequestId(*request_id));
   }
+
+  // Update the suggest inputs with the cluster info's search session id.
+  RunSuggestInputsCallback();
 
   // Clear the cluster info after its lifetime expires.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1334,7 +1352,10 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
         cluster_info_->has_routing_info() &&
         !request_id_generator_->HasRoutingInfo()) {
-      request_id_generator_->SetRoutingInfo(cluster_info_->routing_info());
+      std::unique_ptr<lens::LensOverlayRequestId> new_request_id =
+          request_id_generator_->SetRoutingInfo(cluster_info_->routing_info());
+      suggest_inputs_.set_encoded_request_id(
+          Base64EncodeRequestId(*new_request_id));
     }
   }
 
@@ -2016,6 +2037,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
     // enabled and the image signals feature flag is disabled.
     suggest_inputs_.set_encoded_image_signals(
         server_response.interaction_response().encoded_response());
+    RunSuggestInputsCallback();
   }
 
   if (lens::features::IsSimplifiedSelectionEnabled() &&
@@ -2333,26 +2355,11 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
   cluster_info_.reset();
   query_controller_state_ = QueryControllerState::kClusterInfoExpired;
   request_id_generator_->ResetRequestId();
+  suggest_inputs_.Clear();
+  RunSuggestInputsCallback();
   parent_query_sent_ = false;
   is_first_page_contents_request_ = true;
   is_first_partial_page_contents_request_ = true;
-}
-
-void LensOverlayQueryController::RunSuggestInputsCallback() {
-  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(
-      lens::features::GetLensOverlaySendLensInputsForContextualSuggest());
-  suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
-      lens::features::GetLensOverlaySendLensInputsForLensSuggest());
-  suggest_inputs_.set_send_vsint_for_lens_suggest(
-      lens::features::
-          GetLensOverlaySendLensVisualInteractionDataForLensSuggest());
-  if (cluster_info_.has_value()) {
-    suggest_inputs_.set_search_session_id(cluster_info_->search_session_id());
-  } else {
-    suggest_inputs_.clear_search_session_id();
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(suggest_inputs_callback_, suggest_inputs_));
 }
 
 void LensOverlayQueryController::OnFullImageEndpointFetcherCreated(

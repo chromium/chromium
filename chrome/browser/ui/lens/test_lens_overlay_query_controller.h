@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "lens_overlay_query_controller.h"
 
@@ -280,6 +281,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event,
       std::optional<lens::LensOverlayRequestId> request_id) override;
+
+  void RunSuggestInputsCallback() override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;

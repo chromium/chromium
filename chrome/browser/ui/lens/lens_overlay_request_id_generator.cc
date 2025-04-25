@@ -77,15 +77,9 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
     }
   }
 
-  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
-  request_id->set_uuid(uuid_);
-  request_id->set_sequence_id(sequence_id_);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      GetCurrentRequestId();
   request_id->set_analytics_id(analytics_id_to_set);
-  request_id->set_long_context_id(long_context_id_);
-  request_id->set_image_sequence_id(image_sequence_id_);
-  if (routing_info_.has_value()) {
-    request_id->mutable_routing_info()->CopyFrom(routing_info_.value());
-  }
   return request_id;
 }
 
@@ -94,9 +88,24 @@ std::string LensOverlayRequestIdGenerator::GetBase32EncodedAnalyticsId() {
                               base32::Base32EncodePolicy::OMIT_PADDING);
 }
 
-void LensOverlayRequestIdGenerator::SetRoutingInfo(
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::SetRoutingInfo(
     lens::LensOverlayRoutingInfo routing_info) {
   routing_info_ = routing_info;
+  return GetCurrentRequestId();
 }
 
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::GetCurrentRequestId() {
+  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
+  request_id->set_uuid(uuid_);
+  request_id->set_sequence_id(sequence_id_);
+  request_id->set_analytics_id(analytics_id_);
+  request_id->set_long_context_id(long_context_id_);
+  request_id->set_image_sequence_id(image_sequence_id_);
+  if (routing_info_.has_value()) {
+    request_id->mutable_routing_info()->CopyFrom(routing_info_.value());
+  }
+  return request_id;
+}
 }  // namespace lens

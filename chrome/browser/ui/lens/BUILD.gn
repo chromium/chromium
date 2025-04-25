@@ -199,7 +199,9 @@ source_set("test_support") {
 
   deps = [
     ":lens",
+    "//base/test:test_support",
     "//google_apis/common",
+    "//testing/gtest",
   ]
 }
 

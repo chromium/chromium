@@ -11,7 +11,10 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
+
 namespace lens {
+
+class TestLensOverlayQueryController;
 
 // The update modes for the request id generator.
 enum class RequestIdUpdateMode {
@@ -63,12 +66,26 @@ class LensOverlayRequestIdGenerator {
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();
 
-  // Sets the routing info to be included in the request id.
-  void SetRoutingInfo(lens::LensOverlayRoutingInfo routing_info);
+  // Sets the routing info to be included in the request id and returns the new
+  // request id with this routing info.
+  std::unique_ptr<lens::LensOverlayRequestId> SetRoutingInfo(
+      lens::LensOverlayRoutingInfo routing_info);
 
   bool HasRoutingInfo() { return routing_info_.has_value(); }
 
+ protected:
+  friend class TestLensOverlayQueryController;
+  // Returns the request id of the current requests stored in the request id
+  // generator.
+  std::unique_ptr<lens::LensOverlayRequestId> GetCurrentRequestIdForTesting() {
+    return GetCurrentRequestId();
+  }
+
  private:
+  // Returns the request id of the current requests stored in the request id
+  // generator.
+  std::unique_ptr<lens::LensOverlayRequestId> GetCurrentRequestId();
+
   // The current uuid. Valid for the duration of a Lens overlay session.
   uint64_t uuid_;
 

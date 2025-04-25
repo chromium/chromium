@@ -211,6 +211,14 @@ class LensOverlayQueryController {
     return partial_page_contents_request_start_time_;
   }
 
+  lens::LensOverlayRequestIdGenerator* request_id_generator_for_testing() {
+    return request_id_generator_.get();
+  }
+
+  lens::proto::LensOverlaySuggestInputs suggest_inputs_for_testing() {
+    return suggest_inputs_;
+  }
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -249,6 +257,11 @@ class LensOverlayQueryController {
   virtual void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event,
       std::optional<lens::LensOverlayRequestId> request_id);
+
+  // Updates the suggest inputs with the feature params and latest cluster info
+  // response, then runs the callback. The request id in the suggest inputs will
+  // if the parameter is not null.
+  virtual void RunSuggestInputsCallback();
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -593,11 +606,6 @@ class LensOverlayQueryController {
 
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
-
-  // Updates the suggest inputs with the feature params and latest cluster info
-  // response, then runs the callback. The request id in the suggest inputs will
-  // if the parameter is not null.
-  void RunSuggestInputsCallback();
 
   // Callback for when the interaction response returned text that should be
   // passed to the overlay.
