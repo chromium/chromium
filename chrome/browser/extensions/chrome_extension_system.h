@@ -34,6 +34,7 @@ class ValueStoreFactoryImpl;
 
 namespace extensions {
 
+class ChromeExtensionRegistrarDelegate;
 class ChromeExtensionSystemSharedFactory;
 class UninstallPingSender;
 class InstallGate;
@@ -132,14 +133,20 @@ class ChromeExtensionSystem : public ExtensionSystem {
     // manifests. This region is shared between all extensions.
     std::unique_ptr<UserScriptManager> user_script_manager_;
     // ExtensionService depends on StateStore and Blocklist.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     std::unique_ptr<ExtensionService> extension_service_;
+#else
+    std::unique_ptr<ChromeExtensionRegistrarDelegate> registrar_delegate_;
+#endif
     std::unique_ptr<ManagementPolicy> management_policy_;
     std::unique_ptr<QuotaService> quota_service_;
     std::unique_ptr<AppSorting> app_sorting_;
     std::unique_ptr<InstallGate> update_install_gate_;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // For verifying the contents of extensions read from disk.
     scoped_refptr<ContentVerifier> content_verifier_;
+#endif
 
     std::unique_ptr<UninstallPingSender> uninstall_ping_sender_;
 

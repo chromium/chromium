@@ -469,10 +469,6 @@
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
@@ -640,7 +636,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (extensions::ExtensionsBrowserClient::Get()) {
     extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   }
-  extensions::DesktopAndroidExtensionSystem::GetFactory();
 #endif
 
   // ---------------------------------------------------------------------------

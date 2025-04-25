@@ -10,6 +10,11 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"
+#endif
 
 namespace {
 AndroidBrowserTest* g_current_test = nullptr;
@@ -17,6 +22,11 @@ AndroidBrowserTest* g_current_test = nullptr;
 
 AndroidBrowserTest::AndroidBrowserTest() {
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Allow unpacked extensions without developer mode for testing.
+  feature_list_.InitAndDisableFeature(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+#endif
   g_current_test = this;
 }
 

@@ -260,6 +260,10 @@ TEST_F(ComponentLoaderTest, Remove) {
   EXPECT_EQ(0u, registry->enabled_extensions().size());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/408458901): Enable on Android when we have an extensions test
+// base class that works on Android. This test seems to depend on how
+// TestExtensionSystem initializes components.
 TEST_F(ComponentLoaderTest, LoadAll) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
@@ -279,6 +283,7 @@ TEST_F(ComponentLoaderTest, LoadAll) {
 
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/408458901): Port these to desktop Android when we have an
 // extensions unit test base class where we can move MaybeSetupTestUser().

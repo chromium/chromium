@@ -19,16 +19,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
-#include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -43,7 +39,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/browser/app_sorting.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
@@ -61,6 +57,17 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
+#else
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
+#include "extensions/browser/null_app_sorting.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -80,7 +87,10 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Helper to serve as an UninstallPingSender::Filter callback.
+// TODO(crbug.com/413460628): This depends on initialization of ExtensionUpdater
+// performed by ExtensionService.
 UninstallPingSender::FilterResult ShouldSendUninstallPing(
     Profile* profile,
     const Extension* extension,
@@ -93,6 +103,7 @@ UninstallPingSender::FilterResult ShouldSendUninstallPing(
   }
   return UninstallPingSender::DO_NOT_SEND_PING;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -193,13 +204,18 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
       !command_line->HasSwitch(::switches::kNoErrorDialogs);
   LoadErrorReporter::Init(allow_noisy_errors);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/413122584): Port ChromeContentVerifierDelegate to desktop
+  // Android.
   content_verifier_ = new ContentVerifier(
       profile_, std::make_unique<ChromeContentVerifierDelegate>(profile_));
+#endif
 
   service_worker_manager_ = std::make_unique<ServiceWorkerManager>(profile_);
 
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool autoupdate_enabled =
       !profile_->IsGuestSession() && !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -207,6 +223,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/413460628): Port ExtensionService to desktop Android.
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, base::CommandLine::ForCurrentProcess(),
       profile_->GetPath().AppendASCII(kInstallDirectoryName),
@@ -215,14 +232,29 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
       ExtensionErrorController::Get(profile_), autoupdate_enabled,
       extensions_enabled, &ready_);
 
+  // TODO(crbug.com/413460628): This depends on the initialization of
+  // ExtensionUpdater by ExtensionService.
   uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
       ExtensionRegistry::Get(profile_),
       base::BindRepeating(&ShouldSendUninstallPing, profile_));
+#else
+  // Perform initialization usually handled by ExtensionService.
+  registrar_delegate_ =
+      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_);
+  auto* registrar = ExtensionRegistrar::Get(profile_);
+  registrar->Init(
+      registrar_delegate_.get(), extensions_enabled,
+      base::CommandLine::ForCurrentProcess(),
+      profile_->GetPath().AppendASCII(kInstallDirectoryName),
+      profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
+  registrar_delegate_->Init(registrar);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // These services must be registered before the ExtensionService tries to
   // load any extensions.
   {
     InstallVerifier::Get(profile_)->Init();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     ChromeContentVerifierDelegate::VerifyInfo::Mode mode =
         ChromeContentVerifierDelegate::GetDefaultMode();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -232,6 +264,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     if (mode >= ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP) {
       content_verifier_->Start();
     }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
     // This class is used to check the permissions of the force-installed
     // extensions inside the managed guest session. It updates the local state
@@ -271,14 +304,25 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
   component_loader->AddDefaultComponentExtensions(skip_session_extensions);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
+#else
+  app_sorting_ = std::make_unique<NullAppSorting>();
+#endif
 
   InitInstallGates();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_service_->Init();
+#else
+  // This is usually handled by ExtensionSystem::Init().
+  ready_.Signal();
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Make sure ExtensionSyncService is created.
   ExtensionSyncService::Get(profile_);
+#endif
 
   // Make the chrome://extension-icon/ resource available.
   content::URLDataSource::Add(profile_,
@@ -290,12 +334,16 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
 }
 
 void ChromeExtensionSystem::Shared::Shutdown() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (content_verifier_.get()) {
     content_verifier_->Shutdown();
   }
   if (extension_service_) {
     extension_service_->Shutdown();
   }
+#else
+  registrar_delegate_.reset();
+#endif
 }
 
 ServiceWorkerManager* ChromeExtensionSystem::Shared::service_worker_manager() {
@@ -320,7 +368,11 @@ ChromeExtensionSystem::Shared::store_factory() const {
 }
 
 ExtensionService* ChromeExtensionSystem::Shared::extension_service() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return extension_service_.get();
+#else
+  return nullptr;
+#endif
 }
 
 ManagementPolicy* ChromeExtensionSystem::Shared::management_policy() {
@@ -340,7 +392,11 @@ AppSorting* ChromeExtensionSystem::Shared::app_sorting() {
 }
 
 ContentVerifier* ChromeExtensionSystem::Shared::content_verifier() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return content_verifier_.get();
+#else
+  return nullptr;
+#endif
 }
 
 //
@@ -437,11 +493,8 @@ void ChromeExtensionSystem::InstallUpdate(
     InstallUpdateCallback install_update_callback) {
   DCHECK(!install_update_callback.is_null());
 
-  ExtensionService* service = extension_service();
-  DCHECK(service);
-
   scoped_refptr<CrxInstaller> installer =
-      CrxInstaller::CreateSilent(service->profile());
+      CrxInstaller::CreateSilent(profile_->GetOriginalProfile());
   installer->set_delete_source(true);
   installer->AddInstallerCallback(std::move(install_update_callback));
   installer->set_install_immediately(install_immediately);
@@ -452,8 +505,13 @@ void ChromeExtensionSystem::InstallUpdate(
 void ChromeExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/413460628): Port ExtensionService to desktop Android.
   extension_service()->PerformActionBasedOnOmahaAttributes(extension_id,
                                                            attributes);
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 }  // namespace extensions

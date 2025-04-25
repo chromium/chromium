@@ -7677,8 +7677,6 @@ static_library("browser") {
       # They should be removed.
       "extensions/desktop_android/desktop_android_extension_host_delegate.cc",
       "extensions/desktop_android/desktop_android_extension_host_delegate.h",
-      "extensions/desktop_android/desktop_android_extension_system.cc",
-      "extensions/desktop_android/desktop_android_extension_system.h",
       "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
       "extensions/desktop_android/desktop_android_extensions_browser_client.h",
       "extensions/desktop_android/desktop_android_runtime_api_delegate.cc",

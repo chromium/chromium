@@ -2473,6 +2473,7 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
     bool needs_sort_ordinal,
     const syncer::StringOrdinal& suggested_page_ordinal,
     prefs::DictionaryValueUpdate* extension_dict) {
+  CHECK(extension_dict);
   // Reinitializes various preferences with empty dictionaries.
   if (!extension_dict->HasKey(pref_names::kPrefPreferences)) {
     extension_dict->Set(pref_names::kPrefPreferences,
@@ -2512,6 +2513,7 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
   // are updated non-transactionally. This is probably not fixable without
   // nested transactional updates to pref dictionaries.
   if (needs_sort_ordinal) {
+    CHECK(app_sorting());
     app_sorting()->EnsureValidOrdinals(extension_id, suggested_page_ordinal);
   }
 

@@ -9,10 +9,10 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/profiles/profile.h"
@@ -281,7 +281,7 @@ bool DesktopAndroidExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
 
 ExtensionSystemProvider*
 DesktopAndroidExtensionsBrowserClient::GetExtensionSystemFactory() {
-  return DesktopAndroidExtensionSystem::GetFactory();
+  return ChromeExtensionSystemFactory::GetInstance();
 }
 
 void DesktopAndroidExtensionsBrowserClient::
