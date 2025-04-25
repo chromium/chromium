@@ -1069,6 +1069,154 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTSuccess) {
   auto ipp_core = std::make_unique<MockIpProtectionCore>(
       &masked_domain_list_manager, &registry);
   ipp_core->SetPRT("serialized-prt");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+  net::ProxyInfo result;
+  delegate->OnResolveProxy(destination_url,
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(top_level_url)),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  ASSERT_TRUE(maybe_header_value.has_value());
+  EXPECT_EQ(maybe_header_value.value(),
+            ":" + base::Base64Encode("serialized-prt") + ":");
+  const auto maybe_item =
+      net::structured_headers::ParseBareItem(maybe_header_value.value());
+  ASSERT_TRUE(maybe_item.has_value());
+  EXPECT_EQ(maybe_item.value(),
+            net::structured_headers::Item(
+                "serialized-prt",
+                net::structured_headers::Item::ItemType::kByteSequenceType));
+}
+
+TEST_F(IpProtectionProxyDelegateTest, NoPRTHeaderWhenFetchOnlyFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableProbabilisticRevealTokens,
+        {{"ProbabilisticRevealTokenFetchOnly", "true"}}}},
+      {});
+
+  const GURL top_level_url =
+      GURL("https://sub.top.com:27272/another/path/arbitrary");
+  const GURL destination_url =
+      GURL("https://foo.example.com:1234/some/arbitrary/path/");
+  std::map<std::string, std::set<std::string>> mdl_map;
+  mdl_map["example.com"] = {};
+  auto masked_domain_list_manager = CreateMdlManager(mdl_map);
+  ProbabilisticRevealTokenRegistry registry;
+  registry.UpdateRegistry(CreateRegistryFromJson(R"json({
+    "domains": [
+      "example.com",
+    ]
+  })json"));
+  auto ipp_core = std::make_unique<MockIpProtectionCore>(
+      &masked_domain_list_manager, &registry);
+  ipp_core->SetPRT("serialized-prt");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+  net::ProxyInfo result;
+  delegate->OnResolveProxy(destination_url,
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(top_level_url)),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  ASSERT_FALSE(maybe_header_value.has_value());
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       PRTHeaderNotAddedToNonProxiedRequestsByDefault) {
+  const GURL top_level_url =
+      GURL("https://sub.top.com:27272/another/path/arbitrary");
+  const GURL destination_url =
+      GURL("https://foo.example.com:1234/some/arbitrary/path/");
+  // Empty MDL.
+  std::map<std::string, std::set<std::string>> mdl_map;
+  auto masked_domain_list_manager = CreateMdlManager(mdl_map);
+  ProbabilisticRevealTokenRegistry registry;
+  registry.UpdateRegistry(CreateRegistryFromJson(R"json({
+    "domains": [
+      "example.com",
+    ]
+  })json"));
+  auto ipp_core = std::make_unique<MockIpProtectionCore>(
+      &masked_domain_list_manager, &registry);
+  ipp_core->SetPRT("serialized-prt");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+  net::ProxyInfo result;
+  delegate->OnResolveProxy(destination_url,
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(top_level_url)),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  ASSERT_FALSE(maybe_header_value.has_value());
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       PRTHeaderNotAddedToNonProxiedRequestsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableProbabilisticRevealTokens,
+        {{"EnableProbabilisticRevealTokensForNonProxiedRequests", "false"}}}},
+      {});
+
+  const GURL top_level_url =
+      GURL("https://sub.top.com:27272/another/path/arbitrary");
+  const GURL destination_url =
+      GURL("https://foo.example.com:1234/some/arbitrary/path/");
+  // Empty MDL.
+  std::map<std::string, std::set<std::string>> mdl_map;
+  auto masked_domain_list_manager = CreateMdlManager(mdl_map);
+  ProbabilisticRevealTokenRegistry registry;
+  registry.UpdateRegistry(CreateRegistryFromJson(R"json({
+    "domains": [
+      "example.com",
+    ]
+  })json"));
+  auto ipp_core = std::make_unique<MockIpProtectionCore>(
+      &masked_domain_list_manager, &registry);
+  ipp_core->SetPRT("serialized-prt");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+  net::ProxyInfo result;
+  delegate->OnResolveProxy(destination_url,
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(top_level_url)),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  ASSERT_FALSE(maybe_header_value.has_value());
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       PRTHeaderAddedToNonProxiedRequestsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableProbabilisticRevealTokens,
+        {{"EnableProbabilisticRevealTokensForNonProxiedRequests", "true"}}}},
+      {});
+
+  const GURL top_level_url =
+      GURL("https://sub.top.com:27272/another/path/arbitrary");
+  const GURL destination_url =
+      GURL("https://foo.example.com:1234/some/arbitrary/path/");
+  // Empty MDL.
+  std::map<std::string, std::set<std::string>> mdl_map;
+  auto masked_domain_list_manager = CreateMdlManager(mdl_map);
+  ProbabilisticRevealTokenRegistry registry;
+  registry.UpdateRegistry(CreateRegistryFromJson(R"json({
+    "domains": [
+      "example.com",
+    ]
+  })json"));
+  auto ipp_core = std::make_unique<MockIpProtectionCore>(
+      &masked_domain_list_manager, &registry);
+  ipp_core->SetPRT("serialized-prt");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate = CreateDelegate(ipp_core.get());
   net::ProxyInfo result;
   delegate->OnResolveProxy(destination_url,
@@ -1104,7 +1252,9 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTNoToken) {
   })json"));
   auto ipp_core = std::make_unique<MockIpProtectionCore>(
       &masked_domain_list_manager, &registry);
-  // `ipp_core` does not have any tokens.
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  // `ipp_core` does not have any PRTs.
   auto delegate = CreateDelegate(ipp_core.get());
   net::ProxyInfo result;
   delegate->OnResolveProxy(destination_url,
@@ -1127,6 +1277,8 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTNotInRegList) {
   auto ipp_core = std::make_unique<MockIpProtectionCore>(
       &masked_domain_list_manager, &registry);
   ipp_core->SetPRT("prt-serialized");
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate = CreateDelegate(ipp_core.get());
   net::ProxyInfo result;
   delegate->OnResolveProxy(destination_url,
@@ -1206,6 +1358,8 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTIntegration) {
   auto ipp_core = std::make_unique<MockIpProtectionCore>(
       &masked_domain_list_manager, &registry,
       /*ip_protection_incognito=*/true, manager.get());
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
 
   // Advance time for PRT manager to fetch PRTs.
   RunForTheSmallestTimeDelta();

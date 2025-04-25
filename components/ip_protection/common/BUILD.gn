@@ -795,6 +795,7 @@ source_set("probabilistic_reveal_token_registry_unittest") {
     ":probabilistic_reveal_token_registry",
     "//base",
     "//base/test:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

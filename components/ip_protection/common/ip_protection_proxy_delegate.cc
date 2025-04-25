@@ -71,15 +71,6 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
 
   result->set_is_mdl_match(true);
 
-  if (const std::optional<net::SchemefulSite>& maybe_top_frame_site =
-          network_anonymization_key.GetTopFrameSite();
-      maybe_top_frame_site.has_value()) {
-    result->SetPRTHeaderValue(
-        GetPRTHeaderValue(url, maybe_top_frame_site.value()));
-  } else {
-    result->SetPRTHeaderValue(std::nullopt);
-  }
-
   // Check availability. We do not proxy requests if:
   // - The allow list has not been populated.
   // - The request doesn't match the allow list.
@@ -130,6 +121,21 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   ProxyResolutionResult resolution_result =
       ClassifyRequest(url, network_anonymization_key, result);
   Telemetry().ProxyResolution(resolution_result);
+
+  const std::optional<net::SchemefulSite>& top_frame_site =
+      network_anonymization_key.GetTopFrameSite();
+  if (bool is_prt_eligible =
+          resolution_result == ProxyResolutionResult::kAttemptProxy ||
+          net::features::kEnableProbabilisticRevealTokensForNonProxiedRequests
+              .Get();
+      is_prt_eligible &&
+      !net::features::kProbabilisticRevealTokenFetchOnly.Get() &&
+      top_frame_site.has_value()) {
+    result->SetPRTHeaderValue(GetPRTHeaderValue(url, top_frame_site.value()));
+  } else {
+    result->SetPRTHeaderValue(std::nullopt);
+  }
+
   if (resolution_result != ProxyResolutionResult::kAttemptProxy) {
     return;
   }
@@ -154,8 +160,6 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   }
 
   if (VLOG_IS_ON(3)) {
-    std::optional<net::SchemefulSite> top_frame_site =
-        network_anonymization_key.GetTopFrameSite();
     VLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
             << (top_frame_site.has_value() ? top_frame_site.value()
                                            : net::SchemefulSite())

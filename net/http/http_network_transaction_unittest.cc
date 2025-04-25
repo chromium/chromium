@@ -28207,6 +28207,152 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 }
 
+// Test that the 'Sec-Probabilistic-Reveal-Token' header is not sent for
+// requests that are not sent through an IP Protection proxy.
+TEST_P(
+    HttpNetworkTransactionTest,
+    HttpsNestedProxyProbabilisticRevealTokenRequestHeaderNotAddedForNonProxiedRequests) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableIpProtectionProxy,
+        {{features::kIpPrivacyDirectOnly.name, "true"}}},
+       {features::kEnableProbabilisticRevealTokens,
+        {{features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.name,
+          "true"},
+         {features::kEnableProbabilisticRevealTokensForNonProxiedRequests.name,
+          "false"}}}},
+      /*disabled_features=*/{});
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
+      session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kIpProtectionDirectChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
+// Test that the 'Sec-Probabilistic-Reveal-Token' header is sent for
+// requests that are not sent through an IP Protection proxy if the
+// corresponding feature is enabled.
+TEST_P(
+    HttpNetworkTransactionTest,
+    HttpsNestedProxyProbabilisticRevealTokenRequestHeaderAddedForNonProxiedRequestsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableIpProtectionProxy,
+        {{features::kIpPrivacyDirectOnly.name, "true"}}},
+       {features::kEnableProbabilisticRevealTokens,
+        {{features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.name,
+          "true"},
+         {features::kEnableProbabilisticRevealTokensForNonProxiedRequests.name,
+          "true"}}}},
+      /*disabled_features=*/{});
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
+      session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kIpProtectionDirectChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n"
+                // IpProtectionProxyDelegate defined above hard
+                // codes following serialized PRT value
+                "Sec-Probabilistic-Reveal-Token: :serializedPRT:\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
 // Tests specific to the HappyEyeballsV3 feature.
 // TODO(crbug.com/346835898): Find ways to run more tests with the
 // HappyEyeballsV3 feature enabled.

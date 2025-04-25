@@ -1293,15 +1293,19 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
+  bool is_proxied_request =
+      proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct();
   if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
-      proxy_info_.is_for_ip_protection()) {
-    if (!proxy_info_.is_direct()) {
-      request_headers_.SetHeader("IP-Protection", "1");
-    }
+      is_proxied_request) {
+    request_headers_.SetHeader("IP-Protection", "1");
   }
 
-  if (features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.Get() &&
-      proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct()) {
+  if (bool is_prt_eligible =
+          features::kEnableProbabilisticRevealTokensForNonProxiedRequests
+              .Get() ||
+          is_proxied_request;
+      features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.Get() &&
+      is_prt_eligible) {
     if (std::optional<std::string> maybe_prt_header_value =
             proxy_info_.PRTHeaderValue();
         maybe_prt_header_value.has_value()) {

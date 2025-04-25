@@ -96,7 +96,9 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
                                                : MdlType::kRegularBrowsing)
                     : MdlType::kIncognito) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  if (ip_protection_incognito && ipp_prt_manager_) {
+  bool should_request_prts = ip_protection_incognito ||
+       !net::features::kProbabilisticRevealTokensOnlyInIncognito.Get();
+  if (ipp_prt_manager_ && should_request_prts) {
     ipp_prt_manager_->RequestTokens();
   }
 }
@@ -258,8 +260,7 @@ bool IpProtectionCoreImpl::ShouldRequestIncludeProbabilisticRevealToken(
           net::features::kEnableProbabilisticRevealTokens)) {
     return false;
   }
-  if (net::features::kAttachProbabilisticRevealTokensOnAllProxiedRequests
-          .Get()) {
+  if (net::features::kBypassProbabilisticRevealTokenRegistry.Get()) {
     return true;
   }
   return probabilistic_reveal_token_registry_->IsRegistered(request_url);

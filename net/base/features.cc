@@ -363,10 +363,35 @@ const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
     /*name=*/"ProbabilisticRevealTokenServerPath",
     /*default_value=*/"/v1/issueprts"};
 
+const base::FeatureParam<bool> kBypassProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"BypassProbabilisticRevealTokenRegistry",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kUseCustomProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"UseCustomProbabilisticRevealTokenRegistry",
+    /*default_value=*/false};
+
+const base::FeatureParam<std::string> kCustomProbabilisticRevealTokenRegistry{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"CustomProbabilisticRevealTokenRegistry",
+    /*default_value=*/""};
+
+const base::FeatureParam<bool> kProbabilisticRevealTokensOnlyInIncognito{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokensOnlyInIncognito",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kProbabilisticRevealTokenFetchOnly{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenFetchOnly",
+    /*default_value=*/false};
+
 const base::FeatureParam<bool>
-    kAttachProbabilisticRevealTokensOnAllProxiedRequests{
+    kEnableProbabilisticRevealTokensForNonProxiedRequests{
         &kEnableProbabilisticRevealTokens,
-        /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
+        /*name=*/"EnableProbabilisticRevealTokensForNonProxiedRequests",
         /*default_value=*/false};
 
 const base::FeatureParam<bool>
