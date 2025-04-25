@@ -62,48 +62,6 @@ using testing::_;
 using testing::Invoke;
 using testing::Property;
 
-AggregatableReportRequest GenerateReportRequest(
-    PrivateAggregationHost::ReportRequestGenerator generator,
-    PrivateAggregationPendingContributions::Wrapper contributions) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiErrorReporting)) {
-    return std::move(generator).Run(
-        std::move(contributions.GetContributionsVector()));
-  }
-
-  EXPECT_TRUE(
-      contributions.GetPendingContributions().are_contributions_finalized());
-
-  // This function should only be used for flows that don't call
-  // `ContributeToHistogramOnEvent()`.
-  EXPECT_TRUE(contributions.GetPendingContributions()
-                  .GetConditionalContributionsForTesting()
-                  .empty());
-
-  std::vector<PrivateAggregationPendingContributions::BudgeterResult>
-      all_approved(
-          /*n=*/contributions.GetPendingContributions()
-              .unconditional_contributions()
-              .size(),
-          PrivateAggregationPendingContributions::BudgeterResult::kApproved);
-
-  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
-      final_unmerged_contributions =
-          contributions.GetPendingContributions()
-              .CompileFinalUnmergedContributions(
-                  /*test_budgeter_results=*/all_approved,
-                  PrivateAggregationPendingContributions::
-                      PendingReportLimitResult::kNotAtLimit,
-                  PrivateAggregationPendingContributions::NullReportBehavior::
-                      kSendNullReport);
-
-  all_approved.resize(final_unmerged_contributions.size());
-
-  return std::move(generator).Run(
-      std::move(contributions.GetPendingContributions())
-          .TakeFinalContributions(all_approved));
-}
-
 auto GenerateAndSaveReportRequest(
     std::optional<AggregatableReportRequest>* out) {
   return [out](PrivateAggregationHost::ReportRequestGenerator generator,

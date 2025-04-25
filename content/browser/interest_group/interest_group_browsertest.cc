@@ -9130,8 +9130,8 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
                 PrivateAggregationBudgetKey budget_key,
                 PrivateAggregationHost::NullReportBehavior
                     null_report_behavior) {
-              AggregatableReportRequest request = std::move(generator).Run(
-                  std::move(contributions.GetContributionsVector()));
+              AggregatableReportRequest request = GenerateReportRequest(
+                  std::move(generator), std::move(contributions));
               ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
               EXPECT_EQ(request.payload_contents().contributions[0].bucket,
                         bucket);
@@ -9434,8 +9434,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            request_returned = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            request_returned = GenerateReportRequest(std::move(generator),
+                                                     std::move(contributions));
 
             EXPECT_EQ(budget_key.caller_api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
@@ -20908,8 +20908,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].bucket, 3);
             EXPECT_EQ(request.payload_contents().contributions[0].value, 5);
