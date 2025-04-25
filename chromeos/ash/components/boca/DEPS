@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/services/network_config/public/cpp",
   "+components/content_settings",
   "+components/gcm_driver",
+  "+components/session_manager",
   "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
   "+components/soda",

@@ -178,6 +178,10 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
   speech_recognizer_->Start();
 }
 
+bool BabelOrcaProducer::IsProducer() {
+  return true;
+}
+
 void BabelOrcaProducer::InitSending(bool signed_in) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!signed_in) {

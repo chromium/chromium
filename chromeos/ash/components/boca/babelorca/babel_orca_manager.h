@@ -105,6 +105,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   void OnLocalCaptionConfigUpdated(
       const ::boca::CaptionsConfig& config) override;
   void OnLocalCaptionClosed() override;
+  void OnSessionCaptionClosed(bool is_error) override;
 
   bool IsCaptioningAvailable();
 

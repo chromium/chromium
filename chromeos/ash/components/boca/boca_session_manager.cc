@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,6 +88,10 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
+  if (session_manager::SessionManager::Get()) {
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
+  }
   LoadInitialNetworkState();
   LoadCurrentSession(/*from_polling=*/false);
   StartSessionPolling(/*in_session=*/false);
@@ -121,6 +126,8 @@ void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
 void BocaSessionManager::Observer::OnSodaStatusUpdate(SodaStatus status) {}
 
 void BocaSessionManager::Observer::OnLocalCaptionClosed() {}
+
+void BocaSessionManager::Observer::OnSessionCaptionClosed(bool is_error) {}
 
 void BocaSessionManager::Observer::OnSessionRosterUpdated(
     const ::boca::Roster& roster) {}
@@ -305,6 +312,12 @@ void BocaSessionManager::OnAppWindowOpened() {
   }
 }
 
+void BocaSessionManager::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->IsScreenLocked()) {
+    CloseAllCaptions();
+  }
+}
+
 void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {
@@ -411,6 +424,7 @@ void BocaSessionManager::OnIdentityManagerShutdown(
 
 void BocaSessionManager::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user || active_user->GetAccountId() != account_id_) {
+    CloseAllCaptions();
     return;
   }
   LoadCurrentSession(/*from_polling=*/false);
@@ -766,6 +780,16 @@ void BocaSessionManager::UpdateNetworkRestriction(
 void BocaSessionManager::NotifySodaStatusListeners(SodaStatus status) {
   for (auto& observer : observers_) {
     observer.OnSodaStatusUpdate(status);
+  }
+}
+
+void BocaSessionManager::CloseAllCaptions() {
+  is_local_caption_enabled_ = false;
+  for (auto& observer : observers_) {
+    if (is_producer_) {
+      observer.OnSessionCaptionClosed(/*is_error=*/false);
+    }
+    observer.OnLocalCaptionClosed();
   }
 }
 

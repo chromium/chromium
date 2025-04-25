@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -22,6 +23,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
@@ -39,12 +41,17 @@ namespace google_apis {
 enum ApiErrorCode;
 }
 
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
+
 namespace ash::boca {
 
 class BocaSessionManager
     : public chromeos::network_config::CrosNetworkConfigObserver,
       public signin::IdentityManager::Observer,
-      public user_manager::UserManager::UserSessionStateObserver {
+      public user_manager::UserManager::UserSessionStateObserver,
+      public session_manager::SessionManagerObserver {
  public:
   using SessionCaptionInitializer =
       base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>;
@@ -139,6 +146,10 @@ class BocaSessionManager
     // Notifies when the status of SODA changes.
     virtual void OnSodaStatusUpdate(SodaStatus status);
 
+    // Notifies when session caption is disabled from a source other than the
+    // boca app.
+    virtual void OnSessionCaptionClosed(bool is_error);
+
     // Notifies when session roster updated. Will emit when only elements order
     // changed in the vector too. Deferred to events consumer to decide on
     // the actual action.
@@ -186,6 +197,9 @@ class BocaSessionManager
   virtual void UpdateTabActivity(std::u16string title);
 
   virtual void OnAppWindowOpened();
+
+  // session_manager::SessionManagerObserver::Observer
+  void OnSessionStateChanged() override;
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
@@ -252,6 +266,8 @@ class BocaSessionManager
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
   void NotifySodaStatusListeners(SodaStatus status);
 
+  void CloseAllCaptions();
+
   const bool is_producer_;
   base::TimeDelta in_session_polling_interval_;
   base::TimeDelta indefinite_polling_interval_;
@@ -297,6 +313,9 @@ class BocaSessionManager
   bool is_local_caption_enabled_ = false;
   SessionCaptionInitializer session_caption_initializer_;
   net::BackoffEntry student_heartbeat_retry_backoff_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

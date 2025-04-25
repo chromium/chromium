@@ -162,6 +162,18 @@ void BabelOrcaManager::OnLocalCaptionClosed() {
       /*local_captions_enabled=*/false);
 }
 
+void BabelOrcaManager::OnSessionCaptionClosed(bool is_error) {
+  if (!babel_orca_controller_ || !babel_orca_controller_->IsProducer()) {
+    LOG_IF(ERROR,
+           babel_orca_controller_ && !babel_orca_controller_->IsProducer())
+        << "Session caption closed called on consumer.";
+    return;
+  }
+  // `translations_enabled` has no effect for producer.
+  babel_orca_controller_->OnSessionCaptionConfigUpdated(
+      /*session_captions_enabled=*/false, /*translations_enabled=*/false);
+}
+
 bool BabelOrcaManager::IsCaptioningAvailable() {
   // TODO(b/361086008): Implement IsCaptioningAvailable();
   return true;

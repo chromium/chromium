@@ -32,6 +32,8 @@
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/soda/constants.h"
@@ -39,6 +41,7 @@
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
@@ -122,6 +125,7 @@ class MockObserver : public BocaSessionManager::Observer {
       (override));
   MOCK_METHOD(void, OnAppReloaded, (), (override));
   MOCK_METHOD(void, OnLocalCaptionClosed, (), (override));
+  MOCK_METHOD(void, OnSessionCaptionClosed, (bool), (override));
 };
 
 class MockBocaAppClient : public BocaAppClient {
@@ -334,6 +338,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
   }
 
  protected:
+  session_manager::SessionManager device_session_manger_;
   base::Time session_start_time_ = base::Time::Now();
   bool is_producer_ = true;
 
@@ -1218,6 +1223,8 @@ TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/true))
       .Times(0);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(1);
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed(/*is_error=*/false)).Times(1);
   user_manager->SwitchActiveUser(account_id);
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
 
@@ -1225,6 +1232,8 @@ TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/true))
       .Times(1);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(0);
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
   user_manager->SwitchActiveUser(
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId));
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
@@ -1549,6 +1558,19 @@ TEST_F(BocaSessionManagerTest, InitializerNotSet) {
   base::test::TestFuture<bool> test_future;
   boca_session_manager()->InitSessionCaption(test_future.GetCallback());
   EXPECT_TRUE(test_future.Get());
+}
+
+TEST_F(BocaSessionManagerTest, NotifyCloseCaptionsOnDeviceSessionLocked) {
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed(/*is_error=*/false)).Times(1);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(1);
+  device_session_manger_.SetSessionState(session_manager::SessionState::LOCKED);
+}
+
+TEST_F(BocaSessionManagerTest,
+       DoesNotNotifyCloseCaptionsOnDeviceSessionNotLocked) {
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(0);
+  device_session_manger_.SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
 class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {
@@ -2291,6 +2313,28 @@ TEST_F(BocaSessionManagerConsumerTest,
   // Have updated two sessions.
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 2 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerConsumerTest,
+       NotifyCloseLocalCaptionsOnlyOnDeviceSessionLocked) {
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(1);
+  device_session_manger_.SetSessionState(session_manager::SessionState::LOCKED);
+}
+
+TEST_F(BocaSessionManagerConsumerTest,
+       NotifyCloseLocalCaptionsOnlyOnActiveUserChanged) {
+  const auto account_id =
+      AccountId::FromUserEmailGaiaId(kTestUserEmail2, kTestGaiaId2);
+  const std::string username_hash =
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
+  auto* user_manager = user_manager::UserManager::Get();
+  user_manager->UserLoggedIn(account_id, username_hash);
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+  EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
+  EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(1);
+  user_manager::UserManager::Get()->SwitchActiveUser(
+      AccountId::FromUserEmailGaiaId(kTestUserEmail2, kTestGaiaId2));
 }
 
 }  // namespace

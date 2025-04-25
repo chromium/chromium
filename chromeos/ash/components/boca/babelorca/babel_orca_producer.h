@@ -73,6 +73,7 @@ class BabelOrcaProducer : public BabelOrcaController {
   void OnSessionCaptionConfigUpdated(bool session_captions_enabled,
                                      bool translations_enabled) override;
   void OnLocalCaptionConfigUpdated(bool local_captions_enabled) override;
+  bool IsProducer() override;
 
  private:
   void InitSending(bool signed_in);
