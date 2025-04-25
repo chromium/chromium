@@ -822,7 +822,7 @@
     },
     {
       name: "CapturedSurfaceResolution",
-      status: { "Win": "stable", "Mac": "stable", "ChromeOS": "experimental", "default": ""},
+      status: { "Win": "stable", "Mac": "stable", "ChromeOS": "stable", "default": ""},
     },
     {
       name: "CaptureHandle",
