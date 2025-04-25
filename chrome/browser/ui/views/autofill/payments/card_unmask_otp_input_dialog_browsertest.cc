@@ -21,7 +21,8 @@ const int kDefaultOtpLength = 6;
 
 class CardUnmaskOtpInputDialogBrowserTest
     : public DialogBrowserTest,
-      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
+      public testing::WithParamInterface<
+          std::tuple<CardUnmaskChallengeOptionType, CreditCard::RecordType>> {
  public:
   CardUnmaskOtpInputDialogBrowserTest() = default;
   CardUnmaskOtpInputDialogBrowserTest(
@@ -33,9 +34,10 @@ class CardUnmaskOtpInputDialogBrowserTest
   void ShowUi(const std::string& name) override {
     CardUnmaskChallengeOption challenge_option;
     challenge_option.challenge_input_length = kDefaultOtpLength;
-    challenge_option.type = GetParam();
+    challenge_option.type = std::get<0>(GetParam());
+    CreditCard::RecordType card_type = std::get<1>(GetParam());
     controller_ = std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
-        challenge_option, /*delegate=*/nullptr);
+        card_type, challenge_option, /*delegate=*/nullptr);
     controller_->ShowDialog(base::BindOnce(
         &CreateAndShowOtpInputDialog, controller_->GetWeakPtr(),
         base::Unretained(
@@ -57,7 +59,28 @@ class CardUnmaskOtpInputDialogBrowserTest
   }
 
   std::string GetOtpAuthType() {
-    return autofill_metrics::GetOtpAuthType(GetParam());
+    switch (std::get<0>(GetParam())) {
+      case CardUnmaskChallengeOptionType::kSmsOtp:
+        return "SmsOtp";
+      case CardUnmaskChallengeOptionType::kEmailOtp:
+        return "EmailOtp";
+      default:
+        NOTREACHED();
+    }
+  }
+
+  std::string GetCardType() {
+    switch (std::get<1>(GetParam())) {
+      case CreditCard::RecordType::kVirtualCard:
+        return "VirtualCard";
+      case CreditCard::RecordType::kFullServerCard:
+      case CreditCard::RecordType::kMaskedServerCard:
+        return "ServerCard";
+      case CreditCard::RecordType::kLocalCard:
+        return "LocalCard";
+      default:
+        NOTREACHED();
+    }
   }
 
  private:
@@ -75,7 +98,9 @@ IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
   // Right now the view is created but not injected. Need to change this when
   // moving this logging.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Shown", true, 1);
+      base::StrCat({"Autofill.OtpInputDialog.", GetCardType(), ".",
+                    GetOtpAuthType(), ".Shown"}),
+      true, 1);
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
@@ -125,8 +150,14 @@ IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     CardUnmaskOtpInputDialogBrowserTest,
-    testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
-                    CardUnmaskChallengeOptionType::kEmailOtp));
+    testing::ValuesIn({
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kVirtualCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kMaskedServerCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kEmailOtp,
+                        CreditCard::RecordType::kVirtualCard),
+    }));
 
 }  // namespace
 }  // namespace autofill

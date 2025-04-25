@@ -115,6 +115,7 @@ void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
 }
 
 void TestPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   show_otp_input_dialog_ = true;

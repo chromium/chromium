@@ -87,6 +87,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure no_user_perceived_authentication_callback) override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
   void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   PaymentsWindowManager* GetPaymentsWindowManager() override;

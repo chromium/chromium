@@ -152,6 +152,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
   void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;

@@ -152,20 +152,24 @@ void LogOtpAuthSelectChallengeOptionRequestLatency(
     CardUnmaskChallengeOptionType type);
 
 // Logs whenever the OTP input dialog is triggered and it is shown.
-void LogOtpInputDialogShown(CardUnmaskChallengeOptionType type);
+void LogOtpInputDialogShown(CreditCard::RecordType card_type,
+                            CardUnmaskChallengeOptionType type);
 
 // Logs the result of how the dialog is dismissed.
-void LogOtpInputDialogResult(OtpInputDialogResult result,
+void LogOtpInputDialogResult(CreditCard::RecordType card_type,
+                             OtpInputDialogResult result,
                              bool temporary_error_shown,
                              CardUnmaskChallengeOptionType type);
 
 // Logs when the temporary error shown in the dialog.
-void LogOtpInputDialogErrorMessageShown(OtpInputDialogError error,
+void LogOtpInputDialogErrorMessageShown(CreditCard::RecordType card_type,
+                                        OtpInputDialogError error,
                                         CardUnmaskChallengeOptionType type);
 
 // Logs when the "Get New Code" button in the dialog is clicked and user is
 // requesting a new OTP.
-void LogOtpInputDialogNewOtpRequested(CardUnmaskChallengeOptionType type);
+void LogOtpInputDialogNewOtpRequested(CreditCard::RecordType card_type,
+                                      CardUnmaskChallengeOptionType type);
 
 // Generate the OTP auth type string according to the challenge option type.
 // This is used as a helper function for LogOtp methods.

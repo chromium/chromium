@@ -90,12 +90,17 @@ void LogOtpAuthSelectChallengeOptionRequestLatency(
       duration);
 }
 
-void LogOtpInputDialogShown(CardUnmaskChallengeOptionType type) {
+void LogOtpInputDialogShown(CreditCard::RecordType card_type,
+                            CardUnmaskChallengeOptionType type) {
   base::UmaHistogramBoolean(
-      "Autofill.OtpInputDialog." + GetOtpAuthType(type) + ".Shown", true);
+      base::StrCat({"Autofill.OtpInputDialog",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".Shown"}),
+      true);
 }
 
-void LogOtpInputDialogResult(OtpInputDialogResult result,
+void LogOtpInputDialogResult(CreditCard::RecordType card_type,
+                             OtpInputDialogResult result,
                              bool temporary_error_shown,
                              CardUnmaskChallengeOptionType type) {
   DCHECK_GT(result, OtpInputDialogResult::kUnknown);
@@ -104,25 +109,36 @@ void LogOtpInputDialogResult(OtpInputDialogResult result,
                                                  ? ".WithPreviousTemporaryError"
                                                  : ".WithNoTemporaryError";
   base::UmaHistogramEnumeration(
-      "Autofill.OtpInputDialog." + GetOtpAuthType(type) + ".Result", result);
-  base::UmaHistogramEnumeration("Autofill.OtpInputDialog." +
-                                    GetOtpAuthType(type) + ".Result" +
-                                    temporary_error_shown_suffix,
-                                result);
+      base::StrCat({"Autofill.OtpInputDialog",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".Result"}),
+      result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.OtpInputDialog",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".Result",
+                    temporary_error_shown_suffix}),
+      result);
 }
 
-void LogOtpInputDialogErrorMessageShown(OtpInputDialogError error,
+void LogOtpInputDialogErrorMessageShown(CreditCard::RecordType card_type,
+                                        OtpInputDialogError error,
                                         CardUnmaskChallengeOptionType type) {
   DCHECK_GT(error, OtpInputDialogError::kUnknown);
   DCHECK_LE(error, OtpInputDialogError::kMaxValue);
   base::UmaHistogramEnumeration(
-      "Autofill.OtpInputDialog." + GetOtpAuthType(type) + ".ErrorMessageShown",
+      base::StrCat({"Autofill.OtpInputDialog",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".ErrorMessageShown"}),
       error);
 }
 
-void LogOtpInputDialogNewOtpRequested(CardUnmaskChallengeOptionType type) {
+void LogOtpInputDialogNewOtpRequested(CreditCard::RecordType card_type,
+                                      CardUnmaskChallengeOptionType type) {
   base::UmaHistogramBoolean(
-      "Autofill.OtpInputDialog." + GetOtpAuthType(type) + ".NewOtpRequested",
+      base::StrCat({"Autofill.OtpInputDialog",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".NewOtpRequested"}),
       true);
 }
 

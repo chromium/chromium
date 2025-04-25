@@ -231,11 +231,12 @@ void IOSChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 }
 
 void IOSChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   otp_input_dialog_controller_ =
-      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(challenge_option,
-                                                               delegate);
+      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
+          card_type, challenge_option, delegate);
   otp_input_dialog_controller_weak_ =
       otp_input_dialog_controller_->GetImplWeakPtr();
   [client_->commands_handler() continueCardUnmaskWithOtpAuth];
