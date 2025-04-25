@@ -151,6 +151,10 @@
     CHECK(!_identityChooserCoordinator);
     CHECK(!_activityOverlayCoordinator);
     [_addAccountSigninCoordinator interruptAnimated:animated];
+    // By stopping the add account coordinator, `-[InstantSigninCoordinator
+    // addAccountDoneWithResult:]` has been called. Therefore `self` is now
+    // stopped and deallocated.
+    return;
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
     [self stopIdentityChooserCoordinator];
