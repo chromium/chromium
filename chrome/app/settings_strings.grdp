@@ -1992,9 +1992,6 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED" desc="Label for safe browsing enhanced protection mode">
     Enhanced protection
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC" desc="Description of safe browsing enhanced protection mode">
-    Real-time, proactive protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
-  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED" desc="Description of safe browsing enhanced protection mode">
     Real-time, AI-powered protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
   </message>

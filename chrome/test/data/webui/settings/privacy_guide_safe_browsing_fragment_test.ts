@@ -91,7 +91,8 @@ suite('SafeBrowsingFragment', function() {
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
             '#safeBrowsingRadioEnhanced');
     assertTrue(!!enhancedProtection);
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     const group = fragment.shadowRoot!.querySelector<HTMLElement>(
