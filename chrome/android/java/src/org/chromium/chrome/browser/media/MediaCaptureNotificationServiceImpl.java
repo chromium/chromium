@@ -185,10 +185,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                     }
                 }
             }
-            // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not
-            // require a foreground service.
-            if (BuildConfig.IS_DESKTOP_ANDROID
-                    && !MediaCaptureNotificationUtil.isCapture(mediaType)) {
+            if (BuildConfig.IS_DESKTOP_ANDROID) {
                 if (mNotifications.size() > 1 && mNotifications.firstKey() == notificationId) {
                     // For large screen device, we use the previous notification to update
                     // foreground
@@ -196,7 +193,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                     Map.Entry<Integer, NotificationWrapper> previousNotification =
                             mNotifications.higherEntry(notificationId);
                     startOrUpdateForegroundService(
-                            previousNotification.getKey(), previousNotification.getValue());
+                            previousNotification.getKey(),
+                            previousNotification.getValue(),
+                            mediaType);
                 }
             }
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
@@ -246,12 +245,10 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         appContext.getString(R.string.app_name),
                         contentIntent,
                         stopIntent);
-        // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not require
-        // a foreground service.
-        if (BuildConfig.IS_DESKTOP_ANDROID && !MediaCaptureNotificationUtil.isCapture(mediaType)) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
-            startOrUpdateForegroundService(notificationId, notification);
+            startOrUpdateForegroundService(notificationId, notification, mediaType);
         } else {
             mNotificationManager.notify(notification);
         }
@@ -280,7 +277,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     }
 
     private void startOrUpdateForegroundService(
-            int notificationId, NotificationWrapper notification) {
+            int notificationId, NotificationWrapper notification, @MediaType int mediaType) {
         int foregroundServiceType = 0;
         if (ActivityCompat.checkSelfPermission(getService(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -289,6 +286,12 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         if (ActivityCompat.checkSelfPermission(getService(), Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+        }
+        if (MediaCaptureNotificationUtil.isCapture(mediaType)) {
+            foregroundServiceType |=
+                    mediaType == MediaType.TAB_CAPTURE
+                            ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                            : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
         }
         ForegroundServiceUtils.getInstance()
                 .startForeground(
