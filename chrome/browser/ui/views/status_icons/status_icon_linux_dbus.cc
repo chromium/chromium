@@ -517,6 +517,8 @@ void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
     model = empty_menu_.get();
   }
 
+  // `menu_` keeps a raw pointer to `click_action_menu_`. Clear that pointer.
+  menu_->SetModel(nullptr, /*send_signal=*/false);
   click_action_menu_ = std::make_unique<ui::SimpleMenuModel>(this);
   if (delegate_->HasClickAction() && !delegate_->GetToolTip().empty()) {
     click_action_menu_->AddItem(0, delegate_->GetToolTip());
