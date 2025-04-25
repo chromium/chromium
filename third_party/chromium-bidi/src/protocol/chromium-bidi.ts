@@ -114,6 +114,13 @@ type ExternalSpecCommand<T> = {
   id: WebDriverBidi.JsUint;
 } & T;
 
+type ExternalSpecEvent<T> = {
+  // type is defined by the main WebDriver BiDi spec and extension specs do
+  // not re-define it. Therefore, it's not part of generated types.
+  type: 'event';
+} & T &
+  WebDriverBidi.Extensible;
+
 export type Command = (
   | WebDriverBidi.Command
   | Cdp.Command
@@ -125,10 +132,8 @@ export type CommandResponse =
   | WebDriverBidi.CommandResponse
   | Cdp.CommandResponse;
 
-export type BluetoothEvent = {
-  type: 'event';
-} & (WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated &
-  WebDriverBidi.Extensible);
+export type BluetoothEvent =
+  ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated>;
 export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
 
 export const EVENT_NAMES = new Set([
