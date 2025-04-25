@@ -681,7 +681,7 @@ const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {
   }
 
   return l10n_util::GetStringFUTF8(
-      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
+      IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN,
       l10n_util::GetStringUTF16(capture_source_id),
       l10n_util::GetStringUTF16(
           controller->type() == CaptureModeType::kImage
