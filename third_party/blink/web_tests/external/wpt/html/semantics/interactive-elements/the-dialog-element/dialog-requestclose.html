@@ -10,6 +10,8 @@
 <dialog>Dialog</dialog>
 
 <script>
+const waitForTick = () =>  new Promise(resolve => step_timeout(resolve, 0));
+
 const dialog = document.querySelector('dialog');
 function openDialog(openMethod) {
   assert_false(dialog.open);
@@ -49,7 +51,7 @@ async function setup(t,closedby) {
     dialog.setAttribute('closedby',closedby);
   }
   // Be sure any pending close events get fired.
-  await new Promise(resolve => requestAnimationFrame(resolve));
+  await waitForTick();
   return getSignal(t);
 }
 
@@ -75,7 +77,7 @@ async function setup(t,closedby) {
       assert_false(dialog.open);
       assert_false(dialog.matches(':open'));
       assert_array_equals(events,['cancel'],'close is scheduled');
-      await new Promise(resolve => requestAnimationFrame(resolve));
+      await waitForTick();
       assert_array_equals(events,['cancel','close']);
     },`requestClose fires both cancel and close ${testDescription}`);
 
@@ -100,7 +102,7 @@ async function setup(t,closedby) {
       assert_array_equals(events,['cancel']);
     },`closedby has no effect on dialog.requestClose() ${testDescription}`);
 
-    if (dialog.closedBy != "none") {
+    if (closedby != "none") {
       promise_test(async (t) => {
         const signal = await setup(t,closedby);
         let shouldPreventDefault = true;
@@ -180,7 +182,7 @@ promise_test(async (t) => {
   dialog.requestClose();
   assert_false(dialog.open);
   assert_array_equals(events,['cancel'],'close is scheduled');
-  await new Promise(resolve => requestAnimationFrame(resolve));
+  await waitForTick();
   assert_array_equals(events,['cancel','close']);
 },`requestClose fires cancel and close when dialog is open via attribute`);
 
