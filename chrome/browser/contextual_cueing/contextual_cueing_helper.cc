@@ -102,18 +102,27 @@ tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
   return browser->browser_window_features()->glic_nudge_controller();
 }
 
-void ContextualCueingHelper::DidStartNavigation(
+void ContextualCueingHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Ignore subframe navigations and reloads.
-  if (!navigation_handle->IsInMainFrame()) {
+  // Ignore sub-frame and uncommitted navigations.
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
+  if (!navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  // Ignore reloads.
   if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
 
-  // TODO: b/412468816 - See what we should do about fragments.
+  // Ignore fragment changes.
+  if (navigation_handle->GetPreviousPrimaryMainFrameURL().GetWithoutRef() ==
+      navigation_handle->GetURL().GetWithoutRef()) {
+    return;
+  }
 
   // Clear zero state suggestions if needed.
   if (base::FeatureList::IsEnabled(kGlicZeroStateSuggestions) &&
@@ -121,6 +130,10 @@ void ContextualCueingHelper::DidStartNavigation(
           web_contents()->GetPrimaryPage())) {
     ZeroStateSuggestionsPageData::DeleteForPage(
         web_contents()->GetPrimaryPage());
+  }
+
+  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+    return;
   }
 
   // Make sure we always clear the nudge label anyway despite operating on
@@ -131,26 +144,10 @@ void ContextualCueingHelper::DidStartNavigation(
         web_contents(), std::string(),
         tabs::GlicNudgeActivity::kNudgeIgnoredNavigation, base::DoNothing());
   }
-}
-
-void ContextualCueingHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
-    return;
-  }
-
-  // Ignore sub-frame navigations.
-  if (!navigation_handle->IsInMainFrame()) {
-    return;
-  }
 
   // Do not report page loads for these types of navigations.
-  if (navigation_handle->IsErrorPage() || !navigation_handle->HasCommitted() ||
+  if (navigation_handle->IsErrorPage() ||
       !navigation_handle->ShouldUpdateHistory()) {
-    return;
-  }
-  if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                               ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
 

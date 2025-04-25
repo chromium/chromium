@@ -37,8 +37,6 @@ class ContextualCueingHelper
   ~ContextualCueingHelper() override;
 
   // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainDocumentElementAvailable() override;
