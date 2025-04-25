@@ -53,6 +53,11 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
         .Times(times);
   }
 
+  void SetOnIsCapturingTabChangedExpectation(content::WebContents* contents,
+                                             bool is_capturing_tab) {
+    EXPECT_CALL(*this, OnIsCapturingTabChanged(contents, is_capturing_tab));
+  }
+
   void SetOnIsCapturingWindowChangedExpectation(content::WebContents* contents,
                                                 bool is_capturing_window) {
     EXPECT_CALL(*this,
@@ -78,6 +83,8 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
                void(content::WebContents* contents, bool is_capturing_audio));
   MOCK_METHOD2(OnIsBeingMirroredChanged,
                void(content::WebContents* contents, bool is_being_mirrored));
+  MOCK_METHOD2(OnIsCapturingTabChanged,
+               void(content::WebContents* contents, bool is_capturing_tab));
   MOCK_METHOD2(OnIsCapturingWindowChanged,
                void(content::WebContents* contents, bool is_capturing_window));
   MOCK_METHOD2(OnIsCapturingDisplayChanged,
@@ -165,7 +172,21 @@ ObserverMethodTestParam kObserverMethodTestParams[] = {
      &MockObserver::SetOnIsBeingMirroredChangedExpectation,
      &MediaStreamCaptureIndicator::IsBeingMirrored},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-     /*display_media_info=*/nullptr,
+     media::mojom::DisplayMediaInformation::New(
+         media::mojom::DisplayCaptureSurfaceType::BROWSER,
+         /*logical_surface=*/true,
+         media::mojom::CursorCaptureType::NEVER,
+         /*capture_handle=*/nullptr,
+         /*initial_zoom_level=*/100),
+     &MockObserver::SetOnIsCapturingTabChangedExpectation,
+     &MediaStreamCaptureIndicator::IsCapturingTab},
+    {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+     media::mojom::DisplayMediaInformation::New(
+         media::mojom::DisplayCaptureSurfaceType::WINDOW,
+         /*logical_surface=*/true,
+         media::mojom::CursorCaptureType::NEVER,
+         /*capture_handle=*/nullptr,
+         /*initial_zoom_level=*/100),
      &MockObserver::SetOnIsCapturingWindowChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingWindow},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,

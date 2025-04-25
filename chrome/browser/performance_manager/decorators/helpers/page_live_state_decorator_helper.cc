@@ -316,6 +316,15 @@ void PageLiveStateDecoratorHelper::OnIsBeingMirroredChanged(
   PageLiveStateDecorator::OnIsBeingMirroredChanged(contents, is_being_mirrored);
 }
 
+void PageLiveStateDecoratorHelper::OnIsCapturingTabChanged(
+    content::WebContents* contents,
+    bool is_capturing_tab) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Treat tab capturing the same as window capturing here.
+  PageLiveStateDecorator::OnIsCapturingWindowChanged(contents,
+                                                     is_capturing_tab);
+}
+
 void PageLiveStateDecoratorHelper::OnIsCapturingWindowChanged(
     content::WebContents* contents,
     bool is_capturing_window) {

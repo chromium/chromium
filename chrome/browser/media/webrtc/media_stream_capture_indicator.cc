@@ -89,6 +89,18 @@ std::u16string GetTitle(WebContents* web_contents) {
       web_contents->GetLastCommittedURL());
 }
 
+bool IsDeviceCapturingTab(const blink::MediaStreamDevice& device) {
+  return device.display_media_info &&
+         device.display_media_info->display_surface ==
+             media::mojom::DisplayCaptureSurfaceType::BROWSER;
+}
+
+bool IsDeviceCapturingWindow(const blink::MediaStreamDevice& device) {
+  return device.display_media_info &&
+         device.display_media_info->display_surface ==
+             media::mojom::DisplayCaptureSurfaceType::WINDOW;
+}
+
 // Returns if the passed |device| is capturing the whole display. This is
 // different from capturing a tab or a single window on a desktop.
 bool IsDeviceCapturingDisplay(const blink::MediaStreamDevice& device) {
@@ -119,11 +131,18 @@ ObserverMethod GetObserverMethodToCall(const blink::MediaStreamDevice& device) {
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
-      return IsDeviceCapturingDisplay(device)
-                 ? &MediaStreamCaptureIndicator::Observer::
-                       OnIsCapturingDisplayChanged
-                 : &MediaStreamCaptureIndicator::Observer::
-                       OnIsCapturingWindowChanged;
+      if (IsDeviceCapturingTab(device)) {
+        return &MediaStreamCaptureIndicator::Observer::OnIsCapturingTabChanged;
+      }
+      if (IsDeviceCapturingWindow(device)) {
+        return &MediaStreamCaptureIndicator::Observer::
+            OnIsCapturingWindowChanged;
+      }
+      if (IsDeviceCapturingDisplay(device)) {
+        return &MediaStreamCaptureIndicator::Observer::
+            OnIsCapturingDisplayChanged;
+      }
+      NOTREACHED();
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
@@ -153,6 +172,7 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   bool IsCapturingAudio() const { return audio_stream_count_ > 0; }
   bool IsCapturingVideo() const { return video_stream_count_ > 0; }
   bool IsMirroring() const { return mirroring_stream_count_ > 0; }
+  bool IsCapturingTab() const { return tab_stream_count_ > 0; }
   bool IsCapturingWindow() const { return window_stream_count_ > 0; }
   bool IsCapturingDisplay() const { return display_stream_count_ > 0; }
 
@@ -190,6 +210,7 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   int audio_stream_count_ = 0;
   int video_stream_count_ = 0;
   int mirroring_stream_count_ = 0;
+  int tab_stream_count_ = 0;
   int window_stream_count_ = 0;
   int display_stream_count_ = 0;
 
@@ -432,8 +453,16 @@ int& MediaStreamCaptureIndicator::WebContentsDeviceUsage::GetStreamCount(
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
-      return IsDeviceCapturingDisplay(device) ? display_stream_count_
-                                              : window_stream_count_;
+      if (IsDeviceCapturingTab(device)) {
+        return tab_stream_count_;
+      }
+      if (IsDeviceCapturingWindow(device)) {
+        return window_stream_count_;
+      }
+      if (IsDeviceCapturingDisplay(device)) {
+        return display_stream_count_;
+      }
+      NOTREACHED();
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
@@ -583,6 +612,12 @@ bool MediaStreamCaptureIndicator::IsBeingMirrored(
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsMirroring);
 }
 
+bool MediaStreamCaptureIndicator::IsCapturingTab(
+    content::WebContents* web_contents) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingTab);
+}
+
 bool MediaStreamCaptureIndicator::IsCapturingWindow(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -625,6 +660,11 @@ void MediaStreamCaptureIndicator::UnregisterWebContents(
   if (IsBeingMirrored(web_contents)) {
     for (Observer& observer : observers_)
       observer.OnIsBeingMirroredChanged(web_contents, false);
+  }
+  if (IsCapturingTab(web_contents)) {
+    for (Observer& observer : observers_) {
+      observer.OnIsCapturingTabChanged(web_contents, false);
+    }
   }
   if (IsCapturingWindow(web_contents)) {
     for (Observer& observer : observers_)

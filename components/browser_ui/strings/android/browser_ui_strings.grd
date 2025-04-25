@@ -706,6 +706,12 @@
       <message name="IDS_NOTIFICATION_CATEGORY_WEBRTC_CAM_AND_MIC" desc="Label for notifications shown when media is being recorded from a camera or microphone, within a list of notification categories. [CHAR_LIMIT=32]">
         Camera and microphone use
       </message>
+      <message name="IDS_TAB_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when tab capture is in progress.">
+        Sharing a tab
+      </message>
+      <message name="IDS_WINDOW_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when window capture is in progress.">
+        Sharing a window
+      </message>
       <message name="IDS_SCREEN_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when screen capture is in progress.">
         Sharing your screen
       </message>

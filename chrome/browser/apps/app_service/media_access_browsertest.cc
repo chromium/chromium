@@ -61,6 +61,15 @@ base::OnceClosure StartMediaCapture(content::WebContents* web_contents,
   blink::mojom::StreamDevices fake_devices;
   blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
 
+  if (stream_type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+      stream_type == blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE) {
+    device.display_media_info = media::mojom::DisplayMediaInformation::New(
+        media::mojom::DisplayCaptureSurfaceType::WINDOW,
+        /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+        /*capture_handle=*/nullptr,
+        /*initial_zoom_level=*/100);
+  }
+
   if (blink::IsAudioInputMediaType(stream_type)) {
     fake_devices.audio_device = device;
   } else {

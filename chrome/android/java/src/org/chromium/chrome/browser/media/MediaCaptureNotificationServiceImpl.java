@@ -173,7 +173,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
      */
     private void destroyNotification(int notificationId, @MediaType int mediaType) {
         if (doesNotificationExist(notificationId)) {
-            if (mNotificationsType.get(notificationId) == MediaType.SCREEN_CAPTURE) {
+            if (MediaCaptureNotificationUtil.isCapture(mNotificationsType.get(notificationId))) {
                 final int tabId = getTabIdFromNotificationId(notificationId);
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
@@ -187,7 +187,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             }
             // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not
             // require a foreground service.
-            if (BuildConfig.IS_DESKTOP_ANDROID && mediaType != MediaType.SCREEN_CAPTURE) {
+            if (BuildConfig.IS_DESKTOP_ANDROID
+                    && !MediaCaptureNotificationUtil.isCapture(mediaType)) {
                 if (mNotifications.size() > 1 && mNotifications.firstKey() == notificationId) {
                     // For large screen device, we use the previous notification to update
                     // foreground
@@ -210,7 +211,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private void createNotification(
             int notificationId, @MediaType int mediaType, String url, boolean isIncognito) {
         final String channelId =
-                mediaType == MediaType.SCREEN_CAPTURE
+                MediaCaptureNotificationUtil.isCapture(mediaType)
                         ? ChromeChannelDefinitions.ChannelId.SCREEN_CAPTURE
                         : ChromeChannelDefinitions.ChannelId.WEBRTC_CAM_AND_MIC;
 
@@ -234,7 +235,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         // Add a "Stop" button to the screen capture notification and turn the notification
         // into a high priority one.
         PendingIntent stopIntent =
-                mediaType == MediaType.SCREEN_CAPTURE
+                MediaCaptureNotificationUtil.isCapture(mediaType)
                         ? buildStopCapturePendingIntent(notificationId)
                         : null;
         NotificationWrapper notification =
@@ -247,7 +248,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         stopIntent);
         // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not require
         // a foreground service.
-        if (BuildConfig.IS_DESKTOP_ANDROID && mediaType != MediaType.SCREEN_CAPTURE) {
+        if (BuildConfig.IS_DESKTOP_ANDROID && !MediaCaptureNotificationUtil.isCapture(mediaType)) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
             startOrUpdateForegroundService(notificationId, notification);
@@ -264,7 +265,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                         notification.getNotification());
 
-        if (mediaType == MediaType.SCREEN_CAPTURE) {
+        if (MediaCaptureNotificationUtil.isCapture(mediaType)) {
             final int tabId = getTabIdFromNotificationId(notificationId);
             final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
             if (tab != null) {
@@ -349,6 +350,14 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private static int getMediaType(@Nullable WebContents webContents) {
         if (webContents == null) {
             return MediaType.NO_MEDIA;
+        }
+
+        if (MediaCaptureDevicesDispatcherAndroid.isCapturingTab(webContents)) {
+            return MediaType.TAB_CAPTURE;
+        }
+
+        if (MediaCaptureDevicesDispatcherAndroid.isCapturingWindow(webContents)) {
+            return MediaType.WINDOW_CAPTURE;
         }
 
         if (MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents)) {

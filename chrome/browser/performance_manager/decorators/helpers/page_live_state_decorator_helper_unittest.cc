@@ -144,10 +144,26 @@ TEST_F(PageLiveStateDecoratorHelperTest, OnIsBeingMirroredChanged) {
       &PageLiveStateDecorator::Data::IsBeingMirrored);
 }
 
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingTabChanged) {
+  // Treat tab capture the same as window capture.
+  EndToEndStreamPropertyTest(
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::BROWSER,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100),
+      &PageLiveStateDecorator::Data::IsCapturingWindow);
+}
+
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingWindowChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*display_media_info=*/nullptr,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::WINDOW,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100),
       &PageLiveStateDecorator::Data::IsCapturingWindow);
 }
 
