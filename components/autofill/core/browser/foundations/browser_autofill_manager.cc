@@ -58,6 +58,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -2435,16 +2436,16 @@ void BrowserAutofillManager::AppendFillLogEvents(
       trigger_fill_field_log_event);
   FillEventId fill_event_id = trigger_fill_field_log_event.fill_event_id;
 
-  for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    AutofillField& field = CHECK_DEREF(form_structure.field(i));
-    const FieldGlobalId field_id = field.global_id();
-    const bool has_value_before = !form.fields()[i].value().empty();
+  for (auto [form_field, field] :
+       base::zip(form.fields(), form_structure.fields())) {
+    const FieldGlobalId field_id = field->global_id();
+    const bool has_value_before = !form_field.value().empty();
     const FieldFillingSkipReason skip_reason =
         skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
                                           : *skip_reasons.at(field_id).begin();
-    if (!IsCheckable(field.check_status())) {
+    if (!IsCheckable(field->check_status())) {
       if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
-        field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
+        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
             .fill_event_id = fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
             .autofill_skipped_status = skip_reason,
@@ -2457,7 +2458,7 @@ void BrowserAutofillManager::AppendFillLogEvents(
             .was_refill = ToOptionalBoolean(is_refill),
         });
       } else {
-        field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
+        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
             .fill_event_id = fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
             .autofill_skipped_status = skip_reason,
