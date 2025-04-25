@@ -3364,6 +3364,9 @@ extern const char kWebRtcAllowWgcScreenCapturerDescription[];
 extern const char kWebRtcAllowWgcWindowCapturerName[];
 extern const char kWebRtcAllowWgcWindowCapturerDescription[];
 
+extern const char kWebRtcWgcRequireBorderName[];
+extern const char kWebRtcWgcRequireBorderDescription[];
+
 extern const char kWindows11MicaTitlebarName[];
 extern const char kWindows11MicaTitlebarDescription[];
 

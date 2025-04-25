@@ -37,6 +37,14 @@ BASE_FEATURE(kWebRtcAllowWgcWindowZeroHz,
              "AllowWgcWindowZeroHz",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// When enabled, instruct WGC to draw a border around the captured
+// window or screen.
+BASE_FEATURE(kWebRtcWgcRequireBorder,
+             "WebRtcWgcRequireBorder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // TODO(crbug.com/40872787): Deactivate the flag gradually before deleting it.
 // When disabled, any WebRTC Audio Processing Module input volume recommendation
 // is ignored and no adjustment takes place.

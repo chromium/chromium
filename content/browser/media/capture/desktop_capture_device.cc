@@ -851,6 +851,9 @@ base::TimeTicks DesktopCaptureDevice::Core::NowTicks() const {
 // static
 std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     const DesktopMediaID& source) {
+  CHECK(source.type == DesktopMediaID::TYPE_WINDOW ||
+        source.type == DesktopMediaID::TYPE_SCREEN);
+
   VLOG(1) << __func__ << "(source=" << source.ToString() << ")";
   auto options = desktop_capture::CreateDesktopCaptureOptions();
   std::unique_ptr<webrtc::DesktopCapturer> capturer;
@@ -890,13 +893,17 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
           base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
     }
   }
+
+  options.set_wgc_require_border(
+      base::FeatureList::IsEnabled(features::kWebRtcWgcRequireBorder));
+
   VLOG(1) << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
           << options.prefer_cursor_embedded() << ", allow_wgc_screen_capturer: "
           << options.allow_wgc_screen_capturer()
           << ", allow_wgc_window_capturer: "
           << options.allow_wgc_window_capturer()
           << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
-          << "}";
+          << ", wgc_require_border: " << options.wgc_require_border() << "}";
 #endif
 
   // For browser tests, to create a fake desktop capturer.

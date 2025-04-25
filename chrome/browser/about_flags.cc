@@ -5900,6 +5900,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebRtcAllowWgcWindowCapturerName,
      flag_descriptions::kWebRtcAllowWgcWindowCapturerDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kWebRtcAllowWgcWindowCapturer)},
+    {"webrtc-wgc-require-border",
+     flag_descriptions::kWebRtcWgcRequireBorderName,
+     flag_descriptions::kWebRtcWgcRequireBorderDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kWebRtcWgcRequireBorder)},
 #endif  // BUILDFLAG(IS_WIN)
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_ANDROID)
     {"enable-autofill-credit-card-upload",

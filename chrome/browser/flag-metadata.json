@@ -9947,6 +9947,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "webrtc-wgc-require-border",
+    "owners": [ "eladalon@chromium.org", "kron@chromium.org" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "webtransport-developer-mode",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by developers to debug applications

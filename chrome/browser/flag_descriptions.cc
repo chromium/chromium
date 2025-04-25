@@ -5758,6 +5758,11 @@ const char kWebRtcAllowWgcWindowCapturerDescription[] =
     "window area. The GDI API is used as window capture API when this flag is "
     "disabled.";
 
+const char kWebRtcWgcRequireBorderName[] = "Border around WGC captures";
+const char kWebRtcWgcRequireBorderDescription[] =
+    "When using WGC to capture a window or a screen, draw a border around the "
+    "captured surface.";
+
 const char kWindows11MicaTitlebarName[] = "Windows 11 Mica titlebar";
 const char kWindows11MicaTitlebarDescription[] =
     "Use the DWM system-drawn Mica titlebar on Windows 11, version 22H2 (build "

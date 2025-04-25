@@ -14133,6 +14133,7 @@ from previous Chrome versions.
   <int value="-75418012" label="ContextualSuggestionsOptOut:disabled"/>
   <int value="-75396730" label="UseAlternateHistorySyncIllustration:disabled"/>
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
+  <int value="-74808314" label="WebRtcWgcRequireBorder:enabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
   <int value="-72904030" label="ChromeRefresh2023:enabled"/>
   <int value="-72691146" label="SafetyHubFollowup:disabled"/>
@@ -18859,6 +18860,7 @@ from previous Chrome versions.
       label="AccessibilityDictationKeyboardImprovements:disabled"/>
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
   <int value="1727201171" label="EventBasedLogUpload:enabled"/>
+  <int value="1728616693" label="WebRtcWgcRequireBorder:disabled"/>
   <int value="1728816382" label="SeaPenEnterprise:disabled"/>
   <int value="1729485335" label="CastMessageLogging:disabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
