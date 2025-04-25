@@ -23,6 +23,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "components/crash/core/common/crash_key.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
@@ -55,7 +56,7 @@ constexpr base::TimeDelta kIdleCheckingDelay = base::Seconds(3);
 
 // How long to wait for a request to the library be responded, before assuming
 // that the library is not responsive.
-constexpr base::TimeDelta kMaxWaitForResponseTime = base::Seconds(60);
+constexpr base::TimeDelta kMaxWaitForResponseTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -164,6 +165,26 @@ std::string GetMemoryStatusForCrashKey() {
   return base::StringPrintf("%i,%i", available_memory, total_memory);
 }
 
+class HangTimer : public base::OneShotTimer {
+ public:
+  explicit HangTimer(bool is_ocr) : is_ocr_(is_ocr) {}
+
+  void StartTimer() {
+    Start(FROM_HERE, kMaxWaitForResponseTime,
+          base::BindOnce(
+              [](bool request_is_ocr) {
+                base::UmaHistogramBoolean(
+                    "Accessibility.ScreenAI.Service.NotReponsive.IsOCR",
+                    request_is_ocr);
+                base::Process::TerminateCurrentProcessImmediately(0);
+              },
+              is_ocr_));
+  }
+
+ private:
+  bool is_ocr_;
+};
+
 }  // namespace
 
 // The library accepts simple pointers to model data retrieval functions, hence
@@ -245,6 +266,10 @@ ScreenAIService::ScreenAIService(
   idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
   idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
                               &ScreenAIService::ShutDownIfNoClients);
+
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -394,9 +419,11 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
                                 client_type);
 
   ocr_last_used_ = base::TimeTicks::Now();
-  bool* task_finished_ptr = StartProcessNotResponsiveKillTimer(true);
+  base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
+                                            /*is_ocr=*/true);
+  hang_timer.AsyncCall(&HangTimer::StartTimer);
   auto result = library_->PerformOcr(image);
-  *task_finished_ptr = true;
+  hang_timer.AsyncCall(&base::OneShotTimer::Stop);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
 
   int lines_count = result ? result->lines_size() : 0;
@@ -600,10 +627,12 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  bool* task_finished_ptr = StartProcessNotResponsiveKillTimer(false);
+  base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
+                                            /*is_ocr=*/false);
+  hang_timer.AsyncCall(&HangTimer::StartTimer);
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
-  *task_finished_ptr = true;
+  hang_timer.AsyncCall(&HangTimer::Stop);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   bool successful =
@@ -640,32 +669,6 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
     const ui::AXTree* tree,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   return ComputeMainNode(tree, content_node_ids);
-}
-
-bool* ScreenAIService::StartProcessNotResponsiveKillTimer(bool request_is_ocr) {
-  // Ownership of this unique pointer is passed to the delayed task and a raw
-  // pointer to the variable is returned to the caller. If the delayed task runs
-  // before caller sets the raw pointer to true, the process is killed, and
-  // hence the caller will not use the pointer later than that.
-  std::unique_ptr<bool> task_finished = absl::make_unique<bool>(false);
-  bool* task_finished_ptr = task_finished.get();
-
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](bool request_is_ocr, std::unique_ptr<bool> task_finished) {
-            if (*task_finished) {
-              return;
-            }
-            base::UmaHistogramBoolean(
-                "Accessibility.ScreenAI.Service.NotReponsive.IsOCR",
-                request_is_ocr);
-            base::Process::TerminateCurrentProcessImmediately(0);
-          },
-          request_is_ocr, std::move(task_finished)),
-      kMaxWaitForResponseTime);
-
-  return task_finished_ptr;
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
