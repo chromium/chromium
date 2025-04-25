@@ -63,6 +63,7 @@ using OptimizationGuideModelExecutionError = optimization_guide::
 using ::testing::_;
 using ::testing::An;
 using ::testing::Contains;
+using ::testing::DoAll;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -205,18 +206,29 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                 ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
                                  kPasswordChangeSubmission,
                              _, _, _))
-        .WillOnce(WithArg<3>(Invoke([response,
-                                     logs_uploader_weak_ptr](auto callback) {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  std::move(callback),
-                  optimization_guide::OptimizationGuideModelExecutionResult(
-                      optimization_guide::AnyWrapProto(response),
-                      /*execution_info=*/nullptr),
-                  std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                      logs_uploader_weak_ptr)));
-        })));
+        .WillOnce(DoAll(
+            WithArg<1>([&](const google::protobuf::MessageLite& request) {
+              auto& password_change_request = static_cast<
+                  const optimization_guide::proto::PasswordChangeRequest&>(
+                  request);
+              ASSERT_TRUE(password_change_request.page_context()
+                              .has_annotated_page_content());
+              ASSERT_TRUE(
+                  password_change_request.page_context().has_ax_tree_data());
+            }),
+            WithArg<3>(Invoke([response,
+                               logs_uploader_weak_ptr](auto callback) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      std::move(callback),
+                      optimization_guide::OptimizationGuideModelExecutionResult(
+                          optimization_guide::AnyWrapProto(response),
+                          /*execution_info=*/nullptr),
+                      std::make_unique<
+                          optimization_guide::ModelQualityLogEntry>(
+                          logs_uploader_weak_ptr)));
+            }))));
   }
 
   void CheckPasswordsSavedOnFailure(const std::string& username,

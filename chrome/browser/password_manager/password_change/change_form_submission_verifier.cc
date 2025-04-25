@@ -4,17 +4,22 @@
 
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 
+#include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +38,7 @@ using SubmissionOutcome = ChangeFormSubmissionVerifier::SubmissionOutcome;
 using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
 using QualityLogEntry =
     std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
+using page_content_annotations::PageContentExtractionService;
 
 // Max numbers of nodes for the AX Tree Update Snapshot.
 constexpr int kMaxNodesInAXTreeSnapshot = 5000;
@@ -127,7 +133,21 @@ ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
     content::WebContents* web_contents,
     FormSubmissionResultCallback callback)
     : web_contents_(web_contents->GetWeakPtr()),
+      capture_annotated_page_content_(
+          base::BindOnce(&optimization_guide::GetAIPageContent,
+                         web_contents,
+                         optimization_guide::DefaultAIPageContentOptions())),
       callback_(std::move(callback)) {}
+
+ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
+    base::PassKey<class ChangeFormSubmissionVerifierTest>,
+    content::WebContents* web_contents,
+    base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+        capture_annotated_page_content,
+    FormSubmissionResultCallback callback)
+    : ChangeFormSubmissionVerifier(web_contents, std::move(callback)) {
+  capture_annotated_page_content_ = std::move(capture_annotated_page_content);
+}
 
 ChangeFormSubmissionVerifier::~ChangeFormSubmissionVerifier() = default;
 
@@ -154,7 +174,7 @@ void ChangeFormSubmissionVerifier::FillChangePasswordForm(
   // captured.
   timeout_timer_.Start(FROM_HERE,
                        ChangeFormSubmissionVerifier::kSubmissionWaitingTimeout,
-                       this, &ChangeFormSubmissionVerifier::RequestAXTree);
+                       this, &ChangeFormSubmissionVerifier::RequestPageContent);
 }
 
 void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
@@ -243,7 +263,7 @@ void ChangeFormSubmissionVerifier::OnFormSubmitted(
   // looking for a submit button.
 }
 
-void ChangeFormSubmissionVerifier::RequestAXTree() {
+void ChangeFormSubmissionVerifier::RequestPageContent() {
   // If browser didn't receive confirmation about change password form
   // submission from driver, fail immediately.
   if (!password_form_submitted_ || !web_contents_) {
@@ -253,23 +273,53 @@ void ChangeFormSubmissionVerifier::RequestAXTree() {
 
   base::UmaHistogramBoolean(kPasswordChangeSubmittedHistogram,
                             submission_detected_);
+
+  base::ConcurrentClosures concurrent_closures;
+  std::move(capture_annotated_page_content_)
+      .Run(base::BindOnce(
+               &ChangeFormSubmissionVerifier::OnAnnotatedPageContentReceived,
+               weak_ptr_factory_.GetWeakPtr())
+               .Then(concurrent_closures.CreateClosure()));
+  // TODO(crbug.com/409946698): Delete this when removing support for AX tree
+  // prompts.
   web_contents_->RequestAXTreeSnapshot(
-      base::BindOnce(&ChangeFormSubmissionVerifier::ProcessTree,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChangeFormSubmissionVerifier::OnAxTreeReceived,
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(concurrent_closures.CreateClosure()),
       ui::AXMode::kWebContents, kMaxNodesInAXTreeSnapshot,
       /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
+  std::move(concurrent_closures)
+      .Done(base::BindOnce(
+          &ChangeFormSubmissionVerifier::CheckSubmissionSuccessful,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangeFormSubmissionVerifier::ProcessTree(
+void ChangeFormSubmissionVerifier::OnAnnotatedPageContentReceived(
+    std::optional<optimization_guide::AIPageContentResult> page_content) {
+  if (page_content.has_value()) {
+    *check_submission_successful_request_.mutable_page_context()
+         ->mutable_annotated_page_content() = std::move(page_content->proto);
+  }
+}
+
+void ChangeFormSubmissionVerifier::OnAxTreeReceived(
     ui::AXTreeUpdate& ax_tree_update) {
   ProtoTreeUpdate ax_tree_proto;
   optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update, &ax_tree_proto);
   // Construct request.
-  optimization_guide::proto::PasswordChangeRequest request;
-  optimization_guide::proto::PageContext* page_context =
-      request.mutable_page_context();
-  *page_context->mutable_ax_tree_data() = std::move(ax_tree_proto);
+  *check_submission_successful_request_.mutable_page_context()
+       ->mutable_ax_tree_data() = std::move(ax_tree_proto);
+}
 
+void ChangeFormSubmissionVerifier::CheckSubmissionSuccessful() {
+  if (!check_submission_successful_request_.has_page_context() ||
+      !check_submission_successful_request_.page_context()
+           .has_annotated_page_content()) {
+    // TODO (crbug.com/413318086): Add metrics to handle failure of capturing
+    // annotated page content.
+    std::move(callback_).Run(false);
+    return;
+  }
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::PasswordChangeSubmissionLoggingData>
       wrapper_callback = password_manager::metrics_util::TimeCallback(
@@ -281,12 +331,12 @@ void ChangeFormSubmissionVerifier::ProcessTree(
   optimization_guide::ExecuteModelWithLogging(
       GetOptimizationService(),
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
-      request,
+      check_submission_successful_request_,
       /*execution_timeout=*/std::nullopt, std::move(wrapper_callback));
 }
 
 OptimizationGuideKeyedService*
-ChangeFormSubmissionVerifier::GetOptimizationService() {
+ChangeFormSubmissionVerifier::GetOptimizationService() const {
   return OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
