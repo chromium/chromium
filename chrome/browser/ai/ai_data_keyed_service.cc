@@ -690,10 +690,8 @@ glic::mojom::GetTabContextOptions DefaultOptions() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 void RunLater(base::OnceClosure task) {
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             std::move(task));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              std::move(task));
 }
 
 // Feature to add allow listed extensions remotely for data collection.
