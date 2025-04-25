@@ -316,6 +316,9 @@ public class TabUiUtils {
             String tabGroupDisplayName,
             @CollaborationServiceShareOrManageEntryPoint int entry) {
         Tab tab = filter.getTabModel().getTabById(tabId);
+        // The tab may have been closed in parallel with the share starting. Skip if this happens.
+        if (tab == null) return;
+
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         dataSharingTabManager.createOrManageFlow(
