@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -29,6 +31,7 @@ import static java.util.Map.entry;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -1185,6 +1188,20 @@ public class ManageSyncSettingsTest {
         onView(withText(R.string.sign_in_personalize_google_services_title_eea)).perform(click());
         onView(withText(R.string.personalized_google_services_summary))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testKeyboardNavigationToSignOutButton() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+        // There are 3 non-selectable preferences in the preference screen: account_section_header,
+        // account_section_footer, and account_advanced_header.
+        for (int i = 0; i < recyclerView.getAdapter().getItemCount() - 3; ++i) {
+            onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        }
+        onView(withId(R.id.sign_out_button)).check(matches(hasFocus()));
     }
 
     // TODO(crbug.com/330438265): Extend this test for the identity error card.
