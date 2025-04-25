@@ -138,9 +138,9 @@
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.searchOnlyUI = self.searchOnlyUI;
 
-  BOOL isIncognito = self.profile->IsOffTheRecord();
+  BOOL incognito = self.profile->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
-      initWithIncognito:isIncognito
+      initWithIncognito:incognito
                 tracker:feature_engagement::TrackerFactory::GetForProfile(
                             self.profile)
           isLensOverlay:_isLensOverlay];
@@ -227,7 +227,7 @@
                                     : nullptr];
   autocompleteResultWrapper.pedalAnnotator = annotator;
   autocompleteResultWrapper.templateURLService = templateURLService;
-  autocompleteResultWrapper.isIncognito = isIncognito;
+  autocompleteResultWrapper.incognito = incognito;
   autocompleteResultWrapper.delegate = _omniboxAutocompleteController;
 
   _omniboxAutocompleteController.autocompleteResultWrapper =

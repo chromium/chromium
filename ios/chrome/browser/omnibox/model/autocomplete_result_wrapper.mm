@@ -118,7 +118,7 @@
   AutocompleteMatchFormatter* formatter =
       [AutocompleteMatchFormatter formatterWithMatch:match];
   formatter.starred = [self isStarredMatch:match];
-  formatter.incognito = self.isIncognito;
+  formatter.incognito = self.incognito;
   formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
   formatter.isMultimodal = self.hasThumbnail;

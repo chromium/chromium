@@ -264,10 +264,10 @@ using base::UserMetricsAction;
     UIContentSizeCategory contentSizeCategory =
         self.baseViewController.traitCollection.preferredContentSizeCategory;
 
-    BOOL isIncognito = profile->IsOffTheRecord();
-    mediator.isIncognito = isIncognito;
+    BOOL incognito = profile->IsOffTheRecord();
+    mediator.incognito = incognito;
     _overflowMenuOrderer =
-        [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
+        [[OverflowMenuOrderer alloc] initWithIsIncognito:incognito];
     _overflowMenuOrderer.visibleDestinationsCount = [OverflowMenuUIConfiguration
         numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
             screenWidth
