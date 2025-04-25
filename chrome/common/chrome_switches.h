@@ -283,6 +283,7 @@ extern const char kForceNtpMobilePromo[];
 extern const char kGlicGuestURL[];
 extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicFreURL[];
+extern const char kGlicShortcutsLearnMoreURL[];
 extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];
 extern const char kGlicAutomation[];

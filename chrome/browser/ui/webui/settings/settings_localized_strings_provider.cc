@@ -512,10 +512,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("aiPageMainManagedLearnMoreUrl",
                          chrome::kAiSettingsLearnMorePageManagedUrl);
 
-  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
-                         chrome::kGlicKeyboardShortcutLearnMoreURL);
-  html_source->AddString("glicKeyboardShortcutLearnMoreManagedUrl",
-                         chrome::kGlicKeyboardShortcutLearnMoreManagedURL);
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchLearnMoreManagedUrl",
@@ -771,6 +767,14 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicTabAccessConsider2", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_url =
+      command_line->HasSwitch(::switches::kGlicShortcutsLearnMoreURL);
+  const std::string url = has_url ? command_line->GetSwitchValueASCII(
+                                        ::switches::kGlicShortcutsLearnMoreURL)
+                                  : features::kGlicLearnMoreURL.Get();
+  html_source->AddString("glicKeyboardShortcutLearnMoreUrl", url);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

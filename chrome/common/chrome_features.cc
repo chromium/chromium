@@ -375,6 +375,15 @@ BASE_FEATURE_PARAM(std::string,
                    "glic-fre-url",
                    "");
 
+BASE_FEATURE(kGlicLearnMoreURLConfig,
+             "GlicLearnMoreURLConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kGlicLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-shortcuts-learn-more-url",
+                   "");
+
 BASE_FEATURE(kGlicCSPConfig,
              "GlicCSPConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

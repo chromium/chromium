@@ -360,7 +360,28 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSettingsPage) {
-  RunTest("settings/glic_page_test.js", "mocha.run()");
+  RunTest("settings/glic_page_test.js", "runMochaSuite('GlicPage Default')");
+}
+
+class SettingsGlicPageLearnMoreTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"glic-shortcuts-learn-more-url", "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageLearnMoreTest,
+                       GlicSettingsLearnMoreEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage LearnMoreEnabled')");
 }
 #endif
 

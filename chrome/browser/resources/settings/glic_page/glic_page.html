@@ -20,6 +20,10 @@
     display: flex;
     align-items: center;
   }
+
+  #shortcutsLearnMoreLabel[href=''] {
+    display: none;
+  }
 </style>
 
 <settings-animated-pages id="pages" section="glicSection">
@@ -79,11 +83,12 @@
                 <div class="secondary"
                     learn-more-url="$i18n{glicKeyboardShortcutLearnMoreUrl}">
                   $i18n{glicKeyboardShortcutSublabel}
-                  <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+                  <a id="shortcutsLearnMoreLabel"
+                      href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
                       aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
                       aria-description="$i18n{opensInNewTab}"
                       on-click="onLearnMoreClick_" target="_blank">
-                      $i18n{glicKeyboardShortcutLearnMoreLabel}
+                    $i18n{glicKeyboardShortcutLearnMoreLabel}
                   </a>
                 </div>
               </div>
