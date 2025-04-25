@@ -337,15 +337,15 @@ message BoundingRect {
 
 // The interaction information for the content node. This indicates whether the
 // node is interactive and what type of interaction it supports.
-// Next ID: 13
+// Next ID: 14
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12;
 
   // DEPRECATED: Use `scroller_info` instead.
-  bool scrolls_overflow_x = 1;
+  bool scrolls_overflow_x = 1 [deprecated = true];
 
-  bool scrolls_overflow_y = 2;
+  bool scrolls_overflow_y = 2 [deprecated = true];
 
   // Whether the content node is selectable.
   bool is_selectable = 3;
@@ -379,6 +379,17 @@ message InteractionInfo {
   //
   // Note: The label may be an ancestor of the input node.
   int32 for_dom_node_id = 11;
+
+  // The z-order of the content node relative to other nodes in the same
+  // Document. A higher value means the node is in front of other nodes with
+  // lower values.
+  //
+  // Since all content within a Document is rendered as a single layer, nodes
+  // behind the iframe in the embedder draw behind all nodes inside the
+  // iframe's Document (similar for nodes on top of the iframe node).
+  //
+  // Note: This value is only set for nodes in the viewport.
+  int32 document_scoped_z_order = 13;
 
   reserved 8;
 }
@@ -442,7 +453,7 @@ message ImageInfo {
 
   // DEPRECATED: Provides the URL for this image if available. For example,
   // data: URLs for inline images will be skipped.
-  string source_url = 3;
+  string source_url = 3 [deprecated = true];
 
   // Provides the source origin for the image.
   SecurityOrigin security_origin = 4;
@@ -545,7 +556,7 @@ message TableData {
 message IframeData {
   // DEPRECATED in favor of Security Origin in FrameData.
   // The URL of the iframe.
-  string url = 1;
+  string url = 1 [deprecated = true];
 
   FrameData frame_data = 3;
 
@@ -577,6 +588,8 @@ message FrameData {
   // if paid content was checked.
   PaidContentMetadata paid_content_metadata = 6;
 
+  // DEPRECATED: USE `document_scoped_z_order` IN InteractionInfo INSTEAD.
+  //
   // The ordered list of DOM nodes which are eligible for hit testing in the
   // viewport. This list is ordered back-to-front, i.e., in the given list :
   // [0, 1], node 1 draws on top of node 0.
@@ -593,7 +606,7 @@ message FrameData {
   // 2. If a node is eligible for hit testing and is in the viewport, but
   //    isn't actionable or satisfies any other criteria for generating a
   //    ContentNode, it will still be in this list.
-  repeated HitTestNode hit_test_nodes = 7;
+  repeated HitTestNode hit_test_nodes = 7 [deprecated = true];
 }
 
 // The interaction information for the frame. This is for interactions that
