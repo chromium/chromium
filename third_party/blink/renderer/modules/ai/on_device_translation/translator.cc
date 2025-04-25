@@ -7,12 +7,14 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -71,6 +73,17 @@ ScriptPromise<V8Availability> Translator::availability(
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
 
+  // Return `unavailable` for cross-origin iframe access with no permission
+  // policy.
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->IsCrossSiteSubframeIncludingScheme() &&
+        !window->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kTranslator)) {
+      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+      return promise;
+    }
+  }
+
   AIInterfaceProxy::GetTranslationManagerRemote(context)->TranslationAvailable(
       mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
       mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
@@ -104,13 +117,26 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
     return EmptyPromise();
   }
 
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<Translator>>(script_state);
+
+  // Block cross-origin iframe access with no permission policy.
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->GetFrame() &&
+        window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+        !window->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kTranslator)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessageCrossOriginAccess));
+      return EmptyPromise();
+    }
+  }
+
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return EmptyPromise();
   }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<Translator>>(script_state);
 
   CreateTranslatorClient* create_translator_client =
       MakeGarbageCollected<CreateTranslatorClient>(script_state, options,

@@ -1995,10 +1995,13 @@ class OnDeviceTranslationCrossOriginBrowserTest
         GURL("https://translation-api.test/index.html")));
   }
 
-  // Adds an iframe to the test page.
-  void AddIframe(size_t index, Browser* target_browser) {
-    EXPECT_EQ(EvalJsCatchingError(JsReplace("return addIframe($1);",
-                                            CreateCrossOriginIframeUrl(index)),
+  // Adds an iframe to the test page and optionally sets its permission policy.
+  void AddIframe(size_t index,
+                 Browser* target_browser,
+                 bool permission_policy_enabled) {
+    EXPECT_EQ(EvalJsCatchingError(JsReplace("return addIframe($1, $2);",
+                                            CreateCrossOriginIframeUrl(index),
+                                            permission_policy_enabled),
                                   target_browser),
               "loaded");
   }
@@ -2022,18 +2025,22 @@ class OnDeviceTranslationCrossOriginBrowserTest
   std::string TryCreateTranslatorAndTranslateInIframe(size_t index,
                                                       Browser* target_browser) {
     const std::string_view translateTestScript = R"(
-      (async () => {
-        try {
-          window._translator = await Translator.create({
-            sourceLanguage: 'en',
-            targetLanguage: 'ja',
-          });
-          return await window._translator.translate('hello');
-        } catch (e) {
-          return e.toString();
-        }
-      })()
-    )";
+        (async () => {
+          try {
+            window._translator = await Translator.create({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+            if (window._translator) {
+              return await window._translator.translate('hello');
+            } else {
+              return 'NotSupportedError';
+            }
+          } catch (e) {
+            return e.name.toString();
+          }
+        })()
+      )";
     return EvalJsCatchingError(
         JsReplace("return evalInIframe($1, $2);",
                   CreateCrossOriginIframeUrl(index), translateTestScript),
@@ -2046,9 +2053,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
                               bool expect_success,
                               Browser* target_browser) {
     EXPECT_EQ(TryCreateTranslatorAndTranslateInIframe(index, target_browser),
-              expect_success ? "en to ja: hello"
-                             : "NotSupportedError: Unable to create translator "
-                               "for the given source and target language.");
+              expect_success ? "en to ja: hello" : "NotSupportedError");
   }
 
   // Checks the result of availability() in the iframe.
@@ -2061,7 +2066,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
             targetLanguage: 'ja',
           });
         } catch (e) {
-          return e.toString();
+          return e.name.toString();
         }
       })()
     )";
@@ -2081,11 +2086,14 @@ class OnDeviceTranslationCrossOriginBrowserTest
           R"(
           <head><script>
           const frames = {};
-          async function addIframe(url) {
-            const frame = document.createElement("iframe");
+          async function addIframe(url, permissionPolicyEnabled) {
+            const frame = document.createElement('iframe');
             frames[url] = frame;
+            if (permissionPolicyEnabled) {
+              frame.setAttribute('allow', 'translator');
+            }
             const loadedPromise = new Promise(resolve => {
-              frame.addEventListener("load", () => {
+              frame.addEventListener('load', () => {
                 resolve('loaded');
               });
             });
@@ -2102,7 +2110,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
               });
             });
             channel.port1.start();
-            frame.contentWindow.postMessage(script, "*", [channel.port2]);
+            frame.contentWindow.postMessage(script, '*', [channel.port2]);
             return await onMessagePromise;
           }
           function removeIframe(url) {
@@ -2137,13 +2145,15 @@ class OnDeviceTranslationCrossOriginBrowserTest
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        TranslateInCrossOriginIframe) {
   MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      {LanguagePackKey::kEn_Ja});
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(0);
 
   NavigateToTestPage(browser());
-  AddIframe(0, browser());
-  CheckTranslateInIframe(0, /*expect_success=*/true, browser());
+  AddIframe(0, browser(), /*enable_permission_policy=*/false);
+
+  // Translation is not available in cross-origin iframes without permission
+  // policy.
+  CheckTranslateInIframe(0, /*expect_success=*/false, browser());
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe when the
@@ -2160,13 +2170,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // Until the service count exceeds the limit, the translator can be created,
   // and the translation is successful.
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
-    AddIframe(i, browser());
+    AddIframe(i, browser(), /*enable_permission_policy=*/true);
     CheckTranslateInIframe(i, /*expect_success=*/true, browser());
     EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
   }
 
-  // When the service count exceeds the limit, the translator cannot be created.
-  AddIframe(i, browser());
+  // When the service count exceeds the limit, the translator cannot be created,
+  // even when the permission policy is still enabled.
+  AddIframe(i, browser(), /*enable_permission_policy=*/true);
   auto console_observer = CreateConsoleObserver(
       "The translation service count exceeded the limitation.");
   CheckTranslateInIframe(i, /*expect_success=*/false, browser());
@@ -2192,8 +2203,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   NavigateToTestPage(incognito_browser);
-  AddIframe(0, incognito_browser);
+  AddIframe(0, incognito_browser, /*enable_permission_policy=*/true);
   CheckTranslateInIframe(0, /*expect_success=*/true, incognito_browser);
+
+  AddIframe(1, incognito_browser, /*enable_permission_policy=*/false);
+  CheckTranslateInIframe(1, /*expect_success=*/false, incognito_browser);
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe using the
@@ -2208,7 +2222,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
 
   NavigateToTestPage(guest_browser);
-  AddIframe(0, guest_browser);
+  AddIframe(0, guest_browser, /*enable_permission_policy=*/true);
   CheckTranslateInIframe(0, /*expect_success=*/true, guest_browser);
 }
 
@@ -2244,7 +2258,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // translation is successful.
   for (size_t i = 0; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     for (auto* target_browser : browsers) {
-      AddIframe(i, target_browser);
+      AddIframe(i, target_browser, /*enable_permission_policy=*/true);
       CheckTranslateInIframe(i, /*expect_success=*/true, target_browser);
     }
   }
@@ -2254,7 +2268,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // When the service count per profile exceeds the limit, the translator
   // cannot be created.
   for (auto* target_browser : browsers) {
-    AddIframe(limit_count, target_browser);
+    AddIframe(limit_count, target_browser, /*enable_permission_policy=*/true);
     auto console_observer = CreateConsoleObserver(
         "The translation service count exceeded the limitation.",
         target_browser);
@@ -2304,13 +2318,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginWithCommandLineBrowserTest,
   // Until the service count exceeds the limit, the translator can be created,
   // and the translation is successful.
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
-    AddIframe(i, browser());
+    AddIframe(i, browser(), /*enable_permission_policy=*/true);
     CheckTranslateInIframe(i, /*expect_success=*/true, browser());
     EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
   }
 
   // When the service count exceeds the limit, the translator cannot be created.
-  AddIframe(i, browser());
+  AddIframe(i, browser(), /*enable_permission_policy=*/true);
   CheckTranslateInIframe(i, /*expect_success=*/false, browser());
   EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "unavailable");
 
