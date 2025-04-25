@@ -220,7 +220,8 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   SharedWorkerInstance instance(info->url, info->options->type,
                                 info->options->credentials, info->options->name,
                                 storage_key, creation_context_type,
-                                info->same_site_cookies);
+                                info->same_site_cookies,
+                                /*extended_lifetime=*/false);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -365,8 +366,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
-          creator.policy_container_host()->Clone(),
-          /*extended_lifetime=*/false));
+          creator.policy_container_host()->Clone()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
