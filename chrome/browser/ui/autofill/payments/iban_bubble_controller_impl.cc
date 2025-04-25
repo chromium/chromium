@@ -303,7 +303,8 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 
   // Log save IBAN prompt result according to the closed reason.
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
-      current_bubble_type_ == IbanBubbleType::kUploadSave) {
+      current_bubble_type_ == IbanBubbleType::kUploadSave ||
+      current_bubble_type_ == IbanBubbleType::kUploadInProgress) {
     autofill_metrics::SaveIbanPromptResult metric;
     switch (closed_reason) {
       case PaymentsUiClosedReason::kAccepted:
@@ -326,7 +327,9 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
     }
     autofill_metrics::LogSaveIbanPromptResultMetric(
         metric, is_reshow_,
-        /*is_upload_save=*/current_bubble_type_ == IbanBubbleType::kUploadSave);
+        /*is_upload_save=*/
+        (current_bubble_type_ == IbanBubbleType::kUploadSave ||
+         current_bubble_type_ == IbanBubbleType::kUploadInProgress));
   }
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
