@@ -932,10 +932,6 @@ omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
   if (type == AutocompleteMatchType::HISTORY_CLUSTER)
     return omnibox::GROUP_HISTORY_CLUSTER;
 
-  if (type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    return omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
-  }
-
   return omnibox::GROUP_OTHER_NAVS;
 }
 
