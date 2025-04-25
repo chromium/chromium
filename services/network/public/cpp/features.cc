@@ -612,4 +612,6 @@ BASE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote,
              "DeviceBoundSessionAccessObserverSharedRemote",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCSPScriptSrcV2, "ScriptSrcV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

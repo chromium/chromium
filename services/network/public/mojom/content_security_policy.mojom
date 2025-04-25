@@ -107,6 +107,7 @@ enum CSPDirectiveName {
   RequireTrustedTypesFor,
   Sandbox,
   ScriptSrc,
+  ScriptSrcV2,
   ScriptSrcAttr,
   ScriptSrcElem,
   StyleSrc,

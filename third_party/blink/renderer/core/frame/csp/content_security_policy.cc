@@ -33,6 +33,8 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
@@ -496,6 +498,7 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::ScriptSrc:
       case CSPDirectiveName::ScriptSrcAttr:
       case CSPDirectiveName::ScriptSrcElem:
+      case CSPDirectiveName::ScriptSrcV2:
       case CSPDirectiveName::StyleSrc:
       case CSPDirectiveName::StyleSrcAttr:
       case CSPDirectiveName::StyleSrcElem:
@@ -831,6 +834,7 @@ bool AllowResourceHintRequestForPolicy(
              CSPDirectiveName::MediaSrc,
              CSPDirectiveName::ObjectSrc,
              CSPDirectiveName::ScriptSrc,
+             CSPDirectiveName::ScriptSrcV2,
              CSPDirectiveName::ScriptSrcElem,
              CSPDirectiveName::StyleSrc,
              CSPDirectiveName::StyleSrcElem,
@@ -1533,6 +1537,8 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "sandbox";
     case CSPDirectiveName::ScriptSrc:
       return "script-src";
+    case CSPDirectiveName::ScriptSrcV2:
+      return "script-src-v2";
     case CSPDirectiveName::ScriptSrcAttr:
       return "script-src-attr";
     case CSPDirectiveName::ScriptSrcElem:
@@ -1598,6 +1604,10 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::Sandbox;
   if (name == "script-src")
     return CSPDirectiveName::ScriptSrc;
+  if (base::FeatureList::IsEnabled(network::features::kCSPScriptSrcV2) &&
+      name == "script-src-v2") {
+    return CSPDirectiveName::ScriptSrcV2;
+  }
   if (name == "script-src-attr")
     return CSPDirectiveName::ScriptSrcAttr;
   if (name == "script-src-elem")

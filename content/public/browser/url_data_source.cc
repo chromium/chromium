@@ -101,6 +101,7 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::Sandbox:
     case network::mojom::CSPDirectiveName::ScriptSrcAttr:
     case network::mojom::CSPDirectiveName::ScriptSrcElem:
+    case network::mojom::CSPDirectiveName::ScriptSrcV2:
     case network::mojom::CSPDirectiveName::StyleSrc:
     case network::mojom::CSPDirectiveName::StyleSrcAttr:
     case network::mojom::CSPDirectiveName::StyleSrcElem:

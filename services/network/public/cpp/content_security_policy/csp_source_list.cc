@@ -50,6 +50,7 @@ void IntersectHashes(base::flat_set<mojom::CSPHashSourcePtr>& a,
 
 bool IsScriptDirective(CSPDirectiveName directive) {
   return directive == CSPDirectiveName::ScriptSrc ||
+         directive == CSPDirectiveName::ScriptSrcV2 ||
          directive == CSPDirectiveName::ScriptSrcAttr ||
          directive == CSPDirectiveName::ScriptSrcElem ||
          directive == CSPDirectiveName::DefaultSrc;

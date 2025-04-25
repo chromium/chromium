@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 
 #include "base/feature_list.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -30,6 +31,7 @@ bool HasSourceMatchInList(
 
 bool IsScriptDirective(CSPDirectiveName directive_type) {
   return (directive_type == CSPDirectiveName::ScriptSrc ||
+          directive_type == CSPDirectiveName::ScriptSrcV2 ||
           directive_type == CSPDirectiveName::ScriptSrcAttr ||
           directive_type == CSPDirectiveName::ScriptSrcElem ||
           directive_type == CSPDirectiveName::DefaultSrc);

@@ -42,7 +42,7 @@ using DirectivesMap =
 namespace {
 
 bool IsDirectiveNameCharacter(char c) {
-  return base::IsAsciiAlpha(c) || c == '-';
+  return base::IsAsciiAlphaNumeric(c) || c == '-';
 }
 
 bool IsDirectiveValueCharacter(char c) {
@@ -112,6 +112,10 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "script-src")) {
     return CSPDirectiveName::ScriptSrc;
   }
+  if (base::FeatureList::IsEnabled(network::features::kCSPScriptSrcV2) &&
+      base::EqualsCaseInsensitiveASCII(name, "script-src-v2")) {
+    return CSPDirectiveName::ScriptSrcV2;
+  }
   if (base::EqualsCaseInsensitiveASCII(name, "script-src-attr")) {
     return CSPDirectiveName::ScriptSrcAttr;
   }
@@ -171,6 +175,7 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -207,6 +212,7 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -255,6 +261,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -1047,6 +1054,7 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::MediaSrc:
       case CSPDirectiveName::ObjectSrc:
       case CSPDirectiveName::ScriptSrc:
+      case CSPDirectiveName::ScriptSrcV2:
       case CSPDirectiveName::ScriptSrcAttr:
       case CSPDirectiveName::ScriptSrcElem:
       case CSPDirectiveName::StyleSrc:
@@ -1184,6 +1192,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::StyleSrc:
       return CSPDirectiveName::DefaultSrc;
 
@@ -1601,6 +1610,8 @@ std::string ToString(CSPDirectiveName name) {
       return "sandbox";
     case CSPDirectiveName::ScriptSrc:
       return "script-src";
+    case CSPDirectiveName::ScriptSrcV2:
+      return "script-src-v2";
     case CSPDirectiveName::ScriptSrcAttr:
       return "script-src-attr";
     case CSPDirectiveName::ScriptSrcElem:
