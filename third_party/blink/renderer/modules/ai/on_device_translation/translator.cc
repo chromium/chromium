@@ -59,32 +59,32 @@ ScriptPromise<V8Availability> Translator::availability(
     ScriptState* script_state,
     TranslatorCreateCoreOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
     return ScriptPromise<V8Availability>();
   }
 
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  AIInterfaceProxy::GetTranslationManagerRemote(execution_context)
-      ->TranslationAvailable(
-          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
-          mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
-          WTF::BindOnce(
-              [](ExecutionContext* execution_context,
-                 ScriptPromiseResolver<V8Availability>* resolver,
-                 CanCreateTranslatorResult result) {
-                CHECK(resolver);
+  AIInterfaceProxy::GetTranslationManagerRemote(context)->TranslationAvailable(
+      mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+      mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
+      WTF::BindOnce(
+          [](ExecutionContext* context,
+             ScriptPromiseResolver<V8Availability>* resolver,
+             CanCreateTranslatorResult result) {
+            CHECK(resolver);
 
-                Availability availability =
-                    HandleTranslatorAvailabilityCheckResult(execution_context,
-                                                            result);
-                resolver->Resolve(AvailabilityToV8(availability));
-              },
-              WrapPersistent(execution_context), WrapPersistent(resolver)));
+            Availability availability =
+                HandleTranslatorAvailabilityCheckResult(context, result);
+            resolver->Resolve(AvailabilityToV8(availability));
+          },
+          WrapPersistent(context), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -96,9 +96,11 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
   // be thrown before we get here.
   CHECK(options && options->sourceLanguage() && options->targetLanguage());
 
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
     return EmptyPromise();
   }
 
@@ -114,13 +116,11 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
       MakeGarbageCollected<CreateTranslatorClient>(script_state, options,
                                                    resolver);
 
-  AIInterfaceProxy::GetTranslationManagerRemote(
-      ExecutionContext::From(script_state))
-      ->CanCreateTranslator(
-          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
-          mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
-          WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,
-                        WrapPersistent(create_translator_client)));
+  AIInterfaceProxy::GetTranslationManagerRemote(context)->CanCreateTranslator(
+      mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+      mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
+      WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,
+                    WrapPersistent(create_translator_client)));
 
   return resolver->Promise();
 }
@@ -130,8 +130,11 @@ ScriptPromise<IDLString> Translator::translate(
     const WTF::String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
     return EmptyPromise();
   }
 
@@ -171,8 +174,11 @@ ReadableStream* Translator::translateStreaming(
     const WTF::String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
     return nullptr;
   }
 

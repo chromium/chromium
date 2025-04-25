@@ -4724,6 +4724,11 @@
       implied_by: ["TranslationAPIV1"],
     },
     {
+      name: "TranslationAPIForWorkers",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "TranslationAPIV1",
       status: "experimental",
       copied_from_base_feature_if: "overridden",

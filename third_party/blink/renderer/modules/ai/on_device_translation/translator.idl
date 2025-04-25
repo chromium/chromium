@@ -20,7 +20,7 @@ dictionary TranslatorTranslateOptions {
 };
 
 [
-  Exposed=(Window,Worker),
+  Exposed(Window TranslationAPI, Worker TranslationAPIForWorkers),
   RuntimeEnabled=TranslationAPI,
   SecureContext
 ]
