@@ -145,8 +145,42 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kFormsClassifications:
-      // TODO(crbug.com/389631477) - Add traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "forms_classifications_model_execution", R"(
+    semantics {
+      sender: "AutofillAI - Forms Classifications"
+      description:
+        "Analyze page content to classify the types of form fields and store "
+        "those classifications for subsequent autofilling of forms."
+      trigger: "User encounters a web form on page load and the Autofill "
+               "server has selected the form as relevant for model execution."
+      destination: GOOGLE_OWNED_SERVICE
+      data: "Title, URL, and content of the page."
+      internal {
+        contacts {
+          email: "chrome-intelligence-core@google.com"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+        type: USER_CONTENT
+      }
+      last_reviewed: "2025-04-23"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "Users can control this by signing-in to Chrome, and via the "
+        "'Autofill with AI' setting in the 'Autofill and passwords' "
+        "section."
+      chrome_policy {
+        AutofillPredictionSettings {
+          AutofillPredictionSettings: 2
+        }
+      }
+    })");
     case ModelBasedCapabilityKey::kEnhancedCalendar:
       // TODO(crbug.com/398296762): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
