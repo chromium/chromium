@@ -22,12 +22,14 @@ import org.junit.runners.MethodSorters;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.testhtmls.BlankPopupOnLoadPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnLoadPageStation;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -144,5 +146,23 @@ public class PopupPTTest {
 
         assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
         assertFinalDestination(page, popupBlockedMessage);
+    }
+
+    // Regression test for crbug.com/413341816.
+    @Test
+    @MediumTest
+    @RequiresRestart
+    public void testBlankPopupLaunchedFromBlockedChip() {
+        PopupBlockedMessageFacility popupBlockedMessage =
+                BlankPopupOnLoadPageStation.loadInCurrentTabExpectBlocked(
+                                mCtaTestRule.getActivityTestRule(), mEntryPage)
+                        .second;
+        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        // Click the "Always allow" button.
+        WebPageStation poppedUpPage = popupBlockedMessage.clickAlwaysAllow();
+        assertEquals(2, mCtaTestRule.tabsCount(/* incognito= */ false));
+
+        assertFinalDestination(poppedUpPage);
     }
 }
