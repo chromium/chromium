@@ -4,6 +4,7 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
+#include "base/power_monitor/energy_monitor_android.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
@@ -77,6 +78,16 @@ void JNI_PowerMonitor_OnThermalStatusChanged(JNIEnv* env, int thermal_status) {
   ProcessThermalEventHelper(MapToDeviceThermalState(thermal_status));
 }
 
+int GetRemainingBatteryCapacity() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::android::Java_PowerMonitor_getRemainingBatteryCapacity(env);
+}
+
+int64_t GetTotalEnergyConsumed() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::android::Java_PowerMonitor_getTotalEnergyConsumed(env);
+}
+
 // Note: Android does not have the concept of suspend / resume as it's known by
 // other platforms. Thus we do not send Suspend/Resume notifications. See
 // http://crbug.com/644515
@@ -89,11 +100,6 @@ PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
   int battery_power =
       base::android::Java_PowerMonitor_getBatteryPowerStatus(env);
   return static_cast<PowerStateObserver::BatteryPowerStatus>(battery_power);
-}
-
-int PowerMonitorDeviceSource::GetRemainingBatteryCapacity() const {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::android::Java_PowerMonitor_getRemainingBatteryCapacity(env);
 }
 
 PowerThermalObserver::DeviceThermalState

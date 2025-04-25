@@ -107,6 +107,7 @@ class AndroidBatteryMetrics
   PowerStateObserver::BatteryPowerStatus battery_power_status_ =
       PowerStateObserver::BatteryPowerStatus::kUnknown;
   int last_remaining_capacity_uah_ = 0;
+  int64_t last_total_energy_uws_ = 0;
   base::RepeatingTimer metrics_timer_;
   int skipped_timers_ = 0;
 

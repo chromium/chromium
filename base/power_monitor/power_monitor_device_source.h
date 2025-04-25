@@ -116,7 +116,6 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 #if BUILDFLAG(IS_ANDROID)
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
       const override;
-  int GetRemainingBatteryCapacity() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

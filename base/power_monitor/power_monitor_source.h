@@ -49,11 +49,6 @@ class BASE_EXPORT PowerMonitorSource {
   virtual PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
       const = 0;
 
-#if BUILDFLAG(IS_ANDROID)
-  // Read and return the current remaining battery capacity (microampere-hours).
-  virtual int GetRemainingBatteryCapacity() const;
-#endif  // BUILDFLAG(IS_ANDROID)
-
   static const char* DeviceThermalStateToString(
       PowerThermalObserver::DeviceThermalState state);
 

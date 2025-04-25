@@ -134,13 +134,6 @@ void PowerMonitor::SetCurrentThermalState(
   source_->SetCurrentThermalState(state);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-int PowerMonitor::GetRemainingBatteryCapacity() const {
-  DCHECK(IsInitialized());
-  return Source()->GetRemainingBatteryCapacity();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void PowerMonitor::NotifyPowerStateChange(bool on_battery_power) {
   DCHECK(IsInitialized());
   NotifyPowerStateChange(

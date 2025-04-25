@@ -4,25 +4,37 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.OutcomeReceiver;
 import android.os.PowerManager;
+import android.os.PowerMonitorReadings;
+import android.os.health.SystemHealthManager;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.power_monitor.BatteryPowerStatus;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /** Integrates native PowerMonitor with the java side. */
 @NullMarked
@@ -31,6 +43,26 @@ public class PowerMonitor {
     private static boolean sIsInitRequested;
 
     @PowerStatus private static int sBatteryPowerStatus = PowerStatus.UNKNOWN;
+
+    private static final int SYSTEM_HEALTH_MANAGER_API_TIMEOUT_MS = 1000;
+    private static final String SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM =
+            "Power.SystemHealthManagerError";
+
+    private static final List<android.os.PowerMonitor> sPowerMonitors = new ArrayList<>();
+    private static @Nullable SystemHealthManager sSystemHealthManager;
+    private static @Nullable SequencedTaskRunner sTaskRunner;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @Retention(RetentionPolicy.SOURCE)
+    @interface SystemHealthManagerError {
+        // LINT.IfChange(SystemHealthManagerError)
+        int NO_POWER_MONITORS = 0;
+        int GET_POWER_MONITOR_READINGS_INTERRUPTED = 1;
+        int GET_POWER_MONITOR_READINGS_TIMEOUT = 2;
+        int COUNT = 3;
+        // LINT.ThenChange(/tools/metrics/histograms/metadata/power/enums.xml:SystemHealthManagerError)
+    };
 
     @Retention(RetentionPolicy.SOURCE)
     @interface PowerStatus {
@@ -105,6 +137,33 @@ public class PowerMonitor {
                         }
                     });
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            sTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
+            sSystemHealthManager =
+                    (SystemHealthManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.SYSTEM_HEALTH_SERVICE);
+            if (sSystemHealthManager != null) {
+                sSystemHealthManager.getSupportedPowerMonitors(
+                        Runnable::run,
+                        (monitors) -> {
+                            synchronized (sPowerMonitors) {
+                                for (android.os.PowerMonitor monitor : monitors) {
+                                    // Ignore direct rails measurements. Their meaning is
+                                    // effectively unknown.
+                                    // https://developer.android.com/reference/android/os/PowerMonitor#POWER_MONITOR_TYPE_CONSUMER
+                                    // https://developer.android.com/reference/android/os/PowerMonitor#POWER_MONITOR_TYPE_MEASUREMENT
+                                    if (monitor.getType()
+                                            == android.os.PowerMonitor
+                                                    .POWER_MONITOR_TYPE_CONSUMER) {
+                                        sPowerMonitors.add(monitor);
+                                    }
+                                }
+                            }
+                        });
+            }
+        }
     }
 
     private PowerMonitor() {}
@@ -136,6 +195,72 @@ public class PowerMonitor {
             case PowerStatus.BATTERY_POWER -> BatteryPowerStatus.BATTERY_POWER;
             default -> throw new IllegalStateException("Unexpected value: " + sBatteryPowerStatus);
         };
+    }
+
+    @CalledByNative
+    private static long getTotalEnergyConsumed() {
+        ThreadUtils.assertOnBackgroundThread();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return 0;
+        }
+        CountDownLatch ready = new CountDownLatch(1);
+        class TotalEnergyReceiver
+                implements OutcomeReceiver<PowerMonitorReadings, RuntimeException> {
+            private long mTotalEnergy;
+
+            @Override
+            public void onResult(PowerMonitorReadings readings) {
+                ThreadUtils.assertOnBackgroundThread();
+                // No need to synchronize sPowerMonitors because it is never mutated once populated.
+                for (android.os.PowerMonitor monitor : sPowerMonitors) {
+                    long consumed = readings.getConsumedEnergy(monitor);
+                    if (consumed != PowerMonitorReadings.ENERGY_UNAVAILABLE) {
+                        mTotalEnergy += consumed;
+                    }
+                }
+                ready.countDown();
+            }
+
+            public long getTotalEnergy() {
+                return mTotalEnergy;
+            }
+        }
+
+        TotalEnergyReceiver receiver = new TotalEnergyReceiver();
+        // We start monitoring power use only after we know the battery status. Thus we don't need
+        // to call `create` here.
+        synchronized (sPowerMonitors) {
+            if (sPowerMonitors.isEmpty()) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
+                        SystemHealthManagerError.NO_POWER_MONITORS,
+                        SystemHealthManagerError.COUNT);
+                return 0;
+            }
+            // If power monitors are not empty, the system health manager and the task runner are
+            // initialized.
+            assumeNonNull(sSystemHealthManager);
+            assumeNonNull(sTaskRunner);
+            sSystemHealthManager.getPowerMonitorReadings(sPowerMonitors, sTaskRunner, receiver);
+        }
+        boolean isReady = false;
+        try {
+            isReady = ready.await(SYSTEM_HEALTH_MANAGER_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
+                    SystemHealthManagerError.GET_POWER_MONITOR_READINGS_INTERRUPTED,
+                    SystemHealthManagerError.COUNT);
+            return 0;
+        }
+        if (!isReady) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    SYSTEM_HEALTH_MANAGER_ERROR_HISTOGRAM,
+                    SystemHealthManagerError.GET_POWER_MONITOR_READINGS_TIMEOUT,
+                    SystemHealthManagerError.COUNT);
+            return 0;
+        }
+        return receiver.getTotalEnergy();
     }
 
     @CalledByNative
