@@ -430,18 +430,14 @@ enum class AuthenticationFlowInProfileState {
   [self continueFlow];
 }
 
-- (void)didClearData {
-  // TODO(crbug.com/403183877): Split `AuthenticationFlowPerformer` into 2
-  // classes to avoid having all those NOTREACHED methods.
-  NOTREACHED();
-}
-
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes {
   // Unsynced data is checked by AuthenticationFlow before calling
   // `AuthenticationFlowInProfile`.
   // So unsynced data is checked when leaving a profile (for profile switching),
   // or before sign-out (for account switching).
+  // TODO(crbug.com/403183877): Split `AuthenticationFlowPerformer` into 2
+  // classes to avoid having all those NOTREACHED methods.
   NOTREACHED();
 }
 

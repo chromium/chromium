@@ -23,9 +23,6 @@ class Browser;
 // `signOutForAccountSwitchWithProfile`.
 - (void)didSignOutForAccountSwitch;
 
-// Indicates that browsing data finished clearing.
-- (void)didClearData;
-
 // Called after `-[AuthenticationFlowPerformer
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
 // unsynced in the current profile.

@@ -817,11 +817,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 #pragma mark AuthenticationFlowPerformerDelegate
 
 - (void)didSignOutForAccountSwitch {
-  [self continueFlow];
-}
-
-- (void)didClearData {
-  [self continueFlow];
+  NOTREACHED();
 }
 
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
