@@ -727,6 +727,16 @@ Element& MenuListSelectType::InnerElement() const {
 }
 
 void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
+  if (LayoutTheme::GetTheme().DelegatesMenuListRendering() &&
+      select_->IsMultiple() &&
+      !select_->FastHasAttribute(html_names::kSizeAttr)) {
+    // If this UseCounter is low, then we could consider not delegating MenuList
+    // rendering for <select multiple> when no size attribute is present.
+    // https://issues.chromium.org/issues/357649033
+    UseCounter::Count(select_->GetDocument(),
+                      WebFeature::kSelectMultipleShowPopup);
+  }
+
   if (PopupIsVisible()) {
     return;
   }

@@ -4850,6 +4850,7 @@ enum WebFeature {
   kInputParsedParentSelect = 5546,
   kInputParsedAncestorSelect = 5547,
   kCSSSelectorPseudoHasSlotted = 5548,
+  kSelectMultipleShowPopup = 5549,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
