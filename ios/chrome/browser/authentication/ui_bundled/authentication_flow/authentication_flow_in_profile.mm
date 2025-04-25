@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -77,8 +76,6 @@ enum class AuthenticationFlowInProfileState {
   // to compare with a similiar list from device mangement to understand whether
   // user and device are managed by the same domain.
   NSArray<NSString*>* _userAffiliationIDs;
-  // Capabilities fetcher for the subsequent History Sync Opt-In screen.
-  HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
 
   // The lifetime of this ScopedClosureRunner denotes a batch of primary account
   // changes. UI listens to batched changes to avoid visual artifacts during an
@@ -357,19 +354,7 @@ enum class AuthenticationFlowInProfileState {
     [self continueFlow];
     return;
   }
-  ProfileIOS* profile = [self originalProfile];
-  // Create the capability fetcher and start fetching capabilities.
-  __weak __typeof(self) weakSelf = self;
-  _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)];
-
-  [_capabilitiesFetcher
-      startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
-                                                         signin::Tribool
-                                                             capability) {
-        // The capability value is ignored.
-        [weakSelf continueFlow];
-      })];
+  [_performer fetchAccountCapabilities:[self originalProfile]];
 }
 
 - (void)successCompleteFlowStep {
@@ -525,6 +510,10 @@ enum class AuthenticationFlowInProfileState {
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings {
   NOTREACHED();
+}
+
+- (void)didFetchAccountCapabilities {
+  [self continueFlow];
 }
 
 @end

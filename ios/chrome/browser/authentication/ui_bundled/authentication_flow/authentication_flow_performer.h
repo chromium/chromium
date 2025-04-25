@@ -147,6 +147,8 @@ using OnProfileSwitchCompletion =
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
                identity:(id<SystemIdentity>)identity;
 
+- (void)fetchAccountCapabilities:(ProfileIOS*)profile;
+
 @property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>
     delegate;
 

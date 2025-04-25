@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -144,6 +145,8 @@ void HandleSignoutForSnackbar(
   // calls it.
   std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
       _accountLevelSigninRestrictionPolicyFetcher;
+  // Capabilities fetcher for the subsequent History Sync Opt-In screen.
+  HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
   id<ChangeProfileCommands> _changeProfileHandler;
   ActionSheetCoordinator* _leavingPrimaryAccountConfirmationDialogCoordinator;
@@ -550,6 +553,21 @@ void HandleSignoutForSnackbar(
   [_delegate didFetchUserPolicyWithSuccess:success];
 }
 
+- (void)fetchAccountCapabilities:(ProfileIOS*)profile {
+  // Create the capability fetcher and start fetching capabilities.
+  _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)];
+
+  __weak __typeof(self) weakSelf = self;
+  [_capabilitiesFetcher
+      startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
+                                                         signin::Tribool
+                                                             capability) {
+        // The capability value is ignored.
+        [weakSelf didFetchAccountCapabilities];
+      })];
+}
+
 #pragma mark - Private
 
 // The change profile continuation for the authentication flow.
@@ -578,6 +596,10 @@ void HandleSignoutForSnackbar(
   }
   [_delegate didFetchProfileSeparationPolicies:
                  profile_separation_data_migration_settings];
+}
+
+- (void)didFetchAccountCapabilities {
+  [_delegate didFetchAccountCapabilities];
 }
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
