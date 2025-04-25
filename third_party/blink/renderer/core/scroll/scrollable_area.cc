@@ -84,14 +84,6 @@ int ScrollableArea::PixelsPerLineStep(LocalFrame* frame) {
       frame, cc::kPixelsPerLineStep);
 }
 
-float ScrollableArea::MinFractionToStepWhenPaging() {
-  return cc::kMinFractionToStepWhenPaging;
-}
-
-int ScrollableArea::MaxOverlapBetweenPages() const {
-  return GetPageScrollbarTheme().MaxOverlapBetweenPages();
-}
-
 // static
 mojom::blink::ScrollBehavior ScrollableArea::DetermineScrollBehavior(
     mojom::blink::ScrollBehavior behavior_from_param,
@@ -1080,15 +1072,12 @@ int ScrollableArea::PageStep(ScrollbarOrientation orientation) const {
   // use the snapport rect to calculate the page step instead of the visible
   // rect.
   // [1] https://drafts.csswg.org/css-scroll-snap/#scroll-padding
-  gfx::Size snapport_size =
+  const gfx::Size snapport_size =
       VisibleScrollSnapportRect(kExcludeScrollbars).PixelSnappedSize();
-  int length = (orientation == kHorizontalScrollbar) ? snapport_size.width()
-                                                     : snapport_size.height();
-  int min_page_step =
-      static_cast<float>(length) * MinFractionToStepWhenPaging();
-  int page_step = std::max(min_page_step, length - MaxOverlapBetweenPages());
-
-  return std::max(page_step, 1);
+  const int snapport_length = (orientation == kHorizontalScrollbar)
+                                  ? snapport_size.width()
+                                  : snapport_size.height();
+  return cc::ScrollUtils::CalculatePageStep(snapport_length);
 }
 
 int ScrollableArea::DocumentStep(ScrollbarOrientation orientation) const {

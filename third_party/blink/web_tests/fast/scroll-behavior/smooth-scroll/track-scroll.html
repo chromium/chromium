@@ -11,9 +11,6 @@ body {
   // Compute ScrollableArea::pageStep.
   var pageStep = innerHeight * 0.875;
   if (navigator.userAgent.indexOf("Mac OS X") >= 0) {
-      // TODO(crbug.com/40701909): the expectation is still broken on Mac since
-      // composited scrollbars implementation in ScrollbarController don't check
-      // for ScrollbarTheme::MaxOverlapBetweenPages() which is 40px on Mac.
       pageStep = Math.max(pageStep, innerHeight - 40);
   }
 

@@ -650,6 +650,7 @@ _CONFIG = [
             'cc::kManipulationInfoScrollbar',
             'cc::kManipulationInfoTouch',
             'cc::kManipulationInfoWheel',
+            'cc::kMaxOverlapBetweenPages',
             'cc::kMinFractionToStepWhenPaging',
             'cc::kPixelsPerLineStep',
             'cc::MainThreadScrollingReason',

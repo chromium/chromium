@@ -91,8 +91,6 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
       bool jump_on_track_click);
 
  protected:
-  int MaxOverlapBetweenPages() const override { return 40; }
-
   bool ShouldDragDocumentInsteadOfThumb(const Scrollbar&,
                                         const WebMouseEvent&) const override;
 
