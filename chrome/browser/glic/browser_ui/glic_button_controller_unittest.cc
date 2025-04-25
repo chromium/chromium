@@ -51,8 +51,8 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
 class MockGlicButtonControllerDelegate
     : public glic::GlicButtonControllerDelegate {
  public:
-  void SetShowState(bool show) override { show_state_ = show; }
-  void SetIcon(const gfx::VectorIcon& icon) override { icon_ = &icon; }
+  void SetGlicShowState(bool show) override { show_state_ = show; }
+  void SetGlicIcon(const gfx::VectorIcon& icon) override { icon_ = &icon; }
 
   bool show_state() const { return show_state_; }
   const gfx::VectorIcon* icon() const { return icon_; }

@@ -55,10 +55,11 @@ void GlicButtonController::PanelStateChanged(
   } else {
     bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
     if (detached) {
-      glic_controller_delegate_->SetIcon(GlicVectorIconManager::GetVectorIcon(
-          IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
+      glic_controller_delegate_->SetGlicIcon(
+          GlicVectorIconManager::GetVectorIcon(
+              IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
     } else {
-      glic_controller_delegate_->SetIcon(
+      glic_controller_delegate_->SetGlicIcon(
           GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
     }
     UpdateShowState(detached);
@@ -75,7 +76,7 @@ void GlicButtonController::UpdateShowState(bool detached) {
   // If the glic window is detached, we want to show the re-attach icon
   // regardless of glic enabling/pinned state.
   if (detached && !GlicWindowController::AlwaysDetached()) {
-    glic_controller_delegate_->SetShowState(true);
+    glic_controller_delegate_->SetGlicShowState(true);
     return;
   }
 
@@ -86,9 +87,9 @@ void GlicButtonController::UpdateShowState(bool detached) {
 
   if (is_enabled_for_profile && is_pinned_to_tabstrip) {
     glic_keyed_service_->TryPreload();
-    glic_controller_delegate_->SetShowState(true);
+    glic_controller_delegate_->SetGlicShowState(true);
   } else {
-    glic_controller_delegate_->SetShowState(false);
+    glic_controller_delegate_->SetGlicShowState(false);
   }
 }
 

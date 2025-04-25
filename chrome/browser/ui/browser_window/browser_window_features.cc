@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -286,7 +286,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             browser_view->browser()->profile())) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
           browser_view->GetProfile(),
-          browser_view->tab_strip_region_view()->GetGlicButton(),
+          browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(
               browser_view->GetProfile()));
     }

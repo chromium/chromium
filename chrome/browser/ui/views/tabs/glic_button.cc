@@ -85,17 +85,6 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 
 GlicButton::~GlicButton() = default;
 
-void GlicButton::SetShowState(bool show) {
-  show_state_ = show;
-
-  SetVisible(show_state_);
-
-  PreferredSizeChanged();
-}
-
-void GlicButton::SetIcon(const gfx::VectorIcon& icon) {
-  SetVectorIcon(icon);
-}
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
   if (is_showing) {

@@ -18,10 +18,10 @@ class GlicButtonControllerDelegate {
   virtual ~GlicButtonControllerDelegate() = default;
 
   // Set the show state of the button
-  virtual void SetShowState(bool show) = 0;
+  virtual void SetGlicShowState(bool show) = 0;
 
   // Sets the icon of the button
-  virtual void SetIcon(const gfx::VectorIcon& icon) = 0;
+  virtual void SetGlicIcon(const gfx::VectorIcon& icon) = 0;
 };
 
 }  // namespace glic
