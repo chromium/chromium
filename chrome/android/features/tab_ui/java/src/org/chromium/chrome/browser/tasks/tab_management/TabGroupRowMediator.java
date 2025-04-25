@@ -113,7 +113,7 @@ class TabGroupRowMediator {
         String userTitle = savedTabGroup.title;
         TabGroupRowViewTitleData titleData =
                 new TabGroupRowViewTitleData(
-                        userTitle, numberOfTabs, R.string.tab_group_row_accessibility_text);
+                        userTitle, numberOfTabs, R.plurals.tab_group_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(

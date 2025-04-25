@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
@@ -44,7 +45,7 @@ public class TabGroupRowView extends LinearLayout {
     public static class TabGroupRowViewTitleData {
         public final String title;
         public final int numTabs;
-        public final @StringRes int rowAccessibilityTextResId;
+        public final @PluralsRes int rowAccessibilityTextResId;
 
         /**
          * @param title The title string to display. If empty, a default title will be used.
@@ -53,7 +54,7 @@ public class TabGroupRowView extends LinearLayout {
          *     describes the row.
          */
         public TabGroupRowViewTitleData(
-                String title, int numTabs, @StringRes int rowAccessibilityTextResId) {
+                String title, int numTabs, @PluralsRes int rowAccessibilityTextResId) {
             this.title = title;
             this.numTabs = numTabs;
             this.rowAccessibilityTextResId = rowAccessibilityTextResId;
@@ -120,7 +121,11 @@ public class TabGroupRowView extends LinearLayout {
         // Note that the subtitle will also be read for the row, as it just loops over visible text
         // children.
         mTitleTextView.setContentDescription(
-                resources.getString(titleData.rowAccessibilityTextResId, title));
+                resources.getQuantityString(
+                        titleData.rowAccessibilityTextResId,
+                        titleData.numTabs,
+                        title,
+                        titleData.numTabs));
     }
 
     void setTimestampEvent(TabGroupTimeAgo event) {

@@ -149,7 +149,7 @@ public class TabGroupRowViewRenderTest {
                             new TabGroupRowViewTitleData(
                                     "Title",
                                     1,
-                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
+                                    R.plurals.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(
@@ -174,7 +174,7 @@ public class TabGroupRowViewRenderTest {
                             new TabGroupRowViewTitleData(
                                     "VeryLongTitleThatGetsTruncatedOrSplitOverMultipleLines",
                                     1,
-                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
+                                    R.plurals.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(
@@ -229,7 +229,7 @@ public class TabGroupRowViewRenderTest {
                             new TabGroupRowViewTitleData(
                                     "A generic title",
                                     1,
-                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
+                                    R.plurals.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(
@@ -256,7 +256,7 @@ public class TabGroupRowViewRenderTest {
                             new TabGroupRowViewTitleData(
                                     "A generic title",
                                     1,
-                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
+                                    R.plurals.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(OPEN_RUNNABLE, null);
                     mPropertyModel = builder.build();
                     PropertyModelChangeProcessor.create(

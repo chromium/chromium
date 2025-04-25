@@ -71,7 +71,7 @@ class TabGroupListBottomSheetRowMediator {
                 new TabGroupRowViewTitleData(
                         mSavedTabGroup.title,
                         numTabs,
-                        R.string.tab_group_bottom_sheet_row_accessibility_text);
+                        R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(

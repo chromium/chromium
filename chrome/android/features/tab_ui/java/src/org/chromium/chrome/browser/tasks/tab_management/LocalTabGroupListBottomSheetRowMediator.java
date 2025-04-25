@@ -67,7 +67,7 @@ class LocalTabGroupListBottomSheetRowMediator {
                 new TabGroupRowViewTitleData(
                         mTabGroupModelFilter.getTabGroupTitle(rootId),
                         numTabs,
-                        R.string.tab_group_bottom_sheet_row_accessibility_text);
+                        R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
         builder.with(
                 TabGroupRowProperties.ROW_CLICK_RUNNABLE,

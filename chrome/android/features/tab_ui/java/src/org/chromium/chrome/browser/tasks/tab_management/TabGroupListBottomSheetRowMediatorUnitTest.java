@@ -105,7 +105,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         assertEquals(TEST_TITLE, titleData.title);
         assertEquals(1, titleData.numTabs);
         assertEquals(
-                R.string.tab_group_bottom_sheet_row_accessibility_text,
+                R.plurals.tab_group_bottom_sheet_row_accessibility_text,
                 titleData.rowAccessibilityTextResId);
         assertNotNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
     }
