@@ -36,8 +36,8 @@ ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FieldType& field_type) const {
-  if (!(field_type == EMAIL_ADDRESS || field_type == NAME_FIRST ||
-        field_type == NAME_FULL)) {
+  if (!(field_type == PASSWORD || field_type == EMAIL_ADDRESS ||
+        field_type == NAME_FIRST || field_type == NAME_FULL)) {
     return {};
   }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
@@ -77,6 +77,8 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
       suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
     } else if (field_type == PASSWORD) {
+      suggestion.main_text =
+          Suggestion::Text(base::UTF8ToUTF16(account->email));
       suggestion.custom_icon = account->decoded_picture;
       // TODO(crbug.com/410421491): support more context.
       suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(

@@ -70,14 +70,13 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
   content::IdentityProviderMetadata metadata;
   metadata.config_url = GURL("https://idp.example");
 
-  content::ClientMetadata client((GURL()), (GURL()), (GURL()), (gfx::Image()));
-
   std::vector<content::IdentityRequestDialogDisclosureField> disclosures;
 
   scoped_refptr<content::IdentityProviderData> identity_provider =
       base::MakeRefCounted<content::IdentityProviderData>(
-          "idp.example", metadata, client, blink::mojom::RpContext::kSignIn,
-          disclosures, false);
+          "idp.example", metadata,
+          content::ClientMetadata((GURL()), (GURL()), (GURL()), (gfx::Image())),
+          blink::mojom::RpContext::kSignIn, disclosures, false);
 
   account->identity_provider = identity_provider;
   std::vector<IdentityRequestAccountPtr> accounts = {account};
@@ -105,6 +104,48 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
   EXPECT_EQ(payload.fields[NAME_FULL], u"name");
   EXPECT_TRUE(payload.fields.contains(NAME_FIRST));
   EXPECT_EQ(payload.fields[NAME_FIRST], u"given_name");
+}
+
+TEST_F(ContentIdentityCredentialDelegateTest, GetSuggestionsForPassword) {
+  MockFederatedAuthAutofillSource mock;
+
+  ContentIdentityCredentialDelegate delegate(
+      base::BindLambdaForTesting([&mock]() {
+        content::FederatedAuthAutofillSource* result = &mock;
+        return result;
+      }));
+
+  IdentityRequestAccountPtr account =
+      base::MakeRefCounted<content::IdentityRequestAccount>(
+          "id", "display_identifier", "display_name", "john@email.com", "name",
+          "given_name", GURL(), "phone", "username",
+          /*login_hints=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
+          /*labels=*/std::vector<std::string>());
+  content::IdentityProviderMetadata metadata;
+  metadata.config_url = GURL("https://idp.example");
+
+  std::vector<content::IdentityRequestDialogDisclosureField> disclosures;
+
+  scoped_refptr<content::IdentityProviderData> identity_provider =
+      base::MakeRefCounted<content::IdentityProviderData>(
+          "idp.example", metadata,
+          content::ClientMetadata((GURL()), (GURL()), (GURL()), (gfx::Image())),
+          blink::mojom::RpContext::kSignIn, disclosures, false);
+
+  account->identity_provider = identity_provider;
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+
+  std::vector<Suggestion> suggestions =
+      delegate.GetVerifiedAutofillSuggestions(PASSWORD);
+  EXPECT_EQ(1ul, suggestions.size());
+
+  Suggestion suggestion = suggestions[0];
+  EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
+  EXPECT_EQ(suggestion.labels.size(), 1ul);
+  EXPECT_EQ(suggestion.minor_texts.size(), 0ul);
 }
 
 }  // namespace
