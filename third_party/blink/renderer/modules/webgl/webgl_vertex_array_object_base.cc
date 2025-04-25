@@ -11,7 +11,8 @@ namespace blink {
 
 WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
     WebGLRenderingContextBase* ctx,
-    VaoType type)
+    VaoType type,
+    GLint max_vertex_attribs)
     : WebGLContextObject(ctx),
       object_(0),
       type_(type),
@@ -21,8 +22,8 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
     return;
   }
 
-  array_buffer_list_.resize(ctx->MaxVertexAttribs());
-  attrib_enabled_.resize(ctx->MaxVertexAttribs());
+  array_buffer_list_.resize(max_vertex_attribs);
+  attrib_enabled_.resize(max_vertex_attribs);
   for (wtf_size_t i = 0; i < attrib_enabled_.size(); ++i) {
     attrib_enabled_[i] = false;
   }
@@ -77,7 +78,7 @@ void WebGLVertexArrayObjectBase::SetElementArrayBuffer(WebGLBuffer* buffer) {
 }
 
 WebGLBuffer* WebGLVertexArrayObjectBase::GetArrayBufferForAttrib(GLuint index) {
-  DCHECK(index < Context()->MaxVertexAttribs());
+  DCHECK(index < array_buffer_list_.size());
   return array_buffer_list_[index].Get();
 }
 
@@ -93,14 +94,9 @@ void WebGLVertexArrayObjectBase::SetArrayBufferForAttrib(GLuint index,
 }
 
 void WebGLVertexArrayObjectBase::SetAttribEnabled(GLuint index, bool enabled) {
-  DCHECK(index < Context()->MaxVertexAttribs());
+  DCHECK(index < attrib_enabled_.size());
   attrib_enabled_[index] = enabled;
   UpdateAttribBufferBoundStatus();
-}
-
-bool WebGLVertexArrayObjectBase::GetAttribEnabled(GLuint index) const {
-  DCHECK(index < Context()->MaxVertexAttribs());
-  return attrib_enabled_[index];
 }
 
 void WebGLVertexArrayObjectBase::UpdateAttribBufferBoundStatus() {

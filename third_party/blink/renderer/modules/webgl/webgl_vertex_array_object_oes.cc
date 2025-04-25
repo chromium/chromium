@@ -31,7 +31,8 @@ namespace blink {
 
 WebGLVertexArrayObjectOES::WebGLVertexArrayObjectOES(
     WebGLRenderingContextBase* ctx,
-    VaoType type)
-    : WebGLVertexArrayObjectBase(ctx, type) {}
+    VaoType type,
+    GLint max_vertex_attribs)
+    : WebGLVertexArrayObjectBase(ctx, type, max_vertex_attribs) {}
 
 }  // namespace blink

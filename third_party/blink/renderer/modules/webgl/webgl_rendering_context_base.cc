@@ -1449,7 +1449,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   read_buffer_of_default_framebuffer_ = GL_BACK;
 
   default_vertex_array_object_ = MakeGarbageCollected<WebGLVertexArrayObject>(
-      this, WebGLVertexArrayObjectBase::kVaoTypeDefault);
+      this, WebGLVertexArrayObjectBase::kVaoTypeDefault, max_vertex_attribs_);
 
   bound_vertex_array_object_ = default_vertex_array_object_;
 

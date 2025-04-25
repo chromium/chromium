@@ -23,7 +23,10 @@ class WebGLTransformFeedback : public WebGLContextObject {
     kUser,
   };
 
-  explicit WebGLTransformFeedback(WebGL2RenderingContextBase*, TFType);
+  explicit WebGLTransformFeedback(
+      WebGL2RenderingContextBase*,
+      TFType,
+      GLint max_transform_feedback_separate_attribs);
   ~WebGLTransformFeedback() override;
 
   GLuint Object() const { return object_; }

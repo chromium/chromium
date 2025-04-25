@@ -9,8 +9,10 @@
 
 namespace blink {
 
-WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
-                                               TFType type)
+WebGLTransformFeedback::WebGLTransformFeedback(
+    WebGL2RenderingContextBase* ctx,
+    TFType type,
+    GLint max_transform_feedback_separate_attribs)
     : WebGLContextObject(ctx),
       object_(0),
       type_(type),
@@ -22,9 +24,9 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
     return;
   }
 
-  GLint max_attribs = ctx->GetMaxTransformFeedbackSeparateAttribs();
-  DCHECK_GE(max_attribs, 0);
-  bound_indexed_transform_feedback_buffers_.resize(max_attribs);
+  DCHECK_GE(max_transform_feedback_separate_attribs, 0);
+  bound_indexed_transform_feedback_buffers_.resize(
+      max_transform_feedback_separate_attribs);
 
   switch (type_) {
     case TFType::kDefault:

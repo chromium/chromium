@@ -36,7 +36,6 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
   WebGLBuffer* GetArrayBufferForAttrib(GLuint);
   void SetArrayBufferForAttrib(GLuint, WebGLBuffer*);
   void SetAttribEnabled(GLuint, bool);
-  bool GetAttribEnabled(GLuint) const;
   bool IsAllEnabledAttribBufferBound() const {
     return is_all_enabled_attrib_buffer_bound_;
   }
@@ -48,7 +47,9 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
   void Trace(Visitor*) const override;
 
  protected:
-  WebGLVertexArrayObjectBase(WebGLRenderingContextBase*, VaoType);
+  WebGLVertexArrayObjectBase(WebGLRenderingContextBase*,
+                             VaoType,
+                             GLint max_vertex_attribs);
 
  private:
   void DispatchDetached(gpu::gles2::GLES2Interface*);

@@ -47,9 +47,14 @@ WebGLVertexArrayObjectOES* OESVertexArrayObject::createVertexArrayOES() {
   WebGLExtensionScopedContext scoped(this);
 
   // Object creation must be infallible even if the context is lost.
+  if (scoped.IsLost()) {
+    return MakeGarbageCollected<WebGLVertexArrayObjectOES>(
+        scoped.Context(), WebGLVertexArrayObjectOES::kVaoTypeUser, 0);
+  }
 
   return MakeGarbageCollected<WebGLVertexArrayObjectOES>(
-      scoped.Context(), WebGLVertexArrayObjectOES::kVaoTypeUser);
+      scoped.Context(), WebGLVertexArrayObjectOES::kVaoTypeUser,
+      scoped.Context()->MaxVertexAttribs());
 }
 
 void OESVertexArrayObject::deleteVertexArrayOES(

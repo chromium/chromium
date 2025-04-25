@@ -282,7 +282,8 @@ void WebGL2RenderingContextBase::InitializeNewContext() {
   // Create a default transform feedback object so there is a place to
   // hold any bound buffers.
   default_transform_feedback_ = MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFType::kDefault);
+      this, WebGLTransformFeedback::TFType::kDefault,
+      max_transform_feedback_separate_attribs_);
   transform_feedback_binding_ = default_transform_feedback_;
 
   GLint max_uniform_buffer_bindings = 0;
@@ -4053,7 +4054,8 @@ ScriptValue WebGL2RenderingContextBase::getSyncParameter(
 
 WebGLTransformFeedback* WebGL2RenderingContextBase::createTransformFeedback() {
   return MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFType::kUser);
+      this, WebGLTransformFeedback::TFType::kUser,
+      max_transform_feedback_separate_attribs_);
 }
 
 void WebGL2RenderingContextBase::deleteTransformFeedback(
@@ -4681,7 +4683,7 @@ void WebGL2RenderingContextBase::uniformBlockBinding(
 
 WebGLVertexArrayObject* WebGL2RenderingContextBase::createVertexArray() {
   return MakeGarbageCollected<WebGLVertexArrayObject>(
-      this, WebGLVertexArrayObjectBase::kVaoTypeUser);
+      this, WebGLVertexArrayObjectBase::kVaoTypeUser, max_vertex_attribs_);
 }
 
 void WebGL2RenderingContextBase::deleteVertexArray(
@@ -5828,11 +5830,6 @@ void WebGL2RenderingContextBase::useProgram(WebGLProgram* program) {
     return;
   }
   WebGLRenderingContextBase::useProgram(program);
-}
-
-GLint WebGL2RenderingContextBase::GetMaxTransformFeedbackSeparateAttribs()
-    const {
-  return max_transform_feedback_separate_attribs_;
 }
 
 WebGLImageConversion::PixelStoreParams
