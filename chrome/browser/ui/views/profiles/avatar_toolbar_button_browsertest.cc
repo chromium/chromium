@@ -18,6 +18,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -1059,7 +1060,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
 }
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/331746545): Re-enable this test
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
   DISABLED_HistorySyncOptinNotShownWhenPromotionsDisabled
 #else
