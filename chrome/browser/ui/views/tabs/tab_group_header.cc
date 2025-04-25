@@ -460,13 +460,20 @@ void TabGroupHeader::UpdateAccessibleName() {
       is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
                    : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
+
+  const std::u16string& shared_state =
+      should_show_header_icon_
+          ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
+          : u"";
+
   if (title.empty()) {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
-  } else {
     GetViewAccessibility().SetName(
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
-                                   contents, collapsed_state));
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                   shared_state, contents, collapsed_state));
+  } else {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, shared_state, title, contents,
+        collapsed_state));
   }
 }
 
