@@ -29,6 +29,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_event_dispatcher.h"
@@ -242,32 +243,42 @@ void PersistentNotificationHandler::ReportNotificationAsSafe(
     const std::string& notification_id,
     const GURL& url,
     Profile* profile) {
-  OnReport(notification_id, url, profile, /*did_show_warning=*/true,
-           /*did_user_unsubscribe=*/false);
+  OnMaybeReport(notification_id, url, profile, /*did_show_warning=*/true,
+                /*did_user_unsubscribe=*/false);
 }
 
 void PersistentNotificationHandler::ReportWarnedNotificationAsSpam(
     const std::string& notification_id,
     const GURL& url,
     Profile* profile) {
-  OnReport(notification_id, url, profile, /*did_show_warning=*/true,
-           /*did_user_unsubscribe=*/true);
+  OnMaybeReport(notification_id, url, profile, /*did_show_warning=*/true,
+                /*did_user_unsubscribe=*/true);
 }
 
 void PersistentNotificationHandler::ReportUnwarnedNotificationAsSpam(
     const std::string& notification_id,
     const GURL& url,
     Profile* profile) {
-  OnReport(notification_id, url, profile, /*did_show_warning=*/false,
-           /*did_user_unsubscribe=*/true);
+  OnMaybeReport(notification_id, url, profile, /*did_show_warning=*/false,
+                /*did_user_unsubscribe=*/true);
 }
 
-void PersistentNotificationHandler::OnReport(const std::string& notification_id,
-                                             const GURL& url,
-                                             Profile* profile,
-                                             bool did_show_warning,
-                                             bool did_user_unsubscribe) {
+void PersistentNotificationHandler::OnMaybeReport(
+    const std::string& notification_id,
+    const GURL& url,
+    Profile* profile,
+    bool did_show_warning,
+    bool did_user_unsubscribe) {
   CHECK(profile);
+
+  // In case the data volume becomes excessive, logging should happen at a
+  // sampled rate. This rate is defined by the
+  // `kReportNotificationContentDetectionDataRate` feature parameter.
+  if (base::RandDouble() * 100 >
+      safe_browsing::kReportNotificationContentDetectionDataRate.Get()) {
+    return;
+  }
+
   scoped_refptr<content::PlatformNotificationContext> notification_context =
       profile->GetStoragePartitionForUrl(url)->GetPlatformNotificationContext();
   if (!notification_context ||

@@ -66,11 +66,11 @@ class PersistentNotificationHandler : public NotificationHandler {
                         const std::string& notification_id,
                         base::OnceClosure completed_closure,
                         content::PersistentNotificationStatus status);
-  void OnReport(const std::string& notification_id,
-                const GURL& url,
-                Profile* profile,
-                bool did_show_warning,
-                bool did_user_unsubscribe);
+  void OnMaybeReport(const std::string& notification_id,
+                     const GURL& url,
+                     Profile* profile,
+                     bool did_show_warning,
+                     bool did_user_unsubscribe);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   class NotificationKeepAliveState {

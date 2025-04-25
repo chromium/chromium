@@ -1876,6 +1876,9 @@ extern const char kPermissionsAIv3Description[];
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];
 
+extern const char kReportNotificationContentDetectionDataName[];
+extern const char kReportNotificationContentDetectionDataDescription[];
+
 extern const char kShowRelatedWebsiteSetsPermissionGrantsName[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
 

@@ -288,6 +288,12 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
 // Enables reporting notification contents and metadata to the server, upon user
 // consent.
 BASE_DECLARE_FEATURE(kReportNotificationContentDetectionData);
+// Determines how often we should log the reported notification to the server.
+// For the default rate of 100, the notification will always be reported where a
+// rate of 0 means there is no reporting. This will help limit data volume, if
+// it becomes excessive.
+extern const base::FeatureParam<int>
+    kReportNotificationContentDetectionDataRate;
 
 // Enables client side phishing daily reports limit to be configured via Finch
 // for ESB and SBER users

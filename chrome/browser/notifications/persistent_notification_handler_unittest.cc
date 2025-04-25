@@ -567,3 +567,40 @@ TEST_F(
                 SITE_ENGAGEMENT_SCORE_NONE,
             notification_content_detection->quality().site_engagement_score());
 }
+
+class
+    PersistentNotificationHandlerWithNotificationContentDetectionLowLoggingRateTest
+    : public PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        safe_browsing::kReportNotificationContentDetectionData,
+        {{"ReportNotificationContentDetectionDataRate", "0"}});
+    PersistentNotificationHandlerWithNotificationContentDetectionAndLoggingTest::
+        SetUp();
+  }
+};
+
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionLowLoggingRateTest,
+    NoReportSent) {
+  bool is_url_on_allowlist = true;
+  bool did_user_always_allow_url = false;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      is_url_on_allowlist, did_user_always_allow_url, suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->ReportNotificationAsSafe(notification_id_str, origin_, profile());
+
+  // Check no MQLS logs.
+  const auto& logs = uploaded_logs();
+  ASSERT_EQ(0u, logs.size());
+}

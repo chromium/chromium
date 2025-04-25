@@ -3244,6 +3244,12 @@ const char kPermissionSiteSettingsRadioButtonName[] =
 const char kPermissionSiteSettingsRadioButtonDescription[] =
     "Enables radio buttons for permissions in SiteSettings";
 
+const char kReportNotificationContentDetectionDataName[] =
+    "Option to report notifications to Google";
+const char kReportNotificationContentDetectionDataDescription[] =
+    "Enables reporting a notification's contents to Google, when the user taps "
+    "the `Report` button on the notification.";
+
 const char kShowRelatedWebsiteSetsPermissionGrantsName[] =
     "Show permission grants from Related Website Sets";
 const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =

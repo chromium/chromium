@@ -8117,6 +8117,11 @@
       "expiry_milestone": 137
   },
   {
+    "name": "report-notification-content-detection-data",
+    "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 143
+  },
+  {
     "name": "reset-audio-selection-improvement-pref",
     "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
