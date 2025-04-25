@@ -1108,6 +1108,8 @@ static_library("test_support") {
     "test_utils/valuables_data_test_utils.cc",
     "test_utils/valuables_data_test_utils.h",
     "test_utils/vote_uploads_test_matchers.h",
+    "ui/mock_autofill_image_fetcher.cc",
+    "ui/mock_autofill_image_fetcher.h",
     "ui/mock_autofill_suggestion_delegate.cc",
     "ui/mock_autofill_suggestion_delegate.h",
     "ui/payments/virtual_card_enroll_ui_model_test_api.h",

@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
+#include "components/autofill/core/browser/ui/mock_autofill_image_fetcher.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -263,33 +264,6 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
-class MockAutofillImageFetcher : public AutofillImageFetcherBase {
- public:
-  MOCK_METHOD(
-      void,
-      FetchCreditCardArtImagesForURLs,
-      (base::span<const GURL> card_art_urls,
-       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes),
-      (override));
-  MOCK_METHOD(void,
-              FetchPixAccountImagesForURLs,
-              (base::span<const GURL> card_art_urls),
-              (override));
-  MOCK_METHOD(void,
-              FetchValuableImagesForURLs,
-              (base::span<const GURL> image_urls),
-              (override));
-  MOCK_METHOD(const gfx::Image*,
-              GetCachedImageForUrl,
-              (const GURL& image_url, ImageType image_type),
-              (const, override));
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
-              GetOrCreateJavaImageFetcher,
-              (),
-              (override));
-#endif
-};
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
  public:
