@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
-import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -186,12 +185,10 @@ if (!is_android) {
       "form_structure_browsertest.cc",
     ]
 
-    defines = [
-      "HAS_OUT_OF_PROC_TEST_RUNNER",
-      "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
+      "//base/version_info",
       "//chrome/browser/autofill",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/tabs:tab_strip",

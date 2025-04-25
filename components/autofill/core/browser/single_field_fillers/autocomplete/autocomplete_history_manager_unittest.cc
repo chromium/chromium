@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -78,7 +79,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 
     // Mock such that we don't trigger the cleanup.
     prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                       CHROME_VERSION_MAJOR);
+                       version_info::GetMajorVersionNumberAsInt());
 
     // Set time to some arbitrary date.
     task_environment_.AdvanceClock(
@@ -387,7 +388,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
 TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
   // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                     CHROME_VERSION_MAJOR - 1);
+                     version_info::GetMajorVersionNumberAsInt() - 1);
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(1);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
@@ -399,7 +400,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
 TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
   // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                     CHROME_VERSION_MAJOR - 1);
+                     version_info::GetMajorVersionNumberAsInt() - 1);
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
@@ -410,7 +411,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
 TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
   // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                     CHROME_VERSION_MAJOR - 1);
+                     version_info::GetMajorVersionNumberAsInt() - 1);
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(nullptr, prefs_.get(),
@@ -423,7 +424,7 @@ TEST_F(AutocompleteHistoryManagerTest,
        Init_SameMajorVersion_Not_TriggersCleanup) {
   // Set the retention policy cleanup to the current major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                     CHROME_VERSION_MAJOR);
+                     version_info::GetMajorVersionNumberAsInt());
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
@@ -881,7 +882,7 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
       1, std::make_unique<WDResult<size_t>>(AUTOFILL_CLEANUP_RESULT,
                                             cleanup_result));
 
-  EXPECT_EQ(CHROME_VERSION_MAJOR,
+  EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
 }
 

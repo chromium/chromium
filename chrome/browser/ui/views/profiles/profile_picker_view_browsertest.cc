@@ -24,6 +24,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -400,8 +401,9 @@ class ProfilePickerCreationFlowBrowserTest
 
     // Avoid showing the What's New page. These tests assume this isn't the
     // first update and the NTP opens after sign in.
-    g_browser_process->local_state()->SetInteger(prefs::kLastWhatsNewVersion,
-                                                 CHROME_VERSION_MAJOR);
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLastWhatsNewVersion,
+        version_info::GetMajorVersionNumberAsInt());
   }
 
   virtual void OnWillCreateBrowserContextServices(

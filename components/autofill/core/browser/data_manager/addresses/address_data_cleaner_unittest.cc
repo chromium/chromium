@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -196,7 +197,8 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
   test_adm_.AddProfile(test::StandardProfile());
   test_adm_.AddProfile(test::UpdateableStandardProfile());
   // Pretend that deduplication was already run this milestone.
-  prefs_->SetInteger(prefs::kAutofillLastVersionDeduped, CHROME_VERSION_MAJOR);
+  prefs_->SetInteger(prefs::kAutofillLastVersionDeduped,
+                     version_info::GetMajorVersionNumberAsInt());
   data_cleaner_.MaybeCleanupAddressData();
   EXPECT_EQ(2U, test_adm_.GetProfiles().size());
 }

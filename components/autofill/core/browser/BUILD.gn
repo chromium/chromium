@@ -5,7 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
-import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -796,8 +795,6 @@ static_library("browser") {
     ]
   }
 
-  defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]
-
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
@@ -842,6 +839,7 @@ static_library("browser") {
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
+    "//base/version_info",
     "//build:branding_buildflags",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:autofill_regex",
@@ -1520,8 +1518,6 @@ source_set("unit_tests") {
         [ "ml_model/autofill_ai/autofill_ai_model_executor_impl_unittest.cc" ]
   }
 
-  defines = [ "CHROME_VERSION_MAJOR=" + chrome_version_major ]
-
   deps = [
     ":autofill_address_rewriter_resources",
     ":browser",
@@ -1532,6 +1528,7 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//base/version_info",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth:device_reauth",
