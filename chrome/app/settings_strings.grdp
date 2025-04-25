@@ -2022,9 +2022,6 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FOUR" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     Improves security for you and everyone on the web.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
-    Warns you if you use a password that has been compromised in a data breach.
-  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
     Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.
   </message>
