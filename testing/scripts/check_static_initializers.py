@@ -33,9 +33,9 @@ _LINUX_SI_ALLOWLIST = {
         'iostream\\.cpp : _GLOBAL__I_000100',
 
         # TODO(crbug.com/40268361): Rust stdlib argv handling.
-        # https://github.com/rust-lang/rust/blob/b08148f6a76010ea3d4e91d61245aa7aac59e4b4/library/std/src/sys/unix/args.rs#L107-L127
+        # https://github.com/rust-lang/rust/blob/6bc57c6bf7d0024ad9ea5a2c112f3fc9c383c8a4/library/std/src/sys/args/unix.rs#L124
         # https://github.com/rust-lang/rust/issues/111921
-        '.* : std::sys::pal::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper',
+        '.* : std::sys::args::unix::imp::ARGV_INIT_ARRAY::init_wrapper',
 
         # Added by libgcc due to USE_EH_FRAME_REGISTRY.
         'crtstuff\\.c : frame_dummy',
