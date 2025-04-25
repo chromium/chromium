@@ -785,6 +785,8 @@ class WebClientThatFailsInitialize extends WebClient {
         location.href = '/sorry/index.html';
       });
     }
+    // This initialization is sometimes skipped depending on the type of desired
+    // failure detected above
     return super.initialize(glicBrowserHost);
   }
 }
@@ -803,22 +805,25 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   // testParams when `createWebClient()` is called.
   override async setUpClient() {}
 
-  async testInitializeFailsWindowClosed() {
-    // Failing initialize will tear down this web contents. Deferring that here
-    // so that our test can exit cleanly.
+  // Runs ApiTestFixtureBase.setUpClient() after 100 ms, and returns
+  // immediately. This allows the test to exit cleanly before the web contents
+  // is torn down.
+  deferredSetUpClient() {
     sleep(100).then(() => super.setUpClient());
   }
 
+  async testInitializeFailsWindowClosed() {
+    this.deferredSetUpClient();
+  }
+
   async testInitializeFailsWindowOpen() {
-    // Failing initialize will tear down this web contents. Deferring that here
-    // so that our test can exit cleanly.
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testReload() {
     // First run.
     if (this.getTestParams().failWith === 'reloadAfterInitialize') {
-      sleep(100).then(() => super.setUpClient());
+      this.deferredSetUpClient();
       return;
     }
 
@@ -828,15 +833,15 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   }
 
   async testSorryPageBeforeInitialize() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testSorryPageAfterInitialize() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testInitializeFailsAfterReload() {
-    sleep(100).then(() => super.setUpClient());
+    this.deferredSetUpClient();
   }
 
   async testInitializeTimesOut() {
