@@ -141,6 +141,7 @@ export function createPayOverTimeIssuerEntry():
     instrumentId: '123456',
     displayName: 'Issuer1',
     imageSrc: 'chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC',
+    imageSrcDark: 'chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC',
   };
 }
 

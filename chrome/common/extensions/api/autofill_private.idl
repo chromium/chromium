@@ -425,6 +425,9 @@ namespace autofillPrivate {
 
     // The Pay Over Time issuer image source.
     DOMString? imageSrc;
+
+    // The Pay Over Time issuer image source for dark theme.
+    DOMString? imageSrcDark;
   };
 
   callback VoidCallback = void();
