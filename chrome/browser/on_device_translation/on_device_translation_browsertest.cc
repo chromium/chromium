@@ -126,6 +126,27 @@ std::string GetPreferredLanguageString(
   return selected_languages;
 }
 
+// Handles HTTP requests to `path` with `content` as the response body.
+// `content` is expected to be JavaScript; the response mime type is always
+// set to "text/javascript". Invokes `done_callback` after serving the HTTP
+// request.
+std::unique_ptr<net::test_server::HttpResponse> RespondWithJS(
+    const std::string& path,
+    const std::string& content,
+    base::OnceClosure done_callback,
+    const net::test_server::HttpRequest& request) {
+  GURL request_url = request.GetURL();
+  if (request_url.path() != path) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content_type("text/javascript");
+  response->set_content(content);
+  std::move(done_callback).Run();
+  return response;
+}
+
 // Sets the path of the mock library to the command line.
 void SetMockLibraryPathToCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchPath(kTranslateKitBinaryPath, GetMockLibraryPath());
@@ -1874,6 +1895,37 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
       return await translator.translate('hello');
     )"),
             "en to ja: hello");
+}
+
+// TODO(crbug.com/410842873): Add test to check behavior for extension
+// service workers once supported.
+//
+// Test the behavior of the Translator API accessed from a service worker
+// outside of an extension.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       APIAvailability_NonExtensionWorkers) {
+  const std::string kWorkerScript =
+      "try {"
+      "    Translator;"
+      "    self.postMessage('test');"
+      "} catch (e) {"
+      "    self.postMessage(e.name);"
+      "}";
+
+  base::RunLoop loop;
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &RespondWithJS, "/js-response", kWorkerScript, loop.QuitClosure()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/workers/create_dedicated_worker.html?worker_url=/js-response")));
+  loop.Run();
+
+  EXPECT_EQ(
+      "ReferenceError",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "waitForMessage();"));
 }
 
 // Test the behavior of availability() when PassAcceptLanguagesCheck() checks
