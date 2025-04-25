@@ -226,8 +226,9 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     let x1p24 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
     let x1p_24 = f64::from_bits(0x3e70000000000000); // 0x1p_24 === 2 ^ (-24)
 
-    #[cfg(all(target_pointer_width = "64", feature = "checked"))]
-    assert!(e0 <= 16360);
+    if cfg!(target_pointer_width = "64") {
+        debug_assert!(e0 <= 16360);
+    }
 
     let nx = x.len();
 
@@ -425,8 +426,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             for i in (0..=jz).rev() {
                 fw += i!(fq, i);
             }
-            // TODO: drop excess precision here once double_t is used
-            fw = fw as f64;
             i!(y, 0, =, if ih == 0 { fw } else { -fw });
             fw = i!(fq, 0) - fw;
             for i in 1..=jz {

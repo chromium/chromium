@@ -114,6 +114,7 @@ const S04: f64 = 5.04636257076217042715e-09; /* 0x3E35AC88, 0xC97DFF2C */
 const S05: f64 = 1.23542274426137913908e-11; /* 0x3DAB2ACF, 0xCFB97ED8 */
 
 /// First order of the [Bessel function](https://en.wikipedia.org/wiki/Bessel_function) of the first kind (f64).
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn j1(x: f64) -> f64 {
     let mut z: f64;
     let r: f64;
@@ -160,6 +161,7 @@ const V0: [f64; 5] = [
 ];
 
 /// First order of the [Bessel function](https://en.wikipedia.org/wiki/Bessel_function) of the second kind (f64).
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn y1(x: f64) -> f64 {
     let z: f64;
     let u: f64;
@@ -171,10 +173,10 @@ pub fn y1(x: f64) -> f64 {
     lx = get_low_word(x);
 
     /* y1(nan)=nan, y1(<0)=nan, y1(0)=-inf, y1(inf)=0 */
-    if (ix << 1 | lx) == 0 {
+    if (ix << 1) | lx == 0 {
         return -1.0 / 0.0;
     }
-    if (ix >> 31) != 0 {
+    if ix >> 31 != 0 {
         return 0.0 / 0.0;
     }
     if ix >= 0x7ff00000 {

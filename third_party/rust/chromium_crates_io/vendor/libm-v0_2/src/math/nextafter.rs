@@ -10,20 +10,20 @@ pub fn nextafter(x: f64, y: f64) -> f64 {
         return y;
     }
 
-    let ax = ux_i & !1_u64 / 2;
-    let ay = uy_i & !1_u64 / 2;
+    let ax = ux_i & (!1_u64 / 2);
+    let ay = uy_i & (!1_u64 / 2);
     if ax == 0 {
         if ay == 0 {
             return y;
         }
-        ux_i = (uy_i & 1_u64 << 63) | 1;
-    } else if ax > ay || ((ux_i ^ uy_i) & 1_u64 << 63) != 0 {
+        ux_i = (uy_i & (1_u64 << 63)) | 1;
+    } else if ax > ay || ((ux_i ^ uy_i) & (1_u64 << 63)) != 0 {
         ux_i -= 1;
     } else {
         ux_i += 1;
     }
 
-    let e = ux_i >> 52 & 0x7ff;
+    let e = (ux_i >> 52) & 0x7ff;
     // raise overflow if ux.f is infinite and x is finite
     if e == 0x7ff {
         force_eval!(x + x);

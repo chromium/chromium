@@ -118,14 +118,18 @@ pub fn log1p(x: f64) -> f64 {
         k = (hu >> 20) as i32 - 0x3ff;
         /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
         if k < 54 {
-            c = if k >= 2 { 1. - (f64::from_bits(ui) - x) } else { x - (f64::from_bits(ui) - 1.) };
+            c = if k >= 2 {
+                1. - (f64::from_bits(ui) - x)
+            } else {
+                x - (f64::from_bits(ui) - 1.)
+            };
             c /= f64::from_bits(ui);
         } else {
             c = 0.;
         }
         /* reduce u into [sqrt(2)/2, sqrt(2)] */
         hu = (hu & 0x000fffff) + 0x3fe6a09e;
-        ui = (hu as u64) << 32 | (ui & 0xffffffff);
+        ui = ((hu as u64) << 32) | (ui & 0xffffffff);
         f = f64::from_bits(ui) - 1.;
     }
     hfsq = 0.5 * f * f;
