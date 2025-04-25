@@ -2161,10 +2161,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKioskActiveWiFiCredentialsScopeChangeEnabled,
     prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
     base::Value::Type::BOOLEAN },
-  // TODO(b/329064666): Remove this pref once the pivot to IWAs is complete.
-  { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-    capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls,
-    base::Value::Type::LIST },
   { key::kKioskChromeAppsForceAllowed,
     prefs::kKioskChromeAppsForceAllowed,
     base::Value::Type::BOOLEAN },

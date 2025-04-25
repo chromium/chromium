@@ -51,85 +51,11 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::MultiCaptureService* g_multi_capture_service_for_testing =
     nullptr;
-
-void IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
-    base::OnceCallback<void(bool)> callback,
-    content::BrowserContext* context,
-    bool is_multi_capture_allowed_for_any_origin_on_main_profile) {
-  // If the new MultiScreenCaptureAllowedForUrls policy permits access, exit
-  // early. If not, check the legacy
-  // GetDisplayMediaSetSelectAllScreensAllowedForUrls policy.
-  if (is_multi_capture_allowed_for_any_origin_on_main_profile) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  // TODO(b/329064666): Remove the checks below once the pivot to IWAs is
-  // complete.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!host_content_settings_map) {
-    std::move(callback).Run(false);
-    return;
-  }
-  ContentSettingsForOneType content_settings =
-      host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::ALL_SCREEN_CAPTURE);
-  std::move(callback).Run(std::ranges::any_of(
-      content_settings, [](const ContentSettingPatternSource& source) {
-        return source.GetContentSetting() ==
-               ContentSetting::CONTENT_SETTING_ALLOW;
-      }));
-}
-
-void CheckAllScreensMediaAllowedForIwaResultReceived(
-    base::OnceCallback<void(bool)> callback,
-    const GURL& url,
-    content::BrowserContext* context,
-    bool result) {
-  if (result) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    std::move(callback).Run(false);
-    return;
-  }
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!host_content_settings_map) {
-    std::move(callback).Run(false);
-    return;
-  }
-  ContentSetting auto_accept_enabled =
-      host_content_settings_map->GetContentSetting(
-          url, url, ContentSettingsType::ALL_SCREEN_CAPTURE);
-  std::move(callback).Run(auto_accept_enabled ==
-                          ContentSetting::CONTENT_SETTING_ALLOW);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
 namespace capture_policy {
-
-// This pref connects to the GetDisplayMediaSetSelectAllScreensAllowedForUrls
-// policy. To avoid dynamic refresh, this pref will not be read directly, but
-// the value will be copied manually to the
-// kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref, which is then
-// consumed by content settings to check if access to `getAllScreensMedia` shall
-// be permitted for a given origin.
-// TODO(b/329064666): Remove this pref once the pivot to IWAs is complete.
-const char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
-    "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // This pref connects to the MultiScreenCaptureAllowedForUrls policy and will
@@ -248,52 +174,35 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kManagedMultiScreenCaptureAllowedForUrls);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CheckGetAllScreensMediaAllowedForAnyOrigin(
-    content::BrowserContext* context,
     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (crosapi::mojom::MultiCaptureService* multi_capture_service =
           GetMultiCaptureService()) {
     multi_capture_service->IsMultiCaptureAllowedForAnyOriginOnMainProfile(
-        base::BindOnce(
-            IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived,
-            std::move(callback), context));
-  } else {
-    // If the multi capture service is not available with the required version,
-    // fall back to the original flow using the deprecated policy.
-    IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
-        std::move(callback), context, /*result=*/false);
+        std::move(callback));
+    return;
   }
-#else
-  std::move(callback).Run(false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  std::move(callback).Run(/*result=*/false);
 }
 
-void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
-                                    const GURL& url,
+void CheckGetAllScreensMediaAllowed(const GURL& url,
                                     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   crosapi::mojom::MultiCaptureService* multi_capture_service =
       GetMultiCaptureService();
   if (multi_capture_service) {
-    multi_capture_service->IsMultiCaptureAllowed(
-        url, base::BindOnce(&CheckAllScreensMediaAllowedForIwaResultReceived,
-                            std::move(callback), std::move(url), context));
-  } else {
-    // If the multi capture service is not available with the required version,
-    // fall back to the original flow using the deprecated policy.
-    CheckAllScreensMediaAllowedForIwaResultReceived(
-        std::move(callback), std::move(url), context, /*result=*/false);
+    multi_capture_service->IsMultiCaptureAllowed(url, std::move(callback));
+    return;
   }
-#else
-  std::move(callback).Run(false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  std::move(callback).Run(/*result=*/false);
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)

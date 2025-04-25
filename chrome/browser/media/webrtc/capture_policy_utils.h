@@ -15,7 +15,6 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace content {
-class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -37,8 +36,6 @@ enum class AllowedScreenCaptureLevel {
 };
 
 namespace capture_policy {
-
-extern const char kManagedAccessToGetAllScreensMediaAllowedForUrls[];
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kManagedMultiScreenCaptureAllowedForUrls[];
@@ -82,12 +79,10 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // TODO(crbug.com/40230867): Use Origin instead of GURL.
-void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
-                                    const GURL& url,
+void CheckGetAllScreensMediaAllowed(const GURL& url,
                                     base::OnceCallback<void(bool)> callback);
 
 void CheckGetAllScreensMediaAllowedForAnyOrigin(
-    content::BrowserContext* context,
     base::OnceCallback<void(bool)> callback);
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)

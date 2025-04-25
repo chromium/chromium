@@ -561,23 +561,7 @@ constexpr char kLastUploadedEuiccStatusPrefLegacy[] =
     "esim.last_upload_euicc_status";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Deprecated 04/2024.
-inline constexpr char kOmniboxInstantKeywordUsed[] =
-    "omnibox.instant_keyword_used";
-
-// Deprecated 04/2024.
-inline constexpr char kWebAppPreinstalledAppWindowExperiment[] =
-    "web_apps.preinstalled_app_window_experiment";
-
-// Deprecated 04/2024.
-inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
-
 #if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 04/2024
-constexpr char kMetricsUserInheritOwnerConsent[] =
-    "metrics.user_inherit_owner_consent";
-constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
-
 // Deprecated 05/2024.
 // A preference to keep track of the device registered time.
 constexpr char kDeviceRegisteredTime[] = "DeviceRegisteredTime";
@@ -1102,6 +1086,10 @@ inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
     "bookmarks.added_since_power_bookmarks_launch";
 inline constexpr char kGlicRolloutEligibility[] = "glic.rollout_eligibility";
 
+// Deprecated 04/2025.
+inline constexpr char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
+    "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1219,20 +1207,7 @@ void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
-  // Deprecated 04/2024.
-  registry->RegisterBooleanPref(kOmniboxInstantKeywordUsed, false);
-
-  // Deprecated 04/2024.
-  registry->RegisterDictionaryPref(kWebAppPreinstalledAppWindowExperiment);
-
-  // Deprecated 04/2024.
-  registry->RegisterTimePref(kDIPSTimerLastUpdate, base::Time());
-
 #if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 04/2024.
-  registry->RegisterBooleanPref(kMetricsUserInheritOwnerConsent, true);
-  registry->RegisterBooleanPref(kGlanceablesEnabled, true);
-
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAccessibilityMouseKeysShortcutToPauseEnabled,
                                 true);
@@ -1547,7 +1522,12 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2025.
   registry->RegisterBooleanPref(kAddedBookmarkSincePowerBookmarksLaunch, false);
+
+  // Deprecated 04/2025.
   registry->RegisterIntegerPref(kGlicRolloutEligibility, 0);
+
+  // Deprecated 04/2025.
+  registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
 }
 
 }  // namespace
@@ -2518,20 +2498,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
           password_manager_android_util::PasswordManagerUtilBridge>());
 #endif
 
-  // Added 04/2024.
-  profile_prefs->ClearPref(kOmniboxInstantKeywordUsed);
-
-  // Added 04/2024.
-  profile_prefs->ClearPref(kWebAppPreinstalledAppWindowExperiment);
-
-  // Added 04/2024.
-  profile_prefs->ClearPref(kDIPSTimerLastUpdate);
-
 #if BUILDFLAG(IS_CHROMEOS)
-  // Added 04/2024.
-  profile_prefs->ClearPref(kMetricsUserInheritOwnerConsent);
-  profile_prefs->ClearPref(kGlanceablesEnabled);
-
   // Added 05/2024.
   profile_prefs->ClearPref(kAccessibilityMouseKeysShortcutToPauseEnabled);
   profile_prefs->ClearPref(kAccessibilityMouseKeysDisableInTextFields);
@@ -2837,7 +2804,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025.
   profile_prefs->ClearPref(kAddedBookmarkSincePowerBookmarksLaunch);
+
+  // Added 04/2025.
   profile_prefs->ClearPref(kGlicRolloutEligibility);
+
+  // Added 04/2025
+  profile_prefs->ClearPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
