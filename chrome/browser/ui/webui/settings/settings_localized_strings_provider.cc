@@ -1448,7 +1448,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "cardBenefitsToggleSublabel",
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableNewCardBenefitsToggleText)
+              ? IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_ISSUER_TERMS_APPLY_TEXT_AND_LEARN_LINK
+              : IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
           chrome::kCardBenefitsLearnMoreURL,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
