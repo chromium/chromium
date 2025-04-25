@@ -117,23 +117,6 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   if (policy_pref_state == kAutofillPredictionSettingsDisabled) {
     return false;
   }
-  if (policy_pref_state == kAutofillPredictionSettingsAllowWithoutLogging) {
-    switch (action) {
-      case AutofillAiAction::kLogToMqls:
-        return false;
-      case AutofillAiAction::kAddEntityInstanceInSettings:
-      case AutofillAiAction::kCrowdsourcingVote:
-      case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
-      case AutofillAiAction::kFilling:
-      case AutofillAiAction::kImport:
-      case AutofillAiAction::kIphForOptIn:
-      case AutofillAiAction::kListEntityInstancesInSettings:
-      case AutofillAiAction::kOptIn:
-      case AutofillAiAction::kServerClassificationModel:
-      case AutofillAiAction::kUseCachedServerClassificationModelResults:
-        break;
-    }
-  }
 
   // State of the Address-Autofill pref.
   if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
