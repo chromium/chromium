@@ -9,7 +9,9 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -103,6 +105,8 @@ BnplTosDialog::BnplTosDialog(
       std::make_unique<views::Throbber>(kDialogThrobberDiameter));
   throbber_->SetProperty(views::kElementIdentifierKey,
                          BnplTosDialog::kThrobberId);
+  throbber_->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
 }
 
 BnplTosDialog::~BnplTosDialog() = default;

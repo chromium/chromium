@@ -158,7 +158,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
           IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE);
     case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE);
+          IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }

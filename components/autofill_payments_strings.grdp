@@ -1002,7 +1002,7 @@
   <message name="IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE" desc="The title of the progress dialog to be displayed after the user reviewed their payment plan for the Buy-Now-Pay-Later transaction, and Chrome is attempting to retrieve the virtual card from the Payments server. If the retrieval was successful, a confirmation message will display in the progress dialog and then the virtual card will be filled.">
     Getting ready for checkout
   </message>
-  <message name="IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE" desc="The description text of the progress dialog to be displayed after the user reviewed their payment plan for the the Buy-Now-Pay-Later transaction, and Chrome is attempting to retrieve the virtual card from the Payments server.">
+  <message name="IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE" desc="The description text of the progress dialog to be displayed after the user reviewed their payment plan for the the Buy-Now-Pay-Later transaction, and Chrome is attempting to retrieve the virtual card from the Payments server.">
     Just a few more seconds...
   </message>
   <message name="IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE" desc="The description text of the progress dialog to be displayed after Chrome successfully retrieved the virtual card from the Payments server, and Chrome is going to fill the virtual card.">

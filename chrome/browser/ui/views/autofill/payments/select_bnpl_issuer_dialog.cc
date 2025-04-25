@@ -145,6 +145,8 @@ void SelectBnplIssuerDialog::DisplayThrobber() {
           .Build());
   throbber->Start();
   throbber->SizeToPreferredSize();
+  throbber->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
 }
 
 bool SelectBnplIssuerDialog::OnCancelled() {
