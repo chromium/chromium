@@ -378950,6 +378950,10 @@
       []
      ]
     },
+    "scoped-registry-initialize-expected.txt": [
+     "03a54dac7fe61d8b7798f7d4122969d3f23dd1ab",
+     []
+    ],
     "state": {
      "META.yml": [
       "df335b339e1324d8c36939df30c8506efa6aae0a",
@@ -390715,10 +390719,6 @@
        ],
        "location_assign_about_blank-1.html": [
         "b43598f2cd8f47bcd23373075773ef245c95c21a",
-        []
-       ],
-       "location_hash_set_empty_string-expected.txt": [
-        "4150dc964681a70da58fdc354359c652e3c66f6e",
         []
        ],
        "location_reload-iframe.html": [
@@ -405843,7 +405843,7 @@
        ],
        "resources": {
         "invoker-utils.js": [
-         "f731ab7c42c2ce36334d64385cd2d41cf0e8bde9",
+         "bc43e738c34e58f450874d8ccc99e110e07e7800",
          []
         ]
        }
@@ -432841,7 +432841,7 @@
        []
       ],
       "helpers.py": [
-       "0bd27a39acd5d8c2b6bba106bc24e17f4945a8d2",
+       "f4763deca141b4cf2bb592a740b7fbdd2a4d2869",
        []
       ],
       "html": {
@@ -433826,6 +433826,10 @@
     ],
     "script-transform-generateKeyFrame.js": [
      "5e68ee1fb9be8133501ee3f5338f4335bd4901de",
+     []
+    ],
+    "script-transform-sendKeyFrameRequest.https-expected.txt": [
+     "8f074d15a45b6450ef764bf44cc184704364d4ee",
      []
     ],
     "script-transform-sendKeyFrameRequest.js": [
@@ -465452,7 +465456,7 @@
       ]
      ],
      "detector.https.window.js": [
-      "7c86d011032a22c9479d2c746152cf299a69561a",
+      "e85ea6d249b17d3ed1505f206f5ac6659b6dfd94",
       [
        "ai/language_detection/detector.https.window.html",
        {
@@ -465468,6 +465472,10 @@
          [
           "script",
           "../resources/util.js"
+         ],
+         [
+          "script",
+          "../resources/locale-util.js"
          ]
         ]
        }
@@ -647404,7 +647412,7 @@
          ]
         ],
         "select-iterate-before-beginning.tentative.html": [
-         "5ccaa111499d55a1ebe8446e045bc672ff0943d7",
+         "0e8c16f8fdac6412dac0da80a09fe2be93122584",
          [
           null,
           {
@@ -654345,9 +654353,16 @@
         ]
        ],
        "interesttarget-hide-delay.tentative.html": [
-        "9ec1c229c01aaca68ca6fb379f56b0b17a383c14",
+        "8828d879cac2b55e485b67511e41d64609a635e0",
         [
-         null,
+         "html/semantics/the-button-element/interest-target/interesttarget-hide-delay.tentative.html?method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-hide-delay.tentative.html?method=hover",
          {
           "testdriver": true,
           "timeout": "long"
@@ -654393,9 +654408,44 @@
         ]
        ],
        "interesttarget-show-delay.tentative.html": [
-        "ca47c0f237d1fb0e94589fc2a0dc694bf97dc863",
+        "8d7b78de7fc6ae38a25ee70c413939aad7932f8e",
         [
-         null,
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested&method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested-offset&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested-offset&method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=plain&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=plain&method=hover",
          {
           "testdriver": true,
           "timeout": "long"
@@ -662058,7 +662108,7 @@
       ]
      ],
      "get_all_cookies.sub.https.html": [
-      "e94167133b3aa852a54f06b49e850e66e2873f65",
+      "70a4ff773333dbd764ce04e99da2f49d5c74f47b",
       [
        null,
        {
@@ -662076,7 +662126,7 @@
       ]
      ],
      "get_named_cookie.sub.https.html": [
-      "8e8f44338128b9f110c22861b067cd6af1ef2e09",
+      "32b3bed459e8a282481a7b3e293155691ee0ab6a",
       [
        null,
        {
@@ -707522,6 +707572,16 @@
      ],
      "reading-flow": {
       "tentative": {
+       "carousel-grid-order.html": [
+        "89b3f8dd928f33fe73fa6b9bd987ad0402e7f255",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
        "flex-flow.html": [
         "a956ae476fae8febccf32054d50f6b550ac4bbd6",
         [
@@ -771337,7 +771397,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "8e2d785c436d0245702b841ebd6f2609abff8e63",
+      "8f6f2246b04f8a6fc9570eced30b31b841da5a06",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
