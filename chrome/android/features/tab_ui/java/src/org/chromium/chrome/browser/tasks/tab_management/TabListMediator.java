@@ -2096,8 +2096,12 @@ class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     String getLatestTitleForTab(Tab tab, boolean useDefault) {
-        String originalTitle = tab.getTitle();
         if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
+            String originalTitle = tab.getTitle();
+            if (TextUtils.isEmpty(originalTitle)) {
+                String url = tab.getUrl().getSpec();
+                return TextUtils.isEmpty(url) ? "" : url;
+            }
             return originalTitle;
         }
 

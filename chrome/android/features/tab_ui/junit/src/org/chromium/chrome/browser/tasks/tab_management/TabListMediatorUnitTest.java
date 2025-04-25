@@ -2716,6 +2716,16 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void getLatestTitle_NoTitleUrlFallback() {
+        assertEquals(TAB1_TITLE,
+                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true));
+
+        when(mTab1.getTitle()).thenReturn("");
+        assertEquals(TAB1_URL.getSpec(),
+                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true));
+    }
+
+    @Test
     public void getLatestTitle_NotGts() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
