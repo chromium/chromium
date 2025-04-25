@@ -32,6 +32,7 @@ class PrivacySandboxDialogView : public views::View {
   // TODO(chrstne): Create initialization method for PSNotice, v2.
 
   void Close();
+  content::WebContents* GetWebContentsForTesting();
 
  private:
   friend class PrivacySandboxQueueTestNotice;
@@ -45,11 +46,6 @@ class PrivacySandboxDialogView : public views::View {
   void ShowNativeView();
   void OpenPrivacySandboxSettings();
   void OpenPrivacySandboxAdMeasurementSettings();
-  friend class PrivacySandboxDialogViewPrivacyPolicyBrowserTest;
-  friend class
-      PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest;
-  friend class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest;
-  content::WebContents* GetWebContentsForTesting();
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<BrowserWindowInterface> browser_;
