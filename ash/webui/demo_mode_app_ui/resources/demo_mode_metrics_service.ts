@@ -84,6 +84,22 @@ export enum DetailsPage {
   // CBX:
   HELP_ME_READ = 'HelpMeRead',
   LIVE_TRANSLATE = 'LiveTranslate',
+
+  // New in 2025 Refresh
+  // CB Generic:
+  QUICK_INSERT = 'QuickInsert',
+  GEMINI_PWA = 'GeminiPWA',
+  SELECT_TO_SEARCH = 'SelectToSearch',
+  GEMINI_ADVANCE = 'GeminiAdvance',
+  DRIVE_INTEGRATION = 'DriveIntegration',
+  BETTER_TOGETHER = 'BetterTogether',
+  PHONE_HUB = 'PhoneHub',
+  WELCOM_RECAP = 'WelcomeRecap',
+  // CBX:
+  FILE_SYNC = 'FileSync',
+  MAGIC_EDITOR = 'MagicEditor',
+  // Enum shared between CB & CBX are: GEMINI_PWA, SELECT_TO_SEARCH,
+  // QUICK_INSERT, GEMINI_ADVANCE, BETTER_TOGETHER, and PHONE_HUB
 }
 
 /**
