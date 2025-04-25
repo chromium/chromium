@@ -5469,11 +5469,11 @@ ScriptValue WebGL2RenderingContextBase::getFramebufferAttachmentParameter(
     }
   }
 
-  WebGLSharedObject* attachment_object = nullptr;
+  WebGLObject* attachment_object = nullptr;
   if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
-    WebGLSharedObject* depth_attachment =
+    WebGLObject* depth_attachment =
         framebuffer_binding->GetAttachmentObject(GL_DEPTH_ATTACHMENT);
-    WebGLSharedObject* stencil_attachment =
+    WebGLObject* stencil_attachment =
         framebuffer_binding->GetAttachmentObject(GL_STENCIL_ATTACHMENT);
     if (depth_attachment != stencil_attachment) {
       SynthesizeGLError(

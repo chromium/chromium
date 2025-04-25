@@ -91,7 +91,6 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   DCHECK(texture);
   DCHECK(!texture->HasEverBeenBound() ||
          texture->GetTarget() == GL_TEXTURE_CUBE_MAP);
-  DCHECK(texture->ContextGroup() == context->ContextGroup());
 
   auto* gl = context->ContextGL();
   texture->SetTarget(GL_TEXTURE_CUBE_MAP);

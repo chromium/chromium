@@ -26,13 +26,12 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_group.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
 WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx),
+    : WebGLObject(ctx),
       link_status_(false),
       link_count_(0),
       active_transform_feedback_count_(0),
@@ -169,7 +168,7 @@ void WebGLProgram::setLinkStatus(bool link_status) {
 void WebGLProgram::Trace(Visitor* visitor) const {
   visitor->Trace(vertex_shader_);
   visitor->Trace(fragment_shader_);
-  WebGLSharedPlatform3DObject::Trace(visitor);
+  WebGLObject::Trace(visitor);
 }
 
 }  // namespace blink

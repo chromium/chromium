@@ -26,12 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_SHADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_SHADER_H_
 
-#include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class WebGLShader final : public WebGLSharedPlatform3DObject {
+class WebGLShader final : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

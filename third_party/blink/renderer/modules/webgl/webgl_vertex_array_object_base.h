@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_VERTEX_ARRAY_OBJECT_BASE_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class WebGLVertexArrayObjectBase : public WebGLContextObject {
+class WebGLVertexArrayObjectBase : public WebGLObject {
  public:
   enum VaoType {
     kVaoTypeDefault,

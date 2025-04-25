@@ -12,7 +12,7 @@
 namespace blink {
 
 WebGLQuery::WebGLQuery(WebGL2RenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx),
+    : WebGLObject(ctx),
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),

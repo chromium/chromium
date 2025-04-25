@@ -3502,7 +3502,7 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
-  WebGLSharedObject* attachment_object =
+  WebGLObject* attachment_object =
       framebuffer_binding_->GetAttachmentObject(attachment);
   if (!attachment_object) {
     if (pname == GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE)
