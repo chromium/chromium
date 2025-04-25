@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_UTILS_H_
 
-#include "chrome/browser/profiles/profile.h"
-#include "url/gurl.h"
-
 namespace content {
 class BrowserContext;
 }
@@ -21,9 +18,6 @@ bool IsWallpaperSearchEnabledForProfile(Profile* profile);
 // Disables the current NTP extension for |browser_context| if there is one.
 void MaybeDisableExtensionOverridingNtp(
     content::BrowserContext* browser_context);
-
-// Returns whether `url` belongs to an extension NTP.
-bool IsExtensionNtp(const GURL& url, Profile* profile);
 
 }  // namespace customize_chrome
 

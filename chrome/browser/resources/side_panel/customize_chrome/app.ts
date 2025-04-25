@@ -29,7 +29,7 @@ import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
 import {CustomizeChromeImpression, recordCustomizeChromeImpression} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
-import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
+import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
 
@@ -82,7 +82,7 @@ export class AppElement extends AppElementBase {
       extensionsCardEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
-      newTabPageType_: {type: NewTabPageType},
+      isSourceTabFirstPartyNtp_: {type: Boolean},
       showEditTheme_: {type: Boolean},
     };
   }
@@ -106,8 +106,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('footerEnabled');
   protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected accessor newTabPageType_: NewTabPageType =
-      NewTabPageType.kFirstPartyWebUI;
+  protected accessor isSourceTabFirstPartyNtp_: boolean = true;
   protected accessor showEditTheme_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
@@ -143,16 +142,17 @@ export class AppElement extends AppElementBase {
     this.attachedTabStateUpdatedId_ =
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.attachedTabStateUpdated.addListener(
-                (newTabPageType: NewTabPageType) => {
-                  if (this.newTabPageType_ === newTabPageType) {
+                (isSourceTabFirstPartyNtp: boolean) => {
+                  if (this.isSourceTabFirstPartyNtp_ ===
+                      isSourceTabFirstPartyNtp) {
                     return;
                   }
 
-                  this.newTabPageType_ = newTabPageType;
+                  this.isSourceTabFirstPartyNtp_ = isSourceTabFirstPartyNtp;
 
                   // Since some pages aren't supported in non first party mode,
                   // change the section back to the overview.
-                  if (!this.isSourceTabFirstPartyNtp_() &&
+                  if (!this.isSourceTabFirstPartyNtp_ &&
                       !this.pageSupportedOnNonFirstPartyNtps()) {
                     this.page_ = CustomizeChromePage.OVERVIEW;
                   }
@@ -205,14 +205,6 @@ export class AppElement extends AppElementBase {
     assert(this.setThemeEditableId_);
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setThemeEditableId_);
-  }
-
-  protected isSourceTabFirstPartyNtp_(): boolean {
-    return this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI;
-  }
-
-  protected isSourceTabExtension_(): boolean {
-    return this.newTabPageType_ === NewTabPageType.kExtension;
   }
 
   protected async onBackClick_() {

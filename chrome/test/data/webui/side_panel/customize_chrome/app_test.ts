@@ -7,7 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 import {CustomizeChromeImpression} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
 import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
@@ -230,7 +230,7 @@ suite('AppTest', () => {
     });
   });
 
-  test('source tab type should update the cards', async () => {
+  test('isSourceTabFirstPartyNtp should update the cards', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
       '#shortcuts',
       '#modules',
@@ -249,29 +249,19 @@ suite('AppTest', () => {
       '#buttonContainer',
     ];
 
-    const newTabPageTypes = [
-      NewTabPageType.kFirstPartyWebUI,
-      NewTabPageType.kThirdPartyWebUI,
-      NewTabPageType.kThirdPartyRemote,
-      NewTabPageType.kExtension,
-      NewTabPageType.kIncognito,
-      NewTabPageType.kGuestMode,
-      NewTabPageType.kNone,
-    ];
-
-    const checkIdsVisibility = (sourceTabType: NewTabPageType) => {
+    const checkIdsVisibility = (isSourceTabFirstPartyNtp: boolean) => {
       idsControlledByIsSourceTabFirstPartyNtp.forEach(
           id => assertEquals(
-              sourceTabType === NewTabPageType.kFirstPartyWebUI,
+              isSourceTabFirstPartyNtp,
               !!customizeChromeApp.shadowRoot.querySelector(id)));
       idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
           id => assertTrue(!!customizeChromeApp.shadowRoot.querySelector(id)));
     };
 
-    await newTabPageTypes.forEach(async t => {
-      callbackRouter.attachedTabStateUpdated(t);
+    await[true, false].forEach(async b => {
+      callbackRouter.attachedTabStateUpdated(b);
       await microtasksFinished();
-      checkIdsVisibility(t);
+      checkIdsVisibility(b);
     });
   });
 
@@ -311,7 +301,7 @@ suite('AppTest', () => {
               'selected'));
           assertEquals(customizeChromeApp, document.activeElement);
 
-          callbackRouter.attachedTabStateUpdated(NewTabPageType.kExtension);
+          callbackRouter.attachedTabStateUpdated(false);
           callbackRouter.setThemeEditable(false);
           await microtasksFinished();
 
@@ -336,7 +326,7 @@ suite('AppTest', () => {
               customizeChromeApp.shadowRoot.querySelector('#toolbarPage')!
                   .classList.contains('selected'));
 
-          callbackRouter.attachedTabStateUpdated(NewTabPageType.kExtension);
+          callbackRouter.attachedTabStateUpdated(false);
           await microtasksFinished();
 
           // Current page should now be toolbar.
