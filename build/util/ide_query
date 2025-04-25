@@ -112,14 +112,14 @@ def main():
     if options.log_dir:
         args.extend(['-log_dir', options.log_dir])
     args.extend(targets)
+    # Set build ID for android build server.
+    build_id = str(uuid.uuid4())
+    os.environ.setdefault("AUTONINJA_BUILD_ID", build_id)
     env = os.environ.copy()
     if use_prepare_header_only:
         env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only,ignore-missing-targets'
     else:
         env['SISO_EXPERIMENTS'] = 'no-fast-deps,ignore-missing-targets'
-    # Set build ID for android build server.
-    build_id = str(uuid.uuid4())
-    os.environ.setdefault("AUTONINJA_BUILD_ID", build_id)
     with android_build_server_helper.build_server_context(
         build_id,
         options.out_dir,
