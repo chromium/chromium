@@ -1503,8 +1503,6 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 # Popover flaky timeouts:
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/408782594 [ Mac ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
-crbug.com/408782594 [ Mac ] virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
 
 # HTML `anchor` attribute disabled virtual suite - these tests should fail:
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-inset-rule-display.tentative.html [ Failure ]
