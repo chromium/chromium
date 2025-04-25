@@ -213,36 +213,6 @@ TEST_F(SystemGestureEventFilterTest, WindowsWithMaxSizeDontSnap) {
             toplevel->GetWindowBoundsInScreen().ToString());
 }
 
-TEST_F(SystemGestureEventFilterTest, DISABLED_TwoFingerDragEdge) {
-  gfx::Rect bounds(0, 0, 200, 100);
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  views::Widget* toplevel = views::Widget::CreateWindowWithContext(
-      new ResizableWidgetDelegate, root_window, bounds);
-  toplevel->Show();
-
-  const int kSteps = 15;
-  const int kTouchPoints = 2;
-  gfx::Point points[kTouchPoints] = {
-      gfx::Point(30, 20),  // Caption
-      gfx::Point(0, 40),   // Left edge
-  };
-
-  EXPECT_EQ(HTCAPTION,
-            toplevel->GetNativeWindow()->delegate()->GetNonClientComponent(
-                points[0]));
-  EXPECT_EQ(HTLEFT,
-            toplevel->GetNativeWindow()->delegate()->GetNonClientComponent(
-                points[1]));
-
-  ui::test::EventGenerator generator(root_window, toplevel->GetNativeWindow());
-
-  bounds = toplevel->GetNativeWindow()->bounds();
-  // Swipe down. Nothing should happen.
-  generator.GestureMultiFingerScroll(kTouchPoints, points, 15, kSteps, 0, 150);
-  EXPECT_EQ(bounds.ToString(),
-            toplevel->GetNativeWindow()->bounds().ToString());
-}
-
 // We do not allow resizing a window via multiple edges simultaneously. Test
 // that the behavior is reasonable if a user attempts to resize a window via
 // several edges.
