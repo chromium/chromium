@@ -1068,7 +1068,7 @@ export declare interface UserProfileInfo {
   localProfileName?: string;
   /** The profile email. */
   email: string;
-  /** Whether the profile or the browser is managed. */
+  /** Whether the profile's signed-in account is a managed account. */
   isManaged?: boolean;
 }
 

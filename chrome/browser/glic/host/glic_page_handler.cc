@@ -550,7 +550,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::UTF16ToUTF8(entry->GetLocalProfileName());
     policy::ManagementService* management_service =
         policy::ManagementServiceFactory::GetForProfile(profile_);
-    result->is_managed = management_service && management_service->IsManaged();
+    result->is_managed =
+        management_service && management_service->IsAccountManaged();
     std::move(callback).Run(std::move(result));
   }
 

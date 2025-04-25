@@ -166,8 +166,8 @@ struct UserProfileInfo {
   string email;
   // The user's given name.
   string given_name;
-  // Whether the profile or browser is managed.
-  // See `policy::ManagementService::IsManaged()`.
+  // Whether the profile's signed-in account is a managed account.
+  // See `policy::ManagementService::IsAccountManaged()`.
   bool is_managed;
 };
 
