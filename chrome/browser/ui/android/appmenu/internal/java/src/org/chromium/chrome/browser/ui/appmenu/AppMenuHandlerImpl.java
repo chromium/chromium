@@ -603,6 +603,7 @@ class AppMenuHandlerImpl
         if (mDelegate.shouldShowHeader(appRect.height())) {
             headerResourceId = mDelegate.getHeaderResourceId();
         }
+
         mAppMenu.show(
                 wrapper,
                 anchorView,
@@ -615,11 +616,17 @@ class AppMenuHandlerImpl
                 mHighlightMenuId,
                 customViewBinders,
                 mDelegate.isMenuIconAtStart(),
-                mBrowserControlsStateProvider.getControlsPosition());
+                mBrowserControlsStateProvider.getControlsPosition(),
+                addTopPaddingBeforeFirstRow());
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
         mDelegate.onMenuShown();
+    }
+
+    private boolean addTopPaddingBeforeFirstRow() {
+        if (mModelList == null || mModelList.isEmpty()) return false;
+        return mModelList.get(0).type != AppMenuItemType.BUTTON_ROW;
     }
 }

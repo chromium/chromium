@@ -88,9 +88,6 @@ found in the LICENSE file.
     <!-- Elevation levels -->
     <dimen name="default_elevation_0">0dp</dimen>
 
-    <!-- Arbitrary shadow length for elevation levels -->
-    <dimen name="default_shadow_length_elev_2">6dp</dimen>
-
     <dimen name="default_list_row_padding">16dp</dimen>
 
     <!-- List menu & item dimensions -->
