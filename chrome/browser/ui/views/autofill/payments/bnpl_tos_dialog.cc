@@ -12,6 +12,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/throbber.h"
@@ -107,11 +108,12 @@ BnplTosDialog::BnplTosDialog(
 BnplTosDialog::~BnplTosDialog() = default;
 
 void BnplTosDialog::AddedToWidget() {
+  std::u16string title = controller_->GetTitle();
   // The view needs to be added to the widget before we can get the bubble frame
   // view.
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(controller_->GetTitle(),
-                                                    GetTitleIcon()));
+      std::make_unique<TitleWithIconAfterLabelView>(title, GetTitleIcon()));
+  GetViewAccessibility().AnnouncePolitely(title);
 }
 
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
