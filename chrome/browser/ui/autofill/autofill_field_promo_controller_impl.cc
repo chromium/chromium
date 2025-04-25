@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill_ai/core/browser/autofill_ai_metrics.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -93,6 +94,9 @@ void AutofillFieldPromoControllerImpl::OnShowPromoResult(
   // On failure to show, hide the invisible view.
   if (!result) {
     Hide();
+  } else if (feature_promo_ == feature_engagement::kIPHAutofillAiOptInFeature) {
+    autofill_ai::LogOptInFunnelEvent(
+        autofill_ai::AutofillAiOptInFunnelEvents::kIphShown);
   }
 }
 

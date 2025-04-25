@@ -1076,6 +1076,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
+    expires_after="2025-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records events related to the surfaces available for users to find out and
+    opt in Autofill AI. These educational surfaces are the IPH and the FFR
+    dialog. Logged when any of them are shown and when the FFR (final step in
+    the funnel) is accepted.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.AmountExtraction.HeuristicRegexesComponentInstallationResult"
     enum="AmountExtractionComponentInstallationResult"
