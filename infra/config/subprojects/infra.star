@@ -85,7 +85,7 @@ builders.builder(
     notifies = [
         luci.notifier(
             name = "chromium-autosharder-notifier",
-            notify_emails = ["chrome-browser-infra-team@google.com"],
+            notify_emails = ["chrome-dev-infra-auto+alerts@google.com"],
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
         ),
     ],
