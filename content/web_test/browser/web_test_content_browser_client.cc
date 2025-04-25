@@ -628,12 +628,14 @@ void WebTestContentBrowserClient::BindCookieManagerAutomation(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
         receiver) {
-  cookie_managers_.Add(std::make_unique<WebTestCookieManager>(
-                           GetWebTestBrowserContext()
-                               ->GetDefaultStoragePartition()
-                               ->GetCookieManagerForBrowserProcess(),
-                           render_frame_host->GetLastCommittedURL()),
-                       std::move(receiver));
+  cookie_managers_.Add(
+      std::make_unique<WebTestCookieManager>(
+          GetWebTestBrowserContext()
+              ->GetDefaultStoragePartition()
+              ->GetCookieManagerForBrowserProcess(),
+          render_frame_host->GetLastCommittedURL(),
+          render_frame_host->GetIsolationInfoForSubresources()),
+      std::move(receiver));
 }
 
 void WebTestContentBrowserClient::BindDevicePostureProviderAutomation(
