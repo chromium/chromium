@@ -4174,6 +4174,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BUTTON_NEW_TAB" desc="Button name for opening a new tab.">
         New tab
       </message>
+      <message name="IDS_BUTTON_NEW_TAB_GROUP" desc="Button name for opening a new tab group.">
+        New tab group
+      </message>
       <message name="IDS_BUTTON_NEW_INCOGNITO_TAB" desc="Tooltip for the button to open a new Incognito browser tab.">
         New Incognito tab
       </message>
