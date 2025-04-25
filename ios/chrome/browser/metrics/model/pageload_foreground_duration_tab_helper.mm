@@ -119,8 +119,8 @@ void PageloadForegroundDurationTabHelper::WebStateRealized(
 }
 
 void PageloadForegroundDurationTabHelper::CreateNotificationObservers() {
-  CHECK(!background_notification_observer_, base::NotFatalUntil::M125);
-  CHECK(!foreground_notification_observer_, base::NotFatalUntil::M125);
+  CHECK(!background_notification_observer_);
+  CHECK(!foreground_notification_observer_);
 
   base::RepeatingCallback<void(NSNotification*)> backgrounding_closure =
       base::IgnoreArgs<NSNotification*>(base::BindRepeating(
