@@ -1,4 +1,3 @@
-ci/android-15-chrome-stable-wpt-fyi-rel
 ci/android-15-chrome-wpt-fyi-rel
 ci/android-15-webview-wpt-fyi-rel
 try/android-15-chrome-wpt-fyi-rel
