@@ -17,7 +17,9 @@ component("shared") {
     "utils.h",
   ]
 
-  if (enable_cros_libassistant) {
+  # Some Quick Answers code depend on constants.
+  # TODO(crbug.com/406795923): move them out to a better place.
+  if (is_chrome_branded) {
     sources += [ "//chromeos/assistant/internal/constants.cc" ]
   } else {
     sources += [ "constants.cc" ]
