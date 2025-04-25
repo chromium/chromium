@@ -166,7 +166,10 @@ int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   DCHECK(xievent);
   DCHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
          xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
+  bool is_repeat =
+      static_cast<bool>(xievent->flags & x11::Input::KeyEventFlags::KeyRepeat);
   return GetEventFlagsFromXState(xievent->mods.effective) |
+         (is_repeat ? ui::EF_IS_REPEAT : 0) |
          (x11_event.send_event() ? ui::EF_FINAL : 0);
 }
 

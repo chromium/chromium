@@ -64,6 +64,30 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_EQ(ui::DomKey::ENTER, copy.GetDomKey());
 }
 
+// Ensure KeyEvent repeat flag is set when XI2 key event repeat flag is set.
+TEST(XEventTranslationTest, KeyEventXI2EventRepeat) {
+  ScopedXI2Event scoped_xev;
+  // deviceid of XI2 key event must match that of virtual core keyboard in
+  // x11::TouchFactory to be processed.
+  scoped_xev.InitGenericKeyEvent(/*deviceid=*/3, /*sourceid=*/0,
+                                 EventType::kKeyPressed, KeyboardCode::VKEY_A,
+                                 EF_NONE);
+  x11::Event* xev = scoped_xev;
+  auto* xievent = xev->As<x11::Input::DeviceEvent>();
+
+  // Repeat flag is not set at first.
+  auto non_repeat_key_event = ui::BuildKeyEventFromXEvent(*xev);
+  ASSERT_TRUE(non_repeat_key_event);
+  EXPECT_FALSE(non_repeat_key_event->is_repeat());
+
+  // Now set repeat flag on XI2 key event.
+  xievent->flags = x11::Input::KeyEventFlags::KeyRepeat;
+
+  auto repeat_key_event = ui::BuildKeyEventFromXEvent(*xev);
+  ASSERT_TRUE(repeat_key_event);
+  EXPECT_TRUE(repeat_key_event->is_repeat());
+}
+
 // Ensure KeyEvent::Properties is properly set when XI2 key events are used.
 TEST(XEventTranslationTest, KeyEventXI2EventPropertiesSet) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
