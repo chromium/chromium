@@ -57,7 +57,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -99,6 +98,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -284,7 +284,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        final int backgroundColor = ChromeColors.getDefaultThemeColor(getContext(), false);
+        final int backgroundColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
         setBackground(new ColorDrawable(backgroundColor));
         mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
@@ -2445,7 +2447,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
             mOmniboxBackground.mutate();
             mOmniboxBackground.setTint(
-                    ContextCompat.getColor(getContext(), R.color.toolbar_text_box_bg_color));
+                    SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                            getContext(), /* isIncognito= */ false));
             mLocationBarFrameLayout.setBackground(mOmniboxBackground);
             var lp = mLocationBarFrameLayout.getLayoutParams();
             lp.height =

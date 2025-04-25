@@ -1,0 +1,78 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.theme;
+
+import static org.junit.Assert.assertEquals;
+
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
+import androidx.core.content.ContextCompat;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+
+@RunWith(BaseRobolectricTestRunner.class)
+public class SurfaceColorUpdateUtilsUnitTest {
+    private Context mContext;
+
+    @Before
+    public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
+    public void testThemeAndOmniboxColors_flagEnabled() {
+        int themeColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
+        assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), themeColor);
+
+        int omniboxColor =
+                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                        mContext, /* isIncognito= */ false);
+        assertEquals(SemanticColorUtils.getColorSurface(mContext), omniboxColor);
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
+    public void testThemeAndOmniboxColors_flagDisabled() {
+        int themeColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
+        assertEquals(
+                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false), themeColor);
+
+        int omniboxColor =
+                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                        mContext, /* isIncognito= */ false);
+        assertEquals(
+                ContextCompat.getColor(mContext, R.color.toolbar_text_box_bg_color), omniboxColor);
+    }
+
+    @Test
+    public void testThemeAndOmniboxColors_Incognito() {
+        int themeColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ true);
+        assertEquals(
+                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ true), themeColor);
+
+        int omniboxColor =
+                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                        mContext, /* isIncognito= */ true);
+        assertEquals(
+                ContextCompat.getColor(mContext, R.color.toolbar_text_box_background_incognito),
+                omniboxColor);
+    }
+}

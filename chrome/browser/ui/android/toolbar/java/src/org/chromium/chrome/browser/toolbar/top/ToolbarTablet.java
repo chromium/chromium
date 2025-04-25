@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -58,7 +59,6 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
@@ -268,7 +268,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
             // TODO (amaralp): Have progress bar observe theme color and incognito changes directly.
             getProgressBar()
                     .setThemeColor(
-                            ChromeColors.getDefaultThemeColor(getContext(), incognitoBranded),
+                            SurfaceColorUpdateUtils.getDefaultThemeColor(
+                                    getContext(), incognitoBranded),
                             incognitoBranded);
             updateRippleBackground();
             mIsIncognitoBranded = incognitoBranded;

@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -125,7 +124,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
         if (!isUsingTabThemeColor(tab, themeColor)) {
-            themeColor = ChromeColors.getDefaultThemeColor(mContext, tab.isIncognito());
+            themeColor = SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, tab.isIncognito());
             if (isThemingAllowed(tab)) {
                 int customThemeColor = mActivityThemeColorSupplier.get();
                 if (customThemeColor != TabState.UNSPECIFIED_THEME_COLOR) {
@@ -150,12 +149,14 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     /**
      * The default background color used for {@link Tab} if the associate web content doesn't
      * specify a background color.
+     *
      * @param tab {@link Tab} object to get the background color for.
      * @return The background color of {@link Tab}.
      */
     public int getBackgroundColor(Tab tab) {
         // This method makes it easy to mock, test-friendly.
-        return ThemeUtils.getBackgroundColor(tab);
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                tab.getContext(), tab.isIncognitoBranded());
     }
 
     /**

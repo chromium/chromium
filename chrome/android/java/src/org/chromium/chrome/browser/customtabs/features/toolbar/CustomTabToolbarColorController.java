@@ -25,12 +25,12 @@ import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.Custo
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -223,7 +223,7 @@ public class CustomTabToolbarColorController {
     }
 
     private int getDefaultColor() {
-        return ChromeColors.getDefaultThemeColor(
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(
                 mActivity, mIntentDataProvider.getCustomTabMode() == INCOGNITO);
     }
 

@@ -20,7 +20,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** {@link ColorProvider} implementation used for Auth Tab. */
@@ -70,7 +70,7 @@ public class AuthTabColorProvider implements ColorProvider {
         if (hasCustomToolbarColor) {
             return ColorUtils.getOpaqueColor(params.getToolbarColor());
         }
-        return ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
     }
 
     @Override

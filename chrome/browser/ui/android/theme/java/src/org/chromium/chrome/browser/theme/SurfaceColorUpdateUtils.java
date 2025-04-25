@@ -10,7 +10,9 @@ import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Utility class that provides color values based on feature flags enabled. */
 @NullMarked
@@ -22,7 +24,12 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getOmniboxBackgroundColor(Context context, boolean isIncognito) {
-        return ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
+        if (isIncognito) {
+            return ContextCompat.getColor(context, R.color.toolbar_text_box_background_incognito);
+        }
+        return ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()
+                ? SemanticColorUtils.getColorSurface(context)
+                : ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
     }
 
     /**
@@ -32,6 +39,9 @@ public class SurfaceColorUpdateUtils {
      * @return The background color.
      */
     public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
+        if (ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled() && !isIncognito) {
+            return SemanticColorUtils.getColorSurfaceContainerHigh(context);
+        }
         return ChromeColors.getDefaultThemeColor(context, isIncognito);
     }
 }

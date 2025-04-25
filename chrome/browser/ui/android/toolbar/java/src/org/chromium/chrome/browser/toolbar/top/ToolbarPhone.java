@@ -55,6 +55,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -81,7 +83,6 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColo
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -314,10 +315,14 @@ public class ToolbarPhone extends ToolbarLayout
         float LocationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
+        // Explicitly checking the flag value since the default color value is colorPrimary tinted.
         mLocationBarBackgroundColorForNtp =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        LocationBarBackgroundColorAlphaForNtp);
+                ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()
+                        ? SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                                getContext(), /* isIncognito= */ false)
+                        : ColorUtils.setAlphaComponentWithFloat(
+                                SemanticColorUtils.getDefaultIconColorAccent1(context),
+                                LocationBarBackgroundColorAlphaForNtp);
         mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
@@ -413,7 +418,9 @@ public class ToolbarPhone extends ToolbarLayout
                                 R.drawable.modern_toolbar_text_box_background_with_primary_color);
         assumeNonNull(drawable);
         drawable.mutate();
-        drawable.setColor(ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
+        drawable.setColor(
+                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                        context, /* isIncognito= */ false));
         return drawable;
     }
 
@@ -487,7 +494,7 @@ public class ToolbarPhone extends ToolbarLayout
             return OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
                     getContext(), mThemeColorProvider.getBrandedColorScheme());
         }
-        return ChromeColors.getDefaultThemeColor(getContext(), isIncognitoBranded());
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(getContext(), isIncognitoBranded());
     }
 
     /**
@@ -793,9 +800,11 @@ public class ToolbarPhone extends ToolbarLayout
                 if (mIsInLoadingPhaseFromNtpToWebpage) {
                     return mToolbarBackgroundColorForNtp;
                 }
-                return ChromeColors.getDefaultThemeColor(getContext(), false);
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
             case VisualState.INCOGNITO:
-                return ChromeColors.getDefaultThemeColor(getContext(), true);
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ true);
             case VisualState.BRAND_COLOR:
                 if (urlHasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
@@ -803,7 +812,8 @@ public class ToolbarPhone extends ToolbarLayout
                 return getToolbarDataProvider().getPrimaryColor();
             default:
                 assert false;
-                return SemanticColorUtils.getToolbarBackgroundPrimary(getContext());
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
         }
     }
 

@@ -127,6 +127,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiOneshotSupplier;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
@@ -172,7 +173,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -2690,7 +2690,7 @@ public class ToolbarManager
         }
         if (previousTab != tab || wasIncognitoBranded != isIncognitoBranded) {
             int defaultPrimaryColor =
-                    ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
+                    SurfaceColorUpdateUtils.getDefaultThemeColor(mActivity, isIncognitoBranded);
             int primaryColor =
                     tab != null
                             ? mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor())
