@@ -28,13 +28,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
  public:
   // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
-    ComputeResourceInfo(base::flat_map<std::string, OperandDescriptor>
-                            input_names_to_descriptors,
-                        base::flat_map<std::string, OperandDescriptor>
-                            output_names_to_descriptors,
-                        base::flat_map<uint64_t, base::flat_set<size_t>>
-                            operand_to_dependent_operations,
-                        base::PassKey<WebNNGraphBuilderImpl> pass_key);
+    ComputeResourceInfo(
+        base::flat_map<std::string, OperandDescriptor>
+            input_names_to_descriptors,
+        base::flat_map<std::string, OperandDescriptor>
+            output_names_to_descriptors,
+        base::flat_map<uint64_t, base::flat_set<size_t>>
+            operand_to_dependent_operations,
+        base::flat_map<uint64_t, size_t> operand_to_producing_operation,
+        base::PassKey<WebNNGraphBuilderImpl> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;
@@ -47,6 +49,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors;
     base::flat_map<uint64_t, base::flat_set<size_t>>
         operand_to_dependent_operations;
+    base::flat_map<uint64_t, size_t> operand_to_producing_operation;
   };
 
   // Constructs a graph where the receiever and implementation is owned by the
