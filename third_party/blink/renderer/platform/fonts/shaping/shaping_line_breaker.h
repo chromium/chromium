@@ -48,9 +48,6 @@ class PLATFORM_EXPORT ShapingLineBreaker {
     STACK_ALLOCATED();
 
    public:
-    // Indicates the limits of the space run.
-    std::optional<unsigned> non_hangable_run_end;
-
     // Indicates the resulting break offset.
     unsigned break_offset;
 

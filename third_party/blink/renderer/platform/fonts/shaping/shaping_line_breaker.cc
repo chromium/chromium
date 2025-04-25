@@ -223,7 +223,6 @@ inline void ShapingLineBreaker::SetBreakOffset(
   result->is_hyphenated =
       break_opportunity.is_hyphenated ||
       text[result->break_offset - 1] == kSoftHyphenCharacter;
-  result->non_hangable_run_end = break_opportunity.non_hangable_run_end;
 }
 
 // Shapes a line of text by finding a valid and appropriate break opportunity
@@ -442,7 +441,6 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       // triggering the trailing spaces handling
       result_out->has_trailing_spaces = true;
       result_out->break_offset = std::min(range_end, break_opportunity.offset);
-      result_out->non_hangable_run_end = break_opportunity.non_hangable_run_end;
 #if DCHECK_IS_ON()
       DCHECK(IsAllSpaces(text, start, result_out->break_offset));
 #endif
