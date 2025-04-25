@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -152,6 +153,16 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
   if (!window_tracker) {
     return false;
   }
+
+  // Google search sometimes redirects to the captcha page. We let this
+  // navigation proceed by default.
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::SubdomainPermission::DISALLOW_SUBDOMAIN,
+          google_util::PortPermission::ALLOW_NON_STANDARD_PORTS) &&
+      url.path_piece().starts_with("/sorry/")) {
+    return true;
+  }
+
   OnTaskBlocklist* const on_task_blocklist =
       window_tracker->on_task_blocklist();
   if (!on_task_blocklist->CanPerformOneLevelNavigation(tab)) {
@@ -222,6 +233,11 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
       !window_tracker->oauth_in_progress()) {
     MaybeShowBlockedURLToast();
     return CANCEL;
+  }
+
+  // Allow redirects triggered as separate navigation requests to go through.
+  if (navigation_handle()->GetRedirectChain().size() > 1) {
+    return PROCEED;
   }
   const GURL& url = navigation_handle()->GetURL();
 
