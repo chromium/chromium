@@ -598,7 +598,7 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."
   modulator->FetchTree(
-      module_url_record, ModuleType::kJavaScript,
+      module_url_record, ModuleType::kJavaScriptOrWasm,
       CreateOutsideSettingsFetcher(fetch_client_settings_object,
                                    resource_timing_notifier),
       context_type, destination, options, custom_fetch_type, client);

@@ -25,7 +25,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(ScriptState* script_state,
                                                     const KURL& url) {
   ModuleScriptCreationParams params(
       /*source_url=*/url, /*base_url=*/url,
-      ScriptSourceLocationType::kExternalFile, ModuleType::kJavaScript,
+      ScriptSourceLocationType::kExternalFile, ResolvedModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr,
       network::mojom::ReferrerPolicy::kDefault);
   return ModuleRecord::Compile(script_state, params, ScriptFetchOptions(),

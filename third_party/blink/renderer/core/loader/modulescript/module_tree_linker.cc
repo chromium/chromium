@@ -247,7 +247,7 @@ void ModuleTreeLinker::FetchRootInline(
 #if DCHECK_IS_ON()
   original_url_ = module_script->BaseUrl();
   url_ = original_url_;
-  module_type_ = ModuleType::kJavaScript;
+  module_type_ = ModuleType::kJavaScriptOrWasm;
   root_is_inline_ = true;
 #endif
 
@@ -649,8 +649,8 @@ std::ostream& operator<<(std::ostream& stream, ModuleType module_type) {
     case ModuleType::kInvalid:
       stream << "Invalid";
       break;
-    case ModuleType::kJavaScript:
-      stream << "JavaScript";
+    case ModuleType::kJavaScriptOrWasm:
+      stream << "JavaScript-or-Wasm";
       break;
     case ModuleType::kJSON:
       stream << "JSON";

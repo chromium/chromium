@@ -121,7 +121,7 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
       CachedMetadataHandler* cache_handler) {
     ModuleScriptCreationParams params(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
-        ScriptSourceLocationType::kInline, ModuleType::kJavaScript,
+        ScriptSourceLocationType::kInline, ResolvedModuleType::kJavaScript,
         ParkableString(source_text.Impl()->IsolatedCopy()), cache_handler,
         network::mojom::ReferrerPolicy::kDefault);
     return JSModuleScript::Create(params, modulator, ScriptFetchOptions());

@@ -97,8 +97,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeNoDeps) {
   SimModuleRequest sim_module(KURL("http://example.com/root.js"));
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 
@@ -121,8 +121,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeInstantiationFailure) {
 
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 
@@ -148,8 +148,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWithSingleDependency) {
 
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 
@@ -176,8 +176,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps) {
 
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 
@@ -216,8 +216,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps1Fail) {
 
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 
@@ -266,8 +266,8 @@ TEST_F(ModuleTreeLinkerTest, FetchDependencyOfCyclicGraph) {
 
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   GetModulator()->FetchTree(
-      sim_module.GetURL(), ModuleType::kJavaScript, GetDocument().Fetcher(),
-      mojom::blink::RequestContextType::SCRIPT,
+      sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
+      GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       ModuleScriptCustomFetchType::kNone, client);
 

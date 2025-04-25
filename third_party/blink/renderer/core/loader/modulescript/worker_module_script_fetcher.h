@@ -51,7 +51,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   String DebugName() const override { return "WorkerModuleScriptFetcher"; }
 
   void NotifyClient(const KURL& request_url,
-                    ModuleType module_type,
+                    ResolvedModuleType module_type,
                     const ParkableString& source_text,
                     const ResourceResponse& response,
                     CachedMetadataHandler* cache_handler);

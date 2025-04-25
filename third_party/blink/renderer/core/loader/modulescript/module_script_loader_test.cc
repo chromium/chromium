@@ -237,10 +237,11 @@ void ModuleScriptLoaderTest::TestFetchDataURL(
     TestModuleScriptLoaderClient* client) {
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url("data:text/javascript,export default 'grapes';");
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 void ModuleScriptLoaderTest::TestFetchDataURLJSONModule(
@@ -417,10 +418,11 @@ void ModuleScriptLoaderTest::TestInvalidSpecifier(
     TestModuleScriptLoaderClient* client) {
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url("data:text/javascript,import 'invalid';export default 'grapes';");
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 TEST_F(ModuleScriptLoaderTest, InvalidSpecifier) {
@@ -461,10 +463,11 @@ void ModuleScriptLoaderTest::TestFetchInvalidURL(
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url;
   EXPECT_FALSE(url.IsValid());
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 TEST_F(ModuleScriptLoaderTest, FetchInvalidURL) {
@@ -503,10 +506,11 @@ void ModuleScriptLoaderTest::TestFetchURL(
       platform_->GetURLLoaderMockFactory());
 
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 TEST_F(ModuleScriptLoaderTest, FetchURL) {

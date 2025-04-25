@@ -33,7 +33,7 @@ void ModuleScriptFetcher::Trace(Visitor* visitor) const {
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
-bool ModuleScriptFetcher::WasModuleLoadSuccessful(
+std::optional<ResolvedModuleType> ModuleScriptFetcher::WasModuleLoadSuccessful(
     ScriptResource* resource,
     ModuleType expected_module_type,
     HeapVector<Member<ConsoleMessage>>* error_messages) {
@@ -49,14 +49,14 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
   // <spec step="9">... response's type is "error" ...</spec>
   if (!resource || resource->ErrorOccurred() ||
       !resource->PassedIntegrityChecks()) {
-    return false;
+    return std::nullopt;
   }
 
   const auto& response = resource->GetResponse();
   // <spec step="9">... response's status is not an ok status</spec>
   if (response.IsHTTP() &&
       !network::IsSuccessfulStatus(response.HttpStatusCode())) {
-    return false;
+    return std::nullopt;
   }
 
   // <spec step="10">Let type be the result of extracting a MIME type from
@@ -69,21 +69,21 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
   // MimeType() may be rewritten by mime sniffer.
   //
   // <spec step="12">If type is a JavaScript MIME type, then:</spec>
-  if (expected_module_type == ModuleType::kJavaScript &&
+  if (expected_module_type == ModuleType::kJavaScriptOrWasm &&
       MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           response.HttpContentType())) {
-    return true;
+    return ResolvedModuleType::kJavaScript;
   }
   // <spec step="13">If type is a JSON MIME type, then:</spec>
   if (expected_module_type == ModuleType::kJSON &&
       MIMETypeRegistry::IsJSONMimeType(response.HttpContentType())) {
-    return true;
+    return ResolvedModuleType::kJSON;
   }
 
   if (expected_module_type == ModuleType::kCSS &&
       MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
           response.HttpContentType())) {
-    return true;
+    return ResolvedModuleType::kCSS;
   }
 
   String message =
@@ -99,7 +99,7 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
       mojom::ConsoleMessageLevel::kError, message,
       response.ResponseUrl().GetString(), /*loader=*/nullptr,
       resource->InspectorId()));
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace blink

@@ -20,7 +20,17 @@
 
 namespace blink {
 
-enum class ModuleType { kInvalid, kJavaScript, kJSON, kCSS };
+// Spec module types. Return value of
+// "https://html.spec.whatwg.org/#module-type-from-module-request".
+enum class ModuleType { kInvalid, kJavaScriptOrWasm, kJSON, kCSS };
+
+// Non-standard internal module types. The spec defines javascript-or-wasm
+// as the module type for module requests without an explicit type and uses
+// the MIME type to disambiguate between JavaScript and Wasm modules.
+// We don't pass the MIME type to `ModuleScript`, instead, we resolve the
+// kJavascriptOrWasm type to kJavaScript or kWasm before calling the
+// ModuleScriptCreationParams constructor.
+enum class ResolvedModuleType { kJSON, kCSS, kJavaScript, kWasm };
 
 // ModuleScriptCreationParams contains parameters for creating ModuleScript.
 class ModuleScriptCreationParams {
@@ -31,7 +41,7 @@ class ModuleScriptCreationParams {
       const KURL& source_url,
       const KURL& base_url,
       ScriptSourceLocationType source_location_type,
-      const ModuleType module_type,
+      const ResolvedModuleType module_type,
       const ParkableString& source_text,
       CachedMetadataHandler* cache_handler,
       network::mojom::ReferrerPolicy response_referrer_policy,
@@ -71,7 +81,7 @@ class ModuleScriptCreationParams {
         isolated_source_text, response_referrer_policy_);
   }
 
-  ModuleType GetModuleType() const { return module_type_; }
+  ResolvedModuleType GetModuleType() const { return module_type_; }
 
   const KURL& SourceURL() const { return source_url_; }
   const KURL& BaseURL() const { return base_url_; }
@@ -118,7 +128,7 @@ class ModuleScriptCreationParams {
       const KURL& source_url,
       const KURL& base_url,
       ScriptSourceLocationType source_location_type,
-      const ModuleType& module_type,
+      const ResolvedModuleType& module_type,
       const String& isolated_source_text,
       network::mojom::ReferrerPolicy response_referrer_policy)
       : source_url_(source_url),
@@ -140,7 +150,7 @@ class ModuleScriptCreationParams {
   const KURL source_url_;
   const KURL base_url_;
   const ScriptSourceLocationType source_location_type_;
-  const ModuleType module_type_;
+  const ResolvedModuleType module_type_;
 
   // Mutable because an isolated copy can become bound to a thread when
   // calling GetSourceText().
