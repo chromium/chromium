@@ -532,6 +532,14 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
+  // In case of out-of-process printing, code execution reaches the NewDocument
+  // function twice. First time the browser process ends here with a skip.
+  // The flow is later picked up by the print backend service process, where
+  // a new instance of the printing context is created and the flow goes through
+  // here without a skip.
+  //
+  // Other OS-es might do more than a quick skip, because of a potential need
+  // to handle OS-based printing dialogs.
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (out_of_process_behavior() ==
       OutOfProcessBehavior::kEnabledSkipSystemCalls) {
