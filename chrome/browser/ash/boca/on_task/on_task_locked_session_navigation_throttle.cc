@@ -68,6 +68,11 @@ bool IsChromeWebStoreURL(const GURL& url) {
          (url.host() == extension_urls::GetNewWebstoreLaunchURL().host());
 }
 
+bool IsBocaAppHostURL(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+          url.host() == boca::kChromeBocaAppHost);
+}
+
 }  // namespace
 
 OnTaskLockedSessionNavigationThrottle::OnTaskLockedSessionNavigationThrottle(
@@ -180,14 +185,11 @@ bool OnTaskLockedSessionNavigationThrottle::
   // an exception), blob urls, non-boca app chrome urls, and other local
   // schemes.
   const GURL& url = navigation_handle()->GetURL();
-  bool is_boca_app_host_url =
-      (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-       url.host() == boca::kChromeBocaAppHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
                net::HttpRequestHeaders::kGetMethod &&
            !navigation_handle()->IsFormSubmission()) ||
-          (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url) ||
+          (!url.SchemeIsHTTPOrHTTPS() && !IsBocaAppHostURL(url)) ||
           IsChromeWebStoreURL(url));
 }
 
@@ -240,6 +242,14 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     return PROCEED;
   }
   const GURL& url = navigation_handle()->GetURL();
+
+  // There is no nav restriction associated with the home tab so the blocklist
+  // may enforce nav restrictions based on the previous active tab. We allow all
+  // requests to the home URL to go through for now.
+  // TODO(crbug.com/413468168) - Associate a nav restriction with the home tab.
+  if (IsBocaAppHostURL(url)) {
+    return PROCEED;
+  }
 
   // Checks if the query is the end of an OAuth login. If so, then we want
   // to let these pass.
