@@ -2698,6 +2698,11 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "LanguageDetectionAPIForWorkers",
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "LayoutFlexNewRowAlgorithm",
       status: "stable",
     },

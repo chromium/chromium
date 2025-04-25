@@ -1720,6 +1720,7 @@ void ChromeContentRendererClient::
     blink::WebRuntimeFeatures::EnableAIRewriterAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAISummarizationAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAIWriterAPIForWorkers(true);
+    blink::WebRuntimeFeatures::EnableLanguageDetectionAPIForWorkers(true);
   }
 }
 

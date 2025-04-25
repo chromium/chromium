@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -237,7 +238,12 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
     ScriptState* script_state,
     LanguageDetectorCreateCoreOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
@@ -249,7 +255,6 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
-  ExecutionContext* context = ExecutionContext::From(script_state);
 
   // Return unavailable for cross-origin iframe access with no permission
   // policy.
@@ -275,7 +280,12 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     ScriptState* script_state,
     LanguageDetectorCreateOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
@@ -295,7 +305,6 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
           script_state);
 
   // Block cross-origin iframe access with no permission policy.
-  ExecutionContext* context = ExecutionContext::From(script_state);
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     if (window->GetFrame() &&
         window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
@@ -346,7 +355,12 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 
@@ -392,7 +406,12 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  if (!ValidateScriptState(script_state, exception_state)) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(
+              context))) {
     return EmptyPromise();
   }
 

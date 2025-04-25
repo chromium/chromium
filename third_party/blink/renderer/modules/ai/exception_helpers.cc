@@ -121,12 +121,19 @@ bool HandleAbortSignal(AbortSignal* signal,
 }
 
 bool ValidateScriptState(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+                         ExceptionState& exception_state,
+                         bool permit_workers) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return false;
   }
+
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (context->IsServiceWorkerGlobalScope()) {
+    return permit_workers;
+  }
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
 
   // Realm’s global object must be a Window object.
