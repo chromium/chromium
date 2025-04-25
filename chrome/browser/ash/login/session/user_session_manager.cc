@@ -132,7 +132,6 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -371,24 +370,7 @@ void InitLocaleAndInputMethodsForNewUser(
   prefs->SetBoolean(::prefs::kLanguageShouldMergeInputMethods, true);
 }
 
-bool IsKioskProfile(Profile* profile) {
-  const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
-  return user && user->IsKioskType();
-}
-
-bool AreKioskTroubleshootingToolsEnabled(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      ::prefs::kKioskTroubleshootingToolsEnabled);
-}
-
-bool CanPerformEarlyRestart(Profile* profile) {
-  // Allow early restart in kiosk mode to apply flags for experimentation when
-  // the troubleshooting tools policy is set.
-  if (IsKioskProfile(profile) && AreKioskTroubleshootingToolsEnabled(profile)) {
-    return true;
-  }
-
+bool CanPerformEarlyRestart() {
   const ExistingUserController* controller =
       ExistingUserController::current_controller();
   if (!controller)
@@ -1003,9 +985,14 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
 
   MaybeSaveSessionStartedTimeBeforeRestart(profile);
 
-  if (early_restart && !CanPerformEarlyRestart(profile)) {
+  // Kiosk sessions keeps the startup flags.
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
     return false;
   }
+
+  if (early_restart && !CanPerformEarlyRestart())
+    return false;
 
   // We can't really restart if we've already restarted as a part of
   // user session restore after crash of in case when flags were changed inside
