@@ -263,8 +263,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // disallowed concurrent read/write accesses.
   bool ongoing_write_access_ GUARDED_BY(lock_) = false;
 
-  scoped_refptr<IOSurfaceBackingEGLState> RetainGLTexture()
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  scoped_refptr<IOSurfaceBackingEGLState> RetainGLTexture();
   void ReleaseGLTexture(IOSurfaceBackingEGLState* egl_state, bool have_context)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

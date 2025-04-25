@@ -279,6 +279,7 @@ class IOSurfaceImageBacking::GLTextureIRepresentation final
         egl_state_(egl_state) {}
   ~GLTextureIRepresentation() override {
     egl_state_->WillRelease(has_context());
+    AutoLock auto_lock(backing());
     egl_state_.reset();
   }
 
@@ -383,10 +384,13 @@ IOSurfaceImageBacking::SkiaGaneshRepresentation::~SkiaGaneshRepresentation() {
     DLOG(ERROR) << "SkiaImageRepresentation was destroyed while still "
                 << "open for write access.";
   }
+
   promise_textures_.clear();
   if (egl_state_) {
     DCHECK(context_state_->GrContextIsGL());
     egl_state_->WillRelease(has_context());
+
+    AutoLock auto_lock(backing());
     egl_state_.reset();
   }
 }
@@ -1168,7 +1172,7 @@ bool IOSurfaceImageBacking::UploadFromMemory(
 
 scoped_refptr<IOSurfaceBackingEGLState>
 IOSurfaceImageBacking::RetainGLTexture() {
-  AssertLockAcquired();
+  AutoLock auto_lock(this);
 
   gl::GLContext* context = gl::GLContext::GetCurrent();
   gl::GLDisplayEGL* display = context ? context->GetGLDisplayEGL() : nullptr;
@@ -1284,10 +1288,7 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 IOSurfaceImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                    MemoryTypeTracker* tracker) {
   scoped_refptr<IOSurfaceBackingEGLState> egl_state;
-  {
-    AutoLock auto_lock(this);
-    egl_state = RetainGLTexture();
-  }
+  egl_state = RetainGLTexture();
 
   // The corresponding release will be done when the returned representation is
   // destroyed, in GLTextureImageRepresentationBeingDestroyed.
@@ -1480,12 +1481,12 @@ IOSurfaceImageBacking::ProduceSkiaGanesh(
   scoped_refptr<IOSurfaceBackingEGLState> egl_state;
   std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
 
+  if (context_state->GrContextIsGL()) {
+    egl_state = RetainGLTexture();
+  }
+
   {
     AutoLock auto_lock(this);
-    if (context_state->GrContextIsGL()) {
-      egl_state = RetainGLTexture();
-    }
-
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();
          plane_index++) {
       GLFormatDesc format_desc =
