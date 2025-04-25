@@ -906,8 +906,9 @@ void ReadAnythingUntrustedPageHandler::SetLanguageCode(
   const std::string& language_code =
       (code.empty() || code == language_detection::kUnknownLanguageCode) ? ""
                                                                          : code;
-  // Only send the language code if it's a new language.
-  if (language_code != current_language_code_) {
+  // Only send the language code if it's a new language, unless it's an empty
+  // code. Always send an empty code so we know to use the tree language.
+  if (language_code.empty() || (language_code != current_language_code_)) {
     current_language_code_ = language_code;
     page_->SetLanguageCode(current_language_code_);
   }

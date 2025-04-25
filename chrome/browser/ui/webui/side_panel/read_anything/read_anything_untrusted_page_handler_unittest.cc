@@ -748,6 +748,19 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_CALL(page_, SetLanguageCode("")).Times(1);
 }
 
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguageDetermined_UnknownLanguageSendsEmptyEveryTime) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  EXPECT_CALL(page_, SetLanguageCode).Times(1);
+
+  OnLanguageDetermined(language_detection::kUnknownLanguageCode);
+  OnLanguageDetermined(language_detection::kUnknownLanguageCode);
+  OnLanguageDetermined(language_detection::kUnknownLanguageCode);
+
+  EXPECT_CALL(page_, SetLanguageCode("")).Times(3);
+}
+
 TEST_F(ReadAnythingUntrustedPageHandlerTest, AccessibilityEventReceived) {
   ui::AXUpdatesAndEvents details;
   details.events = {};
