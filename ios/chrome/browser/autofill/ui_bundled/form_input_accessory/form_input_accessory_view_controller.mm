@@ -578,6 +578,7 @@ UIImage* GetManualFillSymbol() {
       case FillingProduct::kCompose:
       case FillingProduct::kAutofillAi:
       case FillingProduct::kLoyaltyCard:
+      case FillingProduct::kIdentityCredential:
       case FillingProduct::kNone:
         // `kMerchantPromoCode` and `kCompose` cases are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.

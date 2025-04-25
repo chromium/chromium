@@ -71,6 +71,7 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kIdentityCredential:
       return false;
     case FillingProduct::kPassword:
     case FillingProduct::kNone:
@@ -84,7 +85,10 @@ FillingProduct GetFillingProductFromFillingPayload(
       base::Overloaded{
           [](const AutofillProfile*) { return FillingProduct::kAddress; },
           [](const CreditCard*) { return FillingProduct::kCreditCard; },
-          [](const EntityInstance*) { return FillingProduct::kAutofillAi; }},
+          [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
+          [](const VerifiedProfile*) {
+            return FillingProduct::kIdentityCredential;
+          }},
       filling_payload);
 }
 
@@ -137,6 +141,8 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{LOYALTY_MEMBERSHIP_ID};
     case FillingProduct::kPlusAddresses:
       return FieldTypeSet{EMAIL_ADDRESS};
+    case FillingProduct::kIdentityCredential:
+      return FieldTypeSet{EMAIL_ADDRESS, NAME_FIRST, NAME_FULL};
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
       return std::nullopt;
@@ -228,6 +234,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
       return false;
   }
   NOTREACHED();
@@ -396,6 +403,9 @@ FormFiller::RefillContext::RefillContext(const AutofillField& field,
       base::Overloaded{
           // Autofill with AI doesn't support refills.
           [](const EntityInstance*)
+              -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
+          // Verified Profiles doesn't support refills.
+          [](const VerifiedProfile*)
               -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
           [](const auto* x) {
             return std::variant<CreditCard, AutofillProfile>(*x);
@@ -988,6 +998,12 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                         manager_->client().GetAppLocale(),
                         manager_->client().GetAddressNormalizer()),
                     std::nullopt};
+          },
+          [&](const VerifiedProfile* profile)
+              -> std::pair<std::u16string, std::optional<FieldType>> {
+            auto it = profile->find(autofill_field.Type().GetStorableType());
+            std::u16string value = it == profile->end() ? u"" : it->second;
+            return {value, autofill_field.Type().GetStorableType()};
           }},
       filling_payload);
   return {value_to_fill, filling_type, /*value_is_an_override=*/false};

@@ -182,7 +182,9 @@ FillDataType GetFillDataTypeFromFillingPayload(
       base::Overloaded{
           [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
           [](const CreditCard*) { return FillDataType::kCreditCard; },
-          [](const EntityInstance*) { return FillDataType::kAutofillAi; }},
+          [](const EntityInstance*) { return FillDataType::kAutofillAi; },
+          [](const VerifiedProfile*) { return FillDataType::kAutofillProfile; },
+      },
       filling_payload);
 }
 
@@ -239,6 +241,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kCreditCard:
     case FillingProduct::kAddress:
     case FillingProduct::kNone:
+    case FillingProduct::kIdentityCredential:
       return false;
   }
 }
@@ -1548,6 +1551,12 @@ void BrowserAutofillManager::FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source);
+                 },
+                 [&](const VerifiedProfile*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, form, filling_payload,
+                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
+                       trigger_source);
                  }},
              filling_payload);
 }
@@ -2394,6 +2403,10 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                                trigger_autofill_field,
                                driver().GetPageUkmSourceId());
                          }
+                       },
+                       [&](const VerifiedProfile*) {
+                         // TODO(crbug.com/380367784): consider moving the
+                         // notification to the delegate here.
                        }},
       filling_payload);
 }
@@ -3019,11 +3032,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     if (std::optional<AutocompleteParsingResult> autocomplete =
             ParseAutocompleteAttribute(
                 autofill_field->autocomplete_attribute());
-        autocomplete && autocomplete->field_type == HtmlFieldType::kEmail &&
-        autocomplete->webidentity) {
+        autocomplete && autocomplete->webidentity) {
       std::vector<Suggestion> verified_suggestions =
           identity_credential_delegate->GetVerifiedAutofillSuggestions(
-              FieldType::EMAIL_ADDRESS);
+              autofill_field->Type().GetStorableType());
       // Insert verified suggestions above unverified ones.
       // TODO(crbug.com/380367784): figure out what to do when both verified
       // and unverified suggestions point to the same email address.

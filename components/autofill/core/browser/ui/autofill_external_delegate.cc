@@ -630,15 +630,16 @@ void AutofillExternalDelegate::DidSelectSuggestion(
         PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
       }
       break;
-    case SuggestionType::kIdentityCredential:
-      // TODO(crbug.com/380367784): allow previewing more field types.
-      manager_->FillOrPreviewField(
-          mojom::ActionPersistence::kPreview,
-          mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
-          suggestion.GetPayload<Suggestion::IdentityCredentialPayload>()
-              .fields[HtmlFieldType::kEmail],
-          SuggestionType::kIdentityCredential, EMAIL_ADDRESS);
+    case SuggestionType::kIdentityCredential: {
+      VerifiedProfile profile =
+          suggestion.GetPayload<Suggestion::IdentityCredentialPayload>().fields;
+
+      manager_->FillOrPreviewForm(
+          mojom::ActionPersistence::kPreview, query_form_,
+          query_field_.global_id(), &profile,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
+    }
     case SuggestionType::kLoyaltyCardEntry:
       // Always shows the masked loyalty card value as the preview of the
       // suggestion.
@@ -850,16 +851,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         identity_credential_delegate->NotifySuggestionAccepted(
             suggestion, base::NullCallback());
 
-        // TODO(crbug.com/380367784): generalize this to allow filling different
-        // field types (e.g. passwords) as well as more than one one field
-        // at a time (e.g. name and email, rather than email alone)?
-        Suggestion::IdentityCredentialPayload payload =
-            suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
-        manager_->FillOrPreviewField(
-            mojom::ActionPersistence::kFill,
-            mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
-            payload.fields[HtmlFieldType::kEmail],
-            SuggestionType::kIdentityCredential, EMAIL_ADDRESS);
+        VerifiedProfile profile =
+            suggestion.GetPayload<Suggestion::IdentityCredentialPayload>()
+                .fields;
+        manager_->FillOrPreviewForm(
+            mojom::ActionPersistence::kFill, query_form_,
+            query_field_.global_id(), &profile,
+            TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       }
       break;
     }

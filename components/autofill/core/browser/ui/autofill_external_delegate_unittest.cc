@@ -1261,11 +1261,8 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Preview) {
 
   // Test preview.
   EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(), _,
-                                 SuggestionType::kIdentityCredential,
-                                 std::optional(EMAIL_ADDRESS)));
+              FillOrPreviewForm(mojom::ActionPersistence::kPreview,
+                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
@@ -1283,12 +1280,8 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
 
   // Expect that the form filler gets notified.
   EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(), _,
-                                 SuggestionType::kIdentityCredential,
-                                 std::optional(EMAIL_ADDRESS)));
-
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
   // Expect that the delegate gets notified.
   EXPECT_CALL(mock, NotifySuggestionAccepted(suggestion, _));
 

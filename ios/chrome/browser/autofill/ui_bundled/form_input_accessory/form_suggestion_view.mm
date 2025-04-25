@@ -75,6 +75,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     case FillingProduct::kCompose:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIdentityCredential:
       // These cases are currently not available on iOS.
       NOTREACHED();
   }

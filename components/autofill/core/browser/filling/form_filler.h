@@ -39,8 +39,12 @@ enum class RefillTriggerReason {
   kMaxValue = kExpirationDateFormatted
 };
 
-using FillingPayload = std::
-    variant<const AutofillProfile*, const CreditCard*, const EntityInstance*>;
+using VerifiedProfile = std::map<FieldType, std::u16string>;
+
+using FillingPayload = std::variant<const AutofillProfile*,
+                                    const CreditCard*,
+                                    const EntityInstance*,
+                                    const VerifiedProfile*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //

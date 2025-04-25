@@ -511,6 +511,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
+    case FillingProduct::kIdentityCredential:
       break;
   }
 

@@ -163,7 +163,7 @@ struct Suggestion {
     // https://w3c-fedid.github.io/FedCM/#dom-identityprovideraccount-id
     std::string account_id;
     // The field values of the account profile available to autofill.
-    std::map<HtmlFieldType, std::u16string> fields;
+    std::map<FieldType, std::u16string> fields;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;

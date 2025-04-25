@@ -25,7 +25,8 @@ enum class FillingProduct {
   kPlusAddresses,
   kAutofillAi,
   kLoyaltyCard,
-  kMaxValue = kLoyaltyCard
+  kIdentityCredential,
+  kMaxValue = kIdentityCredential
 };
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type);
