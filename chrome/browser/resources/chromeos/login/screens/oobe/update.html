@@ -65,7 +65,8 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'checkingForUpdates')]]
   </h1>
-  <paper-progress slot="progress" id="checking-progress" indeterminate>
+  <paper-progress slot="progress" id="checking-progress" aria-hidden="true"
+    indeterminate>
   </paper-progress>
   <div slot="content" class="flex layout vertical center-justified center">
     <oobe-cr-lottie id="checkingAnimation"
