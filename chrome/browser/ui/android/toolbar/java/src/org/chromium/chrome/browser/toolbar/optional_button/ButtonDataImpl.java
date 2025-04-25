@@ -9,10 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -20,19 +20,20 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import java.util.Objects;
 
 /** An implementation of the {@link ButtonData}. */
+@NullMarked
 public class ButtonDataImpl implements ButtonData {
     private boolean mCanShow;
     private boolean mIsEnabled;
     private @DrawableRes int mBackgroundResId;
 
-    private ButtonSpec mButtonSpec;
+    private @SuppressWarnings("NullAway.Init") ButtonSpec mButtonSpec;
 
     public ButtonDataImpl() {}
 
     public ButtonDataImpl(
             boolean canShow,
-            @NonNull Drawable drawable,
-            @NonNull OnClickListener onClickListener,
+            Drawable drawable,
+            OnClickListener onClickListener,
             String contentDescription,
             boolean supportsTinting,
             @Nullable IphCommandBuilder iphCommandBuilder,
@@ -56,8 +57,8 @@ public class ButtonDataImpl implements ButtonData {
 
     public ButtonDataImpl(
             boolean canShow,
-            @NonNull Drawable drawable,
-            @NonNull OnClickListener onClickListener,
+            Drawable drawable,
+            OnClickListener onClickListener,
             String contentDescription,
             @StringRes int actionChipLabelResId,
             boolean supportsTinting,

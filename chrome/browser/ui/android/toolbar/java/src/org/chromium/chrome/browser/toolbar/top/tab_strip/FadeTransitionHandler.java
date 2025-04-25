@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
@@ -16,6 +17,7 @@ import org.chromium.ui.base.ViewUtils;
  * Owned and used by {@link TabStripTransitionCoordinator} to manage showing / hiding the tab strip
  * by an in-place fade transition facilitated by a scrim update.
  */
+@NullMarked
 class FadeTransitionHandler {
     // Minimum width (in dp) of the tab strip for it to be shown.
     // 284 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) + modelSelectorButton(48).

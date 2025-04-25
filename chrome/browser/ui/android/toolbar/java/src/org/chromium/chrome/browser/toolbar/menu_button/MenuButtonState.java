@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The UI state required to properly display a 'update decorated' main menu button. */
+@NullMarked
 public class MenuButtonState {
     /**
-     * The new content description of the menu button.  Always set if this object is not
-     * {@code null}.
+     * The new content description of the menu button. Always set if this object is not {@code
+     * null}.
      */
     public @StringRes int menuContentDescription;
 

@@ -8,9 +8,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 /** The home button. */
+@NullMarked
 public class HomeButton extends ListMenuButton {
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);

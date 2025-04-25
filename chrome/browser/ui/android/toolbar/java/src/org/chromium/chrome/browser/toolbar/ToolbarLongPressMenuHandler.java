@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -17,12 +19,12 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -48,6 +50,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.Supplier;
 
 /** The handler for the toolbar long press menu. */
+@NullMarked
 public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MenuItemType.MOVE_ADDRESS_BAR_TO, MenuItemType.COPY_LINK})
@@ -56,22 +59,22 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         int COPY_LINK = 1;
     }
 
-    private PopupWindow mPopupMenu;
+    private @Nullable PopupWindow mPopupMenu;
     private final int mAppMenuShadowLength;
     private final int mAdditonalHorizontalPadding;
     private final int mEdgeToTextDistance;
     private final int mUrlBarMargin;
     private final int mMenuOmniboxOverlap;
     private int mScreenWidthDp;
-    @NonNull private final Context mContext;
-    @NonNull private final ObservableSupplier<Profile> mProfileSupplier;
-    @NonNull private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    @NonNull private final Supplier<String> mUrlBarTextSupplier;
-    @NonNull private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
-    @Nullable private final OnLongClickListener mOnLongClickListener;
-    @NonNull private final SharedPreferencesManager mSharedPreferencesManager;
-    @NonNull private final WindowAndroid mWindowAndroid;
-    @NonNull private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Context mContext;
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final Supplier<String> mUrlBarTextSupplier;
+    private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
+    private final @Nullable OnLongClickListener mOnLongClickListener;
+    private final SharedPreferencesManager mSharedPreferencesManager;
+    private final WindowAndroid mWindowAndroid;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     /**
      * Creates a new {@link ToolbarLongPressMenuHandler}.
@@ -168,6 +171,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
                         buildMenuItems(onTop),
                         (model) -> {
                             handleMenuClick(model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                            assumeNonNull(mPopupMenu);
                             mPopupMenu.dismiss();
                         });
 
@@ -268,7 +272,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         return new int[] {x, y};
     }
 
-    public PopupWindow getPopupWindowForTesting() {
+    public @Nullable PopupWindow getPopupWindowForTesting() {
         return mPopupMenu;
     }
 

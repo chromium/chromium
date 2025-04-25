@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
  * tracking logic; to function properly, setPrimaryColor must be called each time the color changes.
  */
 @Deprecated
+@NullMarked
 class SettableThemeColorProvider extends ThemeColorProvider {
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar.top;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -22,10 +24,11 @@ import java.util.Map;
  * mode toolbar.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class OptionalBrowsingModeButtonController {
     private final UserEducationHelper mUserEducationHelper;
     private final Map<ButtonDataProvider, ButtonDataProvider.ButtonDataObserver> mObserverMap;
-    private ButtonDataProvider mCurrentProvider;
+    private @Nullable ButtonDataProvider mCurrentProvider;
     private List<ButtonDataProvider> mButtonDataProviders;
     private final ToolbarLayout mToolbarLayout;
     private final Supplier<Tab> mTabSupplier;

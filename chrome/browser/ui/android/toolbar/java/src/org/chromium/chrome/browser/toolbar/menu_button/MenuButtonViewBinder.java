@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
+@NullMarked
 class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, PropertyKey> {
     // Whether MenuButtonState supplier was set already. The supplier needs to be set before
     // some other properties.

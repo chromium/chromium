@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,6 +28,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
 
 /** Implementation of {@link ToolbarTabController}. */
+@NullMarked
 public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<Tab> mTabSupplier;
     private final Supplier<Tracker> mTrackerSupplier;
@@ -34,7 +36,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
     private final Supplier<Tab> mActivityTabSupplier;
-    private final @NonNull TabCreatorManager mTabCreatorManager;
+    private final TabCreatorManager mTabCreatorManager;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
 
     /**
@@ -57,7 +59,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             Supplier<String> homepageUrlSupplier,
             Runnable onSuccessRunnable,
             Supplier<Tab> activityTabSupplier,
-            @NonNull TabCreatorManager tabCreatorManager,
+            TabCreatorManager tabCreatorManager,
             @Nullable MultiInstanceManager multiInstanceManager) {
         mTabSupplier = tabSupplier;
         mTrackerSupplier = trackerSupplier;
@@ -110,6 +112,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                             .createNewTab(
                                     new LoadUrlParams(tab.getUrl()), TabLaunchType.UNSET, tab);
             if (mMultiInstanceManager == null) return false;
+            assumeNonNull(newTab);
             mMultiInstanceManager.moveTabToNewWindow(newTab);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;

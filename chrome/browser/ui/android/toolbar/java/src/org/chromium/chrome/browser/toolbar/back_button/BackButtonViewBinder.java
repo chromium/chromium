@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A class that binds changed {@link PropertyKey} in the {@link PropertyModel} to actual Android
  * view.
  */
+@NullMarked
 class BackButtonViewBinder {
 
     private BackButtonViewBinder() {}

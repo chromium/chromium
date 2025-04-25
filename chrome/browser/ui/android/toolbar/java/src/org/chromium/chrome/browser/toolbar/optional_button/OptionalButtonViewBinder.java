@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class OptionalButtonViewBinder {
     static void bind(PropertyModel model, OptionalButtonView view, PropertyKey propertyKey) {
         if (OptionalButtonProperties.BUTTON_DATA.equals(propertyKey)) {

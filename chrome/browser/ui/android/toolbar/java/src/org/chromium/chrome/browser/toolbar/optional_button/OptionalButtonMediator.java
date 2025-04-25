@@ -9,8 +9,11 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class OptionalButtonMediator {
     private final PropertyModel mModel;
 
@@ -18,7 +21,7 @@ class OptionalButtonMediator {
         mModel = model;
     }
 
-    void updateButton(ButtonData buttonData) {
+    void updateButton(@Nullable ButtonData buttonData) {
         mModel.set(OptionalButtonProperties.BUTTON_DATA, buttonData);
         if (buttonData != null) {
             mModel.set(OptionalButtonProperties.IS_ENABLED, buttonData.isEnabled());
@@ -29,7 +32,7 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK, transitionStartedCallback);
     }
 
-    void setIconForegroundColor(ColorStateList colorStateList) {
+    void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
         mModel.set(OptionalButtonProperties.ICON_TINT_LIST, colorStateList);
     }
 

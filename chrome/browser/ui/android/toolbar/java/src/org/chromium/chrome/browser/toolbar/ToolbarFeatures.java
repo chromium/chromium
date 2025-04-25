@@ -9,12 +9,15 @@ import android.os.Build.VERSION_CODES;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Utility class for toolbar code interacting with features and params. */
+@NullMarked
 public final class ToolbarFeatures {
 
-    private static Boolean sTabStripLayoutOptimizationEnabledForTesting;
+    private static @Nullable Boolean sTabStripLayoutOptimizationEnabledForTesting;
 
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}

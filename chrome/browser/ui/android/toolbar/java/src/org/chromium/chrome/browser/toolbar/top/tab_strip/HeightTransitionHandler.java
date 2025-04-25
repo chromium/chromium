@@ -4,19 +4,20 @@
 
 package org.chromium.chrome.browser.toolbar.top.tab_strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
@@ -38,6 +39,7 @@ import org.chromium.ui.util.TokenHolder;
  * into / exit from desktop windowing mode that warrants the strip height to be updated to include /
  * exclude a reserved strip top padding.
  */
+@NullMarked
 class HeightTransitionHandler {
     private static final String TAG = "DTCStripTransition";
 
@@ -67,7 +69,7 @@ class HeightTransitionHandler {
 
     private int mTabObscureToken = TokenHolder.INVALID_TOKEN;
     private final TabObscuringHandler mTabObscuringHandler;
-    private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
+    private TabObscuringHandler.@Nullable Observer mTabObscuringHandlerObserver;
 
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
@@ -93,8 +95,8 @@ class HeightTransitionHandler {
 
     private boolean mIsDestroyed;
 
-    private @Nullable BrowserControlsStateProvider.Observer mTransitionKickoffObserver;
-    private @Nullable BrowserControlsStateProvider.Observer mTransitionFinishedObserver;
+    private BrowserControlsStateProvider.@Nullable Observer mTransitionKickoffObserver;
+    private BrowserControlsStateProvider.@Nullable Observer mTransitionFinishedObserver;
 
     private boolean mForceUpdateHeight;
     private boolean mUpdateStripVisibility;
@@ -119,8 +121,8 @@ class HeightTransitionHandler {
             ControlContainer controlContainer,
             View toolbarLayout,
             int tabStripHeightFromResource,
-            @NonNull CallbackController callbackController,
-            @NonNull Handler handler,
+            CallbackController callbackController,
+            Handler handler,
             TabObscuringHandler tabObscuringHandler,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -371,9 +373,9 @@ class HeightTransitionHandler {
         // For cases where transition is finished in sequence during #onTransitionRequested (e.g.
         // browser control's visibility is under constraint), we'll call updateTabStripHeightImpl
         // to update the margin for the views.
-        boolean browserControlsHasConstraint =
-                mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate().get()
-                        != BrowserControlsState.BOTH;
+        Integer visibility = mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate().get();
+        assumeNonNull(visibility);
+        boolean browserControlsHasConstraint = visibility != BrowserControlsState.BOTH;
 
         if (javaAnimationInProgress || browserControlsHasConstraint) {
             updateTabStripHeightImpl(newHeight);
@@ -513,6 +515,7 @@ class HeightTransitionHandler {
     }
 
     private void notifyTransitionFinished(boolean measureControlContainer) {
+        assumeNonNull(mTransitionFinishedObserver);
         mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
         mTransitionFinishedObserver = null;
 

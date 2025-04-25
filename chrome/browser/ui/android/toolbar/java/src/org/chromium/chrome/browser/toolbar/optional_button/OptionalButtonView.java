@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -31,8 +33,6 @@ import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
@@ -42,6 +42,9 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -54,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
 
 /** Toolbar button that performs animated transitions between icons. */
+@NullMarked
 class OptionalButtonView extends FrameLayout implements TransitionListener {
     private static final int SWAP_TRANSITION_DURATION_MS = 300;
     private static final int HIDE_TRANSITION_DURATION_MS = 225;
@@ -66,18 +70,18 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private ListMenuButton mButton;
     private ImageView mAnimationImage;
 
-    private Drawable mIconDrawable;
+    private @Nullable Drawable mIconDrawable;
 
-    private ViewGroup mTransitionRoot;
-    private String mContentDescription;
-    private String mActionChipLabelString;
+    private @MonotonicNonNull ViewGroup mTransitionRoot;
+    private @Nullable String mContentDescription;
+    private @Nullable String mActionChipLabelString;
     private boolean mCurrentButtonSupportsTinting;
-    private ColorStateList mForegroundColorTint;
+    private @Nullable ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
-    private Runnable mOnBeforeHideTransitionCallback;
-    private Callback<Transition> mFakeBeginTransitionForTesting;
-    private Handler mHandler;
-    private Handler mHandlerForTesting;
+    private @Nullable Runnable mOnBeforeHideTransitionCallback;
+    private @Nullable Callback<Transition> mFakeBeginTransitionForTesting;
+    private @Nullable Handler mHandler;
+    private @Nullable Handler mHandlerForTesting;
 
     private @State int mState;
 
@@ -87,15 +91,16 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @ButtonType int mCurrentButtonType;
     private @ButtonType int mNextButtonType;
 
-    private OnClickListener mClickListener;
-    private OnLongClickListener mLongClickListener;
-    private Callback<Integer> mTransitionStartedCallback;
-    private Callback<Integer> mTransitionFinishedCallback;
-    private BooleanSupplier mIsAnimationAllowedPredicate;
+    private @Nullable OnClickListener mClickListener;
+    private @Nullable OnLongClickListener mLongClickListener;
+    private @Nullable Callback<Integer> mTransitionStartedCallback;
+    private @Nullable Callback<Integer> mTransitionFinishedCallback;
+    private @Nullable BooleanSupplier mIsAnimationAllowedPredicate;
     private final Runnable mCollapseActionChipRunnable =
             new Runnable() {
                 @Override
                 public void run() {
+                    assumeNonNull(mIsAnimationAllowedPredicate);
                     if (mIsAnimationAllowedPredicate.getAsBoolean()) {
                         animateActionChipCollapse();
                     } else {
@@ -352,7 +357,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     /** Constructor for inflating from XML. */
-    public OptionalButtonView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public OptionalButtonView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         mState = State.HIDDEN;
@@ -419,10 +424,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     /**
      * Listens to all transition ends. This is called even if the transition is cancelled or if all
      * animations are disabled. Implementation of {@link TransitionListener}.
+     *
      * @param transition Transition that ended, not used.
      */
     @Override
-    public void onTransitionEnd(Transition transition) {
+    public void onTransitionEnd(@Nullable Transition transition) {
         if (mTransitionFinishedCallback != null
                 && getCurrentTransitionType() != TransitionType.NONE) {
             mTransitionFinishedCallback.onResult(getCurrentTransitionType());

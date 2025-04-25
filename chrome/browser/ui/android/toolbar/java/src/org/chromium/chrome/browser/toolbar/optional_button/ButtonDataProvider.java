@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Interface for components that wish to display a button in the "optional" button slot in the
  * browsing mode toolbar.
  */
+@NullMarked
 public interface ButtonDataProvider {
     /**
      * Observer class for changes in button state. Implementers should notify their observers when
@@ -35,7 +36,7 @@ public interface ButtonDataProvider {
     void removeObserver(ButtonDataObserver obs);
 
     /** Get the current ButtonData, including any tab-specific adjustments. */
-    ButtonData get(@Nullable Tab tab);
+    @Nullable ButtonData get(@Nullable Tab tab);
 
     /**
      * Destroy the provider. This should be made safe to call multiple times, in case a provider is

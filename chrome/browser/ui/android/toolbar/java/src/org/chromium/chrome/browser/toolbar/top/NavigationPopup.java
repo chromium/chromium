@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -20,13 +22,14 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
@@ -46,6 +49,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** A popup that handles displaying the navigation history for a given tab. */
+@NullMarked
 public class NavigationPopup implements AdapterView.OnItemClickListener {
     private static final int MAXIMUM_HISTORY_ITEMS = 8;
     private static final int FULL_HISTORY_ENTRY_INDEX = -1;
@@ -77,7 +81,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private final NavigationAdapter mAdapter;
     private final @Type int mType;
     private final int mFaviconSize;
-    @Nullable private final OnLayoutChangeListener mAnchorViewLayoutChangeListener;
+    private final @Nullable OnLayoutChangeListener mAnchorViewLayoutChangeListener;
     private final Supplier<Tab> mCurrentTabSupplier;
     private final HistoryDelegate mHistoryDelegate;
 
@@ -86,7 +90,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     /** Loads the favicons asynchronously. */
     private FaviconHelper mFaviconHelper;
 
-    private Runnable mOnDismissCallback;
+    private @Nullable Runnable mOnDismissCallback;
 
     private boolean mInitialized;
 
@@ -100,10 +104,11 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
      * @param currentTabSupplier Supplies the current tab.
      * @param historyDelegate Delegate used to display navigation history.
      */
+    @SuppressWarnings("NullAway")
     public NavigationPopup(
             Profile profile,
             Context context,
-            NavigationController navigationController,
+            @Nullable NavigationController navigationController,
             @Type int type,
             Supplier<Tab> currentTabSupplier,
             HistoryDelegate historyDelegate) {
@@ -222,6 +227,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
 
     private void centerPopupOverAnchorViewAndShow() {
         assert mInitialized;
+        assumeNonNull(mPopup.getAnchorView());
         int horizontalOffset = (mPopup.getAnchorView().getWidth() - mPopup.getWidth()) / 2;
         if (horizontalOffset > 0) mPopup.setHorizontalOffset(horizontalOffset);
         mPopup.show();
@@ -232,6 +238,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mInitialized = false;
         if (mDefaultFaviconHelper != null) mDefaultFaviconHelper.clearCache();
         if (mAnchorViewLayoutChangeListener != null) {
+            assumeNonNull(mPopup.getAnchorView());
             mPopup.getAnchorView().removeOnLayoutChangeListener(mAnchorViewLayoutChangeListener);
         }
         if (mOnDismissCallback != null) mOnDismissCallback.run();
@@ -298,7 +305,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     }
 
     private class NavigationAdapter extends BaseAdapter {
-        private Integer mTopPadding;
+        private @Nullable Integer mTopPadding;
 
         @Override
         public int getCount() {
@@ -321,10 +328,11 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
                 convertView = inflater.inflate(R.layout.navigation_popup_item, parent, false);
-                viewHolder = new EntryViewHolder();
-                viewHolder.mContainer = convertView;
-                viewHolder.mImageView = convertView.findViewById(R.id.favicon_img);
-                viewHolder.mTextView = convertView.findViewById(R.id.entry_title);
+                viewHolder =
+                        new EntryViewHolder(
+                                /* container= */ convertView,
+                                /* imageView= */ convertView.findViewById(R.id.favicon_img),
+                                /* textView= */ convertView.findViewById(R.id.entry_title));
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (EntryViewHolder) convertView.getTag();
@@ -378,6 +386,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     }
 
     private static class EntryViewHolder {
+        private EntryViewHolder(View container, ImageView imageView, TextView textView) {
+            mContainer = container;
+            mImageView = imageView;
+            mTextView = textView;
+        }
+
         View mContainer;
         ImageView mImageView;
         TextView mTextView;

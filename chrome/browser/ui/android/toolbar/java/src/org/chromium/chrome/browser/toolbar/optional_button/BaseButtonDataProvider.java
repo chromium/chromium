@@ -10,12 +10,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -25,13 +26,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Base class for button data providers used on the adaptive toolbar. */
+@NullMarked
 public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnClickListener {
     protected final ButtonDataImpl mButtonData;
     protected final Supplier<Tab> mActiveTabSupplier;
 
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
-    private final ModalDialogManager mModalDialogManager;
-    private ModalDialogManagerObserver mModalDialogObserver;
+    private final @Nullable ModalDialogManager mModalDialogManager;
+    private @Nullable ModalDialogManagerObserver mModalDialogObserver;
 
     private boolean mShouldShowOnIncognitoTabs;
 
@@ -108,7 +110,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @return whether the button should be shown for the current tab.
      */
     @CallSuper
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
         if (tab == null) return false;
 
         if (tab.isIncognito() && !mShouldShowOnIncognitoTabs) return false;
@@ -128,7 +130,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      *
      * @param tab Current tab.
      */
-    private void maybeSetIphCommandBuilder(Tab tab) {
+    private void maybeSetIphCommandBuilder(@Nullable Tab tab) {
         if (mButtonData.getButtonSpec().getIphCommandBuilder() != null
                 || tab == null
                 || !FeatureList.isInitialized()
@@ -154,7 +156,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @return An {@link org.chromium.chrome.browser.user_education.IphCommand} instance to set on
      *     this button, or null if no IPH should be used.
      */
-    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
+    protected @Nullable IphCommandBuilder getIphCommandBuilder(Tab tab) {
         return null;
     }
 
@@ -170,7 +172,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     }
 
     @Override
-    public ButtonData get(Tab tab) {
+    public ButtonData get(@Nullable Tab tab) {
         mButtonData.setCanShow(shouldShowButton(tab));
         maybeSetIphCommandBuilder(tab);
 
@@ -179,6 +181,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
 
     @Override
     @CallSuper
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mObservers.clear();
         if (mModalDialogManager != null) {

@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import android.content.Context;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
@@ -25,19 +25,20 @@ import java.util.List;
  * preference, and segmentation platform backend prediction. This class is used only for the
  * segmentation experiment.
  */
+@NullMarked
 public class AdaptiveToolbarStatePredictor {
 
     /**
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
      */
-    private static List<Integer> sSegmentationResultsForTesting;
+    private static @Nullable List<Integer> sSegmentationResultsForTesting;
 
-    private static Integer sToolbarStateForTesting;
-    @NonNull private final Profile mProfile;
+    private static @Nullable Integer sToolbarStateForTesting;
+    private final Profile mProfile;
     private final AdaptiveToolbarBehavior mBehavior;
 
-    @Nullable private final AndroidPermissionDelegate mAndroidPermissionDelegate;
+    private final @Nullable AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     /** The result of the predictor. Contains the UI states specific to the toolbar button. */
     public static class UiState {

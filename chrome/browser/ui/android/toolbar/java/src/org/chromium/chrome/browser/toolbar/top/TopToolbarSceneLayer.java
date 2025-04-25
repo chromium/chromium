@@ -8,6 +8,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -19,6 +21,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** A SceneLayer to render the top toolbar. This is the "view" piece of the top toolbar overlay. */
 @JNINamespace("android")
+@NullMarked
 class TopToolbarSceneLayer extends SceneOverlayLayer {
     /** Pointer to native TopToolbarSceneLayer. */
     private long mNativePtr;
@@ -122,7 +125,7 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 boolean showShadow,
                 boolean visible,
                 boolean anonymize,
-                OffsetTag offsetTag);
+                @Nullable OffsetTag offsetTag);
 
         void updateProgressBar(
                 long nativeTopToolbarSceneLayer,

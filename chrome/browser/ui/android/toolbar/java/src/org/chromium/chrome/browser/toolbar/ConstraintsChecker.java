@@ -7,20 +7,20 @@ package org.chromium.chrome.browser.toolbar;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
- * Watches a constraints supplier for the next time the browser controls are unlocked,
- * and then tells the {@link ViewResourceAdapter} to generate a resource.
+ * Watches a constraints supplier for the next time the browser controls are unlocked, and then
+ * tells the {@link ViewResourceAdapter} to generate a resource.
  */
+@NullMarked
 public class ConstraintsChecker implements Callback<Integer> {
-    @NonNull private final ViewResourceAdapter mViewResourceAdapter;
-    @NonNull private final ObservableSupplier<Integer> mConstraintsSupplier;
-    @NonNull private final Handler mHandler;
+    private final ViewResourceAdapter mViewResourceAdapter;
+    private final ObservableSupplier<Integer> mConstraintsSupplier;
+    private final Handler mHandler;
 
     /**
      * @param viewResourceAdapter The target to notify when a capture is needed.
@@ -28,9 +28,9 @@ public class ConstraintsChecker implements Callback<Integer> {
      * @param looper Message loop to post deferred tasks to.
      */
     public ConstraintsChecker(
-            @NonNull ViewResourceAdapter viewResourceAdapter,
-            @NonNull ObservableSupplier<Integer> constraintsSupplier,
-            @NonNull Looper looper) {
+            ViewResourceAdapter viewResourceAdapter,
+            ObservableSupplier<Integer> constraintsSupplier,
+            Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
         mHandler = new Handler(looper);

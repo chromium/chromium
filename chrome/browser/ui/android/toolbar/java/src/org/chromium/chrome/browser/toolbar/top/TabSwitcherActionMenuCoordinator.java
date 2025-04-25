@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
@@ -14,16 +15,18 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
@@ -45,6 +48,7 @@ import java.lang.annotation.RetentionPolicy;
  * The main coordinator for the Tab Switcher Action Menu, responsible for creating the popup menu
  * (popup window) in general and building a list of menu items.
  */
+@NullMarked
 public class TabSwitcherActionMenuCoordinator {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -130,7 +134,7 @@ public class TabSwitcherActionMenuCoordinator {
     private final Profile mProfile;
 
     // For test.
-    private View mContentView;
+    private @Nullable View mContentView;
 
     /** Construct a coordinator for the given {@link Profile}. */
     TabSwitcherActionMenuCoordinator(
@@ -190,7 +194,7 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     @VisibleForTesting
-    View getContentView() {
+    @Nullable View getContentView() {
         return mContentView;
     }
 
@@ -274,13 +278,14 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     private boolean doTabGroupsExist() {
-        @Nullable TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector != null) {
-            return tabModelSelector
+            TabGroupModelFilter currentTabGroupModelFilter =
+                    tabModelSelector
                             .getTabGroupModelFilterProvider()
-                            .getCurrentTabGroupModelFilter()
-                            .getTabGroupCount()
-                    != 0;
+                            .getCurrentTabGroupModelFilter();
+            assumeNonNull(currentTabGroupModelFilter);
+            return currentTabGroupModelFilter.getTabGroupCount() != 0;
         }
         return false;
     }

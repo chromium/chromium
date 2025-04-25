@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Handles toolbar triggered actions on the specific tab. */
+@NullMarked
 public interface ToolbarTabController {
     /**
      * If the page is currently loading, this will trigger the tab to stop. If the page is fully

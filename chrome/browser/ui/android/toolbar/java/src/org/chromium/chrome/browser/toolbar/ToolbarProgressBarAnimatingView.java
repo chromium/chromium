@@ -17,6 +17,8 @@ import android.util.AttributeSet;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -24,6 +26,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * An animating ImageView that is drawn on top of the progress bar. This will animate over the
  * current length of the progress bar only if the progress bar is static for some amount of time.
  */
+@NullMarked
 public class ToolbarProgressBarAnimatingView extends ImageView {
     /** The drawable inside this ImageView. */
     private final ColorDrawable mAnimationDrawable;
@@ -82,7 +85,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     private float mLastAnimatedFraction;
 
     /** The last animation that received an update. */
-    private ValueAnimator mLastUpdatedAnimation;
+    private @Nullable ValueAnimator mLastUpdatedAnimation;
 
     /** The ratio of px to dp. */
     private final float mDpToPx;
@@ -181,10 +184,11 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
     /**
      * Update the animating view.
+     *
      * @param animator The current running animator.
      * @param animatedFraction The current fraction of completion for the animation.
      */
-    private void updateAnimation(ValueAnimator animator, float animatedFraction) {
+    private void updateAnimation(@Nullable ValueAnimator animator, float animatedFraction) {
         if (mIsCanceled) return;
         float interpolatorProgress = mInterpolator.getInterpolation(animatedFraction);
 

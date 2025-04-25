@@ -21,8 +21,6 @@ import android.widget.ProgressBar;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 
@@ -31,6 +29,9 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -72,6 +73,7 @@ import org.chromium.url.GURL;
  * interaction that are not from Views inside Toolbar hierarchy all interactions should be done
  * through {@link Toolbar} rather than using this class directly.
  */
+@NullMarked
 public abstract class ToolbarLayout extends FrameLayout
         implements Destroyable, TintObserver, ThemeColorObserver {
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
@@ -85,7 +87,7 @@ public abstract class ToolbarLayout extends FrameLayout
     private ToolbarDataProvider mToolbarDataProvider;
     private ToolbarTabController mToolbarTabController;
 
-    @Nullable protected ToolbarProgressBar mProgressBar;
+    protected ToolbarProgressBar mProgressBar;
 
     private boolean mNativeLibraryReady;
     private boolean mUrlHasFocus;
@@ -93,16 +95,17 @@ public abstract class ToolbarLayout extends FrameLayout
 
     protected ThemeColorProvider mThemeColorProvider;
     private MenuButtonCoordinator mMenuButtonCoordinator;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
+    private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
 
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
 
-    private TopToolbarOverlayCoordinator mOverlayCoordinator;
+    private @Nullable TopToolbarOverlayCoordinator mOverlayCoordinator;
 
-    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private @Nullable BrowserStateBrowserControlsVisibilityDelegate
+            mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
-    private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     private int mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
 
     protected final DestroyChecker mDestroyChecker;
@@ -133,6 +136,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param trackerSupplier Provides a {@link Tracker} when available.
      */
     @CallSuper
+    @Initializer
     public void initialize(
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
@@ -176,10 +180,12 @@ public abstract class ToolbarLayout extends FrameLayout
 
     // TODO(pnoland, https://crbug.com/865801): Move this from ToolbarLayout to forthcoming
     // BrowsingModeToolbarCoordinator.
+    @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {}
 
     /** Cleans up any code as necessary. */
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mDestroyChecker.destroy();
 
@@ -211,14 +217,15 @@ public abstract class ToolbarLayout extends FrameLayout
     /**
      * @param toolbarColorObserver The observer that observes toolbar color change.
      */
-    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+    public void setToolbarColorObserver(ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserver = toolbarColorObserver;
     }
 
     /**
      * @param themeColorProvider The {@link ThemeColorProvider} used for tinting the toolbar
-     *                           buttons.
+     *     buttons.
      */
+    @Initializer
     void setThemeColorProvider(ThemeColorProvider themeColorProvider) {
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(this);
@@ -228,7 +235,7 @@ public abstract class ToolbarLayout extends FrameLayout
     /**
      * @return The tint the toolbar buttons should use.
      */
-    protected ColorStateList getTint() {
+    protected @Nullable ColorStateList getTint() {
         return mThemeColorProvider == null ? mDefaultTint : mThemeColorProvider.getTint();
     }
 
@@ -270,8 +277,8 @@ public abstract class ToolbarLayout extends FrameLayout
 
     @Override
     public void onTintChanged(
-            ColorStateList tint,
-            ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {}
 
     @Override
@@ -285,7 +292,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * Set hover tooltip text for buttons shared between phones and tablets. @TODO: Remove and use
      * the method in UiUtils.java instead once JaCoCo issue is resolved.
      */
-    protected void setTooltipText(View button, String text) {
+    protected void setTooltipText(View button, @Nullable String text) {
         if (button != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             TooltipCompat.setTooltipText(button, text);
         }
@@ -314,12 +321,12 @@ public abstract class ToolbarLayout extends FrameLayout
                     }
 
                     @Override
-                    public Profile getProfile() {
+                    public @Nullable Profile getProfile() {
                         return null;
                     }
 
                     @Override
-                    public Tab getTab() {
+                    public @Nullable Tab getTab() {
                         return null;
                     }
 
@@ -409,6 +416,7 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     @Override
+    @Initializer
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
@@ -439,7 +447,7 @@ public abstract class ToolbarLayout extends FrameLayout
     /**
      * @return The {@link ProgressBar} this layout uses.
      */
-    protected @Nullable ToolbarProgressBar getProgressBar() {
+    protected ToolbarProgressBar getProgressBar() {
         return mProgressBar;
     }
 
@@ -667,7 +675,7 @@ public abstract class ToolbarLayout extends FrameLayout
     /**
      * @return The current View showing in the Tab.
      */
-    View getCurrentTabView() {
+    @Nullable View getCurrentTabView() {
         Tab tab = mToolbarDataProvider.getTab();
         if (tab != null) {
             return tab.getView();
@@ -739,21 +747,21 @@ public abstract class ToolbarLayout extends FrameLayout
     /**
      * @return Optional button view.
      */
-    public View getOptionalButtonViewForTesting() {
+    public @Nullable View getOptionalButtonViewForTesting() {
         return null;
     }
 
     /**
      * @return Home button this {@link ToolbarLayout} contains, if any.
      */
-    public ImageView getHomeButton() {
+    public @Nullable ImageView getHomeButton() {
         return null;
     }
 
     /**
      * @return {@link ToggleTabStackButton} this {@link ToolbarLayout} contains.
      */
-    public ToggleTabStackButton getTabSwitcherButton() {
+    public @Nullable ToggleTabStackButton getTabSwitcherButton() {
         return null;
     }
 

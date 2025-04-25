@@ -5,16 +5,19 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
- * Interface for the bottom controls content UI. This UI delegates various operations to
- * the implementation. This UI manages its own visibility through
- * {@link BottomControlsCoordinator.BottomControlsVisibilityController}.
+ * Interface for the bottom controls content UI. This UI delegates various operations to the
+ * implementation. This UI manages its own visibility through {@link
+ * BottomControlsCoordinator.BottomControlsVisibilityController}.
  */
+@NullMarked
 public interface BottomControlsContentDelegate extends BackPressHandler {
     /**
      * Called by the ToolbarManager when the system back button is pressed.
+     *
      * @return Whether or not the TabGroupUi consumed the event.
      */
     boolean onBackPressed();

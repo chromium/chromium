@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 // TODO(crbug.com/40883889): See if we still need this class.
 /**
@@ -23,11 +24,11 @@ public class ChromeImageButton extends AppCompatImageButton {
         super(context);
     }
 
-    public ChromeImageButton(Context context, AttributeSet attrs) {
+    public ChromeImageButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ChromeImageButton(Context context, AttributeSet attrs, int defStyle) {
+    public ChromeImageButton(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

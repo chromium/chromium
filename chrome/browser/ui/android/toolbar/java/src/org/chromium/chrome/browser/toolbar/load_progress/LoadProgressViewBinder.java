@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.load_progress;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -13,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * View binder for the load progress bar. Adjusts view properties on ToolbarProgressBar in response
  * to changes in the associated property model.
  */
+@NullMarked
 public class LoadProgressViewBinder {
     public void bind(PropertyModel model, ToolbarProgressBar view, PropertyKey propertyKey) {
         if (propertyKey == LoadProgressProperties.COMPLETION_STATE) {

@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
@@ -18,11 +18,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * upon. This means callers need to be able to tolerate false negatives. Typically fine for uses
  * such as performance optimizations where this failure state is just an inefficiency.
  */
+@NullMarked
 public class VisibleUrlText {
-    private final @NonNull CharSequence mUrlText;
+    private final CharSequence mUrlText;
     private final @Nullable CharSequence mVisibleTextPrefixHint;
 
-    public VisibleUrlText(@NonNull CharSequence urlText, @NonNull CharSequence prefixHint) {
+    public VisibleUrlText(CharSequence urlText, @Nullable CharSequence prefixHint) {
         mUrlText = urlText;
         boolean isPrefixValid = isValidVisibleTextPrefixHint(urlText, prefixHint);
         mVisibleTextPrefixHint = isPrefixValid ? prefixHint : null;
@@ -72,12 +73,14 @@ public class VisibleUrlText {
 
     /**
      * Determines the validity of the hint text given the passed in full text.
+     *
      * @param fullText The full text that should start with the hint.
      * @param hintText The hint text to be checked.
      * @return Whether the full text starts with the specified hint text.
      */
     @VisibleForTesting
-    static boolean isValidVisibleTextPrefixHint(CharSequence fullText, CharSequence hintText) {
+    static boolean isValidVisibleTextPrefixHint(
+            CharSequence fullText, @Nullable CharSequence hintText) {
         if (fullText == null || TextUtils.isEmpty(hintText)) return false;
         if (hintText.length() > fullText.length()) return false;
         return TextUtils.indexOf(fullText, hintText, 0, hintText.length()) == 0;

@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Defines constants used by optional button. */
+@NullMarked
 public class OptionalButtonConstants {
     /**
      * Defines the different transition types for optional button, they are used as arguments to the

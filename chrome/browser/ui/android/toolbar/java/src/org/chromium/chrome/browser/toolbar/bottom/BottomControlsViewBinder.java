@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 
+@NullMarked
 class BottomControlsViewBinder {
     /**
      * A wrapper class that holds a {@link ScrollingBottomViewResourceFrameLayout} and a composited

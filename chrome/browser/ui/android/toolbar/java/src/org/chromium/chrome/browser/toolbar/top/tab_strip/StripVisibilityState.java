@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.top.tab_strip;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION,
     StripVisibilityState.HIDDEN_BY_FADE,
 })
+@NullMarked
 public @interface StripVisibilityState {
     /** Strip is visible. */
     int VISIBLE = 0;

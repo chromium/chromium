@@ -4,19 +4,22 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
@@ -26,17 +29,18 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /** Fragment that allows the user to configure toolbar shortcut preferences. */
+@NullMarked
 public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
-    private @NonNull RadioButtonWithDescriptionLayout mGroup;
-    private @NonNull RadioButtonWithDescription mAutoButton;
-    private @NonNull RadioButtonWithDescription mNewTabButton;
-    private @NonNull RadioButtonWithDescription mShareButton;
-    private @NonNull RadioButtonWithDescription mVoiceSearchButton;
-    private @NonNull RadioButtonWithDescription mTranslateButton;
-    private @NonNull RadioButtonWithDescription mAddToBookmarksButton;
-    private @NonNull RadioButtonWithDescription mReadAloudButton;
-    private @NonNull RadioButtonWithDescription mPageSummaryButton;
+    private @Nullable RadioButtonWithDescriptionLayout mGroup;
+    private @Nullable RadioButtonWithDescription mAutoButton;
+    private @Nullable RadioButtonWithDescription mNewTabButton;
+    private @Nullable RadioButtonWithDescription mShareButton;
+    private @Nullable RadioButtonWithDescription mVoiceSearchButton;
+    private @Nullable RadioButtonWithDescription mTranslateButton;
+    private @Nullable RadioButtonWithDescription mAddToBookmarksButton;
+    private @Nullable RadioButtonWithDescription mReadAloudButton;
+    private @Nullable RadioButtonWithDescription mPageSummaryButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @AdaptiveToolbarButtonVariant int mAutoButtonCaption;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
@@ -45,6 +49,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     private boolean mCanUsePageSummary;
     private boolean mButtonsInitialized;
     private Runnable mInitRadioButtonRunnable = this::initializeRadioButtonSelection;
+    private boolean mIsBound;
 
     public RadioButtonGroupAdaptiveToolbarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -76,8 +81,26 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
         mPageSummaryButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_page_summary);
 
+        mIsBound = true;
+
         mInitRadioButtonRunnable.run();
         RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
+    }
+
+    @EnsuresNonNullIf({
+        "mGroup",
+        "mAutoButton",
+        "mNewTabButton",
+        "mShareButton",
+        "mVoiceSearchButton",
+        "mTranslateButton",
+        "mAddToBookmarksButton",
+        "mReadAloudButton",
+        "mPageSummaryButton"
+    })
+    @SuppressWarnings("NullAway")
+    private boolean isBound() {
+        return mIsBound;
     }
 
     /**
@@ -92,7 +115,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     }
 
     private void initializeRadioButtonSelection() {
-        if (mStatePredictor == null || mGroup == null || mButtonsInitialized) return;
+        if (mStatePredictor == null || !isBound() || mButtonsInitialized) return;
 
         mStatePredictor.recomputeUiState(
                 uiState -> {
@@ -120,7 +143,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
      * @param uiState {@link UiState} to initialize buttons with.
      */
     public void initButtonsFromUiState(UiState uiState) {
-        if (mGroup == null) {
+        if (!isBound()) {
             // View bindings are not ready yet. Try this again after the completion.
             mInitRadioButtonRunnable = () -> initButtonsFromUiState(uiState);
             return;
@@ -150,7 +173,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     }
 
     @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
+    public void onCheckedChanged(@Nullable RadioGroup group, int checkedId) {
+        if (!isBound()) return;
+
         @AdaptiveToolbarButtonVariant int previousSelection = mSelected;
         if (mAutoButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.AUTO;
@@ -189,8 +214,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     }
 
     @VisibleForTesting
-    @Nullable
-    RadioButtonWithDescription getButton(@AdaptiveToolbarButtonVariant int variant) {
+    @Nullable RadioButtonWithDescription getButton(@AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
             case AdaptiveToolbarButtonVariant.AUTO:
                 return mAutoButton;
@@ -280,11 +304,12 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
      * @param shouldBeVisible Whether the button should be hidden or not.
      */
     private void updateButtonVisibility(
-            RadioButtonWithDescription button, boolean shouldBeVisible) {
+            @Nullable RadioButtonWithDescription button, boolean shouldBeVisible) {
         if (button == null) return;
 
         button.setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
         if (button.isChecked() && !shouldBeVisible) {
+            assumeNonNull(mAutoButton);
             mAutoButton.setChecked(true);
             onCheckedChanged(mGroup, mAutoButton.getId());
         }

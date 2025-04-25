@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -33,6 +34,9 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -66,6 +70,7 @@ import java.util.Collection;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
+@NullMarked
 public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
@@ -76,14 +81,14 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
-    private View mIncognitoIndicator;
+    private @Nullable View mIncognitoIndicator;
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
-    private ImageButton mOptionalButton;
+    private @Nullable ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
-    private NavigationPopup mNavigationPopup;
+    private @Nullable NavigationPopup mNavigationPopup;
 
     private Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
@@ -93,10 +98,10 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
     private boolean mShouldAnimateButtonVisibilityChange;
-    private AnimatorSet mButtonVisibilityAnimators;
+    private @Nullable AnimatorSet mButtonVisibilityAnimators;
     private HistoryDelegate mHistoryDelegate;
-    private ObservableSupplier<Integer> mTabCountSupplier;
-    private TabletCaptureStateToken mLastCaptureStateToken;
+    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
 
     /**
@@ -132,6 +137,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
+    @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
         final @ColorInt int color = SemanticColorUtils.getColorSurfaceContainer(getContext());
@@ -274,8 +280,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
 
     @Override
     public void onTintChanged(
-            ColorStateList tint,
-            ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
@@ -396,6 +402,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
+    @Initializer
     public void initialize(
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
@@ -405,8 +412,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
-            ReloadButtonCoordinator reloadButtonCoordinator,
-            BackButtonCoordinator backButtonCoordinator) {
+            @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
+            @Nullable BackButtonCoordinator backButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -419,8 +426,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
                 reloadButtonCoordinator,
                 backButtonCoordinator);
         mHistoryDelegate = historyDelegate;
-        mReloadButtonCoordinator = reloadButtonCoordinator;
-        mBackButtonCoordinator = backButtonCoordinator;
+        mReloadButtonCoordinator = assertNonNull(reloadButtonCoordinator);
+        mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
     }
 
@@ -563,7 +570,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
-    public View getOptionalButtonViewForTesting() {
+    public @Nullable View getOptionalButtonViewForTesting() {
         return mOptionalButton;
     }
 

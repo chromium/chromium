@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A helper class for sharing common code for building a list menu button. */
+@NullMarked
 public class MenuBuilderHelper {
     public static RectProvider getRectProvider(View anchorView) {
         ViewRectProvider rectProvider = new ViewRectProvider(anchorView);

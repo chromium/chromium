@@ -8,10 +8,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -23,6 +23,7 @@ import java.util.Objects;
  *
  * @see ButtonDataProvider
  */
+@NullMarked
 public interface ButtonData {
     /** Returns {@code true} when the {@link ButtonDataProvider} wants to show a button. */
     boolean canShow();
@@ -47,13 +48,13 @@ public interface ButtonData {
     /** A set of button properties which are not expected to change values often. */
     final class ButtonSpec {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
-        @NonNull private final Drawable mDrawable;
-        // TODO(crbug.com/40753109): make mOnClickListener @NonNull
-        @Nullable private final View.OnClickListener mOnClickListener;
-        @Nullable private final View.OnLongClickListener mOnLongClickListener;
+        private final Drawable mDrawable;
+        // TODO(crbug.com/40753109): make mOnClickListener
+        private final View.OnClickListener mOnClickListener;
+        private final View.@Nullable OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;
         private final boolean mSupportsTinting;
-        @Nullable private final IphCommandBuilder mIphCommandBuilder;
+        private final @Nullable IphCommandBuilder mIphCommandBuilder;
         @AdaptiveToolbarButtonVariant private final int mButtonVariant;
         private final boolean mIsDynamicAction;
         @StringRes private final int mActionChipLabelResId;
@@ -62,9 +63,9 @@ public interface ButtonData {
         private final boolean mHasErrorBadge;
 
         public ButtonSpec(
-                @NonNull Drawable drawable,
-                @NonNull View.OnClickListener onClickListener,
-                @Nullable View.OnLongClickListener onLongClickListener,
+                Drawable drawable,
+                View.OnClickListener onClickListener,
+                View.@Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
                 boolean supportsTinting,
                 @Nullable IphCommandBuilder iphCommandBuilder,
@@ -88,19 +89,17 @@ public interface ButtonData {
         }
 
         /** Returns the {@link Drawable} for the button icon. */
-        public @NonNull Drawable getDrawable() {
+        public Drawable getDrawable() {
             return mDrawable;
         }
 
         /** Returns the {@link View.OnClickListener} used on the button. */
-        @NonNull
         public View.OnClickListener getOnClickListener() {
             return mOnClickListener;
         }
 
         /** Returns an optional {@link View.OnLongClickListener} used on the button. */
-        @NonNull
-        public View.OnLongClickListener getOnLongClickListener() {
+        public View.@Nullable OnLongClickListener getOnLongClickListener() {
             return mOnLongClickListener;
         }
 

@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -26,11 +29,12 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 
 /** Coordinator for the Adaptive Button action menu, responsible for creating a popup menu. */
+@NullMarked
 public class AdaptiveButtonActionMenuCoordinator {
     private final boolean mShowMenu;
 
     // For test.
-    private BasicListMenu mListMenu;
+    @Nullable private BasicListMenu mListMenu;
 
     public AdaptiveButtonActionMenuCoordinator(boolean showMenu) {
         mShowMenu = showMenu;
@@ -41,8 +45,8 @@ public class AdaptiveButtonActionMenuCoordinator {
      *
      * @param onItemClicked called when a menu item is selected
      */
-    @Nullable
-    public View.OnLongClickListener createOnLongClickListener(Callback<Integer> onItemClicked) {
+    public View.@Nullable OnLongClickListener createOnLongClickListener(
+            Callback<Integer> onItemClicked) {
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return null;
 
         return view -> {
@@ -91,6 +95,7 @@ public class AdaptiveButtonActionMenuCoordinator {
                 verticalPadding);
         ListMenuDelegate delegate =
                 new ListMenuDelegate() {
+                    @SuppressWarnings("NullAway")
                     @Override
                     public ListMenu getListMenu() {
                         return mListMenu;
@@ -120,6 +125,6 @@ public class AdaptiveButtonActionMenuCoordinator {
     }
 
     public View getContentViewForTesting() {
-        return mListMenu.getContentView();
+        return assumeNonNull(mListMenu).getContentView();
     }
 }

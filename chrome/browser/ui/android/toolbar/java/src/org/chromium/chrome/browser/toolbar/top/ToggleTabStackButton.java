@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.appcompat.widget.TooltipCompat;
 
@@ -16,6 +15,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -36,6 +38,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
  * toolbar.
  */
+@NullMarked
 public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherDrawable.Observer {
     private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
     private final Callback<TabModelDotInfo> mNotificationDotObserver =
@@ -44,7 +47,7 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
     private ObservableSupplier<Integer> mTabCountSupplier;
     private ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     private Supplier<Boolean> mIsIncognitoSupplier;
-    private @Nullable UserEducationHelper mUserEducationHelper;
+    private UserEducationHelper mUserEducationHelper;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -90,6 +93,7 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
      * @param isIncognitoSupplier A supplier used to check for incongito state.
      * @param userEducationHelper Used to show an IPH.
      */
+    @Initializer
     void setSuppliers(
             ObservableSupplier<Integer> tabCountSupplier,
             ObservableSupplier<TabModelDotInfo> notificationDotSupplier,

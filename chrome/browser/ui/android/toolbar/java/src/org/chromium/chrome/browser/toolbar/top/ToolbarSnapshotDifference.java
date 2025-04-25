@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -39,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
     ToolbarSnapshotDifference.NUM_ENTRIES
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ToolbarSnapshotDifference {
     int NONE = 0;
     int NULL = 1;

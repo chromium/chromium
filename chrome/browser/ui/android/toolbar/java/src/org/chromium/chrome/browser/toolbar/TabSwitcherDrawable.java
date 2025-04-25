@@ -21,6 +21,8 @@ import android.text.TextPaint;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -31,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** A drawable for the tab switcher icon. */
+@NullMarked
 public class TabSwitcherDrawable extends TintedDrawable {
     @IntDef({
         TabSwitcherDrawableLocation.TAB_TOOLBAR,
@@ -63,7 +66,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
     // Tab Count Label
     private int mTabCount;
     private boolean mIncognito;
-    private String mTextRenderedForTesting;
+    private @Nullable String mTextRenderedForTesting;
     private Canvas mIconCanvas;
     private Bitmap mIconBitmap;
     private boolean mShouldShowNotificationIcon;
@@ -280,7 +283,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
                 && mTabSwitcherDrawableLocation == TabSwitcherDrawableLocation.TAB_TOOLBAR);
     }
 
-    public String getTextRenderedForTesting() {
+    public @Nullable String getTextRenderedForTesting() {
         return mTextRenderedForTesting;
     }
 }
