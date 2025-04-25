@@ -24,14 +24,9 @@
 
 namespace chrome_pdf {
 
-namespace {
-
-// Maximum DPI needed for OCR.
-constexpr float kMaxNeededDPI = 300.0f;
-constexpr float kMaxNeededPixelToPointRatio =
-    kMaxNeededDPI / printing::kPointsPerInch;
-
-}  // namespace
+// The maximum image dimension which is processed without downsampling by OCR.
+// TODO(crbug.com/413318481): Get this from OCR library.
+constexpr int kMaxImageDimensionForOcr = 2048;
 
 gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object) {
   float left;
@@ -75,19 +70,13 @@ SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
     return bitmap;
   }
 
-  // Get minimum of horizontal and vertical pixel to point ratios.
-  gfx::SizeF point_size = GetImageSize(page_object);
-  if (point_size.IsEmpty()) {
-    return bitmap;
-  }
-  float pixel_to_point_ratio = std::min(pixel_width / point_size.width(),
-                                        pixel_height / point_size.height());
-
-  // Reduce size if DPI is above need.
+  // Reduce size if resolution is above need.
   float effective_width;
   float effective_height;
-  if (pixel_to_point_ratio > kMaxNeededPixelToPointRatio) {
-    float reduction_ratio = kMaxNeededPixelToPointRatio / pixel_to_point_ratio;
+  if (pixel_width > kMaxImageDimensionForOcr ||
+      pixel_height > kMaxImageDimensionForOcr) {
+    float reduction_ratio = static_cast<float>(kMaxImageDimensionForOcr) /
+                            std::max(pixel_width, pixel_height);
     effective_width = pixel_width * reduction_ratio;
     effective_height = pixel_height * reduction_ratio;
   } else {

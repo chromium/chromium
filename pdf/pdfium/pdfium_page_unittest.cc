@@ -616,10 +616,10 @@ TEST_P(PDFiumPageImageForOcrTest, HighResolutionImage) {
   SkBitmap image_bitmap = engine->GetImageForOcr(
       /*page_index=*/0, page.images_[0].page_object_index);
   EXPECT_FALSE(image_bitmap.drawsNothing());
-  // While the original image is 5000x5000, the returned image is 267x267 as
-  // OCR needs at most 300 DPI.
-  EXPECT_EQ(image_bitmap.width(), 267);
-  EXPECT_EQ(image_bitmap.height(), 267);
+  // While the original image is 5000x5000, the returned image is 2048x2048 as
+  // OCR processes at most 2048x2048 pixel images.
+  EXPECT_EQ(image_bitmap.width(), 2048);
+  EXPECT_EQ(image_bitmap.height(), 2048);
 }
 
 TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
