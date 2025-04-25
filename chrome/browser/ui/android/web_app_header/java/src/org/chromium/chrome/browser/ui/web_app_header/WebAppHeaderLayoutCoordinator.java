@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
@@ -26,6 +27,8 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,6 +53,12 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     private final ThemeColorProvider mThemeColorProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
+    private int mMinUIControlsMinWidthPx;
+    private int mAppHeaderUnoccludedWidthPx;
+    private final Callback<Integer> mOnUnoccludedWidthCallback;
+
+    // 48dp * 2 (back and reload button) + 4dp (start padding).
+    private static final int MIN_HEADER_WIDTH_DP = 100;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -78,6 +87,10 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         mTabSupplier = tabSupplier;
         mThemeColorProvider = themeColorProvider;
 
+        mOnUnoccludedWidthCallback = this::onUnoccludedWidthChanged;
+        mMinUIControlsMinWidthPx = 0;
+        mAppHeaderUnoccludedWidthPx = 0;
+
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
             onAppHeaderStateChanged(appHeaderState);
@@ -96,6 +109,10 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
+
+        mMinUIControlsMinWidthPx =
+                DisplayUtil.dpToPx(
+                        DisplayAndroid.getNonMultiDisplay(mView.getContext()), MIN_HEADER_WIDTH_DP);
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         model,
@@ -105,6 +122,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         headerMinHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
+        mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }
@@ -122,7 +140,6 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
                         mThemeColorProvider);
-        mReloadButtonCoordinator.setVisibility(true);
 
         final ImageButton backButton = mView.findViewById(R.id.back_button);
         mBackButtonCoordinator =
@@ -132,16 +149,30 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         mThemeColorProvider,
                         mTabSupplier,
                         mHistoryDelegate);
-        mBackButtonCoordinator.setVisibility(true);
+    }
+
+    private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
+        mAppHeaderUnoccludedWidthPx = newUnoccludedWidthPx;
+        updateButtonVisibility();
+    }
+
+    private void updateButtonVisibility() {
+        boolean showButtons = mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx;
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.setVisibility(showButtons);
+        }
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.setVisibility(showButtons);
+        }
     }
 
     private List<Rect> collectNonDraggableAreas() {
         final var areas = new ArrayList<Rect>();
-        if (mReloadButtonCoordinator != null) {
+        if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisibile()) {
             areas.add(mReloadButtonCoordinator.getHitRect());
         }
 
-        if (mBackButtonCoordinator != null) {
+        if (mBackButtonCoordinator != null && mBackButtonCoordinator.isVisible()) {
             areas.add(mBackButtonCoordinator.getHitRect());
         }
 
@@ -175,6 +206,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         }
 
         if (mMediator != null) {
+            mMediator.getUnoccludedWidthSupplier().removeObserver(mOnUnoccludedWidthCallback);
             mMediator.destroy();
         }
 

@@ -196,6 +196,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
+     * Checks whether view is visible or not.
+     *
+     * @return true - view is visible, false - view is not visible.
+     */
+    public boolean isVisible() {
+        return mModel.get(ReloadButtonProperties.IS_VISIBLE);
+    }
+
+    /**
      * Sets a listeners that allows parent to intercept key events.
      *
      * @param listener a callback that is invoked when hardware key is pressed.

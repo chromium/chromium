@@ -38,6 +38,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     private final Callback<Integer> mOnWidthChangedCallback;
     private final int mWebAppMinHeaderHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
+    private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -60,6 +61,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
         mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
 
         mWidthSupplier = new ObservableSupplierImpl<>();
+        mAppHeaderUnoccludedWidthSupplier = new ObservableSupplierImpl<>();
         mOnWidthChangedCallback = (width) -> updateNonDraggableAreas();
         mWidthSupplier.addObserver(mOnWidthChangedCallback);
 
@@ -79,11 +81,17 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
         mCurrentHeaderState = newState;
 
         updatePaddings();
+
+        mAppHeaderUnoccludedWidthSupplier.set(mCurrentHeaderState.getUnoccludedRectWidth());
         mModel.set(
                 WebAppHeaderLayoutProperties.MIN_HEIGHT,
                 Math.max(mCurrentHeaderState.getAppHeaderHeight(), getDefaultMinHeight()));
         mModel.set(
                 WebAppHeaderLayoutProperties.IS_VISIBLE, mCurrentHeaderState.isInDesktopWindow());
+    }
+
+    public ObservableSupplier<Integer> getUnoccludedWidthSupplier() {
+        return mAppHeaderUnoccludedWidthSupplier;
     }
 
     private void updatePaddings() {

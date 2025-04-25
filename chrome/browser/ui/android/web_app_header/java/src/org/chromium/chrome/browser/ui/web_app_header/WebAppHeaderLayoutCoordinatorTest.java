@@ -9,10 +9,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -179,6 +181,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupMinUiMode();
         mTabSupplier.set(mTab);
         createCoordinator();
+
+        // Wait for animation to finish and update the view.
+        shadowOf(Looper.getMainLooper()).idle();
 
         assertEquals(View.VISIBLE, mActivity.findViewById(R.id.refresh_button).getVisibility());
         assertEquals(View.VISIBLE, mActivity.findViewById(R.id.back_button).getVisibility());

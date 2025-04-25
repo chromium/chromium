@@ -153,6 +153,15 @@ public class BackButtonCoordinator {
     }
 
     /**
+     * Gets visibility.
+     *
+     * @return a boolean indicating whether view is visible or not.
+     */
+    public boolean isVisible() {
+        return mMediator.isVisible();
+    }
+
+    /**
      * Cleans up coordinator resources and unsubscribes from external events. An instance can't be
      * used after this method is called.
      */

@@ -180,6 +180,15 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
+     * Checks whether view is visible or not.
+     *
+     * @return true - view is visible, false - view is not visible.
+     */
+    public boolean isVisible() {
+        return mModel.get(BackButtonProperties.IS_VISIBLE);
+    }
+
+    /**
      * Sets a key event listener on the view.
      *
      * @param listener {@link View.OnKeyListener}

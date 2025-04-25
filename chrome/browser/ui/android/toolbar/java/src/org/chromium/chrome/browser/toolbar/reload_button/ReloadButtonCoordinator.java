@@ -133,6 +133,15 @@ public class ReloadButtonCoordinator {
         return rect;
     }
 
+    /**
+     * Gets visibility.
+     *
+     * @return a Boolean indicating whether view is visible or not.
+     */
+    public boolean isVisibile() {
+        return mMediator.isVisible();
+    }
+
     /** Destroys current object instance. It can't be used after this call. */
     public void destroy() {
         mMediator.destroy();
