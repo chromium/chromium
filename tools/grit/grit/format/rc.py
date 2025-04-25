@@ -9,6 +9,7 @@ import os
 import re
 from functools import partial
 
+from grit import constants
 from grit import util
 from grit.node import misc
 
@@ -360,7 +361,8 @@ def _FormatHeader(root, lang, output_dir):
 
 def FormatMessage(item, lang):
   '''Returns a single message of a string table.'''
-  message = item.ws_at_start + item.Translate(lang) + item.ws_at_end
+  message = item.ws_at_start + item.Translate(
+      lang, constants.DEFAULT_GENDER) + item.ws_at_end
   # Escape quotation marks (RC format uses doubling-up
   message = message.replace('"', '""')
   # Replace linebreaks with a \n escape

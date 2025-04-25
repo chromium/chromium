@@ -16,6 +16,7 @@ if __name__ == '__main__':
 from grit.node import misc
 from grit.node import node_io
 from grit.node import empty
+from grit import constants
 from grit import grd_reader
 from grit import util
 
@@ -51,7 +52,9 @@ class FileNodeUnittest(unittest.TestCase):
   def VerifyCliquesContainEnglishAndFrenchAndNothingElse(self, cliques):
     self.assertEqual(2, len(cliques))
     for clique in cliques:
-      self.assertEqual({'en', 'fr'}, set(clique.clique.keys()))
+      self.assertEqual(
+          {('en', constants.DEFAULT_GENDER), ('fr', constants.DEFAULT_GENDER)},
+          set(clique.clique.keys()))
 
   def testLoadTranslations(self):
     xml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -92,7 +95,8 @@ class FileNodeUnittest(unittest.TestCase):
     cliques = _GetAllCliques(grd)
     self.assertEqual(2, len(cliques))
     for clique in cliques:
-      self.assertEqual({'en'}, set(clique.clique.keys()))
+      self.assertEqual({('en', constants.DEFAULT_GENDER)},
+                       set(clique.clique.keys()))
 
     grd.SetOutputLanguage('fr')
     grd.RunGatherers()

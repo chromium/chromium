@@ -9,6 +9,7 @@ import codecs
 import os
 import re
 
+from grit import constants
 from grit import util
 
 
@@ -61,7 +62,8 @@ def _HexToOct(match):
 def _FormatMessage(item, lang):
   """Format a single <message> element."""
 
-  message = item.ws_at_start + item.Translate(lang) + item.ws_at_end
+  message = item.ws_at_start + item.Translate(
+      lang, constants.DEFAULT_GENDER) + item.ws_at_end
   # Output message with non-ascii chars escaped as octal numbers C's grammar
   # allows escaped hexadecimal numbers to be infinite, but octal is always of
   # the form \OOO.  Python 3 doesn't support string-escape, so we have to jump

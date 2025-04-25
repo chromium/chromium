@@ -64,6 +64,7 @@ import os
 import re
 import xml.sax.saxutils
 
+from grit import constants
 from grit import lazy_re
 from grit.node import message
 
@@ -204,7 +205,8 @@ def _FormatMessage(item, lang):
     raise Exception('Unexpected resource name: %s' % mangled_name)
   name = match.group('name').lower()
 
-  value = item.ws_at_start + item.Translate(lang) + item.ws_at_end
+  value = item.ws_at_start + item.Translate(
+      lang, constants.DEFAULT_GENDER) + item.ws_at_end
   # Replace < > & with &lt; &gt; &amp; to ensure we generate valid XML and
   # replace ' " with \' \" to conform to Android's string formatting rules.
   value = xml.sax.saxutils.escape(value, {"'": "\\'", '"': '\\"'})

@@ -14,6 +14,7 @@ if __name__ == '__main__':
 import unittest
 from grit.node.custom import filename
 from grit import clique
+from grit import constants
 from grit import tclib
 
 
@@ -25,8 +26,10 @@ class WindowsFilenameUnittest(unittest.TestCase):
     c = factory.MakeClique(msg)
     c.SetCustomType(filename.WindowsFilename())
     translation = tclib.Translation(id=msg.GetId(), text='Bilingo bolongo:')
-    c.AddTranslation(translation, 'fr')
-    self.assertTrue(c.MessageForLanguage('fr').GetRealContent() == 'Bilingo bolongo ')
+    c.AddTranslation(translation, 'fr', constants.DEFAULT_GENDER)
+    self.assertTrue(
+        c.MessageForLanguageAndGender('fr', constants.DEFAULT_GENDER).
+        GetRealContent() == 'Bilingo bolongo ')
 
 
 if __name__ == '__main__':

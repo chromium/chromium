@@ -10,9 +10,9 @@ import copy
 import os
 import re
 
+from grit import constants
 from grit import xtb_reader
 from grit.node import base
-from grit import gender
 
 DATA_PACKAGE_FILENAME_RE = re.compile(r'((\w|-)+).pak')
 ANDROID_FILENAME_RE = re.compile(r'(values(-((\w|-|\+)+))?)/')
@@ -82,12 +82,12 @@ class OutputNode(base.Node):
     # Create 3 extra copies of each data_package and android output node so that
     # we have one per gender per language. Adjust file names accordingly.
     if self.GetType() == 'data_package' or self.GetType() == 'android':
-      for gndr in gender.TRANSLATED_GENDERS:
+      for gender in constants.TRANSLATED_GENDERS:
         cloned_node = self._Clone()
-        cloned_node.gender = gndr
+        cloned_node.gender = gender
         cloned_node._AddGenderToFilenames()
 
-      self.gender = gender.DEFAULT_GENDER
+      self.gender = constants.DEFAULT_GENDER
       self._AddGenderToFilenames()
 
   def _AddGenderToFilenames(self):
