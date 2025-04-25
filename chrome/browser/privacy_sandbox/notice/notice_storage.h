@@ -100,47 +100,21 @@ struct NoticeEventTimestampPair {
   base::Time timestamp;
 };
 
-class NoticeStorageData {
- public:
+struct NoticeStorageData {
   NoticeStorageData();
   ~NoticeStorageData();
   NoticeStorageData& operator=(const NoticeStorageData&) = delete;
   NoticeStorageData(const NoticeStorageData& data) = delete;
   NoticeStorageData(NoticeStorageData&& data);
   NoticeStorageData& operator=(NoticeStorageData&& data);
-
-  int GetSchemaVersion() const;
-  std::string GetChromeVersion() const;
-  base::span<const std::unique_ptr<NoticeEventTimestampPair>> GetNoticeEvents()
-      const;
-
-  void SetSchemaVersion(int schema_version);
-  void SetChromeVersion(std::string_view chrome_version);
-  void SetNoticeEvents(
-      std::vector<std::unique_ptr<NoticeEventTimestampPair>>&& events);
-
-  // Gets the timestamp when the notice was first shown. If the notice was never
-  // shown, the default timestamp will be returned.
-  std::optional<base::Time> GetNoticeFirstShownFromEvents() const;
-
-  // Gets the timestamp when the notice was last shown. If the notice was never
-  // shown, the default timestamp will be returned.
-  std::optional<base::Time> GetNoticeLastShownFromEvents() const;
-
-  // Gets the notice action taken and when it was taken the first time the
-  // notice was shown. If the notice hasn't been shown for the first time, or
-  // there was no action associated, no value is returned. If there are multiple
-  // actions associated, only the last action is returned.
-  std::optional<NoticeEventTimestampPair>
-  GetNoticeActionTakenForFirstShownFromEvents() const;
+  bool operator==(const NoticeStorageData& other) const = default;
 
   static void RegisterJSONConverter(
       base::JSONValueConverter<NoticeStorageData>* converter);
 
- private:
-  int schema_version_ = 0;
-  std::string chrome_version_;
-  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events_;
+  int schema_version = 0;
+  std::string chrome_version;
+  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
 };
 
 // Stores pre-migration interactions on a notice in the v1 schema.
@@ -153,6 +127,16 @@ struct V1MigrationData {
   static void RegisterJSONConverter(
       base::JSONValueConverter<V1MigrationData>* converter);
 };
+
+std::optional<base::Time> GetNoticeFirstShownFromEvents(
+    const NoticeStorageData& notice_data);
+
+std::optional<base::Time> GetNoticeLastShownFromEvents(
+    const NoticeStorageData& notice_data);
+
+std::optional<NoticeEventTimestampPair>
+GetNoticeActionTakenForFirstShownFromEvents(
+    const NoticeStorageData& notice_data);
 
 class NoticeStorage {
  public:

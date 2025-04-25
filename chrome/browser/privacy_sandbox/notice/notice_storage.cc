@@ -161,9 +161,9 @@ void PopulateV2NoticeData(PrefService* pref_service,
                           const NoticeStorageData& data) {
   ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
   update.Get().SetByDottedPath(CreatePrefPath(notice, kSchemaVersionKey),
-                               data.GetSchemaVersion());
+                               data.schema_version);
 
-  for (const auto& event : data.GetNoticeEvents()) {
+  for (const auto& event : data.notice_events) {
     update.Get()
         .EnsureDict(notice)
         ->EnsureList(kEventsKey)
@@ -173,6 +173,44 @@ void PopulateV2NoticeData(PrefService* pref_service,
 }
 
 }  // namespace
+
+std::optional<base::Time> GetNoticeFirstShownFromEvents(
+    const NoticeStorageData& notice_data) {
+  for (const auto& notice_event : notice_data.notice_events) {
+    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+      return notice_event->timestamp;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<base::Time> GetNoticeLastShownFromEvents(
+    const NoticeStorageData& notice_data) {
+  for (const auto& notice_event : base::Reversed(notice_data.notice_events)) {
+    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+      return notice_event->timestamp;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<NoticeEventTimestampPair>
+GetNoticeActionTakenForFirstShownFromEvents(
+    const NoticeStorageData& notice_data) {
+  std::optional<NoticeEventTimestampPair> notice_event_data;
+  int last_shown_idx = 0;
+  int first_notice_idx = 0;
+  for (const auto& event_data : notice_data.notice_events) {
+    if (event_data->event == PrivacySandboxNoticeEvent::kShown) {
+      last_shown_idx++;
+    } else if (!notice_event_data.has_value() ||
+               first_notice_idx == last_shown_idx) {
+      first_notice_idx = last_shown_idx;
+      notice_event_data = *event_data;
+    }
+  }
+  return notice_event_data;
+}
 
 void NoticeEventTimestampPair::RegisterJSONConverter(
     base::JSONValueConverter<NoticeEventTimestampPair>* converter) {
@@ -185,82 +223,20 @@ void NoticeEventTimestampPair::RegisterJSONConverter(
 
 // PrivacySandboxNoticeData definitions.
 NoticeStorageData::NoticeStorageData() = default;
-
 NoticeStorageData::~NoticeStorageData() = default;
 
 NoticeStorageData::NoticeStorageData(NoticeStorageData&& data) = default;
 NoticeStorageData& NoticeStorageData::operator=(NoticeStorageData&& data) =
     default;
 
-int NoticeStorageData::GetSchemaVersion() const {
-  return schema_version_;
-}
-std::string NoticeStorageData::GetChromeVersion() const {
-  return chrome_version_;
-}
-base::span<const std::unique_ptr<NoticeEventTimestampPair>>
-NoticeStorageData::GetNoticeEvents() const {
-  return notice_events_;
-}
-
-void NoticeStorageData::SetSchemaVersion(int schema_version) {
-  schema_version_ = schema_version;
-}
-
-void NoticeStorageData::SetChromeVersion(std::string_view chrome_version) {
-  chrome_version_ = chrome_version;
-}
-
-void NoticeStorageData::SetNoticeEvents(
-    std::vector<std::unique_ptr<NoticeEventTimestampPair>>&& events) {
-  notice_events_ = std::move(events);
-}
-
-std::optional<base::Time> NoticeStorageData::GetNoticeFirstShownFromEvents()
-    const {
-  for (const auto& notice_event : notice_events_) {
-    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
-      return notice_event->timestamp;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<base::Time> NoticeStorageData::GetNoticeLastShownFromEvents()
-    const {
-  for (const auto& notice_event : base::Reversed(notice_events_)) {
-    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
-      return notice_event->timestamp;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<NoticeEventTimestampPair>
-NoticeStorageData::GetNoticeActionTakenForFirstShownFromEvents() const {
-  std::optional<NoticeEventTimestampPair> notice_event_data;
-  int last_shown_idx = 0;
-  int first_notice_idx = 0;
-  for (const auto& event_data : notice_events_) {
-    if (event_data->event == PrivacySandboxNoticeEvent::kShown) {
-      last_shown_idx++;
-    } else if (!notice_event_data.has_value() ||
-               first_notice_idx == last_shown_idx) {
-      first_notice_idx = last_shown_idx;
-      notice_event_data = *event_data;
-    }
-  }
-  return notice_event_data;
-}
-
 void NoticeStorageData::RegisterJSONConverter(
     base::JSONValueConverter<NoticeStorageData>* converter) {
   converter->RegisterIntField(kSchemaVersionKey,
-                              &NoticeStorageData::schema_version_);
+                              &NoticeStorageData::schema_version);
   converter->RegisterStringField(kChromeVersionKey,
-                                 &NoticeStorageData::chrome_version_);
+                                 &NoticeStorageData::chrome_version);
   converter->RegisterRepeatedMessage<NoticeEventTimestampPair>(
-      kEventsKey, &NoticeStorageData::notice_events_);
+      kEventsKey, &NoticeStorageData::notice_events);
 }
 
 void V1MigrationData::RegisterJSONConverter(
@@ -326,9 +302,7 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
 // static
 NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
     const V1MigrationData& data_v1) {
-  NoticeStorageData data_v2;
   std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
-  data_v2.SetSchemaVersion(2);
 
   if (data_v1.notice_last_shown != base::Time()) {
     notice_events.emplace_back(
@@ -343,8 +317,10 @@ NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
             *notice_event, data_v1.notice_action_taken_time}));
   }
 
-  data_v2.SetNoticeEvents(std::move(notice_events));
-  return data_v2;
+  NoticeStorageData notice_data;
+  notice_data.schema_version = 2;
+  notice_data.notice_events = std::move(notice_events);
+  return notice_data;
 }
 
 // static
@@ -395,17 +371,17 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
 
     NoticeStartupState startup_state;
 
-    if (!notice_data.has_value() || notice_data->GetNoticeEvents().empty() ||
-        (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt &&
-         notice_data->GetNoticeActionTakenForFirstShownFromEvents() ==
+    if (!notice_data.has_value() || notice_data->notice_events.empty() ||
+        (GetNoticeFirstShownFromEvents(*notice_data) == std::nullopt &&
+         GetNoticeActionTakenForFirstShownFromEvents(*notice_data) ==
              std::nullopt)) {
       startup_state = NoticeStartupState::kPromptNotShown;
-    } else if (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt ||
-               *notice_data->GetNoticeFirstShownFromEvents() == base::Time()) {
+    } else if (auto time = GetNoticeFirstShownFromEvents(*notice_data);
+               time == std::nullopt || time == base::Time()) {
       // E.g. UnknownActionPreMigration && no first shown time set.
       startup_state = NoticeStartupState::kUnknownState;
     } else {  // Notice has been shown, action handling below.
-      switch (notice_data->GetNoticeEvents().back().get()->event) {
+      switch (notice_data->notice_events.back().get()->event) {
         case PrivacySandboxNoticeEvent::kShown:
           startup_state = NoticeStartupState::kPromptWaiting;
           break;
@@ -462,7 +438,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
 
   // The notice should be shown first before action can be taken on it.
   if (!notice_data.has_value() ||
-      notice_data->GetNoticeLastShownFromEvents() == std::nullopt) {
+      GetNoticeLastShownFromEvents(*notice_data) == std::nullopt) {
     base::UmaHistogramEnumeration(
         base::StrCat(
             {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
@@ -471,7 +447,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   }
 
   // Performing multiple actions on an existing notice is unexpected.
-  if (notice_data->GetNoticeEvents().back().get()->event !=
+  if (notice_data->notice_events.back().get()->event !=
       PrivacySandboxNoticeEvent::kShown) {
     base::UmaHistogramEnumeration(
         base::StrCat(
@@ -507,7 +483,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
           notice_action_taken);
   if (!notice_action_str.empty()) {
     // First shown to interacted duration.
-    auto notice_first_shown = notice_data->GetNoticeFirstShownFromEvents();
+    auto notice_first_shown = GetNoticeFirstShownFromEvents(*notice_data);
     if (notice_first_shown) {
       base::TimeDelta first_shown_to_interacted_duration =
           notice_action_taken_time - *notice_first_shown;
@@ -518,7 +494,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     }
 
     // Set last shown to interacted.
-    auto notice_last_shown = notice_data->GetNoticeLastShownFromEvents();
+    auto notice_last_shown = GetNoticeLastShownFromEvents(*notice_data);
     if (notice_last_shown) {
       auto last_shown_to_interacted_duration =
           notice_action_taken_time - *notice_last_shown;
@@ -537,10 +513,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
 
   base::Value::Dict entry =
       BuildDictEntryEvent(PrivacySandboxNoticeEvent::kShown, notice_shown_time);
-  update.Get()
-      .EnsureDict(notice)
-      ->EnsureList(kEventsKey)
-      ->Append(std::move(entry));
+  update->EnsureDict(notice)->EnsureList(kEventsKey)->Append(std::move(entry));
 
   // TODO(chrstne): Deprecate NoticeShown histogram once it is no longer used
   // in other codepaths.
@@ -551,7 +524,8 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
       PrivacySandboxNoticeEvent::kShown);
 
   auto notice_data = ReadNoticeData(notice);
-  if (*notice_data->GetNoticeFirstShownFromEvents() == notice_shown_time) {
+  CHECK(notice_data.has_value());
+  if (GetNoticeFirstShownFromEvents(*notice_data) == notice_shown_time) {
     base::UmaHistogramBoolean(
         base::StrCat(
             {"PrivacySandbox.Notice.NoticeShownForFirstTime.", notice}),

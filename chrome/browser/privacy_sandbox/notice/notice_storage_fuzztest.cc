@@ -25,16 +25,16 @@ void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
   data_v1.notice_action_taken_time = notice_taken_time;
   data_v1.notice_last_shown = notice_last_shown;
   NoticeStorageData data_v2 = PrivacySandboxNoticeStorage::ToV2Schema(data_v1);
-  EXPECT_EQ(data_v2.GetSchemaVersion(), 2);
+  EXPECT_EQ(data_v2.schema_version, 2);
   auto notice_event = PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
       notice_action_taken);
   if (notice_event.has_value()) {
-    EXPECT_THAT(data_v2.GetNoticeEvents(),
+    EXPECT_THAT(data_v2.notice_events,
                 IsSupersetOf({Pointee(Eq(NoticeEventTimestampPair(
                     *notice_event, notice_taken_time)))}));
   }
   if (notice_last_shown != base::Time()) {
-    EXPECT_THAT(data_v2.GetNoticeEvents(),
+    EXPECT_THAT(data_v2.notice_events,
                 IsSupersetOf({Pointee(Eq(NoticeEventTimestampPair(
                     PrivacySandboxNoticeEvent::kShown, notice_last_shown)))}));
   }
