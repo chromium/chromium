@@ -94,6 +94,8 @@ class PasswordChangeDelegate {
 
   virtual void OnPrivacyNoticeAccepted() = 0;
 
+  virtual void OnOtpFieldDetected(content::WebContents* web_contents) = 0;
+
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

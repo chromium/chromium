@@ -27,6 +27,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_delegate_mock.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -351,9 +354,34 @@ class MockPasswordAccessoryControllerImpl
 
 #endif
 
+class MockPasswordChangeService : public ChromePasswordChangeService {
+ public:
+  MockPasswordChangeService()
+      : ChromePasswordChangeService(/*affiliation_service=*/nullptr,
+                                    /*optimization_keyed_service=*/nullptr,
+                                    /*feature_manager=*/nullptr) {}
+
+  MOCK_METHOD(void,
+              OfferPasswordChangeUi,
+              (const GURL&,
+               const std::u16string&,
+               const std::u16string&,
+               content::WebContents*),
+              (override));
+  MOCK_METHOD(PasswordChangeDelegate*,
+              GetPasswordChangeDelegate,
+              (content::WebContents*),
+              (override));
+};
+
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
+}
+
+std::unique_ptr<KeyedService> CreateMockPasswordChangeService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockPasswordChangeService>();
 }
 
 }  // namespace
@@ -385,6 +413,11 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
         }));
   }
 
+  void SetupMockPasswordChangeService() {
+    PasswordChangeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating(&CreateMockPasswordChangeService));
+  }
+
  protected:
   ChromePasswordManagerClient* GetClient();
   password_manager::MockPasswordManagerSettingsService& settings_service() {
@@ -394,6 +427,10 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->GetForProfile(profile()));
+  }
+  MockPasswordChangeService* password_change_service() {
+    return static_cast<MockPasswordChangeService*>(
+        PasswordChangeServiceFactory::GetInstance()->GetForProfile(profile()));
   }
 
   // If autofill::mojom::PasswordAutofillAgent::SetLoggingState() got called,
@@ -444,6 +481,7 @@ void ChromePasswordManagerClientTest::SetUp() {
   ChromePasswordManagerClient::CreateForWebContents(web_contents());
 
   SetupSettingsServiceFactory();
+  SetupMockPasswordChangeService();
 }
 
 void ChromePasswordManagerClientTest::TearDown() {
@@ -1953,3 +1991,46 @@ TEST_F(ChromePasswordManagerClientTest,
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromePasswordManagerClientTest,
+       PasswordChangeDelegateIsNotifiedAboutOTP) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::kPasswordFormClientsideClassifier);
+
+  PasswordChangeDelegateMock mock;
+  ON_CALL(*password_change_service(), GetPasswordChangeDelegate)
+      .WillByDefault(Return(&mock));
+
+  NavigateAndCommit(GURL("https://www.foo.com/login.html"));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {
+      CreateTestFormField("OTP", "one-time-code", "",
+                          FormControlType::kInputText, "one-time-code")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*main_rfh(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+  }
+
+  EXPECT_CALL(mock, OnOtpFieldDetected(web_contents()));
+
+  // Simulate that the field types have been determined.
+  using Observer = autofill::AutofillManager::Observer;
+  autofill_driver->GetAutofillManager()
+      .FindCachedFormById(form.global_id())
+      ->field(0)
+      ->set_heuristic_type(
+          autofill::HeuristicSource::kPasswordManagerMachineLearning,
+          autofill::FieldType::ONE_TIME_CODE);
+  autofill_driver->GetAutofillManager().NotifyObservers(
+      &Observer::OnFieldTypesDetermined, form.global_id(),
+      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+}

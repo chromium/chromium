@@ -248,6 +248,27 @@ void MaybeShowPostMigrationSheetWrapper(
 
 #endif
 
+void InformPasswordChangeServiceIfOtpPresent(
+    content::WebContents* web_contents,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+        predictions) {
+  bool has_otp_field = std::any_of(
+      predictions.begin(), predictions.end(), [](const auto& field) {
+        return field.second == autofill::ONE_TIME_CODE;
+      });
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (has_otp_field) {
+    ChromePasswordChangeService* password_change_service =
+        PasswordChangeServiceFactory::GetForProfile(profile);
+    if (password_change_service &&
+        password_change_service->GetPasswordChangeDelegate(web_contents)) {
+      password_change_service->GetPasswordChangeDelegate(web_contents)
+          ->OnOtpFieldDetected(web_contents);
+    }
+  }
+}
+
 }  // namespace
 
 // static
@@ -1939,13 +1960,15 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
             driver, form,
             manager.GetServerPredictionsForForm(form_id, field_ids));
         break;
-      case FieldTypeSource::kHeuristicsOrAutocomplete:
-        password_manager_.ProcessClassificationModelPredictions(
-            driver, form,
-            manager.GetHeursticPredictionForForm(
-                autofill::HeuristicSource::kPasswordManagerMachineLearning,
-                form_id, field_ids));
+      case FieldTypeSource::kHeuristicsOrAutocomplete: {
+        auto predictions = manager.GetHeursticPredictionForForm(
+            autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
+            field_ids);
+        password_manager_.ProcessClassificationModelPredictions(driver, form,
+                                                                predictions);
+        InformPasswordChangeServiceIfOtpPresent(web_contents(), predictions);
         break;
+      }
     }
   }
 }

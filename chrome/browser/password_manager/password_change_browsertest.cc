@@ -979,3 +979,32 @@ IN_PROC_BROWSER_TEST_F(
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(
+          embedded_test_server()->GetURL("/password/done.html")));
+
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
+
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(
+              browser()->tab_strip_model()->GetWebContentsAt(0))
+          ->AsWeakPtr();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate->GetCurrentState());
+
+  BubbleObserver prompt_observer(WebContents());
+
+  delegate->OnOtpFieldDetected(
+      browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kOtpDetected,
+            delegate->GetCurrentState());
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+}

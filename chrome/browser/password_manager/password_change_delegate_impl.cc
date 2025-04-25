@@ -101,6 +101,7 @@ void NotifyPasswordChangeFinishedSuccessfully(
 void DisplayChangePasswordBubbleAutomatically(
     base::WeakPtr<content::WebContents> original_tab,
     base::WeakPtr<content::WebContents> tab_with_password_change) {
+#if !BUILDFLAG(IS_ANDROID)
   for (auto web_content : {original_tab, tab_with_password_change}) {
     if (!web_content) {
       continue;
@@ -110,6 +111,7 @@ void DisplayChangePasswordBubbleAutomatically(
       manage_controller->ShowChangePasswordBubble();
     }
   }
+#endif
 }
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
@@ -273,6 +275,25 @@ void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
   if (submission_verifier_) {
     submission_verifier_->OnPasswordFormSubmission(web_contents);
   }
+}
+
+void PasswordChangeDelegateImpl::OnOtpFieldDetected(
+    content::WebContents* web_contents) {
+  if (!executor_ || web_contents != executor_.get()) {
+    return;
+  }
+
+  // OTP is relevant only when the change password flow is "ongoing", other
+  // states should be disregarded.
+  if (current_state_ != State::kChangingPassword &&
+      current_state_ != State::kWaitingForChangePasswordForm) {
+    return;
+  }
+
+  form_finder_.reset();
+  submission_verifier_.reset();
+
+  UpdateState(State::kOtpDetected);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
