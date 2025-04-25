@@ -60,18 +60,31 @@ class ActiveTabTracker : public TabModelObserver {
     active_tab_ = tab;
   }
 
-  // TabRemoved is not triggered when the tab model goes away. But it does not
-  // cause holding a dead tab in active_tab_ because `ActiveTabTracker` itself
-  // is removed anyway at `ActiveTabObserver::OnTabModelRemoved()`.
-  void TabRemoved(TabAndroid* tab) override {
+  // OnFinishingTabClosure is not triggered when the tab model goes away. But it
+  // does not cause holding a dead tab in active_tab_ because `ActiveTabTracker`
+  // itself is removed anyway at `ActiveTabObserver::OnTabModelRemoved()`.
+  void OnFinishingTabClosure(TabAndroid* tab) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (tab == active_tab_) {
       active_tab_ = nullptr;
     }
   }
 
+  // This is triggered when a tab is removed from a tab model (e.g. tab is moved
+  // to another window).
+  void TabRemoved(TabAndroid* tab) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (tab == active_tab_) {
+      if (tab && tab->web_contents()) {
+        PageLiveStateDecorator::SetIsActiveTab(tab->web_contents(), false);
+      }
+      active_tab_ = nullptr;
+    }
+  }
+
  private:
-  // The cached TabAndroid* is cleared on TabRemoved().
+  // The cached TabAndroid* is cleared on OnFinishingTabClosure() or
+  // TabRemoved() so that no obsolete pointer is left.
   raw_ptr<TabAndroid> active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 

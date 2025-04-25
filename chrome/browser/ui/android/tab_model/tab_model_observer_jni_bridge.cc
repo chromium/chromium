@@ -75,10 +75,11 @@ void TabModelObserverJniBridge::WillCloseTab(
 void TabModelObserverJniBridge::OnFinishingTabClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
-    int tab_id,
-    bool incognito) {
+    const JavaParamRef<jobject>& jtab) {
+  TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
+  CHECK(tab);
   for (auto& observer : observers_) {
-    observer.OnFinishingTabClosure(tab_id, incognito);
+    observer.OnFinishingTabClosure(tab);
   }
 }
 
