@@ -470,6 +470,7 @@ void AboutHandler::HandlePageReady(const base::Value::List& args) {
 }
 
 void AboutHandler::HandleRefreshUpdateStatus(const base::Value::List& args) {
+  AllowJavascript();
   RefreshUpdateStatus();
 }
 
