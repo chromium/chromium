@@ -21,6 +21,11 @@ class SystemAccountUpdaterTest : public PlatformTest {
   SystemAccountUpdaterTest() {
     NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
     [shared_defaults removeObjectForKey:app_group::kAccountsOnDevice];
+    [shared_defaults
+        removeObjectForKey:app_group::kSuggestedItemsForMultiprofile];
+    [shared_defaults
+        removeObjectForKey:
+            app_group::kSuggestedItemsLastModificationDateForMultiprofile];
 
     system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -34,6 +39,11 @@ class SystemAccountUpdaterTest : public PlatformTest {
 
     NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
     [shared_defaults removeObjectForKey:app_group::kAccountsOnDevice];
+    [shared_defaults
+        removeObjectForKey:app_group::kSuggestedItemsForMultiprofile];
+    [shared_defaults
+        removeObjectForKey:
+            app_group::kSuggestedItemsLastModificationDateForMultiprofile];
   }
 
  protected:
@@ -87,6 +97,91 @@ TEST_F(SystemAccountUpdaterTest, OnIdentityListChanged) {
     NSDictionary* accounts_on_device =
         [shared_defaults objectForKey:app_group::kAccountsOnDevice];
     EXPECT_EQ([accounts_on_device count], 1u);
+  }
+}
+
+// Test that data from kSuggestedItemsForMultiprofile is
+// correctly removed when an account is removed from device.
+TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  EXPECT_EQ([[shared_defaults
+                objectForKey:app_group::kSuggestedItemsForMultiprofile] count],
+            0u);
+
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+
+  // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
+  NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
+  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
+  [fake_info setObject:@"test_info" forKey:app_group::kDefaultAccount];
+
+  [shared_defaults setObject:fake_info
+                      forKey:app_group::kSuggestedItemsForMultiprofile];
+  [shared_defaults
+      setObject:fake_info
+         forKey:app_group::kSuggestedItemsLastModificationDateForMultiprofile];
+
+  // Add 'fakeIdentity1' to the identity list.
+  system_identity_manager_->AddIdentity(fake_identity);
+  {
+    NSDictionary* items = [shared_defaults
+        objectForKey:app_group::kSuggestedItemsForMultiprofile];
+    EXPECT_TRUE([[items allKeys] containsObject:fake_identity.gaiaID]);
+  }
+  // Remove 'fakeIdentity' from the identity list.
+  system_identity_manager_->ForgetIdentity(fake_identity, base::DoNothing());
+  system_identity_manager_->WaitForServiceCallbacksToComplete();
+
+  {
+    NSDictionary* items = [shared_defaults
+        objectForKey:app_group::kSuggestedItemsForMultiprofile];
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefaultAccount]);
+    EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
+  }
+}
+
+// Test that data from kSuggestedItemsLastModificationDateForMultiprofile is
+// correctly removed when an account is removed from device.
+TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  EXPECT_EQ(
+      [[shared_defaults
+          objectForKey:app_group::
+                           kSuggestedItemsLastModificationDateForMultiprofile]
+          count],
+      0u);
+
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+
+  // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
+  NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
+  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
+  [fake_info setObject:@"test_info" forKey:app_group::kDefaultAccount];
+
+  [shared_defaults setObject:fake_info
+                      forKey:app_group::kSuggestedItemsForMultiprofile];
+  [shared_defaults
+      setObject:fake_info
+         forKey:app_group::kSuggestedItemsLastModificationDateForMultiprofile];
+
+  // Add 'fakeIdentity1' to the identity list.
+  system_identity_manager_->AddIdentity(fake_identity);
+  {
+    NSDictionary* items = [shared_defaults
+        objectForKey:app_group::
+                         kSuggestedItemsLastModificationDateForMultiprofile];
+    EXPECT_TRUE([[items allKeys] containsObject:fake_identity.gaiaID]);
+  }
+  // Remove 'fakeIdentity' from the identity list.
+  system_identity_manager_->ForgetIdentity(fake_identity, base::DoNothing());
+  system_identity_manager_->WaitForServiceCallbacksToComplete();
+
+  {
+    NSDictionary* items = [shared_defaults
+        objectForKey:app_group::
+                         kSuggestedItemsLastModificationDateForMultiprofile];
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefaultAccount]);
+    EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
   }
 }
 
