@@ -27,6 +27,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -62,6 +63,7 @@
 #include "sql/initialization.h"
 #include "sql/internal_api_token.h"
 #include "sql/meta_table.h"
+#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -872,12 +874,15 @@ bool Database::SetMmapAltStatus(int64_t status) {
 size_t Database::ComputeMmapSizeForOpen() {
   TRACE_EVENT0("sql", "Database::ComputeMmapSizeForOpen");
 
-  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
-  InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
-
   // How much to map if no errors are found.  50MB encompasses the 99th
   // percentile of Chrome databases in the wild, so this should be good.
   const size_t kMmapEverything = 256 * 1024 * 1024;
+  if (base::FeatureList::IsEnabled(sql::features::kSqlFixedMmapSize)) {
+    return kMmapEverything;
+  }
+
+  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
+  InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   // Progress information is tracked in the [meta] table for databases which use
   // sql::MetaTable, otherwise it is tracked in a special view.
