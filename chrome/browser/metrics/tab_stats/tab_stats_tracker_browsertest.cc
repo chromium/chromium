@@ -5,14 +5,16 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,7 +23,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
@@ -34,6 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace metrics {
 
@@ -70,9 +73,15 @@ class TestTabStatsObserver : public TabStatsObserver {
 };
 
 using TabsStats = TabStatsDataStore::TabsStats;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Ne;
 
-void EnsureTabStatsMatchExpectations(const TabsStats& expected,
-                                     const TabsStats& actual) {
+void EnsureTabStatsMatchExpectations(
+    const TabsStats& expected,
+    const TabsStats& actual,
+    const base::Location& location = base::Location::Current()) {
+  SCOPED_TRACE(location.ToString());
   EXPECT_EQ(expected.total_tab_count, actual.total_tab_count);
   EXPECT_EQ(expected.total_tab_count_max, actual.total_tab_count_max);
   EXPECT_EQ(expected.max_tab_per_window, actual.max_tab_per_window);
@@ -120,7 +129,9 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
   }
 
   void EnsureTabDuplicateHistogramsMatchExpectations(
-      DuplicateHistogramStats expected) {
+      DuplicateHistogramStats expected,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
     for (auto const& bucket : expected.count_multi_window.buckets) {
       histogram_tester_.ExpectBucketCount(expected.count_multi_window.name,
                                           bucket.first, bucket.second);
@@ -214,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   Browser* new_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(new_browser);
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
   ++expected_stats.window_count_max;
@@ -280,11 +292,12 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   tab_stats_tracker_->AddObserverAndSetInitialState(first_observer);
 
   // Observer is initialized properly.
-  DCHECK_EQ(first_observer->tab_count(), expected_stats.total_tab_count);
-  DCHECK_EQ(first_observer->window_count(), expected_stats.window_count);
+  EXPECT_EQ(first_observer->tab_count(), expected_stats.total_tab_count);
+  EXPECT_EQ(first_observer->window_count(), expected_stats.window_count);
 
   // Add some tabs and windows to increase the counts.
   Browser* new_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(new_browser);
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
 
@@ -298,8 +311,11 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   tab_stats_tracker_->AddObserverAndSetInitialState(second_observer);
 
   // Observer is initialized properly.
-  DCHECK_EQ(second_observer->tab_count(), expected_stats.total_tab_count);
-  DCHECK_EQ(second_observer->window_count(), expected_stats.window_count);
+  EXPECT_EQ(second_observer->tab_count(), expected_stats.total_tab_count);
+  EXPECT_EQ(second_observer->window_count(), expected_stats.window_count);
+
+  tab_stats_tracker_->RemoveObserver(first_observer);
+  tab_stats_tracker_->RemoveObserver(second_observer);
 }
 
 namespace {
@@ -344,6 +360,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
 
   auto* window1_tab1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(window1_tab1);
   EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
 
   // The browser starts with one window and one visible tab, the observer will
@@ -356,21 +373,31 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // Mark the tab as hidden.
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   window1_tab1->WasHidden();
+  EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Make it visible again.
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   window1_tab1->WasShown();
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Create a second browser window. This will cause one visible tab to be
   // created and its main frame will do a navigation.
+  // The pointer to the new tab isn't available yet when setting expectations,
+  // so match any pointer that's not a tab that already exists.
+  auto window2_tab1_matcher = Ne(window1_tab1);
   EXPECT_CALL(mock_observer, OnWindowAdded());
-  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  EXPECT_CALL(mock_observer, OnTabAdded(window2_tab1_matcher));
   EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_));
-  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(::testing::_));
+              OnPrimaryMainFrameNavigationCommitted(window2_tab1_matcher));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1_matcher));
+
   Browser* window2 = CreateBrowser(browser()->profile());
+  auto* window2_tab1 = window2->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(window2_tab1);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE, window2_tab1->GetVisibility());
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Make sure that the 2 windows don't overlap to avoid some unexpected
@@ -385,38 +412,42 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   browser_rect.set_x(browser_rect.right());
   window2->window()->SetBounds(browser_rect);
 
-  auto* window2_tab1 = window2->tab_strip_model()->GetWebContentsAt(0);
-
   // Adding a tab to the second window will cause its previous frame to become
   // hidden.
-  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  // The pointer to the new tab isn't available yet when setting expectations,
+  // so match any pointer that's not a tab that already exists.
+  auto window2_tab2_matcher = AllOf(Ne(window1_tab1), Ne(window2_tab1));
+  EXPECT_CALL(mock_observer, OnTabAdded(window2_tab2_matcher));
   EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_));
+              OnPrimaryMainFrameNavigationCommitted(window2_tab2_matcher));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
+
   ASSERT_TRUE(AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
                                      ui::PAGE_TRANSITION_TYPED, true));
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
   auto* window2_tab2 = window2->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_TRUE(window2_tab2);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   EXPECT_EQ(content::Visibility::HIDDEN, window2_tab1->GetVisibility());
   EXPECT_EQ(content::Visibility::VISIBLE, window2_tab2->GetVisibility());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Make sure that the visibility change events are properly forwarded.
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab2));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
   window2->tab_strip_model()->ActivateTabAt(0);
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   EXPECT_EQ(content::Visibility::VISIBLE, window2_tab1->GetVisibility());
   EXPECT_EQ(content::Visibility::HIDDEN, window2_tab2->GetVisibility());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
   EXPECT_CALL(mock_observer, OnTabRemoved(window2_tab1));
   EXPECT_CALL(mock_observer, OnTabRemoved(window2_tab2));
   EXPECT_CALL(mock_observer, OnWindowRemoved());
   CloseBrowserSynchronously(window2);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
-  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   EXPECT_CALL(mock_observer, OnTabRemoved(window1_tab1));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   EXPECT_CALL(mock_observer, OnWindowRemoved());
@@ -441,26 +472,32 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, MAYBE_TabSwitch) {
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
 
   auto* window1_tab1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(window1_tab1);
   EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
 
   // The browser starts with one window and one visible tab, the observer will
   // be notified immediately about those.
   EXPECT_CALL(mock_observer, OnWindowAdded());
-  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  EXPECT_CALL(mock_observer, OnTabAdded(window1_tab1));
   tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  // Adding a new foreground tab will hide the original tab.
+  // The pointer to the new tab isn't available yet when setting expectations,
+  // so match any pointer that's not a tab that already exists.
+  auto window1_tab2_matcher = Ne(window1_tab1);
+  EXPECT_CALL(mock_observer, OnTabAdded(window1_tab2_matcher));
   EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_));
+              OnPrimaryMainFrameNavigationCommitted(window1_tab2_matcher));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
                                      ui::PAGE_TRANSITION_TYPED, true));
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
-  EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
   auto* window1_tab2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_TRUE(window1_tab2);
+  EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
   EXPECT_EQ(content::Visibility::VISIBLE, window1_tab2->GetVisibility());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // A tab switch should cause 2 visibility change events. The "tab hidden"
   // notification should arrive before the "tab visible" one.
@@ -469,6 +506,9 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, MAYBE_TabSwitch) {
     EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab2));
     EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
     browser()->tab_strip_model()->ActivateTabAt(0);
+    EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
+    EXPECT_EQ(content::Visibility::HIDDEN, window1_tab2->GetVisibility());
+    ::testing::Mock::VerifyAndClear(&mock_observer);
   }
 
   tab_stats_tracker_->RemoveObserver(&mock_observer);
@@ -483,22 +523,25 @@ namespace {
 // both indicate that they are audible.
 class AudioStartObserver : public content::WebContentsObserver {
  public:
-  AudioStartObserver(content::WebContents* web_contents,
-                     base::OnceClosure quit_closure)
-      : content::WebContentsObserver(web_contents),
-        quit_closure_(std::move(quit_closure)) {
-    DCHECK(!web_contents->IsCurrentlyAudible());
+  explicit AudioStartObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {
+    if (web_contents->IsCurrentlyAudible()) {
+      waiter_.OnEvent();
+    }
   }
+
   ~AudioStartObserver() override = default;
+
+  void Wait() { EXPECT_TRUE(waiter_.Wait()); }
 
   // WebContentsObserver:
   void OnAudioStateChanged(bool audible) override {
-    DCHECK(audible);
-    std::move(quit_closure_).Run();
+    ASSERT_TRUE(audible);
+    waiter_.OnEvent();
   }
 
  private:
-  base::OnceClosure quit_closure_;
+  content::WaiterHelper waiter_;
 };
 
 }  // namespace
@@ -511,14 +554,16 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
 
   // Open the test JS file in the only WebContents.
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
-                                              "/webaudio_oscillator.html")));
+  ASSERT_TRUE(web_contents);
+  ASSERT_FALSE(web_contents->IsCurrentlyAudible());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("/webaudio_oscillator.html")));
 
   // Start the audio.
-  base::RunLoop run_loop;
-  AudioStartObserver audio_start_observer(web_contents, run_loop.QuitClosure());
+  AudioStartObserver audio_start_observer(web_contents);
   EXPECT_EQ("OK", content::EvalJs(web_contents, "StartOscillator();"));
-  run_loop.Run();
+  audio_start_observer.Wait();
 
   // Adding an observer now should receive the OnTabIsAudibleChanged() call.
   MockTabStatsObserver mock_observer;
@@ -577,11 +622,11 @@ IN_PROC_BROWSER_TEST_F(
   {
     MockTabStatsObserver mock_observer;
     tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
-    EXPECT_CALL(mock_observer,
-                OnPrimaryMainFrameNavigationCommitted(::testing::_))
+    EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_))
         .Times(0);
     content::FrameTreeNodeId host_id =
         prerender_test_helper().AddPrerender(prerender_url);
+    ASSERT_TRUE(GetWebContents());
     host_observer = std::make_unique<content::test::PrerenderHostObserver>(
         *GetWebContents(), host_id);
     EXPECT_FALSE(host_observer->was_activated());
@@ -592,10 +637,10 @@ IN_PROC_BROWSER_TEST_F(
   {
     MockTabStatsObserver mock_observer;
     tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
-    EXPECT_CALL(mock_observer,
-                OnPrimaryMainFrameNavigationCommitted(::testing::_))
+    EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_))
         .Times(1);
     prerender_test_helper().NavigatePrimaryPage(prerender_url);
+    host_observer->WaitForActivation();
     EXPECT_TRUE(host_observer->was_activated());
     tab_stats_tracker_->RemoveObserver(&mock_observer);
   }
@@ -629,8 +674,9 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
 
   // Navigate to an initial page.
+  ASSERT_TRUE(GetWebContents());
   EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_))
+              OnPrimaryMainFrameNavigationCommitted(GetWebContents()))
       .Times(1);
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -638,9 +684,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Create an iframe and navigate inside the iframe.
-  EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_))
-      .Times(0);
+  EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_)).Times(0);
   ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       content::JsReplace("var iframe = document.createElement('iframe');"
@@ -651,9 +695,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Create a fenced frame and navigate inside the fenced frame.
-  EXPECT_CALL(mock_observer,
-              OnPrimaryMainFrameNavigationCommitted(::testing::_))
-      .Times(0);
+  EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_)).Times(0);
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_helper_.CreateFencedFrame(
           GetWebContents()->GetPrimaryMainFrame(),
