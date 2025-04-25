@@ -5,6 +5,8 @@
 package org.chromium.components.permissions;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
@@ -62,10 +64,25 @@ public abstract class OsAdditionalSecurityPermissionProvider {
     }
 
     /**
+     * Returns non-black-and-white icon to use for operating-system-provided advanced protection
+     * branding.
+     */
+    @Nullable
+    public Drawable getColorfulAdvancedProtectionIcon(Context context) {
+        return null;
+    }
+
+    /**
      * Returns resource id for string to display to inform that strict-https-first-mode is enforced
      * by the operating-system-provided advanced protection setting.
      */
     public int getHttpsFirstModeEnforcedByAndroidAdvancedProtectionWarningResourceId() {
         return 0;
+    }
+
+    /** Returns intent which launches OS-advanced-protection settings. */
+    @Nullable
+    public Intent getIntentForOsAdvancedProtectionSettings() {
+        return null;
     }
 }

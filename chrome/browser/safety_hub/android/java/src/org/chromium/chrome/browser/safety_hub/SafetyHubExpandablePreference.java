@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
@@ -18,18 +20,20 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
+@NullMarked
 public class SafetyHubExpandablePreference extends ChromeBasePreference {
-    private String mPrimaryButtonText;
-    private String mSecondaryButtonText;
-    private View.OnClickListener mPrimaryButtonClickListener;
-    private View.OnClickListener mSecondaryButtonClickListener;
+    private @Nullable String mPrimaryButtonText;
+    private @Nullable String mSecondaryButtonText;
+    private @Nullable View.OnClickListener mPrimaryButtonClickListener;
+    private @Nullable View.OnClickListener mSecondaryButtonClickListener;
     private boolean mExpanded = true;
-    private Drawable mDrawable;
+    private @Nullable Drawable mDrawable;
     private boolean mHasProgressBar;
 
     public SafetyHubExpandablePreference(Context context, AttributeSet attrs) {
@@ -92,7 +96,12 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
 
         TextView summary = (TextView) holder.findViewById(android.R.id.summary);
         assert summary != null;
-        summary.setVisibility(getSummary() != null && isExpanded() ? View.VISIBLE : View.GONE);
+        CharSequence summaryStr = getSummary();
+        summary.setVisibility(summaryStr != null && isExpanded() ? View.VISIBLE : View.GONE);
+
+        if (summaryStr instanceof SpannableString) {
+            summary.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         updatePreferenceContentDescription(holder.itemView);
     }

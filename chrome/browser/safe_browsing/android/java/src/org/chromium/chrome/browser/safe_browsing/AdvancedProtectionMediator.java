@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safe_browsing;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -19,6 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissionProvider.Observer {
     private WindowAndroid mWindowAndroid;
+    private boolean mShouldShowMessageOnStartup;
 
     public AdvancedProtectionMediator(WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
@@ -26,6 +28,17 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         if (provider != null) {
             provider.addObserver(this);
+
+            boolean cachedAdvancedProtectionSetting =
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING,
+                                    /* defaultValue= */ false);
+            boolean advancedProtectionSetting = provider.isAdvancedProtectionRequestedByOs();
+            if (cachedAdvancedProtectionSetting != advancedProtectionSetting) {
+                updatePref(provider);
+                mShouldShowMessageOnStartup = advancedProtectionSetting;
+            }
         }
     }
 
@@ -40,17 +53,7 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         if (provider == null) return false;
 
-        boolean cachedAdvancedProtectionSetting =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.DEFAULT_OS_ADVANCED_PROTECTION_SETTING,
-                                /* defaultValue= */ false);
-        if (cachedAdvancedProtectionSetting == provider.isAdvancedProtectionRequestedByOs()) {
-            return false;
-        }
-
-        updatePref(provider);
-        if (provider.isAdvancedProtectionRequestedByOs()) {
+        if (mShouldShowMessageOnStartup && provider.isAdvancedProtectionRequestedByOs()) {
             enqueueMessage(provider);
         }
         return true;
@@ -82,9 +85,12 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
     }
 
     private void updatePref(OsAdditionalSecurityPermissionProvider provider) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(
-                        ChromePreferenceKeys.DEFAULT_OS_ADVANCED_PROTECTION_SETTING,
-                        provider.isAdvancedProtectionRequestedByOs());
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
+        preferences.writeBoolean(
+                ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING,
+                provider.isAdvancedProtectionRequestedByOs());
+        preferences.writeLong(
+                ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
+                System.currentTimeMillis());
     }
 }

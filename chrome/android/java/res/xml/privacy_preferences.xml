@@ -57,7 +57,10 @@ found in the LICENSE file.
 
     <PreferenceCategory
         android:key="security_section"
-        android:title="@string/security_section_title" />
+      android:title="@string/security_section_title" />
+     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+            android:key="advanced_protection_info"
+            android:title="@string/settings_privacy_and_security_advanced_protection_section_title"/>
     <Preference
         android:key="safe_browsing"
         android:title="@string/prefs_safe_browsing_title"

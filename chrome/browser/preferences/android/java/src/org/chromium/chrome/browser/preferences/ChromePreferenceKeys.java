@@ -252,8 +252,15 @@ public final class ChromePreferenceKeys {
      * last opened. Used to determine whether to show on startup a message informing the user about
      * the setting change.
      */
-    public static final String DEFAULT_OS_ADVANCED_PROTECTION_SETTING =
+    public static final String OS_ADVANCED_PROTECTION_SETTING =
             "Chrome.OsAdvancedProtection.DefaultEnabled";
+
+    /**
+     * Indicates the later time of: - user changing advanced-protection android-OS setting OR - user
+     * launching Chrome.
+     */
+    public static final String OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME =
+            "Chrome.OsAdvancedProtection.UpdatedTime";
 
     /**
      * Indicates that Chrome should show an alert to the user about data privacy if the device lock
@@ -1009,7 +1016,6 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
-                DEFAULT_OS_ADVANCED_PROTECTION_SETTING,
                 DEPRECATED_HOMEPAGE_LOCATION_POLICY,
                 DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
@@ -1069,6 +1075,8 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
+                OS_ADVANCED_PROTECTION_SETTING,
+                OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PIH_PRIVACY_NOTICE_CLOSED,
