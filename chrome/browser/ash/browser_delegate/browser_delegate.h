@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/gfx/geometry/rect.h"
 
 class Browser;
 
@@ -29,8 +31,14 @@ class BrowserDelegate {
   // BrowserController::GetDelegate.
   virtual Browser& GetBrowser() const = 0;
 
+  // Returns the browser's type.
+  virtual BrowserType GetType() const = 0;
+
   // Returns the browser's unique ID for the current session.
   virtual SessionID GetSessionID() const = 0;
+
+  // Returns the browser window's current bounds.
+  virtual gfx::Rect GetBounds() const = 0;
 
   // Returns the active contents. Can be nullptr, e.g. when the tab strip is
   // being initialized or destroyed.
@@ -45,6 +53,12 @@ class BrowserDelegate {
 
   // Shows the browser window, or activates it if it's already visible.
   virtual void Show() = 0;
+
+  // Minimizes the browser window.
+  virtual void Minimize() = 0;
+
+  // Closes the browser as soon as possible.
+  virtual void Close() = 0;
 
  protected:
   ~BrowserDelegate() = default;

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -381,13 +382,13 @@ std::optional<base::File::Error> GetFirstTaskError(
 }
 
 std::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile) {
-  Browser* browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+  BrowserDelegate* browser = FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   if (!browser) {
     return std::nullopt;
   }
 
-  gfx::Rect files_app_bounds = browser->window()->GetBounds();
+  gfx::Rect files_app_bounds = browser->GetBounds();
   // These are the min sizes needed for the oauth dialog to look subjectively
   // "good".
   const int kMinWidth = 615;

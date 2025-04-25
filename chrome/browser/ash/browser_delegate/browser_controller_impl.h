@@ -28,7 +28,11 @@ class BrowserControllerImpl : public BrowserController,
 
   // BrowserController:
   BrowserDelegate* GetDelegate(Browser* browser) override;
-  BrowserDelegate* NewTabWithPostData(user_manager::User& user,
+  BrowserDelegate* FindWebApp(const user_manager::User& user,
+                              webapps::AppId app_id,
+                              BrowserType browser_type,
+                              const GURL& url) override;
+  BrowserDelegate* NewTabWithPostData(const user_manager::User& user,
                                       const GURL& url,
                                       base::span<const uint8_t> post_data,
                                       std::string_view extra_headers) override;

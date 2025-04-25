@@ -32,6 +32,7 @@ static_library("files") {
     "//ash/constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/upload_office_to_cloud",

@@ -9,15 +9,39 @@
 
 #include "base/check.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
+#include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+
+namespace {
+
+bool BrowserMatchesURL(Browser* browser, const GURL& url) {
+  return browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetVisibleURL()
+      .EqualsIgnoringRef(url);
+}
+
+bool BrowserMatches(Browser* browser,
+                    Profile* profile,
+                    webapps::AppId app_id,
+                    Browser::Type type,
+                    const GURL& url) {
+  return browser->profile() == profile && browser->type() == type &&
+         web_app::GetAppIdFromApplicationName(browser->app_name()) == app_id &&
+         (url.is_empty() || BrowserMatchesURL(browser, url));
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -41,8 +65,31 @@ BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
   return it->second.get();
 }
 
+BrowserDelegate* BrowserControllerImpl::FindWebApp(
+    const user_manager::User& user,
+    webapps::AppId app_id,
+    BrowserType browser_type,
+    const GURL& url) {
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+  CHECK(profile);
+
+  CHECK(browser_type == BrowserType::kApp ||
+        browser_type == BrowserType::kAppPopup);
+  Browser::Type internal_type = ToInternalBrowserType(browser_type);
+
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (!browser->is_delete_scheduled() &&
+        BrowserMatches(browser, profile, app_id, internal_type, url)) {
+      return GetDelegate(browser);
+    }
+  }
+
+  return nullptr;
+}
+
 BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
-    user_manager::User& user,
+    const user_manager::User& user,
     const GURL& url,
     base::span<const uint8_t> post_data,
     std::string_view extra_headers) {

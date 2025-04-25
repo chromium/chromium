@@ -10,12 +10,12 @@
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/prefs/pref_service.h"
@@ -85,15 +85,14 @@ bool IsMetadataFile(const base::FilePath& path) {
 
 void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  Browser* browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   if (!browser) {
     // Do not call SendFilesToProjectorApp() unless the Projector app is already
     // open.
     return;
   }
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = browser->GetActiveWebContents();
   auto* web_ui = web_contents->GetWebUI();
   if (!web_ui) {
     return;

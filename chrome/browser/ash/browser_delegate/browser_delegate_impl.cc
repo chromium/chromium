@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -20,8 +21,16 @@ Browser& BrowserDelegateImpl::GetBrowser() const {
   return browser_.get();
 }
 
+BrowserType BrowserDelegateImpl::GetType() const {
+  return FromInternalBrowserType(browser_->type());
+}
+
 SessionID BrowserDelegateImpl::GetSessionID() const {
   return browser_->session_id();
+}
+
+gfx::Rect BrowserDelegateImpl::GetBounds() const {
+  return browser_->window()->GetBounds();
 }
 
 content::WebContents* BrowserDelegateImpl::GetActiveWebContents() const {
@@ -37,7 +46,15 @@ bool BrowserDelegateImpl::IsClosing() const {
 }
 
 void BrowserDelegateImpl::Show() {
-  return browser_->window()->Show();
+  browser_->window()->Show();
+}
+
+void BrowserDelegateImpl::Minimize() {
+  browser_->window()->Minimize();
+}
+
+void BrowserDelegateImpl::Close() {
+  browser_->window()->Close();
 }
 
 }  // namespace ash

@@ -8,9 +8,11 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
+#include "components/webapps/common/web_app_id.h"
+#include "url/gurl.h"
 
 class Browser;
-class GURL;
 
 namespace user_manager {
 class User;
@@ -33,12 +35,22 @@ class BrowserController {
   // BrowserDelegate::GetBrowser.
   virtual BrowserDelegate* GetDelegate(Browser* browser) = 0;
 
+  // Returns (the delegate for) the most recently activated web app browser
+  // that matches the given parameters. Returns nullptr if there's none.
+  // Url matching is done ignoring any references, and only if `url` is not
+  // empty.
+  // The `browser_type` must be kApp or kAppPopup.
+  virtual BrowserDelegate* FindWebApp(const user_manager::User& user,
+                                      webapps::AppId app_id,
+                                      BrowserType browser_type,
+                                      const GURL& url = GURL()) = 0;
+
   // Makes a POST request in a new tab in the last active tabbed browser. If no
   // such browser exists, a new one is created. Returns nullptr if the creation
   // is not possible for the given arguments.
   // This is needed by the Media app.
   virtual BrowserDelegate* NewTabWithPostData(
-      user_manager::User& user,
+      const user_manager::User& user,
       const GURL& url,
       base::span<const uint8_t> post_data,
       std::string_view extra_headers) = 0;

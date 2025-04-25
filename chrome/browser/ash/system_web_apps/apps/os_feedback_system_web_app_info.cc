@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -113,10 +114,10 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
   // feedback tool is to be launched.
   if (IsUserFeedbackAllowed(profile)) {
     // Check whether the feedback app is opened already. If yes, just show it.
-    Browser* browser = ash::FindSystemWebAppBrowser(
-        profile, ash::SystemWebAppType::OS_FEEDBACK);
+    ash::BrowserDelegate* browser = ash::FindSystemWebAppBrowser(
+        profile, ash::SystemWebAppType::OS_FEEDBACK, ash::BrowserType::kApp);
     if (browser) {
-      browser->window()->Show();
+      browser->Show();
     } else {
       apps::AppLaunchParams app_params(
           params.app_id, params.container, params.disposition,

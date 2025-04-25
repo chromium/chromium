@@ -18,6 +18,7 @@ static_library("graduation") {
     "//ash/public/cpp:cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/shelf",

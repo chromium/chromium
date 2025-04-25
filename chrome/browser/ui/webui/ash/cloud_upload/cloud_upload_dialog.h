@@ -32,6 +32,10 @@
 
 class Profile;
 
+namespace ash {
+class BrowserDelegate;
+}  // namespace ash
+
 namespace extensions::app_file_handler_util {
 class MimeTypeCollector;
 }  // namespace extensions::app_file_handler_util
@@ -258,7 +262,7 @@ class CloudOpenTask : public BrowserListObserver,
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
   bool need_new_files_app_ = false;
-  raw_ptr<Browser> files_app_browser_;
+  raw_ptr<BrowserDelegate> files_app_browser_;
   bool files_app_closed_ = false;
 };
 

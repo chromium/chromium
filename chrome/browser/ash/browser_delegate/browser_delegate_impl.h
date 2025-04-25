@@ -19,11 +19,15 @@ class BrowserDelegateImpl : public BrowserDelegate {
 
   // BrowserDelegate:
   Browser& GetBrowser() const override;
+  BrowserType GetType() const override;
   SessionID GetSessionID() const override;
+  gfx::Rect GetBounds() const override;
   content::WebContents* GetActiveWebContents() const override;
   aura::Window* GetNativeWindow() const override;
   bool IsClosing() const override;
   void Show() override;
+  void Minimize() override;
+  void Close() override;
 
  private:
   const raw_ref<Browser> browser_;

@@ -25,6 +25,7 @@ static_library("os_feedback") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
