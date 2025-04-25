@@ -5,12 +5,9 @@
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 
 #include <map>
-#include <memory>
-#include <set>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

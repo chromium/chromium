@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>  // For |std::swap()|.
 #include <memory>
 #include <string>
 #include <utility>

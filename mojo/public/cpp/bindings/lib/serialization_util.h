@@ -5,10 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_UTIL_H_
 
-#include <stddef.h>
-
 #include <type_traits>
-#include <utility>
 
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"

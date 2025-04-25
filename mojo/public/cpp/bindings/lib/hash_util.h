@@ -5,7 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_HASH_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_HASH_UTIL_H_
 
-#include <cstring>
 #include <functional>
 #include <optional>
 #include <type_traits>

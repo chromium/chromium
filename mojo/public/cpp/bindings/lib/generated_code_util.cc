@@ -4,8 +4,6 @@
 
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 
-#include <cstring>
-
 #include "mojo/public/cpp/bindings/lib/control_message_handler.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"

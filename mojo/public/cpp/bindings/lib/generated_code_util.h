@@ -5,7 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_GENERATED_CODE_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_GENERATED_CODE_UTIL_H_
 
-#include <utility>
 #include "base/component_export.h"
 #include "base/containers/span.h"
 

@@ -4,9 +4,15 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"

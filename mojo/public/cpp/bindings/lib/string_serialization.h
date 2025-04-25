@@ -10,7 +10,6 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_STRING_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_STRING_SERIALIZATION_H_
 
-#include <stddef.h>
 #include <string.h>
 
 #include <string_view>
