@@ -34,7 +34,6 @@ import java.util.Set;
 /** Polls multiple {@link Condition}s in parallel. */
 @NullMarked
 public class ConditionWaiter {
-
     /**
      * The process of waiting for a {@link Condition} to be fulfilled.
      *
@@ -196,6 +195,7 @@ public class ConditionWaiter {
     protected @MonotonicNonNull List<ConditionWait> mWaits;
     protected @MonotonicNonNull Map<Condition, ElementFactory> mConditionsGuardingFactories;
     protected final Map<String, ConditionWait> mExitWaitsByElementId = new HashMap<>();
+    private boolean mPreCheckFulfilledConditions;
 
     ConditionWaiter(Transition transition) {
         mTransition = transition;
@@ -255,6 +255,12 @@ public class ConditionWaiter {
                             + createWaitConditionsSummary(
                                     mWaits, /* generateMainMessage= */ false));
         }
+
+        // If the preCheck already saw all Conditions fulfilled and there is no trigger which might
+        // cause state changes, avoid checking Conditions a second time.
+        if (mTransition.mTrigger == null && !anyCriteriaMissing) {
+            mPreCheckFulfilledConditions = true;
+        }
     }
 
     /**
@@ -266,20 +272,22 @@ public class ConditionWaiter {
     void waitFor() throws TravelException {
         assert isPreCheckDone();
 
-        TransitionOptions options = mTransition.getOptions();
-        long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
-        try {
-            CriteriaHelper.pollInstrumentationThread(
-                    new CheckConditionsOnce(), timeoutMs, POLLING_INTERVAL);
-        } catch (CriteriaHelper.TimeoutException timeoutException) {
-            // Unwrap the TimeoutException and CriteriaNotSatisfiedException parts of the stack to
-            // reduce the error message.
-            if (timeoutException.getCause()
-                    instanceof CriteriaNotSatisfiedException criteriaNotSatisfiedException) {
-                throw TravelException.newTravelException(
-                        criteriaNotSatisfiedException.getMessage());
-            } else {
-                throw timeoutException;
+        if (!mPreCheckFulfilledConditions) {
+            TransitionOptions options = mTransition.getOptions();
+            long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
+            try {
+                CriteriaHelper.pollInstrumentationThread(
+                        new CheckConditionsOnce(), timeoutMs, POLLING_INTERVAL);
+            } catch (CriteriaHelper.TimeoutException timeoutException) {
+                // Unwrap the TimeoutException and CriteriaNotSatisfiedException parts of the stack
+                // to reduce the error message.
+                if (timeoutException.getCause()
+                        instanceof CriteriaNotSatisfiedException criteriaNotSatisfiedException) {
+                    throw TravelException.newTravelException(
+                            criteriaNotSatisfiedException.getMessage());
+                } else {
+                    throw timeoutException;
+                }
             }
         }
 
