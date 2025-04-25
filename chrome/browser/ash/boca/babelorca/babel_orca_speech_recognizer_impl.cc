@@ -18,15 +18,6 @@
 
 namespace ash::babelorca {
 
-namespace {
-void UnwrapSodaInstallationStatus(
-    base::OnceCallback<void(bool)> availabililty_callback,
-    SodaInstaller::InstallationStatus status) {
-  std::move(availabililty_callback)
-      .Run(status == SodaInstaller::InstallationStatus::kReady);
-}
-}  // namespace
-
 BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
     Profile* profile,
     SodaInstaller* soda_installer,
@@ -53,14 +44,14 @@ void BabelOrcaSpeechRecognizerImpl::OnLanguageIdentificationEvent(
 
 void BabelOrcaSpeechRecognizerImpl::Start() {
   // If already installed, will immediately begin recognizing.
+  started_ = true;
   soda_installer_->InstallSoda(base::BindOnce(
-      &UnwrapSodaInstallationStatus,
-      base::BindOnce(
-          &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
-          service_ptr_factory_.GetWeakPtr())));
+      &BabelOrcaSpeechRecognizerImpl::OnSpeechRecognitionAvailabilityChanged,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BabelOrcaSpeechRecognizerImpl::Stop() {
+  started_ = false;
   SpeechRecognitionAvailabilityChanged(false);
 }
 
@@ -83,6 +74,15 @@ BabelOrcaSpeechRecognizerImpl::GetRecognizerClientType() {
   return features::IsBocaClientTypeForSpeechRecognitionEnabled()
              ? media::mojom::RecognizerClientType::kSchoolTools
              : SystemLiveCaptionService::GetRecognizerClientType();
+}
+
+void BabelOrcaSpeechRecognizerImpl::OnSpeechRecognitionAvailabilityChanged(
+    SodaInstaller::InstallationStatus status) {
+  if (!started_) {
+    return;
+  }
+  SpeechRecognitionAvailabilityChanged(
+      status == SodaInstaller::InstallationStatus::kReady);
 }
 
 }  // namespace ash::babelorca
