@@ -734,7 +734,7 @@ public class TabStripTest {
         assertSetTabStripScrollOffset(
                 (int)
                         TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
-                                .getMinimumScrollOffsetForTesting());
+                                .getScrollOffsetLimitForTesting());
 
         // Tab should now be hidden.
         helper.waitForCallback(0);
@@ -780,7 +780,7 @@ public class TabStripTest {
         // Open enough regular tabs to cause the strip to scroll.
         StripLayoutHelper tabStrip =
                 TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false);
-        while (tabStrip.getMinimumScrollOffsetForTesting() >= 0) {
+        while (tabStrip.getScrollOffsetLimitForTesting() >= 0) {
             ChromeTabUtils.newTabFromMenu(
                     InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         }
@@ -792,12 +792,12 @@ public class TabStripTest {
         assertTabStripFadeFullyHidden(!isLeft);
         assertTabStripFadeFullyVisible(isLeft);
 
-        // Scroll a little below the minimum scroll offset causing the right fade (in LTR) to be
+        // Scroll a little below the scroll offset limit causing the right fade (in LTR) to be
         // at partial opacity.
         assertSetTabStripScrollOffset(
                 (int)
                         (TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
-                                        .getMinimumScrollOffsetForTesting()
+                                        .getScrollOffsetLimitForTesting()
                                 + StripLayoutHelper.FADE_FULL_OPACITY_THRESHOLD_DP / 2));
         assertTabStripFadePartiallyVisible(!isLeft);
         assertTabStripFadeFullyVisible(isLeft);

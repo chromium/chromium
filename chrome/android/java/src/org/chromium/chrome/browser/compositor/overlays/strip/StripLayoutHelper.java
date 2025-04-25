@@ -3302,7 +3302,7 @@ public class StripLayoutHelper
                 resizeTabStrip(false, false, false);
             } else {
                 // If off-screen, request an update so we re-calculate tab initial positions and the
-                // minimum scroll offset.
+                // scroll offset limit.
                 mUpdateHost.requestUpdate();
             }
         }
@@ -4394,10 +4394,11 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The strip's minimum scroll offset.
+     * @return The strip's scroll offset limit (a 1-D vector along the X axis, under the dynamic
+     *     coordinate system used by {@link ScrollDelegate}).
      */
-    float getMinimumScrollOffsetForTesting() {
-        return mScrollDelegate.getMinScrollOffsetForTesting(); // IN-TEST
+    float getScrollOffsetLimitForTesting() {
+        return mScrollDelegate.getScrollOffsetLimitForTesting(); // IN-TEST
     }
 
     /**
