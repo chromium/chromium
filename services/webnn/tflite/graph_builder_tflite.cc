@@ -2883,94 +2883,93 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
     const mojom::ElementWiseBinary& op)
     -> base::expected<OperatorOffset, std::string> {
   std::optional<TensorInfo> quantized_output;
-  const OperandDataType input_data_type =
-      GetOperand(op.lhs_operand_id).descriptor.data_type();
+  const OperandDescriptor& lhs_operand_descriptor =
+      GetOperand(op.lhs_operand_id).descriptor;
+  const OperandDescriptor& rhs_operand_descriptor =
+      GetOperand(op.rhs_operand_id).descriptor;
   ::tflite::BuiltinOperator code;
   switch (op.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      CHECK(context_properties_.data_type_limits.add_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.add_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_ADD;
       quantized_output = CanFuseQuantizeAndGetOutput(op);
       break;
     case mojom::ElementWiseBinary::Kind::kSub:
-      CHECK(context_properties_.data_type_limits.sub_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.sub_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_SUB;
       quantized_output = CanFuseQuantizeAndGetOutput(op);
       break;
     case mojom::ElementWiseBinary::Kind::kMul:
-      CHECK(context_properties_.data_type_limits.mul_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.mul_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_MUL;
       quantized_output = CanFuseQuantizeAndGetOutput(op);
       break;
     case mojom::ElementWiseBinary::Kind::kDiv:
-      CHECK(context_properties_.data_type_limits.div_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.div_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_DIV;
       break;
     case mojom::ElementWiseBinary::Kind::kMax:
-      CHECK(context_properties_.data_type_limits.max_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.max_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_MAXIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kMin:
-      CHECK(context_properties_.data_type_limits.min_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.min_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_MINIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kPow:
-      CHECK(context_properties_.data_type_limits.pow_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.pow_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_POW;
       break;
     case mojom::ElementWiseBinary::Kind::kEqual:
-      CHECK(context_properties_.data_type_limits.equal_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.equal_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kGreater:
-      CHECK(context_properties_.data_type_limits.greater_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.greater_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_GREATER;
       break;
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
       CHECK(context_properties_.data_type_limits.greater_or_equal_input
-                .data_types.Has(input_data_type));
+                .SupportsAll({lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_GREATER_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kLesser:
-      CHECK(context_properties_.data_type_limits.lesser_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.lesser_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_LESS;
       break;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       CHECK(context_properties_.data_type_limits.lesser_or_equal_input
-                .data_types.Has(input_data_type));
+                .SupportsAll({lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_LESS_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kNotEqual:
-      CHECK(context_properties_.data_type_limits.not_equal_input.data_types.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.not_equal_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_NOT_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-      CHECK(
-          context_properties_.data_type_limits.logical_and_input.data_types.Has(
-              input_data_type));
+      CHECK(context_properties_.data_type_limits.logical_and_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_LOGICAL_AND;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
-      CHECK(
-          context_properties_.data_type_limits.logical_or_input.data_types.Has(
-              input_data_type));
+      CHECK(context_properties_.data_type_limits.logical_or_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       code = ::tflite::BuiltinOperator_LOGICAL_OR;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      CHECK(
-          context_properties_.data_type_limits.logical_xor_input.data_types.Has(
-              input_data_type));
+      CHECK(context_properties_.data_type_limits.logical_xor_input.SupportsAll(
+          {lhs_operand_descriptor, rhs_operand_descriptor}));
       // TFLite does not have a logical_xor operator. Since the inputs are
       // converted to bools below, we can use the not_equal operator to get the
       // same results as logical_xor.
@@ -5028,8 +5027,9 @@ int32_t GraphBuilderTflite::ReshapeHiddenAndCellState(
 
 auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.matmul_input.data_types.Has(
-      GetOperand(matmul.a_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.matmul_input.SupportsAll(
+      {GetOperand(matmul.a_operand_id).descriptor,
+       GetOperand(matmul.b_operand_id).descriptor}));
   ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
                    SerializeInputTensorInfo(matmul.a_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
