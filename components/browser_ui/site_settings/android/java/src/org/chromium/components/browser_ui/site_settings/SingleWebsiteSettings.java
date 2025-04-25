@@ -115,6 +115,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     public static final String PREF_RESET_SITE = "reset_site_button";
 
     public static final int REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS = 1;
+    public static final int RWS_ROW_ID = View.generateViewId();
 
     private static boolean arrayContains(int[] array, int element) {
         for (int e : array) {
@@ -1110,6 +1111,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     getActivity().getLayoutInflater(),
                                     /* showRwsMembershipLabels= */ false,
                                     /* isClickable= */ false);
+                    preference.setViewId(RWS_ROW_ID);
                     preference.setOnDeleteCallback(
                             isCurrentSite(entry)
                                     // If deleting data for the current site, pop back to refresh
