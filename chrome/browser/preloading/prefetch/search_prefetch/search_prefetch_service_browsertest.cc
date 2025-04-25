@@ -1294,6 +1294,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   CheckCorrectForwardingResultMetric(
       histogram_tester,
       StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(
+      "navigational-prefetch",
+      content::EvalJs(
+          frame, "performance.getEntriesByType('navigation')[0].deliveryType"));
+
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -2253,6 +2260,11 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ReceivedServableResponse2.Fallback."
       "SuggestionPrefetch",
       /*can_be_served*/ true, 1);
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(
+      "",
+      content::EvalJs(
+          frame, "performance.getEntriesByType('navigation')[0].deliveryType"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
