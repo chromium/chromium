@@ -12,6 +12,12 @@ using ManualFillCreditCardiOSTest = PlatformTest;
 
 autofill::CreditCard::RecordType LOCAL_CARD_RECORD_TYPE =
     autofill::CreditCard::RecordType::kLocalCard;
+autofill::CreditCard::CardInfoRetrievalEnrollmentState
+    CARD_INFO_RETRIEVAL_ENROLLED_STATE = autofill::CreditCard::
+        CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+autofill::CreditCard::CardInfoRetrievalEnrollmentState
+    CARD_INFO_RETRIEVAL_UNENROLLED_STATE = autofill::CreditCard::
+        CardInfoRetrievalEnrollmentState::kRetrievalUnenrolledAndNotEligible;
 
 // Tests that a credential is correctly created.
 TEST_F(ManualFillCreditCardiOSTest, Creation) {
@@ -25,20 +31,21 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   NSString* expirationYear = @"19";
   NSString* expirationMonth = @"10";
   NSString* CVC = @"123";
-  ManualFillCreditCard* card =
-      [[ManualFillCreditCard alloc] initWithGUID:GUID
-                                         network:network
-                                            icon:icon
-                                        bankName:bankName
-                                      cardHolder:cardHolder
-                                          number:number
-                                obfuscatedNumber:obfuscatedNumber
-                        networkAndLastFourDigits:nil
-                                  expirationYear:expirationYear
-                                 expirationMonth:expirationMonth
-                                             CVC:CVC
-                                      recordType:LOCAL_CARD_RECORD_TYPE
-                                 canFillDirectly:true];
+  ManualFillCreditCard* card = [[ManualFillCreditCard alloc]
+                          initWithGUID:GUID
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:nil
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:CVC
+                            recordType:LOCAL_CARD_RECORD_TYPE
+      cardInfoRetrievalEnrollmentState:CARD_INFO_RETRIEVAL_ENROLLED_STATE
+                       canFillDirectly:true];
   EXPECT_TRUE(card);
   EXPECT_NSEQ(GUID, card.GUID);
   EXPECT_NSEQ(network, card.network);
@@ -50,6 +57,8 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   EXPECT_NSEQ(expirationMonth, card.expirationMonth);
   EXPECT_NSEQ(CVC, card.CVC);
   EXPECT_EQ(card.recordType, LOCAL_CARD_RECORD_TYPE);
+  EXPECT_EQ(card.cardInfoRetrievalEnrollmentState,
+            CARD_INFO_RETRIEVAL_ENROLLED_STATE);
 }
 
 // Test equality between credit cards.
@@ -65,52 +74,55 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   NSString* expirationMonth = @"10";
   NSString* CVC = @"123";
 
-  ManualFillCreditCard* card =
-      [[ManualFillCreditCard alloc] initWithGUID:GUID
-                                         network:network
-                                            icon:icon
-                                        bankName:bankName
-                                      cardHolder:cardHolder
-                                          number:number
-                                obfuscatedNumber:obfuscatedNumber
-                        networkAndLastFourDigits:nil
-                                  expirationYear:expirationYear
-                                 expirationMonth:expirationMonth
-                                             CVC:CVC
-                                      recordType:LOCAL_CARD_RECORD_TYPE
-                                 canFillDirectly:true];
+  ManualFillCreditCard* card = [[ManualFillCreditCard alloc]
+                          initWithGUID:GUID
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:nil
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:CVC
+                            recordType:LOCAL_CARD_RECORD_TYPE
+      cardInfoRetrievalEnrollmentState:CARD_INFO_RETRIEVAL_UNENROLLED_STATE
+                       canFillDirectly:true];
 
-  ManualFillCreditCard* equalCard =
-      [[ManualFillCreditCard alloc] initWithGUID:GUID
-                                         network:network
-                                            icon:icon
-                                        bankName:bankName
-                                      cardHolder:cardHolder
-                                          number:number
-                                obfuscatedNumber:obfuscatedNumber
-                        networkAndLastFourDigits:nil
-                                  expirationYear:expirationYear
-                                 expirationMonth:expirationMonth
-                                             CVC:nil
-                                      recordType:LOCAL_CARD_RECORD_TYPE
-                                 canFillDirectly:true];
+  ManualFillCreditCard* equalCard = [[ManualFillCreditCard alloc]
+                          initWithGUID:GUID
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:nil
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:nil
+                            recordType:LOCAL_CARD_RECORD_TYPE
+      cardInfoRetrievalEnrollmentState:CARD_INFO_RETRIEVAL_UNENROLLED_STATE
+                       canFillDirectly:true];
 
   EXPECT_TRUE([card isEqual:equalCard]);
 
-  ManualFillCreditCard* differentGuidCredential =
-      [[ManualFillCreditCard alloc] initWithGUID:@"wxyz-8765-4321"
-                                         network:network
-                                            icon:icon
-                                        bankName:bankName
-                                      cardHolder:cardHolder
-                                          number:number
-                                obfuscatedNumber:obfuscatedNumber
-                        networkAndLastFourDigits:nil
-                                  expirationYear:expirationYear
-                                 expirationMonth:expirationMonth
-                                             CVC:CVC
-                                      recordType:LOCAL_CARD_RECORD_TYPE
-                                 canFillDirectly:true];
+  ManualFillCreditCard* differentGuidCredential = [[ManualFillCreditCard alloc]
+                          initWithGUID:@"wxyz-8765-4321"
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:nil
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:CVC
+                            recordType:LOCAL_CARD_RECORD_TYPE
+      cardInfoRetrievalEnrollmentState:CARD_INFO_RETRIEVAL_UNENROLLED_STATE
+                       canFillDirectly:true];
   EXPECT_FALSE([card isEqual:differentGuidCredential]);
 
   // Guid is the main differentiator, and as long as the guids are equal,

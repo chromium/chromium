@@ -7,18 +7,22 @@
 @implementation ManualFillCreditCard
 
 - (instancetype)initWithGUID:(NSString*)GUID
-                     network:(NSString*)network
-                        icon:(UIImage*)icon
-                    bankName:(NSString*)bankName
-                  cardHolder:(NSString*)cardHolder
-                      number:(NSString*)number
-            obfuscatedNumber:(NSString*)obfuscatedNumber
-    networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
-              expirationYear:(NSString*)expirationYear
-             expirationMonth:(NSString*)expirationMonth
-                         CVC:(NSString*)CVC
-                  recordType:(autofill::CreditCard::RecordType)recordType
-             canFillDirectly:(BOOL)canFillDirectly {
+                             network:(NSString*)network
+                                icon:(UIImage*)icon
+                            bankName:(NSString*)bankName
+                          cardHolder:(NSString*)cardHolder
+                              number:(NSString*)number
+                    obfuscatedNumber:(NSString*)obfuscatedNumber
+            networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
+                      expirationYear:(NSString*)expirationYear
+                     expirationMonth:(NSString*)expirationMonth
+                                 CVC:(NSString*)CVC
+                          recordType:
+                              (autofill::CreditCard::RecordType)recordType
+    cardInfoRetrievalEnrollmentState:
+        (autofill::CreditCard::CardInfoRetrievalEnrollmentState)
+            cardInfoRetrievalEnrollmentState
+                     canFillDirectly:(BOOL)canFillDirectly {
   self = [super init];
   if (self) {
     _GUID = [GUID copy];
@@ -33,6 +37,7 @@
     _expirationMonth = [expirationMonth copy];
     _CVC = [CVC copy];
     _recordType = recordType;
+    _cardInfoRetrievalEnrollmentState = cardInfoRetrievalEnrollmentState;
     _canFillDirectly = canFillDirectly;
   }
   return self;

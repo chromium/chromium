@@ -179,9 +179,9 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest,
 }
 
 // Tests that the manual fill credit card build from CardInfoRetrieval enrolled
-// card has CVC.
+// card has CVC and the enrollment state set.
 TEST_F(ManualFillCreditCardFormAutofilliOSTest,
-       ManualFillFromCardInfoRetrievalHasCVC) {
+       ManualFillFromCardInfoRetrieval) {
   NSString* GUID = @"1234-5678-abcd";
   NSString* number = @"1234";
   NSString* CVC = @"123";
@@ -200,4 +200,7 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest,
                                                   icon:nil];
 
   EXPECT_NSEQ(manualFillCard.CVC, CVC);
+  EXPECT_EQ(manualFillCard.cardInfoRetrievalEnrollmentState,
+            autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalEnrolled);
 }

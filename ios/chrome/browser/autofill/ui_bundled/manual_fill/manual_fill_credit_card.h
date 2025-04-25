@@ -50,6 +50,11 @@
 // The type of card: masked, local, virtual, etc.
 @property(nonatomic, readonly) autofill::CreditCard::RecordType recordType;
 
+// The credit card enrollment state for CardInfoRetrieval.
+@property(nonatomic, readonly)
+    autofill::CreditCard::CardInfoRetrievalEnrollmentState
+        cardInfoRetrievalEnrollmentState;
+
 // YES if the card can be filled directly from the ManualFillCreditCard NO if it
 // needs to be requested.
 @property(nonatomic, readonly) BOOL canFillDirectly;
@@ -57,18 +62,23 @@
 // Default init. `GUID` and `number` are the only fields considered for
 // equality, so we can differentiate between an obfuscated and a complete one.
 - (instancetype)initWithGUID:(NSString*)GUID
-                     network:(NSString*)network
-                        icon:(UIImage*)icon
-                    bankName:(NSString*)bankName
-                  cardHolder:(NSString*)cardHolder
-                      number:(NSString*)number
-            obfuscatedNumber:(NSString*)obfuscatedNumber
-    networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
-              expirationYear:(NSString*)expirationYear
-             expirationMonth:(NSString*)expirationMonth
-                         CVC:(NSString*)CVC
-                  recordType:(autofill::CreditCard::RecordType)recordType
-             canFillDirectly:(BOOL)canFillDirecly NS_DESIGNATED_INITIALIZER;
+                             network:(NSString*)network
+                                icon:(UIImage*)icon
+                            bankName:(NSString*)bankName
+                          cardHolder:(NSString*)cardHolder
+                              number:(NSString*)number
+                    obfuscatedNumber:(NSString*)obfuscatedNumber
+            networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
+                      expirationYear:(NSString*)expirationYear
+                     expirationMonth:(NSString*)expirationMonth
+                                 CVC:(NSString*)CVC
+                          recordType:
+                              (autofill::CreditCard::RecordType)recordType
+    cardInfoRetrievalEnrollmentState:
+        (autofill::CreditCard::CardInfoRetrievalEnrollmentState)
+            cardInfoRetrievalEnrollmentState
+                     canFillDirectly:(BOOL)canFillDirecly
+    NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Please use `initWithGuid:network:bankName:cardholder:number:
 // obfuscatedNumber:expirationYear:expirationMonth:`.

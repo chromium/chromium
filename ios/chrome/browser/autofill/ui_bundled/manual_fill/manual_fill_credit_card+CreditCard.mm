@@ -81,18 +81,20 @@
   }
 
   return [self initWithGUID:GUID
-                       network:network
-                          icon:icon
-                      bankName:bankName
-                    cardHolder:cardHolder
-                        number:number
-              obfuscatedNumber:obfuscatedNumber
-      networkAndLastFourDigits:networkAndLastFourDigits
-                expirationYear:expirationYear
-               expirationMonth:expirationMonth
-                           CVC:CVC
-                    recordType:creditCard.record_type()
-               canFillDirectly:canFillDirectly];
+                               network:network
+                                  icon:icon
+                              bankName:bankName
+                            cardHolder:cardHolder
+                                number:number
+                      obfuscatedNumber:obfuscatedNumber
+              networkAndLastFourDigits:networkAndLastFourDigits
+                        expirationYear:expirationYear
+                       expirationMonth:expirationMonth
+                                   CVC:CVC
+                            recordType:creditCard.record_type()
+      cardInfoRetrievalEnrollmentState:
+          creditCard.card_info_retrieval_enrollment_state()
+                       canFillDirectly:canFillDirectly];
 }
 
 @end

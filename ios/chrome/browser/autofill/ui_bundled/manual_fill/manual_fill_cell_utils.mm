@@ -73,8 +73,8 @@ constexpr CGFloat kOverflowMenuButtonSize = 24;
 // left.
 constexpr CGFloat kTrailingViewMinLeadingSpacing = 8;
 
-// Top and bottom padding for the virtual card instruction view.
-constexpr CGFloat kVirtualCardInstructionsVerticalPadding = 8;
+// Top and bottom padding for the card instruction view.
+constexpr CGFloat kCardInstructionsVerticalPadding = 8;
 
 // Adds all baseline anchor constraints for the given `views` to match the first
 // one. Constraints are not activated.
@@ -120,8 +120,8 @@ CGFloat GetVerticalSpacingForElementType(
     case ManualFillCellView::ElementType::kOtherChipButton:
       return kSmallSpacingBetweenViews;
     case ManualFillCellView::ElementType::kVirtualCardInstructions:
-    case ManualFillCellView::ElementType::kVirtualCardInstructionsSeparator:
-      return kVirtualCardInstructionsVerticalPadding;
+    case ManualFillCellView::ElementType::kCardInstructionsSeparator:
+      return kCardInstructionsVerticalPadding;
   }
 }
 

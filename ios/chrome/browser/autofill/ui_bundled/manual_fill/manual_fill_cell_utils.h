@@ -46,9 +46,9 @@ struct ManualFillCellView {
     kHeaderSeparator,
     // The view presenting the instructions on how to use virtual cards.
     kVirtualCardInstructions,
-    // A grey line to separate the virtual card instruction view from the rest
+    // A grey line to separate the card instruction view from the rest
     // of the cell.
-    kVirtualCardInstructionsSeparator,
+    kCardInstructionsSeparator,
     // Any other element not falling into one of the above types.
     kOther,
   };
