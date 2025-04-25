@@ -143,6 +143,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
 
 void PassageEmbeddingsServiceController::LoadModelsToService(
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+    base::ElapsedTimer service_launch_timer,
     mojom::PassageEmbeddingsLoadModelsParamsPtr params) {
   if (!service_remote_) {
     // Close the model files in a background thread.
@@ -150,20 +151,28 @@ void PassageEmbeddingsServiceController::LoadModelsToService(
         FROM_HERE, {base::MayBlock()},
         base::DoNothingWithBoundArgs(std::move(params)),
         base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
-                       weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(service_launch_timer), /*success=*/false));
     return;
   }
 
   service_remote_->LoadModels(
       std::move(params), MakeEmbedderParams(), std::move(receiver),
       base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(service_launch_timer)));
 }
 
-void PassageEmbeddingsServiceController::OnLoadModelsResult(bool success) {
+void PassageEmbeddingsServiceController::OnLoadModelsResult(
+    base::ElapsedTimer service_launch_timer,
+    bool success) {
   if (!success) {
     ResetEmbedderRemote();
+    return;
   }
+
+  base::UmaHistogramTimes("History.Embeddings.Embedder.LaunchDuration",
+                          service_launch_timer.Elapsed());
 }
 
 Embedder* PassageEmbeddingsServiceController::GetEmbedder() {
@@ -200,6 +209,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
   }
 
   if (!embedder_remote_) {
+    base::ElapsedTimer service_launch_timer;
     MaybeLaunchService();
 
     auto receiver = embedder_remote_.BindNewPipeAndPassReceiver();
@@ -218,16 +228,19 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
         base::BindOnce(&MakeModelParams, embeddings_model_path_, sp_model_path_,
                        model_metadata_->input_window_size()),
         base::BindOnce(&PassageEmbeddingsServiceController::LoadModelsToService,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
+                       std::move(service_launch_timer)));
   }
 
   pending_requests_.push_back(next_request_id_);
+  base::ElapsedTimer generate_embeddings_timer;
   embedder_remote_->GenerateEmbeddings(
       std::move(passages), PassagePriorityToMojom(priority),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PassageEmbeddingsServiceController::OnGotEmbeddings,
                          weak_ptr_factory_.GetWeakPtr(), next_request_id_,
-                         std::move(callback)),
+                         std::move(callback),
+                         std::move(generate_embeddings_timer), priority),
           std::vector<mojom::PassageEmbeddingsResultPtr>()));
   next_request_id_++;
 }
@@ -256,6 +269,8 @@ void PassageEmbeddingsServiceController::ResetEmbedderRemote() {
 void PassageEmbeddingsServiceController::OnGotEmbeddings(
     RequestId request_id,
     GetEmbeddingsResultCallback callback,
+    base::ElapsedTimer generate_embeddings_timer,
+    PassagePriority priority,
     std::vector<mojom::PassageEmbeddingsResultPtr> results) {
   // Mojo invokes the callbacks in the order in which `GenerateEmbeddings()` was
   // called. Therefore, `request_id` should be expected at the front of
@@ -272,6 +287,16 @@ void PassageEmbeddingsServiceController::OnGotEmbeddings(
   auto status = results.empty() ? ComputeEmbeddingsStatus::kExecutionFailure
                                 : ComputeEmbeddingsStatus::kSuccess;
   std::move(callback).Run(std::move(results), status);
+
+  if (status == ComputeEmbeddingsStatus::kSuccess) {
+    const base::TimeDelta duration = generate_embeddings_timer.Elapsed();
+    base::UmaHistogramTimes("History.Embeddings.TaskDuration", duration);
+    const char* const priority_histogram =
+        priority == kUserInitiated
+            ? "History.Embeddings.TaskDuration.UserInitiated"
+            : "History.Embeddings.TaskDuration.Passive";
+    base::UmaHistogramTimes(priority_histogram, duration);
+  }
 }
 
 }  // namespace passage_embeddings

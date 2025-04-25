@@ -2003,6 +2003,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.LaunchDuration" units="ms"
+    expires_after="2025-10-05">
+  <owner>wittman@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The time it took to launch the PassageEmbeddingsService. Logged each time
+    the service is successfully launched.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.ModelInfoStatus"
     enum="EmbeddingsModelInfoStatus" expires_after="2025-10-05">
   <owner>sophiechang@chromium.org</owner>
@@ -2438,6 +2448,38 @@ chromium-metrics-reviews@google.com.
     Number of embeddings that were computed for a tab that were stale by the
     time the computation completed, because the tab navigated away from the page
     in the mean time.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.TaskDuration" units="ms"
+    expires_after="2025-10-05">
+  <owner>wittman@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The time it took to compute embeddings for one service round trip. Logged
+    each time the embeddings are successfully computed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.TaskDuration.Passive" units="ms"
+    expires_after="2025-10-05">
+  <owner>wittman@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The time it took to compute embeddings with kPassive priority, for one
+    service round trip. Logged each time the embeddings are successfully
+    computed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.TaskDuration.UserInitiated" units="ms"
+    expires_after="2025-10-05">
+  <owner>wittman@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The time it took to compute embeddings with kUserInitiated priority, for one
+    service round trip. Logged each time the embeddings are successfully
+    computed.
   </summary>
 </histogram>
 
