@@ -224,8 +224,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptAlertDialog(
-      requestURL, message, base::BindOnce(completionHandler));
+      origin, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -242,8 +243,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptConfirmDialog(
-      requestURL, message, base::BindOnce(completionHandler));
+      origin, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -252,8 +254,8 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                          initiatedByFrame:(WKFrameInfo*)frame
                         completionHandler:
                             (void (^)(NSString* result))completionHandler {
-  GURL origin(web::GURLOriginWithWKSecurityOrigin(frame.securityOrigin));
-  if (web::GetWebClient()->IsAppSpecificURL(origin)) {
+  GURL origin_url(web::GURLOriginWithWKSecurityOrigin(frame.securityOrigin));
+  if (web::GetWebClient()->IsAppSpecificURL(origin_url)) {
     std::string mojoResponse =
         self.mojoFacade->HandleMojoMessage(base::SysNSStringToUTF8(prompt));
     completionHandler(base::SysUTF8ToNSString(mojoResponse));
@@ -269,8 +271,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptPromptDialog(
-      requestURL, prompt, defaultText, base::BindOnce(completionHandler));
+      origin, prompt, defaultText, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView

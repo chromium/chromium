@@ -7,6 +7,8 @@
 #import "base/functional/callback_helpers.h"
 #import "ios/web_view/public/cwv_ui_delegate.h"
 #import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace ios_web_view {
 
@@ -19,7 +21,7 @@ WebViewJavaScriptDialogPresenter::~WebViewJavaScriptDialogPresenter() = default;
 
 void WebViewJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   SEL delegate_method = @selector(webView:
@@ -30,14 +32,14 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
   }
   [ui_delegate_ webView:web_view_
       runJavaScriptAlertPanelWithMessage:message_text
-                                 pageURL:net::NSURLWithGURL(origin_url)
+                                 pageURL:net::NSURLWithGURL(origin.GetURL())
                        completionHandler:base::CallbackToBlock(
                                              std::move(callback))];
 }
 
 void WebViewJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   SEL delegate_method = @selector(webView:
@@ -48,14 +50,14 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
   }
   [ui_delegate_ webView:web_view_
       runJavaScriptConfirmPanelWithMessage:message_text
-                                   pageURL:net::NSURLWithGURL(origin_url)
+                                   pageURL:net::NSURLWithGURL(origin.GetURL())
                          completionHandler:base::CallbackToBlock(
                                                std::move(callback))];
 }
 
 void WebViewJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
@@ -69,7 +71,7 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
   [ui_delegate_ webView:web_view_
       runJavaScriptTextInputPanelWithPrompt:message_text
                                 defaultText:default_prompt_text
-                                    pageURL:net::NSURLWithGURL(origin_url)
+                                    pageURL:net::NSURLWithGURL(origin.GetURL())
                           completionHandler:base::CallbackToBlock(
                                                 std::move(callback))];
 }

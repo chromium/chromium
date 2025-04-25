@@ -54,6 +54,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 using base::test::RunOnceCallback;
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -406,7 +407,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
   EXPECT_FALSE(presenter->cancel_dialogs_called());
 
   __block bool callback_called = false;
-  web_state.RunJavaScriptAlertDialog(GURL(), @"", base::BindOnce(^() {
+  web_state.RunJavaScriptAlertDialog(url::Origin(), @"", base::BindOnce(^() {
                                        callback_called = true;
                                      }));
 
@@ -924,7 +925,8 @@ TEST_F(WebStateImplTest, DisallowSnapshotsDuringDialogPresentation) {
   // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
-  web_state.RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
+  web_state.RunJavaScriptAlertDialog(url::Origin(), @"message",
+                                     base::DoNothing());
 
   // Verify that CanTakeSnapshot() returns no while the dialog is presented.
   EXPECT_FALSE(web_state.CanTakeSnapshot());
@@ -950,7 +952,8 @@ TEST_F(WebStateImplTest, VerifyDialogRunningBoolean) {
   // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
-  web_state.RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
+  web_state.RunJavaScriptAlertDialog(url::Origin(), @"message",
+                                     base::DoNothing());
 
   // Verify that IsJavaScriptDialogRunning() returns true while the dialog is
   // presented.
@@ -985,7 +988,8 @@ TEST_F(WebStateImplTest, CreateFullPagePdfJavaScriptDialog) {
   // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
-  web_state.RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
+  web_state.RunJavaScriptAlertDialog(url::Origin(), @"message",
+                                     base::DoNothing());
 
   // Attempt to create a PDF for this page and validate that it return nil.
   __block NSData* callback_data_when_dialog = nil;

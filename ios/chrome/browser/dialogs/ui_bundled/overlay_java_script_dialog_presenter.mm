@@ -135,7 +135,7 @@ OverlayJavaScriptDialogPresenter::~OverlayJavaScriptDialogPresenter() = default;
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   JavaScriptDialogBlockingState::CreateForWebState(web_state);
@@ -145,9 +145,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     return;
   }
 
+  const GURL origin_url = origin.GetURL();
   bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
           web_state, origin_url, from_main_frame_origin, message_text);
@@ -160,7 +160,7 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   JavaScriptDialogBlockingState::CreateForWebState(web_state);
@@ -170,9 +170,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     return;
   }
 
+  const GURL origin_url = origin.GetURL();
   bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
           web_state, origin_url, from_main_frame_origin, message_text);
@@ -185,7 +185,7 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
 
 void OverlayJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     web::WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
@@ -196,9 +196,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     return;
   }
 
+  const GURL origin_url = origin.GetURL();
   bool from_main_frame_origin =
-      origin_url.DeprecatedGetOriginAsURL() ==
-      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptPromptDialogRequest>(
           web_state, origin_url, from_main_frame_origin, message_text,
