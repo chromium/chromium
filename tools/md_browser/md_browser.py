@@ -296,7 +296,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     if relative_to is None:
       relative_to = self.server.top_level
     assert not relpath.startswith(os.sep)
-    path = os.path.join(relative_to, relpath)
+    path = os.path.normpath(os.path.join(relative_to, relpath))
+    if not path.startswith(relative_to):
+      raise ValueError(f"Access to {relpath} is not allowed.")
     with codecs.open(path, encoding='utf-8') as fp:
       return fp.read()
 
