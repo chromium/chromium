@@ -14,11 +14,44 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+
+// Parse the given metadata and return a std::pair containing:
+// 1. bool: true if eligible for contextual suggestions.
+// 2. std::vector<std::string>: suggestions in the metadata, if present.
+std::pair<bool, std::vector<std::string>> ParseOptimizationMetadata(
+    optimization_guide::OptimizationGuideDecision decision,
+    optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    return std::make_pair(true, std::vector<std::string>());
+  }
+
+  auto suggestions_metadata = metadata.ParsedMetadata<
+      optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
+  if (!suggestions_metadata.has_value()) {
+    return std::make_pair(true, std::vector<std::string>());
+  }
+  if (!suggestions_metadata->contextual_suggestions_eligible()) {
+    return std::make_pair(false, std::vector<std::string>());
+  }
+  if (!suggestions_metadata->contextual_suggestions().empty()) {
+    return std::make_pair(
+        true, std::vector<std::string>(
+                  suggestions_metadata->contextual_suggestions().begin(),
+                  suggestions_metadata->contextual_suggestions().end()));
+  }
+
+  return std::make_pair(true, std::vector<std::string>());
+}
+
+}  // namespace
 
 namespace contextual_cueing {
 
@@ -105,6 +138,47 @@ void ZeroStateSuggestionsPageData::OnReceivedInnerText(
   RequestSuggestionsIfComplete();
 }
 
+void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
+    const GURL& url,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
+  optimization_metadata_done_ = true;
+  auto it =
+      decisions.find(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS);
+  if (it == decisions.end()) {
+    // If not found, treat it as no metadata.
+    optimization_decision_ =
+        optimization_guide::OptimizationGuideDecision::kFalse;
+  } else {
+    optimization_metadata_ = it->second.metadata;
+    optimization_decision_ = it->second.decision;
+  }
+
+  ProcessSuggestionsIfComplete();
+}
+
+bool ZeroStateSuggestionsPageData::
+    ReturnSuggestionsFromOptimizationMetadataIfPossible() {
+  if (!optimization_metadata_done_) {
+    return false;
+  }
+
+  std::pair<bool, std::vector<std::string>> pair =
+      ParseOptimizationMetadata(optimization_decision_, optimization_metadata_);
+  if (!pair.first) {
+    suggestions_callbacks_.Notify(std::nullopt);
+    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
+    return true;
+  }
+  if (!pair.second.empty()) {
+    suggestions_callbacks_.Notify(pair.second);
+    cached_suggestions_ = pair.second;
+    return true;
+  }
+  return false;
+}
+
 void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   bool work_done = inner_text_done_ && annotated_page_content_done_;
   bool has_page_context = inner_text_result_ || annotated_page_content_;
@@ -121,27 +195,21 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
-  optimization_guide::OptimizationMetadata metadata;
-  auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
-      web_contents->GetLastCommittedURL(),
-      optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS, &metadata);
-  auto suggestions_metadata = metadata.ParsedMetadata<
-      optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
-  if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
-      suggestions_metadata &&
-      !suggestions_metadata->contextual_suggestions_eligible()) {
-    suggestions_callbacks_.Notify(std::nullopt);
-    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
-    return;
-  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  bool can_request_metadata =
+      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs());
 
-  if (suggestions_metadata &&
-      !suggestions_metadata->contextual_suggestions().empty()) {
-    std::vector<std::string> suggestions(
-        suggestions_metadata->contextual_suggestions().begin(),
-        suggestions_metadata->contextual_suggestions().end());
-    suggestions_callbacks_.Notify(suggestions);
-    cached_suggestions_ = suggestions;
+  if (!optimization_metadata_done_ && can_request_metadata) {
+    optimization_decision_ =
+        optimization_guide_keyed_service_->CanApplyOptimization(
+            web_contents->GetLastCommittedURL(),
+            optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            &optimization_metadata_);
+    optimization_metadata_done_ = true;
+  }
+  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
     return;
   }
 
@@ -149,6 +217,18 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
     suggestions_callbacks_.Notify(std::nullopt);
     cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     return;
+  }
+
+  if (!optimization_metadata_done_ && !can_request_metadata) {
+    optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
+        {content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()))
+             ->GetLastCommittedURL()},
+        {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
+        optimization_guide::proto::RequestContext::
+            CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+        base::BindRepeating(
+            &ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   optimization_guide::proto::PageContext* page_context =
@@ -172,29 +252,33 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
       *suggestions_request_,
       /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ZeroStateSuggestionsPageData::OnModelExecutionResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     suggestions_request_->is_fre()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
-    bool is_fre,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Clear out suggestions request as it's been fulfilled.
   suggestions_request_ = std::nullopt;
+  mes_suggestions_result_ = std::make_unique<
+      optimization_guide::OptimizationGuideModelExecutionResult>(
+      std::move(result));
+  mes_suggestions_done_ = true;
 
   base::TimeDelta suggestions_duration = base::TimeTicks::Now() - begin_time_;
-  if (!result.response.has_value()) {
+  if (!mes_suggestions_result_->response.has_value()) {
     OPTIMIZATION_GUIDE_LOG(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Failed to get "
-                           "suggestions after %ld ms. Error: %d",
-                           suggestions_duration.InMilliseconds(),
-                           static_cast<int>(result.response.error().error())));
+        base::StringPrintf(
+            "ZeroStateSuggestionsPageData: Failed to get "
+            "suggestions after %ld ms. Error: %d",
+            suggestions_duration.InMilliseconds(),
+            static_cast<int>(
+                mes_suggestions_result_->response.error().error())));
     suggestions_callbacks_.Notify(std::nullopt);
 
-    if (!result.response.error().transient()) {
+    if (!mes_suggestions_result_->response.error().transient()) {
       // Cache empty suggestions if error is not transient.
       cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     }
@@ -209,10 +293,24 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                          "suggestions after %ld ms.",
                          suggestions_duration.InMilliseconds()));
 
+  ProcessSuggestionsIfComplete();
+}
+
+void ZeroStateSuggestionsPageData::ProcessSuggestionsIfComplete() {
+  // Do not wait for model execution service if optimization metadata has
+  // enough information.
+  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
+    return;
+  }
+
+  if (!optimization_metadata_done_ || !mes_suggestions_done_) {
+    return;
+  }
+
   std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
       response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
-          result.response.value());
+          mes_suggestions_result_->response.value());
   if (!response) {
     suggestions_callbacks_.Notify(std::nullopt);
     // Treat this as a transient error that server returned bad data

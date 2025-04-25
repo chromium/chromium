@@ -12,7 +12,9 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_metadata.h"
 #include "content/public/browser/page_user_data.h"
 
 class OptimizationGuideKeyedService;
@@ -62,21 +64,49 @@ class ZeroStateSuggestionsPageData
   void OnReceivedAnnotatedPageContent(
       std::optional<optimization_guide::AIPageContentResult> content);
 
+  // Called when on-demand metadata is received.
+  void OnReceivedOptimizationMetadata(
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
   // Send out suggestions request, if all necessary fetches are complete.
   void RequestSuggestionsIfComplete();
 
+  // Return suggestions result by invoking `suggestions_callbacks_`, if all
+  // necessary fetches are complete.
+  void ProcessSuggestionsIfComplete();
+
+  // If `optimization_metadata_` contains everything necessary to determine a
+  // suggestions result, run `suggestions_callbacks_` to return those
+  // suggestions. This method itself also returns true if suggestions are sent
+  // via the callbacks as a result of execution.
+  bool ReturnSuggestionsFromOptimizationMetadataIfPossible();
+
   // Called when a zero state suggestions server response is received.
   void OnModelExecutionResponse(
-      bool is_fre,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
-  // Tracks the status of inner text and annotated page content fetches.
+  // Tracks the status of inner text and annotated page content fetches, which
+  // are needed in `RequestSuggestionsIfComplete()`.
   bool inner_text_done_ = false;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   bool annotated_page_content_done_ = false;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_;
+
+  // Tracks the status of fetches for on-demand optimization metadata, and
+  // suggestions from model execution service, which are needed for
+  // `ProcessSuggestionsIfComplete()`.
+  bool optimization_metadata_done_ = false;
+  optimization_guide::OptimizationGuideDecision optimization_decision_;
+  optimization_guide::OptimizationMetadata optimization_metadata_;
+  bool mes_suggestions_done_ = false;
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutionResult>
+      mes_suggestions_result_;
 
   // Tracks the state for a request.
   base::TimeTicks begin_time_;

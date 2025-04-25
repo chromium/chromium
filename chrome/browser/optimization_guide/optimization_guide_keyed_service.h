@@ -37,6 +37,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace contextual_cueing {
+class ZeroStateSuggestionsPageData;
+}  // namespace contextual_cueing
+
 namespace download {
 class BackgroundDownloadService;
 }  // namespace download
@@ -246,6 +250,7 @@ class OptimizationGuideKeyedService
   friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
+  friend class contextual_cueing::ZeroStateSuggestionsPageData;
   friend class HintsFetcherBrowserTest;
   friend class on_device_internals::PageHandler;
   friend class OptimizationGuideInternalsUI;
