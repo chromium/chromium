@@ -8050,11 +8050,11 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
     }
   }
 
-  DCHECK(!IsScheduledForTopLayerRemoval(element));
-  DCHECK(!before || top_layer_elements_.Contains(before));
+  CHECK(!IsScheduledForTopLayerRemoval(element));
+  CHECK(!before || top_layer_elements_.Contains(before));
 
   if (before) {
-    DCHECK(element->IsBackdropPseudoElement())
+    CHECK(element->IsBackdropPseudoElement())
         << "If this invariant changes, we might need to revisit Container "
            "Queries for top layer elements.";
     wtf_size_t before_position = top_layer_elements_.Find(before);

@@ -9003,7 +9003,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     return nullptr;
   }
 
-  if (pseudo_id == kPseudoIdBackdrop) {
+  if (pseudo_id == kPseudoIdBackdrop && IsInTopLayer()) {
     GetDocument().AddToTopLayer(pseudo_element, this);
   }
 
