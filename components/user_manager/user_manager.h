@@ -453,8 +453,8 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
 
-  // Returns true if we're logged in as a kiosk app.
-  virtual bool IsLoggedInAsKioskApp() const = 0;
+  // Returns true if we're logged in as a kiosk Chrome app.
+  virtual bool IsLoggedInAsKioskChromeApp() const = 0;
 
   // Returns true if we're logged in as a Web kiosk app.
   virtual bool IsLoggedInAsWebKioskApp() const = 0;

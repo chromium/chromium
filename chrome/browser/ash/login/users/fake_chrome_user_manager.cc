@@ -378,7 +378,7 @@ bool FakeChromeUserManager::IsLoggedInAsGuest() const {
                      : false;
 }
 
-bool FakeChromeUserManager::IsLoggedInAsKioskApp() const {
+bool FakeChromeUserManager::IsLoggedInAsKioskChromeApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
              ? active_user->GetType() == user_manager::UserType::kKioskApp

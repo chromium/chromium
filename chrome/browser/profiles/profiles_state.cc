@@ -309,7 +309,7 @@ bool IsDemoSession() {
 
 bool IsChromeAppKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+  return user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp();
 #else
   return false;
 #endif

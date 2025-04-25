@@ -123,7 +123,7 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
+      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
       connector->IsDeviceEnterpriseManaged()) {
     identity_provider = std::make_unique<DeviceIdentityProvider>(
         DeviceOAuth2TokenServiceFactory::Get());

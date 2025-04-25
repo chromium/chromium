@@ -990,7 +990,7 @@ bool UserManagerImpl::IsLoggedInAsGuest() const {
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kGuest;
 }
 
-bool UserManagerImpl::IsLoggedInAsKioskApp() const {
+bool UserManagerImpl::IsLoggedInAsKioskChromeApp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
 }

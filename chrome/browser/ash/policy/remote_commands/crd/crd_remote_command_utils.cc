@@ -39,7 +39,7 @@ using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 
 const ash::KioskAppManagerBase* GetKioskAppManager(
     const user_manager::UserManager& user_manager) {
-  if (user_manager.IsLoggedInAsKioskApp()) {
+  if (user_manager.IsLoggedInAsKioskChromeApp()) {
     return ash::KioskChromeAppManager::Get();
   }
   if (user_manager.IsLoggedInAsWebKioskApp()) {

@@ -763,7 +763,7 @@ void CrxInstaller::ConfirmInstall() {
     bool in_kiosk_mode = false;
 #if BUILDFLAG(IS_CHROMEOS)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-    in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
+    in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskChromeApp();
 #endif
     if (!in_kiosk_mode) {
       ReportFailureFromUIThread(CrxInstallError(
