@@ -439,7 +439,20 @@ void WebGLFramebuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
 }
 
 bool WebGLFramebuffer::IsBound(GLenum target) const {
-  return (Context()->GetFramebufferBinding(target) == this);
+  GLint bound_fbo = 0;
+  switch (target) {
+    case GL_FRAMEBUFFER:
+    case GL_DRAW_FRAMEBUFFER:
+      Context()->ContextGL()->GetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
+      break;
+    case GL_READ_FRAMEBUFFER:
+      Context()->ContextGL()->GetIntegerv(GL_READ_FRAMEBUFFER_BINDING,
+                                          &bound_fbo);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return GLuint(bound_fbo) == object_;
 }
 
 void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
