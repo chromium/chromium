@@ -13,6 +13,7 @@ source_set("infobar") {
     "//components/collaboration/public",
     "//components/infobars/core",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/model/browser",

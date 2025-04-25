@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using collaboration::messaging::CollaborationEvent;
 
@@ -57,24 +59,41 @@ const TabGroup* GetLocalTabGroup(
   return nullptr;
 }
 
-}  // namespace
-
-// static
-bool CollaborationGroupInfoBarDelegate::Create(
-    ProfileIOS* profile,
-    collaboration::messaging::InstantMessage instant_message) {
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+// Returns the Browser on which to display the infobar for the given
+// `instant_message`.
+Browser* GetBrowserFromInstantMessage(
+    collaboration::messaging::InstantMessage instant_message,
+    BrowserList* browser_list) {
   std::set<Browser*> browsers =
       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
   std::optional<tab_groups::LocalTabGroupID> local_tab_group_id =
       GetLocalTabGroupId(instant_message);
+
+  bool use_first_available_browser = false;
+  switch (instant_message.collaboration_event) {
+    case CollaborationEvent::TAB_UPDATED:
+    case CollaborationEvent::TAB_REMOVED:
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      break;
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+    case CollaborationEvent::UNDEFINED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+      use_first_available_browser = true;
+      break;
+  }
 
   // Retrieve the `source_browser`.
   Browser* source_browser;
   for (Browser* browser : browsers) {
     // TODO(crbug.com/375595834): Handle cases where the `local_tab_group_id` is
     // not set.
-    if (!local_tab_group_id.has_value()) {
+    if (!local_tab_group_id.has_value() || use_first_available_browser) {
       // If `local_tab_group_id` is empty, use the first available browser.
       source_browser = browser;
       break;
@@ -83,10 +102,18 @@ bool CollaborationGroupInfoBarDelegate::Create(
       source_browser = browser;
     }
   }
-  if (!source_browser) {
-    // Early return if the group does not exist locally.
-    return false;
-  }
+  return source_browser;
+}
+
+}  // namespace
+
+// static
+bool CollaborationGroupInfoBarDelegate::Create(
+    ProfileIOS* profile,
+    collaboration::messaging::InstantMessage instant_message) {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+  Browser* source_browser =
+      GetBrowserFromInstantMessage(instant_message, browser_list);
 
   web::WebState* active_web_state =
       source_browser->GetWebStateList()->GetActiveWebState();
@@ -132,23 +159,25 @@ int CollaborationGroupInfoBarDelegate::GetButtons() const {
 
 std::u16string CollaborationGroupInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  // TODO(crbug.com/375595834): Add real strings.
   switch (instant_message_.collaboration_event) {
     case CollaborationEvent::TAB_UPDATED:
     case CollaborationEvent::TAB_REMOVED:
-      return u"test REOPEN";
-    case CollaborationEvent::TAB_GROUP_REMOVED:
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_COLLABORATION_GROUP_TAB_REOPEN_PRIMARY_TOOLBAR_BUTTON);
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
-      return u"test MANAGE";
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_COLLABORATION_GROUP_MEMBER_ADDED_PRIMARY_TOOLBAR_BUTTON);
     case CollaborationEvent::UNDEFINED:
     case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
     case CollaborationEvent::TAB_GROUP_ADDED:
     case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
     case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
     case CollaborationEvent::COLLABORATION_ADDED:
     case CollaborationEvent::COLLABORATION_REMOVED:
     case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
-      return u"";
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_COLLABORATION_GROUP_DEFAULT_PRIMARY_TOOLBAR_BUTTON);
   }
 }
 

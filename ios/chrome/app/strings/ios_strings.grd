@@ -1149,6 +1149,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CLOSE_TABS" desc="Label for the option in settings to close open tabs. In titlecase. [Length: 20em] [iOS only]">
         Tabs
       </message>
+      <message name="IDS_IOS_COLLABORATION_GROUP_DEFAULT_PRIMARY_TOOLBAR_BUTTON" desc="The label of collaboration group infobar when a group update occurs (e.g., member removed, sharing stopped, group deleted). [iOS only]">
+        Got it
+      </message>
+      <message name="IDS_IOS_COLLABORATION_GROUP_MEMBER_ADDED_PRIMARY_TOOLBAR_BUTTON" desc="The label of collaboration group infobar when a member is added to the group. [iOS only]">
+        Manage
+      </message>
+      <message name="IDS_IOS_COLLABORATION_GROUP_TAB_REOPEN_PRIMARY_TOOLBAR_BUTTON" desc="The label of collaboration group infobar to reopen the updated or closed tab. [iOS only]">
+        Reopen
+      </message>
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
       </message>
