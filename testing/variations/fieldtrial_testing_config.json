@@ -5170,41 +5170,6 @@
             ]
         }
     ],
-    "ChromnientIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableLensOverlay",
-                        "IPH_iOSLensOverlayEntrypointTip",
-                        "LensClearcutBackgroundUploadEnabled",
-                        "LensClearcutLoggerFastQosEnabled",
-                        "LensInkMultiSampleModeDisabled",
-                        "LensOverlayEnableLocationBarEntrypoint"
-                    ],
-                    "disable_features": [
-                        "LensGestureTextSelectionDisabled",
-                        "LensOverlayEnableLocationBarEntrypointOnSRP"
-                    ]
-                },
-                {
-                    "name": "LaunchM133",
-                    "enable_features": [
-                        "EnableLensOverlay",
-                        "LensClearcutLoggerFastQosEnabled"
-                    ],
-                    "disable_features": [
-                        "LensOverlayEnableLocationBarEntrypoint",
-                        "LensOverlayEnableLocationBarEntrypointOnSRP"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientIPH": [
         {
             "platforms": [
@@ -11979,6 +11944,22 @@
                     "enable_features": [
                         "IPH_iOSLensOverlayEscapeHatchTip",
                         "LensOverlayEnableLVFEscapeHatch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSChromnientIPHFix": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSLensOverlayEntrypointTip",
+                        "LensOverlayDisableIPHPanGesture"
                     ]
                 }
             ]
