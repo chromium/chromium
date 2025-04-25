@@ -151,7 +151,10 @@ std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
 
 PassageEmbeddingsCoordinator::PassageEmbeddingsCoordinator(
     page_content_annotations::PageContentExtractionService*
-        page_content_extraction_service) {
+        page_content_extraction_service)
+    : omnibox_focus_changed_listener_(base::BindRepeating(
+          &PassageEmbeddingsCoordinator::OnOmniboxFocusChanged,
+          base::Unretained(this))) {
   page_content_extraction_observation_.Observe(page_content_extraction_service);
 }
 
@@ -177,7 +180,7 @@ void PassageEmbeddingsCoordinator::OnPageContentExtracted(
       ChromePassageEmbeddingsServiceController::Get()
           ->GetEmbedder()
           ->ComputePassagesEmbeddings(
-              PassagePriority::kPassive, std::move(passages),
+              current_priority_, std::move(passages),
               base::BindOnce(
                   &PassageEmbeddingsCoordinator::OnPassageEmbeddingsComputed,
                   weak_ptr_factory_.GetWeakPtr(), web_contents_id));
@@ -202,6 +205,19 @@ void PassageEmbeddingsCoordinator::OnPassageEmbeddingsComputed(
                                   embeddings.size());
     }
   }
+}
+
+void PassageEmbeddingsCoordinator::OnOmniboxFocusChanged(bool is_focused) {
+  current_priority_ = is_focused ? kUrgent : kPassive;
+
+  std::set<Embedder::TaskId> task_ids;
+  for (const auto [web_contents, task_id] : web_contents_task_ids_) {
+    task_ids.insert(task_id);
+  }
+
+  ChromePassageEmbeddingsServiceController::Get()
+      ->GetEmbedder()
+      ->ReprioritizeTasks(current_priority_, task_ids);
 }
 
 }  // namespace passage_embeddings

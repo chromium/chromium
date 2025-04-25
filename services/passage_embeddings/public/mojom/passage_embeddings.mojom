@@ -21,6 +21,7 @@ struct PassageEmbeddingsResult {
 // execution of passive requests will be more efficient but slower.
 enum PassagePriority {
   kUnknown,
+  kUrgent,
   kUserInitiated,
   kPassive,
 };
@@ -53,6 +54,8 @@ struct PassageEmbeddingsLoadModelsParams {
 struct PassageEmbedderParams {
   // The number of threads to use for PassagePriority::kUserInitiated tasks.
   uint32 user_initiated_priority_num_threads;
+  // The number of threads to use for PassagePriority::kUrgent tasks.
+  uint32 urgent_priority_num_threads;
   // The number of threads to use for PassagePriority::kPassive tasks.
   uint32 passive_priority_num_threads;
   // The size of the cache to use to limit execution on the same passage.

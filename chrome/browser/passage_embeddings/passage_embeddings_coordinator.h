@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/passage_embeddings/omnibox_focus_change_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -46,6 +47,8 @@ class PassageEmbeddingsCoordinator
                                    Embedder::TaskId task_id,
                                    ComputeEmbeddingsStatus status);
 
+  void OnOmniboxFocusChanged(bool is_focused);
+
   // The key is an id for a WebContents.
   std::map<uintptr_t, Embedder::TaskId> web_contents_task_ids_;
 
@@ -53,6 +56,10 @@ class PassageEmbeddingsCoordinator
       page_content_annotations::PageContentExtractionService,
       PassageEmbeddingsCoordinator>
       page_content_extraction_observation_{this};
+
+  OmniboxFocusChangedListener omnibox_focus_changed_listener_;
+
+  PassagePriority current_priority_ = PassagePriority::kPassive;
 
   base::WeakPtrFactory<PassageEmbeddingsCoordinator> weak_ptr_factory_{this};
 };

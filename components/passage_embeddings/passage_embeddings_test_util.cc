@@ -82,6 +82,9 @@ Embedder::TaskId TestEmbedder::ComputePassagesEmbeddings(
   return kInvalidTaskId;
 }
 
+void TestEmbedder::ReprioritizeTasks(PassagePriority priority,
+                                     const std::set<TaskId>& tasks) {}
+
 bool TestEmbedder::TryCancel(TaskId task_id) {
   return false;
 }

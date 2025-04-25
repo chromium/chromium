@@ -19,6 +19,9 @@ const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
     "UserInitiatedPriorityNumThreads",
     4);
 
+const base::FeatureParam<int>
+    kUrgentPriorityNumThreads(&kPassageEmbedder, "UrgentPriorityNumThreads", 4);
+
 const base::FeatureParam<int> kPassivePriorityNumThreads(
     &kPassageEmbedder,
     "PassivePriorityNumThreads",

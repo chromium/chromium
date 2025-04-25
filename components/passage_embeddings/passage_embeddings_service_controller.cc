@@ -40,6 +40,7 @@ mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
   auto params = mojom::PassageEmbedderParams::New();
   params->user_initiated_priority_num_threads =
       kUserInitiatedPriorityNumThreads.Get();
+  params->urgent_priority_num_threads = kUrgentPriorityNumThreads.Get();
   params->passive_priority_num_threads = kPassivePriorityNumThreads.Get();
   params->embedder_cache_size = kEmbedderCacheSize.Get();
   params->allow_gpu_execution = kAllowGpuExecution.Get();
@@ -50,6 +51,8 @@ mojom::PassagePriority PassagePriorityToMojom(PassagePriority priority) {
   switch (priority) {
     case kUserInitiated:
       return mojom::PassagePriority::kUserInitiated;
+    case kUrgent:
+      return mojom::PassagePriority::kUrgent;
     case kPassive:
     case kLatent:
       return mojom::PassagePriority::kPassive;

@@ -29,6 +29,8 @@ std::string PassagePriorityToString(PassagePriority priority) {
   switch (priority) {
     case PassagePriority::kUserInitiated:
       return "UserInitiated";
+    case PassagePriority::kUrgent:
+      return "Urgent";
     case PassagePriority::kPassive:
       return "Passive";
     case PassagePriority::kLatent:
@@ -213,8 +215,10 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
 
 bool SchedulingEmbedder::IsPerformanceScenarioReady() {
   if (!jobs_.empty() &&
-      jobs_.front().priority == PassagePriority::kUserInitiated) {
-    // Do not block on performance scenario if user initiated a query.
+      (jobs_.front().priority == PassagePriority::kUserInitiated ||
+       jobs_.front().priority == PassagePriority::kUrgent)) {
+    // Do not block on performance scenario if user initiated a query or it's
+    // urgent.
     return true;
   }
 
@@ -227,6 +231,19 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
   return (loading_scenario == LoadingScenario::kNoPageLoading ||
           loading_scenario == LoadingScenario::kBackgroundPageLoading) &&
          input_scenario == InputScenario::kNoInput;
+}
+
+void SchedulingEmbedder::ReprioritizeTasks(PassagePriority priority,
+                                           const std::set<TaskId>& tasks) {
+  for (Job& job : jobs_) {
+    const auto loc = tasks.find(job.task_id);
+    if (loc != tasks.end()) {
+      job.priority = priority;
+    }
+  }
+
+  // Note: the jobs will be reordered to account for the new priorities on the
+  // next call to SubmitWorkToEmbedder().
 }
 
 bool SchedulingEmbedder::TryCancel(TaskId task_id) {

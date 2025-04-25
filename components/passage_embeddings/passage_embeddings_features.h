@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kPassageEmbedder);
 extern const base::FeatureParam<int> kUserInitiatedPriorityNumThreads;
 
 // The number of threads to use for embeddings generation with
+// mojom::PassagePriority::kUrgent.
+extern const base::FeatureParam<int> kUrgentPriorityNumThreads;
+
+// The number of threads to use for embeddings generation with
 // mojom::PassagePriority::kPassive.
 extern const base::FeatureParam<int> kPassivePriorityNumThreads;
 

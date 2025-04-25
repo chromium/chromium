@@ -39,6 +39,8 @@ class TestEmbedder : public Embedder {
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+  void ReprioritizeTasks(PassagePriority priority,
+                         const std::set<TaskId>& tasks) override;
   bool TryCancel(TaskId task_id) override;
 };
 
