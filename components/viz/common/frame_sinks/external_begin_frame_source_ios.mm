@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 
+#include <algorithm>
+
 #include "base/apple/mach_logging.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -138,7 +140,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     // part can result in exceeding the maximum rate because of the division
     // operation.
     _preferredRefreshRate =
-        refresh_rate > _maximumRefreshRate ? _maximumRefreshRate : refresh_rate;
+        std::clamp(refresh_rate, kMinimumRefreshRate, _maximumRefreshRate);
     if (@available(iOS 15, *)) {
       [_displayLink
           setPreferredFrameRateRange:CAFrameRateRange{
