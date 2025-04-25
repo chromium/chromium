@@ -25,6 +25,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/plus_addresses/features.h"
@@ -121,6 +122,7 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -659,6 +661,9 @@ enum class ToolbarKind {
 
   // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
+
+  // The PageContext wrapper used to provide context about a page.
+  PageContextWrapper* _pageContextWrapper;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1786,6 +1791,16 @@ enum class ToolbarKind {
   }
 }
 
+// Opens the Glic overlay with the current page context.
+- (void)openGlicOverlayForPage:
+    (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
+  CHECK(_pageContextWrapper);
+  GlicService* glicService = GlicServiceFactory::GetForProfile(self.profile);
+  glicService->PresentOverlayOnViewController(self.viewController,
+                                              std::move(pageContext));
+  _pageContextWrapper = nil;
+}
+
 #pragma mark - ActivityServiceCommands
 
 - (void)stopAndStartSharingCoordinator {
@@ -2356,9 +2371,27 @@ enum class ToolbarKind {
 }
 
 - (void)showPageActionMenu {
-  GlicService* glicService =
-      GlicServiceFactory::GetForProfile(self.browser->GetProfile());
-  glicService->PresentOverlayOnViewController(self.viewController);
+  // Cancel any ongoing page context operation.
+  if (_pageContextWrapper) {
+    _pageContextWrapper = nil;
+  }
+  // Configure the callback to be executed once the page context is ready.
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(
+      std::unique_ptr<optimization_guide::proto::PageContext>)>
+      page_context_completion_callback = base::BindOnce(
+          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
+                    page_context) {
+            [weakSelf openGlicOverlayForPage:std::move(page_context)];
+          });
+
+  // Collect the PageContext and execute the callback once it's ready.
+  _pageContextWrapper = [[PageContextWrapper alloc]
+        initWithWebState:self.activeWebState
+      completionCallback:std::move(page_context_completion_callback)];
+  [_pageContextWrapper setShouldGetInnerText:YES];
+  [_pageContextWrapper setShouldGetSnapshot:YES];
+  [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

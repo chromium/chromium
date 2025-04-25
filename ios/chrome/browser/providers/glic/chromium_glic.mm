@@ -16,6 +16,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
   return nullptr;
 }
 
-void StartOverlay(UIViewController* base_view_controller) {}
+void StartGlicOverlay(
+    UIViewController* base_view_controller,
+    raw_ptr<AuthenticationService> auth_service,
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context) {}
 
 }  // namespace ios::provider
