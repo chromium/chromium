@@ -113,6 +113,9 @@ bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
 
 std::strong_ordering CookiePartitionKey::operator<=>(
     const CookiePartitionKey& other) const {
+  if (from_script_ || other.from_script_) {
+    return from_script_ <=> other.from_script_;
+  }
   AncestorChainBit this_bit = GetAncestorChainBit();
   AncestorChainBit other_bit = other.GetAncestorChainBit();
   return std::tie(site_, nonce_, this_bit) <=>
@@ -272,6 +275,9 @@ std::ostream& operator<<(std::ostream& os, const CookiePartitionKey& cpk) {
     os << ",nonced";
   }
   os << (cpk.IsThirdParty() ? ",cross_site" : ",same_site");
+  if (cpk.from_script()) {
+    os << ",from_script";
+  }
   return os;
 }
 

@@ -342,10 +342,7 @@ TEST(CookiePartitionKeyTest, FromScript) {
   EXPECT_TRUE(key2->site().opaque());
   EXPECT_TRUE(key2->IsThirdParty());
 
-  // The keys should not be equal because they get created with different opaque
-  // sites. Test both the '==' and '!=' operators here.
-  EXPECT_FALSE(key == key2);
-  EXPECT_TRUE(key != key2);
+  EXPECT_EQ(key, key2);
 }
 
 TEST(CookiePartitionKeyTest, IsSerializeable) {
