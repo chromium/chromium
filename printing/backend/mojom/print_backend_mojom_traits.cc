@@ -4,7 +4,7 @@
 
 #include "printing/backend/mojom/print_backend_mojom_traits.h"
 
-#include <map>
+#include <set>
 
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -78,20 +78,18 @@ bool StructTraits<
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
+
 template <class Key>
-class DuplicateChecker {
- public:
-  bool HasDuplicates(const std::vector<Key>& items) {
-    std::map<Key, bool> items_encountered;
-    for (auto it = items.begin(); it != items.end(); ++it) {
-      auto found = items_encountered.find(*it);
-      if (found != items_encountered.end())
-        return true;
-      items_encountered[*it] = true;
+bool HasDuplicateItems(const std::vector<Key>& items) {
+  std::set<Key> items_encountered;
+  for (const Key& item : items) {
+    bool inserted = items_encountered.insert(item).second;
+    if (!inserted) {
+      return true;
     }
-    return false;
   }
-};
+  return false;
+}
 
 }  // namespace
 
@@ -349,15 +347,12 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   }
 
   // There should not be duplicates in certain arrays.
-  DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
-  if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {
+  if (HasDuplicateItems(out->duplex_modes)) {
     DLOG(ERROR) << "Duplicate duplex_modes detected.";
     return false;
   }
 
-  DuplicateChecker<printing::PrinterSemanticCapsAndDefaults::Paper>
-      user_defined_papers_dup_checker;
-  if (user_defined_papers_dup_checker.HasDuplicates(out->user_defined_papers)) {
+  if (HasDuplicateItems(out->user_defined_papers)) {
     DLOG(ERROR) << "Duplicate user_defined_papers detected.";
     // TODO(crbug.com/372062459): Remove debug code when done.
     std::string names;
@@ -373,16 +368,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DuplicateChecker<printing::AdvancedCapability>
-      advanced_capabilities_dup_checker;
-  if (advanced_capabilities_dup_checker.HasDuplicates(
-          out->advanced_capabilities)) {
+  if (HasDuplicateItems(out->advanced_capabilities)) {
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
     return false;
   }
-  DuplicateChecker<printing::mojom::PrintScalingType>
-      print_scaling_types_dup_checker;
-  if (print_scaling_types_dup_checker.HasDuplicates(out->print_scaling_types)) {
+  if (HasDuplicateItems(out->print_scaling_types)) {
     DLOG(ERROR) << "Duplicate print_scaling_types detected.";
     return false;
   }
@@ -392,8 +382,6 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   if (!data.ReadPageOutputQuality(&out->page_output_quality)) {
     return false;
   }
-  DuplicateChecker<printing::PageOutputQualityAttribute>
-      page_output_quality_dup_checker;
   if (out->page_output_quality) {
     printing::PageOutputQualityAttributes qualities =
         out->page_output_quality->qualities;
@@ -412,7 +400,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     }
 
     // There should be no duplicates in `qualities` array.
-    if (page_output_quality_dup_checker.HasDuplicates(qualities)) {
+    if (HasDuplicateItems(qualities)) {
       DLOG(ERROR) << "Duplicate page output qualities detected.";
       return false;
     }
