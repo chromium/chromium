@@ -809,10 +809,11 @@ bool ReadAnythingAppController::PostProcessSelection() {
   }
   // Skip drawing the selection in the side panel if the selection originally
   // came from there.
-  if (!model_.selection_from_reading_mode()) {
+  if (model_.unprocessed_selections_from_reading_mode() == 0) {
     DrawSelection();
+  } else {
+    model_.decrement_selections_from_reading_mode();
   }
-  model_.set_selection_from_reading_mode(false);
   return did_draw;
 }
 
@@ -1712,7 +1713,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // clears the selection, so we should tell the main page to clear too.
   if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
     if (model_.has_selection()) {
-      model_.set_selection_from_reading_mode(true);
+      model_.increment_selections_from_reading_mode();
       OnCollapseSelection();
     }
     return;
@@ -1748,7 +1749,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
-  model_.set_selection_from_reading_mode(true);
+  model_.increment_selections_from_reading_mode();
   page_handler_->OnSelectionChange(model_.active_tree_id(), anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }

@@ -130,11 +130,14 @@ class ReadAnythingAppModel {
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
 
-  bool selection_from_reading_mode() const {
-    return selection_from_reading_mode_;
+  int unprocessed_selections_from_reading_mode() {
+    return selections_from_reading_mode_;
   }
-  void set_selection_from_reading_mode(bool selection_from_action) {
-    selection_from_reading_mode_ = selection_from_action;
+  void increment_selections_from_reading_mode() {
+    ++selections_from_reading_mode_;
+  }
+  void decrement_selections_from_reading_mode() {
+    --selections_from_reading_mode_;
   }
 
   const std::string& base_language_code() const { return base_language_code_; }
@@ -439,7 +442,7 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
-  bool selection_from_reading_mode_ = false;
+  int selections_from_reading_mode_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire

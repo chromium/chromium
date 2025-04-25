@@ -866,7 +866,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
   ProcessDisplayNodes({2, 3});
-  model().set_selection_from_reading_mode(true);
+  model().increment_selections_from_reading_mode();
 
   ASSERT_FALSE(model().PostProcessSelection());
 }

@@ -2097,7 +2097,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
       .Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
-  ASSERT_TRUE(model().selection_from_reading_mode());
+  ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -2129,8 +2129,67 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(3, 5, 3, 5);
-  ASSERT_FALSE(model().selection_from_reading_mode());
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
   page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_MultipleTimesBeforePostProcess) {
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
+  SendUpdateWithNodes({std::move(node1), std::move(node2)});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(2);
+  controller().OnSelectionChange(3, 5, 3, 6);
+  controller().OnSelectionChange(3, 5, 3, 10);
+
+  ASSERT_EQ(2, model().unprocessed_selections_from_reading_mode());
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSelectionChange_ThenPostProcess) {
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
+  SendUpdateWithNodes({std::move(node1), std::move(node2)});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(2);
+  controller().OnSelectionChange(3, 5, 3, 6);
+  controller().OnSelectionChange(3, 5, 3, 10);
+  ASSERT_EQ(2, model().unprocessed_selections_from_reading_mode());
+
+  ui::AXTreeUpdate selection1;
+  test::SetUpdateTreeID(&selection1, tree_id_);
+  selection1.has_tree_data = true;
+  selection1.tree_data.sel_anchor_object_id = 2;
+  selection1.tree_data.sel_focus_object_id = 3;
+  selection1.tree_data.sel_anchor_offset = 0;
+  selection1.tree_data.sel_focus_offset = 1;
+  AccessibilityEventReceived({std::move(selection1)});
+  ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
+
+  ui::AXTreeUpdate selection2;
+  test::SetUpdateTreeID(&selection2, tree_id_);
+  selection2.has_tree_data = true;
+  selection2.tree_data.sel_anchor_object_id = 2;
+  selection2.tree_data.sel_focus_object_id = 3;
+  selection2.tree_data.sel_anchor_offset = 0;
+  selection2.tree_data.sel_focus_offset = 5;
+  AccessibilityEventReceived({std::move(selection2)});
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
+
+  ui::AXTreeUpdate selection3;
+  test::SetUpdateTreeID(&selection3, tree_id_);
+  selection3.has_tree_data = true;
+  selection3.tree_data.sel_anchor_object_id = 2;
+  selection3.tree_data.sel_focus_object_id = 3;
+  selection3.tree_data.sel_anchor_offset = 0;
+  selection3.tree_data.sel_focus_offset = 7;
+  AccessibilityEventReceived({std::move(selection3)});
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
+
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2155,7 +2214,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
-  ASSERT_TRUE(model().selection_from_reading_mode());
+  ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2177,7 +2236,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // If distillation is in progress, OnSelectionChange should not be called.
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(2, 0, 3, 1);
-  ASSERT_FALSE(model().selection_from_reading_mode());
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2206,7 +2265,7 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(0);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
-  ASSERT_FALSE(model().selection_from_reading_mode());
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2226,7 +2285,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
   ASSERT_EQ(4, controller().EndNodeId());
   ASSERT_EQ(0, controller().StartOffset());
   ASSERT_EQ(1, controller().EndOffset());
-  ASSERT_FALSE(model().selection_from_reading_mode());
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
@@ -2244,7 +2303,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   EXPECT_EQ(4, controller().EndNodeId());
   EXPECT_EQ(0, controller().StartOffset());
   EXPECT_EQ(1, controller().EndOffset());
-  ASSERT_FALSE(model().selection_from_reading_mode());
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {

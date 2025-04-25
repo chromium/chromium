@@ -143,7 +143,7 @@ void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
   display_node_ids_.clear();
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
-  selection_from_reading_mode_ = false;
+  selections_from_reading_mode_ = 0;
   ResetSelection();
 }
 
@@ -173,7 +173,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     return display_node_ids_.contains(start_.id) &&
            display_node_ids_.contains(end_.id);
   };
-  const bool need_to_draw = !selection_from_reading_mode_ && has_selection() &&
+  const bool need_to_draw = (selections_from_reading_mode_ == 0) &&
+                            has_selection() &&
                             !selection_in_distilled_content();
   const bool was_empty = is_empty();
 
