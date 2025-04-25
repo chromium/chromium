@@ -102,7 +102,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
         current = nullptr;
       } else if (IsA<HTMLSelectElement>(current) ||
                  IsA<HTMLHRElement>(current)) {
-        current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
+        current = ElementTraversal::PreviousAbsoluteSibling(*current, &select_);
       } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
         // optgroup->OwnerSelectElement() might be null because this method may
         // be called before InsertedInto is called on the optgroup.
@@ -112,7 +112,8 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
           current = ElementTraversal::Previous(*current, &select_);
         } else {
           // Don't track elements inside nested <optgroup>s.
-          current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
+          current =
+              ElementTraversal::PreviousAbsoluteSibling(*current, &select_);
         }
       } else {
         current = ElementTraversal::Previous(*current, &select_);
