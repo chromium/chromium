@@ -1045,8 +1045,8 @@ TEST_F(BocaAppPageHandlerTest,
               GetSession(_, /*can_skip_duplicate_request=*/false))
       .Times(0);
   EXPECT_CALL(*session_manager(),
-              UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
-      .Times(0);
+              UpdateCurrentSession(testing::IsNull(), /*dispatch_event=*/true))
+      .Times(1);
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(true));
   boca_app_handler()->GetSession(future_1.GetCallback());
