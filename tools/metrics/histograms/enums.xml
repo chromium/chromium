@@ -20421,6 +20421,8 @@ from previous Chrome versions.
   <int value="13" label="Aborted by bubble destroyed"/>
 </enum>
 
+<!-- LINT.IfChange(MessageDismissReason) -->
+
 <enum name="MessageDismissReason">
   <int value="0" label="Unknown (controlled by client)"/>
   <int value="1" label="Primary action"/>
@@ -20432,7 +20434,10 @@ from previous Chrome versions.
   <int value="7" label="Activity destroyed"/>
   <int value="8" label="Scope destroyed"/>
   <int value="9" label="DismissedByFeature"/>
+  <int value="10" label="Close button"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/messages/android/message_enums.h) -->
 
 <enum name="MessagePumpPhases">
   <int value="1" label="Scheduled"/>

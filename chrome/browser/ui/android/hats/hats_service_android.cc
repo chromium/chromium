@@ -124,6 +124,9 @@ void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
     case messages::DismissReason::DISMISSED_BY_FEATURE:
       reason = ShouldShowSurveyReasonsAndroid::kAndroidDismissedByFeature;
       break;
+    case messages::DismissReason::CLOSE_BUTTON:
+      reason = ShouldShowSurveyReasonsAndroid::kAndroidCloseButton;
+      break;
     case messages::DismissReason::COUNT:
       NOTREACHED();
   }

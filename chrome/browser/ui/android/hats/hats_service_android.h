@@ -107,7 +107,9 @@ class HatsServiceAndroid : public HatsService {
     kAndroidDismissedByFeature =
         10,  // Another survey was already launched, leading to the current one
              // being aborted.
-    kMaxValue = kAndroidDismissedByFeature,
+    kAndroidCloseButton =
+        11,  // Dismissed when a mouse clicks on the close button.
+    kMaxValue = kAndroidCloseButton,
   };
 
   explicit HatsServiceAndroid(Profile* profile);
