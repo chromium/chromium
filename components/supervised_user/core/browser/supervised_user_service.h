@@ -187,6 +187,8 @@ class SupervisedUserService : public KeyedService {
 
   void SetActive(bool active);
 
+  void SetSettingsServiceActive(bool active);
+
   void OnCustodianInfoChanged();
 
   void OnSupervisedUserIdChanged();
@@ -243,8 +245,10 @@ class SupervisedUserService : public KeyedService {
   // WebFilterType::kCertainSites, both
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
-  // reports. Initialized in the SetActive().
-  WebFilterType current_web_filter_type_ = WebFilterType::kMaxValue;
+  // reports. Initialized in the SetActive(). This default value is derived from
+  // default value of both prefs.
+  WebFilterType current_web_filter_type_ =
+      WebFilterType::kTryToBlockMatureSites;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };
