@@ -34,6 +34,14 @@ ProxyChain TestProxyDelegate::proxy_chain() const {
   CHECK(proxy_chain_) << "No proxy chain has been set via 'set_proxy_chain()'";
   return *proxy_chain_;
 }
+void TestProxyDelegate::set_proxy_list(const ProxyList& proxy_list) {
+  proxy_list_ = proxy_list;
+}
+
+ProxyList TestProxyDelegate::proxy_list() const {
+  CHECK(proxy_list_) << "No proxy list has been set via 'set_proxy_list()'";
+  return *proxy_list_;
+}
 
 void TestProxyDelegate::MakeOnTunnelHeadersReceivedFail(Error result) {
   on_tunnel_headers_received_result_ = result;
@@ -69,7 +77,10 @@ void TestProxyDelegate::OnResolveProxy(
     const std::string& method,
     const ProxyRetryInfoMap& proxy_retry_info,
     ProxyInfo* result) {
-  if (proxy_chain_) {
+  if (proxy_list_) {
+    CHECK(!proxy_chain_) << "Cannot set both a proxy list and a proxy chain.";
+    result->OverrideProxyList(*proxy_list_);
+  } else if (proxy_chain_) {
     result->UseProxyChain(*proxy_chain_);
   }
 }
