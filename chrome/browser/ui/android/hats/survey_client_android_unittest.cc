@@ -24,7 +24,9 @@
 using base::android::ScopedJavaGlobalRef;
 
 namespace hats {
+
 namespace {
+
 const char kTestSurveyTrigger[] = "testing";
 const SurveyBitsData kTestSurveyProductSpecificBitsData{
     {"Test Field 1", true},

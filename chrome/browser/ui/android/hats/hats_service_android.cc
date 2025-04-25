@@ -281,3 +281,7 @@ void HatsServiceAndroid::RecordSurveyAsShown(std::string trigger_id) {
 void HatsServiceAndroid::RemoveTask(const DelayedSurveyTask& task) {
   pending_tasks_.erase(task);
 }
+
+bool HatsServiceAndroid::HasPendingTasksForTesting() {
+  return !pending_tasks_.empty();
+}

@@ -147,6 +147,9 @@ class HatsServiceAndroid : public HatsService {
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data) override;
 
+  // Surface the overloaded method from the base class.
+  using HatsService::LaunchDelayedSurveyForWebContents;
+
   bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
@@ -170,6 +173,8 @@ class HatsServiceAndroid : public HatsService {
   DelayedSurveyTask& GetFirstTaskForTesting() {
     return const_cast<DelayedSurveyTask&>(*pending_tasks_.begin());
   }
+
+  bool HasPendingTasksForTesting();
 
  protected:
   // Remove |task| from the set of |pending_tasks_|.
