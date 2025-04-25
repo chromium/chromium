@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 import java.util.Optional;
@@ -54,7 +55,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void getPasswordCheckupIntent(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -88,7 +89,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -120,7 +121,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -135,7 +136,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void getWeakCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -150,7 +151,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void getReusedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {}
 }

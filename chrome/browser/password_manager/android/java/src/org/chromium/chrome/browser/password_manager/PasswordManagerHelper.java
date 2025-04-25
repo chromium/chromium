@@ -431,7 +431,7 @@ public class PasswordManagerHelper {
      */
     public void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<@Nullable Void> successCallback,
             Callback<Exception> failureCallback) {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
@@ -470,7 +470,7 @@ public class PasswordManagerHelper {
      */
     public void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
