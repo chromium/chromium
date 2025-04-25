@@ -12482,6 +12482,21 @@
             ]
         }
     ],
+    "IOSOneTapMiniMapRemoveSectionsBreaks": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSOneTapMiniMapRemoveSectionsBreaks"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOverflowMenuCustomization": [
         {
             "platforms": [
