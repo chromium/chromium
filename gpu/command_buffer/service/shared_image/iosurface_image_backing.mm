@@ -1443,8 +1443,12 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
         desc.nextInChain = &io_surface_desc;
 
         shared_texture_memory = device.ImportSharedTextureMemory(&desc);
-        if (!shared_texture_memory) {
-          LOG(ERROR) << "Unable to create SharedTextureMemory - device lost?";
+        // If ImportSharedTextureMemory is not successful and the device is not
+        // lost, an error SharedTextureMemory object will be returned, which
+        // will cause an error upon usage.
+        if (shared_texture_memory.IsDeviceLost()) {
+          LOG(ERROR)
+              << "Failed to create shared texture memory due to device loss.";
           return nullptr;
         }
 
