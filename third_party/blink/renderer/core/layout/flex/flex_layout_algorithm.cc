@@ -1616,11 +1616,11 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     flex_items_.emplace_back(
         child, item_index++, flex_grow, flex_shrink, base_content_size,
         min_max_sizes_in_main_axis_direction, main_axis_border_padding,
-        physical_child_margins, initial_scrollbars, main_axis_auto_margin_count,
-        alignment, baseline_writing_mode, baseline_group,
-        is_initial_block_size_indefinite, is_used_flex_basis_indefinite,
-        depends_on_min_max_sizes, is_horizontal_flow_,
-        max_content_contribution);
+        max_content_contribution, physical_child_margins, initial_scrollbars,
+        main_axis_auto_margin_count, alignment, baseline_writing_mode,
+        baseline_group, is_initial_block_size_indefinite,
+        is_used_flex_basis_indefinite, depends_on_min_max_sizes,
+        is_horizontal_flow_);
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
       flex_items_.back().layout_result = layout_result;
