@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
@@ -28,6 +29,7 @@
 #include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -46,6 +48,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/extension_service.h"
+#else
+#include "extensions/browser/null_app_sorting.h"
 #endif
 
 using content::BrowserThread;
@@ -124,6 +128,8 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
       management_policy_(std::make_unique<ManagementPolicy>()),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       app_sorting_(std::make_unique<ChromeAppSorting>(profile_)),
+#else
+      app_sorting_(std::make_unique<NullAppSorting>()),
 #endif
       quota_service_(std::make_unique<QuotaService>()) {
   management_policy_->RegisterProviders(
@@ -134,11 +140,14 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
 TestExtensionSystem::~TestExtensionSystem() = default;
 
 void TestExtensionSystem::Shutdown() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+  registrar_delegate_.reset();
+#else
   if (extension_service_) {
     extension_service_->Shutdown();
   }
 #endif
+
   in_process_data_decoder_.reset();
 }
 
@@ -147,10 +156,6 @@ void TestExtensionSystem::Init() {
 }
 
 void TestExtensionSystem::Init(const InitParams& params) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/412935322): Put desktop android bootstrapping code
-  // here.
-#else
   base::CommandLine* command_line =
       params.command_line ? params.command_line.get()
                           : base::CommandLine::ForCurrentProcess();
@@ -160,6 +165,14 @@ void TestExtensionSystem::Init(const InitParams& params) {
       params.unpacked_install_directory.value_or(
           profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 
+#if BUILDFLAG(IS_ANDROID)
+  registrar_delegate_ =
+      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(profile_.get());
+  registrar->Init(registrar_delegate_.get(), params.enable_extensions,
+                  command_line, install_directory, unpacked_install_directory);
+  registrar_delegate_->Init(registrar);
+#else
   CreateExtensionService(command_line, install_directory,
                          unpacked_install_directory, params.autoupdate_enabled,
                          params.enable_extensions);
@@ -259,12 +272,7 @@ QuotaService* TestExtensionSystem::quota_service() {
 }
 
 AppSorting* TestExtensionSystem::app_sorting() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return app_sorting_.get();
-#else
-  NOTIMPLEMENTED() << "ChromeAppSorting is not supported on desktop android.";
-  return nullptr;
-#endif
 }
 
 const base::OneShotEvent& TestExtensionSystem::ready() const {
@@ -315,7 +323,7 @@ void TestExtensionSystem::RecreateAppSorting() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
 #else
-  NOTIMPLEMENTED() << "ChromeAppSorting is not supported on desktop android.";
+  app_sorting_ = std::make_unique<NullAppSorting>();
 #endif
 }
 

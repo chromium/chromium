@@ -8893,6 +8893,9 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/api/webstore_private/extension_install_status_unittest.cc",
       "../browser/extensions/api/webstore_private/webstore_private_unittest.cc",
+      "../browser/extensions/chrome_extension_test.cc",
+      "../browser/extensions/chrome_extension_test.h",
+      "../browser/extensions/chrome_extension_test_unittest.cc",
       "../browser/extensions/component_loader_unittest.cc",
       "../browser/extensions/corrupted_extension_reinstaller_unittest.cc",
       "../browser/extensions/cws_info_service_unittest.cc",

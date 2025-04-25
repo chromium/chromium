@@ -37,6 +37,7 @@ class TestValueStoreFactory;
 }  // namespace value_store
 
 namespace extensions {
+class ChromeExtensionRegistrarDelegate;
 
 // Test ExtensionSystem, for use with TestingProfile.
 class TestExtensionSystem : public ExtensionSystem {
@@ -139,7 +140,6 @@ class TestExtensionSystem : public ExtensionSystem {
   // Used by ExtensionPrefsTest to re-create the AppSorting after it has
   // re-created the ExtensionPrefs instance (this can never happen in non-test
   // code).
-  // This is a no-op if AppSorting is unsupported.
   void RecreateAppSorting();
 
   void set_content_verifier(ContentVerifier* verifier) {
@@ -157,9 +157,11 @@ class TestExtensionSystem : public ExtensionSystem {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<ExtensionService> extension_service_;
+#else
+  std::unique_ptr<ChromeExtensionRegistrarDelegate> registrar_delegate_;
+#endif
 
   std::unique_ptr<AppSorting> app_sorting_;
-#endif
 
   std::unique_ptr<QuotaService> quota_service_;
 
