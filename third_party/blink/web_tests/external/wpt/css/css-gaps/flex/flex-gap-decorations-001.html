@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <title>
-  CSS Gap Decorations: Painting flex gaps with bi-directional `rule-color` shorthand.
+  CSS Gap Decorations: column and row gaps are painted.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="../../../reference/ref-filled-green-100px-square.xht">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
   .flex-container {
     display: flex;
-    gap: 10px;
+    column-gap: 10px;
+    row-gap: 10px;
     height: 100px;
     width: 100px;
     background: red;
-    rule-color: green;
-    rule-width: 10px;
-    rule-style: solid;
+    column-rule-color: green;
+    column-rule-style: solid;
+    column-rule-width: 10px;
+    row-rule-color: green;
+    row-rule-style: solid;
+    row-rule-width: 10px;
 
     flex-wrap: wrap;
   }
