@@ -271,6 +271,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/manta",
     "//components/omnibox/browser",
     "//components/optimization_guide/core",
+    "//components/passage_embeddings",
     "//components/password_manager/content/browser",
     "//components/payments/content",
     "//components/permissions:permissions_common",

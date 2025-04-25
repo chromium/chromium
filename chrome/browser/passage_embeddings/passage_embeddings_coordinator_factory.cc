@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embeddings_coordinator.h"
@@ -47,10 +48,24 @@ PassageEmbeddingsCoordinatorFactory::~PassageEmbeddingsCoordinatorFactory() =
 std::unique_ptr<KeyedService>
 PassageEmbeddingsCoordinatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
+  // Don't run the experiment for clients with history embeddings enabled.
+  if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+          Profile::FromBrowserContext(profile))) {
+    return nullptr;
+  }
+
+  // Don't bother running if we don't have a model observer since we won't have
+  // a model to run.
+  if (!PassageEmbedderModelObserverFactory::GetForProfile(
+          Profile::FromBrowserContext(profile))) {
+    return nullptr;
+  }
+
   if (!base::FeatureList::IsEnabled(passage_embeddings::kPassageEmbedder)) {
     return nullptr;
   }
 
+  // Required to ensure the model observer starts.
   PassageEmbedderModelObserverFactory::GetForProfile(
       Profile::FromBrowserContext(profile));
 

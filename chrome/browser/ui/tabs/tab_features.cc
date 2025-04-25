@@ -190,12 +190,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
     }
 
-    if (base::FeatureList::IsEnabled(passage_embeddings::kPassageEmbedder)) {
-      embedder_tab_observer_ =
-          std::make_unique<passage_embeddings::EmbedderTabObserver>(
-              tab.GetContents());
-    }
-
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(
             tab.GetBrowserWindowInterface()->GetProfile())) {
