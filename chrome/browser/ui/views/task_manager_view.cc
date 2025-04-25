@@ -89,7 +89,7 @@ const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>({
     {
         .associated_category = DisplayCategory::kTabsAndExtensions,
         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
-        .icon = &views::kNewTabIcon,
+        .icon = &kNewTabRefreshIcon,
     },
     {
         .associated_category = DisplayCategory::kSystem,
