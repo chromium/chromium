@@ -360,21 +360,21 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.LinesCount",
                                expected_lines_count, expected_calls);
 
-  int image_size = bitmap.width() * bitmap.height();
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize10M",
                               expected_calls);
   histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.ImageSize10M",
-                               image_size, expected_calls);
+                               bitmap.width() * bitmap.height(),
+                               expected_calls);
 
   // Expect measured latency, but we don't know how long it taskes to process.
   // So we just check the total count of the expected bucket determined by the
-  // image size.
-  EXPECT_GT(500 * 500, image_size);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Small",
-                              expected_calls);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium", 0);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Large", 0);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
+  // image dimensions, with threshold 2048 for each dimension.
+  EXPECT_GE(2048, bitmap.width());
+  EXPECT_GE(2048, bitmap.height());
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.Latency.NotDownsampled", expected_calls);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Downsampled",
+                              0);
 
   // PDF Specific metrics should not be recorded as the client type is test.
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount.PDF", 0);

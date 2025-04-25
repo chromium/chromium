@@ -47,9 +47,10 @@ namespace screen_ai {
 
 namespace {
 
-// Maximum image resolution that OCR service processes. Images larger than this
-// threshold are downsampled before processing.
-const uint32_t kLargestOcrResolution = 2048 * 2048;
+// Maximum image dimension that OCR service processes. Images with width or
+// height larger than this threshold are downsampled before processing.
+// TODO(crbug.com/413318481): Get this threshold from the library.
+constexpr int kMaxOcrDimension = 2048;
 
 // How often it would be checked that the service is idle and can be shutdown.
 constexpr base::TimeDelta kIdleCheckingDelay = base::Seconds(3);
@@ -427,16 +428,16 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
 
   int lines_count = result ? result->lines_size() : 0;
-  unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
   if (!result) {
     base::UmaHistogramEnumeration(
         "Accessibility.ScreenAI.OCR.Failed.ClientType", client_type);
   }
-  if (image_size >= kLargestOcrResolution) {
+
+  if (image.width() > kMaxOcrDimension || image.height() > kMaxOcrDimension) {
     base::UmaHistogramEnumeration(
-        "Accessibility.ScreenAI.OCR.Oversize.ClientType", client_type);
+        "Accessibility.ScreenAI.OCR.Downsampled.ClientType", client_type);
   }
 
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
@@ -444,18 +445,12 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
   base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              image_size);
-  if (image_size < 500 * 500) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Small",
-                            elapsed_time);
-  } else if (image_size < 1000 * 1000) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Medium",
-                            elapsed_time);
-  } else if (image_size < 2000 * 2000) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Large",
+                              image.width() * image.height());
+  if (image.width() < kMaxOcrDimension && image.height() < kMaxOcrDimension) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
                             elapsed_time);
   } else {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.XLarge",
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
                             elapsed_time);
   }
 
@@ -469,7 +464,7 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
     base::UmaHistogramCounts10M(
         lines_count ? "Accessibility.ScreenAI.OCR.ImageSize.PDF.WithText"
                     : "Accessibility.ScreenAI.OCR.ImageSize.PDF.NoText",
-        image_size);
+        image.width() * image.height());
 
     if (result.has_value()) {
       std::optional<uint64_t> most_detected_language =

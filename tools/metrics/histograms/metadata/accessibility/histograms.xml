@@ -3239,6 +3239,16 @@ even if they fit the naming pattern. -->
   <summary>Records the client type of each OCR request.</summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.Downsampled.ClientType"
+    enum="OCRClientType" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the client type of the OCR requests that have width or height above
+    the threshold that results in downsampling.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.Failed.ClientType"
     enum="OCRClientType" expires_after="2025-09-07">
   <owner>rhalavati@chromium.org</owner>
@@ -3269,19 +3279,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
-    expires_after="2025-10-12">
+<histogram name="Accessibility.ScreenAI.OCR.Latency.{DownsampleStatus}"
+    units="ms" expires_after="2026-04-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the latency for an OCR request in Screen AI service for an image
-    with {ImageSize} pixels.
+    with width and height {DownsampleStatus} downsampling threshold.
   </summary>
-  <token key="ImageSize">
-    <variant name="Large" summary="[1000x1000, 2000x2000)"/>
-    <variant name="Medium" summary="[500x500, 1000x1000)"/>
-    <variant name="Small" summary="less than 500x500"/>
-    <variant name="XLarge" summary="2000x2000 and more"/>
+  <token key="DownsampleStatus">
+    <variant name="Downsampled" summary="above"/>
+    <variant name="NotDownsampled" summary="below"/>
   </token>
 </histogram>
 
@@ -3310,16 +3318,6 @@ even if they fit the naming pattern. -->
   <summary>
     Records the language that is detected most when OCR is performed on a PDF
     page.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.OCR.Oversize.ClientType"
-    enum="OCRClientType" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the client type of the OCR requests that are over the OCR resolution
-    threshold and will be downsized before processsing.
   </summary>
 </histogram>
 
