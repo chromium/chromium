@@ -5985,6 +5985,7 @@ def ChecksAndroidSpecificOnCommit(input_api, output_api):
     """Groups commit checks that target android code."""
     results = []
     results.extend(_CheckAndroidXmlStyle(input_api, output_api, False))
+    results.extend(_CheckAndroidNullAwayAnnotatedClasses(input_api, output_api))
     return results
 
 # TODO(chrishall): could we additionally match on any path owned by
