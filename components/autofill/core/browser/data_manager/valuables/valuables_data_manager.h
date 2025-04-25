@@ -86,7 +86,6 @@ class ValuablesDataManager : public KeyedService,
   base::ObserverList<Observer> observers_;
 
   // The result of the last successful `LoadLoyaltyCards()` query.
-  // Stored loyalty cards are sorted by merchant name.
   std::vector<LoyaltyCard> loyalty_cards_;
 
   base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};

@@ -25,7 +25,6 @@
 
 namespace autofill {
 namespace {
-using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
@@ -102,7 +101,7 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
 
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
   // Loyalty cards are passed unsorted by sync.
-  valuables_table().SetLoyaltyCards({card2, card1});
+  valuables_table().SetLoyaltyCards({card1, card2});
   // Make sure all async tasks are executed.
   helper().WaitUntilIdle();
 
@@ -119,9 +118,8 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   //   the UI sequence.
   helper().WaitUntilIdle();
   helper().WaitUntilIdle();
-  // Assert the cards are stored sorted by merchant name.
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
-              ElementsAre(card1, card2));
+              UnorderedElementsAre(card1, card2));
 }
 
 }  // namespace

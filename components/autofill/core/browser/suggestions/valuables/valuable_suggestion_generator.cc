@@ -66,6 +66,10 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   }
   std::vector<LoyaltyCard> partitionable_cards(loyalty_cards.begin(),
                                                loyalty_cards.end());
+  std::ranges::sort(partitionable_cards,
+                    [](const LoyaltyCard& a, const LoyaltyCard& b) {
+                      return a.merchant_name() < b.merchant_name();
+                    });
   auto non_affiliated_cards = std::ranges::stable_partition(
       partitionable_cards, [&](const LoyaltyCard& card) {
         return LoyaltyCardMatchesDomain(card, url);

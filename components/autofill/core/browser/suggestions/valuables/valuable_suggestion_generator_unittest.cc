@@ -72,21 +72,21 @@ TEST(ValuableSuggestionGeneratorTest,
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(
           loyalty_cards, GURL("https://not-existing-domain.example/test")),
-      testing::ElementsAre(lc1_suggestion_matcher, lc3_suggestion_matcher,
-                           lc2_suggestion_matcher, separatorMatcher,
+      testing::ElementsAre(lc1_suggestion_matcher, lc2_suggestion_matcher,
+                           lc3_suggestion_matcher, separatorMatcher,
                            manageLoyaltyCardsMatcher));
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(loyalty_cards,
                                 GURL("https://domain2.example/test")),
-      testing::ElementsAre(lc3_suggestion_matcher, lc2_suggestion_matcher,
+      testing::ElementsAre(lc2_suggestion_matcher, lc3_suggestion_matcher,
                            separatorMatcher, lc1_suggestion_matcher,
                            separatorMatcher, manageLoyaltyCardsMatcher));
 
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(loyalty_cards,
                                 GURL("https://common-domain.example/test")),
-      testing::ElementsAre(lc1_suggestion_matcher, lc3_suggestion_matcher,
-                           lc2_suggestion_matcher, separatorMatcher,
+      testing::ElementsAre(lc1_suggestion_matcher, lc2_suggestion_matcher,
+                           lc3_suggestion_matcher, separatorMatcher,
                            manageLoyaltyCardsMatcher));
 }
 

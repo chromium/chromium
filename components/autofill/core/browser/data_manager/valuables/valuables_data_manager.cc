@@ -57,12 +57,6 @@ void ValuablesDataManager::LoadLoyaltyCards() {
 void ValuablesDataManager::OnLoyaltyCardsLoaded(
     const std::vector<LoyaltyCard>& loyalty_cards) {
   loyalty_cards_ = loyalty_cards;
-  // Store loyalty cards sorted by merchant name as they are always
-  // shown in this order.
-  std::ranges::sort(loyalty_cards_,
-                    [](const LoyaltyCard& a, const LoyaltyCard& b) {
-                      return a.merchant_name() < b.merchant_name();
-                    });
   NotifyObservers();
 }
 
