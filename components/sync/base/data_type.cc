@@ -9,6 +9,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
@@ -594,6 +595,21 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
   return UNSPECIFIED;
+}
+
+DataTypeSet AlwaysPreferredUserTypes() {
+  DataTypeSet types = {DEVICE_INFO,          USER_CONSENTS,
+                       PLUS_ADDRESS,         PLUS_ADDRESS_SETTING,
+                       PRIORITY_PREFERENCES, SECURITY_EVENTS,
+                       SEND_TAB_TO_SELF,     SUPERVISED_USER_SETTINGS,
+                       SHARING_MESSAGE};
+  // TODO(crbug.com/412602018): Mark AlwaysPreferredUserTypes() method as
+  // constexpr when removing the feature flag.
+  if (!base::FeatureList::IsEnabled(
+          kSyncSupportAlwaysSyncingPriorityPreferences)) {
+    types.Remove(PRIORITY_PREFERENCES);
+  }
+  return types;
 }
 
 DataTypeSet EncryptableUserTypes() {

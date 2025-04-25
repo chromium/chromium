@@ -7,8 +7,10 @@
 #include <optional>
 #include <ostream>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 
 namespace syncer {
 
@@ -50,10 +52,14 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
   switch (type) {
     case UserSelectableType::kBookmarks:
       return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS, POWER_BOOKMARK}};
-    case UserSelectableType::kPreferences:
-      return {kPreferencesTypeName,
-              PREFERENCES,
-              {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES}};
+    case UserSelectableType::kPreferences: {
+      DataTypeSet types = {PREFERENCES, DICTIONARY, SEARCH_ENGINES};
+      if (!base::FeatureList::IsEnabled(
+              kSyncSupportAlwaysSyncingPriorityPreferences)) {
+        types.Put(PRIORITY_PREFERENCES);
+      }
+      return {kPreferencesTypeName, PREFERENCES, types};
+    }
     case UserSelectableType::kPasswords:
       return {
           kPasswordsTypeName,

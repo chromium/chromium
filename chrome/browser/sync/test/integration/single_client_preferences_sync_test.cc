@@ -1861,4 +1861,64 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+class SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled,
+    InactiveWhenUserToggleIsOff) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Disable all user selectable types.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // User toggle is off.
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  // Preferences and Priority preferences are inactive.
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+}
+
+class SingleClientDecouplePriorityPreferencesSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSyncSupportAlwaysSyncingPriorityPreferences};
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
+                       ActiveWhenUserToggleIsOff) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Disable all user selectable types.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // User toggle is off.
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  // Preferences is inactive.
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Priority preferences is still active.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+}
+
 }  // namespace

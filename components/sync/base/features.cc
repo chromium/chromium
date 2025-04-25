@@ -78,6 +78,10 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 #endif
 );
 
+BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
+             "SyncSupportAlwaysSyncingPriorityPreferences",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting,
              "EnableBookmarksSelectedTypeOnSigninForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
