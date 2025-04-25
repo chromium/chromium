@@ -487,6 +487,9 @@ class BrowserView : public BrowserWindow,
   // Update the index of the active split based on the active tab's web contents
   void UpdateActiveSplitView();
 
+  // Reverses the order of the tabs in the active split.
+  void SwapTabsInActiveSplit();
+
   // True if an activation from `old_contents` to `new_contents` happens between
   // tabs that are already in a split-view configuration.
   bool IsTabChangeInSplitView(content::WebContents* old_contents,
@@ -715,6 +718,10 @@ class BrowserView : public BrowserWindow,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnSplitTabContentsUpdated(
+      split_tabs::SplitTabId split_id,
+      std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
+      std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) override;
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;

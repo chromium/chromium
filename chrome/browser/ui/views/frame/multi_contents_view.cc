@@ -87,7 +87,6 @@ bool MultiContentsView::IsInSplitView() {
 void MultiContentsView::SetWebContentsAtIndex(
     content::WebContents* web_contents,
     int index) {
-  CHECK(web_contents);
   CHECK(index >= 0 && index < 2);
   contents_container_views_[index]->GetContentsView()->SetWebContents(
       web_contents);
@@ -148,6 +147,20 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
   }
 }
 
+void MultiContentsView::OnSwap() {
+  CHECK(IsInSplitView());
+  browser_view_->SwapTabsInActiveSplit();
+}
+
+void MultiContentsView::UpdateSplitRatio(double ratio) {
+  if (start_ratio_ == ratio) {
+    return;
+  }
+
+  start_ratio_ = ratio;
+  InvalidateLayout();
+}
+
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (!initial_start_width_on_resize_.has_value()) {
     initial_start_width_on_resize_ =
@@ -164,15 +177,6 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
   }
-}
-
-void MultiContentsView::UpdateSplitRatio(double ratio) {
-  if (start_ratio_ == ratio) {
-    return;
-  }
-
-  start_ratio_ = ratio;
-  InvalidateLayout();
 }
 
 // TODO(crbug.com/397777917): Consider using FlexSpecification weights and

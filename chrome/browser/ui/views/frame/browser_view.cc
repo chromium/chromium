@@ -1518,6 +1518,17 @@ void BrowserView::UpdateActiveSplitView() {
   multi_contents_view_->SetActiveIndex(relative_active_position);
 }
 
+void BrowserView::SwapTabsInActiveSplit() {
+  CHECK(multi_contents_view_);
+  const int active_index = browser_->tab_strip_model()->active_index();
+
+  std::optional<split_tabs::SplitTabId> split_tab_id =
+      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+
+  CHECK(split_tab_id.has_value());
+  browser_->tab_strip_model()->SwapTabsInSplit(split_tab_id.value());
+}
+
 bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
                                          content::WebContents* new_contents) {
   return multi_contents_view_ && multi_contents_view_->IsInSplitView() &&
@@ -3817,6 +3828,38 @@ LocationBarView* BrowserView::GetLocationBarView() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, TabStripModelObserver implementation:
+
+void BrowserView::OnSplitTabContentsUpdated(
+    split_tabs::SplitTabId split_id,
+    std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
+    std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) {
+  // If the updated split is not active, do nothing.
+  if (const tabs::TabInterface* active_tab = browser_->GetActiveTabInterface();
+      !active_tab || !active_tab->IsSplit() ||
+      active_tab->GetSplit().value() != split_id) {
+    return;
+  }
+
+  split_tabs::SplitTabData* split_data =
+      browser_->tab_strip_model()->GetSplitData(split_id);
+  const int first_split_tab_index =
+      browser_->tab_strip_model()->GetIndexOfTab(split_data->ListTabs()[0]);
+  // Clear web contents for prev_tabs in preparation to reset for new_tabs.
+  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : prev_tabs) {
+    int relative_index = split_tab_with_index.second - first_split_tab_index;
+    multi_contents_view_->SetWebContentsAtIndex(nullptr, relative_index);
+  }
+  // Set web contents in multi_contents_view_ to match new_tabs and update the
+  // active multi_contents_view_ index.
+  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : new_tabs) {
+    int relative_index = split_tab_with_index.second - first_split_tab_index;
+    multi_contents_view_->SetWebContentsAtIndex(
+        split_tab_with_index.first->GetContents(), relative_index);
+    if (split_tab_with_index.first->IsActivated()) {
+      multi_contents_view_->SetActiveIndex(relative_index);
+    }
+  }
+}
 
 void BrowserView::TabChangedAt(content::WebContents* contents,
                                int index,

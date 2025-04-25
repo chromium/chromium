@@ -92,6 +92,9 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   void ExecuteOnEachVisibleContentsView(
       base::RepeatingCallback<void(ContentsWebView*)> callback);
 
+  // If in a split view, swaps the order of the two contents views.
+  void OnSwap();
+
   void UpdateSplitRatio(double ratio);
 
   // views::ResizeAreaDelegate:

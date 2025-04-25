@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/test/views_test_utils.h"
@@ -214,4 +215,66 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // doesn't change since it isn't the currently focused tab.
       SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
       CheckTabIsActive(0));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ResizeDoubleClickSwapsSplitViews) {
+  using MultiContentsViewSwapObserver =
+      views::test::PollingViewObserver<bool, MultiContentsView>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewSwapObserver,
+                                      kMultiContentsViewSwapObserver);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  RunTestSequence(
+      // Create a split view with and verify web contents are as expected and
+      // the active index is correct.
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, GURL(chrome::kChromeUINewTabURL)),
+      CreateTabsAndEnterSplitView(), Check([&]() {
+        return multi_contents_view()
+                   ->start_contents_view_for_testing()
+                   ->GetWebContents()
+                   ->GetVisibleURL() == GURL(chrome::kChromeUISettingsURL);
+      }),
+      Check([&]() {
+        return multi_contents_view()
+                   ->end_contents_view_for_testing()
+                   ->GetWebContents()
+                   ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+      }),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
+      // Simulate a double click on the resize area to trigger the split tabs to
+      // swap.
+      Do([&]() {
+        auto* resize_area = multi_contents_view()->resize_area_for_testing();
+        gfx::Point center(resize_area->width() / 2, resize_area->height() / 2);
+        ui::MouseEvent press_event(
+            ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+            ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+        ui::MouseEvent release_event(ui::EventType::kMouseReleased, center,
+                                     center, ui::EventTimeForNow(),
+                                     ui::EF_LEFT_MOUSE_BUTTON,
+                                     ui::EF_LEFT_MOUSE_BUTTON);
+        press_event.SetClickCount(2);
+        release_event.SetClickCount(2);
+        resize_area->OnMousePressed(press_event);
+        resize_area->OnMouseReleased(release_event);
+      }),
+      // Verify the web contents in the split have swapped and the active index
+      // is correct.
+      PollView(kMultiContentsViewSwapObserver,
+               MultiContentsView::kMultiContentsViewElementId,
+               [&](const MultiContentsView* multi_contents_view) -> bool {
+                 bool first_web_contents_set =
+                     multi_contents_view->start_contents_view_for_testing()
+                         ->GetWebContents()
+                         ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+                 bool second_web_contents_set =
+                     multi_contents_view->end_contents_view_for_testing()
+                         ->GetWebContents()
+                         ->GetVisibleURL() ==
+                     GURL(chrome::kChromeUISettingsURL);
+                 return first_web_contents_set && second_web_contents_set;
+               }),
+      WaitForState(kMultiContentsViewSwapObserver, true),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 1));
 }

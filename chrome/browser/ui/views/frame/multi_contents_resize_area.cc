@@ -86,6 +86,13 @@ MultiContentsResizeArea::MultiContentsResizeArea(
   SetPreferredSize(gfx::Size(kHandleWidth + kHandlePadding, kHandleHeight));
 }
 
+void MultiContentsResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
+  ResizeArea::OnMouseReleased(event);
+  if (event.IsLeftMouseButton() && event.GetClickCount() == 2) {
+    multi_contents_view_->OnSwap();
+  }
+}
+
 bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   const int resize_increment = 50;
   if (event.key_code() == ui::VKEY_LEFT) {
