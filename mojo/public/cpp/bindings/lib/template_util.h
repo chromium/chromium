@@ -7,6 +7,8 @@
 
 #include <type_traits>
 
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
+
 namespace mojo::internal {
 
 // A helper template to determine if given type is non-const move-only-type,
@@ -28,6 +30,13 @@ template <typename T>
 struct AlwaysFalse {
   static const bool value = false;
 };
+
+template <typename T>
+using IsAbslOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
+
+template <typename T>
+using IsOptionalAsPointer =
+    IsSpecializationOf<mojo::OptionalAsPointer, std::decay_t<T>>;
 
 }  // namespace mojo::internal
 
