@@ -711,7 +711,9 @@ public class EventForwarder {
         // and ACTION_BUTTON_RELEASE respectively because they provide
         // info about the changed-button.
         if (event.getAction() == MotionEvent.ACTION_DOWN
-                || event.getAction() == MotionEvent.ACTION_UP) {
+                || event.getAction() == MotionEvent.ACTION_UP
+                || event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN
+                || event.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
             // While we use the action buttons for the changed state it is important to still
             // consume the down/up events to get the complete stream for a drag gesture, which
             // is provided using ACTION_MOVE touch events.
@@ -780,7 +782,17 @@ public class EventForwarder {
 
             mLastTrackpadPositionX = event.getX();
             mLastTrackpadPositionY = event.getY();
-            mIsLastTrackpadPositionValid = (event.getAction() != MotionEvent.ACTION_UP);
+
+            // Invalidate the trackpad position for these cases:
+            // ACTION_UP: No pointer on the trackpad, the position data is stale
+            // ACTION_POINTER_UP & ACTION_POINTER_DOWN: Multiple trackpad pointers causes the main
+            // pointer (pointer at idx 0) to flip from one to another, causing sudden jumps in
+            // offsets, we need to wait for a subsequent event to figure out the correct trackpad
+            // position
+            mIsLastTrackpadPositionValid =
+                    (event.getAction() != MotionEvent.ACTION_UP
+                            && event.getActionMasked() != MotionEvent.ACTION_POINTER_UP
+                            && event.getActionMasked() != MotionEvent.ACTION_POINTER_DOWN);
         } else if (event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)) {
             // Input device is Mouse, getX & getY return the relative change of the pointer position
             offsetX = event.getX();
