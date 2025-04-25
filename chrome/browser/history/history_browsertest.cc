@@ -1272,11 +1272,27 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(HistoryVisitedLinksBrowserTest, GetSaltForSameOrigin) {
   constexpr char kOrigin[] = "foo.com";
   const GURL kUrl(embedded_https_test_server().GetURL(kOrigin, "/empty.html"));
+  int roundtrips = 5;
 
   // Obtain our expected salt value from the history service.
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
+
+  // crbug.com/391985597: To obtain a salt from the `HistoryService`, the
+  // :visited links hashtable must have completed loading in data from the
+  // `HistoryDatabase`. Even though the `HistoryDatabase` is empty, on Windows
+  // and MacOS trybots, this test was flaky due to delays in switching from
+  // the DB to UI thread. To ensure that we can obtain our expected salt, we
+  // will run a few navigations which the test must wait for their completion
+  // to buy these trybots some more time to finish loading the table. (NOTE:
+  // this would traditionally be done with a waiter, but due to layering
+  // constraints, we cannot directly access the `(Partitioned)VisitedLink::
+  // TableBuilder` to be signaled once loading is complete.)
+  for (int i = 0; i < roundtrips; i++) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  }
+
   std::optional<uint64_t> expected_salt =
       history_service->GetOrAddOriginSalt(url::Origin::Create(kUrl));
   ASSERT_TRUE(expected_salt.has_value());
@@ -1298,11 +1314,27 @@ IN_PROC_BROWSER_TEST_P(HistoryVisitedLinksBrowserTest, GetSaltForSameOrigin) {
 IN_PROC_BROWSER_TEST_P(HistoryVisitedLinksBrowserTest, AddSaltForCrossOrigin) {
   constexpr char kOrigin[] = "foo.com";
   const GURL kUrl(embedded_https_test_server().GetURL(kOrigin, "/empty.html"));
+  int roundtrips = 5;
 
   // Obtain our expected salt value for kOrigin from the history service.
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
+
+  // crbug.com/391985597: To obtain a salt from the `HistoryService`, the
+  // :visited links hashtable must have completed loading in data from the
+  // `HistoryDatabase`. Even though the `HistoryDatabase` is empty, on Windows
+  // and MacOS trybots, this test was flaky due to delays in switching from
+  // the DB to UI thread. To ensure that we can obtain our expected salt, we
+  // will run a few navigations which the test must wait for their completion
+  // to buy these trybots some more time to finish loading the table. (NOTE:
+  // this would traditionally be done with a waiter, but due to layering
+  // constraints, we cannot directly access the `(Partitioned)VisitedLink::
+  // TableBuilder` to be signaled once loading is complete.)
+  for (int i = 0; i < roundtrips; i++) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  }
+
   std::optional<uint64_t> expected_salt =
       history_service->GetOrAddOriginSalt(url::Origin::Create(kUrl));
   ASSERT_TRUE(expected_salt.has_value());
