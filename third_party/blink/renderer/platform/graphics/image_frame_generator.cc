@@ -126,7 +126,6 @@ bool ImageFrameGenerator::DecodeAndScale(
   const SkISize scaled_size = pixmap.dimensions();
   CHECK(GetSupportedDecodeSize(scaled_size) == scaled_size);
 
-  wtf_size_t frame_count = 0u;
   bool has_alpha = true;
 
   // |decode_failed| indicates a failure due to a corrupt image.
@@ -141,8 +140,8 @@ bool ImageFrameGenerator::DecodeAndScale(
     ImageDecoderWrapper decoder_wrapper(this, data, pixmap,
                                         decoder_color_behavior_, aux_image_,
                                         index, all_data_received, client_id);
-    current_decode_succeeded = decoder_wrapper.Decode(
-        image_decoder_factory_.get(), &frame_count, &has_alpha);
+    current_decode_succeeded =
+        decoder_wrapper.Decode(image_decoder_factory_.get(), &has_alpha);
     decode_failed = decoder_wrapper.decode_failed();
   }
 
