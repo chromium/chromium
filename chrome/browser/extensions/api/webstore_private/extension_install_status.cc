@@ -16,7 +16,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -113,10 +112,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
 
   // Check if parent approval is needed for a supervised user to install
   // a new extension.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kExposedParentalControlNeededForExtensionInstallation) &&
-      !registry->GetInstalledExtension(extension_id) &&
+  if (!registry->GetInstalledExtension(extension_id) &&
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
           profile) &&

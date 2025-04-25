@@ -514,34 +514,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     return;
   }
 
-  // Check if the supervised user is allowed to install extensions in the legacy
-  // flow. NOTE: we do not block themes.
-  if (!dummy_extension_->is_theme()) {
-    if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
-        !supervised_user::
-            IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-          ManagementAPI::GetFactoryInstance()
-              ->Get(profile_)
-              ->GetSupervisedUserExtensionsDelegate();
-      CHECK(supervised_user_extensions_delegate);
-      if (!supervised_user_extensions_delegate->CanInstallExtensions()) {
-        // Assume that the block dialog will be shown here since it was checked
-        // that extensions cannot be installed by the child user. If extensions
-        // are allowed, the install prompt will be shown before the request
-        // permission dialog is shown.
-        RequestExtensionApproval(web_contents);
-        return;
-      }
-#else
-      // TODO(crbug.com/410616937): Support supervised user install controls on
-      // desktop Android.
-      NOTIMPLEMENTED() << "Supervised user checks not yet supported.";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-    }
-  }
-
   // Check the management policy before the installation process begins.
   ExtensionInstallStatus install_status = GetWebstoreExtensionInstallStatus(
       id, profile_, dummy_extension_->manifest()->type(),

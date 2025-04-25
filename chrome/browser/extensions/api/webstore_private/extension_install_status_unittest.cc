@@ -664,28 +664,7 @@ TEST_F(ExtensionInstallStatusTest, ExtensionCorrupted) {
 }
 
 class SupervisedUserExtensionInstallStatusTest
-    : public ExtensionInstallStatusTest {
- public:
-  SupervisedUserExtensionInstallStatusTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_DESKTOP_ANDROID)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_DESKTOP_ANDROID)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    enabled_features.push_back(
-        supervised_user::kExposedParentalControlNeededForExtensionInstallation);
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public ExtensionInstallStatusTest {};
 
 // If a supervised user requires parent approval to install a new extension that
 // has not received parental approval before, then
