@@ -385,6 +385,8 @@ interface Page {
   OnLocalCaptionDisabled();
   // Notifies when Soda Installation has succeeded or failed.
   OnSpeechRecognitionInstallStateUpdated(SpeechRecognitionInstallState state);
+  // Notifies app when session captions is turned off from chrome.
+  OnSessionCaptionDisabled(bool is_error);
 };
 
 // Implemented in browser process to set up the communication between the Page

@@ -446,4 +446,10 @@ export declare interface ClientApi {
    */
   onSpeechRecognitionInstallStateUpdated(state: SpeechRecognitionInstallState):
       void;
+
+  /**
+   * Notify the app that the session captions has been turned off in chrome.
+   * This can be due to an error or because of an event such as device locked.
+   */
+  onSessionCaptionDisabled(isError: boolean): void;
 }

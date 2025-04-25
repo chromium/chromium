@@ -40,10 +40,14 @@ function initializeApp(app: ClientApi) {
 
   callbackRouter.onLocalCaptionDisabled.addListener(
       () => app.onLocalCaptionDisabled());
+
   callbackRouter.onSpeechRecognitionInstallStateUpdated.addListener(
       (state: SpeechRecognitionInstallState) =>
           app.onSpeechRecognitionInstallStateUpdated(
               getSpeechRecognitionInstallStateMojomToUI(state)));
+
+  callbackRouter.onSessionCaptionDisabled.addListener(
+      (isError: boolean) => app.onSessionCaptionDisabled(isError));
 }
 
 /**

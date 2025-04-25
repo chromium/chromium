@@ -24,7 +24,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -273,6 +275,7 @@ BocaAppHandler::BocaAppHandler(
 }
 
 BocaAppHandler::~BocaAppHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_producer_ &&
       producer_current_session_caption_config_->session_caption_enabled) {
     ::boca::CaptionsConfig caption_config;
@@ -691,6 +694,8 @@ void BocaAppHandler::OnLocalCaptionDisabled() {}
 void BocaAppHandler::OnSpeechRecognitionInstallStateUpdated(
     mojom::SpeechRecognitionInstallState) {}
 
+void BocaAppHandler::OnSessionCaptionDisabled(bool is_error) {}
+
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
   ResetProducerSessionCaptionConfig();
@@ -723,11 +728,32 @@ void BocaAppHandler::OnSessionRosterUpdated(const ::boca::Roster& roster) {
 }
 
 void BocaAppHandler::OnLocalCaptionClosed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_->OnLocalCaptionDisabled();
 }
 
 void BocaAppHandler::OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) {
   remote_->OnSpeechRecognitionInstallStateUpdated(GetMojomSodaState(status));
+}
+
+void BocaAppHandler::OnSessionCaptionClosed(bool is_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_producer_) {
+    LOG(ERROR) << "Session caption closed called on consumer.";
+    return;
+  }
+  auto* session = GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    return;
+  }
+  remote_->OnSessionCaptionDisabled(is_error);
+  producer_current_session_caption_config_->session_caption_enabled = false;
+  // Fire and forget captions update request, we don't need to handle the
+  // response and the session captions will be disabled locally either way.
+  UpdateCaptionConfigInternal(session->session_id(),
+                              producer_current_session_caption_config_->Clone(),
+                              /*callback=*/base::DoNothing(),
+                              /*can_proceed=*/true);
 }
 
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(

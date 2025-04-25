@@ -48,6 +48,7 @@
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -326,6 +327,11 @@ class FakePage : public mojom::Page {
   void OnSpeechRecognitionInstallStateUpdated(
       mojom::SpeechRecognitionInstallState state) override {}
 
+  void SetSessionCaptionDisabledInterceptorCallback(
+      base::OnceCallback<void(bool)> session_caption_disabled_cb) {
+    session_caption_disabled_cb_ = std::move(session_caption_disabled_cb);
+  }
+
  private:
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -346,10 +352,16 @@ class FakePage : public mojom::Page {
       std::move(local_caption_disabled_cb_).Run();
     }
   }
+  void OnSessionCaptionDisabled(bool is_error) override {
+    if (session_caption_disabled_cb_) {
+      std::move(session_caption_disabled_cb_).Run(is_error);
+    }
+  }
 
   ActivityInterceptorCallback student_activity_updated_cb_;
   SessionConfigInterceptorCallback session_config_updated_cb_;
   base::OnceClosure local_caption_disabled_cb_;
+  base::OnceCallback<void(bool)> session_caption_disabled_cb_;
 
   const mojo::Receiver<mojom::Page> receiver_;
 };
@@ -507,6 +519,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
+  session_manager::SessionManager device_session_manager_;
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
@@ -2346,6 +2359,122 @@ TEST_F(BocaAppPageHandlerTest, NotifyWhenLocalCaptionClosed) {
   fake_page()->SetLocalCaptionDisabledInterceptorCallback(future.GetCallback());
   boca_app_handler()->OnLocalCaptionClosed();
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(BocaAppPageHandlerTest, NotifyWhenSessionCaptionClosedRequestSucceed) {
+  ::boca::CaptionsConfig request_captions_config;
+  ::boca::CaptionsConfig notify_captions_config;
+  ::boca::Session session =
+      GetCommonActiveSessionProto({.captions_enabled = true});
+  EXPECT_CALL(*session_manager(), GetCurrentSession)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession).Times(1);
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([&request_captions_config](
+                    std::unique_ptr<UpdateSessionRequest> request) {
+        std::unique_ptr<::boca::Session> result =
+            std::make_unique<::boca::Session>(
+                GetCommonActiveSessionProto({.captions_enabled = false}));
+        request_captions_config = *request->captions_config();
+        request->callback().Run(std::move(result));
+      });
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents)
+      .WillOnce([&notify_captions_config](
+                    const ::boca::CaptionsConfig& captions_config) {
+        notify_captions_config = captions_config;
+      });
+  base::test::TestFuture<bool> future;
+  fake_page()->SetSessionCaptionDisabledInterceptorCallback(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionClosed(/*is_error=*/false);
+
+  EXPECT_FALSE(request_captions_config.captions_enabled());
+  EXPECT_FALSE(notify_captions_config.captions_enabled());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(BocaAppPageHandlerTest, NotifyWhenSessionCaptionClosedRequestFailed) {
+  ::boca::CaptionsConfig request_captions_config;
+  ::boca::CaptionsConfig notify_captions_config;
+  ::boca::Session session =
+      GetCommonActiveSessionProto({.captions_enabled = true});
+  EXPECT_CALL(*session_manager(), GetCurrentSession)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession).Times(0);
+  EXPECT_CALL(*session_client_impl(), UpdateSession)
+      .WillOnce([&request_captions_config](
+                    std::unique_ptr<UpdateSessionRequest> request) {
+        std::unique_ptr<::boca::Session> result =
+            std::make_unique<::boca::Session>(
+                GetCommonActiveSessionProto({.captions_enabled = false}));
+        request_captions_config = *request->captions_config();
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents)
+      .WillOnce([&notify_captions_config](
+                    const ::boca::CaptionsConfig& captions_config) {
+        notify_captions_config = captions_config;
+      });
+  base::test::TestFuture<bool> future;
+  fake_page()->SetSessionCaptionDisabledInterceptorCallback(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionClosed(/*is_error=*/true);
+
+  EXPECT_FALSE(request_captions_config.captions_enabled());
+  EXPECT_FALSE(notify_captions_config.captions_enabled());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       DoesNotNotifyWhenSessionCaptionClosedForConsumer) {
+  CreateBocaAppHandler(/*is_producer=*/false);
+  ::boca::Session session =
+      GetCommonActiveSessionProto({.captions_enabled = true});
+  EXPECT_CALL(*session_manager(), GetCurrentSession)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession).Times(0);
+  EXPECT_CALL(*session_client_impl(), UpdateSession).Times(0);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents).Times(0);
+  base::test::TestFuture<bool> future;
+  fake_page()->SetSessionCaptionDisabledInterceptorCallback(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionClosed(/*is_error=*/true);
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       DoesNotNotifyWhenSessionCaptionClosedIfNullSession) {
+  EXPECT_CALL(*session_manager(), GetCurrentSession)
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession).Times(0);
+  EXPECT_CALL(*session_client_impl(), UpdateSession).Times(0);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents).Times(0);
+  base::test::TestFuture<bool> future;
+  fake_page()->SetSessionCaptionDisabledInterceptorCallback(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionClosed(/*is_error=*/true);
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       DoesNotNotifyWhenSessionCaptionClosedIfSessionInactive) {
+  ::boca::Session session =
+      GetCommonActiveSessionProto({.captions_enabled = true});
+  session.set_session_state(::boca::Session::PAST);
+  EXPECT_CALL(*session_manager(), GetCurrentSession)
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession).Times(0);
+  EXPECT_CALL(*session_client_impl(), UpdateSession).Times(0);
+  EXPECT_CALL(*session_manager(), NotifySessionCaptionProducerEvents).Times(0);
+  base::test::TestFuture<bool> future;
+  fake_page()->SetSessionCaptionDisabledInterceptorCallback(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionClosed(/*is_error=*/true);
+
+  EXPECT_FALSE(future.IsReady());
 }
 
 TEST_F(BocaAppPageHandlerTest, ProducerCaptionsOverrideGetSessionCaptions) {

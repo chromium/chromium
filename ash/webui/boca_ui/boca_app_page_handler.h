@@ -119,6 +119,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnLocalCaptionDisabled() override;
   void OnSpeechRecognitionInstallStateUpdated(
       mojom::SpeechRecognitionInstallState state) override;
+  void OnSessionCaptionDisabled(bool is_error) override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -136,6 +137,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnSessionRosterUpdated(const ::boca::Roster& roster) override;
   void OnLocalCaptionClosed() override;
   void OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) override;
+  void OnSessionCaptionClosed(bool is_error) override;
 
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
