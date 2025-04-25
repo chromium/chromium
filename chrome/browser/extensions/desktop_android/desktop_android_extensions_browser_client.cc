@@ -15,9 +15,11 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -338,6 +340,12 @@ ExtensionWebContentsObserver*
 DesktopAndroidExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {
   return ChromeExtensionWebContentsObserver::FromWebContents(web_contents);
+}
+
+scoped_refptr<update_client::UpdateClient>
+DesktopAndroidExtensionsBrowserClient::CreateUpdateClient(
+    content::BrowserContext* context) {
+  return util::CreateUpdateClient(context);
 }
 
 KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {

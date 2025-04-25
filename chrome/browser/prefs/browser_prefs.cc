@@ -1975,6 +1975,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::util::RegisterProfilePrefs(registry);
   extensions_ui_prefs::RegisterProfilePrefs(registry);
   ExtensionWebUI::RegisterProfilePrefs(registry);
+  update_client::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1985,7 +1986,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   // were nested in either a class or separate namespace with a simple
   // Register[Profile]Prefs() name.
   extensions::RegisterSettingsOverriddenUiPrefs(registry);
-  update_client::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)

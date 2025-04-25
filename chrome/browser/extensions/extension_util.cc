@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/update_client.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
@@ -56,6 +58,9 @@
 namespace extensions::util {
 
 namespace {
+
+const char kCrxUrlPath[] = "/service/update2/crx";
+const char kJsonUrlPath[] = "/service/update2/json";
 
 // Returns |extension_id|. See note below.
 std::string ReloadExtension(const std::string& extension_id,
@@ -349,6 +354,21 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
+}
+
+scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+    content::BrowserContext* context) {
+  std::optional<GURL> override_url;
+  GURL update_url = extension_urls::GetWebstoreUpdateUrl();
+  if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
+    if (update_url.path() == kCrxUrlPath) {
+      override_url = update_url.GetWithEmptyPath().Resolve(kJsonUrlPath);
+    } else {
+      override_url = update_url;
+    }
+  }
+  return update_client::UpdateClientFactory(
+      ChromeUpdateClientConfig::Create(context, override_url));
 }
 
 } // namespace extensions::util

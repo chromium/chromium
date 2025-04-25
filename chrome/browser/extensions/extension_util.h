@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -20,6 +21,10 @@ class BrowserContext;
 
 namespace extensions {
 class PermissionSet;
+}
+
+namespace update_client {
+class UpdateClient;
 }
 
 namespace user_prefs {
@@ -91,6 +96,10 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 
 // Registers miscellaneous chrome-level extension-related prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+// Returns a new UpdateClient.
+scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+    content::BrowserContext* context);
 
 }  // namespace util
 }  // namespace extensions
