@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -37,8 +38,8 @@ class ValuablesDataManager : public KeyedService,
     virtual void OnValuablesDataChanged() = 0;
   };
 
-  explicit ValuablesDataManager(
-      scoped_refptr<AutofillWebDataService> webdata_service);
+  ValuablesDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
+                       AutofillImageFetcherBase* image_fetcher);
   ValuablesDataManager(const ValuablesDataManager&) = delete;
   ValuablesDataManager& operator=(const ValuablesDataManager&) = delete;
   ~ValuablesDataManager() override;
@@ -54,6 +55,12 @@ class ValuablesDataManager : public KeyedService,
   //
   // The returned span may be invalidated asynchronously.
   base::span<const LoyaltyCard> GetLoyaltyCards() const;
+
+  // Returns the cached image for the `image_url` if it was synced locally to
+  // the client. The image is extracted from the local cache in
+  // `AutofillImageFetcher`. If the card art image is not present in the cache,
+  // this function will return a nullptr.
+  const gfx::Image* GetCachedValuableImageForUrl(const GURL& image_url) const;
 
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
@@ -87,6 +94,9 @@ class ValuablesDataManager : public KeyedService,
 
   // The result of the last successful `LoadLoyaltyCards()` query.
   std::vector<LoyaltyCard> loyalty_cards_;
+
+  // The image fetcher to fetch customized images for Autofill data.
+  const raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
 
   base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};
 };

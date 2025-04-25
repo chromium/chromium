@@ -2024,7 +2024,8 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
         std::make_unique<AutofillWebDataServiceTestHelper>(
             std::move(valuables_table));
     client().set_valuables_data_manager(std::make_unique<ValuablesDataManager>(
-        web_data_service_helper_->autofill_webdata_service()));
+        web_data_service_helper_->autofill_webdata_service(),
+        /*image_fetcher=*/nullptr));
     web_data_service_helper_->WaitUntilIdle();
   }
 

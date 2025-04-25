@@ -7,7 +7,8 @@
 namespace autofill {
 
 TestValuablesDataManager::TestValuablesDataManager()
-    : ValuablesDataManager(/*webdata_service=*/nullptr) {}
+    : ValuablesDataManager(/*webdata_service=*/nullptr,
+                           /*image_fetcher=*/nullptr) {}
 TestValuablesDataManager::~TestValuablesDataManager() = default;
 
 }  // namespace autofill

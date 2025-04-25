@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/browser/ui/mock_autofill_image_fetcher.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -55,12 +56,15 @@ class ValuablesDataManagerTest : public testing::Test {
     return *helper().autofill_webdata_service();
   }
 
+  MockAutofillImageFetcher& image_fetcher() { return mock_image_fetcher; }
+
   ValuablesTable& valuables_table() { return *valuables_table_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list{
       syncer::kSyncAutofillLoyaltyCard};
+  MockAutofillImageFetcher mock_image_fetcher;
   raw_ptr<ValuablesTable> valuables_table_;
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
 };
@@ -73,7 +77,8 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
 
   valuables_table().SetLoyaltyCards({card1, card2});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service());
+  ValuablesDataManager valuables_data_manager(&webdata_service(),
+                                              &image_fetcher());
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
 
   helper().WaitUntilIdle();
@@ -87,7 +92,8 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
   valuables_table().SetLoyaltyCards({card1});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service());
+  ValuablesDataManager valuables_data_manager(&webdata_service(),
+                                              &image_fetcher());
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
               UnorderedElementsAre(card1));
@@ -120,6 +126,19 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
               UnorderedElementsAre(card1, card2));
+}
+
+TEST_F(ValuablesDataManagerTest, GetCachedValuableImageForUrl) {
+  ValuablesDataManager valuables_data_manager(&webdata_service(),
+                                              &image_fetcher());
+  helper().WaitUntilIdle();
+
+  const GURL expected_url = GURL("https://example.image");
+  EXPECT_CALL(
+      image_fetcher(),
+      GetCachedImageForUrl(
+          expected_url, AutofillImageFetcherBase::ImageType::kValuableImage));
+  valuables_data_manager.GetCachedValuableImageForUrl(expected_url);
 }
 
 }  // namespace

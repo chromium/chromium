@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/sync/base/features.h"
 #include "components/webdata/common/web_data_results.h"
@@ -12,8 +13,10 @@
 namespace autofill {
 
 ValuablesDataManager::ValuablesDataManager(
-    scoped_refptr<AutofillWebDataService> webdata_service)
-    : webdata_service_(std::move(webdata_service)) {
+    scoped_refptr<AutofillWebDataService> webdata_service,
+    AutofillImageFetcherBase* image_fetcher)
+    : webdata_service_(std::move(webdata_service)),
+      image_fetcher_(image_fetcher) {
   if (!webdata_service_) {
     // In some tests, there are no dbs.
     return;
@@ -28,6 +31,18 @@ ValuablesDataManager::~ValuablesDataManager() = default;
 
 base::span<const LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
   return loyalty_cards_;
+}
+
+const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
+    const GURL& image_url) const {
+  if (!image_url.is_valid()) {
+    return nullptr;
+  }
+  if (!image_fetcher_) {
+    return nullptr;
+  }
+  return image_fetcher_->GetCachedImageForUrl(
+      image_url, AutofillImageFetcherBase::ImageType::kValuableImage);
 }
 
 void ValuablesDataManager::OnDataRetrieved(
