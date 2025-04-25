@@ -13,3 +13,15 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
   ]
 }
+
+source_set("options") {
+  sources = [
+    "reader_mode_options_view_controller.h",
+    "reader_mode_options_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}

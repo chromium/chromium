@@ -59,6 +59,7 @@ source_set("commands") {
     "qr_scanner_commands.h",
     "quick_delete_commands.h",
     "reader_mode_commands.h",
+    "reader_mode_options_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
     "recent_activity_commands.h",
