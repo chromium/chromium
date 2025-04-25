@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,7 +59,7 @@ std::u16string PdfInfoBarDelegate::GetButtonLabel(InfoBarButton button) const {
 
 bool PdfInfoBarDelegate::Accept() {
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/396202897): implement MacOS shell integration.
+  shell_integration::SetAsDefaultHandlerForUTType("com.adobe.pdf");
 #elif BUILDFLAG(IS_WIN)
   auto* window =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar())
