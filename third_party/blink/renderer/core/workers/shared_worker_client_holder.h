@@ -83,7 +83,8 @@ class CORE_EXPORT SharedWorkerClientHolder final
                mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
                ukm::SourceId client_ukm_source_id,
                const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
-                   connector_override);
+                   connector_override,
+               bool extended_lifetime);
 
   void Trace(Visitor* visitor) const override;
 

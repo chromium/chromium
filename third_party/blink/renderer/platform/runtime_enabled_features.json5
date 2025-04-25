@@ -4273,6 +4273,11 @@
       base_feature: "none",
     },
     {
+      // If enabled, SharedWorker supports extendedLifetime
+      // https://github.com/whatwg/html/issues/10997
+      name: "SharedWorkerExtendedLifetime",
+    },
+    {
       name: "SignatureBasedInlineIntegrity",
       status: "experimental",
     },
