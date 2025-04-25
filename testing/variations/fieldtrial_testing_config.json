@@ -24295,7 +24295,7 @@
             ]
         }
     ],
-    "TabGroupSuggestion": [
+    "TabGroupSuggestionMetricsOnly": [
         {
             "platforms": [
                 "android"
