@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -36,12 +37,14 @@ SpeechRecognitionClientBrowserInterface::
                               OnLiveCaptionAvailabilityChanged,
                           base::Unretained(this)));
   // Reuse the same callback, since it does the same thing regardless of which
-  // pref changed.
-  pref_change_registrar_->Add(
-      prefs::kHeadlessCaptionEnabled,
-      base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
-                              OnLiveCaptionAvailabilityChanged,
-                          base::Unretained(this)));
+  // pref changed.  Ignore the pref if the feature is off, though.
+  if (captions::IsHeadlessCaptionFeatureSupported()) {
+    pref_change_registrar_->Add(
+        prefs::kHeadlessCaptionEnabled,
+        base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                                OnLiveCaptionAvailabilityChanged,
+                            base::Unretained(this)));
+  }
   pref_change_registrar_->Add(
       prefs::kLiveCaptionLanguageCode,
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
@@ -130,9 +133,10 @@ void SpeechRecognitionClientBrowserInterface::
   }
 
   // Captioning is enabled if either Live Caption or Headless Caption.
-  const bool enabled =
-      profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled) ||
-      profile_prefs_->GetBoolean(prefs::kHeadlessCaptionEnabled);
+  bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+  if (captions::IsHeadlessCaptionFeatureSupported()) {
+    enabled |= profile_prefs_->GetBoolean(prefs::kHeadlessCaptionEnabled);
+  }
 
   for (auto& observer : live_caption_availibility_observers_) {
     observer->SpeechRecognitionAvailabilityChanged(enabled);

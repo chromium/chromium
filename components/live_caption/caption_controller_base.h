@@ -129,7 +129,7 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // about it.
   void RemoveListener(Listener*);
 
-  const raw_ptr<PrefService> profile_prefs_;
+  const raw_ptr<PrefService> profile_prefs_ = nullptr;
   const std::string application_locale_;
   const std::unique_ptr<Delegate> delegate_;
 

@@ -1,0 +1,146 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/glic/media/glic_media_integration.h"
+
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using content::WebContents;
+
+namespace glic {
+
+class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features(media::kHeadlessLiveCaption);
+    ChromeRenderViewHostTestHarness::SetUp();
+    // Return a mock Live Caption controller.
+    auto controller = CreateLiveCaptionController();
+    live_caption_controller_ = controller.get();
+    captions::LiveCaptionControllerFactory::GetInstance()->SetTestingFactory(
+        web_contents()->GetBrowserContext(),
+        base::BindOnce(
+            [](std::unique_ptr<captions::LiveCaptionController> controller,
+               content::BrowserContext* context)
+                -> std::unique_ptr<KeyedService> {
+              return std::move(controller);
+            },
+            std::move(controller)));
+  }
+
+  void TearDown() override {
+    live_caption_controller_ = nullptr;
+    pref_registry_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  // ChromeRenderViewHostTestHarness
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    auto pref_service =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    pref_registry_ = pref_service->registry();
+    RegisterUserProfilePrefs(pref_registry_);
+    return TestingProfile::Builder()
+        .SetPrefService(std::move(pref_service))
+        .AddTestingFactories(GetTestingFactories())
+        .Build();
+  }
+
+  // Get the MediaIntegration instance, after doing some work to register prefs
+  GlicMediaIntegration* GetIntegration() {
+    scoped_feature_list_.emplace(media::kHeadlessLiveCaption);
+    return GlicMediaIntegration::GetFor(web_contents());
+  }
+
+  captions::LiveCaptionController* live_caption_controller() {
+    return live_caption_controller_;
+  }
+
+  PrefService* pref_service() {
+    return Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+        ->GetPrefs();
+  }
+
+  bool get_headless_pref() {
+    return pref_service()->GetBoolean(prefs::kHeadlessCaptionEnabled);
+  }
+
+  std::unique_ptr<captions::LiveCaptionController>
+  CreateLiveCaptionController() {
+    return std::make_unique<captions::LiveCaptionController>(
+        pref_service(),
+        /*global_prefs=*/nullptr, "application_locale", browser_context(),
+        /*delegate=*/nullptr);
+  }
+
+ private:
+  TestingPrefServiceSimple pref_service_;
+  std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
+  raw_ptr<captions::LiveCaptionController> live_caption_controller_ = nullptr;
+  raw_ptr<user_prefs::PrefRegistrySyncable> pref_registry_ = nullptr;
+};
+
+TEST_F(GlicMediaIntegrationTest, GetWithNullReturnsNull) {
+  // Make sure this doesn't crash.
+  EXPECT_EQ(GlicMediaIntegration::GetFor(nullptr), nullptr);
+}
+
+TEST_F(GlicMediaIntegrationTest, GetReturnsNullIfSwitchIsOff) {
+  EXPECT_EQ(GlicMediaIntegration::GetFor(web_contents()), nullptr);
+}
+
+TEST_F(GlicMediaIntegrationTest, GetReturnsNonNullIfSwitchIsOn) {
+  // Right now, this doesn't depend on the headless pref, but likely it should.
+  EXPECT_NE(GetIntegration(), nullptr);
+}
+
+TEST_F(GlicMediaIntegrationTest, ContextContainsTranscript) {
+  auto* integration = GetIntegration();
+
+  // Send the string in pieces, mixing final and non-final ones.
+  const std::string test_cap_1("ABC");
+  const std::string test_cap_2("DEF");
+  const std::string test_cap_3("XYZ");  // Should be ignored as non-final.
+  const std::string test_cap_4("GHIJ");
+  live_caption_controller()->DispatchTranscription(
+      nullptr, media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
+  live_caption_controller()->DispatchTranscription(
+      nullptr, media::SpeechRecognitionResult(test_cap_2, /*is_final=*/true));
+  live_caption_controller()->DispatchTranscription(
+      nullptr, media::SpeechRecognitionResult(test_cap_3, /*is_final=*/false));
+  live_caption_controller()->DispatchTranscription(
+      nullptr, media::SpeechRecognitionResult(test_cap_4, /*is_final=*/true));
+
+  // Request a max length that's smaller than what we sent.
+  const size_t max_len =
+      test_cap_1.length() + test_cap_2.length() + test_cap_4.length() - 1;
+  std::string reported_cap;
+  base::MockCallback<GlicMediaIntegration::ContextCallback> cb;
+  EXPECT_CALL(cb, Run("BCDEFGHIJ"));
+  integration->ComputeContext(web_contents(), max_len, cb.Get());
+}
+
+TEST_F(GlicMediaIntegrationTest, HeadlessPrefTurnsOnAndOff) {
+  // Verify that the headless pref turns on with the integration, and turns
+  // back off the next time Live Caption starts.  This is temporary behavior.
+  EXPECT_FALSE(get_headless_pref());
+  GetIntegration();
+  EXPECT_TRUE(get_headless_pref());
+  auto controller = CreateLiveCaptionController();
+  EXPECT_FALSE(get_headless_pref());
+}
+
+}  // namespace glic

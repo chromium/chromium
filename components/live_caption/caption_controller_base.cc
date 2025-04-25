@@ -68,6 +68,12 @@ CaptionControllerBase::CaptionControllerBase(
                          : std::make_unique<CaptionControllerDelgateImpl>()),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(profile_prefs_);
+
+  // Turn off headless captioning when we first start, so that it does not get
+  // stuck on.
+  if (profile_prefs_->FindPreference(prefs::kHeadlessCaptionEnabled)) {
+    profile_prefs_->SetBoolean(prefs::kHeadlessCaptionEnabled, false);
+  }
 }
 
 void CaptionControllerBase::CreateUI() {
@@ -169,10 +175,8 @@ bool CaptionControllerBase::DispatchTranscription(
     const media::SpeechRecognitionResult& result) {
   bool success = false;
 
-  // Once there are more listeners than just the caption bubble controller, be
-  // sure that the caption bubble controller expects that it can return false
-  // and still get future calls.  Alternatively, cause it not to get future
-  // calls without stopping transcription if there are other listeners.
+  // Consider deleting the listener if it returns false.  It's unclear if
+  // `caption_bubble_controller_` would allow this, but maybe.
   for (auto& listener : listeners_) {
     success |= listener->OnTranscription(caption_bubble_context, result);
   }
