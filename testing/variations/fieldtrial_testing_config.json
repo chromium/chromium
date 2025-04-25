@@ -4405,21 +4405,6 @@
             ]
         }
     ],
-    "ChromeOSAssistantNewEntryPoint": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeOSEnableNewEntryPoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSBoostUrgentVariables": [
         {
             "platforms": [
