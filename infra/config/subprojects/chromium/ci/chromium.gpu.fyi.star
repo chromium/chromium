@@ -2381,6 +2381,11 @@ ci.thin_tester(
         mixins = [
             "mac_retina_nvidia_gpu_stable",
         ],
+        per_test_modifications = {
+            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.remove(
+                reason = "Tests timeout too often, also bot will be decommissioned. See crbug.com/407800772",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
