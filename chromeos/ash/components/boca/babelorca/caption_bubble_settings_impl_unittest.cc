@@ -4,9 +4,11 @@
 
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "components/live_caption/caption_bubble_settings.h"
@@ -143,6 +145,27 @@ TEST_F(CaptionBubbleSettingsImplTest, DoesNotNotifyWhenCaptionsEnabled) {
 
   caption_bubble_settings.SetLiveCaptionEnabled(/*enabled=*/true);
   EXPECT_FALSE(notified);
+}
+
+TEST_F(CaptionBubbleSettingsImplTest,
+       ShouldAdjustPositionOnExpandIfFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kBocaAdjustCaptionBubbleOnExpand});
+  CaptionBubbleSettingsImpl caption_bubble_settings(
+      &pref_service_, kEnglishLanguage, base::DoNothing());
+
+  EXPECT_TRUE(caption_bubble_settings.ShouldAdjustPositionOnExpand());
+}
+
+TEST_F(CaptionBubbleSettingsImplTest,
+       ShouldAdjustPositionOnExpandIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      {features::kBocaAdjustCaptionBubbleOnExpand});
+  CaptionBubbleSettingsImpl caption_bubble_settings(
+      &pref_service_, kEnglishLanguage, base::DoNothing());
+
+  EXPECT_FALSE(caption_bubble_settings.ShouldAdjustPositionOnExpand());
 }
 
 }  // namespace

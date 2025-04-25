@@ -44,6 +44,8 @@ class LiveCaptionBubbleSettings : public CaptionBubbleSettings {
   void SetLiveTranslateTargetLanguageCode(
       std::string_view language_code) override;
 
+  bool ShouldAdjustPositionOnExpand() override;
+
  private:
   const raw_ptr<PrefService> profile_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -282,6 +282,12 @@ BASE_FEATURE(kBocaClientTypeForSpeechRecognition,
              "BocaClientTypeForSpeechRecognition",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables using a specific app name for speech recognition for Boca
+// on ChromeOS.
+BASE_FEATURE(kBocaAdjustCaptionBubbleOnExpand,
+             "BocaAdjustCaptionBubbleOnExpand",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables enforcing sequential execution for Boca Session load.
 BASE_FEATURE(kBocaSequentialSessionLoad,
              "BocaSequentialSessionLoad",
@@ -3495,6 +3501,10 @@ bool IsBocaNetworkRestrictionEnabled() {
 
 bool IsBocaClientTypeForSpeechRecognitionEnabled() {
   return base::FeatureList::IsEnabled(kBocaClientTypeForSpeechRecognition);
+}
+
+bool IsBocaAdjustCaptionBubbleOnExpandEnabled() {
+  return base::FeatureList::IsEnabled(kBocaAdjustCaptionBubbleOnExpand);
 }
 
 bool IsBocaSequentialSessionLoadEnabled() {

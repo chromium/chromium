@@ -44,6 +44,7 @@ class CaptionBubbleSettingsImpl : public ::captions::CaptionBubbleSettings {
   void SetLiveCaptionBubbleExpanded(bool expanded) override;
   void SetLiveTranslateTargetLanguageCode(
       std::string_view language_code) override;
+  bool ShouldAdjustPositionOnExpand() override;
 
   void SetLiveTranslateEnabled(bool enabled);
 

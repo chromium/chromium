@@ -1012,6 +1012,12 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
   // The change of expanded state may cause the title to change visibility, and
   // it surely causes the content height to change, so redraw the bubble.
   Redraw();
+  if (caption_bubble_settings_->ShouldAdjustPositionOnExpand() && model_ &&
+      is_expanded_) {
+    model_->GetContext()->GetBounds(
+        base::BindOnce(&CaptionBubble::AdjustPosition,
+                       weak_ptr_factory_.GetWeakPtr(), model_->unique_id()));
+  }
 }
 
 void CaptionBubble::SwapButtons(views::Button* first_button,
@@ -1580,6 +1586,22 @@ void CaptionBubble::RepositionInContextRect(CaptionBubbleModel::Id model_id,
   }
 
   GetWidget()->SetBounds(target_bounds);
+}
+
+void CaptionBubble::AdjustPosition(CaptionBubbleModel::Id model_id,
+                                   const gfx::Rect& context_rect) {
+  // We shouldn't reposition ourselves into the context rect of a model that is
+  // no longer active.
+  if (model_ == nullptr || model_->unique_id() != model_id) {
+    return;
+  }
+  gfx::Rect inset_rect = context_rect;
+  inset_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+  if (!inset_rect.Contains(bubble_bounds)) {
+    bubble_bounds.AdjustToFit(inset_rect);
+    GetWidget()->SetBounds(bubble_bounds);
+  }
 }
 
 void CaptionBubble::UpdateContentSize() {
