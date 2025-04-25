@@ -18,11 +18,13 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_modal_manager.h"
+#include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -60,8 +62,7 @@ class GlicModalManager;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowController : public views::WidgetObserver,
-                             public ui::AcceleratorTarget {
+class GlicWindowController : public views::WidgetObserver {
  public:
   // Observes the state of the glic window.
   class StateObserver : public base::CheckedObserver {
@@ -286,12 +287,6 @@ class GlicWindowController : public views::WidgetObserver,
 
   Host& host() const;
 
-  // ui::AcceleratorTarget
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  bool CanHandleAccelerators() const override;
-
-  void AddAccelerators();
-
   // Sets the floating attributes of the glic window.
   //
   // When set to true, the glic window is set to have a `kFloatingWindow`
@@ -502,6 +497,9 @@ class GlicWindowController : public views::WidgetObserver,
   std::unique_ptr<WindowFinder> window_finder_;
 
   std::unique_ptr<GlicModalManager> glic_modal_manager_;
+
+  std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
+  std::unique_ptr<LocalHotkeyManager> glic_window_hotkey_manager_;
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;

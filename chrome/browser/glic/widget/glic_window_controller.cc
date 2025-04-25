@@ -79,20 +79,6 @@ constexpr static int kMaxWidgetSize = 16'384;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
-#if BUILDFLAG(IS_MAC)
-constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
-#else
-constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
-#endif
-constexpr ui::KeyboardCode kFocusToggleAcceleratorKey = ui::VKEY_G;
-
-ui::Accelerator GetFocusToggleAccelerator() {
-  return ui::Accelerator(kFocusToggleAcceleratorKey,
-                         kFocusToggleAcceleratorModifiers);
-}
-
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
   mojom::PanelState panel_state;
@@ -326,6 +312,7 @@ GlicWindowController::GlicWindowController(
       glic_service_(glic_service),
       enabling_(enabling) {
   previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
+  application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
 }
 
 GlicWindowController::~GlicWindowController() = default;
@@ -410,7 +397,9 @@ void GlicWindowController::OnWidgetActivationChanged(views::Widget* widget,
     GetGlicView()->GetViewAccessibility().AnnounceAlert(
         l10n_util::GetStringFUTF16(
             IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT,
-            GetFocusToggleAccelerator().GetShortcutText()));
+            LocalHotkeyManager::GetAccelerator(
+                LocalHotkeyManager::Hotkey::kFocusToggle)
+                .GetShortcutText()));
     do_focus_loss_announcement_ = false;
   }
   window_activation_callback_list_.Notify(active);
@@ -661,52 +650,6 @@ Host& GlicWindowController::host() const {
   return glic_service_->host();
 }
 
-bool GlicWindowController::AcceleratorPressed(
-    const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
-    Close();
-    return true;
-  }
-  if (accelerator.key_code() == kFocusToggleAcceleratorKey &&
-      accelerator.modifiers() == kFocusToggleAcceleratorModifiers) {
-    // Transfer focus back to the browser.
-    if (IsAttached()) {
-      attached_browser_->window()->Activate();
-      return true;
-    }
-    if (auto* last_active = BrowserList::GetInstance()->GetLastActive()) {
-      last_active->window()->Activate();
-      return true;
-    }
-  }
-#if BUILDFLAG(IS_WIN)
-  if (accelerator.key_code() == ui::VKEY_SPACE &&
-      accelerator.modifiers() == ui::EF_ALT_DOWN) {
-    ShowTitleBarContextMenuAt(gfx::Point());
-  }
-#endif  //  BUILDFLAG(IS_WIN)
-  return false;
-}
-
-bool GlicWindowController::CanHandleAccelerators() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void GlicWindowController::AddAccelerators() {
-  GlicView* glic_view = GetGlicView();
-  if (!glic_view) {
-    return;
-  }
-
-  glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  glic_view->AddAccelerator(ui::Accelerator(kFocusToggleAcceleratorKey,
-                                            kFocusToggleAcceleratorModifiers));
-#if BUILDFLAG(IS_WIN)
-  glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN));
-#endif
-}
-
 void GlicWindowController::Show(Browser* browser,
                                 mojom::InvocationSource source) {
   // At this point State must be kClosed, and all glic window state must be
@@ -766,12 +709,13 @@ void GlicWindowController::ShowGlicModal(std::u16string label) {
 
 void GlicWindowController::SetupGlicWidget(Browser* browser) {
   auto initial_bounds = GetInitialBounds(browser);
+  glic_window_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
   glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
-                                    /*accelerator_delegate=*/GetWeakPtr(),
+                                    glic_window_hotkey_manager_->GetWeakPtr(),
                                     user_resizable_);
   glic_widget_observation_.Observe(glic_widget_.get());
   SetupGlicWidgetAccessibilityText();
-  AddAccelerators();
+  glic_window_hotkey_manager_->InitializeAccelerators();
 
   if (AlwaysDetached()) {
     SetGlicWindowToFloatingMode(true);
@@ -805,9 +749,11 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
 void GlicWindowController::SetupGlicWidgetAccessibilityText() {
   auto* widget_delegate = glic_widget_->widget_delegate();
   if (opening_source_ == mojom::InvocationSource::kFre) {
-    widget_delegate->SetAccessibleTitle(l10n_util::GetStringFUTF16(
-        IDS_GLIC_WINDOW_TITLE_FIRST_LOAD,
-        GetFocusToggleAccelerator().GetShortcutText()));
+    widget_delegate->SetAccessibleTitle(
+        l10n_util::GetStringFUTF16(IDS_GLIC_WINDOW_TITLE_FIRST_LOAD,
+                                   LocalHotkeyManager::GetAccelerator(
+                                       LocalHotkeyManager::Hotkey::kFocusToggle)
+                                       .GetShortcutText()));
     do_focus_loss_announcement_ = true;
   } else {
     widget_delegate->SetAccessibleTitle(
@@ -1212,6 +1158,7 @@ void GlicWindowController::CloseFinish(
   attached_browser_ = nullptr;
   window_event_observer_.reset();
   browser_close_subscription_.reset();
+  glic_window_hotkey_manager_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
   scoped_glic_button_indicator_.reset();
