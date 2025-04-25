@@ -113,6 +113,8 @@ source_set("audio") {
       "processing_audio_fifo.h",
       "sync_mixing_graph_input.cc",
       "sync_mixing_graph_input.h",
+      "system_loopback_listener.cc",
+      "system_loopback_listener.h",
     ]
 
     public_deps += [ "//media/webrtc" ]

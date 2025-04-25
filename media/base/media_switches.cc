@@ -454,6 +454,13 @@ BASE_FEATURE(kContextMenuSearchForVideoFrame,
 BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_FEATURE(kSystemLoopbackAsAecReference,
+             "SystemLoopbackAsAecReference",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAddedProcessingDelay{
+    &kSystemLoopbackAsAecReference, "added_delay_ms", 100};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif
 
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
@@ -1694,6 +1701,24 @@ bool IsChromeWideEchoCancellationEnabled() {
          !IsSystemEchoCancellationEnforced();
 #else
   return false;
+#endif
+}
+
+bool IsSystemLoopbackAsAecReferenceEnabled() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
+#else
+  return false;
+#endif
+}
+
+std::optional<base::TimeDelta> GetAecAddedDelay() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  return base::Milliseconds(kAddedProcessingDelay.Get());
+#else
+  return std::nullopt;
 #endif
 }
 

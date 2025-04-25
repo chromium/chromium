@@ -12,9 +12,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/webrtc/api/audio/audio_processing.h"
 #include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
+#include "third_party/webrtc/api/audio/echo_canceller3_config.h"
+#include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc_overrides/environment.h"
 
@@ -144,7 +147,29 @@ CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
       webrtc::AudioProcessing::Config::NoiseSuppression::Level::kHigh;
   apm_config.echo_canceller.enabled = settings.echo_cancellation;
   ConfigAutomaticGainControl(settings, apm_config);
-  return webrtc::BuiltinAudioProcessingBuilder(apm_config)
-      .Build(WebRtcEnvironment());
+
+  webrtc::BuiltinAudioProcessingBuilder apm_builder(apm_config);
+
+  // TODO(crbug.com/412581642): Plumb this as a parameter, this should not be
+  // used in the Renderer.
+  std::optional<base::TimeDelta> added_delay = media::GetAecAddedDelay();
+  if (added_delay.has_value()) {
+    webrtc::EchoCanceller3Config config;
+    webrtc::EchoCanceller3Config multichannel_config =
+        webrtc::EchoCanceller3Config::CreateDefaultMultichannelConfig();
+    // If we are using system loopback as AEC reference, we delay the capture
+    // signal so that the reference signal arrives before the capture signal.
+    // AEC considers the delay to be provided at 16 kHz sample rate.
+    config.delay.fixed_capture_delay_samples =
+        added_delay->InMilliseconds() * 16;
+    multichannel_config.delay.fixed_capture_delay_samples =
+        config.delay.fixed_capture_delay_samples;
+    std::unique_ptr<webrtc::EchoControlFactory> aec3_factory =
+        std::make_unique<webrtc::EchoCanceller3Factory>(config,
+                                                        multichannel_config);
+    apm_builder.SetEchoControlFactory(std::move(aec3_factory));
+  }
+
+  return apm_builder.Build(WebRtcEnvironment());
 }
 }  // namespace media
