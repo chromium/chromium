@@ -89,6 +89,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
 
   base::TimeTicks current_result_frame_time_;
   std::optional<Result> current_result_;
+  uint64_t frame_id_ = 0u;
 };
 
 }  // namespace viz

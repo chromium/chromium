@@ -251,6 +251,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_completion_callback_ = false;
+
+  bool supports_adaptive_refresh_rate_ = false;
+  base::TimeDelta suggested_frame_interval_high_;
+  float device_scale_factor_ = 1.0f;
 #endif
 
   // Map which retains the exact supported refresh rates, keyed by their

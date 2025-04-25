@@ -56,7 +56,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseFrameIntervalDecider);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kUseFrameIntervalDeciderNewAndroidFeatures);
+    kUseFrameIntervalDeciderAdaptiveFrameRate);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kTemporalSkipOverlaysWithRootCopyOutputRequests);

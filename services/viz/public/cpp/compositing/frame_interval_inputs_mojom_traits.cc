@@ -20,6 +20,8 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
       return viz::mojom::ContentFrameIntervalType::kAnimatingImage;
     case viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
       return viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
+    case viz::ContentFrameIntervalType::kCompositorScroll:
+      return viz::mojom::ContentFrameIntervalType::kCompositorScroll;
   }
   NOTREACHED();
 }
@@ -37,6 +39,9 @@ bool EnumTraits<viz::mojom::ContentFrameIntervalType,
       return true;
     case viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
       *out = viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
+      return true;
+    case viz::mojom::ContentFrameIntervalType::kCompositorScroll:
+      *out = viz::ContentFrameIntervalType::kCompositorScroll;
       return true;
   }
   return false;
@@ -63,7 +68,13 @@ bool StructTraits<viz::mojom::FrameIntervalInputsDataView,
   if (!inputs.ReadFrameTime(&out->frame_time)) {
     return false;
   }
+  out->has_user_input = inputs.has_user_input();
   out->has_input = inputs.has_input();
+  out->major_scroll_speed_in_pixels_per_second =
+      inputs.major_scroll_speed_in_pixels_per_second();
+  if (out->major_scroll_speed_in_pixels_per_second < 0.f) {
+    return false;
+  }
   if (!inputs.ReadContentIntervalInfo(&out->content_interval_info)) {
     return false;
   }

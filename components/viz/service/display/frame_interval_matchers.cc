@@ -22,7 +22,8 @@ namespace {
 // have the same content frame interval. Then return that interval.
 std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
     const FrameIntervalMatcher::Inputs& matcher_inputs,
-    ContentFrameIntervalType type) {
+    ContentFrameIntervalType type,
+    FrameIntervalMatcher::ResultIntervalType interval_type) {
   std::optional<base::TimeDelta> content_interval;
   for (const auto& [frame_sink_id, inputs] : matcher_inputs.inputs_map) {
     // Skip frame sinks that are old.
@@ -119,7 +120,7 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
             return content_interval.value();
           }),
       matcher_inputs.settings->interval_settings);
-  return FrameIntervalMatcher::ResultInterval{interval};
+  return FrameIntervalMatcher::ResultInterval{interval, interval_type};
 }
 
 }  // namespace
@@ -147,8 +148,9 @@ FrameIntervalMatcher::Settings::Settings(Settings&& other) = default;
 FrameIntervalMatcher::Settings& FrameIntervalMatcher::Settings::operator=(
     Settings&& other) = default;
 
-FrameIntervalMatcher::Inputs::Inputs(const Settings& settings)
-    : settings(settings) {}
+FrameIntervalMatcher::Inputs::Inputs(const Settings& settings,
+                                     uint64_t frame_id)
+    : settings(settings), frame_id(frame_id) {}
 FrameIntervalMatcher::Inputs::~Inputs() = default;
 FrameIntervalMatcher::Inputs::Inputs(const Inputs& other) = default;
 FrameIntervalMatcher::Inputs& FrameIntervalMatcher::Inputs::operator=(
@@ -216,12 +218,16 @@ std::string FrameIntervalMatcher::MatcherTypeToString(
       return "None";
     case FrameIntervalMatcherType::kInputBoost:
       return "InputBoost";
+    case FrameIntervalMatcherType::kSlowScrollThrottle:
+      return "SlowScrollThrottle";
     case FrameIntervalMatcherType::kOnlyVideo:
       return "OnlyVideo";
     case FrameIntervalMatcherType::kVideoConference:
       return "VideoConference";
     case FrameIntervalMatcherType::kOnlyAnimatingImage:
       return "kOnlyAnimatingImage";
+    case FrameIntervalMatcherType::kUserInputBoost:
+      return "UserInputBoost";
     case FrameIntervalMatcherType::kOnlyScrollBarFadeOut:
       return "OnlyScrollBarFadeOut";
   }
@@ -283,7 +289,8 @@ DefineSimpleMatcherConstructorDestructor(OnlyVideoMatcher, kOnlyVideo);
 std::optional<FrameIntervalMatcher::Result> OnlyVideoMatcher::Match(
     const Inputs& matcher_inputs) {
   return MatchContentIntervalType(matcher_inputs,
-                                  ContentFrameIntervalType::kVideo);
+                                  ContentFrameIntervalType::kVideo,
+                                  ResultIntervalType::kExact);
 }
 
 // Matches video conference case by using heuristic of 2 or more videos.
@@ -358,7 +365,8 @@ DefineSimpleMatcherConstructorDestructor(OnlyAnimatingImageMatcher,
 std::optional<FrameIntervalMatcher::Result> OnlyAnimatingImageMatcher::Match(
     const Inputs& matcher_inputs) {
   return MatchContentIntervalType(matcher_inputs,
-                                  ContentFrameIntervalType::kAnimatingImage);
+                                  ContentFrameIntervalType::kAnimatingImage,
+                                  ResultIntervalType::kExact);
 }
 
 DefineSimpleMatcherConstructorDestructor(OnlyScrollBarFadeOutAnimationMatcher,
@@ -366,7 +374,99 @@ DefineSimpleMatcherConstructorDestructor(OnlyScrollBarFadeOutAnimationMatcher,
 std::optional<FrameIntervalMatcher::Result>
 OnlyScrollBarFadeOutAnimationMatcher::Match(const Inputs& matcher_inputs) {
   return MatchContentIntervalType(
-      matcher_inputs, ContentFrameIntervalType::kScrollBarFadeOutAnimation);
+      matcher_inputs, ContentFrameIntervalType::kScrollBarFadeOutAnimation,
+      ResultIntervalType::kAtLeast);
+}
+
+DefineSimpleMatcherConstructorDestructor(UserInputBoostMatcher,
+                                         kUserInputBoost);
+std::optional<FrameIntervalMatcher::Result> UserInputBoostMatcher::Match(
+    const Inputs& matcher_inputs) {
+  for (const auto& [frame_sink_id, inputs] : matcher_inputs.inputs_map) {
+    if (inputs.has_user_input &&
+        (matcher_inputs.aggregated_frame_time - inputs.frame_time) <
+            matcher_inputs.settings->ignore_frame_sink_timeout) {
+      return std::visit(
+          base::Overloaded(
+              [](const std::monostate& monostate) -> Result {
+                return FrameIntervalClass::kBoost;
+              },
+              [](const FixedIntervalSettings& fixed_interval_settings)
+                  -> Result {
+                return ResultInterval{
+                    *fixed_interval_settings.supported_intervals.begin(),
+                    ResultIntervalType::kAtLeast};
+              },
+              [](const ContinuousRangeSettings& continuous_range_settings)
+                  -> Result {
+                return ResultInterval{continuous_range_settings.min_interval,
+                                      ResultIntervalType::kAtLeast};
+              }),
+          matcher_inputs.settings->interval_settings);
+    }
+  }
+  return std::nullopt;
+}
+
+SlowScrollThrottleMatcher::SlowScrollThrottleMatcher(float device_scale_factor)
+    : FrameIntervalMatcher(FrameIntervalMatcherType::kSlowScrollThrottle),
+      device_scale_factor_(device_scale_factor) {}
+SlowScrollThrottleMatcher::~SlowScrollThrottleMatcher() = default;
+
+std::optional<FrameIntervalMatcher::Result> SlowScrollThrottleMatcher::Match(
+    const Inputs& matcher_inputs) {
+  CHECK(std::holds_alternative<std::monostate>(
+      matcher_inputs.settings->interval_settings));
+  float scroll_speed = 0.f;
+  bool ignored_extra_update = false;
+  for (const auto& [frame_sink_id, inputs] : matcher_inputs.inputs_map) {
+    // Skip frame sinks that are old.
+    if (matcher_inputs.aggregated_frame_time - inputs.frame_time >=
+        matcher_inputs.settings->ignore_frame_sink_timeout) {
+      continue;
+    }
+    bool has_non_scroll_update =
+        !inputs.has_only_content_frame_interval_updates ||
+        std::any_of(
+            inputs.content_interval_info.begin(),
+            inputs.content_interval_info.end(),
+            [](const ContentFrameIntervalInfo& content_frame_interval_info) {
+              return content_frame_interval_info.type !=
+                     ContentFrameIntervalType::kCompositorScroll;
+            });
+    // Scroll can occasionally have new tiles rastered or new content recorded
+    // in a commit. Ignore these one off frames that has updates beyond just
+    // scroll. Otherwise, do not match.
+    if (has_non_scroll_update &&
+        (matcher_inputs.frame_id - last_frame_id_matched_without_extra_update_ >
+         1)) {
+      return std::nullopt;
+    }
+    if (has_non_scroll_update) {
+      ignored_extra_update = true;
+    }
+    if (inputs.major_scroll_speed_in_pixels_per_second > scroll_speed) {
+      scroll_speed = inputs.major_scroll_speed_in_pixels_per_second;
+    }
+  }
+
+  // No scroll.
+  if (scroll_speed <= 0) {
+    return std::nullopt;
+  }
+
+  if (!ignored_extra_update) {
+    last_frame_id_matched_without_extra_update_ = matcher_inputs.frame_id;
+  }
+  float speed_dps = scroll_speed / device_scale_factor_;
+  // The hard-coded values are copied from AOSP View.convertVelocityToFrameRate.
+  if (speed_dps > 300) {
+    return FrameIntervalClass::kBoost;
+  } else if (speed_dps > 125) {
+    return ResultInterval{base::Hertz(80), ResultIntervalType::kAtLeast};
+  } else {
+    return ResultInterval{base::Hertz(60), ResultIntervalType::kAtLeast};
+  }
 }
 
 }  // namespace viz

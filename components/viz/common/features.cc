@@ -73,8 +73,8 @@ BASE_FEATURE(kUseFrameIntervalDecider,
 );
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kUseFrameIntervalDeciderNewAndroidFeatures,
-             "UseFrameIntervalDeciderNewAndroidFeatures",
+BASE_FEATURE(kUseFrameIntervalDeciderAdaptiveFrameRate,
+             "UseFrameIntervalDeciderAdaptiveFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

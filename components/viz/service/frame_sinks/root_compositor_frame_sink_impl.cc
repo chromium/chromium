@@ -487,7 +487,12 @@ void RootCompositorFrameSinkImpl::SetAdaptiveRefreshRateInfo(
     float suggested_high,
     const std::vector<float>& supported_refresh_rates,
     float device_scale_factor) {
-  // TODO(crbug.com/402442892): Use this info.
+  supports_adaptive_refresh_rate_ =
+      has_support && base::FeatureList::IsEnabled(
+                         features::kUseFrameIntervalDeciderAdaptiveFrameRate);
+  suggested_frame_interval_high_ = base::Hertz(suggested_high);
+  device_scale_factor_ = device_scale_factor;
+  UpdateFrameIntervalDeciderSettings();
 }
 
 void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
@@ -680,12 +685,22 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 
   // Note that matcher order defines precedence.
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (supports_adaptive_refresh_rate_) {
+    matchers.push_back(std::make_unique<UserInputBoostMatcher>());
+    matchers.push_back(
+        std::make_unique<SlowScrollThrottleMatcher>(device_scale_factor_));
+  } else {
+    matchers.push_back(std::make_unique<InputBoostMatcher>());
+  }
+#else
   matchers.push_back(std::make_unique<InputBoostMatcher>());
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
-  if (base::FeatureList::IsEnabled(
-          features::kUseFrameIntervalDeciderNewAndroidFeatures)) {
+  if (supports_adaptive_refresh_rate_) {
     matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
     matchers.push_back(
         std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
@@ -743,10 +758,15 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
   std::pair<base::TimeDelta, gfx::SurfaceControlFrameRateCompatibility>
       interval_and_compat = std::visit(
           base::Overloaded(
-              [](FrameIntervalDecider::FrameIntervalClass
-                     frame_interval_class) {
+              [this](FrameIntervalDecider::FrameIntervalClass
+                         frame_interval_class) {
                 switch (frame_interval_class) {
                   case FrameIntervalDecider::FrameIntervalClass::kBoost:
+                    if (supports_adaptive_refresh_rate_) {
+                      return std::pair(
+                          suggested_frame_interval_high_,
+                          gfx::SurfaceControlFrameRateCompatibility::kAtLeast);
+                    }
                     return std::pair(base::Milliseconds(0),
                                      gfx::SurfaceControlFrameRateCompatibility::
                                          kFixedSource);

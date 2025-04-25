@@ -669,7 +669,7 @@
             ]
         }
     ],
-    "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
+    "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
         {
             "platforms": [
                 "android"
@@ -678,7 +678,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseFrameIntervalDeciderNewAndroidFeatures"
+                        "UseFrameIntervalDeciderAdaptiveFrameRate"
                     ]
                 }
             ]

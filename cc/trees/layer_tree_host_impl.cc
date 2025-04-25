@@ -3143,6 +3143,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       CurrentBeginFrameArgs().frame_time;
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
+  metadata.frame_interval_inputs.has_user_input =
+      has_non_fling_input_since_last_frame_;
   has_non_fling_input_since_last_frame_ = false;
 
   if (frame->damage_reasons.Has(DamageReason::kCompositorScroll)) {
@@ -3155,6 +3157,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       metadata.frame_interval_inputs.major_scroll_speed_in_pixels_per_second =
           frame_max_scroll_delta_ / begin_frame_time_delta_.InSecondsF();
     }
+    metadata.frame_interval_inputs.content_interval_info.push_back(
+        {viz::ContentFrameIntervalType::kCompositorScroll, base::TimeDelta(),
+         1u});
+    frame->damage_reasons.Remove(DamageReason::kCompositorScroll);
   }
 
   if (!frame->video_layer_preferred_intervals.empty() &&

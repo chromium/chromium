@@ -72,7 +72,7 @@ FrameIntervalDecider::WrapAggregate(SurfaceManager& surface_manager,
 void FrameIntervalDecider::Decide(
     base::TimeTicks frame_time,
     base::flat_map<FrameSinkId, FrameIntervalInputs> inputs_map) {
-  FrameIntervalMatcher::Inputs matcher_inputs(settings_);
+  FrameIntervalMatcher::Inputs matcher_inputs(settings_, frame_id_++);
   matcher_inputs.aggregated_frame_time = frame_time;
   matcher_inputs.inputs_map = std::move(inputs_map);
 
