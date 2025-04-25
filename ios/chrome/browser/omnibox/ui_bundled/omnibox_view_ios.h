@@ -89,8 +89,6 @@ class OmniboxViewIOS : public OmniboxView {
   // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   void OnDidChange(bool processing_user_input);
-  // Called when the backspace button is pressed in the Omnibox text field.
-  void OnDeleteBackward();
   // Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();

@@ -347,29 +347,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   OnBeforePossibleChange();
 }
 
-void OmniboxViewIOS::OnDeleteBackward() {
-  if (field_.text.length == 0) {
-    // If the user taps backspace while the pre-edit text is showing,
-    // OnWillChange is invoked before this method and sets the text to an empty
-    // string, so use the `clearingPreEditText` to determine if the chip should
-    // be cleared or not.
-    if ([field_ clearingPreEditText]) {
-      // In the case where backspace is tapped while in pre-edit mode,
-      // OnWillChange is called but OnDidChange is never called so ensure the
-      // clearingPreEditText flag is set to false again.
-      [field_ setClearingPreEditText:NO];
-      // Explicitly set the input-in-progress flag. Normally this is set via
-      // in model()->OnAfterPossibleChange, but in this case the text has been
-      // set to the empty string by OnWillChange so when OnAfterPossibleChange
-      // checks if the text has changed it does not see any difference so it
-      // never sets the input-in-progress flag.
-      if (model()) {
-        model()->SetInputInProgress(YES);
-      }
-    }
-  }
-}
-
 void OmniboxViewIOS::OnAcceptAutocomplete() {
   current_selection_ = [field_ selectedNSRange];
   OnDidChange(/*processing_user_event=*/true);
