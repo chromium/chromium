@@ -73,7 +73,7 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  coordinator_->GetLensOverlayController()
+  coordinator_->GetLensSearchController()
       ->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->OpenURL(params, std::move(navigation_handle_callback));
@@ -86,7 +86,8 @@ bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
   if (!coordinator_) {
     return false;
   }
-  return coordinator_->GetLensOverlayController()
+  return coordinator_->GetLensSearchController()
+      ->lens_overlay_controller()
       ->lens_overlay_event_handler()
       ->HandleKeyboardEvent(source, event, GetFocusManager());
 }

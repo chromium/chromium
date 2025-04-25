@@ -17,6 +17,7 @@ namespace lens {
 std::unique_ptr<LensOverlayController>
 TestLensSearchController::CreateLensOverlayController(
     tabs::TabInterface* tab,
+    LensSearchController* lens_search_controller,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
@@ -27,8 +28,8 @@ TestLensSearchController::CreateLensOverlayController(
       ThemeService::BrowserColorScheme::kLight);
 
   return std::make_unique<TestLensOverlayController>(
-      tab, variations_client, identity_manager, pref_service, sync_service,
-      theme_service);
+      tab, lens_search_controller, variations_client, identity_manager,
+      pref_service, sync_service, theme_service);
 }
 
 }  // namespace lens

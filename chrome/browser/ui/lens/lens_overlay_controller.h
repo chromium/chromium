@@ -84,6 +84,7 @@ class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
 class LensOverlayEventHandler;
 struct SearchQuery;
+class SidePanelInUse;
 }  // namespace lens
 
 namespace optimization_guide {
@@ -113,6 +114,7 @@ class WebView;
 
 class PrefService;
 class Profile;
+class LensSearchController;
 enum class SidePanelEntryHideReason;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
@@ -148,6 +150,7 @@ class LensOverlayController : public LensSearchboxClient,
                               public find_in_page::FindResultObserver {
  public:
   LensOverlayController(tabs::TabInterface* tab,
+                        LensSearchController* lens_search_controller,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
                         PrefService* pref_service,
@@ -425,6 +428,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
 
+  // Returns the tab interface that that owns the search controller that owns
+  // this overlay controller.
   tabs::TabInterface* GetTabInterface();
 
   // Show preselection toast bubble. Creates a preselection bubble if it does
@@ -535,6 +540,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles the event where zero suggest was shown for testing.
   void OnZeroSuggestShownForTesting();
 
+  // Opens the side panel for testing. If the side panel is already open, this
+  // does nothing.
+  void OpenSidePanelForTesting();
+
   // Returns the lens suggest inputs stored in this controller for testing.
   const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
 
@@ -587,11 +596,6 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller);
-
-  // Override these methods to be able to track calls made to the side panel
-  // coordinator.
-  virtual std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
-  CreateLensOverlaySidePanelCoordinator();
 
   // Returns the vsrid to use for the new tab URL.
   std::string GetVsridForNewTab();
@@ -926,6 +930,10 @@ class LensOverlayController : public LensSearchboxClient,
   // visible.
   void MaybeHideSharedOverlayView();
 
+  // Requests to open the side panel if this class has not already done so.
+  // Must be called before issuing results to the side panel.
+  void MaybeOpenSidePanel();
+
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
   // LensOverlayController.
@@ -1214,6 +1222,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Owns the LensSearchController which owns this class
   raw_ptr<tabs::TabInterface> tab_;
+
+  // Owns this class.
+  raw_ptr<LensSearchController> lens_search_controller_;
 
   // A monotonically increasing id. This is used to differentiate between
   // different screenshot attempts.
@@ -1504,8 +1515,9 @@ class LensOverlayController : public LensSearchboxClient,
   // be assumed to be non-null.
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
-  // Side panel coordinator for showing results in the panel.
-  std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
+  // Side panel coordinator for the side panel coordinator that controls the
+  // results side panel. Guaranteed to exist if the overlay is not `kOff`.
+  raw_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
 
   // Class for handling key events from the renderer that were not handled.
@@ -1514,6 +1526,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Layer delegate that handles blurring the background behind the WebUI.
   std::unique_ptr<lens::LensOverlayBlurLayerDelegate>
       lens_overlay_blur_layer_delegate_;
+
+  // Keeps alive an instance of the side panel while it is open. This is
+  // necessary to prevent the side panel from closing when the overlay is open.
+  std::unique_ptr<lens::SidePanelInUse> side_panel_in_use_;
 
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.

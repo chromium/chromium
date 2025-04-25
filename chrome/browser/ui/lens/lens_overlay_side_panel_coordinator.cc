@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -124,14 +125,9 @@ SearchQuery& SearchQuery::operator=(const SearchQuery& other) {
 SearchQuery::~SearchQuery() = default;
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
-    LensOverlayController* lens_overlay_controller)
-    : lens_overlay_controller_(lens_overlay_controller) {
-  side_panel_coordinator_ = lens_overlay_controller->GetTabInterface()
-                                ->GetBrowserWindowInterface()
-                                ->GetFeatures()
-                                .side_panel_coordinator();
+    LensSearchController* lens_search_controller)
+    : lens_search_controller_(lens_search_controller) {
   initialization_data_ = std::make_unique<SidePanelInitializationData>();
-  CHECK(side_panel_coordinator_);
 }
 
 LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
@@ -141,36 +137,24 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
     side_panel_web_view_->ClearCoordinator();
     side_panel_web_view_ = nullptr;
   }
-
-  auto* registry = lens_overlay_controller_->GetTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
-  CHECK(registry);
-
-  // Remove the side panel entry observer if it is present.
-  auto* registered_entry = registry->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
-  if (registered_entry) {
-    registered_entry->RemoveObserver(this);
-  }
-
-  // This is a no-op if the entry does not exist.
-  registry->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
 }
 
-void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
-  // Exit early if the side panel is already registered or is in the process of
-  // being registered.
-  if(state_ != State::kOff) {
-    return;
-  }
-
+std::unique_ptr<SidePanelInUse>
+LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   state_ = State::kOpeningSidePanel;
   RegisterEntry();
-  GetSidePanelUI(lens_overlay_controller_)
+  GetSidePanelUI(GetLensOverlayController())
       ->Show(SidePanelEntry::Id::kLensOverlayResults);
-  lens_overlay_controller_->NotifyResultsPanelOpened();
+  GetLensOverlayController()->NotifyResultsPanelOpened();
+
+  // Store reference to the side panel coordinator for this journey.
+  side_panel_coordinator_ = lens_search_controller_->GetTabInterface()
+                                ->GetBrowserWindowInterface()
+                                ->GetFeatures()
+                                .side_panel_coordinator();
+  CHECK(side_panel_coordinator_);
+
+  return std::make_unique<SidePanelInUseImpl>(this);
 }
 
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
@@ -187,7 +171,7 @@ void LensOverlaySidePanelCoordinator::SetSidePanelNewTabUrl(const GURL& url) {
 void LensOverlaySidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  lens_overlay_controller_->OnSidePanelWillHide(reason);
+  GetLensOverlayController()->OnSidePanelWillHide(reason);
 }
 
 void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
@@ -197,14 +181,14 @@ void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   //   (2) The user clicked the 'x' button while the overlay is showing.
   //   (3) The side panel naturally went away after a tab switch.
   // Forward to LensOverlayController to have it disambiguate.
-  lens_overlay_controller_->OnSidePanelHidden();
+  GetLensOverlayController()->OnSidePanelHidden();
 }
 
 void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // This is called from the destructor of the WebView. Synchronously clear all
   // state associated with the WebView.
   if (side_panel_web_view_) {
-    lens_overlay_controller_->ResetSidePanelSearchboxHandler();
+    GetLensOverlayController()->ResetSidePanelSearchboxHandler();
     side_panel_web_view_ = nullptr;
   }
 }
@@ -220,7 +204,7 @@ LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
 bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
     const GURL& nav_url) {
   if (ShouldHandleTextDirectives(nav_url)) {
-    const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+    const GURL& page_url = lens_search_controller_->GetTabInterface()
                                ->GetContents()
                                ->GetLastCommittedURL();
     // Need to check if the page URL matches the navigation URL again. This is
@@ -234,7 +218,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
       if (page_url.host() != nav_url.host() ||
           page_url.path() != nav_url.path() ||
           page_url_text_query != nav_url_text_query) {
-        lens_overlay_controller_->GetTabInterface()
+        lens_search_controller_->GetTabInterface()
             ->GetBrowserWindowInterface()
             ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
         return true;
@@ -246,7 +230,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
         shared_highlighting::ExtractTextFragments(nav_url.ref());
 
     // Create and attach a `TextFinderManager` to the primary page.
-    content::Page& page = lens_overlay_controller_->GetTabInterface()
+    content::Page& page = lens_search_controller_->GetTabInterface()
                               ->GetContents()
                               ->GetPrimaryPage();
     companion::TextFinderManager* text_finder_manager =
@@ -262,7 +246,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
 }
 
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
-  return GetSidePanelUI(lens_overlay_controller_)
+  return GetSidePanelUI(GetLensOverlayController())
       ->IsSidePanelEntryShowing(
           SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
 }
@@ -286,17 +270,17 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   // selection and thumbnail state.
   const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
   if (lens_mode.empty()) {
-    lens_overlay_controller_->SetAdditionalSearchQueryParams(
+    GetLensOverlayController()->SetAdditionalSearchQueryParams(
         /*additional_search_query_params=*/{});
-    lens_overlay_controller_->SetSearchboxThumbnail("");
-    lens_overlay_controller_->ClearAllSelections();
-    lens_overlay_controller_->SetSearchboxThumbnail(std::string());
+    GetLensOverlayController()->SetSearchboxThumbnail("");
+    GetLensOverlayController()->ClearAllSelections();
+    GetLensOverlayController()->SetSearchboxThumbnail(std::string());
   }
 
   // Grab the current state of the overlay and use it to update populate the
   // query stack and currently loaded query.
   lens::SearchQuery search_query(query, search_url);
-  lens_overlay_controller_->AddOverlayStateToSearchQuery(search_query);
+  GetLensOverlayController()->AddOverlayStateToSearchQuery(search_query);
 
   // Add what was the currently loaded search query to the query stack,
   // if it is present.
@@ -311,7 +295,7 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   initialization_data_->currently_loaded_search_query_ = search_query;
 
   // Update searchbox and selection state to match the new query.
-  lens_overlay_controller_->SetSearchboxInputText(query);
+  GetLensOverlayController()->SetSearchboxInputText(query);
 }
 void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   if (initialization_data_->search_query_history_stack_.empty()) {
@@ -331,30 +315,30 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   // Set the translate mode for the new query. Even if there are no translate
   // options, still need to pass the std::nullopt to disable translate
   // mode in the overlay.
-  lens_overlay_controller_->SetTranslateMode(query.translate_options_);
+  GetLensOverlayController()->SetTranslateMode(query.translate_options_);
 
   // Clear any active selections on the page and then re-add selections for this
   // query and update the selection, thumbnail and searchbox state.
-  lens_overlay_controller_->ClearAllSelections();
+  GetLensOverlayController()->ClearAllSelections();
 
   // Do not reset text selections for translated text since it may
   // not be on the screen until the full image request is resent.
   if (query.selected_text_.has_value() &&
       !query.translate_options_.has_value()) {
-    lens_overlay_controller_->SetTextSelection(query.selected_text_->first,
-                                               query.selected_text_->second);
+    GetLensOverlayController()->SetTextSelection(query.selected_text_->first,
+                                                 query.selected_text_->second);
   } else if (query.selected_region_) {
-    lens_overlay_controller_->SetPostRegionSelection(
+    GetLensOverlayController()->SetPostRegionSelection(
         query.selected_region_->Clone());
   }
-  lens_overlay_controller_->SetAdditionalSearchQueryParams(
+  GetLensOverlayController()->SetAdditionalSearchQueryParams(
       query.additional_search_query_params_);
-  lens_overlay_controller_->SetSearchboxInputText(query.search_query_text_);
-  lens_overlay_controller_->SetSearchboxThumbnail(
+  GetLensOverlayController()->SetSearchboxInputText(query.search_query_text_);
+  GetLensOverlayController()->SetSearchboxThumbnail(
       query.selected_region_thumbnail_uri_);
 
   const bool is_contextual_query =
-      lens_overlay_controller_->IsContextualSearchbox();
+      GetLensOverlayController()->IsContextualSearchbox();
   const bool query_has_image =
       query.selected_region_ || !query.selected_region_bitmap_.drawsNothing();
   const bool should_send_interaction = query_has_image || is_contextual_query;
@@ -382,14 +366,14 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
 
     // If the query also has text, we should send it as a multimodal query.
     if (query.search_query_text_.empty()) {
-      lens_overlay_controller_->IssueLensRequest(
+      GetLensOverlayController()->IssueLensRequest(
           query.selected_region_->Clone(), query.lens_selection_type_,
           selected_region_bitmap);
     } else {
       // TODO(crbug.com/404941800): It might be better to send the multimodal
       // request directly to the query controller once the query controller is
       // owned by the search controller.
-      lens_overlay_controller_->IssueMultimodalRequest(
+      GetLensOverlayController()->IssueMultimodalRequest(
           query.selected_region_->Clone(), query.search_query_text_,
           query.lens_selection_type_, selected_region_bitmap);
     }
@@ -402,7 +386,7 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
     // TODO(crbug.com/404941800): It might be better to send the contextual
     // request directly to the query controller once the query controller is
     // owned by the search controller.
-    lens_overlay_controller_->IssueContextualTextRequest(
+    GetLensOverlayController()->IssueContextualTextRequest(
         query.search_query_text_, query.lens_selection_type_);
     return;
   }
@@ -427,19 +411,19 @@ void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
     case COMMAND_MY_ACTIVITY: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kMyActivity);
-      lens_overlay_controller_->ActivityRequestedByEvent(event_flags);
+      GetLensOverlayController()->ActivityRequestedByEvent(event_flags);
       break;
     }
     case COMMAND_LEARN_MORE: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kLearnMore);
-      lens_overlay_controller_->InfoRequestedByEvent(event_flags);
+      GetLensOverlayController()->InfoRequestedByEvent(event_flags);
       break;
     }
     case COMMAND_SEND_FEEDBACK: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kSendFeedback);
-      lens_overlay_controller_->FeedbackRequestedByEvent(event_flags);
+      GetLensOverlayController()->FeedbackRequestedByEvent(event_flags);
       break;
     }
     default: {
@@ -457,7 +441,6 @@ void LensOverlaySidePanelCoordinator::BindSidePanel(
 
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));
-  state_ = State::kOpen;
 
   if (pending_side_panel_url_.has_value()) {
     side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
@@ -480,6 +463,9 @@ bool LensOverlaySidePanelCoordinator::IsSidePanelBound() {
 }
 
 void LensOverlaySidePanelCoordinator::LoadURLInResultsFrame(const GURL& url) {
+  CHECK(state_ != State::kOff) << "Side panel is not registered. You must "
+                                  "first call RegisterEntryAndShow().";
+
   if (side_panel_page_) {
     side_panel_page_->LoadResultsInFrame(url);
     return;
@@ -565,6 +551,45 @@ LensOverlaySidePanelCoordinator::SidePanelInitializationData::
 LensOverlaySidePanelCoordinator::SidePanelInitializationData::
     ~SidePanelInitializationData() = default;
 
+LensOverlaySidePanelCoordinator::SidePanelInUseImpl::SidePanelInUseImpl(
+    LensOverlaySidePanelCoordinator* coordinator)
+    : coordinator_(coordinator->weak_ptr_factory_.GetWeakPtr()) {
+  coordinator_->side_panel_in_use_count_++;
+}
+
+LensOverlaySidePanelCoordinator::SidePanelInUseImpl::~SidePanelInUseImpl() {
+  if (coordinator_) {
+    coordinator_->side_panel_in_use_count_--;
+    if (coordinator_->side_panel_in_use_count_ == 0) {
+      coordinator_->DeregisterEntryAndCleanup();
+    }
+  }
+}
+
+void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
+  auto* registry = lens_search_controller_->GetTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  CHECK(registry);
+
+  // Remove the side panel entry observer if it is present.
+  auto* registered_entry = registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+  if (registered_entry) {
+    registered_entry->RemoveObserver(this);
+  }
+
+  // This is a no-op if the entry does not exist.
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+
+  // Remove the reference to the side panel coordinator to prevent dangling
+  // pointers.
+  side_panel_coordinator_ = nullptr;
+
+  state_ = State::kOff;
+}
+
 // This method is called when the WebContents wants to open a link in a new
 // tab (e.g. an anchor tag with target="_blank"). This delegate does not
 // override AddNewContents(), so the WebContents is not actually created.
@@ -640,7 +665,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
 
 #if BUILDFLAG(ENABLE_PDF)
     content::WebContents* web_contents =
-        lens_overlay_controller_->GetTabInterface()->GetContents();
+        lens_search_controller_->GetTabInterface()->GetContents();
 
     // If a PDFDocumentHelper is found attached to the current web contents,
     // that means that the PDF viewer is currently loaded in it.
@@ -662,7 +687,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
       return;
     }
 
-    lens_overlay_controller_->GetTabInterface()
+    lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
     return;
@@ -670,7 +695,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
 
   // If the search URL should be opened in a new tab, open it here.
   if (ShouldOpenSearchURLInNewTab(nav_url)) {
-    lens_overlay_controller_->GetTabInterface()
+    lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
     return;
@@ -710,7 +735,7 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
 
 web_modal::WebContentsModalDialogHost*
 LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost() {
-  return lens_overlay_controller_->GetTabInterface()
+  return lens_search_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->GetWebContentsModalDialogHostForWindow();
 }
@@ -720,11 +745,11 @@ bool LensOverlaySidePanelCoordinator::ShouldHandleTextDirectives(
   // Only handle text directives if the feature is enabled and the overlay is
   // not covering the current tab.
   if (!lens::features::HandleSidePanelTextDirectivesEnabled() ||
-      lens_overlay_controller_->IsOverlayShowing()) {
+      GetLensOverlayController()->IsOverlayShowing()) {
     return false;
   }
 
-  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+  const GURL& page_url = lens_search_controller_->GetTabInterface()
                              ->GetContents()
                              ->GetLastCommittedURL();
   // Only handle text directives when the page URL and the URL being navigated
@@ -750,11 +775,11 @@ bool LensOverlaySidePanelCoordinator::ShouldHandlePDFViewportChange(
   // Only handle text directives if the feature is enabled and the overlay is
   // not covering the current tab.
   if (!lens::features::HandleSidePanelTextDirectivesEnabled() ||
-      lens_overlay_controller_->IsOverlayShowing()) {
+      GetLensOverlayController()->IsOverlayShowing()) {
     return false;
   }
 
-  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+  const GURL& page_url = lens_search_controller_->GetTabInterface()
                              ->GetContents()
                              ->GetLastCommittedURL();
   // Handle the PDF hash change if the URL being navigated to is the same as the
@@ -768,7 +793,7 @@ bool LensOverlaySidePanelCoordinator::ShouldHandlePDFViewportChange(
 void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
     const GURL& nav_url,
     const std::vector<std::pair<std::string, bool>>& lookup_results) {
-  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+  const GURL& page_url = lens_search_controller_->GetTabInterface()
                              ->GetContents()
                              ->GetLastCommittedURL();
   if (lookup_results.empty()) {
@@ -778,7 +803,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
       return;
     }
 
-    lens_overlay_controller_->GetTabInterface()
+    lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
     return;
@@ -794,7 +819,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
         return;
       }
 
-      lens_overlay_controller_->GetTabInterface()
+      lens_search_controller_->GetTabInterface()
           ->GetBrowserWindowInterface()
           ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
       return;
@@ -804,7 +829,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
 
   // Delete any existing `TextHighlighterManager` on the page. Without this, any
   // text highlights after the first to be rendered on the page will not render.
-  auto& page = lens_overlay_controller_->GetTabInterface()
+  auto& page = lens_search_controller_->GetTabInterface()
                    ->GetContents()
                    ->GetPrimaryPage();
   if (companion::TextHighlighterManager::GetForPage(page)) {
@@ -813,7 +838,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
 
   // If every text fragment was found, then create a text highlighter manager to
   // render the text highlights. Focus the main tab first.
-  lens_overlay_controller_->GetTabInterface()->GetContents()->Focus();
+  lens_search_controller_->GetTabInterface()->GetContents()->Focus();
   companion::TextHighlighterManager* text_highlighter_manager =
       companion::TextHighlighterManager::GetOrCreateForPage(page);
   text_highlighter_manager->CreateTextHighlightersAndRemoveExisting(
@@ -822,13 +847,13 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
 
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
     const content::OpenURLParams& params) {
-  lens_overlay_controller_->GetTabInterface()
+  lens_search_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
-  auto* registry = lens_overlay_controller_->GetTabInterface()
+  auto* registry = lens_search_controller_->GetTabInterface()
                        ->GetTabFeatures()
                        ->side_panel_registry();
   CHECK(registry);
@@ -861,7 +886,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
   // TODO(crbug.com/328295358): Change task manager string ID in view creation
   // when available.
   auto view = std::make_unique<LensOverlaySidePanelWebView>(
-      lens_overlay_controller_->GetTabInterface()
+      lens_search_controller_->GetTabInterface()
           ->GetContents()
           ->GetBrowserContext(),
       this, scope);
@@ -877,7 +902,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
 
 GURL LensOverlaySidePanelCoordinator::GetSidePanelNewTabUrl() {
   return lens::GetSidePanelNewTabUrl(
-      side_panel_new_tab_url_, lens_overlay_controller_->GetVsridForNewTab());
+      side_panel_new_tab_url_, GetLensOverlayController()->GetVsridForNewTab());
 }
 
 void LensOverlaySidePanelCoordinator::ShowToast(std::string message) {

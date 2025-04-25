@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -303,12 +304,14 @@ LensOverlayController* GetLensOverlayControllerFromTabInterface(
 
 LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
+    LensSearchController* lens_search_controller,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     syncer::SyncService* sync_service,
     ThemeService* theme_service)
     : tab_(tab),
+      lens_search_controller_(lens_search_controller),
       variations_client_(variations_client),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
@@ -474,10 +477,10 @@ void LensOverlayController::ShowUI(
   pref_service_->SetInteger(prefs::kLensOverlayStartCount,
                             lens_overlay_start_count + 1);
 
-  // Create the results side panel coordinator when showing the UI if it does
-  // not already exist for this tab's web contents.
+  // Grab reference to the side panel coordinator it not already done so.
   if (!results_side_panel_coordinator_) {
-    results_side_panel_coordinator_ = CreateLensOverlaySidePanelCoordinator();
+    results_side_panel_coordinator_ =
+        lens_search_controller_->lens_overlay_side_panel_coordinator();
   }
 
   Profile* profile =
@@ -1097,6 +1100,10 @@ void LensOverlayController::OnZeroSuggestShownForTesting() {
   OnZeroSuggestShown();
 }
 
+void LensOverlayController::OpenSidePanelForTesting() {
+  MaybeOpenSidePanel();
+}
+
 const lens::proto::LensOverlaySuggestInputs&
 LensOverlayController::GetLensSuggestInputsForTesting() {
   return GetLensSuggestInputs();
@@ -1127,11 +1134,6 @@ LensOverlayController::CreateLensQueryController(
       std::move(thumbnail_created_callback),
       std::move(upload_progress_callback), variations_client, identity_manager,
       profile, invocation_source, use_dark_mode, gen204_controller);
-}
-
-std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
-LensOverlayController::CreateLensOverlaySidePanelCoordinator() {
-  return std::make_unique<lens::LensOverlaySidePanelCoordinator>(this);
 }
 
 std::string LensOverlayController::GetVsridForNewTab() {
@@ -1231,7 +1233,7 @@ void LensOverlayController::IssueLensRequest(
   lens_overlay_query_controller_->SendRegionSearch(
       region.Clone(), selection_type,
       initialization_data_->additional_search_query_params_, region_bytes);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
+  MaybeOpenSidePanel();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
   state_ = State::kOverlayAndResults;
@@ -2127,6 +2129,14 @@ void LensOverlayController::MaybeHideSharedOverlayView() {
   overlay_view_->SetVisible(false);
 }
 
+void LensOverlayController::MaybeOpenSidePanel() {
+  if (side_panel_in_use_) {
+    // Exit early if this class has already requested access to the side panel.
+    return;
+  }
+  side_panel_in_use_ = results_side_panel_coordinator_->RegisterEntryAndShow();
+}
+
 void LensOverlayController::CloseUIPart2(
     lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff) {
@@ -2159,7 +2169,8 @@ void LensOverlayController::CloseUIPart2(
 
   permission_bubble_controller_.reset();
   side_panel_searchbox_handler_.reset();
-  results_side_panel_coordinator_.reset();
+  results_side_panel_coordinator_ = nullptr;
+  side_panel_in_use_.reset();
   pre_initialization_suggest_inputs_.reset();
   pre_initialization_objects_.reset();
   pre_initialization_text_.reset();
@@ -3065,7 +3076,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   lens_overlay_query_controller_->SendTextOnlyQuery(
       query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
+  MaybeOpenSidePanel();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kTextSelect);
   state_ = State::kOverlayAndResults;
@@ -3299,7 +3310,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // a long query loads.
   SetSearchboxInputText(search_box_text);
 
-  results_side_panel_coordinator_->RegisterEntryAndShow();
+  MaybeOpenSidePanel();
   results_side_panel_coordinator_->SetSidePanelIsLoadingResults(true);
   MaybeLaunchSurvey();
 
@@ -3351,6 +3362,7 @@ void LensOverlayController::HandleStartQueryResponse(
 
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
+  MaybeOpenSidePanel();
   results_side_panel_coordinator_->LoadURLInResultsFrame(GURL(response.url()));
 }
 

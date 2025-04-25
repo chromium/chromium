@@ -10,6 +10,7 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "content/public/browser/navigation_handle.h"
@@ -71,6 +72,17 @@ struct SearchQuery {
   std::optional<lens::TranslateOptions> translate_options_;
 };
 
+// A Lens feature that wants to keep results in the side panel should call
+// `LensOveraySidePanelCoordinator::RegisterEntryAndShow()` and keep alive the
+// instance of `SidePanelInUse` for the duration of using the side panel. When
+// all instances of `SidePanelInUse` are destroyed, the side panel will close
+// and the `LensOveraySidePanelCoordinator` will clean up.
+class SidePanelInUse {
+ public:
+  SidePanelInUse() = default;
+  virtual ~SidePanelInUse() = default;
+};
+
 // Handles the creation and registration of the lens overlay side panel entry.
 // There are two ways for this instance to be torn down.
 //   (1) Its owner, LensOverlayController can destroy it.
@@ -89,7 +101,7 @@ class LensOverlaySidePanelCoordinator
       public ui::SimpleMenuModel::Delegate {
  public:
   explicit LensOverlaySidePanelCoordinator(
-      LensOverlayController* lens_overlay_controller);
+      LensSearchController* lens_search_controller);
   LensOverlaySidePanelCoordinator(const LensOverlaySidePanelCoordinator&) =
       delete;
   LensOverlaySidePanelCoordinator& operator=(
@@ -97,8 +109,9 @@ class LensOverlaySidePanelCoordinator
   ~LensOverlaySidePanelCoordinator() override;
 
   // Registers the side panel entry in the side panel if it doesn't already
-  // exist and then shows it.
-  void RegisterEntryAndShow();
+  // exist and then shows it. Calls must keep the returned `SidePanelInUse`
+  // alive for the duration of using the side panel.
+  std::unique_ptr<SidePanelInUse> RegisterEntryAndShow();
 
   // SidePanelEntryObserver:
   void OnEntryWillHide(SidePanelEntry* entry,
@@ -110,9 +123,14 @@ class LensOverlaySidePanelCoordinator
 
   content::WebContents* GetSidePanelWebContents();
 
-  // Return the LensOverlayController that owns this side panel coordinator.
+  // Return the LensSearchController that owns this side panel coordinator.
+  LensSearchController* GetLensSearchController() {
+    return lens_search_controller_.get();
+  }
+
+  // Return the LensOverlayController that is part of this tab.
   LensOverlayController* GetLensOverlayController() {
-    return lens_overlay_controller_.get();
+    return lens_search_controller_->lens_overlay_controller();
   }
 
   // Handles rendering text highlights on the main browser window based on
@@ -236,6 +254,21 @@ class LensOverlaySidePanelCoordinator
     std::optional<SearchQuery> currently_loaded_search_query_;
   };
 
+  // Tracks whether the side panel is in use.
+  class SidePanelInUseImpl : public SidePanelInUse {
+   public:
+    explicit SidePanelInUseImpl(LensOverlaySidePanelCoordinator* coordinator);
+    ~SidePanelInUseImpl() override;
+
+   private:
+    // Owns this.
+    base::WeakPtr<LensOverlaySidePanelCoordinator> coordinator_;
+  };
+
+  // Cleans up the side panel entry and closes the side panel if there are no
+  // other SidePanelInUse instances.
+  void DeregisterEntryAndCleanup();
+
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
                            content::RenderFrameHost* source_render_frame_host,
@@ -307,7 +340,7 @@ class LensOverlaySidePanelCoordinator
   std::unique_ptr<ui::MenuModel> GetMoreInfoMenuModel();
 
   // Owns this.
-  const raw_ptr<LensOverlayController> lens_overlay_controller_;
+  const raw_ptr<LensSearchController> lens_search_controller_;
 
   // Connections to and from the side panel WebUI. Only valid when the side
   // panel is currently open and after the WebUI has started executing JS and
@@ -343,6 +376,10 @@ class LensOverlaySidePanelCoordinator
   // lives with the browser view, so it should outlive this class. Therefore
   // this can be assumed to be non-null.
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
+
+  // Counts the number of SidePanelInUse instances that are alive. When this
+  // reaches zero, the side panel will close.
+  uint16_t side_panel_in_use_count_ = 0;
 
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
   base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};

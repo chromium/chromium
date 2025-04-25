@@ -20,6 +20,7 @@ class TestLensSearchController : public LensSearchController {
 
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
       tabs::TabInterface* tab,
+      LensSearchController* lens_search_controller,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,

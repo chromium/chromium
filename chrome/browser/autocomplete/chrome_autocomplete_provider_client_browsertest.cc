@@ -32,12 +32,14 @@ namespace {
 class MockLensOverlayController : public LensOverlayController {
  public:
   MockLensOverlayController(tabs::TabInterface* tab,
+                            LensSearchController* lens_search_controller,
                             variations::VariationsClient* variations_client,
                             signin::IdentityManager* identity_manager,
                             PrefService* pref_service,
                             syncer::SyncService* sync_service,
                             ThemeService* theme_service)
       : LensOverlayController(tab,
+                              lens_search_controller,
                               variations_client,
                               identity_manager,
                               pref_service,
@@ -61,14 +63,15 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
 
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
       tabs::TabInterface* tab,
+      LensSearchController* lens_search_controller,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       ThemeService* theme_service) override {
     return std::make_unique<MockLensOverlayController>(
-        tab, variations_client, identity_manager, pref_service, sync_service,
-        theme_service);
+        tab, lens_search_controller, variations_client, identity_manager,
+        pref_service, sync_service, theme_service);
   }
 };
 
