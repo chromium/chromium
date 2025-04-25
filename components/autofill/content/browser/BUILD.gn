@@ -118,6 +118,7 @@ source_set("unit_tests") {
     "autofill_internals_log_router_unittest.cc",
     "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
+    "content_identity_credential_delegate_unittest.cc",
     "scoped_autofill_managers_observation_unittest.cc",
   ]
 

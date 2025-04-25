@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
 
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -17,7 +18,20 @@ namespace autofill {
 
 ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : ContentIdentityCredentialDelegate(base::BindRepeating(
+          [](content::WebContents* web_contents)
+              -> content::FederatedAuthAutofillSource* {
+            return content::FederatedAuthAutofillSource::FromPage(
+                web_contents->GetPrimaryPage());
+          },
+          web_contents)) {}
+
+ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
+    base::RepeatingCallback<content::FederatedAuthAutofillSource*()> source)
+    : source_(std::move(source)) {}
+
+ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
+    default;
 
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
@@ -28,9 +42,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
   }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
-  content::FederatedAuthAutofillSource* source =
-      content::FederatedAuthAutofillSource::FromPage(
-          web_contents_->GetPrimaryPage());
+  content::FederatedAuthAutofillSource* source = source_.Run();
 
   if (!source) {
     return {};
@@ -48,7 +60,6 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     Suggestion suggestion(SuggestionType::kIdentityCredential);
     auto payload = Suggestion::IdentityCredentialPayload(
         account->identity_provider->idp_metadata.config_url, account->id);
-    suggestion.payload = payload;
 
     if (field_type == EMAIL_ADDRESS || field_type == NAME_FIRST ||
         field_type == NAME_FULL) {
@@ -73,6 +84,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
           base::UTF8ToUTF16(account->identity_provider->idp_for_display)))});
     }
 
+    suggestion.payload = payload;
     suggestions.push_back(std::move(suggestion));
   }
 
@@ -82,9 +94,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
     const Suggestion& suggestion,
     OnFederatedTokenReceivedCallback callback) const {
-  content::FederatedAuthAutofillSource* source =
-      content::FederatedAuthAutofillSource::FromPage(
-          web_contents_->GetPrimaryPage());
+  content::FederatedAuthAutofillSource* source = source_.Run();
 
   if (!source) {
     return;
