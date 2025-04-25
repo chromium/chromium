@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Notes about usage of this object by VideoCaptureImplManager.
 //
 // VideoCaptureImplManager access this object by using a Unretained()
@@ -23,12 +18,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
@@ -121,8 +118,7 @@ struct VideoCaptureImpl::BufferContext
   BufferContext& operator=(const BufferContext&) = delete;
 
   VideoFrameBufferHandleType buffer_type() const { return buffer_type_; }
-  const uint8_t* data() const { return data_; }
-  size_t data_size() const { return data_size_; }
+  base::span<const uint8_t> data() const { return data_; }
   const base::ReadOnlySharedMemoryRegion* read_only_shmem_region() const {
     return &read_only_shmem_region_;
   }
@@ -197,16 +193,14 @@ struct VideoCaptureImpl::BufferContext
     DCHECK(region.IsValid());
     backup_mapping_ = region.Map();
     DCHECK(backup_mapping_.IsValid());
-    data_ = backup_mapping_.GetMemoryAsSpan<uint8_t>().data();
-    data_size_ = backup_mapping_.size();
+    data_ = backup_mapping_.GetMemoryAsSpan<uint8_t>();
   }
 
   void ResetPreMapping() {
     // If it's already mapped previously, then reset the mapping.
-    if (backup_mapping_.IsValid() || data_) {
+    if (backup_mapping_.IsValid() || data_.data()) {
       backup_mapping_ = base::WritableSharedMemoryMapping();
-      data_ = nullptr;
-      data_size_ = 0;
+      data_ = {};
     }
   }
 
@@ -216,8 +210,7 @@ struct VideoCaptureImpl::BufferContext
     DCHECK(region.IsValid());
     read_only_mapping_ = region.Map();
     DCHECK(read_only_mapping_.IsValid());
-    data_ = read_only_mapping_.GetMemoryAsSpan<uint8_t>().data();
-    data_size_ = read_only_mapping_.size();
+    data_ = read_only_mapping_.GetMemoryAsSpan<uint8_t>();
     read_only_shmem_region_ = std::move(region);
   }
 
@@ -262,10 +255,9 @@ struct VideoCaptureImpl::BufferContext
   // GMB comes premapped from the capturer.
   base::WritableSharedMemoryMapping backup_mapping_;
 
-  // These point into one of the above mappings, which hold the mapping open for
+  // This points into one of the above mappings, which hold the mapping open for
   // the lifetime of this object.
-  raw_ptr<const uint8_t> data_ = nullptr;
-  size_t data_size_ = 0;
+  base::raw_span<const uint8_t> data_;
 
   // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
@@ -312,9 +304,7 @@ bool VideoCaptureImpl::ProcessBuffer(
             (media::VideoFrame::NumPlanes(
                  video_frame_init_data.ready_buffer->info->pixel_format) == 3))
             << "Currently, only YUV formats support custom strides.";
-        uint8_t* y_data = const_cast<uint8_t*>(buffer_context->data());
-        uint8_t* u_data =
-            y_data +
+        const size_t y_size =
             (media::VideoFrame::Rows(
                  media::VideoFrame::Plane::kY,
                  video_frame_init_data.ready_buffer->info->pixel_format,
@@ -322,8 +312,7 @@ bool VideoCaptureImpl::ProcessBuffer(
                      .height()) *
              video_frame_init_data.ready_buffer->info->strides
                  ->stride_by_plane[0]);
-        uint8_t* v_data =
-            u_data +
+        const size_t u_size =
             (media::VideoFrame::Rows(
                  media::VideoFrame::Plane::kU,
                  video_frame_init_data.ready_buffer->info->pixel_format,
@@ -331,6 +320,9 @@ bool VideoCaptureImpl::ProcessBuffer(
                      .height()) *
              video_frame_init_data.ready_buffer->info->strides
                  ->stride_by_plane[1]);
+        base::span<const uint8_t> data = buffer_context->data();
+        auto [y_data, uv_data] = data.split_at(y_size);
+        auto [u_data, v_data] = uv_data.split_at(u_size);
         video_frame_init_data.frame = media::VideoFrame::WrapExternalYuvData(
             video_frame_init_data.ready_buffer->info->pixel_format,
             gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
@@ -350,8 +342,7 @@ bool VideoCaptureImpl::ProcessBuffer(
             gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
             gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
             video_frame_init_data.ready_buffer->info->visible_rect.size(),
-            const_cast<uint8_t*>(buffer_context->data()),
-            buffer_context->data_size(),
+            buffer_context->data(),
             video_frame_init_data.ready_buffer->info->timestamp);
       }
       break;
@@ -364,8 +355,7 @@ bool VideoCaptureImpl::ProcessBuffer(
               gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
               gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
               video_frame_init_data.ready_buffer->info->visible_rect.size(),
-              const_cast<uint8_t*>(buffer_context->data()),
-              buffer_context->data_size(),
+              buffer_context->data(),
               video_frame_init_data.ready_buffer->info->timestamp);
       frame->BackWithSharedMemory(buffer_context->read_only_shmem_region());
       video_frame_init_data.frame = frame;
@@ -408,15 +398,15 @@ bool VideoCaptureImpl::ProcessBuffer(
           mappable_buffers_not_supported_) {
         // The associated shared memory region is mapped only once.
         if (video_frame_init_data.ready_buffer->info->is_premapped &&
-            !buffer_context->data()) {
+            !buffer_context->data().data()) {
           auto gmb_handle = buffer_context->CloneGpuMemoryBufferHandle();
           buffer_context->InitializeFromUnsafeShmemRegion(
               std::move(gmb_handle).dxgi_handle().TakeRegion());
-          DCHECK(buffer_context->data());
+          DCHECK(buffer_context->data().data());
         }
         RequirePremappedFrames();
         if (!video_frame_init_data.ready_buffer->info->is_premapped ||
-            !buffer_context->data()) {
+            !buffer_context->data().data()) {
           // If the frame isn't premapped, can't do anything here.
           return false;
         }
@@ -428,8 +418,7 @@ bool VideoCaptureImpl::ProcessBuffer(
                 gfx::Rect(
                     video_frame_init_data.ready_buffer->info->visible_rect),
                 video_frame_init_data.ready_buffer->info->visible_rect.size(),
-                const_cast<uint8_t*>(buffer_context->data()),
-                buffer_context->data_size(),
+                buffer_context->data(),
                 video_frame_init_data.ready_buffer->info->timestamp);
         if (!frame) {
           return false;
