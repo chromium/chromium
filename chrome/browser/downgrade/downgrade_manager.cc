@@ -172,13 +172,20 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
   DCHECK_EQ(type_, Type::kNone);
   DCHECK(!user_data_dir.empty());
 
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  // Ensure extensions are repaired only the first time the browser starts
+  // after a downgrade.
+  if (command_line.HasSwitch(switches::kRepairAllValidExtensions)) {
+    command_line.RemoveSwitch(switches::kRepairAllValidExtensions);
+  }
   // Do not attempt migration if this process is the product of a relaunch from
   // a previous in which migration was attempted/performed.
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kUserDataMigrated)) {
     // Strip the switch from the command line so that it does not propagate to
     // any subsequent relaunches.
     command_line.RemoveSwitch(switches::kUserDataMigrated);
+    // Ensure all extensions are repaired.
+    command_line.AppendSwitch(switches::kRepairAllValidExtensions);
     return false;
   }
 

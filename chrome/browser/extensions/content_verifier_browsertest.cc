@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -1405,5 +1407,144 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, FailedUpdateRetries) {
 
   EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class ContentVerifierRepairsAllExtensionsDowngradeTest
+    : public UserInstalledContentVerifierTest {
+ public:
+  void SetUp() override { UserInstalledContentVerifierTest::SetUp(); }
+
+  void TearDown() override {
+    UserInstalledContentVerifierTest::TearDown();
+
+    if (!delete_all_extension_files_) {
+      return;
+    }
+    // Corrupt the extension
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::DeletePathRecursively(profile_path_.AppendASCII("Extensions")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension State")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension Scripts")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension Rules")));
+  }
+
+  void SetUpOnMainThread() override {
+    UserInstalledContentVerifierTest::SetUpOnMainThread();
+    profile_path_ = profile()->GetPath();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    UserInstalledContentVerifierTest::SetUpCommandLine(command_line);
+    const std::string_view test_name(
+        ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    if (GetTestPreCount() >= 1) {
+      return;
+    }
+
+    // Simulate a successful user data downgrade.
+    command_line->AppendSwitch(switches::kRepairAllValidExtensions);
+    command_line->AppendSwitch(switches::kUserDataMigrated);
+  }
+
+ protected:
+  CorruptedExtensionReinstaller* GetCorruptedExtensionReinstaller() {
+    return CorruptedExtensionReinstaller::Get(profile());
+  }
+
+  bool delete_all_extension_files_ = false;
+  base::FilePath profile_path_;
+};
+
+// Verify that all extensions are repaired while the browser is running and the
+// command line switch 'repair-all-valid-extensions' is set.
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       RepairsAllValidExtensions) {
+  auto verifier_observer = std::make_unique<VerifierObserver>();
+  InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx), 1);
+  verifier_observer->EnsureFetchCompleted(kStoragePermissionExtensionId);
+  verifier_observer.reset();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kStoragePermissionExtensionId);
+  EXPECT_TRUE(extension);
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("background.js"));
+
+  // Corrupt the extension
+  {
+    base::FilePath resource_path = extension->path().Append(kResourcePath);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Temporarily disable extension, we don't want to tackle with resources of
+    // enabled one.
+    DisableExtension(kStoragePermissionExtensionId);
+    ASSERT_TRUE(base::WriteFile(resource_path, "// corrupted\n"));
+    EnableExtension(kStoragePermissionExtensionId);
+  }
+
+  TestExtensionRegistryObserver registry_observer(
+      registry, kStoragePermissionExtensionId);
+  ExtensionSystem* system = ExtensionSystem::Get(profile());
+  system->content_verifier()->VerifyFailedForTest(
+      kStoragePermissionExtensionId, ContentVerifyJob::HASH_MISMATCH);
+  EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
+
+  // The extension should be disabled and expected to be repaired.
+  EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(
+                  kStoragePermissionExtensionId),
+              testing::UnorderedElementsAre(disable_reason::DISABLE_CORRUPTED));
+  EXPECT_TRUE(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       PRE_ExtensionsRepairedAtStartup) {
+  auto verifier_observer = std::make_unique<VerifierObserver>();
+  InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx), 1);
+  verifier_observer->EnsureFetchCompleted(kStoragePermissionExtensionId);
+  verifier_observer.reset();
+  ASSERT_TRUE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+      kStoragePermissionExtensionId));
+  delete_all_extension_files_ = true;
+}
+
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       ExtensionsRepairedAtStartup) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  ASSERT_TRUE(command_line.HasSwitch(switches::kRepairAllValidExtensions));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  DisableReasonSet disable_reasons =
+      prefs->GetDisableReasons(kStoragePermissionExtensionId);
+
+  // Depending on timing, the extension may have already been reinstalled
+  // between SetUpInProcessBrowserTestFixture and now (usually not during local
+  // testing on a developer machine, but sometimes on a heavily loaded system
+  // such as the build waterfall / trybots). If the reinstall didn't already
+  // happen, wait for it.
+  if (disable_reasons.contains(disable_reason::DISABLE_CORRUPTED)) {
+    EXPECT_TRUE(
+        GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+            kStoragePermissionExtensionId));
+    TestExtensionRegistryObserver registry_observer(
+        registry, kStoragePermissionExtensionId);
+    ASSERT_TRUE(registry_observer.WaitForExtensionInstalled());
+    disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
+  }
+  EXPECT_FALSE(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
+  EXPECT_TRUE(disable_reasons.empty());
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          kStoragePermissionExtensionId);
+  ASSERT_TRUE(extension);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

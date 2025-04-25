@@ -248,12 +248,12 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     }
   }
 
-  SYSLOG(WARNING) << "Corruption detected in extension " << extension_id
-                  << " installed at: " << extension->path().value()
-                  << ", from webstore: " << info.is_from_webstore
-                  << ", corruption reason: " << reason
-                  << ", should be repaired: " << info.should_repair
-                  << ", extension location: " << extension->location();
+  LOG(WARNING) << "Corruption detected in extension " << extension_id
+               << " installed at: " << extension->path().value()
+               << ", from webstore: " << info.is_from_webstore
+               << ", corruption reason: " << reason
+               << ", should be repaired: " << info.should_repair
+               << ", extension location: " << extension->location();
 
   const bool should_disable = info.mode >= VerifyInfo::Mode::ENFORCE;
   // Configuration when we should repair extension, but not disable it, is
@@ -325,8 +325,11 @@ ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
       ExtensionSystem::Get(context_)->management_policy();
 
   // Magement policy may be not configured in some tests.
-  bool should_repair = management_policy &&
-                       management_policy->ShouldRepairIfCorrupted(&extension);
+  bool should_repair =
+      (management_policy &&
+       management_policy->ShouldRepairIfCorrupted(&extension)) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kRepairAllValidExtensions);
   bool is_from_webstore = IsFromWebstore(extension);
 
 #if BUILDFLAG(IS_CHROMEOS)
