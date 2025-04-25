@@ -276,7 +276,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void SetExtensionIconVisibility(ToolbarActionsModel::ActionId id,
                                   bool visible);
 
-  // Returns whether the contianer should be showing, e.g. not if there are no
+  // Returns whether the container should be showing, e.g. not if there are no
   // extensions installed, nor if the container is inactive in kAutoHide mode.
   bool ShouldContainerBeVisible() const;
 
