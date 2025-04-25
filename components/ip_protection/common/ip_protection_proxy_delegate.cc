@@ -25,10 +25,12 @@
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "net/http/structured_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -68,6 +70,15 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   }
 
   result->set_is_mdl_match(true);
+
+  if (const std::optional<net::SchemefulSite>& maybe_top_frame_site =
+          network_anonymization_key.GetTopFrameSite();
+      maybe_top_frame_site.has_value()) {
+    result->SetPRTHeaderValue(
+        GetPRTHeaderValue(url, maybe_top_frame_site.value()));
+  } else {
+    result->SetPRTHeaderValue(std::nullopt);
+  }
 
   // Check availability. We do not proxy requests if:
   // - The allow list has not been populated.
@@ -262,6 +273,37 @@ net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
   }
 
   return merged_proxy_list;
+}
+
+/*
+  Sec-Probabilistic-Reveal-Token header is a structured header of type Byte
+  Sequence (rfc8941 section 3.3.5) and holds a serialized PRT.
+
+  `GetPRTHeaderValue()` will return nullopt if destination is not
+  registered for PRTs or there is no PRTs in the manager.
+*/
+std::optional<std::string> IpProtectionProxyDelegate::GetPRTHeaderValue(
+    const GURL& url,
+    const net::SchemefulSite& top_frame_site) const {
+  if (!ip_protection_core_->IsProbabilisticRevealTokenAvailable() ||
+      !ip_protection_core_->ShouldRequestIncludeProbabilisticRevealToken(url)) {
+    return std::nullopt;
+  }
+  const std::string top_level =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          top_frame_site.GetURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  const std::string third_party =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  const std::optional<std::string> prt =
+      ip_protection_core_->GetProbabilisticRevealToken(top_level, third_party);
+  if (!prt.has_value()) {
+    return std::nullopt;
+  }
+  auto item = net::structured_headers::Item(
+      prt.value(), net::structured_headers::Item::ItemType::kByteSequenceType);
+  return net::structured_headers::SerializeItem(item);
 }
 
 }  // namespace ip_protection
