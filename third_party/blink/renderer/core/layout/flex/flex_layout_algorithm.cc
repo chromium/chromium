@@ -1811,6 +1811,41 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   const LayoutUnit main_axis_inner_size =
       MainAxisContentExtent(result.max_sum_hypothetical_main_size);
 
+  // If we are a single line, and have a definite cross-size, the line
+  // cross-size will be the container cross-size.
+  const std::optional<LayoutUnit> definite_line_cross_size =
+      ([&]() -> std::optional<LayoutUnit> {
+        if (is_multi_line_) {
+          return std::nullopt;
+        }
+        const LayoutUnit cross_available_size =
+            is_column_ ? ChildAvailableSize().inline_size
+                       : ChildAvailableSize().block_size;
+        if (cross_available_size == kIndefiniteSize) {
+          return std::nullopt;
+        }
+        const auto& style = Style();
+        if (!is_column_) {
+          // Treat the block-size as indefinite if we need to apply the
+          // automatic-minimum size for aspect-ratio.
+          // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+          if (!style.AspectRatio().IsAuto() && !style.IsScrollContainer() &&
+              style.LogicalMinHeight().HasAuto()) {
+            return std::nullopt;
+          }
+          // Similarly if we have a content-based min/max block-size treat it
+          // as indefinite.
+          // NOTE: This behaviour isn't in the specification.
+          // https://github.com/w3c/csswg-drafts/issues/12123
+          if (style.LogicalMinHeight().HasContentOrIntrinsic() ||
+              style.LogicalMaxHeight().HasContentOrIntrinsic()) {
+            return std::nullopt;
+          }
+        }
+
+        return cross_available_size;
+      })();
+
   LayoutUnit sum_line_cross_size;
 
   flex_lines->reserve(result.flex_lines.size());
@@ -1839,6 +1874,10 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       item_indices.push_back(flex_item.item_index);
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
       main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
+
+      const bool has_baseline_alignment =
+          flex_item.alignment == ItemPosition::kBaseline ||
+          flex_item.alignment == ItemPosition::kLastBaseline;
 
       const LayoutUnit cross_axis_size = ([&]() {
         const ConstraintSpace space =
@@ -1897,9 +1936,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       // TODO(crbug.com/1272533): We may not have a layout-result during
       // min/max calculations. This is incorrect, and we should produce a
       // layout-result when baseline aligned.
-      if (flex_item.layout_result &&
-          (flex_item.alignment == ItemPosition::kBaseline ||
-           flex_item.alignment == ItemPosition::kLastBaseline)) {
+      if (flex_item.layout_result && has_baseline_alignment) {
         const LayoutUnit ascent = BaselineAscent(
             flex_item, To<PhysicalBoxFragment>(
                            flex_item.layout_result->GetPhysicalFragment()));
@@ -1916,6 +1953,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       }
       line_cross_size = std::max(line_cross_size, cross_axis_margin_size);
     }
+
+    // Ensure that we use the definite line cross-line if available.
+    line_cross_size = definite_line_cross_size.value_or(line_cross_size);
 
     flex_lines->emplace_back(std::move(item_indices), main_axis_free_space,
                              line_cross_size, max_major_ascent,
