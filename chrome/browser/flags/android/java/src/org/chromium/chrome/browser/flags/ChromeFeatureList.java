@@ -1439,6 +1439,10 @@ public abstract class ChromeFeatureList {
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
     public static final MutableBooleanParamWithSafeDefault
+            sAndroidNativePagesInNewTabBookmarksEnabled =
+            sAndroidNativePagesInNewTab.newBooleanParam(
+                    "android_native_pages_in_new_tab_bookmarks_enabled", true);
+    public static final MutableBooleanParamWithSafeDefault
             sAndroidNativePagesInNewTabDownloadsEnabled =
             sAndroidNativePagesInNewTab.newBooleanParam(
                     "android_native_pages_in_new_tab_downloads_enabled", true);
