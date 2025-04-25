@@ -8,8 +8,6 @@
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
-
 namespace web_app {
 struct WebAppInstallInfo;
 }  // namespace web_app
@@ -28,7 +26,7 @@ class EcheSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowFullscreen() const override;
   bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
-  gfx::Rect GetDefaultBounds(Browser*) const override;
+  gfx::Rect GetDefaultBounds(ash::BrowserDelegate*) const override;
   bool IsAppEnabled() const override;
 };
 

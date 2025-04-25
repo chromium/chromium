@@ -10,6 +10,7 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -136,12 +137,12 @@ std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(
   return tab_menu;
 }
 
-Browser* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+ash::BrowserDelegate* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,
     const apps::AppLaunchParams& params) const {
-  Browser* const browser =
+  ash::BrowserDelegate* const browser =
       ash::SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
           profile, provider, url, params);
   if (IsConsumerProfile(profile)) {
@@ -150,7 +151,7 @@ Browser* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     ash::boca::BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
   } else {
     // Always launch producer app into float mode.
-    aura::Window* window = browser->window()->GetNativeWindow();
+    aura::Window* window = browser->GetNativeWindow();
     ash::boca::BocaAppHandler::SetFloatModeAndBoundsForWindow(
         /*is_float_mode=*/true, window, base::BindOnce([](bool result) {}));
   }

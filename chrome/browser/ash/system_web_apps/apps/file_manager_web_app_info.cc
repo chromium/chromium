@@ -148,7 +148,7 @@ bool FileManagerSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-Browser* FileManagerSystemAppDelegate::GetWindowForLaunch(
+ash::BrowserDelegate* FileManagerSystemAppDelegate::GetWindowForLaunch(
     Profile* profile,
     const GURL& url) const {
   return nullptr;

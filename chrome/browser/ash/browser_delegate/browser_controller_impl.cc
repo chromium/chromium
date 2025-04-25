@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
@@ -120,6 +121,41 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
 
   Navigate(&navigate_params);
   return GetDelegate(navigate_params.browser);
+}
+
+BrowserDelegate* BrowserControllerImpl::CreateWebApp(
+    const user_manager::User& user,
+    webapps::AppId app_id,
+    BrowserType browser_type,
+    const CreateParams& params) {
+  CHECK(browser_type == BrowserType::kApp ||
+        browser_type == BrowserType::kAppPopup)
+      << "Unexpected BrowserType: " << static_cast<int>(browser_type);
+  const bool popup = browser_type == BrowserType::kAppPopup;
+
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+  CHECK(profile);
+
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    LOG(WARNING) << "Cannot create browser for given profile";
+    return nullptr;
+  }
+
+  Browser::CreateParams cparams =
+      web_app::CreateParamsForApp(app_id, popup,
+                                  /*trusted_source=*/true,
+                                  /*window_bounds=*/gfx::Rect(), profile,
+                                  /*user_gesture=*/true);
+  cparams.restore_id = params.restore_id;
+  cparams.omit_from_session_restore = true;
+  cparams.initial_show_state = ui::mojom::WindowShowState::kDefault;
+  cparams.can_resize = params.allow_resize;
+  cparams.can_maximize = params.allow_maximize;
+  cparams.can_fullscreen = params.allow_fullscreen;
+  return GetDelegate(
+      web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, cparams));
 }
 
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {

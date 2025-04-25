@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -202,7 +203,8 @@ void WebAppBrowserController::SetIsolatedWebAppTrueForTesting() {
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (system_app_) {
-    return system_app_->GetDefaultBounds(browser());
+    return system_app_->GetDefaultBounds(
+        ash::BrowserController::GetInstance()->GetDelegate(browser()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return gfx::Rect();

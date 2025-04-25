@@ -349,8 +349,9 @@ bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-Browser* MediaSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                    const GURL& url) const {
+ash::BrowserDelegate* MediaSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 
@@ -358,7 +359,7 @@ bool MediaSystemAppDelegate::ShouldHandleFileOpenIntents() const {
   return true;
 }
 
-Browser* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+ash::BrowserDelegate* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,

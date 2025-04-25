@@ -40,8 +40,9 @@ bool CroshSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-Browser* CroshSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                    const GURL& url) const {
+ash::BrowserDelegate* CroshSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 

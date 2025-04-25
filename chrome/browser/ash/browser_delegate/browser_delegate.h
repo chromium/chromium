@@ -44,6 +44,10 @@ class BrowserDelegate {
   // being initialized or destroyed.
   virtual content::WebContents* GetActiveWebContents() const = 0;
 
+  // Returns the contents for the given index, or nullptr if out of bounds. Can
+  // be nullptr even if index is in bounds, just like GetActiveWebContents().
+  virtual content::WebContents* GetWebContentsAt(unsigned int index) const = 0;
+
   // Returns the native window. Can be nullptr, e.g. when the browser is being
   // closed.
   virtual aura::Window* GetNativeWindow() const = 0;

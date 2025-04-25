@@ -22,6 +22,8 @@ class FakeWebAppProviderCreator;
 
 namespace ash {
 
+class BrowserDelegate;
+
 class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
  public:
   UnittestingSystemAppDelegate(SystemWebAppType type,
@@ -34,16 +36,17 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   ~UnittestingSystemAppDelegate() override;
 
   using LaunchAndNavigateSystemWebAppCallback =
-      base::RepeatingCallback<Browser*(Profile*,
-                                       web_app::WebAppProvider*,
-                                       const GURL&,
-                                       const apps::AppLaunchParams&)>;
+      base::RepeatingCallback<BrowserDelegate*(Profile*,
+                                               web_app::WebAppProvider*,
+                                               const GURL&,
+                                               const apps::AppLaunchParams&)>;
 
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
 
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
+  BrowserDelegate* GetWindowForLaunch(Profile* profile,
+                                      const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;
@@ -60,8 +63,8 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
-  gfx::Rect GetDefaultBounds(Browser* browser) const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  gfx::Rect GetDefaultBounds(BrowserDelegate* browser) const override;
+  BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,
@@ -88,7 +91,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldHaveReloadButtonInMinimalUi(bool);
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemWebAppBackgroundTaskInfo&);
-  void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
+  void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(BrowserDelegate*)>);
   void SetLaunchAndNavigateSystemWebApp(LaunchAndNavigateSystemWebAppCallback);
   void SetIsAppEnabled(bool);
   void SetUrlInSystemAppScope(const GURL& url);
@@ -118,7 +121,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   GURL url_in_system_app_scope_;
   bool use_system_theme_color_ = true;
   bool should_animate_theme_changes_ = false;
-  base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
+  base::RepeatingCallback<gfx::Rect(BrowserDelegate*)> get_default_bounds_ =
       base::NullCallback();
   LaunchAndNavigateSystemWebAppCallback launch_and_navigate_system_web_apps_ =
       base::NullCallback();

@@ -76,7 +76,8 @@ bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 
-gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(Browser*) const {
+gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(
+    ash::BrowserDelegate*) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(

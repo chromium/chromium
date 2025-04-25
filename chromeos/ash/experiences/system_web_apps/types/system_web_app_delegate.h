@@ -17,7 +17,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-class Browser;
 class Profile;
 
 namespace apps {
@@ -34,6 +33,8 @@ class WebAppProvider;
 }  // namespace web_app
 
 namespace ash {
+
+class BrowserDelegate;
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 
@@ -92,7 +93,8 @@ class SystemWebAppDelegate {
   //
   // This is implemented in
   // chrome/browser/ui/ash/system_web_apps/system_web_app_delegate_ui_impl.cc.
-  virtual Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const;
+  virtual BrowserDelegate* GetWindowForLaunch(Profile* profile,
+                                              const GURL& url) const;
 
   // If true, adds a "New Window" option to App's shelf context menu.
   // NOTE: Combining this with a GetWindowForLaunch function that allows window
@@ -170,7 +172,7 @@ class SystemWebAppDelegate {
   virtual std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const;
 
   // Default window bounds of the application.
-  virtual gfx::Rect GetDefaultBounds(Browser* browser) const;
+  virtual gfx::Rect GetDefaultBounds(BrowserDelegate* browser) const;
 
   // If false, the application will not be installed.
   virtual bool IsAppEnabled() const;
@@ -202,7 +204,7 @@ class SystemWebAppDelegate {
   //
   // This is implemented in
   // chrome/browser/ui/ash/system_web_apps/system_web_app_delegate_ui_impl.cc.
-  virtual Browser* LaunchAndNavigateSystemWebApp(
+  virtual BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,

@@ -36,6 +36,10 @@ class BrowserControllerImpl : public BrowserController,
                                       const GURL& url,
                                       base::span<const uint8_t> post_data,
                                       std::string_view extra_headers) override;
+  BrowserDelegate* CreateWebApp(const user_manager::User& user,
+                                webapps::AppId app_id,
+                                BrowserType browser_type,
+                                const CreateParams& params) override;
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;

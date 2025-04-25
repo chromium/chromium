@@ -59,7 +59,8 @@ bool DiagnosticsSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-Browser* DiagnosticsSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+ash::BrowserDelegate*
+DiagnosticsSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,

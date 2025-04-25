@@ -37,6 +37,11 @@ content::WebContents* BrowserDelegateImpl::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
+content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
+    unsigned int index) const {
+  return browser_->tab_strip_model()->GetWebContentsAt(index);
+}
+
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
   return browser_->window()->GetNativeWindow();
 }

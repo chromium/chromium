@@ -24,11 +24,12 @@ class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInSearchAndShelf() const override;
   bool ShouldShowNewWindowMenuOption() const override;
-  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
+  ash::BrowserDelegate* GetWindowForLaunch(Profile* profile,
+                                           const GURL& url) const override;
   bool ShouldHandleFileOpenIntents() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  ash::BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,

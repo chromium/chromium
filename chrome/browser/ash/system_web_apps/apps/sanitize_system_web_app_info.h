@@ -26,7 +26,7 @@ class SanitizeSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldShowInLauncher() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   bool ShouldShowInSearchAndShelf() const override;
-  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  gfx::Rect GetDefaultBounds(ash::BrowserDelegate* browser) const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SANITIZE_SYSTEM_WEB_APP_INFO_H_

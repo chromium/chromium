@@ -266,9 +266,8 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
 
-  BrowserDelegate* browser = BrowserController::GetInstance()->GetDelegate(
-      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url,
-                                                params));
+  BrowserDelegate* browser =
+      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
   if (!browser) {
     return nullptr;
   }

@@ -55,6 +55,24 @@ class BrowserController {
       base::span<const uint8_t> post_data,
       std::string_view extra_headers) = 0;
 
+  // Creates a web app browser for the given parameters.
+  // The `browser_type` must be kApp or kAppPopup. In the case of kApp, a pinned
+  // home tab is added if that feature is supported and a URL is registered for
+  // the app.
+  // Returns nullptr if the creation is not possible for the given arguments.
+  struct CreateParams {
+    bool allow_resize;
+    bool allow_maximize;
+    bool allow_fullscreen;
+    // TODO(crbug.com/369689187): Figure out if the restore_id field makes
+    // sense, and if so, add a description.
+    int32_t restore_id;
+  };
+  virtual BrowserDelegate* CreateWebApp(const user_manager::User& user,
+                                        webapps::AppId app_id,
+                                        BrowserType browser_type,
+                                        const CreateParams& params) = 0;
+
  protected:
   BrowserController();
   BrowserController(const BrowserController&) = delete;
