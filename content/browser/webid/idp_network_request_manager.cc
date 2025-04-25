@@ -339,8 +339,8 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   return base::MakeRefCounted<IdentityRequestAccount>(
       *id, display_identifier, display_name, *email, *name,
       given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
-      std::move(account_hints), std::move(domain_hints), std::move(labels),
-      approved_value,
+      phone ? *phone : "", username ? *username : "", std::move(account_hints),
+      std::move(domain_hints), std::move(labels), approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
 }
 

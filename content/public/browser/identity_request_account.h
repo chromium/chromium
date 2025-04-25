@@ -56,6 +56,8 @@ class CONTENT_EXPORT IdentityRequestAccount
       const std::string& name,
       const std::string& given_name,
       const GURL& picture,
+      const std::string& phone,
+      const std::string& username,
       std::vector<std::string> login_hints,
       std::vector<std::string> domain_hints,
       std::vector<std::string> labels,
@@ -79,6 +81,8 @@ class CONTENT_EXPORT IdentityRequestAccount
   std::string name;
   std::string given_name;
   GURL picture;
+  std::string phone;
+  std::string username;
   // This will be an empty image if fetching failed.
   gfx::Image decoded_picture;
 

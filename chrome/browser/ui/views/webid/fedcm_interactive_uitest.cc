@@ -45,7 +45,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
           /*has_login_status_mismatch=*/false)};
       accounts_ = {base::MakeRefCounted<Account>(
           "id", "display_identifier", "display_name", "email", "name",
-          "given_name", GURL(),
+          "given_name", GURL(), "phone", "username",
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>())};

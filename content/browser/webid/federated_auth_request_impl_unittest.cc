@@ -925,6 +925,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         "Ken R. Example",            // name
         "Ken",                       // given_name
         GURL(),                      // picture
+        "(650) 312-3223",            // phone number
+        "kenr",                      // username
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -953,6 +955,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         "Ken R. Example",            // name
         "Ken",                       // given_name
         GURL(),                      // picture
+        "(650) 312-3223",            // phone number
+        "kenr",                      // username
         kLoginHints,                 // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -966,6 +970,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             "Ken R. Example",            // name
             "Ken",                       // given_name
             GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "kenr",                      // username
             std::vector<std::string>(),  // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>()   // labels
@@ -978,6 +984,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                         "Nicolas P",                 // name
                         "Nicolas",                   // given_name
                         GURL(),                      // picture
+                        "(650) 312-3223",            // phone number
+                        "npm",                       // username
                         std::vector<std::string>(),  // login_hints
                         std::vector<std::string>(),  // domain_hints
                         std::vector<std::string>(),  // labels
@@ -991,6 +999,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                         "Zachary T",                 // name
                         "Zach",                      // given_name
                         GURL(),                      // picture
+                        "(650) 312-3223",            // phone number
+                        "tanz",                      // username
                         std::vector<std::string>(),  // login_hints
                         std::vector<std::string>(),  // domain_hints
                         std::vector<std::string>(),  // labels
@@ -1004,6 +1014,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                              "Nicolas P",                 // name
                              "Nicolas",                   // given_name
                              GURL(),                      // picture
+                             "(650) 312-3223",            // phone number
+                             "npm",                       // username
                              std::vector<std::string>(),  // login_hints
                              std::vector<std::string>(),  // domain_hints
                              std::vector<std::string>(),  // labels
@@ -1017,6 +1029,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                              "Peter K",                   // name
                              "Peter",                     // given_name
                              GURL(),                      // picture
+                             "(650) 312-3223",            // phone number
+                             "peter",                     // username
                              std::vector<std::string>(),  // login_hints
                              std::vector<std::string>(),  // domain_hints
                              std::vector<std::string>(),  // labels
@@ -1030,6 +1044,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                              "Zachary T",                 // name
                              "Zach",                      // given_name
                              GURL(),                      // picture
+                             "(650) 312-3223",            // phone number
+                             "zacht",                     // username
                              std::vector<std::string>(),  // login_hints
                              std::vector<std::string>(),  // domain_hints
                              std::vector<std::string>(),  // labels
@@ -1044,6 +1060,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             "Nicolas P",                 // name
             "Nicolas",                   // given_name
             GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "npm",                       // username
             kNicolasHints,               // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>(),  // labels
@@ -1057,6 +1075,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             "Peter K",                   // name
             "Peter",                     // given_name
             GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "peterk",                    // username
             kPeterHints,                 // login_hints
             std::vector<std::string>(),  // domain_hints
             kLabelVector,                // labels
@@ -1070,6 +1090,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             "Zachary T",                 // name
             "Zach",                      // given_name
             GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "zacht",                     // username
             kZachHints,                  // login_hints
             kTwoDomainHints,             // domain_hints
             std::vector<std::string>(),  // labels

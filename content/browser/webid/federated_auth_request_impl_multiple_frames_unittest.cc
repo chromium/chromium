@@ -224,6 +224,8 @@ class FederatedAuthRequestImplMultipleFramesTest
         "Ken R. Example",            // name
         "Ken",                       // given_name
         GURL(),                      // picture
+        "(403) 293-3421",            // phone
+        "@kenr",                     // username
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
