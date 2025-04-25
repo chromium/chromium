@@ -65,7 +65,8 @@ void ConnectToSharedWorker(
       blink::mojom::FetchClientSettingsObject::New(
           network::mojom::ReferrerPolicy::kDefault, GURL(),
           blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-      blink::mojom::SharedWorkerSameSiteCookies::kAll));
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
 
   blink::MessagePortDescriptorPair pipe;
   *local_port = MessagePortChannel(pipe.TakePort0());

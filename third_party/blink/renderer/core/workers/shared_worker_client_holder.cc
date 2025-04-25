@@ -123,7 +123,8 @@ void SharedWorkerClientHolder::Connect(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
-      same_site_cookies);
+      same_site_cookies,
+      /*extended_lifetime=*/false);
 
   const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
       connector_override ? *connector_override : connector_;

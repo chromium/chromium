@@ -183,10 +183,22 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   SharedWorkerHost* host = FindMatchingSharedWorkerHost(
       info->url, info->options->name, storage_key, info->same_site_cookies);
   if (host) {
+    // TODO(crbug.com/413207418): revise ScriptLoadFailed() to use enum.
+
     // Non-secure contexts cannot connect to secure workers, and secure contexts
     // cannot connect to non-secure workers:
     if (host->instance().creation_context_type() != creation_context_type) {
       ScriptLoadFailed(std::move(client), /*error_message=*/"");
+      return;
+    }
+    // If extended_lifetime does not match, raise.
+    // See: https://github.com/whatwg/html/issues/10997#issuecomment-2791533299
+    if (host->instance().extended_lifetime() != info->extended_lifetime) {
+      ScriptLoadFailed(
+          std::move(client),
+          "Failed to connect an existing shared worker because the "
+          "extendedLifetime given on the SharedWorker constructor doesn't "
+          "match the existing shared worker's extendedLifetime.");
       return;
     }
     // Step 11.4: "If worker global scope is not null, then check if worker
