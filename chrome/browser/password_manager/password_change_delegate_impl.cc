@@ -11,7 +11,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -197,16 +197,16 @@ void PasswordChangeDelegateImpl::StartPasswordChange() {
   }
   executor_ = new_tab->GetWeakPtr();
 
-  form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
+  form_finder_ = std::make_unique<ChangePasswordFormFinder>(
       executor_.get(),
-      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormParsed,
+      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
   Observe(executor_.get());
 }
 
-void PasswordChangeDelegateImpl::OnPasswordChangeFormParsed(
+void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
     password_manager::PasswordFormManager* form_manager) {
-  form_waiter_.reset();
+  form_finder_.reset();
 
   LogPasswordFormDetectedMetric(/*form_detected=*/form_manager,
                                 base::Time::Now() - flow_start_time_);

@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -149,9 +149,8 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
             delegate->GetCurrentState());
 
   static_cast<PasswordChangeDelegateImpl*>(delegate.get())
-      ->form_waiter()
-      ->MarkPageFinishedLoading();
-  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      ->form_finder()
+      ->RespondWithFormNotFound();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
@@ -172,9 +171,8 @@ TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
             delegate->GetCurrentState());
 
   static_cast<PasswordChangeDelegateImpl*>(delegate.get())
-      ->form_waiter()
-      ->MarkPageFinishedLoading();
-  FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      ->form_finder()
+      ->RespondWithFormNotFound();
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
