@@ -190,6 +190,10 @@ public class TabStripSceneLayerTest {
                         ((TintedCompositorButton) mModelSelectorButton).getTint(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
                         mModelSelectorButton.getOpacity(),
+                        false,
+                        R.drawable.circular_button_keyfocus,
+                        MaterialColors.getColor(
+                                mContext, R.attr.colorPrimary, /* defaultValue= */ 0),
                         mResourceManager);
         verify(mTabStripSceneMock)
                 .updateNewTabButton(
@@ -205,6 +209,11 @@ public class TabStripSceneLayerTest {
                         /* tint= */ anyInt(),
                         /* backgroundTint= */ anyInt(),
                         /* buttonAlpha= */ anyFloat(),
+                        /* isKeyboardFocused= */ eq(false),
+                        /* keyboardFocusRingResourceId= */ eq(R.drawable.circular_button_keyfocus),
+                        /* keyboardFocusRingColor= */ eq(
+                                MaterialColors.getColor(
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
                         /* resourceManager= */ eq(mResourceManager));
         verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(
@@ -245,7 +254,7 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyInt(),
                         eq(false),
-                        eq(R.drawable.close_button_keyfocus),
+                        eq(R.drawable.circular_button_keyfocus),
                         anyInt(),
                         anyInt(),
                         anyInt(),
@@ -310,7 +319,7 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyInt(),
                         eq(false),
-                        eq(R.drawable.close_button_keyfocus),
+                        eq(R.drawable.circular_button_keyfocus),
                         anyInt(),
                         anyInt(),
                         anyInt(),
@@ -373,7 +382,7 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyInt(),
                         eq(false),
-                        eq(R.drawable.close_button_keyfocus),
+                        eq(R.drawable.circular_button_keyfocus),
                         anyInt(),
                         anyInt(),
                         anyInt(),
@@ -437,7 +446,7 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyInt(),
                         eq(true),
-                        eq(R.drawable.close_button_keyfocus),
+                        eq(R.drawable.circular_button_keyfocus),
                         anyInt(),
                         anyInt(),
                         anyInt(),
@@ -523,6 +532,59 @@ public class TabStripSceneLayerTest {
                                 mContext.getResources()
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(mLayerTitleCache),
+                        eq(mResourceManager));
+    }
+
+    @Test
+    public void testUpdateNewTabButton() {
+        mNewTabButton.setKeyboardFocused(true);
+        mTabStripSceneLayer.pushButtonsAndBackground(
+                mStripLayoutHelperManager, mResourceManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+        verify(mTabStripSceneMock, times(1))
+                .updateNewTabButton(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        eq(true),
+                        eq(R.drawable.circular_button_keyfocus),
+                        eq(
+                                MaterialColors.getColor(
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
+                        eq(mResourceManager));
+    }
+
+    @Test
+    public void testUpdateModelSelectorButton() {
+        mModelSelectorButton.setKeyboardFocused(true);
+        mTabStripSceneLayer.pushButtonsAndBackground(
+                mStripLayoutHelperManager, mResourceManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+        verify(mTabStripSceneMock, times(1))
+                .updateModelSelectorButton(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        eq(true),
+                        eq(R.drawable.circular_button_keyfocus),
+                        eq(
+                                MaterialColors.getColor(
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
                         eq(mResourceManager));
     }
 }

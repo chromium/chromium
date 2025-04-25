@@ -147,7 +147,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get().updateOffsetTag(mNativePtr, TabStripSceneLayer.this, offsetTag);
     }
 
-    private void pushButtonsAndBackground(
+    @VisibleForTesting
+    /* package */ void pushButtonsAndBackground(
             StripLayoutHelperManager layoutHelper,
             ResourceManager resourceManager,
             float yOffset,
@@ -188,6 +189,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getTint(),
                         newTabButton.getBackgroundTint(),
                         newTabButton.getOpacity(),
+                        newTabButton.isKeyboardFocused(),
+                        TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
+                        newTabButton.getKeyboardFocusRingColor(),
                         resourceManager);
 
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -207,6 +211,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             ((TintedCompositorButton) modelSelectorButton).getTint(),
                             ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
                             modelSelectorButton.getOpacity(),
+                            modelSelectorButton.isKeyboardFocused(),
+                            TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
+                            modelSelectorButton.getKeyboardFocusRingColor(),
                             resourceManager);
         }
 
@@ -263,7 +270,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getCloseButton().getResourceId(),
                             st.getCloseButton().getBackgroundResourceId(),
                             st.getCloseButton().isKeyboardFocused(),
-                            TabUiThemeUtil.getCloseButtonKeyboardFocusDrawableRes(),
+                            TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
                             st.getDividerResourceId(),
                             st.getResourceId(),
                             st.getOutlineResourceId(),
@@ -397,6 +404,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int tint,
                 int backgroundTint,
                 float buttonAlpha,
+                boolean isKeyboardFocused,
+                int keyboardFocusRingResourceId,
+                int keyboardFocusRingColor,
                 ResourceManager resourceManager);
 
         void updateModelSelectorButton(
@@ -411,6 +421,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int tint,
                 int backgroundTint,
                 float buttonAlpha,
+                boolean isKeyboardFocused,
+                int keyboardFocusRingResourceId,
+                int keyboardFocusRingColor,
                 ResourceManager resourceManager);
 
         void updateTabStripLeftFade(

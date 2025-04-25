@@ -37,12 +37,15 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       foreground_group_titles_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
+      new_tab_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
       right_fade_(cc::slim::UIResourceLayer::Create()),
       left_padding_layer_(cc::slim::SolidColorLayer::Create()),
       right_padding_layer_(cc::slim::SolidColorLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
+      model_selector_button_keyboard_focus_ring_(
+          cc::slim::UIResourceLayer::Create()),
       scrim_layer_(cc::slim::SolidColorLayer::Create()),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);
@@ -85,6 +88,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(new_tab_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(new_tab_button_);
+  tab_strip_layer_->AddChild(model_selector_button_keyboard_focus_ring_);
+  tab_strip_layer_->AddChild(new_tab_button_keyboard_focus_ring_);
 
   layer()->AddChild(background_layer_);
 }
@@ -233,6 +238,9 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jint tint,
     jint background_tint,
     jfloat button_alpha,
+    jboolean is_keyboard_focused,
+    jint keyboard_focus_ring_resource_id,
+    jint keyboard_focus_ring_color,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
@@ -241,12 +249,17 @@ void TabStripSceneLayer::UpdateNewTabButton(
   ui::Resource* background_resource =
       resource_manager->GetStaticResourceWithTint(bg_resource_id,
                                                   background_tint, true);
+  ui::Resource* keyboard_focus_ring_drawable =
+      resource_manager->GetStaticResourceWithTint(
+          keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
   x += touch_target_offset;
 
   UpdateCompositorButton(new_tab_button_, new_tab_button_background_,
                          button_resource, background_resource, x, y, visible,
-                         should_apply_hover_highlight, button_alpha);
+                         should_apply_hover_highlight, button_alpha,
+                         new_tab_button_keyboard_focus_ring_,
+                         is_keyboard_focused, keyboard_focus_ring_drawable);
 }
 
 void TabStripSceneLayer::UpdateModelSelectorButton(
@@ -261,6 +274,9 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
     jint tint,
     jint background_tint,
     jfloat button_alpha,
+    jboolean is_keyboard_focused,
+    jint keyboard_focus_ring_resource_id,
+    jint keyboard_focus_ring_color,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
@@ -269,11 +285,16 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
   ui::Resource* background_resource =
       resource_manager->GetStaticResourceWithTint(bg_resource_id,
                                                   background_tint, true);
+  ui::Resource* keyboard_focus_ring_drawable =
+      resource_manager->GetStaticResourceWithTint(
+          keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
   UpdateCompositorButton(model_selector_button_,
                          model_selector_button_background_, button_resource,
                          background_resource, x, y, visible,
-                         should_apply_hover_highlight, button_alpha);
+                         should_apply_hover_highlight, button_alpha,
+                         model_selector_button_keyboard_focus_ring_,
+                         is_keyboard_focused, keyboard_focus_ring_drawable);
 }
 
 void TabStripSceneLayer::UpdateCompositorButton(
@@ -285,7 +306,10 @@ void TabStripSceneLayer::UpdateCompositorButton(
     float y,
     bool visible,
     bool should_apply_hover_highlight,
-    float button_alpha) {
+    float button_alpha,
+    scoped_refptr<cc::slim::UIResourceLayer> keyboard_focus_ring_layer,
+    bool is_keyboard_focused,
+    ui::Resource* keyboard_focus_ring_drawable) {
   button->SetUIResourceId(button_resource->ui_resource()->id());
   button->SetBounds(button_resource->size());
   button->SetHideLayerAndSubtree(!visible);
@@ -305,6 +329,23 @@ void TabStripSceneLayer::UpdateCompositorButton(
     background->SetBounds(background_resource->size());
     background->SetHideLayerAndSubtree(!visible);
     background->SetOpacity(button_alpha);
+  }
+
+  if (is_keyboard_focused) {
+    keyboard_focus_ring_layer->SetIsDrawable(true);
+    keyboard_focus_ring_layer->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+    gfx::Size ring_size = keyboard_focus_ring_drawable->size();
+
+    float ring_x_offset = (background_size.width() - ring_size.width()) / 2;
+    float ring_y_offset = (background_size.height() - ring_size.height()) / 2;
+    keyboard_focus_ring_layer->SetPosition(
+        gfx::PointF(x + ring_x_offset, y + ring_y_offset));
+    keyboard_focus_ring_layer->SetBounds(ring_size);
+  } else {
+    // If the keyboard focus ring is already showing, make sure it stops
+    // showing.
+    keyboard_focus_ring_layer->SetIsDrawable(false);
   }
 }
 

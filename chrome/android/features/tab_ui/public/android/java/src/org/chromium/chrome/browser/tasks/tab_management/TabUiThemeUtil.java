@@ -199,8 +199,8 @@ public class TabUiThemeUtil {
     }
 
     /** {@return The {@link DrawableRes} for the close button keyboard focus ring} */
-    public static @DrawableRes int getCloseButtonKeyboardFocusDrawableRes() {
-        return R.drawable.close_button_keyfocus;
+    public static @DrawableRes int getCircularButtonKeyboardFocusDrawableRes() {
+        return R.drawable.circular_button_keyfocus;
     }
 
     /** {@return The keyboard focus ring's offset in px} */
