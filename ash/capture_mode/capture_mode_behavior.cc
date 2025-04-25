@@ -395,7 +395,8 @@ class SunfishBehavior : public CaptureModeBehavior {
     return true;
   }
   const std::u16string GetCaptureLabelRegionText() const override {
-    return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_SUNFISH_CAPTURE_LABEL_KEYBOARD_NAVIGATION);
   }
   const std::u16string GetActionButtonContainerTitle() const override {
     return l10n_util::GetStringUTF16(
