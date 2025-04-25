@@ -12,11 +12,12 @@ namespace remoting {
 // OAuthTokenInfo contains relevant info for a given OAuth token.
 struct OAuthTokenInfo {
   OAuthTokenInfo() = default;
-  explicit OAuthTokenInfo(const std::string& token);
-  OAuthTokenInfo(const std::string& token, const std::string& email);
+  explicit OAuthTokenInfo(const std::string& access_token);
+  OAuthTokenInfo(const std::string& access_token,
+                 const std::string& user_email);
 
-  std::string access_token() const { return access_token_; }
-  std::string user_email() const { return user_email_; }
+  const std::string& access_token() const { return access_token_; }
+  const std::string& user_email() const { return user_email_; }
 
   void set_access_token(const std::string& access_token) {
     access_token_ = access_token;
