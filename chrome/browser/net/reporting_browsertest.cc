@@ -208,13 +208,9 @@ class ReportingBrowserTestMoreContextData : public BaseReportingBrowserTest {
   ~ReportingBrowserTestMoreContextData() override = default;
 
   void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kCrashReportingAPIMoreContextData);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kCrashReportingAPIMoreContextData);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kCrashReportingAPIMoreContextData,
+        /*enabled=*/GetParam());
     BaseReportingBrowserTest::SetUp();
   }
 
