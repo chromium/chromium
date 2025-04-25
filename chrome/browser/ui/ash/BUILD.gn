@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/chromeos/crosier_tests.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(is_chromeos)
 
@@ -116,10 +115,6 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/web_view:browser_tests",
     "//chrome/browser/ui/ash/wm:browser_tests",
   ]
-
-  if (enable_assistant_integration_tests) {
-    deps += [ "//chrome/browser/ui/ash/assistant:browser_tests" ]
-  }
 }
 
 if (is_chromeos_device) {

@@ -301,25 +301,6 @@ source_set("browser_tests") {
     "//ui/views:test_support",
     "//ui/wm",
   ]
-
-  if (enable_assistant_integration_tests) {
-    sources += [ "launcher_search_iph_browsertest.cc" ]
-
-    deps += [
-      "//ash/app_list:test_support",
-      "//ash/assistant/ui",
-      "//ash/assistant/ui:constants",
-      "//chrome/browser/ui/ash/assistant:browser_test_support",
-      "//chromeos/ash/components/assistant/test_support",
-      "//chromeos/ash/services/assistant/public/cpp",
-      "//chromeos/assistant/internal:libassistant",
-      "//components/feature_engagement/test:test_support",
-    ]
-
-    data = [ "//chromeos/assistant/internal/test_data/" ]
-
-    data_deps = [ "//chromeos/assistant/internal:build_fake_s3_server_main" ]
-  }
 }
 
 if (!is_chromeos_device) {
