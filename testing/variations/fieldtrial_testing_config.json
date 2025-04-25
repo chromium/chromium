@@ -6835,6 +6835,21 @@
             ]
         }
     ],
+    "CrOSLateBootResourcedMsrLogger": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootResourcedMsrLogger"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootResourcedVariableTimeMemorySignal": [
         {
             "platforms": [
