@@ -15,7 +15,8 @@ namespace {
 using ::actions::ActionItem;
 }  // namespace
 
-PageActionModel::PageActionModel() = default;
+PageActionModel::PageActionModel(bool is_ephemeral)
+    : is_ephemeral_(is_ephemeral) {}
 
 PageActionModel::~PageActionModel() {
   observer_list_.Notify(
@@ -214,6 +215,10 @@ void PageActionModel::NotifyChange() {
   base::AutoReset<bool> auto_reset(&is_notifying_observers_, true);
   observer_list_.Notify(&PageActionModelObserver::OnPageActionModelChanged,
                         *this);
+}
+
+bool PageActionModel::IsEphemeral() const {
+  return is_ephemeral_;
 }
 
 }  // namespace page_actions

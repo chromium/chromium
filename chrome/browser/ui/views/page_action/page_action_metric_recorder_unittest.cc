@@ -43,8 +43,10 @@ class PageActionMetricsRecorderTest : public testing::Test {
     properties_.type = PageActionIconType::kLensOverlay;
     properties_.is_ephemeral = is_ephemeral;
     properties_.histogram_name = "LensOverlay";
-    recorder_ = std::make_unique<PageActionMetricsRecorder>(tab_, properties_,
-                                                            mock_model_);
+    recorder_ = std::make_unique<PageActionMetricsRecorder>(
+        tab_, properties_, mock_model_,
+        base::BindRepeating(&PageActionMetricsRecorderTest::GetVisibleCount,
+                            base::Unretained(this)));
   }
 
   void FireModelChanged() { recorder_->OnPageActionModelChanged(mock_model_); }
@@ -53,6 +55,8 @@ class PageActionMetricsRecorderTest : public testing::Test {
     recorder_->RecordClick(trigger);
   }
 
+  int GetVisibleCount() const { return visible_count_; }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -60,6 +64,8 @@ class PageActionMetricsRecorderTest : public testing::Test {
   FakeTabInterface tab_;
   PageActionProperties properties_;
   std::unique_ptr<PageActionMetricsRecorder> recorder_;
+
+  int visible_count_ = 1;
 };
 
 TEST_F(PageActionMetricsRecorderTest, NoRecordIfNotEphemeral) {
@@ -221,6 +227,59 @@ TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
   histogram_tester.ExpectTotalCount(specific_histogram, 3);
   histogram_tester.ExpectBucketCount(specific_histogram,
                                      PageActionCTREvent::kClicked, 3);
+}
+
+TEST_F(PageActionMetricsRecorderTest,
+       NumberActionsShownWhenClicked_OneVisibleAction) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder(/*is_ephemeral=*/true);
+
+  constexpr char kHistogram[] =
+      "PageActionController.Icon.NumberActionsShownWhenClicked";
+
+  // Simulate a click when exactly one ephemeral page action is visible.
+  visible_count_ = 1;
+  recorder_->RecordClick(PageActionTrigger::kMouse);
+
+  histogram_tester.ExpectTotalCount(kHistogram, 1);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1,
+                                     /*expected_count=*/1);
+}
+
+TEST_F(PageActionMetricsRecorderTest,
+       NumberActionsShownWhenClicked_VariousVisibleCounts) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder(/*is_ephemeral=*/true);
+
+  constexpr char kHistogram[] =
+      "PageActionController.Icon.NumberActionsShownWhenClicked";
+
+  // First click with 2 visible actions.
+  visible_count_ = 2;
+  recorder_->RecordClick(PageActionTrigger::kMouse);
+
+  // Second click with 5 visible actions.
+  visible_count_ = 5;
+  recorder_->RecordClick(PageActionTrigger::kKeyboard);
+
+  // Third click with 2 visible actions again.
+  visible_count_ = 2;
+  recorder_->RecordClick(PageActionTrigger::kGesture);
+
+  histogram_tester.ExpectTotalCount(kHistogram, 3);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/5,
+                                     /*expected_count=*/1);
+
+  // No other buckets should be populated.
+  for (int bucket = 0; bucket <= 20; ++bucket) {
+    if (bucket == 2 || bucket == 5) {
+      continue;
+    }
+    histogram_tester.ExpectBucketCount(kHistogram, bucket,
+                                       /*expected_count=*/0);
+  }
 }
 
 }  // namespace

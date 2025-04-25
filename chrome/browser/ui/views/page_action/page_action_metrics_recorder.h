@@ -7,6 +7,8 @@
 
 #include <set>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -21,6 +23,14 @@ class TabInterface;
 namespace page_actions {
 
 struct PageActionProperties;
+
+// Metrics may need to know the number of visible ephemeral page actions.
+// This information is not available to the local instance of the metrics
+// recorder, as it does not have visibility into the page action state. However,
+// the `PageActionController`, which owns the metrics recorder instance, can
+// determine that count. Therefore, a callback is used to retrieve the count
+// from the `PageActionController`.
+using VisibleEphemeralPageActionsCountCallback = base::RepeatingCallback<int()>;
 
 // Interface for PageActionMetricsRecorder, used for concrete implementation or
 // a mock for testing.
@@ -39,7 +49,9 @@ class PageActionMetricsRecorderFactory {
   virtual std::unique_ptr<PageActionMetricsRecorderInterface> Create(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
-      PageActionModelInterface& model) = 0;
+      PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback) = 0;
 };
 
 // Records visibility metrics for a specific page action, scoped to a single
@@ -48,9 +60,12 @@ class PageActionMetricsRecorderFactory {
 class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
                                   public PageActionModelObserver {
  public:
-  explicit PageActionMetricsRecorder(tabs::TabInterface& tab_interface,
-                                     const PageActionProperties& properties,
-                                     PageActionModelInterface& model);
+  explicit PageActionMetricsRecorder(
+      tabs::TabInterface& tab_interface,
+      const PageActionProperties& properties,
+      PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback);
 
   PageActionMetricsRecorder(const PageActionMetricsRecorder&) = delete;
   PageActionMetricsRecorder operator=(const PageActionMetricsRecorder&) =
@@ -77,6 +92,11 @@ class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
   bool is_ephemeral_;
   PageActionIconType page_action_type_;
   std::string histogram_name_;
+
+  // Used to get count of visible ephemeral page actions from the
+  // `PageActionController`.
+  VisibleEphemeralPageActionsCountCallback
+      visible_ephemeral_page_actions_count_callback_;
 
   // The TabInterface is guaranteed valid for this object’s lifetime.
   const raw_ref<tabs::TabInterface> tab_interface_;

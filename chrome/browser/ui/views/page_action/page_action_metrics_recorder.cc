@@ -17,10 +17,14 @@ namespace page_actions {
 PageActionMetricsRecorder::PageActionMetricsRecorder(
     tabs::TabInterface& tab_interface,
     const PageActionProperties& properties,
-    PageActionModelInterface& model)
+    PageActionModelInterface& model,
+    VisibleEphemeralPageActionsCountCallback
+        visible_ephemeral_page_actions_count_callback)
     : is_ephemeral_(properties.is_ephemeral),
       page_action_type_(properties.type),
       histogram_name_(properties.histogram_name),
+      visible_ephemeral_page_actions_count_callback_(
+          std::move(visible_ephemeral_page_actions_count_callback)),
       tab_interface_(tab_interface) {
   scoped_observation_.Observe(&model);
 }
@@ -76,6 +80,9 @@ void PageActionMetricsRecorder::RecordClick(
   base::UmaHistogramEnumeration(
       base::StrCat({"PageActionController.", histogram_name_, ".Icon.CTR2"}),
       PageActionCTREvent::kClicked);
+  base::UmaHistogramExactLinear(
+      "PageActionController.Icon.NumberActionsShownWhenClicked",
+      visible_ephemeral_page_actions_count_callback_.Run(), 20);
 }
 
 }  // namespace page_actions

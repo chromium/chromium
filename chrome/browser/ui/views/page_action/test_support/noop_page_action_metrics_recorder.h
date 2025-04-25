@@ -29,7 +29,9 @@ class NoopPageActionMetricsRecorderFactory
   std::unique_ptr<PageActionMetricsRecorderInterface> Create(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
-      PageActionModelInterface& model) override;
+      PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback) override;
 };
 
 }  // namespace page_actions

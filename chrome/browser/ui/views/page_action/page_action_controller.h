@@ -154,7 +154,9 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
                std::unique_ptr<PageActionMetricsRecorderInterface>>;
 
   // Creates a page action model for the given id, and initializes it's values.
-  void Register(actions::ActionId action_id, bool is_tab_active);
+  void Register(actions::ActionId action_id,
+                bool is_tab_active,
+                bool is_ephemeral);
 
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;
@@ -167,15 +169,22 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   void PinnedActionsModelChanged();
 
   std::unique_ptr<PageActionModelInterface> CreateModel(
-      actions::ActionId action_id);
+      actions::ActionId action_id,
+      bool is_ephemeral);
   std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
-      PageActionModelInterface& model);
+      PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback);
 
   // Issues internally a metric recording for the provided `action_id`.
   void RecordClickMetric(actions::ActionId action_id,
                          PageActionTrigger trigger_source);
+
+  // Returns the number of page actions currently visual in the actual tab that
+  // are ephemeral.
+  int GetVisibleEphemeralPageActionsCount() const;
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>

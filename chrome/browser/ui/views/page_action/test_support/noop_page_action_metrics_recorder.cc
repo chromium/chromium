@@ -10,7 +10,9 @@ std::unique_ptr<PageActionMetricsRecorderInterface>
 NoopPageActionMetricsRecorderFactory::Create(
     tabs::TabInterface& tab_interface,
     const PageActionProperties& properties,
-    PageActionModelInterface& model) {
+    PageActionModelInterface& model,
+    VisibleEphemeralPageActionsCountCallback
+        visible_ephemeral_page_actions_count_callback) {
   return std::make_unique<NoopPageActionMetricsRecorder>();
 }
 
