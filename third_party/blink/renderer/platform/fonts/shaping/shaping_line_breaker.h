@@ -157,6 +157,11 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   void SetBreakOffset(unsigned break_offset, const String&, Result*);
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
 
+  template <TextDirection>
+  const ShapeResultView* ShapeLine(unsigned start_offset,
+                                   LayoutUnit available_space,
+                                   Result* result_out);
+
   const ShapeResult* result_;
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;

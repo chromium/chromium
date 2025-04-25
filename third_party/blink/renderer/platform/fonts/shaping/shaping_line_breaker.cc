@@ -29,7 +29,8 @@ namespace {
 
 // ShapingLineBreaker computes using visual positions. This function flips
 // logical advance to visual, or vice versa.
-inline LayoutUnit FlipRtl(LayoutUnit value, TextDirection direction) {
+template <TextDirection direction>
+inline LayoutUnit FlipRtl(LayoutUnit value) {
   return IsLtr(direction) ? value : -value;
 }
 
@@ -258,6 +259,17 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     unsigned start,
     LayoutUnit available_space,
     ShapingLineBreaker::Result* result_out) {
+  if (IsLtr(result_->Direction())) {
+    return ShapeLine<TextDirection::kLtr>(start, available_space, result_out);
+  }
+  return ShapeLine<TextDirection::kRtl>(start, available_space, result_out);
+}
+
+template <TextDirection direction>
+const ShapeResultView* ShapingLineBreaker::ShapeLine(
+    unsigned start,
+    LayoutUnit available_space,
+    ShapingLineBreaker::Result* result_out) {
   DCHECK_GE(available_space, LayoutUnit(0));
   const unsigned range_start = result_->StartIndex();
   const unsigned range_end = result_->EndIndex();
@@ -298,7 +310,6 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   // If the start offset is not at a safe-to-break boundary, the content between
   // the start and the next safe-to-break boundary needs to be reshaped.
   const ShapeResult* line_start_result = nullptr;
-  const TextDirection direction = result_->Direction();
   const EdgeOffset first_safe = FirstSafeOffset(start);
   DCHECK_GE(first_safe.offset, start);
   if (first_safe.offset != start) [[unlikely]] {
@@ -309,7 +320,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
         {.is_line_start = true, .han_kerning_start = first_safe.han_kerning});
     // Adjust the available space to take the reshaping into account.
     const LayoutUnit old_width =
-        FlipRtl(first_safe_position - start_position, direction);
+        FlipRtl<direction>(first_safe_position - start_position);
     if (const LayoutUnit diff = old_width - line_start_result->SnappedWidth()) {
       available_space = std::max(available_space + diff, LayoutUnit());
     }
@@ -319,8 +330,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   // exceeding the available space and the determine the closest valid break
   // preceding the candidate.
   const LayoutUnit end_position =
-      start_position + FlipRtl(available_space, direction);
-  DCHECK_GE(FlipRtl(end_position - start_position, direction), LayoutUnit(0));
+      start_position + FlipRtl<direction>(available_space);
+  DCHECK_GE(FlipRtl<direction>(end_position - start_position), LayoutUnit(0));
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
   if (candidate_break < range_end &&
@@ -345,7 +356,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       const LayoutUnit last_safe_position =
           result_->CachedPositionForOffset(last_safe - range_start);
       const LayoutUnit width_to_last_safe =
-          FlipRtl(last_safe_position - start_position, direction);
+          FlipRtl<direction>(last_safe_position - start_position);
       if (width_to_last_safe + line_end_result->Width() <= available_space) {
         candidate_break = adjusted_candidate_break;
       } else {
@@ -535,8 +546,9 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
           result_->CachedPositionForOffset(last_safe - range_start);
       line_end_result = Shape(last_safe, break_opportunity.offset);
       if (line_end_result->Width() <=
-          FlipRtl(end_position - safe_position, direction))
+          FlipRtl<direction>(end_position - safe_position)) {
         break;
+      }
 
       // Doesn't fit after the reshape. Try the previous break opportunity.
       line_end_result = nullptr;
