@@ -75,13 +75,17 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    builderless = False,
     cores = None,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     # TODO(crbug.com/40208487) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
     execution_timeout = 15 * time.hour,
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/build/mac-arm.pgo.txt",
+        ],
+    ),
 )
 
 try_.builder(

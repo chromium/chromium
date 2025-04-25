@@ -674,6 +674,11 @@ builder.
   Location filters:
   * [`//chrome/enterprise_companion/.+`](https://cs.chromium.org/chromium/src/chrome/enterprise_companion/)
 
+* [mac-official](https://ci.chromium.org/p/chromium/builders/try/mac-official) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-official""))
+
+  Location filters:
+  * [`//chrome/build/mac-arm.pgo.txt`](https://cs.chromium.org/search?q=+file:chrome/build/mac-arm.pgo.txt)
+
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg""))
 
   Location filters:
