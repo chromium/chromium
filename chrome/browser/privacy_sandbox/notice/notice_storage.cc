@@ -66,6 +66,24 @@ std::string CreatePrefPath(std::string_view notice,
   return base::StrCat({notice, ".", pref_name});
 }
 
+template <typename T>
+std::optional<T> ConvertTo(const base::Value::Dict* dict) {
+  if (!dict) {
+    return std::nullopt;
+  }
+  base::JSONValueConverter<T> converter;
+  T data;
+  if (converter.Convert(*dict, &data)) {
+    return data;
+  }
+  return std::nullopt;
+}
+
+template <typename T>
+std::optional<T> ConvertTo(const base::Value* value) {
+  return value ? ConvertTo<T>(value->GetIfDict()) : std::nullopt;
+}
+
 void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
                                 base::Days(10), 100);
@@ -131,56 +149,18 @@ bool MaybeValueToTime(const base::Value* value, base::Time* time) {
   return true;
 }
 
-bool MaybeValueToNoticeEvent(const base::Value* value,
-                             PrivacySandboxNoticeEvent* event) {
+template <typename T>
+bool MaybeValueToEnum(const base::Value* value, T* output) {
   if (!value || !value->is_int()) {
     return false;
   }
-  int notice_event = value->GetInt();
-  if (notice_event < static_cast<int>(PrivacySandboxNoticeEvent::kMinValue) ||
-      notice_event > static_cast<int>(PrivacySandboxNoticeEvent::kMaxValue)) {
+  int int_value = value->GetInt();
+  if (int_value < static_cast<int>(T::kMinValue) ||
+      int_value > static_cast<int>(T::kMaxValue)) {
     return false;
   }
-  *event = static_cast<PrivacySandboxNoticeEvent>(notice_event);
+  *output = static_cast<T>(int_value);
   return true;
-}
-
-std::optional<V1MigrationData> ExtractV1NoticeData(
-    PrefService* pref_service,
-    std::string_view notice,
-    const base::Value::Dict& data) {
-  std::optional<int> schema_version = data.FindIntByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxSchemaVersion));
-
-  if (!schema_version.has_value() || *schema_version != 1) {
-    return std::nullopt;
-  }
-
-  // Notice last shown.
-  std::optional<base::Time> shown_v1 = base::ValueToTime(data.FindByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxNoticeLastShown)));
-  V1MigrationData migration_data;
-  if (shown_v1.has_value()) {
-    migration_data.notice_last_shown = *shown_v1;
-  }
-
-  // Action taken.
-  std::optional<int> action_v1 = data.FindIntByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken));
-  if (action_v1.has_value()) {
-    migration_data.notice_action_taken =
-        static_cast<NoticeActionTaken>(*action_v1);
-  }
-
-  // Action taken time.
-  std::optional<base::Time> action_time_v1 =
-      base::ValueToTime(data.FindByDottedPath(
-          CreatePrefPath(notice, kPrivacySandboxNoticeActionTakenTime)));
-  if (action_time_v1.has_value()) {
-    migration_data.notice_action_taken_time = *action_time_v1;
-  }
-
-  return migration_data;
 }
 
 void PopulateV2NoticeData(PrefService* pref_service,
@@ -200,35 +180,13 @@ void PopulateV2NoticeData(PrefService* pref_service,
   }
 }
 
-std::optional<PrivacySandboxNoticeData> ConvertToNoticeData(
-    const base::Value::Dict* notice_dict) {
-  if (!notice_dict) {
-    return std::nullopt;
-  }
-  base::JSONValueConverter<PrivacySandboxNoticeData> converter;
-  PrivacySandboxNoticeData notice_data;
-  if (converter.Convert(*notice_dict, &notice_data)) {
-    return notice_data;
-  } else {
-    return std::nullopt;
-  }
-}
-
-std::optional<PrivacySandboxNoticeData> ConvertToNoticeData(
-    const base::Value* notice_dict) {
-  if (!notice_dict) {
-    return std::nullopt;
-  }
-  return ConvertToNoticeData(notice_dict->GetIfDict());
-}
-
 }  // namespace
 
 void NoticeEventTimestampPair::RegisterJSONConverter(
     base::JSONValueConverter<NoticeEventTimestampPair>* converter) {
   converter->RegisterCustomValueField<PrivacySandboxNoticeEvent>(
       kPrivacySandboxNoticeEvent, &NoticeEventTimestampPair::event,
-      &MaybeValueToNoticeEvent);
+      &MaybeValueToEnum<PrivacySandboxNoticeEvent>);
   converter->RegisterCustomValueField<base::Time>(
       kPrivacySandboxNoticeEventTime, &NoticeEventTimestampPair::timestamp,
       &MaybeValueToTime);
@@ -316,9 +274,20 @@ void PrivacySandboxNoticeData::RegisterJSONConverter(
       kPrivacySandboxEvents, &PrivacySandboxNoticeData::notice_events_);
 }
 
-// V1MigrationData definitions.
-V1MigrationData::V1MigrationData() = default;
-V1MigrationData::~V1MigrationData() = default;
+void V1MigrationData::RegisterJSONConverter(
+    base::JSONValueConverter<V1MigrationData>* converter) {
+  converter->RegisterIntField(kPrivacySandboxSchemaVersion,
+                              &V1MigrationData::schema_version);
+  converter->RegisterCustomValueField<NoticeActionTaken>(
+      kPrivacySandboxNoticeActionTaken, &V1MigrationData::notice_action_taken,
+      &MaybeValueToEnum<NoticeActionTaken>);
+  converter->RegisterCustomValueField<base::Time>(
+      kPrivacySandboxNoticeActionTakenTime,
+      &V1MigrationData::notice_action_taken_time, &MaybeValueToTime);
+  converter->RegisterCustomValueField<base::Time>(
+      kPrivacySandboxNoticeLastShown, &V1MigrationData::notice_last_shown,
+      &MaybeValueToTime);
+}
 
 // PrivacySandboxNoticeStorage definitions.
 void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
@@ -366,7 +335,7 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
 }
 
 // static
-PrivacySandboxNoticeData PrivacySandboxNoticeStorage::ConvertV1SchemaToV2Schema(
+PrivacySandboxNoticeData PrivacySandboxNoticeStorage::ToV2Schema(
     const V1MigrationData& data_v1) {
   PrivacySandboxNoticeData data_v2;
   std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
@@ -408,22 +377,13 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
   }
 
   for (const auto [notice, notice_value] : *data) {
-    const base::Value::Dict* notice_value_dict = notice_value.GetIfDict();
-    if (!notice_value_dict) {
+    auto data_v1 = ConvertTo<V1MigrationData>(&notice_value);
+    if (!data_v1 || data_v1->schema_version != 1) {
       continue;
     }
-    std::optional<int> schema_version =
-        notice_value_dict->FindInt(kPrivacySandboxSchemaVersion);
-    if (schema_version.has_value() && *schema_version == 2) {
-      continue;
-    }
+    PopulateV2NoticeData(pref_service, notice, ToV2Schema(*data_v1));
 
-    auto data_v1 = ExtractV1NoticeData(pref_service, notice, *data);
-    if (!data_v1) {
-      continue;
-    }
-    PrivacySandboxNoticeData data_v2 = ConvertV1SchemaToV2Schema(*data_v1);
-    PopulateV2NoticeData(pref_service, notice, data_v2);
+    // TODO(boujane) Erase V1 Only fields.
   }
 }
 
@@ -442,7 +402,7 @@ PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
 void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
   for (const auto [notice, notice_value] :
        pref_service_->GetDict(kPrivacySandboxNoticeDataPath)) {
-    auto notice_data = ConvertToNoticeData(&notice_value);
+    auto notice_data = ConvertTo<PrivacySandboxNoticeData>(&notice_value);
 
     NoticeStartupState startup_state;
 
@@ -487,7 +447,7 @@ std::optional<PrivacySandboxNoticeData>
 PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
   const base::Value::Dict& pref_data =
       pref_service_->GetDict(kPrivacySandboxNoticeDataPath);
-  return ConvertToNoticeData(pref_data.FindDict(notice));
+  return ConvertTo<PrivacySandboxNoticeData>(pref_data.FindDict(notice));
 }
 
 void PrivacySandboxNoticeStorage::RecordEvent(

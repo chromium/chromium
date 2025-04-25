@@ -49,6 +49,7 @@ enum class NoticeStartupState {
 // for histograms.
 // LINT.IfChange(NoticeActionTaken)
 enum class NoticeActionTaken {
+  kMinValue = 0,
   // No Ack action set.
   kNotSet = 0,
   // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
@@ -144,11 +145,13 @@ class PrivacySandboxNoticeData {
 
 // Stores pre-migration interactions on a notice in the v1 schema.
 struct V1MigrationData {
-  V1MigrationData();
-  ~V1MigrationData();
+  int schema_version = 0;
   NoticeActionTaken notice_action_taken = NoticeActionTaken::kNotSet;
   base::Time notice_action_taken_time;
   base::Time notice_last_shown;
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<V1MigrationData>* converter);
 };
 
 class NoticeStorage {
@@ -196,8 +199,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   static void UpdateNoticeSchemaV2(PrefService* pref_service);
 
   // Migrates fields in the notice data v1 schema to the notice data v2 schema.
-  static PrivacySandboxNoticeData ConvertV1SchemaToV2Schema(
-      const V1MigrationData& data_v1);
+  static PrivacySandboxNoticeData ToV2Schema(const V1MigrationData& data_v1);
 
   // Converts the schema v1 NoticeActionTaken to the schema v2
   // PrivacySandboxNoticeEvent.
