@@ -20,7 +20,9 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
@@ -374,6 +376,12 @@ class SessionRestorationServiceImplTest : public PlatformTest {
               // Creates a FakeTabGroupSyncService, as the real implementation
               // affects the list of created files.
               return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+            }));
+    builder.AddTestingFactory(
+        data_sharing::DataSharingServiceFactory::GetInstance(),
+        base::BindOnce(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<data_sharing::MockDataSharingService>();
             }));
     profile_ = std::move(builder).Build();
     file_tracker_.Start(profile_->GetStatePath());
