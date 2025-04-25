@@ -39,6 +39,7 @@ BASE_FEATURE(kVideoCaptureDeviceFactoryAppleLogging,
 
 namespace {
 
+#if BUILDFLAG(IS_MAC)
 void EnsureRunsOnCFRunLoopEnabledThread() {
   static bool has_checked_cfrunloop_for_video_capture = false;
   if (!has_checked_cfrunloop_for_video_capture) {
@@ -50,6 +51,7 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
     has_checked_cfrunloop_for_video_capture = true;
   }
 }
+#endif
 
 media::VideoCaptureFormats GetDeviceSupportedFormats(AVCaptureDevice* device) {
   media::VideoCaptureFormats formats;
@@ -111,7 +113,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(descriptor.capture_api, VideoCaptureApi::UNKNOWN);
+
+#if BUILDFLAG(IS_MAC)
   EnsureRunsOnCFRunLoopEnabledThread();
+#endif
 
   std::unique_ptr<VideoCaptureDevice> capture_device;
   if (descriptor.capture_api != VideoCaptureApi::MACOSX_DECKLINK) {
@@ -144,7 +149,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
 void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+#if BUILDFLAG(IS_MAC)
   EnsureRunsOnCFRunLoopEnabledThread();
+#endif
 
   NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices();
 

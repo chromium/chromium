@@ -980,12 +980,14 @@ BASE_FEATURE(
     "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
              base::FEATURE_DISABLED_BY_DEFAULT
 );
+#endif
 
 // Update scheduler settings using resourced on ChromeOS.
 BASE_FEATURE(kSchedQoSOnResourcedForChrome,
@@ -1482,7 +1484,7 @@ enum class VideoCaptureServiceConfiguration {
 };
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
   return base::FeatureList::IsEnabled(
