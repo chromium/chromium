@@ -31,7 +31,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.IPaymentDetailsUpdateService;
@@ -58,7 +59,8 @@ public class PaymentDetailsUpdateServiceHelperTest {
     private static final int DECODER_STARTUP_TIMEOUT_IN_MS = 10000;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public ExpectedException thrown = ExpectedException.none();
 
@@ -108,7 +110,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
 
     @Before
     public void setUp() throws Throwable {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mContext = mActivityTestRule.getActivity();
     }
 

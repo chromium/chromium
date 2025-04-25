@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.payments;
 
 import androidx.annotation.Nullable;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -23,7 +22,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.CSPChecker;
@@ -40,7 +41,6 @@ import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -66,7 +66,8 @@ import java.util.Set;
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** Simulates a package manager in memory. */
     private final MockPackageManagerDelegate mPackageManager = new MockPackageManagerDelegate();
@@ -113,8 +114,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     private final TestServerDownloader mDownloader = new TestServerDownloader();
-
-    private EmbeddedTestServer mServer;
+    private WebPageStation mStartingPage;
     private List<PaymentApp> mPaymentApps;
     private boolean mAllPaymentAppsCreated;
     private Map<String, PaymentMethodData> mMethodData;
@@ -243,12 +243,13 @@ public class AndroidPaymentAppFinderTest
 
     @Before
     public void setUp() throws Throwable {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mPackageManager.reset();
-        mServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        mDownloader.setTestServerUrl(new GURL(mServer.getURL("/components/test/data/payments/")));
+        mDownloader.setTestServerUrl(
+                new GURL(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/components/test/data/payments/")));
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;
         mPaymentOptions = new PaymentOptions();

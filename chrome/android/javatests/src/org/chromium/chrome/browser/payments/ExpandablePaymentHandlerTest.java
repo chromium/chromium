@@ -38,15 +38,17 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerContentFrameLayout;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.ui.InputProtector;
@@ -74,14 +76,16 @@ public class ExpandablePaymentHandlerTest {
     private static final long SAFE_INPUT_DELAY =
             InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
 
-    @Rule public ChromeTabbedActivityTestRule mRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mRule = ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // Host the tests on https://127.0.0.1, because file:// URLs cannot have service workers.
     private EmbeddedTestServer mServer;
+    private WebPageStation mStartingPage;
     private boolean mUiShownCalled;
     private boolean mUiClosedCalled;
     private UiDevice mDevice;
-    private ChromeActivity mDefaultActivity;
+    private ChromeTabbedActivity mDefaultActivity;
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private FakeClock mClock;
 
@@ -127,12 +131,12 @@ public class ExpandablePaymentHandlerTest {
 
     @Before
     public void setUp() throws Throwable {
-        mRule.startMainActivityOnBlankPage();
+        mStartingPage = mRule.startOnBlankPage();
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        mDefaultActivity = mRule.getActivity();
+        mDefaultActivity = mStartingPage.getActivity();
         mBottomSheetTestSupport =
                 new BottomSheetTestSupport(
-                        mRule.getActivity()
+                        mDefaultActivity
                                 .getRootUiCoordinatorForTesting()
                                 .getBottomSheetController());
         mClock = new FakeClock();
