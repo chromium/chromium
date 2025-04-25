@@ -175,6 +175,7 @@ Object: {
 		data: {
 			frame: string
 			nodeId: number
+			nodeName: string
 		}
 	}
 	cat: string
@@ -246,6 +247,7 @@ Object: {
 				{
 					depth: number
 					nodeId: number
+					nodeName: string
 				}
 			]
 		}

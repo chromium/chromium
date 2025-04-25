@@ -108,6 +108,7 @@ Object: {
 			frame: string
 			layerId: number
 			nodeId: number
+			nodeName: string
 		}
 	}
 	cat: string
