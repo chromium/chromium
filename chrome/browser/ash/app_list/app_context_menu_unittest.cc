@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -299,7 +298,7 @@ class AppContextMenuTest : public AppListTestBase {
 
     scoped_refptr<extensions::Extension> store = MakeApp(app_id, platform_app);
     registrar()->AddExtension(store.get());
-    service_->EnableExtension(app_id);
+    registrar()->EnableExtension(app_id);
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     controller_->SetAppPinnable(app_id, pinnable);
