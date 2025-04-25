@@ -317,52 +317,67 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 continue;
             }
             visibleBeforeReadAloudCount++;
-            PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
-            propertyModel.set(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(item));
-            propertyModel.set(
-                    AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(item));
-            propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
-            propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
-            propertyModel.set(AppMenuItemProperties.TITLE_CONDENSED, getContentDescription(item));
-            propertyModel.set(AppMenuItemProperties.MANAGED, isMenuItemManaged(item));
-            if (item.hasSubMenu()) {
-                // Only support top level menu items have SUBMENU, and a SUBMENU item cannot have a
-                // SUBMENU.
-                // TODO(crbug.com/40171109) : Create a new SubMenuItemProperties property key set
-                // for
-                // SUBMENU items.
+
+            PropertyModel propertyModel;
+            @AppMenuItemType int menuType;
+            if (item.getItemId() == R.id.icon_row_menu_id) {
+                menuType = AppMenuItemType.BUTTON_ROW;
+
                 ModelList subList = new ModelList();
-                for (int j = 0; j < item.getSubMenu().size(); ++j) {
+                assert item.getSubMenu().size() <= 5 : "At most 5 buttons currently supported.";
+                for (int j = 0; j < item.getSubMenu().size(); j++) {
                     MenuItem subitem = item.getSubMenu().getItem(j);
                     if (!subitem.isVisible()) continue;
 
-                    PropertyModel subModel = AppMenuUtil.menuItemToPropertyModel(subitem);
+                    PropertyModel subModel = AppMenuUtil.buildPropertyModelForIcon(subitem);
                     subList.add(new MVCListAdapter.ListItem(0, subModel));
                     if (subitem.getItemId() == R.id.reload_menu_id) {
                         mReloadPropertyModel = subModel;
                         Tab currentTab = mActivityTabProvider.get();
-                        loadingStateChanged(currentTab == null ? false : currentTab.isLoading());
+                        loadingStateChanged(currentTab != null && currentTab.isLoading());
                     }
                 }
-                propertyModel.set(AppMenuItemProperties.SUBMENU, subList);
-            }
-            int menutype = AppMenuItemType.STANDARD;
-            if (item.getItemId() == R.id.request_desktop_site_row_menu_id
-                    || item.getItemId() == R.id.share_row_menu_id
-                    || item.getItemId() == R.id.auto_dark_web_contents_row_menu_id) {
-                menutype = AppMenuItemType.TITLE_BUTTON;
-            } else if (item.getItemId() == R.id.icon_row_menu_id) {
-                int viewCount = item.getSubMenu().size();
-                menutype = AppMenuItemType.BUTTON_ROW;
-                assert viewCount <= 5 : "At most 5 buttons currently supported.";
+                propertyModel =
+                        new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                .with(AppMenuItemProperties.MENU_ITEM_ID, item.getItemId())
+                                .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
+                                .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
+                                .build();
             } else {
-                // Could be standard items or custom items.
                 int customType = customItemViewTypeProvider.fromMenuItemId(item.getItemId());
-                if (customType != CustomViewBinder.NOT_HANDLED) {
-                    menutype = customType;
+                boolean isTitleButtonType = item.hasSubMenu() && item.getSubMenu().size() == 2;
+                MenuItem textItem = item;
+                if (isTitleButtonType) {
+                    menuType = AppMenuItemType.TITLE_BUTTON;
+                    textItem = item.getSubMenu().getItem(0);
+                } else if (customType != CustomViewBinder.NOT_HANDLED) {
+                    menuType = customType;
+                } else {
+                    menuType = AppMenuItemType.STANDARD;
+                }
+
+                propertyModel = AppMenuUtil.menuItemToPropertyModel(textItem);
+                propertyModel.set(
+                        AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(textItem));
+                propertyModel.set(
+                        AppMenuItemProperties.ICON_SHOW_BADGE,
+                        shouldShowBadgeOnMenuItemIcon(textItem));
+                propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
+                propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
+                propertyModel.set(
+                        AppMenuItemProperties.TITLE_CONDENSED, getContentDescription(textItem));
+                propertyModel.set(AppMenuItemProperties.MANAGED, isMenuItemManaged(textItem));
+
+                if (isTitleButtonType) {
+                    ModelList subList = new ModelList();
+                    MenuItem subitem = item.getSubMenu().getItem(1);
+                    assert subitem.isVisible();
+                    PropertyModel subModel = AppMenuUtil.buildPropertyModelForIcon(subitem);
+                    subList.add(new MVCListAdapter.ListItem(0, subModel));
+                    propertyModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
                 }
             }
-            modelList.add(new MVCListAdapter.ListItem(menutype, propertyModel));
+            modelList.add(new MVCListAdapter.ListItem(menuType, propertyModel));
         }
         int lastIndex = modelList.size() - 1;
         int itemId = modelList.get(lastIndex).model.get(AppMenuItemProperties.MENU_ITEM_ID);

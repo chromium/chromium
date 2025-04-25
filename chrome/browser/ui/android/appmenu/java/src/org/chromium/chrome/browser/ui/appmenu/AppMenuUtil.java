@@ -131,6 +131,23 @@ public class AppMenuUtil {
     }
 
     /**
+     * Create a {@link PropertyModel} for an icon represented as a {@link MenuItem}.
+     *
+     * @param menuItem The MenuItem which need to be transferred to the {@link PropertyModel}.
+     * @return The {@link PropertyModel}.
+     */
+    public static PropertyModel buildPropertyModelForIcon(MenuItem menuItem) {
+        return new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
+                .with(AppMenuItemProperties.MENU_ITEM_ID, menuItem.getItemId())
+                .with(AppMenuItemProperties.TITLE_CONDENSED, menuItem.getTitleCondensed())
+                .with(AppMenuItemProperties.ICON, menuItem.getIcon())
+                .with(AppMenuItemProperties.ENABLED, menuItem.isEnabled())
+                .with(AppMenuItemProperties.CHECKABLE, menuItem.isCheckable())
+                .with(AppMenuItemProperties.CHECKED, menuItem.isChecked())
+                .build();
+    }
+
+    /**
      * builds a enter animation of a standard menu item.
      *
      * @param model The model containing the data for the view.

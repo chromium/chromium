@@ -2838,7 +2838,7 @@ public class CustomTabActivityTest {
 
         openAppMenuAndAssertMenuShown();
         Assert.assertNull(
-                "Share option should be hidden.", activity.findViewById(R.id.share_row_menu_id));
+                "Share option should be hidden.", activity.findViewById(R.id.share_menu_id));
     }
 
     @Test

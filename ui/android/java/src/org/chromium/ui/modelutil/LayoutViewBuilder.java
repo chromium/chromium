@@ -38,6 +38,16 @@ public class LayoutViewBuilder<T extends View> implements ViewBuilder<T> {
         }
 
         T view = (T) mInflater.inflate(mLayoutResId, parent, false);
+        return postInflationInit(view);
+    }
+
+    /**
+     * Allows for additional post processing of the view following inflation.
+     *
+     * @param view The view to be initialized.
+     * @return The view with post inflation processing completed.
+     */
+    protected T postInflationInit(T view) {
         return view;
     }
 }

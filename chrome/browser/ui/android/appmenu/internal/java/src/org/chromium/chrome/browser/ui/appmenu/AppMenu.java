@@ -566,8 +566,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             PropertyModel model = mModelList.get(i).model;
             if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
                 return model;
-            } else if (model.get(AppMenuItemProperties.SUBMENU) != null) {
-                ModelList subList = model.get(AppMenuItemProperties.SUBMENU);
+            } else if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
+                ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
                 for (int j = 0; j < subList.size(); j++) {
                     PropertyModel subModel = subList.get(j).model;
                     if (subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {

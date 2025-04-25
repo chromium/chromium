@@ -270,11 +270,10 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.share_row_menu_id));
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id));
 
         assertHistoryMenuVisibility();
 
@@ -391,13 +390,13 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
 
         ModelList iconRowModelList =
                 AppMenuTestSupport.getMenuItemPropertyModel(
                                 mCustomTabActivityTestRule.getAppMenuCoordinator(),
                                 R.id.icon_row_menu_id)
-                        .get(AppMenuItemProperties.SUBMENU);
+                        .get(AppMenuItemProperties.ADDITIONAL_ICONS);
         final int expectedIconMenuSize = 4;
         assertEquals(expectedIconMenuSize, iconRowModelList.size());
         Assert.assertNotNull(
@@ -458,7 +457,7 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),

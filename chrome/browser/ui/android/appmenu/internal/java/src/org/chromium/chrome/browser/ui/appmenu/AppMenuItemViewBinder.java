@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -100,66 +99,37 @@ class AppMenuItemViewBinder {
     }
 
     public static void bindTitleButtonItem(PropertyModel model, View view, PropertyKey key) {
-        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
+        bindStandardItem(model, view, key);
 
-        if (key == AppMenuItemProperties.SUBMENU) {
-            ModelList subList = model.get(AppMenuItemProperties.SUBMENU);
-            PropertyModel titleModel = subList.get(0).model;
-
-            view.setId(titleModel.get(AppMenuItemProperties.MENU_ITEM_ID));
-
-            TextViewWithCompoundDrawables title =
-                    (TextViewWithCompoundDrawables) view.findViewById(R.id.title);
-            title.setText(titleModel.get(AppMenuItemProperties.TITLE));
-            title.setEnabled(titleModel.get(AppMenuItemProperties.ENABLED));
-            title.setFocusable(titleModel.get(AppMenuItemProperties.ENABLED));
-            title.setCompoundDrawablesRelative(
-                    titleModel.get(AppMenuItemProperties.ICON), null, null, null);
-            setContentDescription(title, titleModel);
+        if (key == AppMenuItemProperties.ADDITIONAL_ICONS) {
+            ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
+            assert subList.size() == 1;
 
             AppMenuClickHandler appMenuClickHandler =
                     model.get(AppMenuItemProperties.CLICK_HANDLER);
-            title.setOnClickListener(v -> appMenuClickHandler.onItemClick(titleModel));
-            if (titleModel.get(AppMenuItemProperties.HIGHLIGHTED)) {
-                ViewHighlighter.turnOnHighlight(
-                        view, new HighlightParams(HighlightShape.RECTANGLE));
-            } else {
-                ViewHighlighter.turnOffHighlight(view);
-            }
 
-            AppMenuItemIcon checkbox = (AppMenuItemIcon) view.findViewById(R.id.checkbox);
-            ChromeImageButton button = (ChromeImageButton) view.findViewById(R.id.button);
-            PropertyModel buttonModel = null;
-            boolean checkable = false;
-            boolean checked = false;
-            boolean buttonEnabled = true;
-            Drawable subIcon = null;
+            View titleContainer = view.findViewById(R.id.menu_item_container);
+            View actionIconContainer = view.findViewById(R.id.action_icon_container);
+            AppMenuItemIcon checkbox = view.findViewById(R.id.checkbox);
+            ChromeImageButton button = view.findViewById(R.id.button);
+            PropertyModel buttonModel = subList.get(0).model;
+            boolean hasAction = true;
 
-            if (subList.size() == 2) {
-                buttonModel = subList.get(1).model;
-                checkable = buttonModel.get(AppMenuItemProperties.CHECKABLE);
-                checked = buttonModel.get(AppMenuItemProperties.CHECKED);
-                buttonEnabled = buttonModel.get(AppMenuItemProperties.ENABLED);
-                subIcon = buttonModel.get(AppMenuItemProperties.ICON);
-            }
-
-            if (checkable) {
-                assumeNonNull(buttonModel);
+            if (buttonModel.get(AppMenuItemProperties.CHECKABLE)) {
                 // Display a checkbox for the MenuItem.
                 button.setVisibility(View.GONE);
                 checkbox.setVisibility(View.VISIBLE);
-                checkbox.setChecked(checked);
+                checkbox.setChecked(buttonModel.get(AppMenuItemProperties.CHECKED));
                 ImageViewCompat.setImageTintList(
                         checkbox,
                         AppCompatResources.getColorStateList(
                                 checkbox.getContext(), R.color.selection_control_button_tint_list));
                 setupMenuButton(checkbox, buttonModel, appMenuClickHandler);
-            } else if (subIcon != null) {
-                assumeNonNull(buttonModel);
+            } else if (buttonModel.get(AppMenuItemProperties.ICON) != null) {
                 // Display an icon alongside the MenuItem.
                 checkbox.setVisibility(View.GONE);
                 button.setVisibility(View.VISIBLE);
-                if (!buttonEnabled) {
+                if (!buttonModel.get(AppMenuItemProperties.ENABLED)) {
                     // Only grey out the icon when disabled. When the menu is enabled, use the
                     // icon's original color.
                     Drawable icon = buttonModel.get(AppMenuItemProperties.ICON);
@@ -172,23 +142,38 @@ class AppMenuItemViewBinder {
                 }
                 setupImageButton(button, buttonModel, appMenuClickHandler);
             } else {
-                // Display just the label of the MenuItem.
-                checkbox.setVisibility(View.GONE);
-                button.setVisibility(View.GONE);
+                hasAction = false;
             }
-        } else if (key == AppMenuItemProperties.HIGHLIGHTED) {
-            if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {
-                ViewHighlighter.turnOnHighlight(
-                        view, new HighlightParams(HighlightShape.RECTANGLE));
+
+            if (hasAction) {
+                actionIconContainer.setVisibility(View.VISIBLE);
+                titleContainer.setPaddingRelative(
+                        titleContainer.getPaddingStart(),
+                        titleContainer.getPaddingTop(),
+                        0,
+                        titleContainer.getPaddingBottom());
             } else {
-                ViewHighlighter.turnOffHighlight(view);
+                // Display just the label of the MenuItem.
+                actionIconContainer.setVisibility(View.GONE);
+
+                int[] attrs = {android.R.attr.paddingEnd};
+                @SuppressLint("ResourceType")
+                TypedArray ta =
+                        view.getContext().obtainStyledAttributes(R.style.AppMenuItem, attrs);
+                int paddingEnd = ta.getDimensionPixelSize(0, 0);
+                titleContainer.setPaddingRelative(
+                        titleContainer.getPaddingStart(),
+                        titleContainer.getPaddingTop(),
+                        paddingEnd,
+                        titleContainer.getPaddingBottom());
+                ta.recycle();
             }
         }
     }
 
     public static void bindIconRowItem(PropertyModel model, View view, PropertyKey key) {
-        if (key == AppMenuItemProperties.SUBMENU) {
-            ModelList iconList = model.get(AppMenuItemProperties.SUBMENU);
+        if (key == AppMenuItemProperties.ADDITIONAL_ICONS) {
+            ModelList iconList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
 
             AppMenuClickHandler appMenuClickHandler =
                     model.get(AppMenuItemProperties.CLICK_HANDLER);
