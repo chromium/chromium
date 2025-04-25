@@ -89,6 +89,7 @@ _CONFIG = [
             'base::GetSystemMemoryInfo',
             'base::HashingLRUCache',
             'base::HashInts',
+            'base::HashMetricName',
             'base::HeapArray',
             'base::Hertz',
             'base::HexStringToUInt64',
