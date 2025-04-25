@@ -83,6 +83,7 @@ if (current_toolchain == default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "assert_no_deps",
+                               "add_view_trace_events",
                                "expected_android_manifest",
                                "is_64_bit_browser",
                                "is_monochrome",
@@ -93,7 +94,6 @@ if (current_toolchain == default_toolchain) {
                                "resource_ids_provider_dep",
                              ])
       target_type = "android_app_bundle_module"
-      add_view_trace_events = true
 
       srcjar_deps = []
       foreach(_module_desc, _module_descs) {
@@ -113,6 +113,7 @@ if (current_toolchain == default_toolchain) {
     chrome_bundle(target_name) {
       forward_variables_from(invoker,
                              [
+                               "add_view_trace_events",
                                "bundle_name",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -128,7 +129,6 @@ if (current_toolchain == default_toolchain) {
       manifest_package = chrome_public_manifest_package
       module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
-      add_view_trace_events = true
 
       if (target_name == _android_lint_target_name) {
         enable_lint = true
@@ -2730,6 +2730,7 @@ if (current_toolchain == default_toolchain) {
     chrome_public_bundle(_main_monochrome_public_bundle_target) {
       is_monochrome = true
       bundle_name = "MonochromePublic"
+      add_view_trace_events = true
 
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
@@ -2747,6 +2748,7 @@ if (current_toolchain == default_toolchain) {
       is_trichrome = true
       bundle_name = "TrichromeChrome"
       static_library_provider = ":$_main_trichrome_library_apk_target"
+      add_view_trace_events = true
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true

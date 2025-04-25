@@ -106,11 +106,6 @@ def _WriteFile(path, data):
     output_file.write(data)
 
 
-def _ReadJson(path):
-  with open(path) as f:
-    return json.load(f)
-
-
 def _RunGnGen(output_dir, args=None):
   cmd = [os.path.join(_DEPOT_TOOLS_PATH, 'gn'), 'gen', output_dir]
   if args:
@@ -181,9 +176,6 @@ class _ProjectEntry:
   def BuildConfigPath(self):
     return os.path.join('gen', self.GradleSubdir() + '.build_config.json')
 
-  def GetName(self):
-    return self._gn_target.split(':')[-1]
-
   def GradleSubdir(self):
     """Returns the output subdirectory."""
     ninja_target = self.NinjaTarget()
@@ -203,12 +195,12 @@ class _ProjectEntry:
   def BuildConfig(self):
     """Reads and returns the project's .build_config.json JSON."""
     if not self._build_config:
-      path = self.BuildConfigPath()
-      config = _ReadJson(path.replace('.build_config.json', '.params.json'))
-      config.update(_ReadJson(path))
-      config['path'] = path
-      self._build_config = config
+      with open(_RebasePath(self.BuildConfigPath())) as jsonfile:
+        self._build_config = json.load(jsonfile)
     return self._build_config
+
+  def DepsInfo(self):
+    return self.BuildConfig()['deps_info']
 
   def Gradle(self):
     return self.BuildConfig()['gradle']
@@ -218,7 +210,7 @@ class _ProjectEntry:
 
   def GetType(self):
     """Returns the target type from its .build_config."""
-    return self.BuildConfig()['type']
+    return self.DepsInfo()['type']
 
   def IsValid(self):
     return self.GetType() in (
@@ -231,11 +223,11 @@ class _ProjectEntry:
     )
 
   def ResSources(self):
-    return self.BuildConfig().get('lint_resource_sources', [])
+    return self.DepsInfo().get('lint_resource_sources', [])
 
   def JavaFiles(self):
     if self._java_files is None:
-      target_sources_file = self.BuildConfig().get('target_sources_file')
+      target_sources_file = self.DepsInfo().get('target_sources_file')
       java_files = []
       if target_sources_file:
         target_sources_file = _RebasePath(target_sources_file)
@@ -339,7 +331,7 @@ class _ProjectContextGenerator:
     return generated_inputs
 
   def GenerateManifest(self, root_entry):
-    android_manifest = root_entry.BuildConfig().get('android_manifest')
+    android_manifest = root_entry.DepsInfo().get('android_manifest')
     if not android_manifest:
       android_manifest = self._GenCustomManifest(root_entry)
     return self._Relativize(root_entry, android_manifest)
@@ -558,31 +550,31 @@ def _GenerateBaseVars(generator, build_vars):
 
 def _GenerateGradleFile(entry, generator, build_vars, jinja_processor):
   """Returns the data for a project's build.gradle."""
-  config = entry.BuildConfig()
+  deps_info = entry.DepsInfo()
   variables = _GenerateBaseVars(generator, build_vars)
   sourceSetName = 'main'
 
-  if config['type'] == 'android_apk':
+  if deps_info['type'] == 'android_apk':
     target_type = 'android_apk'
-  elif config['type'] in ('java_library', 'java_annotation_processor'):
-    is_prebuilt = config.get('is_prebuilt', False)
-    gradle_treat_as_prebuilt = config.get('gradle_treat_as_prebuilt', False)
+  elif deps_info['type'] in ('java_library', 'java_annotation_processor'):
+    is_prebuilt = deps_info.get('is_prebuilt', False)
+    gradle_treat_as_prebuilt = deps_info.get('gradle_treat_as_prebuilt', False)
     if is_prebuilt or gradle_treat_as_prebuilt:
       return None
-    if config['requires_android']:
+    if deps_info['requires_android']:
       target_type = 'android_library'
     else:
       target_type = 'java_library'
-  elif config['type'] == 'java_binary':
+  elif deps_info['type'] == 'java_binary':
     target_type = 'java_binary'
-    variables['main_class'] = config.get('main_class')
-  elif config['type'] == 'robolectric_binary':
+    variables['main_class'] = deps_info.get('main_class')
+  elif deps_info['type'] == 'robolectric_binary':
     target_type = 'android_junit'
     sourceSetName = 'test'
   else:
     return None
 
-  variables['target_name'] = entry.GetName()
+  variables['target_name'] = os.path.splitext(deps_info['name'])[0]
   variables['template_type'] = target_type
   variables['main'] = {}
   variables[sourceSetName] = generator.Generate(entry)
@@ -726,7 +718,7 @@ def _FindAllProjectEntries(main_entries):
     if cur_entry in found:
       continue
     found.add(cur_entry)
-    sub_config_paths = cur_entry.BuildConfig()['deps_configs']
+    sub_config_paths = cur_entry.DepsInfo()['deps_configs']
     to_scan.extend(
         _ProjectEntry.FromBuildConfigPath(p) for p in sub_config_paths)
   return list(found)
@@ -751,7 +743,7 @@ def _CombineTestEntries(entries):
     else:
       combined_entries.append(entry)
   for entry in combined_entries:
-    target_name = entry.GetName()
+    target_name = entry.DepsInfo()['name']
     if target_name in android_test_entries:
       entry.android_test_entries = android_test_entries[target_name]
       del android_test_entries[target_name]
