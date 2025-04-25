@@ -39,8 +39,8 @@
     sequence<MediaStreamTrack> getVideoTracks();
     sequence<MediaStreamTrack> getTracks();
     MediaStreamTrack? getTrackById(DOMString trackId);
-    [CallWith=Isolate, RaisesException] void addTrack(MediaStreamTrack track);
-    [CallWith=Isolate, RaisesException] void removeTrack(MediaStreamTrack track);
+    [RaisesException] void addTrack(MediaStreamTrack track);
+    [RaisesException] void removeTrack(MediaStreamTrack track);
     [CallWith=ScriptState] MediaStream clone();
     [Measure] readonly attribute boolean active;
     attribute EventHandler onaddtrack;

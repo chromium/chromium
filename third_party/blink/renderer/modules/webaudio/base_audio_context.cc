@@ -339,7 +339,7 @@ ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
         "Cannot decode detached ArrayBuffer");
     // Fall through in order to invoke the error_callback.
   } else if (!audio_data->Transfer(isolate, buffer_contents,
-                                   IgnoreException(isolate))) {
+                                   IGNORE_EXCEPTION)) {
     // Transfer may throw a TypeError, which is not a DOMException. However, the
     // spec requires throwing a DOMException with kDataCloneError. Hence ignore
     // that exception and throw a DOMException instead.

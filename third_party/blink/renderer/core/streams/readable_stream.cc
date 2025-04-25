@@ -319,8 +319,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
   auto* stream = MakeGarbageCollected<ReadableStream>();
   stream->InitWithCountQueueingStrategy(
       script_state, underlying_source, high_water_mark,
-      allow_per_chunk_transferring, std::move(optimizer),
-      IgnoreException(isolate));
+      allow_per_chunk_transferring, std::move(optimizer), IGNORE_EXCEPTION);
   return stream;
 }
 

@@ -18,8 +18,7 @@ class InputEvent final : public UIEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static InputEvent* Create(v8::Isolate* isolate,
-                            const AtomicString& type,
+  static InputEvent* Create(const AtomicString& type,
                             const InputEventInit* initializer,
                             ExceptionState& exception_state);
 

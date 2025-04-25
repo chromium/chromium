@@ -795,10 +795,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
     EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
     LocalFrame::NotifyUserActivation(
         document->GetFrame(), mojom::UserActivationNotificationType::kTest);
-    document->domWindow()->resizeTo(10, 10,
-                                    IgnoreException(v8_scope.GetIsolate()));
-    document->domWindow()->resizeTo(20, 20,
-                                    IgnoreException(v8_scope.GetIsolate()));
+    document->domWindow()->resizeTo(10, 10, IGNORE_EXCEPTION);
+    document->domWindow()->resizeTo(20, 20, IGNORE_EXCEPTION);
     testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
   }
 
@@ -808,10 +806,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
     EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
     LocalFrame::NotifyUserActivation(
         document->GetFrame(), mojom::UserActivationNotificationType::kTest);
-    document->domWindow()->resizeBy(10, 10,
-                                    IgnoreException(v8_scope.GetIsolate()));
-    document->domWindow()->resizeBy(20, 20,
-                                    IgnoreException(v8_scope.GetIsolate()));
+    document->domWindow()->resizeBy(10, 10, IGNORE_EXCEPTION);
+    document->domWindow()->resizeBy(20, 20, IGNORE_EXCEPTION);
     testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
   }
 
