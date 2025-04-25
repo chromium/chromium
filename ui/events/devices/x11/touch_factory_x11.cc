@@ -225,12 +225,9 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
   // these events.
   SetXinputMask(mask_data, x11::Input::HierarchyEvent::opcode);
   SetXinputMask(mask_data, x11::Input::DeviceChangedEvent::opcode);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
-    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
-  }
-#endif
+
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
 
   connection->xinput().XISelectEvents({window, {mask}});
   connection->Flush();
