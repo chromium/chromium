@@ -8177,6 +8177,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="318" label="TextBox"/>
   <int value="319" label="ScrollInitialTarget"/>
   <int value="320" label="HasSlotted"/>
+  <int value="321" label="ElementCapture"/>
+  <int value="322" label="RegionCapture"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

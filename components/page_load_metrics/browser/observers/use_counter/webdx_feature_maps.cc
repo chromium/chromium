@@ -384,7 +384,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            {WebFeature::kSharedDictionaryUsed,
             WebDXFeature::kCompressionDictionaryTransport},
            {WebFeature::kHttp3, WebDXFeature::kHttp3},
-           {WebFeature::kSpeculationRules, WebDXFeature::kSpeculationRules}}};
+           {WebFeature::kSpeculationRules, WebDXFeature::kSpeculationRules},
+           {WebFeature::kElementCapture, WebDXFeature::kElementCapture},
+           {WebFeature::kRegionCapture, WebDXFeature::kRegionCapture}}};
 
   return *kMap;
 }
