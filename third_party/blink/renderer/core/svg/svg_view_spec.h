@@ -50,7 +50,7 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
  private:
   bool ParseViewSpec(const String&);
   template <typename CharType>
-  bool ParseViewSpecInternal(const CharType* ptr, const CharType* end);
+  bool ParseViewSpecInternal(base::span<const CharType> chars);
 
   Member<const SVGRect> view_box_;
   Member<const SVGPreserveAspectRatio> preserve_aspect_ratio_;

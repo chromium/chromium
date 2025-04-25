@@ -41,17 +41,6 @@
 namespace WTF {
 
 template <typename CharType>
-bool SkipExactly(const CharType*& position,
-                 const CharType* end,
-                 CharType delimiter) {
-  if (position < end && *position == delimiter) {
-    ++position;
-    return true;
-  }
-  return false;
-}
-
-template <typename CharType>
 bool SkipExactly(base::span<const CharType> chars,
                  CharType delimiter,
                  size_t& position) {
