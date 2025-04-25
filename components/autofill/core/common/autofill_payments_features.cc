@@ -147,6 +147,11 @@ BASE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes,
              "AutofillEnableLogFormEventsToAllParsedFormTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the card benefits toggle in settings will show updated text.
+BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
+             "AutofillEnableNewCardBenefitsToggleText",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, card and IBAN autofill will be shown in new FOP style.
 BASE_FEATURE(kAutofillEnableNewFopDisplayDesktop,
              "AutofillEnableNewFopDisplayDesktop",
