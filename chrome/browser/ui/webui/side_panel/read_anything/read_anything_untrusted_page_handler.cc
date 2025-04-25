@@ -509,9 +509,14 @@ void ReadAnythingUntrustedPageHandler::OnExtensionReady(
       features::IsWasmTtsComponentUpdaterEnabled()
           ? extension_misc::kComponentUpdaterTTSEngineExtensionId
           : extension_misc::kTTSEngineExtensionId;
-  if (extension->id() != extensionId) {
+  if (extension->id() != extensionId || extension_installed_) {
     return;
   }
+  // Keep track of whether or not we've gotten a signal for installing the
+  // extension. Otherwise, if reading mode is opened simultaneously in
+  // multiple profiles, there can be an infinite loop of trying to install
+  // and uninstall voices.
+  extension_installed_ = true;
   page_->OnTtsEngineInstalled();
 }
 #endif

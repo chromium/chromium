@@ -251,6 +251,8 @@ class ReadAnythingUntrustedPageHandler :
 
   const bool use_screen_ai_service_;
 
+  bool extension_installed_ = false;
+
   void OnScreenAIServiceInitialized(bool successful);
 
   // Observes LanguageDetectionObserver, which notifies us when the language of
