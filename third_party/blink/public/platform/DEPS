@@ -37,6 +37,7 @@ include_rules = [
     "+media/base/media_content_type.h",
     "+media/base/media_log.h",
     "+media/base/output_device_info.h",
+    "+media/base/picture_in_picture_events_info.h",
     "+media/base/stream_parser.h",
     "+media/base/video_frame.h",
     "+media/base/video_frame_metadata.h",

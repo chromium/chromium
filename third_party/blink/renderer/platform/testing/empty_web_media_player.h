@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 
 namespace cc {
@@ -69,7 +70,8 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void SetPowerExperimentState(bool enabled) override {}
   void SuspendForFrameClosed() override {}
   void RecordAutoPictureInPictureInfo(
-      const WebString& auto_picture_in_picture_info) override {}
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override {}
   void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;

@@ -10,6 +10,7 @@
 #include "media/base/media_export.h"
 #include "media/base/media_log_type_enforcement.h"
 #include "media/base/media_track.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -124,7 +125,7 @@ MEDIA_LOG_EVENT_NAMED_DATA(kVideoOcclusionState,
                            std::string,
                            "video_occlusion_state");
 MEDIA_LOG_EVENT_NAMED_DATA(kAutoPictureInPictureInfoChanged,
-                           std::string,
+                           PictureInPictureEventsInfo::AutoPipInfo,
                            "auto_picture_in_picture_info");
 
 MEDIA_LOG_EVENT_NAMED_DATA_OP(kHlsSegmentFetch,

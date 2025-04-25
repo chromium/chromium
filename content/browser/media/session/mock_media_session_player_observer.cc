@@ -270,7 +270,8 @@ media::MediaContentType MockMediaSessionPlayerObserver::GetMediaContentType()
 
 void MockMediaSessionPlayerObserver::OnAutoPictureInPictureInfoChanged(
     int player_id,
-    std::string_view auto_picture_in_picture_info) {
+    const media::PictureInPictureEventsInfo::AutoPipInfo&
+        auto_picture_in_picture_info) {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 

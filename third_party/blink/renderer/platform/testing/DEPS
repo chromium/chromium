@@ -55,6 +55,9 @@ specific_include_rules = {
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
     ],
+    "empty_web_media_player\.h": [
+        "+media/base/picture_in_picture_events_info.h",
+    ],
     "exception_state_matchers\.cc": [
         "+third_party/blink/renderer/core/dom/dom_exception.h",
     ],
