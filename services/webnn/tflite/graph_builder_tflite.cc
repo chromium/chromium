@@ -1348,8 +1348,6 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
     return std::nullopt;
   }
 
-  const mojom::Operand& output_operand = GetOperand(conv2d.output_operand_id);
-  const uint32_t output_channels = output_operand.descriptor.shape()[3];
   // TODO(crbug.com/401281047): Support quantization fusion for transposed
   // conv2d.
   if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
@@ -1364,7 +1362,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
       GetDequantizeOp(conv2d.filter_operand_id);
   const OperandDataType quantized_type =
       GetOperand(input_dequantize.input_operand_id).descriptor.data_type();
-  if (!DataTypeConstraint::kInts8.Has(quantized_type) ||
+  if (!IsInts8AndScalarScale(input_dequantize) ||
       GetOperand(filter_dequantize.input_operand_id).descriptor.data_type() !=
           quantized_type) {
     return std::nullopt;
@@ -1408,10 +1406,6 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
   // For XNNPack delegate, input and output scale have to be scaler, both filter
   // and bias scale can be either scalar or vector that matches the output
   // channel.
-  CHECK(constant_operands_->contains(input_dequantize.scale_operand_id));
-  CHECK(constant_operands_->contains(quantize_linear.scale_operand_id));
-  CHECK(constant_operands_->contains(bias_dequantize.scale_operand_id));
-  CHECK(constant_operands_->contains(filter_dequantize.scale_operand_id));
   base::span<const float> input_scale_values =
       GetConstantValue<float>(input_dequantize.scale_operand_id);
   base::span<const float> output_scale_values =
@@ -1420,10 +1414,12 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
       GetConstantValue<float>(bias_dequantize.scale_operand_id);
   base::span<const float> filter_scale_values =
       GetConstantValue<float>(filter_dequantize.scale_operand_id);
-  if (input_scale_values.size() != 1 || output_scale_values.size() != 1) {
+  if (output_scale_values.size() != 1) {
     return std::nullopt;
   }
 
+  const uint32_t output_channels =
+      GetOperand(conv2d.output_operand_id).descriptor.shape()[3];
   if ((bias_scale_values.size() != 1 &&
        bias_scale_values.size() != output_channels) ||
       (filter_scale_values.size() != 1 &&
@@ -1471,16 +1467,14 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     return std::nullopt;
   }
 
-  // Input and output operands must be dequantized from int8, and their scale
-  // and zero point must be scalar values, this is required by XNNPACK delegate
-  // in CheckTensorFloat32OrQUInt8Type.
   const mojom::DequantizeLinear& lhs_dequantize =
       GetDequantizeOp(binary.lhs_operand_id);
   const mojom::DequantizeLinear& rhs_dequantize =
       GetDequantizeOp(binary.rhs_operand_id);
   const OperandDataType quantized_type =
       GetOperand(lhs_dequantize.input_operand_id).descriptor.data_type();
-  if (!DataTypeConstraint::kInts8.Has(quantized_type) ||
+  if (!IsInts8AndScalarScale(lhs_dequantize) ||
+      !IsInts8AndScalarScale(rhs_dequantize) ||
       GetOperand(rhs_dequantize.input_operand_id).descriptor.data_type() !=
           quantized_type) {
     return std::nullopt;
@@ -1492,9 +1486,6 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     return std::nullopt;
   }
   const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
-  CHECK(constant_operands_->contains(lhs_dequantize.scale_operand_id));
-  CHECK(constant_operands_->contains(rhs_dequantize.scale_operand_id));
-  CHECK(constant_operands_->contains(output_quantize.scale_operand_id));
   base::span<const float> lhs_scale_values =
       GetConstantValue<float>(lhs_dequantize.scale_operand_id);
   base::span<const float> rhs_scale_values =
@@ -1503,16 +1494,9 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
       GetConstantValue<float>(output_quantize.scale_operand_id);
   // The shape of scale and zero point is the same, that has been verified in
   // the function ValidateScaleZeroPointOperandShapeIsCompatibleWithInput.
-  if (lhs_scale_values.size() != 1 || rhs_scale_values.size() != 1 ||
-      output_scale_values.size() != 1) {
+  if (output_scale_values.size() != 1) {
     return std::nullopt;
   }
-  CHECK_EQ(GetOperand(lhs_dequantize.zero_point_operand_id)
-               .descriptor.NumberOfElements(),
-           1u);
-  CHECK_EQ(GetOperand(rhs_dequantize.zero_point_operand_id)
-               .descriptor.NumberOfElements(),
-           1u);
   CHECK_EQ(GetOperand(output_quantize.zero_point_operand_id)
                .descriptor.NumberOfElements(),
            1u);
@@ -1564,6 +1548,26 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   }
 
   return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
+    const mojom::Transpose& transpose) {
+  if (!IsDequantizeOutput(transpose.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(transpose.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<size_t> next_op = IsNextOpQuantize(
+      transpose.output_operand_id,
+      {GetOperand(input_dequantize.input_operand_id).descriptor.data_type()});
+
+  return next_op ? TrySerializeQuantizedOutput(*next_op) : std::nullopt;
 }
 
 bool GraphBuilderTflite::IsDequantizeOutput(uint64_t operand_id) {
@@ -1670,6 +1674,27 @@ std::optional<size_t> GraphBuilderTflite::IsNextOpQuantize(
     return std::nullopt;
   }
   return quantize_op_idx;
+}
+
+bool GraphBuilderTflite::IsInts8AndScalarScale(
+    const mojom::DequantizeLinear& dequantize_linear) {
+  if (!DataTypeConstraint::kInts8.Has(
+          GetOperand(dequantize_linear.input_operand_id)
+              .descriptor.data_type())) {
+    return false;
+  }
+
+  if (GetOperand(dequantize_linear.scale_operand_id)
+          .descriptor.NumberOfElements() != 1) {
+    return false;
+  }
+
+  // The shape of scale and zero point is the same that has been verified in
+  // the function ValidateScaleZeroPointOperandShapeIsCompatibleWithInput.
+  CHECK_EQ(GetOperand(dequantize_linear.zero_point_operand_id)
+               .descriptor.NumberOfElements(),
+           1u);
+  return true;
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
@@ -6319,13 +6344,26 @@ auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.transpose_input.Supports(
       GetOperand(transpose.input_operand_id).descriptor));
+
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(transpose);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(transpose.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(transpose.output_operand_id));
+                   SerializeInputTensorInfo(
+                       transpose.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
+  int32_t output_tensor_index;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(transpose.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
 
   return SerializeTransposeOperation(
-      input_tensor_info.index, output_tensor_info.index,
+      input_tensor_info.index, output_tensor_index,
       input_tensor_info.dimensions, transpose.permutation);
 }
 

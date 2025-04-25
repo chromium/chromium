@@ -702,13 +702,15 @@ class GraphBuilderTflite final {
 
   bool RequiresFloat32Precision(const mojom::Operation& op);
 
-  // Check if conv2d's inputs and outputs are quantized tensors and matches
-  // fusion criteria required by TFLite, if so we can remove the
+  // Check if inputs and outputs are quantized tensors and matches
+  // op specific fusion criteria required by TFLite, if so we can remove the
   // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Conv2d& conv2d);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::ElementWiseBinary& binary);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Transpose& transpose);
   bool IsDequantizeOutput(uint64_t operand_id);
   //   Get the dequantize op by its output operand id.
   const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
@@ -726,6 +728,12 @@ class GraphBuilderTflite final {
   std::optional<size_t> IsNextOpQuantize(
       uint64_t output_operand_id,
       SupportedDataTypes supported_quantized_types);
+  // Check if the input is dequantized from (u)int8, and its scale and zero
+  // point are scalar values.
+  //
+  // Used by DQ->op->Q fusion to satisfy XNNPACK delegate's validation in
+  // `CheckTensorFloat32OrQUInt8Type`.
+  bool IsInts8AndScalarScale(const mojom::DequantizeLinear& dequantize_linear);
 
   bool IsSerializedWithMismatchQuantizeParameters(
       uint64_t operand_id,
