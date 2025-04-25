@@ -18,7 +18,7 @@ GURL GetGuestURL();
 url::Origin GetGuestOrigin();
 
 // Returns true if `web_contents` contains the Glic WebUI application.
-bool IsGlicWebUI(content::WebContents* web_contents);
+bool IsGlicWebUI(const content::WebContents* web_contents);
 
 // If `guest_contents` is the glic guest, do glic-specific setup and return
 // true, otherwise return false.

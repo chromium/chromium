@@ -187,8 +187,6 @@ window.addEventListener('load', () => {
   $.panelScreenshot.addEventListener('click', async () => {
     const stream = await navigator.mediaDevices.getDisplayMedia({
       video: {
-        cursor: 'always',
-        displaySurface: 'browser',
         height: 200,
         width: 200,
       },

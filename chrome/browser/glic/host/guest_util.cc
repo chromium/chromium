@@ -65,14 +65,9 @@ url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
 }
 
-bool IsGlicWebUI(content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-  if (web_contents->GetLastCommittedURL() != chrome::kChromeUIGlicURL) {
-    return false;
-  }
-  return true;
+bool IsGlicWebUI(const content::WebContents* web_contents) {
+  return web_contents &&
+         web_contents->GetLastCommittedURL() == chrome::kChromeUIGlicURL;
 }
 
 bool OnGuestAdded(content::WebContents* guest_contents) {

@@ -568,10 +568,7 @@ class ApiTests extends ApiTestFixtureBase {
     // The client should be able to use getDisplayMedia() to capture the glic
     // window.
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        cursor: 'always',
-        displaySurface: 'browser',
-      } as MediaTrackConstraints,
+      video: true,
       audio: false,
       preferCurrentTab: true,
     } as any);

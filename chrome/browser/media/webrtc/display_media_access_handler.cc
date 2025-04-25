@@ -83,15 +83,13 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+bool IsGlicWebUI(const content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_GLIC)
-bool IsGlicWebUI(content::WebContents* web_contents) {
   return glic::IsGlicWebUI(web_contents);
-}
 #else
-bool IsGlicWebUI(content::WebContents* web_contents) {
   return false;
-}
 #endif
+}
 
 // If bypassing the media selection dialog is allowed for this request, this
 // returns the `DesktopMediaId` to use. Returns a null ID otherwise.
@@ -288,8 +286,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     }
   }
 
-  // The DISPLAY_MEDIA_SYSTEM_AUDIO / DISPLAY_VIDEO_CAPTURE_THIS_TAB settings
-  // are not supported on Android.
+  // Screen capture is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(
