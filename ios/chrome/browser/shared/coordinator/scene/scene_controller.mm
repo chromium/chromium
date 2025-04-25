@@ -2241,8 +2241,7 @@ using UserFeedbackDataCallback =
                                           contextStyle:SigninContextStyle::
                                                            kDefault
                                             anchorView:nil
-                                           accessPoint:AccountMenuAccessPoint::
-                                                           kWeb];
+                                           accessPoint:accessPoint];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

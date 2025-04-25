@@ -871,7 +871,7 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (IsIdentityDiscAccountMenuEnabled()) {
-      [self showAccountMenu:identityDisc fromWeb:NO];
+      [self showAccountMenu:identityDisc];
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
@@ -1507,14 +1507,14 @@
 
 #pragma mark - Private
 
-- (void)showAccountMenu:(UIView*)identityDisc fromWeb:(BOOL)fromWeb {
+- (void)showAccountMenu:(UIView*)identityDisc {
   _accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:self.NTPViewController
                                            browser:self.browser
                                       contextStyle:SigninContextStyle::kDefault
                                         anchorView:identityDisc
                                        accessPoint:AccountMenuAccessPoint::
-                                                       kWeb];
+                                                       kNewTabPage];
   __typeof(self) weakSelf = self;
   _accountMenuCoordinator.signinCompletion =
       ^(SigninCoordinatorResult, id<SystemIdentity>) {
