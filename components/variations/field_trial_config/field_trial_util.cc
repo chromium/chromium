@@ -23,6 +23,7 @@
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_seed_processor.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
 namespace {
@@ -67,6 +68,14 @@ bool HasMinOSVersion(const FieldTrialTestingExperiment& experiment) {
     return true;
   return base::Version(experiment.min_os_version) <=
          ClientFilterableState::GetOSVersion();
+}
+
+// Checks that if |is_benchmarking_enabled| is true that this particular
+// experiment has not been disabled for benchmarking.
+bool IsEnabledForBenchmarking(const FieldTrialTestingExperiment& experiment,
+                              const bool is_benchmarking_enabled) {
+  return !is_benchmarking_enabled ||
+         !experiment.disable_benchmarking.value_or(false);
 }
 
 // Records the override ui string config. Mainly used for testing.
@@ -164,6 +173,8 @@ void ChooseExperiment(
     base::FeatureList* feature_list) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  const bool is_benchmarking_enabled =
+      command_line.HasSwitch(switches::kEnableBenchmarking);
   const FieldTrialTestingExperiment* chosen_experiment = nullptr;
   for (const FieldTrialTestingExperiment& experiment : study.experiments) {
     if (HasPlatform(experiment, platform)) {
@@ -174,7 +185,8 @@ void ChooseExperiment(
       if (!chosen_experiment && !HasDeviceLevelMismatch(experiment) &&
           HasFormFactor(experiment, current_form_factor) &&
           HasMinOSVersion(experiment) &&
-          internal::CheckStudyHardwareClass(filter, hardware_class)) {
+          internal::CheckStudyHardwareClass(filter, hardware_class) &&
+          IsEnabledForBenchmarking(experiment, is_benchmarking_enabled)) {
         chosen_experiment = &experiment;
       }
 

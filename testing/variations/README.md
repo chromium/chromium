@@ -108,7 +108,7 @@ the experiment group name.
 > config.
 
 The remaining keys -- `enable_features`, `disable_features`, `min_os_version`,
-and `params` -- are optional.
+`disable_benchmarking`, and `params` -- are optional.
 
 `enable_features` and `disable_features` indicate which features should be
 enabled and disabled, respectively, through the
@@ -118,6 +118,10 @@ enabled and disabled, respectively, through the
 the experiment. This string is decoded as a `base::Version`. The same version is
 applied to all platforms. If you need different versions for different
 platforms, you will need to use different studies.
+
+`disable_benchmarking` indicates that when the flag
+`--enable-benchmarking` is passed at start up this experiment should not be
+enabled. This should be used extremely sparingly.
 
 `params` is a dictionary mapping parameter name to parameter value.
 

@@ -215,6 +215,7 @@ const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
      /*platforms=*/array_kFieldTrialConfig_platforms_0,
      /*form_factors=*/{},
      /*is_low_end_device=*/std::nullopt,
+     /*disable_benchmarking=*/std::nullopt,
      /*min_os_version=*/nullptr,
      /*params=*/array_kFieldTrialConfig_params_0,
      /*enable_features=*/enable_features_0,
