@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
@@ -158,6 +159,13 @@
         HandlerForProtocol(_commandDispatcher, SnackbarCommands));
   }
 
+  if (IsReaderModeAvailable()) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(webState);
+    readerModeTabHelper->SetReaderModeHandler(
+        HandlerForProtocol(_commandDispatcher, ReaderModeCommands));
+  }
+
   DCHECK(_printCoordinator);
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
       _printCoordinator);
@@ -257,6 +265,12 @@
     ReaderModeTabHelper* readerModeTabHelper =
         ReaderModeTabHelper::FromWebState(webState);
     readerModeTabHelper->SetSnackbarHandler(nil);
+  }
+
+  if (IsReaderModeAvailable()) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(webState);
+    readerModeTabHelper->SetReaderModeHandler(nil);
   }
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);

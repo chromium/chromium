@@ -18,10 +18,13 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
@@ -162,9 +165,49 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
 
 ReaderModeTabHelper::~ReaderModeTabHelper() = default;
 
+bool ReaderModeTabHelper::IsActive() const {
+  return active_;
+}
+
+void ReaderModeTabHelper::SetActive(bool active) {
+  if (active == active_) {
+    return;
+  }
+  active_ = active;
+  if (active_) {
+    // If Reader mode is being activated, create the secondary WebState where
+    // the content will be rendered and start distillation.
+    web::WebState::CreateParams create_params = web::WebState::CreateParams(
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+            ->GetOffTheRecordProfile());
+    reader_mode_web_state_ = web::WebState::Create(create_params);
+    reader_mode_web_state_->SetWebUsageEnabled(true);
+    // TODO(crbug.com/409940117): Decouple heuristic and distillation.
+    TriggerReaderModeHeuristic();
+  } else {
+    // If Reader mode is being deactivated, destroy the secondary WebState and
+    // ensure the Reader mode UI is dismissed.
+    // TODO(crbug.com/409940117): Ensure the UI gracefully handles the
+    // destruction of the Reader mode WebState while its view is inside the view
+    // hierarchy.
+    reader_mode_web_state_.reset();
+    [reader_mode_handler_ hideReaderMode];
+  }
+}
+
+UIView* ReaderModeTabHelper::GetReaderModeContentView() {
+  CHECK(reader_mode_web_state_);
+  return reader_mode_web_state_->GetView();
+}
+
 void ReaderModeTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
+}
+
+void ReaderModeTabHelper::SetReaderModeHandler(
+    id<ReaderModeCommands> reader_mode_handler) {
+  reader_mode_handler_ = reader_mode_handler;
 }
 
 void ReaderModeTabHelper::PageLoaded(
@@ -199,12 +242,23 @@ void ReaderModeTabHelper::DidStartNavigation(
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
   }
+  if (IsReaderModeAvailable()) {
+    // Hide Reader mode.
+    [reader_mode_handler_ hideReaderMode];
+  }
 }
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void ReaderModeTabHelper::WasHidden(web::WebState* web_state) {
+  if (IsReaderModeAvailable()) {
+    // Ensure the Reader mode UI is hidden when the tab is hidden.
+    [reader_mode_handler_ hideReaderMode];
+  }
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
@@ -346,9 +400,24 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     [snackbar_handler_ showSnackbarMessage:message];
   }
 
-  if (IsReaderModeAvailable() && is_distillable_page) {
-    web_state_->LoadSimulatedRequest(
-        web_state_->GetVisibleURL(),
-        base::SysUTF8ToNSString(distiller_result->distilled_content().html()));
+  if (IsReaderModeAvailable()) {
+    if (is_distillable_page) {
+      // `LoadData` requires an already committed navigation item.
+      std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
+      navigation_items.push_back(web::NavigationItem::Create());
+      reader_mode_web_state_->GetNavigationManager()->Restore(
+          0, std::move(navigation_items));
+      reader_mode_web_state_->GetNavigationManager()->LoadIfNecessary();
+      // Load the Reader mode content in the Reader mode WebState.
+      const std::string content = distiller_result->distilled_content().html();
+      reader_mode_web_state_->LoadData(
+          [NSData dataWithBytes:content.data() length:content.length()],
+          @"text/html", web_state_->GetLastCommittedURL());
+      // Once the Reader mode content is ready, show the Reader mode UI.
+      [reader_mode_handler_ showReaderMode];
+    } else {
+      // If the page could not be distilled, ensure Reader mode UI is hidden.
+      [reader_mode_handler_ hideReaderMode];
+    }
   }
 }

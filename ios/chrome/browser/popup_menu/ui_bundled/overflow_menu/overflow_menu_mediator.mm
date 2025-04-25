@@ -743,6 +743,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (OverflowMenuAction*)openReaderModeAction {
+  // TODO(crbug.com/409935686): Dynamically update the Reader mode overflow menu
+  // string to "Exit Reader Mode" if Reader mode is already enabled.
   __weak __typeof(self) weakSelf = self;
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_READER_MODE
@@ -753,7 +755,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                          accessibilityID:kToolsMenuOpenReaderMode
                             hideItemText:nil
                                  handler:^{
-                                   [weakSelf startReaderMode];
+                                   [weakSelf toggleReaderMode];
                                  }];
 }
 
@@ -2358,10 +2360,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       showSetTabReminderUI:SetTabReminderEntryPoint::kOverflowMenu];
 }
 
-// Opens the Reader mode UI.
-- (void)startReaderMode {
+// Opens or closes the Reader mode UI.
+- (void)toggleReaderMode {
   [self dismissMenu];
-  [self.readerModeHandler showReaderMode];
+  [self.readerModeHandler toggleReaderMode];
 }
 
 #pragma mark - Destinations Handlers

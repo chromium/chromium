@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@protocol ReaderModeCommands;
 @protocol SnackbarCommands;
 
 // Observes changes to the web state to perform reader mode operations.
@@ -24,8 +25,19 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   ~ReaderModeTabHelper() override;
 
+  // Returns whether Reader mode is active in the current tab. If so, the Reader
+  // mode UI should be presented.
+  bool IsActive() const;
+  // Activates/deactivates Reader mode in the current tab.
+  void SetActive(bool active);
+  // Returns the Reader mode content view. A precondition for calling this
+  // method is for Reader mode to be active in this tab.
+  UIView* GetReaderModeContentView();
+
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
+  // Sets the reader mode handler.
+  void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
 
   // Processes the result of the Reader Mode heuristic trigger that was run on
   // the `url` content.
@@ -42,6 +54,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
 
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic();
@@ -58,7 +71,12 @@ class ReaderModeTabHelper : public web::WebStateObserver,
                                  base::TimeTicks start_time,
                                  const base::Value* value);
 
+  // Whether Reader mode is active in this tab.
+  bool active_ = false;
+  // WebState used to render the Reader mode content.
+  std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;
+  id<ReaderModeCommands> reader_mode_handler_;
   base::TimeDelta heuristic_latency_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::OneShotTimer trigger_reader_mode_timer_;
