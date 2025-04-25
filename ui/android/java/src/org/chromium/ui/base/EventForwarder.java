@@ -767,9 +767,10 @@ public class EventForwarder {
         float offsetX = 0.0f;
         float offsetY = 0.0f;
 
-        // TODO(crbug.com/405067297): support multi-finger events on the trackpad (scroll, right
-        // click & middle click)
+        // TODO(crbug.com/405067297): support multi-finger events on the trackpad (scroll)
         if (event.isFromSource(InputDevice.SOURCE_TOUCHPAD)) {
+            event = updateTrackpadButtonState(event);
+
             // Ignore calculating the offset if we don't have the previous event trackpad position
             if (mIsLastTrackpadPositionValid) {
                 // Input device is trackpad, getX & getY return the raw finger position on the
@@ -809,6 +810,65 @@ public class EventForwarder {
         ret.setSource(InputDevice.SOURCE_MOUSE);
         ret.setLocation(currentPointerPositionX, currentPointerPositionY);
 
+        return ret;
+    }
+
+    private static MotionEvent updateTrackpadButtonState(MotionEvent event) {
+        if (event.getAction() != MotionEvent.ACTION_BUTTON_PRESS
+                && event.getAction() != MotionEvent.ACTION_BUTTON_RELEASE) {
+            return event;
+        }
+
+        // When the pointer is captured, all clicks on trackpad would have a BUTTON_PRIMARY state,
+        // regardless of how many pointers are on the trackpad. So, we need to correct the button
+        // state
+        int updatedButtonState;
+        if (event.getPointerCount() == 2) {
+            updatedButtonState = MotionEvent.BUTTON_SECONDARY;
+        } else if (event.getPointerCount() == 3) {
+            updatedButtonState = MotionEvent.BUTTON_TERTIARY;
+        } else {
+            // No change is made on the event
+            return event;
+        }
+
+        return MotionEvent.obtain(
+                event.getDownTime(),
+                event.getEventTime(),
+                event.getAction(),
+                event.getPointerCount(),
+                getPointerPropertiesForEvent(event),
+                getPointerCoordsForEvent(event),
+                event.getMetaState(),
+                updatedButtonState,
+                event.getXPrecision(),
+                event.getYPrecision(),
+                event.getDeviceId(),
+                event.getEdgeFlags(),
+                event.getSource(),
+                event.getFlags());
+    }
+
+    private static MotionEvent.PointerProperties[] getPointerPropertiesForEvent(MotionEvent event) {
+        MotionEvent.PointerProperties[] ret =
+                new MotionEvent.PointerProperties[event.getPointerCount()];
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+            event.getPointerProperties(i, properties);
+
+            ret[i] = properties;
+        }
+        return ret;
+    }
+
+    private static MotionEvent.PointerCoords[] getPointerCoordsForEvent(MotionEvent event) {
+        MotionEvent.PointerCoords[] ret = new MotionEvent.PointerCoords[event.getPointerCount()];
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            event.getPointerCoords(i, coords);
+
+            ret[i] = coords;
+        }
         return ret;
     }
 
