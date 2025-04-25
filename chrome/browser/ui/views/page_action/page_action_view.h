@@ -73,6 +73,7 @@ class PageActionView : public IconLabelBubbleView,
   void NotifyClick(const ui::Event& event) override;
   gfx::Size GetMinimumSize() const override;
   bool IsBubbleShowing() const override;
+  bool IsTriggerableEvent(const ui::Event& event) override;
 
   actions::ActionId GetActionId() const;
 

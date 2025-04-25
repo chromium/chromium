@@ -215,6 +215,21 @@ bool PageActionView::IsBubbleShowing() const {
          observation_.GetSource()->GetActionItemIsShowingBubble();
 }
 
+bool PageActionView::IsTriggerableEvent(const ui::Event& event) {
+  // Returns whether the bubble should be shown given the event. Only trigger an
+  // action when action UI isn't already showing (managed at the
+  // IconLabelBubbleView level), and if mouse input, when event is a left button
+  // click.
+  if (event.IsMouseEvent()) {
+    // IconLabelBubbleView allows any mouse click to be triggerable event so
+    // need to manually check here.
+    return IconLabelBubbleView::IsTriggerableEvent(event) &&
+           ((GetTriggerableEventFlags() & event.flags()) != 0);
+  }
+
+  return IconLabelBubbleView::IsTriggerableEvent(event);
+}
+
 void PageActionView::OnLabelVisibilityChanged() {
   UpdateBackground();
   UpdateLabelColors();
