@@ -16,7 +16,7 @@
 <translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
-<translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時讓你自動登入。如關閉這項功能，系統每次都會詢問你是否要登入</translation>
 <translation id="1008544602823861396">已遭封鎖，無法使用你在以下網站的資訊</translation>
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="100881991356161927">網站名稱</translation>
@@ -4392,7 +4392,7 @@
 <translation id="4047726037116394521">前往主畫面</translation>
 <translation id="4048295959689903187">選取音訊輸出裝置</translation>
 <translation id="4048384495227695211">在資料夾中顯示 <ph name="FILE_NAME" /></translation>
-<translation id="404894744863342743">下載的檔案使用完畢之後，請務必刪除，避免這部裝置的其他使用者知道你的密碼。</translation>
+<translation id="404894744863342743">下載的檔案使用完畢之後，請務必刪除，避免這部裝置的其他使用者知道你的密碼</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="4050225813016893843">驗證方式</translation>
 <translation id="4050379682069019014">「<ph name="MAIN_GESTURE" />」可能與「<ph name="CONFLICTING_GESTURE" />」相似。如果可以，請選擇其他表情。</translation>
@@ -10242,7 +10242,7 @@
 <translation id="8275080796245127762">用你的裝置撥打電話</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步瞭解如何授予網站使用第三方 Cookie 的臨時權限</translation>
-<translation id="8277907305629781277">你在「<ph name="DATE" />」建立了這個密碼金鑰</translation>
+<translation id="8277907305629781277">你在 <ph name="DATE" /> 建立了這個密碼金鑰</translation>
 <translation id="827966378414194229">透過頭部動作和臉部表情操控 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
 <translation id="8280848878018088610">海浪洶湧，背景呈現奇幻的城市和城堡，色調偏暗。</translation>
@@ -10570,7 +10570,7 @@
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
-<translation id="8513357934662532537">如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案。</translation>
+<translation id="8513357934662532537">如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案</translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514828975162859845">蛋糕棒棒糖</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
