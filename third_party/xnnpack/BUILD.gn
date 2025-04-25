@@ -30,6 +30,10 @@ config("xnnpack_config") {
     "-Wno-deprecated-comma-subscript",
   ]
 
+  if (is_android && current_cpu == "arm64") {
+    asmflags = [ "-mmark-bti-property" ]
+  }
+
   defines = [
     "CHROMIUM",
     "XNN_ENABLE_ASSEMBLY=1",
