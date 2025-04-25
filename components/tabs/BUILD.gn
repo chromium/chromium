@@ -6,6 +6,7 @@ source_set("public") {
   sources = [
     "public/split_tab_id.h",
     "public/supports_handles.h",
+    "public/tab_collection_node_interface.h",
     "public/tab_interface.h",
   ]
   public_deps = [
