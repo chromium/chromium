@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_credential_leak_bubble_view.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -83,6 +84,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -215,10 +217,21 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
     return;
   }
 
-  if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
+  const auto saving_prompt_status = GetSavingPromptStatus();
+  if (saving_prompt_status == SavingPromptStatus::kCanShow) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   }
   UpdateBubbleAndIconVisibility();
+  const GURL url = web_contents()->GetLastCommittedURL();
+  if (saving_prompt_status == SavingPromptStatus::kExplicitlyBlocklisted &&
+      ChromePasswordManagerClient::CanShowBubbleOnURL(url)) {
+    if (auto* const user_education =
+            BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+                web_contents())) {
+      user_education->MaybeShowFeaturePromo(
+          feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature);
+    }
+  }
 }
 
 void ManagePasswordsUIController::OnUpdatePasswordSubmitted(
@@ -1031,15 +1044,15 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
     return;
   }
   if (GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
-    if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
+    if (GetSavingPromptStatus() == SavingPromptStatus::kCanShow) {
       bubble_status_ = BubbleStatus::SHOULD_POP_UP;
     }
     UpdateBubbleAndIconVisibility();
   }
 }
 
-bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
-    const {
+ManagePasswordsUIController::SavingPromptStatus
+ManagePasswordsUIController::GetSavingPromptStatus() const {
   PasswordFormManagerForUI* form_manager = passwords_data_.form_manager();
   DCHECK(form_manager);
   auto logger = GetSaveProgressLogger(passwords_data_.client());
@@ -1048,19 +1061,20 @@ bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
     if (logger.has_value()) {
       logger->LogMessage(Logger::STRING_SAVING_BLOCKLISTED_EXPLICITLY);
     }
-    return true;
+    return SavingPromptStatus::kExplicitlyBlocklisted;
   }
 
   const password_manager::InteractionsStats* stats =
       GetCurrentInteractionStats();
   const int show_threshold =
       password_bubble_experiment::GetSmartBubbleDismissalThreshold();
-  const bool is_implicitly_blocklisted =
+  const bool is_implicitly_blocked =
       stats && show_threshold > 0 && stats->dismissal_count >= show_threshold;
-  if (is_implicitly_blocklisted && logger.has_value()) {
+  if (is_implicitly_blocked && logger.has_value()) {
     logger->LogMessage(Logger::STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE);
   }
-  return is_implicitly_blocklisted;
+  return is_implicitly_blocked ? SavingPromptStatus::kImplicitlyBlocked
+                               : SavingPromptStatus::kCanShow;
 }
 
 void ManagePasswordsUIController::AuthenticateUserWithMessage(

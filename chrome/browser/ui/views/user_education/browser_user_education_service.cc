@@ -670,6 +670,18 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered when the user navigates a page with an eligible login "
               "form, and they have no saved passwords.")));
 
+  // kIPHPasswordsSavePrimingPromo:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature,
+                    kPasswordsOmniboxKeyIconElementId,
+                    IDS_PASSWORDS_SAVE_RECOVERY_PROMO_BODY,
+                    IDS_PASSWORDS_SAVE_RECOVERY_PROMO_SCREENREADER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetMetadata(137, "dfried@chromium.org",
+                                 "Triggered when the user logs into a page "
+                                 "they have blocklisted")));
+
   // kIPHPasswordsManagementBubbleAfterSaveFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

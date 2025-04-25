@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/stack_trace.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,6 +67,9 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
   DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
          controller_.state() ==
              password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+
+  LOG(WARNING) << "-------------------\n"
+               << base::debug::StackTrace(20).ToString();
 
   const password_manager::PasswordForm& password_form =
       controller_.pending_password();

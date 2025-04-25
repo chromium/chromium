@@ -48629,6 +48629,8 @@ should be able to be added at any place in this file.
       label="For password management bubble during signin feature."/>
   <suffix name="PasswordsSavePrimingPromo"
       label="For password save priming promo."/>
+  <suffix name="PasswordsSaveRecoveryPromo"
+      label="For password save recovery promo."/>
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PasswordsWebAppProfileSwitch"
       label="For PasswordsWebAppProfileSwitch feature."/>
