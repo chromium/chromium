@@ -1015,6 +1015,63 @@ TEST_F(VideoRendererImplTest, UnderflowEvictionBeforeEOS) {
   Destroy();
 }
 
+// Tests the case where underflow evicts all frames then good frames come in.
+TEST_F(VideoRendererImplTest, UnderflowResume) {
+  Initialize();
+  QueueFrames("0 30 60 90 120");
+
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(_));
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(AnyNumber());
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
+    StartPlayingFrom(0);
+    event.RunAndWait();
+  }
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_NOTHING");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    renderer_->OnTimeProgressing();
+    time_source_.StartTicking();
+    // Jump time far enough forward that no frames are valid.
+    AdvanceTimeInMs(1000);
+    event.RunAndWait();
+  }
+
+  WaitForPendingDecode();
+
+  renderer_->OnTimeStopped();
+  time_source_.StopTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  QueueFrames("1000 1030 1060 1090 1120 1150");
+  SatisfyPendingDecode();
+
+  // Providing the end of stream packet should remove all frames and exit.
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
+  EXPECT_TRUE(null_video_sink_->is_started());
+  Destroy();
+}
+
 // Tests the case where underflow evicts all frames in the HAVE_ENOUGH state.
 TEST_F(VideoRendererImplTest, UnderflowEvictionWhileHaveEnough) {
   Initialize();

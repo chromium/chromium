@@ -384,6 +384,12 @@ void VideoRendererImpl::OnBufferingStateChange(BufferingState buffering_state) {
           buffering_state, reason});
 
   client_->OnBufferingStateChange(buffering_state, reason);
+
+  if (buffering_state == BUFFERING_HAVE_ENOUGH &&
+      buffering_state_ == BUFFERING_HAVE_ENOUGH && time_progressing_ &&
+      !sink_started_) {
+    OnTimeProgressing();
+  }
 }
 
 void VideoRendererImpl::OnWaiting(WaitingReason reason) {
