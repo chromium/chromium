@@ -1937,7 +1937,7 @@ void AppMenuModel::Build() {
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
+  if (glic::GlicEnabling::IsEnabledForProfile(browser_->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_GLIC,
                                      IDS_GLIC_THREE_DOT_MENU_ITEM,
                                      glic::GlicVectorIconManager::GetVectorIcon(
