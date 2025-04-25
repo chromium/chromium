@@ -144,6 +144,7 @@ void PDFiumOnDemandSearchifier::SearchifyNextPage() {
 }
 
 void PDFiumOnDemandSearchifier::SearchifyNextImage() {
+  CHECK(current_page_);
   std::optional<BitmapResult> bitmap_result = GetNextBitmap();
   if (bitmap_result.has_value()) {
     const auto& bitmap = bitmap_result.value().bitmap;
@@ -164,6 +165,11 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
 }
 
 void PDFiumOnDemandSearchifier::CommitResultsToPage() {
+  // Ignore the results if the page got unloaded before committing them.
+  if (!current_page_) {
+    current_page_ocr_results_.clear();
+  }
+
   if (!current_page_ocr_results_.empty()) {
     // If the page is being painted, wait for paint to finish.
     if (engine_->IsPageScheduledForPaint(current_page_->index())) {
