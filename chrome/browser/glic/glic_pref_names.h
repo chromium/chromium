@@ -65,9 +65,6 @@ inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 inline constexpr char kGlicRolloutEligibility[] =
     "sync.glic_rollout_eligibility";
 
-// Dict pref that records user status.
-inline constexpr char kGlicUserStatus[] = "glic.user_status";
-
 // Integer pref that determines the Fre status for user profile. Values are from
 // the FreStatus enum.
 inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";

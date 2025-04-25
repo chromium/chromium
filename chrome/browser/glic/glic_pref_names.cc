@@ -24,9 +24,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
 
-  // Dict pref to store GlicUserStatus information.
-  registry->RegisterDictionaryPref(prefs::kGlicUserStatus);
-
   // The default value is not used. If not set the default position is
   // calculated based on the entrypoint and current active browser.
   registry->RegisterIntegerPref(kGlicPreviousPositionX, 0,

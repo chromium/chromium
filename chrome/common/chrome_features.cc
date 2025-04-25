@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
-#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
@@ -367,24 +366,6 @@ BASE_FEATURE(kGlicURLConfig,
 const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
                                                     "glic-guest-url", ""};
 
-BASE_FEATURE_PARAM(std::string,
-                   kGlicUserStatusUrl,
-                   &kGlicUserStatusCheck,
-                   "glic-user-status-url",
-                   "");
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kGlicUserStatusRequestDelay,
-                   &kGlicUserStatusCheck,
-                   "glic-user-status-request-delay",
-                   base::Hours(23));
-
-BASE_FEATURE_PARAM(std::string,
-                   kGeminiOAuth2Scope,
-                   &kGlicUserStatusCheck,
-                   "glic-user-status-oauth2-scope",
-                   "");
-
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -476,10 +457,6 @@ const base::FeatureParam<std::string> kGlicTieredRolloutAllowedGroup{
     &kGlicTieredRollout, "glic-tiered-rollout-allowed-group", ""};
 
 BASE_FEATURE(kGlicRollout, "GlicRollout", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kGlicUserStatusCheck,
-             "GlicUserStatusCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,

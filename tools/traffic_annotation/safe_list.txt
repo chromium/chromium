@@ -45,7 +45,6 @@ missing,chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/StoreP
 missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
-missing,chrome/browser/glic/glic_user_status_fetcher.cc
 missing,components/optimization_guide/core/model_execution/model_execution_fetcher.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
