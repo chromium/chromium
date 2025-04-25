@@ -108,7 +108,7 @@ void ConnectProducerSocketViaMojo(perfetto::CreateSocketCallback cb,
 
 // Wrapper for |ConnectProducerSocketViaMojo| to be used as a function pointer.
 void ConnectProducerSocketAsync(perfetto::CreateSocketCallback cb) {
-  PerfettoTracedProcess::Get().DeferOrConnectProducerSocket(std::move(cb));
+  ConnectProducerSocketViaMojo(std::move(cb), base::Milliseconds(100));
 }
 #endif
 
@@ -171,22 +171,19 @@ void PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
   GetDataSourceTaskRunner() = task_runner;
 }
 
+// static
 void PerfettoTracedProcess::RestartThreadInSandbox() {
-  CHECK(trace_process_thread_->StartWithOptions(
-      base::Thread::Options(base::MessagePumpType::IO, 0)));
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  task_runner_ = trace_process_thread_->task_runner();
-  platform_->ResetTaskRunner(trace_process_thread_->task_runner());
-  DataSourceBase::ResetTaskRunner(trace_process_thread_->task_runner());
-  tracing_backend_->DetachFromMuxerSequence();
-  CustomEventRecorder::GetInstance()->DetachFromSequence();
-  will_trace_thread_restart_ = false;
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-  if (system_tracing_producer_socket_cb_) {
-    task_runner_->PostTask(FROM_HERE,
-                           std::move(system_tracing_producer_socket_cb_));
+  base::Thread* trace_thread = PerfettoTracedProcess::GetTraceThread();
+  if (trace_thread->StartWithOptions(
+          base::Thread::Options(base::MessagePumpType::IO, 0))) {
+    DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get().sequence_checker_);
+    PerfettoTracedProcess::Get().task_runner_ = trace_thread->task_runner();
+    PerfettoTracedProcess::Get().platform_->ResetTaskRunner(
+        trace_thread->task_runner());
+    DataSourceBase::ResetTaskRunner(trace_thread->task_runner());
+    PerfettoTracedProcess::Get().tracing_backend_->DetachFromMuxerSequence();
+    CustomEventRecorder::GetInstance()->DetachFromSequence();
   }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -203,10 +200,8 @@ PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstance() {
 }
 
 // static
-PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstanceWithThread(
-    bool will_trace_thread_restart) {
-  static base::NoDestructor<PerfettoTracedProcess> traced_process(
-      will_trace_thread_restart);
+PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstanceWithThread() {
+  static base::NoDestructor<PerfettoTracedProcess> traced_process{};
   return *traced_process;
 }
 
@@ -222,18 +217,15 @@ PerfettoTracedProcess& PerfettoTracedProcess::Get() {
   return *g_instance;
 }
 
-PerfettoTracedProcess::PerfettoTracedProcess(bool will_trace_thread_restart)
+PerfettoTracedProcess::PerfettoTracedProcess()
     : trace_process_thread_(std::make_unique<base::Thread>("PerfettoTrace")),
       task_runner_(trace_process_thread_->StartWithOptions(
                        base::Thread::Options(base::MessagePumpType::IO, 0))
                        ? trace_process_thread_->task_runner()
                        : nullptr),
-      will_trace_thread_restart_(will_trace_thread_restart),
+      platform_(
+          std::make_unique<base::tracing::PerfettoPlatform>(task_runner_)),
       tracing_backend_(std::make_unique<PerfettoTracingBackend>()) {
-  base::tracing::PerfettoPlatform::Options options{
-      .defer_delayed_tasks = will_trace_thread_restart_};
-  platform_ =
-      std::make_unique<base::tracing::PerfettoPlatform>(task_runner_, options);
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK_EQ(g_instance, nullptr);
   CHECK(task_runner_);
@@ -373,20 +365,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
 }
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-void PerfettoTracedProcess::DeferOrConnectProducerSocket(
-    perfetto::CreateSocketCallback cb) {
-  CHECK(!system_tracing_producer_socket_cb_);
-  // Hold off the attempts to get socket fd until trace thread restarts.
-  if (will_trace_thread_restart_) {
-    system_tracing_producer_socket_cb_ = base::BindOnce(
-        ConnectProducerSocketViaMojo, cb, base::Milliseconds(100));
-  } else {
-    ConnectProducerSocketViaMojo(cb, base::Milliseconds(100));
-  }
-}
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
   thread_pool_started_ = true;

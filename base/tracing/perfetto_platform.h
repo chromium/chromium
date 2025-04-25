@@ -27,10 +27,6 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
     // TraceConfig.DataSource.producer_name_filter).
     std::string process_name_prefix = "org.chromium-";
 
-    // Defer delayed tasks to PerfettoTaskRunner until task runner resets after
-    // sandbox entry.
-    bool defer_delayed_tasks = false;
-
     // Work around https://bugs.llvm.org/show_bug.cgi?id=36684
     static Options Default() { return {}; }
   };
@@ -54,7 +50,6 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
 
  private:
   const std::string process_name_prefix_;
-  const bool defer_delayed_tasks_;
   WeakPtr<PerfettoTaskRunner> perfetto_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ThreadLocalStorage::Slot thread_local_object_;

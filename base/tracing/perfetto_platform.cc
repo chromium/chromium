@@ -27,7 +27,6 @@ PerfettoPlatform::PerfettoPlatform(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     Options options)
     : process_name_prefix_(std::move(options.process_name_prefix)),
-      defer_delayed_tasks_(options.defer_delayed_tasks),
       task_runner_(std::move(task_runner)),
       thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
@@ -50,7 +49,7 @@ std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
   // TODO(b/242965112): Add support for the builtin task runner
   DCHECK(!perfetto_task_runner_);
   auto perfetto_task_runner =
-      std::make_unique<PerfettoTaskRunner>(task_runner_, defer_delayed_tasks_);
+      std::make_unique<PerfettoTaskRunner>(task_runner_);
   perfetto_task_runner_ = perfetto_task_runner->GetWeakPtr();
   return perfetto_task_runner;
 }
