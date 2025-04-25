@@ -139,9 +139,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // Called when the Related Website Sets enabled preference is changed.
   void OnRelatedWebsiteSetsEnabledPrefChanged();
 
-  // Called when the CookieControlsMode preference is changed.
-  void OnCookieControlsModePrefChanged();
-
   void SetTopicsDataAccessibleFromNow() const;
 
   // These values are persisted to logs. Entries should not be renumbered and

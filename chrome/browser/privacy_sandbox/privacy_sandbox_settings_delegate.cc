@@ -401,13 +401,9 @@ bool PrivacySandboxSettingsDelegate::
       static_cast<content_settings::CookieControlsMode>(
           profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
 
-  switch (cookie_controls_mode) {
-    case content_settings::CookieControlsMode::kBlockThirdParty:
-    case content_settings::CookieControlsMode::kLimited:
-      return false;
-    case content_settings::CookieControlsMode::kIncognitoOnly:
-    case content_settings::CookieControlsMode::kOff:
-      break;
+  if (cookie_controls_mode ==
+      content_settings::CookieControlsMode::kBlockThirdParty) {
+    return false;
   }
 
   return true;

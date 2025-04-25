@@ -213,16 +213,10 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
 }
 
 bool CookieSettings::AreThirdPartyCookiesLimited() const {
-  // Checks whether we are in the limited state via Mode B or
-  // `CookieControlsMode`
-  return (tracking_protection_settings_ &&
-          tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
-          !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) ||
-         (static_cast<CookieControlsMode>(
-              pref_change_registrar_->prefs()->GetInteger(
-                  prefs::kCookieControlsMode)) ==
-              CookieControlsMode::kLimited &&
-          !is_incognito_);
+  // Checks whether we are in the limited state via Mode B.
+  return tracking_protection_settings_ &&
+         tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
+         !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
 }
 
 // TODO(crbug.com/40247160): Update to take in CookieSettingOverrides.
@@ -484,9 +478,8 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
 void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kAddLimit3pcsSetting) ||
-      (tracking_protection_settings_ &&
-       tracking_protection_settings_->IsTrackingProtection3pcdEnabled())) {
+  if (tracking_protection_settings_ &&
+      tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
     OnMitigationsEnabledChanged();
   }
 

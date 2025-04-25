@@ -1070,8 +1070,7 @@ class CookieControlsModePrefManagerBrowserTest : public ManagerBrowserTest {
  public:
   CookieControlsModePrefManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{privacy_sandbox::kAddLimit3pcsSetting, true},
-         {net::features::kForceThirdPartyCookieBlocking, false},
+        {{net::features::kForceThirdPartyCookieBlocking, false},
          {net::features::kThirdPartyStoragePartitioning, false},
          {net::features::kThirdPartyPartitionedStorageAllowedByDefault, true},
          {content_settings::features::kTrackingProtection3pcd, false}});
@@ -1095,30 +1094,6 @@ class CookieControlsModePrefManagerBrowserTest : public ManagerBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(CookieControlsModePrefManagerBrowserTest,
-                       EnablesMitigationsWhenThirdPartyCookiesLimited) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
-  GURL third_party_url = https_server()->GetURL(kThirdPartyHost1, "/");
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kLimited));
-  AddWildcardMetadataGrant();
-
-  EXPECT_TRUE(GetCookieSettings()->MitigationsEnabledFor3pcd());
-  EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
-                third_party_url, net::SiteForCookies(), first_party_url,
-                net::CookieSettingOverrides()),
-            ContentSetting::CONTENT_SETTING_ALLOW);
-
-  NavigateToPageWithFrame(kFirstPartyHost);
-  NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-  ExpectCookie(GetFrame(), /*expected=*/true);
-  ExpectStorage(GetFrame(), /*expected=*/true, /*setting_source_user=*/false,
-                /*is_3psp_enabled=*/false);
-}
 
 IN_PROC_BROWSER_TEST_F(CookieControlsModePrefManagerBrowserTest,
                        DisablesMitigationsWhenThirdPartyCookiesBlocked) {

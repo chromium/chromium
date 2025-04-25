@@ -1513,25 +1513,6 @@ TEST_F(CookieControlsUserBypassTest,
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_F(CookieControlsUserBypassTest,
-       BlockingStatusLimitedWhenCookieControlsModePrefIsLimited) {
-  NavigateAndCommit(GURL("https://cool.things.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kLimited, zero_expiration()));
-  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
-                           /*icon_visible=*/false, /*protections_on=*/true,
-                           CookieBlocking3pcdStatus::kLimited,
-                           /*should_highlight=*/false));
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kLimited));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
 class CookieControlsUserBypassIncognitoTest
     : public CookieControlsUserBypassTest {
  public:

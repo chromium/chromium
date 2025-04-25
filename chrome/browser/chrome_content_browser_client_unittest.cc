@@ -1770,9 +1770,6 @@ class GrantCookieAccessDueToHeuristicTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    profile_.GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(content_settings::CookieControlsMode::kLimited));
     profile_.GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
                                     true);
 

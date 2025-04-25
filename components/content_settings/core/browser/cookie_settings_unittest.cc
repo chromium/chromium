@@ -812,13 +812,6 @@ TEST_P(AreThirdPartyCookiesLimited, FalseWhenAll3pcsBlockedInModeB) {
 }
 
 TEST_P(AreThirdPartyCookiesLimited,
-       TrueWhenCookieControlsModePrefSetToLimited) {
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kLimited));
-  EXPECT_TRUE(cookie_settings_->AreThirdPartyCookiesLimited());
-}
-
-TEST_P(AreThirdPartyCookiesLimited,
        FalseWhenCookieControlsModePrefSetToBlockThirdParty) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));

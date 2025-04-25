@@ -289,8 +289,6 @@ INSTANTIATE_TEST_SUITE_P(
                           CookieControlsMode::kIncognitoOnly),
         CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
                           CookieControlsMode::kOff),
-        CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
-                          CookieControlsMode::kLimited),
         CookieSettingPair(ThirdPartyCookieBlockingSetting::BLOCK_THIRD_PARTY,
                           CookieControlsMode::kBlockThirdParty)));
 
