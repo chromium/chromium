@@ -3817,8 +3817,8 @@ TEST_F(ThemeSyncableServiceTestForThemeExtension,
        ShouldNotRemoveThemeExtensionUponSignoutIfPreexisting) {
   // Theme extension pre-exists but is disabled.
   InstallExtension();
-  service_->DisableExtension(kCustomThemeId,
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kCustomThemeId, {extensions::disable_reason::DISABLE_USER_ACTION});
   ASSERT_TRUE(extension_registry_->GetExtensionById(
       kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
   ASSERT_FALSE(theme_service()->UsingExtensionTheme());

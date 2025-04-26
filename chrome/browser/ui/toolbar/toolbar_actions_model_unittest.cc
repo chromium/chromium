@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -1133,8 +1132,9 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
 
   // Disable extension A. It should no longer be reflected in the pinned
   // extensions (or the actions at all).
-  service()->DisableExtension(browser_action_a()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      browser_action_a()->id(),
+      {extensions::disable_reason::DISABLE_USER_ACTION});
   EXPECT_THAT(toolbar_model()->action_ids(),
               ::testing::UnorderedElementsAre(browser_action_b()->id(),
                                               browser_action_c()->id()));
@@ -1144,7 +1144,7 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
 
   // Re-enable extension A. It should retain it's pinned status (and position,
   // at index 0).
-  service()->EnableExtension(browser_action_a()->id());
+  registrar()->EnableExtension(browser_action_a()->id());
   EXPECT_THAT(toolbar_model()->action_ids(),
               ::testing::UnorderedElementsAre(browser_action_a()->id(),
                                               browser_action_b()->id(),
@@ -1157,8 +1157,9 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
   // Repeat the unload, reload flow, but move a pinned action
   // (https://crbug.com/1203899) and unpin an action
   // (https://crbug.com/1205561) between the unload and the reload.
-  service()->DisableExtension(browser_action_a()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      browser_action_a()->id(),
+      {extensions::disable_reason::DISABLE_USER_ACTION});
   toolbar_model()->MovePinnedAction(browser_action_b()->id(), 1u);
   toolbar_model()->SetActionVisibility(browser_action_b()->id(), false);
 
@@ -1170,7 +1171,7 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
               ::testing::ElementsAre(browser_action_c()->id()));
 
   // Reload - state should include all of A, B, C, with pinned order of A, C.
-  service()->EnableExtension(browser_action_a()->id());
+  registrar()->EnableExtension(browser_action_a()->id());
   EXPECT_THAT(toolbar_model()->action_ids(),
               ::testing::UnorderedElementsAre(browser_action_a()->id(),
                                               browser_action_b()->id(),

@@ -405,7 +405,7 @@ TEST_F(ThemeServiceTest, DisableUnusedTheme) {
   // 2) Enabling a disabled theme extension should swap the current theme.
   {
     test::ThemeServiceChangedWaiter waiter(theme_service_);
-    service_->EnableExtension(scoper1.extension_id());
+    registrar()->EnableExtension(scoper1.extension_id());
     waiter.WaitForThemeChanged();
   }
   EXPECT_EQ(scoper1.extension_id(), theme_service_->GetThemeID());
@@ -427,8 +427,9 @@ TEST_F(ThemeServiceTest, DisableUnusedTheme) {
   // 4) Disabling the current theme extension should revert to the default theme
   // and disable any installed theme extensions.
   EXPECT_FALSE(theme_service_->UsingDefaultTheme());
-  service_->DisableExtension(scoper2.extension_id(),
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      scoper2.extension_id(),
+      {extensions::disable_reason::DISABLE_USER_ACTION});
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   EXPECT_FALSE(registrar()->IsExtensionEnabled(scoper1.extension_id()));
