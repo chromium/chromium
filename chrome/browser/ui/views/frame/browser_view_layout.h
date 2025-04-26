@@ -88,7 +88,6 @@ class BrowserViewLayout : public views::LayoutManager {
   views::Widget* contents_border_widget() { return contents_border_widget_; }
 
   void SetUseBrowserContentMinimumSize(bool use_browser_content_minimum_size);
-  void SetWindowControlsOverlayEnabled(bool window_controls_overlay_enabled);
 
   // Sets the bounds for the contents border.
   // * If nullopt, no specific bounds are set, and the border will be drawn
@@ -223,9 +222,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Whether or not to use the browser based content minimum size.
   bool use_browser_content_minimum_size_ = false;
-
-  // Whether or not window controls overlay is enabled.
-  bool window_controls_overlay_enabled_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_

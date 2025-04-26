@@ -857,6 +857,10 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return controller->find_bar()->MoveWindowIfNecessary();
   }
 
+  bool IsWindowControlsOverlayEnabled() const override {
+    return browser_view_->IsWindowControlsOverlayEnabled();
+  }
+
   void UpdateWindowControlsOverlay(
       const gfx::Rect& available_titlebar_area) override {
     content::WebContents* web_contents = browser_view_->GetActiveWebContents();
@@ -2704,11 +2708,7 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
   // When Window Controls Overlay is enabled or disabled, the browser window
   // needs to be re-layed out to make sure the title bar and web contents appear
   // in the correct locations.
-  auto* browser_view_layout = GetBrowserViewLayout();
-  if (browser_view_layout) {
-    browser_view_layout->SetWindowControlsOverlayEnabled(
-        window_controls_overlay_enabled_);
-  }
+  InvalidateLayout();
 
   const std::u16string& state_change_text =
       IsWindowControlsOverlayEnabled()
@@ -5229,8 +5229,6 @@ void BrowserView::AddedToWidget() {
           immersive_mode_controller_.get(), contents_separator_));
   browser_view_layout->SetUseBrowserContentMinimumSize(
       ShouldUseBrowserContentMinimumSize());
-  browser_view_layout->SetWindowControlsOverlayEnabled(
-      IsWindowControlsOverlayEnabled());
 
   EnsureFocusOrder();
 

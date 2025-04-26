@@ -38,6 +38,7 @@ class BrowserViewLayoutDelegate {
   virtual gfx::NativeView GetHostViewForAnchoring() const = 0;
   virtual bool HasFindBarController() const = 0;
   virtual void MoveWindowForFindBarIfNecessary() const = 0;
+  virtual bool IsWindowControlsOverlayEnabled() const = 0;
   virtual void UpdateWindowControlsOverlay(
       const gfx::Rect& available_titlebar_area) = 0;
   virtual bool ShouldLayoutTabStrip() const = 0;

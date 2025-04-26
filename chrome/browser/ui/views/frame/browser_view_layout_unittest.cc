@@ -97,6 +97,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   }
   bool HasFindBarController() const override { return false; }
   void MoveWindowForFindBarIfNecessary() const override {}
+  bool IsWindowControlsOverlayEnabled() const override { return false; }
   void UpdateWindowControlsOverlay(const gfx::Rect& rect) override {}
   bool ShouldLayoutTabStrip() const override { return true; }
   int GetExtraInfobarOffset() const override { return 0; }

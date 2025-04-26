@@ -232,16 +232,6 @@ void BrowserViewLayout::SetUseBrowserContentMinimumSize(
   InvalidateLayout();
 }
 
-void BrowserViewLayout::SetWindowControlsOverlayEnabled(
-    bool window_controls_overlay_enabled) {
-  if (window_controls_overlay_enabled_ == window_controls_overlay_enabled) {
-    return;
-  }
-
-  window_controls_overlay_enabled_ = window_controls_overlay_enabled;
-  InvalidateLayout();
-}
-
 WebContentsModalDialogHost* BrowserViewLayout::GetWebContentsModalDialogHost() {
   return dialog_host_.get();
 }
@@ -405,7 +395,7 @@ BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
   // Make sure `top_container_` is after `contents_container_` in paint order
   // when this is a window using WindowControlsOverlay, to make sure the window
   // controls are in fact drawn on top of the web contents.
-  if (window_controls_overlay_enabled_) {
+  if (delegate_->IsWindowControlsOverlayEnabled()) {
     auto top_container_iter = std::ranges::find(result, top_container_);
     auto contents_container_iter =
         std::ranges::find(result, contents_container_);
@@ -454,7 +444,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     return top;
   }
 
-  if (window_controls_overlay_enabled_) {
+  if (delegate_->IsWindowControlsOverlayEnabled()) {
     web_app_frame_toolbar_->LayoutForWindowControlsOverlay(toolbar_bounds);
     toolbar_bounds.Subtract(web_app_frame_toolbar_->bounds());
     delegate_->UpdateWindowControlsOverlay(toolbar_bounds);
