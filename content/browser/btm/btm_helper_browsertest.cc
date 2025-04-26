@@ -51,20 +51,13 @@ using testing::Pair;
 
 namespace content {
 
-class BtmTabHelperBrowserTest : public ContentBrowserTest,
-                                public testing::WithParamInterface<bool> {
+class BtmTabHelperBrowserTest : public ContentBrowserTest {
  protected:
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (IsPersistentStorageEnabled()) {
-      enabled_features.push_back(
-          {features::kBtm,
-           {{"persist_database", "true"}, {"triggering_action", "bounce"}}});
-    } else {
-      enabled_features.push_back(
-          {features::kBtm, {{"triggering_action", "bounce"}}});
-    }
+    enabled_features.push_back(
+        {features::kBtm, {{"triggering_action", "bounce"}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
     ContentBrowserTest::SetUp();
@@ -123,7 +116,6 @@ class BtmTabHelperBrowserTest : public ContentBrowserTest,
     return true;
   }
 
-  bool IsPersistentStorageEnabled() { return GetParam(); }
   base::Clock* test_clock() { return &test_clock_; }
 
   // Make GetActiveWebContents() return the given value instead of the default.
@@ -160,7 +152,7 @@ class BtmTabHelperBrowserTest : public ContentBrowserTest,
   std::unique_ptr<TestBrowserContext> extra_browser_context_;
 };
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        InteractionsRecordedInAncestorFrames) {
   GURL url_a =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
@@ -225,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_b).has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        MultipleUserInteractionsRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
   base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
@@ -272,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
             state_2->user_activation_times->second);
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   // We host the iframe content on an HTTPS server, because for it to write a
   // cookie, the cookie needs to be SameSite=None and Secure.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -320,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        StorageNotRecordedForThirdPartySubresource) {
   // We host the "image" on an HTTPS server, because for it to write a
   // cookie, the cookie needs to be SameSite=None and Secure.
@@ -377,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
             time);
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
@@ -442,7 +434,7 @@ bool ClearBrowsingData(BrowsingDataRemover* remover,
 }
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        ChromeBrowsingDataRemover_Basic) {
   WebContents* web_contents = GetActiveWebContents();
   base::Time interaction_time = base::Time::Now() - base::Seconds(10);
@@ -474,8 +466,6 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   EXPECT_FALSE(state_final.has_value());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, BtmTabHelperBrowserTest, ::testing::Bool());
-
 // Makes a long URL involving several stateful stateful bounces on b.test,
 // ultimately landing on c.test. Returns both the full redirect URL and the URL
 // for the landing page. The landing page URL has a param appended to it to
@@ -498,7 +488,7 @@ std::pair<GURL, GURL> MakeRedirectAndFinalUrl(net::EmbeddedTestServer* server) {
 // Attempt to detect flakiness in waiting for DIPS storage by repeatedly
 // visiting long redirect chains, deleting the relevant rows, and verifying the
 // rows don't come back.
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        DetectRedirectHandlingFlakiness) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -553,7 +543,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
 #define MAYBE_UserClearedSitesAreNotReportedToUKM \
   UserClearedSitesAreNotReportedToUKM
 #endif
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        MAYBE_UserClearedSitesAreNotReportedToUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
@@ -637,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
   EXPECT_THAT(ukm_recorder, EntryUrlsAre("DIPS.Deletion", {"http://b.test/"}));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   WebContents* web_contents = GetActiveWebContents();
   BtmServiceImpl* dips_service =
       BtmServiceImpl::Get(web_contents->GetBrowserContext());
@@ -708,7 +698,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
                   .has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        SitesInDestroyedTabsAreNotExempt) {
   WebContents* web_contents = GetActiveWebContents();
   BtmServiceImpl* dips_service =
@@ -759,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
 
 // Multiple running profiles is not supported on Android or ChromeOS.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(BtmTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        SitesInOpenTabsForDifferentProfilesAreNotExempt) {
   WebContents* web_contents = GetActiveWebContents();
   BtmServiceImpl* dips_service =

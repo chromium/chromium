@@ -113,9 +113,7 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   std::unique_ptr<TestBrowserContext> profile;
 
   // Ensure the BTM feature is enabled and the database is set to be persisted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "true"}});
+  base::test::ScopedFeatureList feature_list(features::kBtm);
 
   profile = std::make_unique<TestBrowserContext>(data_path);
   service = BtmServiceImpl::Get(profile.get());
@@ -124,26 +122,7 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   // Ensure the database files have been created and are NOT deleted since the
   // BTM feature is enabled.
   WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
-  ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
-
-  // Reset the feature list to set database persistence to false.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "false"}});
-
-  // Reset the TestBrowserContext, then create a new instance with the same user
-  // data path.
-  profile.reset();
-  profile = std::make_unique<TestBrowserContext>(data_path);
-
-  service = BtmServiceImpl::Get(profile.get());
-  ASSERT_NE(service, nullptr);
-
-  // Ensure the database files ARE deleted since the BTM feature is disabled.
-  WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
-  EXPECT_FALSE(base::PathExists(GetBtmFilePath(profile.get())));
+  EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
 // Verifies that when an OTR profile is opened, the BTM database file for
@@ -152,9 +131,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
   // Ensure the BTM feature is enabled and the database is set to be persisted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"persist_database", "true"}});
+  base::test::ScopedFeatureList feature_list(features::kBtm);
 
   // Build a regular profile.
   std::unique_ptr<TestBrowserContext> profile =
@@ -165,7 +142,6 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the regular profile's database files have been created since the
   // BTM feature and persistence are enabled.
   WaitOnStorage(service);
-  service->WaitForFileDeletionCompleteForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 
   // Build an off-the-record profile based on `profile`.
@@ -178,7 +154,6 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the OTR profile's database has been initialized and any file
   // deletion tasks have finished (although there shouldn't be any).
   WaitOnStorage(otr_service);
-  otr_service->WaitForFileDeletionCompleteForTesting();
 
   // Ensure the regular profile's database files were NOT deleted.
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));

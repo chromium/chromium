@@ -289,10 +289,6 @@ BASE_FEATURE(kBtm, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 // |kBtm| feature flag).
 BASE_FEATURE(kBtmTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Set whether BTM persists its database to disk.
-const base::FeatureParam<bool> kBtmPersistedDatabaseEnabled{
-    &kBtm, "persist_database", true};
-
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.

@@ -294,36 +294,13 @@ BtmServiceImpl::BtmServiceImpl(base::PassKey<BrowserContextImpl>,
                                BrowserContext* context)
     : browser_context_(context) {
   DCHECK(base::FeatureList::IsEnabled(features::kBtm));
-  std::optional<base::FilePath> path_to_use;
-  base::FilePath dips_path = GetBtmFilePath(browser_context_);
+  base::FilePath btm_path = GetBtmFilePath(browser_context_);
 
-  if (browser_context_->IsOffTheRecord()) {
-    // OTR profiles should have no existing DIPS database file to be cleaned up.
-    // In fact, attempting to delete one at the path associated with the OTR
-    // profile would delete the DIPS database for the underlying regular
-    // profile.
-    wait_for_file_deletion_.Quit();
-  } else {
-    if (features::kBtmPersistedDatabaseEnabled.Get()) {
-      path_to_use = dips_path;
-      // Existing database files won't be deleted, so quit the
-      // `wait_for_file_deletion_` RunLoop.
-      wait_for_file_deletion_.Quit();
-    } else {
-      // If opening in-memory, delete any database files that may exist.
-      BtmStorage::DeleteDatabaseFiles(dips_path,
-                                      wait_for_file_deletion_.QuitClosure());
-    }
-  }
-
-  if (path_to_use.has_value()) {
-    // If opening a persisted database, use `CreateTaskRunnerForResource()` to
-    // avoid race condition during profile re-loading.
-    storage_ = base::SequenceBound<BtmStorage>(
-        CreateTaskRunnerForResource(path_to_use.value()), path_to_use);
-  } else {
-    storage_ = base::SequenceBound<BtmStorage>(CreateTaskRunner(), path_to_use);
-  }
+  storage_ =
+      browser_context_->IsOffTheRecord()
+          ? base::SequenceBound<BtmStorage>(CreateTaskRunner(), std::nullopt)
+          : base::SequenceBound<BtmStorage>(
+                CreateTaskRunnerForResource(btm_path), btm_path);
 
   repeating_timer_ = CreateTimer();
   repeating_timer_->Start();

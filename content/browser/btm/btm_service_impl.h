@@ -96,9 +96,6 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   }
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
-  void WaitForFileDeletionCompleteForTesting() {
-    wait_for_file_deletion_.Run();
-  }
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(const Observer* observer) override;
@@ -159,7 +156,6 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   // BtmService overrides:
   void RecordBrowserSignIn(std::string_view domain) override;
 
-  base::RunLoop wait_for_file_deletion_;
   raw_ptr<BrowserContext> browser_context_;
   // The persisted timer controlling how often incidental state is cleared.
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
