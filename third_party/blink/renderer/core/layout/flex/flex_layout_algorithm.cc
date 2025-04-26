@@ -1171,14 +1171,17 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     child_percentage_size.block_size = kIndefiniteSize;
     space_builder.SetIsInitialBlockSizeIndefinite(true);
   }
-  if (override_inline_size.has_value()) {
-    LogicalSize available_size = ChildAvailableSize();
-    available_size.inline_size = *override_inline_size;
-    space_builder.SetIsFixedInlineSize(true);
-    space_builder.SetAvailableSize(available_size);
+
+  LogicalSize available_size = ChildAvailableSize();
+  if (is_column_) {
+    if (override_inline_size) {
+      available_size.inline_size = *override_inline_size;
+      space_builder.SetIsFixedInlineSize(true);
+    }
   } else {
-    space_builder.SetAvailableSize(ChildAvailableSize());
+    DCHECK(!override_inline_size);
   }
+  space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size);
   return space_builder.ToConstraintSpace();
 }
@@ -1214,19 +1217,17 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
                                           &space_builder);
   space_builder.SetIsPaintedAtomically(true);
 
-  LogicalSize available_size;
+  LogicalSize available_size = ChildAvailableSize();
   if (is_column_) {
-    available_size.inline_size = line_cross_size_for_stretch
-                                     ? *line_cross_size_for_stretch
-                                     : ChildAvailableSize().inline_size;
-
     if (override_inline_size) {
-      DCHECK(!line_cross_size_for_stretch.has_value())
+      DCHECK(!line_cross_size_for_stretch)
           << "We only override inline size when we are calculating intrinsic "
              "width of multiline column flexboxes, and we don't do any "
              "stretching during the intrinsic width calculation.";
       available_size.inline_size = *override_inline_size;
       space_builder.SetIsFixedInlineSize(true);
+    } else if (line_cross_size_for_stretch) {
+      available_size.inline_size = *line_cross_size_for_stretch;
     }
     available_size.block_size = item_main_axis_final_size;
     space_builder.SetIsFixedBlockSize(true);
@@ -1235,11 +1236,11 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
       space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     }
   } else {
-    DCHECK(!override_inline_size.has_value());
+    DCHECK(!override_inline_size);
+    if (line_cross_size_for_stretch) {
+      available_size.block_size = *line_cross_size_for_stretch;
+    }
     available_size.inline_size = item_main_axis_final_size;
-    available_size.block_size = line_cross_size_for_stretch
-                                    ? *line_cross_size_for_stretch
-                                    : ChildAvailableSize().block_size;
     space_builder.SetIsFixedInlineSize(true);
     if (line_cross_size_for_stretch ||
         WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
