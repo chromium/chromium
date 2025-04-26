@@ -123,11 +123,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return getPerformTrigger(ViewActions.click());
     }
 
-    @Deprecated
-    public Transition.Trigger clickTrigger() {
-        return getClickTrigger();
-    }
-
     /**
      * Trigger an Espresso click on this View.
      *
