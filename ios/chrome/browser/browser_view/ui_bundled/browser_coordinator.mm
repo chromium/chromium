@@ -120,9 +120,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
-#import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
-#import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -216,6 +214,7 @@
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
@@ -347,6 +346,7 @@ enum class ToolbarKind {
     NewTabPageCommands,
     NonModalSignInPromoCommands,
     OverscrollActionsControllerDelegate,
+    PageActionMenuCommands,
     PageInfoCommands,
     PageInfoPresentation,
     ParentAccessCommands,
@@ -664,8 +664,8 @@ enum class ToolbarKind {
   // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
 
-  // The PageContext wrapper used to provide context about a page.
-  PageContextWrapper* _pageContextWrapper;
+  // The coordinator for the page action menu.
+  PageActionMenuCoordinator* _pageActionMenuCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1069,6 +1069,7 @@ enum class ToolbarKind {
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
+    @protocol(PageActionMenuCommands),
     @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
@@ -1793,16 +1794,6 @@ enum class ToolbarKind {
   }
 }
 
-// Opens the Glic overlay with the current page context.
-- (void)openGlicOverlayForPage:
-    (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
-  CHECK(_pageContextWrapper);
-  GlicService* glicService = GlicServiceFactory::GetForProfile(self.profile);
-  glicService->PresentOverlayOnViewController(self.viewController,
-                                              std::move(pageContext));
-  _pageContextWrapper = nil;
-}
-
 #pragma mark - ActivityServiceCommands
 
 - (void)stopAndStartSharingCoordinator {
@@ -2372,30 +2363,6 @@ enum class ToolbarKind {
   _enhancedSafeBrowsingPromoCoordinator = nil;
 }
 
-- (void)showPageActionMenu {
-  // Cancel any ongoing page context operation.
-  if (_pageContextWrapper) {
-    _pageContextWrapper = nil;
-  }
-  // Configure the callback to be executed once the page context is ready.
-  __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::PageContext>)>
-      page_context_completion_callback = base::BindOnce(
-          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
-                    page_context) {
-            [weakSelf openGlicOverlayForPage:std::move(page_context)];
-          });
-
-  // Collect the PageContext and execute the callback once it's ready.
-  _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:self.activeWebState
-      completionCallback:std::move(page_context_completion_callback)];
-  [_pageContextWrapper setShouldGetInnerText:YES];
-  [_pageContextWrapper setShouldGetSnapshot:YES];
-  [_pageContextWrapper populatePageContextFieldsAsync];
-}
-
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
 - (BOOL)showContextualPanelEntrypointIPHWithConfig:
@@ -2928,6 +2895,22 @@ enum class ToolbarKind {
                                              id<SystemIdentity>) {
         [self.promosManagerCoordinator promoWasDismissed];
       }];
+}
+
+#pragma mark - PageActionMenuCommands
+
+- (void)showPageActionMenu {
+  _pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _pageActionMenuCoordinator.pageActionMenuHandler =
+      HandlerForProtocol(self.dispatcher, PageActionMenuCommands);
+  [_pageActionMenuCoordinator start];
+}
+
+- (void)dismissPageActionMenu {
+  [_pageActionMenuCoordinator stop];
+  _pageActionMenuCoordinator = nil;
 }
 
 #pragma mark - PageInfoCommands

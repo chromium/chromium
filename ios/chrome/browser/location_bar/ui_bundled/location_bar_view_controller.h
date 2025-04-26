@@ -24,6 +24,7 @@
 @protocol LensOverlayCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
+@protocol PageActionMenuCommands;
 @protocol TextFieldViewContaining;
 class PrefService;
 namespace feature_engagement {
@@ -111,6 +112,9 @@ class Tracker;
 
 // The help command handler.
 @property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
+
+// The page action menu handler.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 
 // An object to provide a snapshot of the fakebox buttons to be used during
 // focus and defocus transitions.

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("page_action_menu") {
+source_set("ui") {
   sources = [
     "page_action_menu_entrypoint_view.h",
     "page_action_menu_entrypoint_view.mm",

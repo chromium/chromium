@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -180,6 +181,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                      BrowserCoordinatorCommands, LoadQueryCommands,
                      LensCommands, LensOverlayCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
+  self.viewController.pageActionMenuHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
   self.viewController.tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.voiceSearchEnabled =
