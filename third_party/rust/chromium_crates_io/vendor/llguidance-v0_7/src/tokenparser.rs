@@ -113,6 +113,10 @@ impl TokenParser {
         })
     }
 
+    pub fn grammar_warnings(&mut self) -> Vec<String> {
+        self.parser.grammar_warnings()
+    }
+
     pub fn get_capture(&self, name: &str) -> Option<&[u8]> {
         self.parser.get_capture(name)
     }
@@ -507,7 +511,7 @@ impl TokenParser {
         }
 
         // now apply normally
-        match self.parser.apply_token(tok_bytes) {
+        match self.parser.apply_token(tok_bytes, tok_id) {
             Err(e) => {
                 return Err(self.stop(
                     &format!("Parser Error: {}", e),

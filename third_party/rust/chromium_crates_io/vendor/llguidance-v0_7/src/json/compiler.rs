@@ -1,14 +1,16 @@
 use crate::api::LLGuidanceOptions;
 use crate::grammar_builder::GrammarResult;
-use crate::HashMap;
-use anyhow::{anyhow, Context, Result};
+use crate::json::schema::{NumberSchema, StringSchema};
+use crate::{regex_to_lark, HashMap};
+use anyhow::{anyhow, bail, Context, Result};
 use derivre::{JsonQuoteOptions, RegexAst};
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use super::numeric::{check_number_bounds, rx_float_range, rx_int_range, Decimal};
-use super::schema::{build_schema, Schema};
+use super::numeric::{check_number_bounds, rx_float_range, rx_int_range};
+use super::schema::{build_schema, ArraySchema, ObjectSchema, OptSchemaExt, Schema};
+use super::shared_context::PatternPropertyCache;
 use super::RetrieveWrapper;
 
 use crate::{GrammarBuilder, NodeRef};
@@ -25,6 +27,7 @@ pub struct JsonCompileOptions {
     pub whitespace_flexible: bool,
     pub whitespace_pattern: Option<String>,
     pub coerce_one_of: bool,
+    pub lenient: bool,
     #[serde(skip)]
     pub retriever: Option<RetrieveWrapper>,
 }
@@ -51,6 +54,7 @@ struct Compiler {
     options: JsonCompileOptions,
     definitions: HashMap<String, NodeRef>,
     pending_definitions: Vec<(String, NodeRef)>,
+    pattern_cache: PatternPropertyCache,
 
     any_cache: Option<NodeRef>,
     string_cache: Option<NodeRef>,
@@ -73,12 +77,28 @@ impl Default for JsonCompileOptions {
             whitespace_pattern: None,
             whitespace_flexible: true,
             coerce_one_of: false,
+            lenient: false,
             retriever: None,
         }
     }
 }
 
 impl JsonCompileOptions {
+    pub fn json_to_llg_with_overrides(
+        &self,
+        builder: GrammarBuilder,
+        mut schema: Value,
+    ) -> Result<GrammarResult> {
+        if let Some(x_guidance) = schema.get("x-guidance") {
+            let opts: Self = serde_json::from_value(x_guidance.clone())?;
+            // TODO: figure out why not removing this still causes problems in maskbench
+            schema.as_object_mut().unwrap().remove("x-guidance");
+            opts.json_to_llg(builder, schema)
+        } else {
+            self.json_to_llg(builder, schema)
+        }
+    }
+
     pub fn json_to_llg(&self, builder: GrammarBuilder, schema: Value) -> Result<GrammarResult> {
         let compiler = Compiler::new(self.clone(), builder);
         #[cfg(feature = "jsonschema_validation")]
@@ -116,6 +136,7 @@ impl Compiler {
             pending_definitions: vec![],
             any_cache: None,
             string_cache: None,
+            pattern_cache: PatternPropertyCache::default(),
         }
     }
 
@@ -131,16 +152,25 @@ impl Compiler {
             .builder
             .add_grammar(LLGuidanceOptions::default(), skip)?;
 
-        let (compiled_schema, definitions) = build_schema(schema, self.options.retriever.clone())?;
+        let built = build_schema(schema, &self.options)?;
+        self.pattern_cache = built.pattern_cache;
 
-        let root = self.gen_json(&compiled_schema)?;
+        for w in built.warnings {
+            self.builder.add_warning(w);
+        }
+
+        let root = self.gen_json(&built.schema)?;
         self.builder.set_start_node(root);
 
         while let Some((path, pl)) = self.pending_definitions.pop() {
-            let schema = definitions
+            let schema = built
+                .definitions
                 .get(&path)
                 .ok_or_else(|| anyhow!("Definition not found: {}", path))?;
-            let compiled = self.gen_json(schema)?;
+            let compiled = self.gen_json(schema).map_err(|e| {
+                let top_level = anyhow!("{e}\n  while processing {path}");
+                e.context(top_level)
+            })?;
             self.builder.set_placeholder(pl, compiled);
         }
 
@@ -153,47 +183,26 @@ impl Compiler {
         }
         match json_schema {
             Schema::Any => Ok(self.gen_json_any()),
-            Schema::Unsatisfiable { reason } => Err(anyhow!(UnsatisfiableSchemaError {
+            Schema::Unsatisfiable(reason) => Err(anyhow!(UnsatisfiableSchemaError {
                 message: reason.to_string(),
             })),
 
-            Schema::Array {
-                min_items,
-                max_items,
-                prefix_items,
-                items,
-            } => self.gen_json_array(
-                prefix_items,
-                items.as_deref().unwrap_or(&Schema::Any),
-                *min_items,
-                *max_items,
-            ),
-            Schema::Object {
-                properties,
-                additional_properties,
-                required,
-            } => self.gen_json_object(
-                properties,
-                additional_properties.as_deref().unwrap_or(&Schema::Any),
-                required.iter().cloned().collect(),
-            ),
+            Schema::Array(arr) => self.gen_json_array(arr),
+            Schema::Object(obj) => self.gen_json_object(obj),
+            Schema::AnyOf(options) => self.process_any_of(options),
+            Schema::OneOf(options) => self.process_one_of(options),
+            Schema::Ref(uri) => self.get_definition(uri),
 
-            Schema::AnyOf { options } => self.process_any_of(options),
-            Schema::OneOf { options } => self.process_one_of(options),
-            Schema::Ref { uri, .. } => self.get_definition(uri),
-
-            Schema::Null
-            | Schema::Boolean
-            | Schema::LiteralBool { .. }
-            | Schema::String { .. }
-            | Schema::Number { .. } => {
+            Schema::Null | Schema::Boolean(_) | Schema::String(_) | Schema::Number(_) => {
                 unreachable!("should be handled in regex_compile()")
             }
         }
     }
 
     fn process_one_of(&mut self, options: &[Schema]) -> Result<NodeRef> {
-        if self.options.coerce_one_of {
+        if self.options.coerce_one_of || self.options.lenient {
+            self.builder
+                .add_warning("oneOf not fully supported, falling back to anyOf. This may cause validation errors in some cases.".to_string());
             self.process_any_of(options)
         } else {
             Err(anyhow!("oneOf constraints are not supported. Enable 'coerce_one_of' option to approximate oneOf with anyOf"))
@@ -249,28 +258,13 @@ impl Compiler {
         }
     }
 
-    fn json_int(
-        &mut self,
-        minimum: Option<f64>,
-        maximum: Option<f64>,
-        exclusive_minimum: bool,
-        exclusive_maximum: bool,
-        multiple_of: Option<Decimal>,
-    ) -> Result<RegexAst> {
-        check_number_bounds(
-            minimum,
-            maximum,
-            exclusive_minimum,
-            exclusive_maximum,
-            false,
-            multiple_of.clone(),
-        )
-        .map_err(|e| {
+    fn json_int(&mut self, num: &NumberSchema) -> Result<RegexAst> {
+        check_number_bounds(num).map_err(|e| {
             anyhow!(UnsatisfiableSchemaError {
                 message: e.to_string(),
             })
         })?;
-        let minimum = match (minimum, exclusive_minimum) {
+        let minimum = match num.get_minimum() {
             (Some(min_val), true) => {
                 if min_val.fract() != 0.0 {
                     Some(min_val.ceil())
@@ -282,7 +276,7 @@ impl Compiler {
             _ => None,
         }
         .map(|val| val as i64);
-        let maximum = match (maximum, exclusive_maximum) {
+        let maximum = match num.get_maximum() {
             (Some(max_val), true) => {
                 if max_val.fract() != 0.0 {
                     Some(max_val.floor())
@@ -301,33 +295,20 @@ impl Compiler {
             )
         })?;
         let mut ast = RegexAst::Regex(rx);
-        if let Some(d) = multiple_of {
+        if let Some(d) = num.multiple_of.as_ref() {
             ast = RegexAst::And(vec![ast, RegexAst::MultipleOf(d.coef, d.exp)]);
         }
         Ok(ast)
     }
 
-    fn json_number(
-        &mut self,
-        minimum: Option<f64>,
-        maximum: Option<f64>,
-        exclusive_minimum: bool,
-        exclusive_maximum: bool,
-        multiple_of: Option<Decimal>,
-    ) -> Result<RegexAst> {
-        check_number_bounds(
-            minimum,
-            maximum,
-            exclusive_minimum,
-            exclusive_maximum,
-            false,
-            multiple_of.clone(),
-        )
-        .map_err(|e| {
+    fn json_number(&mut self, num: &NumberSchema) -> Result<RegexAst> {
+        check_number_bounds(num).map_err(|e| {
             anyhow!(UnsatisfiableSchemaError {
                 message: e.to_string(),
             })
         })?;
+        let (minimum, exclusive_minimum) = num.get_minimum();
+        let (maximum, exclusive_maximum) = num.get_maximum();
         let rx = rx_float_range(minimum, maximum, !exclusive_minimum, !exclusive_maximum)
             .with_context(|| {
                 format!(
@@ -336,7 +317,7 @@ impl Compiler {
                 )
             })?;
         let mut ast = RegexAst::Regex(rx);
-        if let Some(d) = multiple_of {
+        if let Some(d) = num.multiple_of.as_ref() {
             ast = RegexAst::And(vec![ast, RegexAst::MultipleOf(d.coef, d.exp)]);
         }
         Ok(ast)
@@ -368,16 +349,29 @@ impl Compiler {
         cache!(self.any_cache, {
             let json_any = self.builder.new_node("json_any");
             self.any_cache = Some(json_any); // avoid infinite recursion
-            let num = self.json_number(None, None, false, false, None).unwrap();
+            let num = self.json_number(&NumberSchema::default()).unwrap();
             let tf = self.builder.regex.regex("true|false").unwrap();
             let options = vec![
                 self.builder.string("null"),
                 self.builder.lexeme(tf),
                 self.ast_lexeme(num).unwrap(),
                 self.json_simple_string(),
-                self.gen_json_array(&[], &Schema::Any, 0, None).unwrap(),
-                self.gen_json_object(&IndexMap::new(), &Schema::Any, vec![])
-                    .unwrap(),
+                self.gen_json_array(&ArraySchema {
+                    min_items: 0,
+                    max_items: None,
+                    prefix_items: vec![],
+                    items: Schema::any_box(),
+                })
+                .unwrap(),
+                self.gen_json_object(&ObjectSchema {
+                    properties: IndexMap::new(),
+                    additional_properties: Schema::any_box(),
+                    required: IndexSet::new(),
+                    pattern_properties: IndexMap::new(),
+                    min_properties: 0,
+                    max_properties: None,
+                })
+                .unwrap(),
             ];
             let inner = self.builder.select(&options);
             self.builder.set_placeholder(json_any, inner);
@@ -385,21 +379,26 @@ impl Compiler {
         })
     }
 
-    fn gen_json_object(
-        &mut self,
-        properties: &IndexMap<String, Schema>,
-        additional_properties: &Schema,
-        required: Vec<String>,
-    ) -> Result<NodeRef> {
+    fn gen_json_object(&mut self, obj: &ObjectSchema) -> Result<NodeRef> {
         let mut taken_names: Vec<String> = vec![];
+        let mut unquoted_taken_names: Vec<String> = vec![];
         let mut items: Vec<(NodeRef, bool)> = vec![];
-        for name in properties.keys().chain(
-            required
+
+        let colon = self.builder.string(&self.options.key_separator);
+
+        let mut num_required = 0;
+        let mut num_optional = 0;
+
+        for name in obj.properties.keys().chain(
+            obj.required
                 .iter()
-                .filter(|n| !properties.contains_key(n.as_str())),
+                .filter(|n| !obj.properties.contains_key(n.as_str())),
         ) {
-            let property_schema = properties.get(name).unwrap_or(additional_properties);
-            let is_required = required.contains(name);
+            let property_schema = self.pattern_cache.property_schema(obj, name)?;
+            let is_required = obj.required.contains(name);
+            if !obj.pattern_properties.is_empty() {
+                unquoted_taken_names.push(name.to_string());
+            }
             // Quote (and escape) the name
             let quoted_name = json_dumps(&json!(name));
             let property = match self.gen_json(property_schema) {
@@ -422,12 +421,132 @@ impl Compiler {
             };
             let name = self.builder.string(&quoted_name);
             taken_names.push(quoted_name);
-            let colon = self.builder.string(&self.options.key_separator);
             let item = self.builder.join(&[name, colon, property]);
             items.push((item, is_required));
+            if is_required {
+                num_required += 1;
+            } else {
+                num_optional += 1;
+            }
         }
 
-        match self.gen_json(additional_properties) {
+        let min_properties = obj.min_properties.saturating_sub(num_required);
+        let max_properties = obj.max_properties.map(|v| v.saturating_sub(num_required));
+
+        if num_optional > 0 && (min_properties > 0 || max_properties.is_some()) {
+            // special case for min/maxProperties == 1
+            // this is sometimes used to indicate that at least one property is required
+            if min_properties <= 1
+                && max_properties.unwrap_or(1) == 1
+                && obj.pattern_properties.is_empty()
+                && obj
+                    .additional_properties
+                    .as_ref()
+                    .map(|s| s.is_unsat())
+                    .unwrap_or(false)
+            {
+                let mut options: Vec<Vec<(NodeRef, bool)>> = vec![];
+                if max_properties == Some(1) {
+                    // at most one
+                    for idx in 0..items.len() {
+                        let (_, required) = items[idx];
+                        if !required {
+                            options.push(
+                                items
+                                    .iter()
+                                    .enumerate()
+                                    .filter_map(|(i2, (n, r))| {
+                                        if i2 == idx || *r {
+                                            Some((*n, true))
+                                        } else {
+                                            None
+                                        }
+                                    })
+                                    .collect(),
+                            );
+                        }
+                    }
+                    if min_properties == 1 {
+                        // exactly one - done
+                    } else {
+                        // at most one - add empty option
+                        assert!(min_properties == 0);
+                        options.push(items.into_iter().filter(|(_, r)| *r).collect());
+                    }
+                } else {
+                    assert!(max_properties.is_none());
+                    assert!(min_properties == 1);
+                    // at least one
+                    for idx in 0..items.len() {
+                        let (_, required) = items[idx];
+                        if !required {
+                            options.push(
+                                items
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(i2, (n, r))| (*n, *r || i2 == idx))
+                                    .collect(),
+                            );
+                        }
+                    }
+                }
+                let sel_options = options
+                    .iter()
+                    .map(|v| self.object_fields(v))
+                    .collect::<Vec<_>>();
+                return Ok(self.builder.select(&sel_options));
+            }
+
+            let msg = "min/maxProperties only supported when all keys listed in \"properties\" are required";
+            if self.options.lenient {
+                self.builder.add_warning(msg.to_string());
+            } else {
+                bail!(msg);
+            }
+        }
+
+        let mut taken_name_ids = taken_names
+            .iter()
+            .map(|n| self.builder.regex.literal(n.to_string()))
+            .collect::<Vec<_>>();
+
+        let mut pattern_options = vec![];
+        for (pattern, schema) in obj.pattern_properties.iter() {
+            let regex = self
+                .builder
+                .regex
+                .add_ast(self.json_quote(RegexAst::SearchRegex(regex_to_lark(pattern, "dw"))))?;
+            taken_name_ids.push(regex);
+
+            let schema = match self.gen_json(schema) {
+                Ok(r) => r,
+                Err(e) => match e.downcast_ref::<UnsatisfiableSchemaError>() {
+                    // If it's not an UnsatisfiableSchemaError, just propagate it normally
+                    None => return Err(e),
+                    // Property is optional; don't raise UnsatisfiableSchemaError but mark name as taken
+                    Some(_) => continue,
+                },
+            };
+
+            let exclude_names = unquoted_taken_names
+                .iter()
+                .enumerate()
+                .filter(|(_, name)| self.pattern_cache.is_match(pattern, name).unwrap_or(true))
+                .map(|(idx, _)| taken_name_ids[idx])
+                .collect::<Vec<_>>();
+            let regex = if exclude_names.is_empty() {
+                regex
+            } else {
+                let options = self.builder.regex.select(exclude_names);
+                let not_taken = self.builder.regex.not(options);
+                self.builder.regex.and(vec![regex, not_taken])
+            };
+
+            let name = self.builder.lexeme(regex);
+            pattern_options.push(self.builder.join(&[name, colon, schema]));
+        }
+
+        match self.gen_json(obj.additional_properties.schema_ref()) {
             Err(e) => {
                 if e.downcast_ref::<UnsatisfiableSchemaError>().is_none() {
                     // Propagate errors that aren't UnsatisfiableSchemaError
@@ -436,13 +555,9 @@ impl Compiler {
                 // Ignore UnsatisfiableSchemaError for additionalProperties
             }
             Ok(property) => {
-                let name = if taken_names.is_empty() {
+                let name = if taken_name_ids.is_empty() {
                     self.json_simple_string()
                 } else {
-                    let taken_name_ids = taken_names
-                        .iter()
-                        .map(|n| self.builder.regex.literal(n.to_string()))
-                        .collect::<Vec<_>>();
                     let taken = self.builder.regex.select(taken_name_ids);
                     let not_taken = self.builder.regex.not(taken);
                     let valid = self
@@ -452,16 +567,33 @@ impl Compiler {
                     let valid_and_not_taken = self.builder.regex.and(vec![valid, not_taken]);
                     self.builder.lexeme(valid_and_not_taken)
                 };
-                let colon = self.builder.string(&self.options.key_separator);
                 let item = self.builder.join(&[name, colon, property]);
-                let seq = self.sequence(item);
-                items.push((seq, false));
+                pattern_options.push(item);
             }
         }
+
+        if !pattern_options.is_empty() && max_properties != Some(0) {
+            let pattern = self.builder.select(&pattern_options);
+            let required = min_properties > 0;
+            let seq = self.bounded_sequence(pattern, min_properties, max_properties);
+            items.push((seq, required));
+        } else if min_properties > 0 {
+            return Err(anyhow!(UnsatisfiableSchemaError {
+                message: format!(
+                    "minProperties ({}) is greater than number of properties ({})",
+                    min_properties, num_required
+                ),
+            }));
+        }
+
+        Ok(self.object_fields(&items))
+    }
+
+    fn object_fields(&mut self, items: &[(NodeRef, bool)]) -> NodeRef {
         let opener = self.builder.string("{");
-        let inner = self.ordered_sequence(&items, false, &mut HashMap::default());
+        let inner = self.ordered_sequence(items, false, &mut HashMap::default());
         let closer = self.builder.string("}");
-        Ok(self.builder.join(&[opener, inner, closer]))
+        self.builder.join(&[opener, inner, closer])
     }
 
     #[allow(clippy::type_complexity)]
@@ -515,6 +647,20 @@ impl Compiler {
         node
     }
 
+    fn bounded_sequence(
+        &mut self,
+        item: NodeRef,
+        min_elts: usize,
+        max_elts: Option<usize>,
+    ) -> NodeRef {
+        let min_elts = min_elts.saturating_sub(1);
+        let max_elts = max_elts.map(|v| v.saturating_sub(1));
+        let comma = self.builder.string(&self.options.item_separator);
+        let item_comma = self.builder.join(&[item, comma]);
+        let item_comma_rep = self.builder.repeat(item_comma, min_elts, max_elts);
+        self.builder.join(&[item_comma_rep, item])
+    }
+
     fn sequence(&mut self, item: NodeRef) -> NodeRef {
         let comma = self.builder.string(&self.options.item_separator);
         let item_comma = self.builder.join(&[item, comma]);
@@ -541,87 +687,31 @@ impl Compiler {
 
         let r = match schema {
             Schema::Null => literal_regex("null"),
-            Schema::Boolean => Some(RegexAst::Regex("true|false".to_string())),
-            Schema::LiteralBool { value } => literal_regex(if *value { "true" } else { "false" }),
+            Schema::Boolean(None) => Some(RegexAst::Regex("true|false".to_string())),
+            Schema::Boolean(Some(value)) => literal_regex(if *value { "true" } else { "false" }),
 
-            Schema::Number {
-                minimum,
-                maximum,
-                exclusive_minimum,
-                exclusive_maximum,
-                integer,
-                multiple_of,
-            } => {
-                let (minimum, exclusive_minimum) = match (minimum, exclusive_minimum) {
-                    (Some(min), Some(xmin)) => {
-                        if xmin >= min {
-                            (Some(*xmin), true)
-                        } else {
-                            (Some(*min), false)
-                        }
-                    }
-                    (Some(min), None) => (Some(*min), false),
-                    (None, Some(xmin)) => (Some(*xmin), true),
-                    (None, None) => (None, false),
-                };
-                let (maximum, exclusive_maximum) = match (maximum, exclusive_maximum) {
-                    (Some(max), Some(xmax)) => {
-                        if xmax <= max {
-                            (Some(*xmax), true)
-                        } else {
-                            (Some(*max), false)
-                        }
-                    }
-                    (Some(max), None) => (Some(*max), false),
-                    (None, Some(xmax)) => (Some(*xmax), true),
-                    (None, None) => (None, false),
-                };
-                Some(if *integer {
-                    self.json_int(
-                        minimum,
-                        maximum,
-                        exclusive_minimum,
-                        exclusive_maximum,
-                        multiple_of.clone(),
-                    )?
-                } else {
-                    self.json_number(
-                        minimum,
-                        maximum,
-                        exclusive_minimum,
-                        exclusive_maximum,
-                        multiple_of.clone(),
-                    )?
-                })
-            }
+            Schema::Number(num) => Some(if num.integer {
+                self.json_int(num)?
+            } else {
+                self.json_number(num)?
+            }),
 
-            Schema::String {
-                min_length,
-                max_length,
-                regex,
-            } => {
-                return self
-                    .gen_json_string(*min_length, *max_length, regex.clone())
-                    .map(Some)
-            }
+            Schema::String(opts) => return self.gen_json_string(opts.clone()).map(Some),
 
             Schema::Any
-            | Schema::Unsatisfiable { .. }
-            | Schema::Array { .. }
-            | Schema::Object { .. }
-            | Schema::AnyOf { .. }
-            | Schema::OneOf { .. }
-            | Schema::Ref { .. } => None,
+            | Schema::Unsatisfiable(_)
+            | Schema::Array(_)
+            | Schema::Object(_)
+            | Schema::AnyOf(_)
+            | Schema::OneOf(_)
+            | Schema::Ref(_) => None,
         };
         Ok(r)
     }
 
-    fn gen_json_string(
-        &self,
-        min_length: u64,
-        max_length: Option<u64>,
-        regex: Option<RegexAst>,
-    ) -> Result<RegexAst> {
+    fn gen_json_string(&self, opts: StringSchema) -> Result<RegexAst> {
+        let min_length = opts.min_length;
+        let max_length = opts.max_length;
         if let Some(max_length) = max_length {
             if min_length > max_length {
                 return Err(anyhow!(UnsatisfiableSchemaError {
@@ -632,10 +722,10 @@ impl Compiler {
                 }));
             }
         }
-        if min_length == 0 && max_length.is_none() && regex.is_none() {
+        if min_length == 0 && max_length.is_none() && opts.regex.is_none() {
             return Ok(self.json_quote(RegexAst::Regex("(?s:.*)".to_string())));
         }
-        if let Some(mut ast) = regex {
+        if let Some(mut ast) = opts.regex {
             let mut positive = false;
 
             fn mk_rx_repr(ast: &RegexAst) -> String {
@@ -646,9 +736,9 @@ impl Compiler {
 
             // special-case literals - the length is easy to check
             if let RegexAst::Literal(s) = &ast {
-                let l = s.chars().count() as u64;
+                let l = s.chars().count();
 
-                if l < min_length || l > max_length.unwrap_or(u64::MAX) {
+                if l < min_length || l > max_length.unwrap_or(usize::MAX) {
                     return Err(anyhow!(UnsatisfiableSchemaError {
                         message: format!("Constant {:?} doesn't match length constraints", s)
                     }));
@@ -708,14 +798,9 @@ impl Compiler {
         }
     }
 
-    fn gen_json_array(
-        &mut self,
-        prefix_items: &[Schema],
-        item_schema: &Schema,
-        min_items: u64,
-        max_items: Option<u64>,
-    ) -> Result<NodeRef> {
-        let mut max_items = max_items;
+    fn gen_json_array(&mut self, arr: &ArraySchema) -> Result<NodeRef> {
+        let mut max_items = arr.max_items;
+        let min_items = arr.min_items;
 
         if let Some(max_items) = max_items {
             if min_items > max_items {
@@ -728,13 +813,13 @@ impl Compiler {
             }
         }
 
-        let additional_item_grm = match self.gen_json(item_schema) {
+        let additional_item_grm = match self.gen_json(arr.items.schema_ref()) {
             Ok(node) => Some(node),
             Err(e) => match e.downcast_ref::<UnsatisfiableSchemaError>() {
                 // If it's not an UnsatisfiableSchemaError, just propagate it normally
                 None => return Err(e),
                 // Item is optional; don't raise UnsatisfiableSchemaError
-                Some(_) if prefix_items.len() >= min_items as usize => None,
+                Some(_) if arr.prefix_items.len() >= min_items => None,
                 // Item is required; add context and propagate UnsatisfiableSchemaError
                 Some(_) => {
                     return Err(e.context(UnsatisfiableSchemaError {
@@ -748,21 +833,19 @@ impl Compiler {
         let mut optional_items = vec![];
 
         // If max_items is None, we can add an infinite tail of items later
-        let n_to_add = max_items.map_or(prefix_items.len().max(min_items as usize), |max| {
-            max as usize
-        });
+        let n_to_add = max_items.map_or(arr.prefix_items.len().max(min_items), |max| max);
 
         for i in 0..n_to_add {
-            let item = if i < prefix_items.len() {
-                match self.gen_json(&prefix_items[i]) {
+            let item = if i < arr.prefix_items.len() {
+                match self.gen_json(&arr.prefix_items[i]) {
                     Ok(node) => node,
                     Err(e) => match e.downcast_ref::<UnsatisfiableSchemaError>() {
                         // If it's not an UnsatisfiableSchemaError, just propagate it normally
                         None => return Err(e),
                         // Item is optional; don't raise UnsatisfiableSchemaError.
                         // Set max_items to the current index, as we can't satisfy any more items.
-                        Some(_) if i >= min_items as usize => {
-                            max_items = Some(i as u64);
+                        Some(_) if i >= min_items => {
+                            max_items = Some(i);
                             break;
                         }
                         // Item is required; add context and propagate UnsatisfiableSchemaError
@@ -782,7 +865,7 @@ impl Compiler {
                 break;
             };
 
-            if i < min_items as usize {
+            if i < min_items {
                 required_items.push(item);
             } else {
                 optional_items.push(item);

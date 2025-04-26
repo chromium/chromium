@@ -308,7 +308,7 @@ criteria = []
 [policy."litemap:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."llguidance:0.7.14"]
+[policy."llguidance:0.7.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."log:0.4.27"]

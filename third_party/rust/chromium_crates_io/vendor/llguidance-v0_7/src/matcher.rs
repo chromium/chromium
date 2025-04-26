@@ -186,6 +186,13 @@ impl Matcher {
         }
     }
 
+    pub fn grammar_warnings(&mut self) -> Vec<String> {
+        match &mut self.0 {
+            MatcherState::Normal(inner) => inner.parser.grammar_warnings(),
+            MatcherState::Error(_) => vec![],
+        }
+    }
+
     pub fn tok_env(&self) -> Result<TokEnv> {
         match &self.0 {
             MatcherState::Normal(inner) => Ok(inner.parser.token_env.clone()),

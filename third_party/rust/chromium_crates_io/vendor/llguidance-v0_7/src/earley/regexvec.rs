@@ -509,6 +509,10 @@ impl RegexVec {
         }
     }
 
+    pub fn get_fuel(&self) -> u64 {
+        self.fuel
+    }
+
     pub fn has_error(&self) -> bool {
         self.alpha.has_error()
     }

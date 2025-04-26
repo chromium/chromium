@@ -11,7 +11,7 @@ use toktrie::{
 
 use crate::{
     api::{GrammarInit, ParserLimits, TopLevelGrammar},
-    earley::SlicedBiasComputer,
+    earley::{SlicedBiasComputer, ValidationResult},
     CommitResult, Constraint, Logger, Matcher, ParserFactory, StopController, TokenParser,
 };
 
@@ -170,16 +170,20 @@ impl LlgTokenizer {
         })
     }
 
-    fn to_env(&self) -> TokEnv {
+    pub fn to_env(&self) -> TokEnv {
         self.factory.tok_env().clone()
     }
 
-    fn tok_env(&self) -> &TokEnv {
+    pub fn tok_env(&self) -> &TokEnv {
         self.factory.tok_env()
     }
 
-    fn tok_trie(&self) -> &TokTrie {
+    pub fn tok_trie(&self) -> &TokTrie {
         self.factory.tok_env().tok_trie()
+    }
+
+    pub fn factory(&self) -> &ParserFactory {
+        &self.factory
     }
 }
 
@@ -644,8 +648,10 @@ pub extern "C" fn llg_clone_constraint(cc: &LlgConstraint) -> *mut LlgConstraint
 }
 
 /// Construct a new tokenizer from the given TokenizerInit
+/// # Safety
+/// This function should only be called from C code.
 #[no_mangle]
-pub extern "C" fn llg_new_tokenizer(
+pub unsafe extern "C" fn llg_new_tokenizer(
     tok_init: &LlgTokenizerInit,
     error_string: *mut c_char,
     error_string_len: usize,
@@ -849,7 +855,16 @@ fn build_stop_controller(
     StopController::new(tokenizer.to_env(), stop_tokens.to_vec(), stop_rx, vec![])
 }
 
-fn save_error_string(e: impl Display, error_string: *mut c_char, error_string_len: usize) {
+/// Save the error string to the given pointer.
+/// The string is NUL-terminated.
+/// The function will write at most error_string_len bytes (including the NUL).
+/// # Safety
+/// This function should only when interacting with pointers passed from C.
+pub unsafe fn save_error_string(
+    e: impl Display,
+    error_string: *mut c_char,
+    error_string_len: usize,
+) {
     if !error_string.is_null() && error_string_len > 0 {
         let e = e.to_string();
         let e = e.as_bytes();
@@ -979,6 +994,55 @@ pub unsafe extern "C" fn llg_new_matcher(
     }))
 }
 
+fn validate_grammar(
+    init: &LlgConstraintInit,
+    constraint_type: *const c_char,
+    data: *const c_char,
+) -> Result<String> {
+    let tp = unsafe { c_str_to_str(constraint_type, "constraint_type") }?;
+    let data = unsafe { c_str_to_str(data, "data") }?;
+    let grammar = TopLevelGrammar::from_tagged_str(tp, data)?;
+    let tok_env = init.factory()?.tok_env().clone();
+    match GrammarInit::Serialized(grammar).validate(Some(tok_env), init.limits.clone()) {
+        ValidationResult::Valid => Ok(String::new()),
+        ValidationResult::Error(e) => bail!(e),
+        r => Ok(r.render(true)),
+    }
+}
+
+/// Check if given grammar is valid.
+/// This about twice as fast as creating a matcher (which also validates).
+/// See llg_new_matcher() for the grammar format.
+/// Returns 0 on success and -1 on error and 1 on warning.
+/// The error message or warning is written to message, which is message_len bytes long.
+/// It's always NUL-terminated.
+/// # Safety
+/// This function should only be called from C code.
+#[no_mangle]
+pub unsafe extern "C" fn llg_validate_grammar(
+    init: &LlgConstraintInit,
+    constraint_type: *const c_char,
+    data: *const c_char,
+    message: *mut c_char,
+    message_len: usize,
+) -> i32 {
+    match validate_grammar(init, constraint_type, data) {
+        Err(e) => {
+            save_error_string(e, message, message_len);
+            -1
+        }
+        Ok(s) => {
+            if !s.is_empty() {
+                save_error_string(s, message, message_len);
+                1
+            } else {
+                save_error_string("", message, message_len);
+                0
+            }
+        }
+    }
+}
+
 /// Compute the set of allowed tokens for the current state.
 /// The result is written to mask_dest.
 /// mask_byte_len must be equal to llg_matcher_get_mask_byte_size().
@@ -1012,7 +1076,7 @@ pub unsafe extern "C" fn llg_matcher_compute_mask_into(
 }
 
 /// Compute the set of allowed tokens for the current state.
-/// The pointer to the result is written to mask_dest.
+/// Use llg_matcher_get_mask() to get the result.
 /// Returns 0 on success and -1 on error.
 #[no_mangle]
 pub extern "C" fn llg_matcher_compute_mask(matcher: &mut LlgMatcher) -> i32 {

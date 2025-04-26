@@ -1,13 +1,13 @@
 [package]
 name = "llguidance"
-version = "0.7.14"
+version = "0.7.18"
 edition = "2021"
 license = "MIT"
 description = "Super-fast Structured Outputs"
 repository = "https://github.com/guidance-ai/llguidance"
 
 [dependencies]
-toktrie = { version = "0.7.14" }
+toktrie = { version = "0.7.18" }
 derivre = { version = "=0.3.7", default-features = false, features = ["compress"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = { version = "1.0.138", features = ["preserve_order"] }
