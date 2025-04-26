@@ -102,7 +102,7 @@
 <translation id="10619348099955377">Görünen adı kopyala</translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1066964438793906105">Kötü amaçlı yazılım taraması yapın</translation>
-<translation id="1067661089446014701">Ek güvenlik için, Google Hesabınıza kaydedilmeden önce şifrelerinizi cihazınızda şifreleyebilirsiniz</translation>
+<translation id="1067661089446014701">Ek güvenlik için, Google Hesabınıza kaydedilmeden önce şifrelerinizi cihazınızda şifreleyebilirsiniz.</translation>
 <translation id="1067922213147265141">Diğer Google hizmetleri</translation>
 <translation id="106814709658156573">Parmak izini ayarlamak için çocuğunuzun, klavyenin sol alt köşesindeki parmak izi sensörüne dokunması gerekir. Çocuğunuzun parmak izi verileri güvenli bir şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur.</translation>
 <translation id="106855837688344862">Dokunma Etkinlikleri</translation>
@@ -4169,7 +4169,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3898768766145818464">Videoyu oynatır veya duraklatır</translation>
 <translation id="389901847090970821">Klavye seçin</translation>
 <translation id="3899457911440165602">Sertifika silinirken hata oluştu</translation>
-<translation id="3900966090527141178">Şifreleri dışa aktarın</translation>
+<translation id="3900966090527141178">Şifreleri dışa aktar</translation>
 <translation id="390187954523570172"><ph name="TIME_AGO" /> kullanıldı</translation>
 <translation id="3903187154317825986">Yerleşik klavye</translation>
 <translation id="3903696968689283281">WiFi Direct Sahip Bilgisi:</translation>
@@ -5553,7 +5553,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4890585766056792498">Tehlikeli sitelere karşı korunun</translation>
 <translation id="4890773143211625964">Gelişmiş yazıcı seçeneklerini göster</translation>
 <translation id="4891089016822695758">Beta forumu</translation>
-<translation id="4891795846939730995">Bu cihazın geçiş anahtarlarınıza tekrar erişmesine izin vermek için kayıtlı bir geçiş anahtarıyla bir sitede veya uygulamada oturum açın</translation>
+<translation id="4891795846939730995">Bu cihazın geçiş anahtarlarınıza tekrar erişmesine izin vermek için kayıtlı bir geçiş anahtarıyla bir sitede veya uygulamada oturum açın.</translation>
 <translation id="4892229439761351791">Site Bluetooth bağlantısı kullanabilir</translation>
 <translation id="4892328231620815052">Hazır olduğunuzda okuma listenizi Yer İşaretleri ve Listeler'de bulabilirsiniz</translation>
 <translation id="489258173289528622">Pil kullanılırken boşta kalma işlemi</translation>
