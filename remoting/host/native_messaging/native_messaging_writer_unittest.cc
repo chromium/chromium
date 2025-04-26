@@ -53,7 +53,6 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   ASSERT_TRUE(header_read.has_value());
   ASSERT_EQ(sizeof(body_length), *header_read);
 
-  // Use std::string as buffer.
   std::string body_buffer(body_length, '\0');
   auto body_read =
       read_file_.ReadAtCurrentPos(base::as_writable_byte_span(body_buffer));
