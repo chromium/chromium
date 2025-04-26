@@ -470,6 +470,10 @@ void FloatingWorkspaceService::SuspendImminent(
 
 void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
   restore_upon_wake_ = true;
+  // Setting initialization time here is important to avoid unintended
+  // automatic sign-out when device wakes up on the lock screen.
+  initialization_time_ = base::Time::Now();
+  initialization_timeticks_ = base::TimeTicks::Now();
 }
 
 void FloatingWorkspaceService::OnDeviceInfoChange() {}

@@ -2158,6 +2158,49 @@ TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithDeviceInfo) {
   EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
 }
 
+// Test that receiving new device info immediately after waking up doesn't
+// trigger auto-signout.
+TEST_F(FloatingWorkspaceServiceV2Test, NoAutoSignoutOnWakeUp) {
+  PopulateAppsCache();
+  base::RunLoop loop;
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service(),
+                                   fake_device_info_sync_service());
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+
+  // Simulate sleep.
+  power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  // Simulate another device being active while the first device is asleep.
+  constexpr base::TimeDelta new_device_timestamp_delta = base::Seconds(10);
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + new_device_timestamp_delta));
+
+  // Sleep past the activity timestamp of the other device.
+  constexpr base::TimeDelta sleep_duration =
+      new_device_timestamp_delta + base::Seconds(5);
+  task_environment().FastForwardBy(sleep_duration);
+
+  // Simulate waking up.
+  power_manager_client()->SendSuspendDone();
+
+  // Receive activity timestamp of the other device.
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  // Verify that sign-out is not requested.
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
+}
+
 TEST_F(FloatingWorkspaceServiceV2Test,
        AutoSignoutDontTriggerWithSameDeviceInfoGuid) {
   PopulateAppsCache();
