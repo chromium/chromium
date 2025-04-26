@@ -115,11 +115,7 @@ void ManagePasswordsIconViews::UpdateImpl() {
 }
 
 void ManagePasswordsIconViews::OnExecuting(
-    PageActionIconView::ExecuteSource source) {
-  browser()->window()->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-}
+    PageActionIconView::ExecuteSource source) {}
 
 bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
   bool result = PageActionIconView::OnMousePressed(event);

@@ -378,8 +378,6 @@ DEFINE_VARIATION_PARAM(kIPHLiveCaptionFeature, "IPH_LiveCaption");
 DEFINE_VARIATION_PARAM(kIPHMerchantTrustFeature, "IPH_MerchantTrust");
 DEFINE_VARIATION_PARAM(kIPHPasswordsSavePrimingPromoFeature,
                        "IPH_PasswordsSavePrimingPromo");
-DEFINE_VARIATION_PARAM(kIPHPasswordsSaveRecoveryPromoFeature,
-                       "IPH_PasswordsSaveRecoveryPromo");
 DEFINE_VARIATION_PARAM(kIPHPasswordsManagementBubbleAfterSaveFeature,
                        "IPH_PasswordsManagementBubbleAfterSave");
 DEFINE_VARIATION_PARAM(kIPHPasswordsManagementBubbleDuringSigninFeature,

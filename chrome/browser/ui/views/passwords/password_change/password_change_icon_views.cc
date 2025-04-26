@@ -13,13 +13,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -111,11 +109,7 @@ void PasswordChangeIconViews::UpdateImpl() {
 }
 
 void PasswordChangeIconViews::OnExecuting(
-    PageActionIconView::ExecuteSource source) {
-  browser()->window()->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-}
+    PageActionIconView::ExecuteSource source) {}
 
 bool PasswordChangeIconViews::OnMousePressed(const ui::MouseEvent& event) {
   bool result = PageActionIconView::OnMousePressed(event);

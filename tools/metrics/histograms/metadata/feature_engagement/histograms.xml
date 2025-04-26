@@ -415,8 +415,6 @@ chromium-metrics-reviews@google.com.
                during signin flows"/>
   <variant name="IPH_PasswordsSavePrimingPromo"
       summary="prompting users to consider saving passwords in the browser"/>
-  <variant name="IPH_PasswordsSaveRecoveryPromo"
-      summary="prompting users to reconsider saving passwords in the browser"/>
   <variant name="IPH_PasswordSuggestions"
       summary="the Autofill password suggestions on iOS"/>
   <variant name="IPH_PasswordsWebAppProfileSwitch"
