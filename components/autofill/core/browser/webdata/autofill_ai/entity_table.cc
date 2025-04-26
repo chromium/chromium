@@ -225,10 +225,8 @@ bool EntityTable::MigrateToVersion(int version,
     }
     case 140: {
       // In this version use count and use date information was added.
-      AddColumnIfNotExists(db(), "autofill_ai_entities", "use_count",
-                           "INTEGER DEFAULT 0");
-      AddColumnIfNotExists(db(), "autofill_ai_entities", "use_date",
-                           "INTEGER DEFAULT 0");
+      AddColumn(db(), "autofill_ai_entities", "use_count", "INTEGER DEFAULT 0");
+      AddColumn(db(), "autofill_ai_entities", "use_date", "INTEGER DEFAULT 0");
       break;
     }
   }
@@ -287,7 +285,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   s.BindString(2, entity.nickname());
   s.BindInt64(3, entity.date_modified().ToTimeT());
   s.BindInt64(4, entity.use_count());
-  s.BindInt64(5, entity.use_date().ToTimeT());
+  s.BindTime(5, entity.use_date());
 
   if (!s.Run()) {
     return false;
@@ -407,7 +405,7 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
     std::string nickname = s.ColumnString(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
     size_t use_count = s.ColumnInt64(4);
-    base::Time use_date = base::Time::FromTimeT(s.ColumnInt64(5));
+    base::Time use_date = s.ColumnTime(5);
 
     if (auto attributes = attribute_records.extract(guid)) {
       if (std::optional<EntityInstance> e = ValidateInstance(
