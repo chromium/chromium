@@ -683,6 +683,14 @@
     'bottombar': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/',
     },
+    'bounce_tracking_mitigations': {
+      'filepath': 'chrome/browser/btm/' \
+                  '|content/browser/btm/' \
+                  '|content/public/common/btm_.*' \
+                  '|content/public/browser/btm_.*' \
+                  '|content/public/test/btm_.*' \
+                  '|content/test/data/btm/'
+    },
     'bound_session_credentials': {
       'filepath': 'chrome/renderer/bound_session_credentials/' \
                   '|chrome/browser/signin/bound_session_credentials/'
@@ -1105,9 +1113,6 @@
     },
     'diagnostics_ui': {
       'filepath': 'ash/webui/diagnostics_ui/',
-    },
-    'dips': {
-      'filepath': 'chrome/browser/dips/',
     },
     'discardable_memory': {
         'filepath': 'components/discardable_memory/',
@@ -2751,6 +2756,12 @@
     'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
+    'bounce_tracking_mitigations': ['amaliev+watch-btm@chromium.org',
+                                    'jdh+watch-btm@chromium.org',
+                                    'liu+watch-btm@chromium.org',
+                                    'njeunje+watch-btm@chromium.org',
+                                    'ortuno+watch-btm@chromium.org',
+                                    'svend+watch-btm@chromium.org'],
     'bound_session_credentials': ['drubery+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
@@ -2913,11 +2924,6 @@
                        'gavindodd+diagnostics-watch@google.com',
                        'ashleydp+diagnostics-watch@google.com',
                        'zhangwenyu+diagnostics-watch@google.com'],
-    'dips': ['jdh+watch-dips@chromium.org',
-             'njeunje+watch-dips@chromium.org',
-             'amaliev+watch-dips@chromium.org',
-             'rtarpine+watch-dips@chromium.org',
-             'wanderview+watch-dips@chromium.org'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'display': ['zhangwenyu+watch@google.com'],
