@@ -78,6 +78,7 @@ export declare interface HostRequestTypes {
       actInFocusedTabResult: ActInFocusedTabResultPrivate,
     },
   };
+  glicBrowserStopActorTask: {};
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
@@ -277,6 +278,7 @@ type HostRequestEnumNamesType = {
     ShowProfilePicker: 0,
     GetContextFromFocusedTab: 0,
     ActInFocusedTab: 0,
+    StopActorTask: 0,
     CaptureScreenshot: 0,
     ResizeWindow: 0,
     EnableDragResize: 0,

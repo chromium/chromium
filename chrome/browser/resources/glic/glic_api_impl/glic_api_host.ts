@@ -331,6 +331,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
+  glicBrowserStopActorTask(): void {
+    this.handler.stopActorTask();
+  }
+
   async glicBrowserResizeWindow(request: {
     size: {width: number, height: number},
     options?: {durationMs?: number},

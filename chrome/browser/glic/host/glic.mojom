@@ -365,10 +365,22 @@ interface WebClientHandler {
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
-  // Returns the result of acting in the currently active tab.
-  // Action proto is a serialized proto of type .....
+  // Starts an action in the currently focused tab. `action_proto` is a
+  // serialized proto of type optimization_guide::proto::BrowserAction. Returns
+  // the result of the action when it is completed along with an observation of
+  // the page, taken using the given `options`.
+  //
+  // Actions can only be executed in a tab after act task has been started.  An
+  // act task is started by calling this function with a Navigate BrowserAction
+  // on a tab without an active task.
+  // TODO(crbug.com/407860715): Add an explicit method for starting a task.
   ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
       => (ActInFocusedTabResult result);
+
+  // Immediately stops the actor from taking any further actions and exits
+  // acting mode. Any in flight actions are canceled and their callbacks will be
+  // (asynchronously) invoked. No-op if the actor doesn't have an active task.
+  StopActorTask();
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.

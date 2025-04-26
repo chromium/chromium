@@ -229,6 +229,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableActInFocusedTab) {
       this.actInFocusedTab = undefined;
+      this.stopActorTask = undefined;
     }
 
     if (!state.enableDragToResizePanel) {
@@ -330,6 +331,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserActInFocusedTab', {actInFocusedTabParams});
     return convertActInFocusedTabResultFromPrivate(
         context.actInFocusedTabResult);
+  }
+
+  stopActorTask?(): void {
+    this.sender.requestNoResponse('glicBrowserStopActorTask', undefined);
   }
 
   async resizeWindow(

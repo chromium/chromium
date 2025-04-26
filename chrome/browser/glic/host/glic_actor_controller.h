@@ -40,6 +40,8 @@ class GlicActorController {
            const mojom::GetTabContextOptions& options,
            glic::mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
+  void StopTask();
+
  private:
   // Handles a new task being started, and then performs the action that
   // initiated the task.

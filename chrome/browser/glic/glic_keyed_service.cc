@@ -376,6 +376,14 @@ void GlicKeyedService::ActInFocusedTab(
                          std::move(callback));
 }
 
+void GlicKeyedService::StopActorTask() {
+  if (!actor_controller_) {
+    return;
+  }
+
+  actor_controller_->StopTask();
+}
+
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(

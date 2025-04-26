@@ -76,6 +76,9 @@ void GlicActorController::Act(
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
   if (!actor_coordinator_) {
     actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile_);
+  }
+
+  if (!actor_coordinator_->HasTask()) {
     // Start of a new task, which must begin with a navigate action.
     // The OnTaskStarted callback will perform the action after the task is
     // setup by the coordinator.
@@ -89,6 +92,13 @@ void GlicActorController::Act(
   }
 
   ActImpl(focused_tab_data, action, options, std::move(callback));
+}
+
+void GlicActorController::StopTask() {
+  if (!actor_coordinator_) {
+    return;
+  }
+  actor_coordinator_->StopTask();
 }
 
 void GlicActorController::OnTaskStarted(

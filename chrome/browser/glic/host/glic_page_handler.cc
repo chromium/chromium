@@ -434,6 +434,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
   }
 
+  void StopActorTask() override { glic_service_->StopActorTask(); }
+
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
     glic_service_->CaptureScreenshot(std::move(callback));
   }

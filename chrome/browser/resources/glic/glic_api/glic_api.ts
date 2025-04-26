@@ -180,6 +180,11 @@ export declare interface GlicBrowserHost {
       (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
 
   /**
+   * Stops an actor task in the browser if one exists. No-op otherwise.
+   */
+  stopActorTask?(): void;
+
+  /**
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.
