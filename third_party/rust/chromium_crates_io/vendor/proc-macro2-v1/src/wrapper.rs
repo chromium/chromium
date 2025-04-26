@@ -360,45 +360,6 @@ impl Iterator for TokenTreeIter {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
-#[cfg(super_unstable)]
-pub(crate) enum SourceFile {
-    Compiler(proc_macro::SourceFile),
-    Fallback(fallback::SourceFile),
-}
-
-#[cfg(super_unstable)]
-impl SourceFile {
-    fn nightly(sf: proc_macro::SourceFile) -> Self {
-        SourceFile::Compiler(sf)
-    }
-
-    /// Get the path to this source file as a string.
-    pub(crate) fn path(&self) -> PathBuf {
-        match self {
-            SourceFile::Compiler(a) => a.path(),
-            SourceFile::Fallback(a) => a.path(),
-        }
-    }
-
-    pub(crate) fn is_real(&self) -> bool {
-        match self {
-            SourceFile::Compiler(a) => a.is_real(),
-            SourceFile::Fallback(a) => a.is_real(),
-        }
-    }
-}
-
-#[cfg(super_unstable)]
-impl Debug for SourceFile {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            SourceFile::Compiler(a) => Debug::fmt(a, f),
-            SourceFile::Fallback(a) => Debug::fmt(a, f),
-        }
-    }
-}
-
 #[derive(Copy, Clone)]
 pub(crate) enum Span {
     Compiler(proc_macro::Span),
@@ -456,14 +417,6 @@ impl Span {
         }
     }
 
-    #[cfg(super_unstable)]
-    pub(crate) fn source_file(&self) -> SourceFile {
-        match self {
-            Span::Compiler(s) => SourceFile::nightly(s.source_file()),
-            Span::Fallback(s) => SourceFile::Fallback(s.source_file()),
-        }
-    }
-
     #[cfg(span_locations)]
     pub(crate) fn byte_range(&self) -> Range<usize> {
         match self {
@@ -503,6 +456,22 @@ impl Span {
             #[cfg(not(proc_macro_span))]
             Span::Compiler(_) => LineColumn { line: 0, column: 0 },
             Span::Fallback(s) => s.end(),
+        }
+    }
+
+    #[cfg(super_unstable)]
+    pub(crate) fn file(&self) -> String {
+        match self {
+            Span::Compiler(s) => s.file(),
+            Span::Fallback(s) => s.file(),
+        }
+    }
+
+    #[cfg(super_unstable)]
+    pub(crate) fn local_file(&self) -> Option<PathBuf> {
+        match self {
+            Span::Compiler(s) => s.local_file(),
+            Span::Fallback(s) => s.local_file(),
         }
     }
 
