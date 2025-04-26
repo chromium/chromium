@@ -1274,6 +1274,63 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
   }
 }
 
+// Test for https://crbug.com/413078309.
+TEST_P(PaintChunksToCcLayerTest, VeryTallScrollingContentsIntoDisplayItemList) {
+  // A value larger than InfiniteIntRect can represent.
+  const int kScrollOffset = 1 << 25;
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), 0, -kScrollOffset, gfx::Rect(0, 0, 100, 100),
+      gfx::Size(100, kScrollOffset + 100));
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state);
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(0, 0, 100, 100), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip>
+                    PaintOpIs<cc::DrawScrollingContentsOp>(),
+                    PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+                    PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+    EXPECT_EQ(
+        gfx::Rect(0, 0, 100, 100),
+        cc_list->raster_inducing_scrolls()
+            .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+            .visual_rect);
+    const auto& scrolling_contents_op =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            cc_list->paint_op_buffer().GetOpAtForTesting(3));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op.GetType());
+    EXPECT_THAT(scrolling_contents_op.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+  } else {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(0, 0, 100, 100), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip>
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::TranslateOp>(
+                        0, -kScrollOffset),           // <scroll-translation>
+                    PaintOpIs<cc::DrawRecordOp>(),    // chunk 1
+                    PaintOpIs<cc::RestoreOp>(),       // </scroll-translation>
+                    PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+                    PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  }
+}
+
 TEST_P(PaintChunksToCcLayerTest, ScrollingContentsUnderEffect) {
   auto* t1 = Create2DTranslation(t0(), 10, 20);
   auto* e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
