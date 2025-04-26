@@ -186,6 +186,10 @@ id<GREYMatcher> OtpNewCodeLink() {
                      IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+    StaticTextWithAccessibilityLabel(@"Enter 6-digit verification code")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   [[EarlGrey selectElementWithMatcher:OtpTextfield()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
