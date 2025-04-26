@@ -512,7 +512,9 @@ Widget* BubbleDialogDelegate::CreateBubble(
 
   bubble_delegate->Init();
   // Get the latest anchor widget from the anchor view at bubble creation time.
-  bubble_delegate->SetAnchorView(bubble_delegate->GetAnchorView());
+  if (auto* anchor_view = bubble_delegate->GetAnchorView()) {
+    bubble_delegate->SetAnchorView(anchor_view);
+  }
   Widget* const bubble_widget =
       CreateBubbleWidget(bubble_delegate_unique.release(), ownership);
 
@@ -1005,6 +1007,22 @@ gfx::Size BubbleDialogDelegateView::GetMinimumSize() const {
 
 gfx::Size BubbleDialogDelegateView::GetMaximumSize() const {
   return gfx::Size();
+}
+
+void BubbleDialogDelegate::SetAnchorWidget(views::Widget* anchor_widget) {
+  if (anchor_widget_ == anchor_widget) {
+    return;
+  }
+  // Reset the anchor view.
+  SetAnchorView(nullptr);
+  if (anchor_widget_) {
+    anchor_widget_observer_.reset();
+  }
+  anchor_widget_ = anchor_widget;
+  if (anchor_widget_) {
+    anchor_widget_observer_ =
+        std::make_unique<AnchorWidgetObserver>(this, anchor_widget_);
+  }
 }
 
 void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {

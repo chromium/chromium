@@ -66,8 +66,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void CloseBubble(views::Widget::ClosedReason reason);
 
  private:
-  class SharesheetParentWidgetObserver;
-
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
@@ -94,6 +92,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   // launching. Creates the bubble and shows it to the user.
   void SetUpAndShowBubble();
 
+  // Returns the designed bubble widget's bounds.
+  gfx::Rect GetDesiredBubbleBounds();
+
   std::unique_ptr<views::View> MakeScrollableTargetView(
       std::vector<TargetInfo> targets);
   void PopulateLayoutsWithTargets(std::vector<TargetInfo> targets,
@@ -102,7 +103,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void ExpandButtonPressed();
   void AnimateToExpandedState();
   void TargetButtonPressed(TargetInfo target);
-  void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();
   void ShowWidgetWithAnimateFadeIn();
   void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
@@ -140,8 +140,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<views::Separator> expanded_view_separator_ = nullptr;
   raw_ptr<views::View> parent_view_ = nullptr;
   raw_ptr<SharesheetExpandButton> expand_button_ = nullptr;
-
-  std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };
 
 }  // namespace sharesheet

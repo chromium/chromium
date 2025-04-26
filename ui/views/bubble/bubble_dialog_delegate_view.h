@@ -286,10 +286,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // bubble is active, and will optionally resize itself to fit within the
   // anchor widget if the anchor widget's size changes.
   //
-  // The anchor widget is implied by the anchor view - bubbles with no anchor
-  // view cannot be anchored to a widget.
-
+  // The anchor widget can be explicitly set, or is implied by the anchor view.
+  void SetAnchorWidget(views::Widget* anchor_widget);
   Widget* anchor_widget() { return anchor_widget_; }
+  const Widget* anchor_widget() const { return anchor_widget_; }
 
   //////////////////////////////////////////////////////////////////////////////
   // The arrow:
