@@ -58,9 +58,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   struct AdaptiveRefreshRateInfo {
     bool supports_adaptive_refresh_rate = false;
     // Fields below are valid only if `supports_adaptive_refresh_rate` is true.
-    float suggested_frame_rate_normal = 0.f;
     float suggested_frame_rate_high = 0.f;
-    std::vector<float> supported_frame_rates;
 
     AdaptiveRefreshRateInfo();
     AdaptiveRefreshRateInfo(const AdaptiveRefreshRateInfo& other);
@@ -120,12 +118,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jfloatArray>& supported_refresh_rates);
-  void OnAdaptiveRefreshRateInfoChanged(
-      JNIEnv* env,
-      jboolean supports_adaptive_refresh_rate,
-      jfloat suggested_frame_rate_normal,
-      jfloat suggested_frame_rate_high,
-      const base::android::JavaParamRef<jfloatArray>& supported_frame_rates);
+  void OnAdaptiveRefreshRateInfoChanged(JNIEnv* env,
+                                        jboolean supports_adaptive_refresh_rate,
+                                        jfloat suggested_frame_rate_high);
   void OnOverlayTransformUpdated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

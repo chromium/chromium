@@ -1144,9 +1144,7 @@ public class WindowAndroid
                 .onAdaptiveRefreshRateInfoChanged(
                         mNativeWindowAndroid,
                         arrInfo.supportsAdaptiveRefreshRate,
-                        arrInfo.suggestedFrameRateNormal,
-                        arrInfo.suggestedFrameRateHigh,
-                        arrInfo.supportedFrameRates);
+                        arrInfo.suggestedFrameRateHigh);
     }
 
     @CalledByNative
@@ -1446,9 +1444,7 @@ public class WindowAndroid
         void onAdaptiveRefreshRateInfoChanged(
                 long nativeWindowAndroid,
                 boolean supportsAdaptiveRefreshRate,
-                float suggestedFrameRateNormal,
-                float suggestedFrameRateHigh,
-                float @Nullable [] supportedRefreshRates);
+                float suggestedFrameRateHigh);
 
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
 

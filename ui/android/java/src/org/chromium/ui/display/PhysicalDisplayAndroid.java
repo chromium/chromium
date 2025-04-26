@@ -352,22 +352,12 @@ import java.util.function.Consumer;
         AdaptiveRefreshRateInfo arrInfo = null;
         if (BuildCompat.isAtLeastB()) {
             boolean hasArrSupport = display.hasArrSupport();
-            float suggestedFrameRateNormal = 0.0f;
             float suggestedFrameRateHigh = 0.0f;
-            float[] supportedFrameRates = null;
             if (hasArrSupport) {
-                suggestedFrameRateNormal =
-                        display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_NORMAL);
                 suggestedFrameRateHigh =
                         display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_HIGH);
-                supportedFrameRates = display.getSupportedRefreshRates();
             }
-            arrInfo =
-                    new AdaptiveRefreshRateInfo(
-                            hasArrSupport,
-                            suggestedFrameRateNormal,
-                            suggestedFrameRateHigh,
-                            supportedFrameRates);
+            arrInfo = new AdaptiveRefreshRateInfo(hasArrSupport, suggestedFrameRateHigh);
         }
         super.update(
                 display.getName(),

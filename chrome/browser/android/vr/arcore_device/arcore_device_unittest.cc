@@ -223,9 +223,7 @@ class StubCompositorFrameSink
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetAdaptiveRefreshRateInfo(
       bool has_support,
-      float suggested_normal,
       float suggested_high,
-      const std::vector<float>& supported_refresh_rates,
       float device_scale_factor) override {}
   void SetSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override {}

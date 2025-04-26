@@ -18,7 +18,6 @@ import androidx.annotation.RequiresApi;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -73,19 +72,12 @@ public class DisplayAndroid {
 
     public static final class AdaptiveRefreshRateInfo {
         public final boolean supportsAdaptiveRefreshRate;
-        public final float suggestedFrameRateNormal;
         public final float suggestedFrameRateHigh;
-        public final float @Nullable [] supportedFrameRates;
 
         public AdaptiveRefreshRateInfo(
-                boolean supportsAdaptiveRefreshRate,
-                float suggestedFrameRateNormal,
-                float suggestedFrameRateHigh,
-                float @Nullable [] supportedFrameRates) {
+                boolean supportsAdaptiveRefreshRate, float suggestedFrameRateHigh) {
             this.supportsAdaptiveRefreshRate = supportsAdaptiveRefreshRate;
-            this.suggestedFrameRateNormal = suggestedFrameRateNormal;
             this.suggestedFrameRateHigh = suggestedFrameRateHigh;
-            this.supportedFrameRates = supportedFrameRates;
         }
 
         @Override
@@ -95,9 +87,7 @@ public class DisplayAndroid {
             }
             AdaptiveRefreshRateInfo other = (AdaptiveRefreshRateInfo) obj;
             return supportsAdaptiveRefreshRate == other.supportsAdaptiveRefreshRate
-                    && suggestedFrameRateNormal == other.suggestedFrameRateNormal
-                    && suggestedFrameRateHigh == other.suggestedFrameRateHigh
-                    && Arrays.equals(supportedFrameRates, other.supportedFrameRates);
+                    && suggestedFrameRateHigh == other.suggestedFrameRateHigh;
         }
     }
 
@@ -126,7 +116,7 @@ public class DisplayAndroid {
     protected boolean mIsDisplayWideColorGamut;
     protected boolean mIsDisplayServerWideColorGamut;
     private AdaptiveRefreshRateInfo mAdaptiveRefreshRateInfo =
-            new AdaptiveRefreshRateInfo(false, 0.0f, 0.0f, null);
+            new AdaptiveRefreshRateInfo(false, 0.0f);
 
     protected static DisplayAndroidManager getManager() {
         return DisplayAndroidManager.getInstance();
