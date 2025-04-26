@@ -1,7 +1,7 @@
 Name: toktrie
 URL: https://crates.io/crates/toktrie
-Version: 0.7.14
-Revision: e8f2ad14c019fdd886f1878d54391d578947611f
+Version: 0.7.18
+Revision: bdc92c138b650e30bc203357bfe581bbd7ba8fb3
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/LICENSE
 Shipped: yes

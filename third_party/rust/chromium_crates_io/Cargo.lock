@@ -1287,7 +1287,7 @@ dependencies = [
 
 [[package]]
 name = "toktrie"
-version = "0.7.14"
+version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "anyhow",

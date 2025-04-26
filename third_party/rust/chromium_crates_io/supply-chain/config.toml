@@ -452,7 +452,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."tinystr:0.8.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."toktrie:0.7.14"]
+[policy."toktrie:0.7.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-bidi:0.3.18"]

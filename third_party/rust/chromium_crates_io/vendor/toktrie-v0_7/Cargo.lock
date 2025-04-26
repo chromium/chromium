@@ -106,7 +106,7 @@ dependencies = [
 
 [[package]]
 name = "toktrie"
-version = "0.7.14"
+version = "0.7.18"
 dependencies = [
  "anyhow",
  "bytemuck",

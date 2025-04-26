@@ -27,7 +27,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.14"
+  cargo_pkg_version = "0.7.18"
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
   library_configs -= [ "//build/config/coverage:default_coverage" ]
