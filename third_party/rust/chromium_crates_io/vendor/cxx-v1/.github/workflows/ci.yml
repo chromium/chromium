@@ -23,6 +23,7 @@ jobs:
       matrix:
         rust: [nightly, beta, stable, 1.82.0, 1.80.0, 1.77.0, 1.74.0, 1.73.0]
         os: [ubuntu]
+        cc: ['']
         flags: ['']
         include:
           - name: Cargo on macOS
@@ -32,19 +33,25 @@ jobs:
             rust: nightly-x86_64-pc-windows-msvc
             os: windows
             flags: /EHsc
+          - name: Clang
+            rust: nightly
+            cc: clang++
+            os: ubuntu
+            flags: -std=c++20 -Werror -Wall
           - name: C++14
             rust: nightly
             os: ubuntu
-            flags: -std=c++14
+            flags: -std=c++14 -Werror -Wall
           - name: C++17
             rust: nightly
             os: ubuntu
-            flags: -std=c++17
+            flags: -std=c++17 -Werror -Wall
           - name: C++20
             rust: nightly
             os: ubuntu
-            flags: -std=c++20
+            flags: -std=c++20 -Werror -Wall
     env:
+      CXX: ${{matrix.cc}}
       CXXFLAGS: ${{matrix.flags}}
       RUSTFLAGS: --cfg deny_warnings -Dwarnings
     timeout-minutes: 45
