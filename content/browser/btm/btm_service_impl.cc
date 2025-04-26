@@ -133,12 +133,6 @@ inline void UmaHistogramSiteToClearDomainLength(
       site_to_clear.length());
 }
 
-void OnDeletionFinished(base::OnceClosure finished_callback,
-                        base::Time deletion_start) {
-  UmaHistogramDeletionLatency(deletion_start);
-  std::move(finished_callback).Run();
-}
-
 net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
     const std::vector<std::string>& sites) {
   std::vector<net::CookiePartitionKey> keys;
@@ -647,21 +641,17 @@ void BtmServiceImpl::DeleteBtmEligibleState(
     std::erase(sites_to_clear, site_ctr.first);
   }
 
-  if (sites_to_clear.empty()) {
-    UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
-    std::move(callback).Run(std::vector<std::string>());
-    return;
-  }
-
-  UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
-
+  std::vector<std::string> filtered_sites_to_clear;
   for (const auto& site : sites_to_clear) {
     // TODO(crbug.com/40268849): Investigate and fix the presence of empty
     // site(s) in the `site_to_clear` list. Once this is fixed remove this loop
     // escape.
     if (site.empty()) {
+      UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
       continue;
     }
+    UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kEnforced);
+
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
         base::PassKey<BtmServiceImpl>(), site);
     ukm::builders::DIPS_Deletion(source_id)
@@ -671,56 +661,23 @@ void BtmServiceImpl::DeleteBtmEligibleState(
         // meantime).
         .SetShouldBlockThirdPartyCookies(true)
         .SetHasCookieException(false)
-        .SetIsDeletionEnabled(features::kBtmDeletionEnabled.Get())
+        .SetIsDeletionEnabled(true)
         .Record(ukm::UkmRecorder::Get());
+
+    filtered_sites_to_clear.push_back(site);
   }
 
-  if (features::kBtmDeletionEnabled.Get()) {
-    std::vector<std::string> filtered_sites_to_clear;
-
-    for (const auto& site : sites_to_clear) {
-      // TODO(crbug.com/40268849): Investigate and fix the presence of empty
-      // site(s) in the `site_to_clear` list. Once this is fixed remove this
-      // loop escape.
-      if (site.empty()) {
-        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
-        continue;
-      }
-      UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kEnforced);
-      filtered_sites_to_clear.push_back(site);
-    }
-
-    base::OnceClosure finish_callback = base::BindOnce(
-        std::move(callback), std::vector<std::string>(filtered_sites_to_clear));
-    if (filtered_sites_to_clear.empty()) {
-      std::move(finish_callback).Run();
-      return;
-    }
-
-    // Perform state deletion on the filtered list of sites.
-    RunDeletionTaskOnUIThread(std::move(filtered_sites_to_clear),
-                              std::move(finish_callback));
-  } else {
-    for (const auto& site : sites_to_clear) {
-      // TODO(crbug.com/40268849): Investigate and fix the presence of empty
-      // site(s) in the `site_to_clear` list. Once this is fixed remove this
-      // loop escape.
-      if (site.empty()) {
-        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
-        continue;
-      }
-      UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kDisallowed);
-    }
-
-    base::Time deletion_start = base::Time::Now();
-    // Storage init should be finished by now, so no need to delay until then.
-    storage_.AsyncCall(&BtmStorage::RemoveRows)
-        .WithArgs(std::move(sites_to_clear))
-        .Then(base::BindOnce(
-            &OnDeletionFinished,
-            base::BindOnce(std::move(callback), std::vector<std::string>()),
-            deletion_start));
+  UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
+  base::OnceClosure finish_callback = base::BindOnce(
+      std::move(callback), std::vector<std::string>(filtered_sites_to_clear));
+  if (filtered_sites_to_clear.empty()) {
+    std::move(finish_callback).Run();
+    return;
   }
+
+  // Perform state deletion on the filtered list of sites.
+  RunDeletionTaskOnUIThread(std::move(filtered_sites_to_clear),
+                            std::move(finish_callback));
 }
 
 void BtmServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,

@@ -392,7 +392,7 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -448,52 +448,12 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
               EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
 }
 
-TEST_F(BtmServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
-
-  // Record a bounce.
-  GURL url("https://example.com");
-  base::Time bounce = base::Time::FromSecondsSinceUnixEpoch(2);
-  RecordBounce(url, GURL("https://initial.com"), GURL("https://final.com"),
-               bounce, false,
-               base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage(GetService());
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
-
-  // Set the current time to just after the bounce happened.
-  AdvanceTimeTo(bounce + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify the BTM entry was not removed and a removal task was not posted to
-  // the BrowsingDataRemover(Delegate).
-  delegate_.VerifyAndClearExpectations();
-  EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce + grace_period + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify that the site's BTM entry WAS removed, but a removal task was NOT
-  // posted to the BrowsingDataRemover(Delegate) since
-  // `features::kBtmDeletionEnabled` is false.
-  delegate_.VerifyAndClearExpectations();
-  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
-
-  EXPECT_THAT(ukm_recorder,
-              EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
-}
-
 TEST_F(BtmServiceStateRemovalTest,
        BrowsingDataDeletion_Respects3PExceptionsFor3PC) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL excepted_3p_url("https://excepted-as-3p.com");
   GURL non_excepted_url("https://not-excepted.com");
@@ -536,7 +496,7 @@ TEST_F(BtmServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL excepted_1p_url("https://excepted-as-1p.com");
   GURL scoped_excepted_1p_url("https://excepted-as-1p-with-3p.com");
@@ -612,7 +572,7 @@ TEST_F(BtmServiceStateRemovalTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
   enabled_features.push_back(
-      {features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}}});
+      {features::kBtm, {{"triggering_action", "bounce"}}});
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(enabled_features, {});
 
@@ -701,7 +661,7 @@ TEST_F(
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   GURL blocked_1p_url("https://excepted-as-1p.com");
   GURL scoped_blocked_1p_url("https://excepted-as-1p-with-3p.com");
@@ -771,7 +731,7 @@ TEST_F(
 TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "true"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
   SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
 
   // Record a bounce.
@@ -858,7 +818,7 @@ class BtmServiceHistogramTest : public BtmServiceStateRemovalTest {
 TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify the histogram starts empty
   histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
@@ -892,45 +852,10 @@ TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
 }
 
-TEST_F(BtmServiceHistogramTest, Deletion_Disallowed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "false"}, {"triggering_action", "stateful_bounce"}});
-
-  // Verify the histogram is initially empty.
-  EXPECT_TRUE(histograms()
-                  .GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix)
-                  .empty());
-
-  // Record a bounce.
-  GURL url("https://example.com");
-  base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
-  RecordBounce(url, GURL("https://initial.com"), GURL("https://final.com"),
-               bounce_time, true,
-               base::BindRepeating([](const GURL& final_url) {}));
-  WaitOnStorage(GetService());
-
-  // Time-travel to after the grace period has ended for the bounce.
-  AdvanceTimeTo(bounce_time + grace_period + tiny_delta);
-  FireBtmTimer();
-  task_environment_.RunUntilIdle();
-
-  // Verify a deletion metric was emitted and the BTM entry was removed.
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
-  EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
-              testing::ContainerEq(expected_counts));
-  histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
-                                  BtmDeletionAction::kDisallowed, 1);
-  EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
-}
-
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -964,8 +889,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
 TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -999,8 +923,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
 TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm,
-      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+      features::kBtm, {{"triggering_action", "stateful_bounce"}});
 
   // Verify the histogram is initially empty.
   EXPECT_TRUE(histograms()
@@ -1033,7 +956,7 @@ TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
 TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kBtm, {{"delete", "false"}, {"triggering_action", "bounce"}});
+      features::kBtm, {{"triggering_action", "bounce"}});
 
   // Verify that the histograms start empty.
   histograms().ExpectTotalCount(kServerRedirectsDelayHist, 0);

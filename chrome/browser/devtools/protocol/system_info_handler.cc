@@ -20,7 +20,6 @@ protocol::Response SystemInfoHandler::GetFeatureState(
     bool* featureEnabled) {
   if (in_featureState == "DIPS") {
     *featureEnabled = base::FeatureList::IsEnabled(features::kBtm) &&
-                      features::kBtmDeletionEnabled.Get() &&
                       (features::kBtmTriggeringAction.Get() !=
                        content::BtmTriggeringAction::kNone);
     return protocol::Response::Success();

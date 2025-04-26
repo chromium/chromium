@@ -293,9 +293,6 @@ BASE_FEATURE(kBtmTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kBtmPersistedDatabaseEnabled{
     &kBtm, "persist_database", true};
 
-// Set whether BTM performs deletion.
-const base::FeatureParam<bool> kBtmDeletionEnabled{&kBtm, "delete", true};
-
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.

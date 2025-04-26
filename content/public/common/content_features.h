@@ -89,7 +89,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtm);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtmTtl);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kBtmPersistedDatabaseEnabled;
-CONTENT_EXPORT extern const base::FeatureParam<bool> kBtmDeletionEnabled;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kBtmGracePeriod;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kBtmTimerDelay;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
