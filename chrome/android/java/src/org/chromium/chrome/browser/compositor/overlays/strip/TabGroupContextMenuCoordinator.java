@@ -298,9 +298,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.open_new_tab_in_group_context_menu_item,
                         R.id.open_new_tab_in_group,
-                        R.drawable.ic_open_new_tab_in_group_24dp,
-                        R.color.default_icon_color_light_tint_list,
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
 
@@ -309,9 +306,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.ungroup_tab_group_menu_item,
                             R.id.ungroup_tab,
-                            R.drawable.ic_ungroup_tabs_24dp,
-                            R.color.default_icon_color_light_tint_list,
-                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
                             /* enabled= */ true));
         }
@@ -324,7 +318,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.share_tab_group_context_menu_item,
                             R.id.share_group,
-                            R.drawable.ic_group_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
         }
 
@@ -332,9 +326,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.tab_grid_dialog_toolbar_close_group,
                         R.id.close_tab_group,
-                        R.drawable.ic_tab_close_24dp,
-                        R.color.default_icon_color_light_tint_list,
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
 
@@ -345,7 +336,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_delete_group,
                             R.id.delete_tab_group,
-                            R.drawable.material_ic_delete_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
         }
     }
