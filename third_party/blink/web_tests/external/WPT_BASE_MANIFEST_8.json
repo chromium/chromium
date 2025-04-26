@@ -6429,6 +6429,15 @@
       ]
      ]
     },
+    "ranges": {
+     "Range-compareBoundaryPoints-crash.html": [
+      "673eeb6182844b5097d6edb0699a7b480c50b404",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "svg-insert-crash.html": [
      "80eec1fba7ddc50db35fa53f7f4e72b59e6e31c7",
      [
@@ -409020,6 +409029,14 @@
        ],
        "get_all_cookies.sub.html.ini": [
         "c733dac7c389f68cdea6d6a94c8884d6075360e9",
+        []
+       ],
+       "get_all_cookies.sub.https.html.ini": [
+        "ede46b74c64027d7e350664f331c858eeae9a81f",
+        []
+       ],
+       "get_named_cookie.sub.https.html.ini": [
+        "05352bf82a1347bbb966f12fe99a0f30205fc829",
         []
        ],
        "minimize_restore_popup.html.ini": [
