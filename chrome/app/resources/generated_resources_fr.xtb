@@ -5592,7 +5592,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4890585766056792498">Protégez-vous contre les sites dangereux</translation>
 <translation id="4890773143211625964">Afficher les paramètres d'imprimante avancés</translation>
 <translation id="4891089016822695758">Forum bêta</translation>
-<translation id="4891795846939730995">Pour accorder de nouveau l'accès, connectez-vous à un site ou à une appli à l'aide d'une clé d'accès enregistrée</translation>
+<translation id="4891795846939730995">Pour rétablir l'accès aux clés sur cet appareil, connectez-vous à un site ou à une appli avec une clé d'accès enregistrée.</translation>
 <translation id="4892229439761351791">Le site peut utiliser le Bluetooth</translation>
 <translation id="4892328231620815052">Lorsque vous serez prêt, retrouvez votre liste de lecture dans "Favoris et listes"</translation>
 <translation id="489258173289528622">Lorsque l'appareil est inactif et fonctionne sur batterie</translation>
@@ -10138,7 +10138,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="815347678407292813">Les applis et les sites Web pourraient toujours voir votre position via votre adresse IP</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="815491593104042026">Petit problème… L'authentification a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>
-<translation id="8155214519979960765">Pour vous reconnecter avec une clé d'accès sur cet appareil, vous devez confirmer votre identité. Si vous avez une autre option de connexion, comme un mot de passe, vous pouvez l'utiliser à la place.</translation>
+<translation id="8155214519979960765">Pour vous reconnecter avec une clé d'accès sur cet appareil, vous devrez confirmer votre identité. Si vous disposez d'une autre option de connexion, comme un mot de passe, vous pourrez l'utiliser à la place.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Aucun mot de passe compromis trouvé}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8157248655669507702">Activez les données mobiles afin d'installer un profil eSIM</translation>
 <translation id="8157704005178149728">Configuration de la supervision…</translation>
@@ -10644,7 +10644,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
-<translation id="8513357934662532537">Pour importer des mots de passe dans <ph name="BRAND" /> pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV.</translation>
+<translation id="8513357934662532537">Pour importer des mots de passe dans le <ph name="BRAND" /> pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV.</translation>
 <translation id="8514746246728959655">Essayer une autre clé de sécurité</translation>
 <translation id="8514828975162859845">Cake pops</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (déconseillé)</translation>

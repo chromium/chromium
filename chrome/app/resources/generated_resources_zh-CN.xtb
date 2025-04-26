@@ -1153,7 +1153,7 @@
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{卸载“<ph name="APP_NAME" />”也会卸载下面这个应用：}other{卸载“<ph name="APP_NAME" />”也会卸载下面这些应用：}}</translation>
 <translation id="1786290960428378411">请求进行读取和更改</translation>
 <translation id="1787350673646245458">用户图片</translation>
-<translation id="1790976235243700817">移除访问权限</translation>
+<translation id="1790976235243700817">撤消访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
 <translation id="1794212650797661990">隐藏 <ph name="DOMAIN" /> 的密码</translation>
@@ -1176,7 +1176,7 @@
 <translation id="1806335016774576568">切换到另一个已打开的应用</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1808805149659872686">新建条目</translation>
-<translation id="1809201888580326312">您已选择不让系统保存用于登录这些网站和应用的密码</translation>
+<translation id="1809201888580326312">您已选择不保存用于登录这些网站和应用的密码</translation>
 <translation id="1809734401532861917">将我的书签、历史记录、密码和其他设置添加至 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">如需在手机上使用您已保存的密码，请扫描二维码，下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
 <translation id="1810366086647840386">映像服务器</translation>
@@ -10300,7 +10300,7 @@
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
 <translation id="8276850948802942358">详细了解如何向网站授予对第三方 Cookie 的临时使用权限</translation>
-<translation id="8277907305629781277">您在 <ph name="DATE" />创建了此通行密钥</translation>
+<translation id="8277907305629781277">您创建此通行密钥的日期为 <ph name="DATE" /></translation>
 <translation id="827966378414194229">使用头部动作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">网站使用的语言</translation>
 <translation id="8280848878018088610">图片描绘了一种黑暗氛围，海中巨浪翻滚，背景中有一座奇幻的城市和城堡。</translation>
