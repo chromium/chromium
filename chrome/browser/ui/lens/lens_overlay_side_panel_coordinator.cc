@@ -126,9 +126,7 @@ SearchQuery::~SearchQuery() = default;
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
     LensSearchController* lens_search_controller)
-    : lens_search_controller_(lens_search_controller) {
-  initialization_data_ = std::make_unique<SidePanelInitializationData>();
-}
+    : lens_search_controller_(lens_search_controller) {}
 
 LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
   // If the coordinator is destroyed before the web view, clear the reference
@@ -146,6 +144,9 @@ LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   GetSidePanelUI(GetLensOverlayController())
       ->Show(SidePanelEntry::Id::kLensOverlayResults);
   GetLensOverlayController()->NotifyResultsPanelOpened();
+
+  // Create the initialization data for this journey.
+  initialization_data_ = std::make_unique<SidePanelInitializationData>();
 
   // Store reference to the side panel coordinator for this journey.
   side_panel_coordinator_ = lens_search_controller_->GetTabInterface()
@@ -586,6 +587,15 @@ void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
   // Remove the reference to the side panel coordinator to prevent dangling
   // pointers.
   side_panel_coordinator_ = nullptr;
+
+  // Cleanup internal state.
+  side_panel_receiver_.reset();
+  side_panel_page_.reset();
+  initialization_data_.reset();
+  pending_side_panel_url_.reset();
+  side_panel_should_show_error_page_ = false;
+  side_panel_new_tab_url_ = GURL();
+  side_panel_result_status_ = lens::SidePanelResultStatus::kUnknown;
 
   state_ = State::kOff;
 }
