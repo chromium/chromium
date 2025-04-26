@@ -36,11 +36,10 @@ namespace ash::boca {
 // static
 void BabelOrcaManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  constexpr char kEnglish[] = "en";
   registry->RegisterBooleanPref(babelorca::prefs::kCaptionBubbleExpanded,
                                 false);
   registry->RegisterStringPref(babelorca::prefs::kTranslateTargetLanguageCode,
-                               kEnglish);
+                               "");
   registry->RegisterStringPref(babelorca::prefs::kTachyonClientUuid, "");
 }
 
@@ -53,12 +52,13 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
     base::RepeatingClosure on_local_caption_closed_cb,
     PrefService* pref_service,
-    const std::string& application_locale) {
+    const std::string& application_locale,
+    const std::string& caption_language) {
   auto caption_controller = std::make_unique<babelorca::CaptionController>(
       std::move(caption_bubble_context), pref_service, application_locale,
       std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
-          /*caption_language_code=*/application_locale,
+          /*caption_language_code=*/caption_language,
           on_local_caption_closed_cb));
   ControllerFactory controller_factory =
       base::BindOnce(babelorca::BabelOrcaProducer::Create, url_loader_factory,
@@ -79,12 +79,13 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
     base::RepeatingClosure on_local_caption_closed_cb,
     PrefService* pref_service,
-    const std::string& application_locale) {
+    const std::string& application_locale,
+    const std::string& caption_language) {
   auto caption_controller = std::make_unique<babelorca::CaptionController>(
       std::move(caption_bubble_context), pref_service, application_locale,
       std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
-          /*caption_language_code=*/application_locale,
+          /*caption_language_code=*/caption_language,
           on_local_caption_closed_cb));
   ControllerFactory controller_factory = base::BindOnce(
       babelorca::BabelOrcaConsumer::Create, url_loader_factory,

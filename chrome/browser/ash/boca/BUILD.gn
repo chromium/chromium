@@ -40,6 +40,7 @@ static_library("boca") {
     "//components/live_caption",
     "//components/live_caption:live_translate",
     "//components/signin/public/identity_manager",
+    "//components/soda:constants",
     "//components/user_manager",
     "//extensions/browser",
     "//google_apis:google_apis",
