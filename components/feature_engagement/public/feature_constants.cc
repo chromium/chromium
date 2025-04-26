@@ -125,6 +125,9 @@ BASE_FEATURE(kIPHTabAudioMutingFeature,
 BASE_FEATURE(kIPHPasswordsSavePrimingPromoFeature,
              "IPH_PasswordsSavePrimingPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPasswordsSaveRecoveryPromoFeature,
+             "IPH_PasswordsSaveRecoveryPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPasswordsManagementBubbleAfterSaveFeature,
              "IPH_PasswordsManagementBubbleAfterSave",
              base::FEATURE_ENABLED_BY_DEFAULT);
