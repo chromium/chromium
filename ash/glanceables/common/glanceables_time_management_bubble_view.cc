@@ -135,7 +135,8 @@ GlanceablesTimeManagementBubbleView::InitParams::~InitParams() = default;
 
 GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
     InitParams params)
-    : context_(params.context),
+    : views::AnimationDelegateViews(this),
+      context_(params.context),
       combobox_model_(std::move(params.combobox_model)) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
