@@ -91,7 +91,7 @@ const char kLVFSMirrorBaseURL[] =
 constexpr std::string_view kMirrorJcatFileName = "firmware.xml.xz.jcat";
 constexpr std::string_view kMirrorZipFileName = "firmware.xml.gz";
 const char kLocalFirmwareBasePath[] = "/var/lib/fwupd/metadata/";
-const char kLocalMetadataFileName[] = "metadata.xml.zst";
+const char kLocalMetadataFileName[] = "firmware.xml.zst";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
