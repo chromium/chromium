@@ -8,6 +8,8 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_vm.h"
+#include "base/check_op.h"
+#include "base/debug/alias.h"
 
 namespace base::subtle {
 
@@ -29,8 +31,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
+  PermissionModeCheckResult result =
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
+  base::debug::Alias(&result);
+  CHECK_EQ(PermissionModeCheckResult::kOk, result);
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
@@ -155,7 +159,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+PlatformSharedMemoryRegion::PermissionModeCheckResult
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -172,21 +177,19 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
         << "vm_deallocate";
   } else if (kr != KERN_INVALID_RIGHT) {
     MACH_LOG(ERROR, kr) << "vm_map";
-    return false;
+    return PermissionModeCheckResult::kVmMapFailed;
   }
 
   bool is_read_only = kr == KERN_INVALID_RIGHT;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "VM region has a wrong protection mask: it is"
-               << (is_read_only ? " " : " not ") << "read-only but it should"
-               << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return expected_read_only
+               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
+               : PermissionModeCheckResult::kExpectedWritableButNot;
   }
 
-  return true;
+  return PermissionModeCheckResult::kOk;
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

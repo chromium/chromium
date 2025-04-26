@@ -7,6 +7,8 @@
 #include <sys/mman.h>
 
 #include "base/bits.h"
+#include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
@@ -54,7 +56,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size));
+  PermissionModeCheckResult result =
+      CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size);
+  base::debug::Alias(&result);
+  CHECK_EQ(PermissionModeCheckResult::kOk, result);
 
   return PlatformSharedMemoryRegion(std::move(fd), mode, size, guid);
 }
@@ -160,27 +165,26 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   return PlatformSharedMemoryRegion(std::move(scoped_fd), mode, size, guid);
 }
 
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+PlatformSharedMemoryRegion::PermissionModeCheckResult
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   int prot = GetAshmemRegionProtectionMask(handle);
   if (prot < 0) {
-    return false;
+    return PermissionModeCheckResult::kFailedToGetAshmemRegionProtectionMask;
   }
 
   bool is_read_only = (prot & PROT_WRITE) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "Ashmem region has a wrong protection mask: it is"
-               << (is_read_only ? " " : " not ") << "read-only but it should"
-               << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return expected_read_only
+               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
+               : PermissionModeCheckResult::kExpectedWritableButNot;
   }
 
-  return true;
+  return PermissionModeCheckResult::kOk;
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

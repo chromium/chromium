@@ -9,6 +9,9 @@
 #include <stdint.h>
 
 #include "base/bits.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -116,8 +119,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
+  PermissionModeCheckResult result =
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
+  base::debug::Alias(&result);
+  CHECK_EQ(PermissionModeCheckResult::kOk, result);
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
@@ -242,7 +247,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+PlatformSharedMemoryRegion::PermissionModeCheckResult
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -261,13 +267,12 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    DLOG(ERROR) << "File mapping handle has wrong access rights: it is"
-                << (is_read_only ? " " : " not ") << "read-only but it should"
-                << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return expected_read_only
+               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
+               : PermissionModeCheckResult::kExpectedWritableButNot;
   }
 
-  return true;
+  return PermissionModeCheckResult::kOk;
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

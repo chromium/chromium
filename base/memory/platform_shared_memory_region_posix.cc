@@ -7,6 +7,10 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
+#include <optional>
+
+#include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -33,23 +37,25 @@ using ScopedPathUnlinker =
     ScopedGeneric<const FilePath*, ScopedPathUnlinkerTraits>;
 
 #if !BUILDFLAG(IS_NACL)
-bool CheckFDAccessMode(int fd, int expected_mode) {
+enum class FDAccessModeError {
+  kFcntlFailed,
+  kMismatch,
+};
+
+std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
   int fd_status = fcntl(fd, F_GETFL);
   if (fd_status == -1) {
     // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
     PLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
-    return false;
+    return FDAccessModeError::kFcntlFailed;
   }
 
   int mode = fd_status & O_ACCMODE;
   if (mode != expected_mode) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "Descriptor access mode (" << mode
-               << ") differs from expected (" << expected_mode << ")";
-    return false;
+    return FDAccessModeError::kMismatch;
   }
 
-  return true;
+  return std::nullopt;
 }
 #endif  // !BUILDFLAG(IS_NACL)
 
@@ -85,8 +91,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
+  PermissionModeCheckResult result =
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
+  base::debug::Alias(&result);
+  CHECK_EQ(PermissionModeCheckResult::kOk, result);
 
   switch (mode) {
     case Mode::kReadOnly:
@@ -275,33 +283,49 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 #endif  // !BUILDFLAG(IS_NACL)
 }
 
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+PlatformSharedMemoryRegion::PermissionModeCheckResult
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
 #if !BUILDFLAG(IS_NACL)
-  if (!CheckFDAccessMode(handle.fd,
-                         mode == Mode::kReadOnly ? O_RDONLY : O_RDWR)) {
-    return false;
+  if (auto result = CheckFDAccessMode(
+          handle.fd, mode == Mode::kReadOnly ? O_RDONLY : O_RDWR);
+      result.has_value()) {
+    switch (*result) {
+      case FDAccessModeError::kFcntlFailed:
+        return PermissionModeCheckResult::kFcntlFailed;
+      case FDAccessModeError::kMismatch:
+        return mode == Mode::kReadOnly
+                   ? PermissionModeCheckResult::kExpectedReadOnlyButNot
+                   : PermissionModeCheckResult::kExpectedWritableButNot;
+    }
   }
 
   if (mode == Mode::kWritable) {
-    return CheckFDAccessMode(handle.readonly_fd, O_RDONLY);
+    if (auto result = CheckFDAccessMode(handle.readonly_fd, O_RDONLY);
+        result.has_value()) {
+      switch (*result) {
+        case FDAccessModeError::kFcntlFailed:
+          return PermissionModeCheckResult::kFcntlFailed;
+        case FDAccessModeError::kMismatch:
+          return PermissionModeCheckResult::kReadOnlyFdNotReadOnly;
+      }
+    }
+    return PermissionModeCheckResult::kOk;
   }
 
   // The second descriptor must be invalid in kReadOnly and kUnsafe modes.
   if (handle.readonly_fd != -1) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "The second descriptor must be invalid";
-    return false;
+    return PermissionModeCheckResult::kUnexpectedReadOnlyFd;
   }
 
-  return true;
+  return PermissionModeCheckResult::kOk;
 #else
   // fcntl(_, F_GETFL) is not implemented on NaCl.
   // We also cannot try to mmap() a region as writable and look at the return
   // status because the plugin process crashes if system mmap() fails.
-  return true;
+  return PermissionModeCheckResult::kOk;
 #endif  // !BUILDFLAG(IS_NACL)
 }
 

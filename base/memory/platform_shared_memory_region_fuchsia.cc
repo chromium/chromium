@@ -10,6 +10,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 
@@ -38,8 +39,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
-                                                       mode, size));
+  PermissionModeCheckResult result =
+      CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
+                                                     mode, size);
+  base::debug::Alias(&result);
+  CHECK_EQ(PermissionModeCheckResult::kOk, result);
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
@@ -143,7 +147,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+PlatformSharedMemoryRegion::PermissionModeCheckResult
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -155,21 +160,19 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   if (basic.type != ZX_OBJ_TYPE_VMO) {
     // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
     LOG(ERROR) << "Received zircon handle is not a VMO";
-    return false;
+    return PermissionModeCheckResult::kNotVmo;
   }
 
   bool is_read_only = (basic.rights & (ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE)) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "VMO object has wrong access rights: it is"
-               << (is_read_only ? " " : " not ") << "read-only but it should"
-               << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return expected_read_only
+               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
+               : PermissionModeCheckResult::kExpectedWritableButNot;
   }
 
-  return true;
+  return PermissionModeCheckResult::kOk;
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

@@ -333,25 +333,31 @@ TEST_F(PlatformSharedMemoryRegionTest,
             region.GetPlatformHandle(), mode, region.GetSize());
   };
 
+  using PermissionModeCheckResult =
+      PlatformSharedMemoryRegion::PermissionModeCheckResult;
   // Check kWritable region.
   PlatformSharedMemoryRegion region =
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
-  EXPECT_TRUE(check(region, Mode::kWritable));
-  EXPECT_FALSE(check(region, Mode::kReadOnly));
+  EXPECT_EQ(PermissionModeCheckResult::kOk, check(region, Mode::kWritable));
+  EXPECT_EQ(PermissionModeCheckResult::kExpectedReadOnlyButNot,
+            check(region, Mode::kReadOnly));
 
   // Check kReadOnly region.
   ASSERT_TRUE(region.ConvertToReadOnly());
-  EXPECT_TRUE(check(region, Mode::kReadOnly));
-  EXPECT_FALSE(check(region, Mode::kWritable));
-  EXPECT_FALSE(check(region, Mode::kUnsafe));
+  EXPECT_EQ(PermissionModeCheckResult::kOk, check(region, Mode::kReadOnly));
+  EXPECT_EQ(PermissionModeCheckResult::kExpectedWritableButNot,
+            check(region, Mode::kWritable));
+  EXPECT_EQ(PermissionModeCheckResult::kExpectedWritableButNot,
+            check(region, Mode::kUnsafe));
 
   // Check kUnsafe region.
   PlatformSharedMemoryRegion region2 =
       PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
   ASSERT_TRUE(region2.IsValid());
-  EXPECT_TRUE(check(region2, Mode::kUnsafe));
-  EXPECT_FALSE(check(region2, Mode::kReadOnly));
+  EXPECT_EQ(PermissionModeCheckResult::kOk, check(region2, Mode::kUnsafe));
+  EXPECT_EQ(PermissionModeCheckResult::kExpectedReadOnlyButNot,
+            check(region2, Mode::kReadOnly));
 }
 
 // Tests that it's impossible to create read-only platform shared memory region.
