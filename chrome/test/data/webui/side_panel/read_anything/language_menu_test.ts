@@ -182,9 +182,64 @@ suite('LanguageMenu', () => {
             'English (United States)', getLanguageLineItems()[0]!);
         assertEquals(true, getNoResultsFoundMessage()!.hidden);
       });
+
+      test('it matches the language code', async () => {
+        getLanguageSearchField().value = 'en-us';
+        await microtasksFinished();
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            'English (United States)', getLanguageLineItems()[0]!);
+        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+      });
+    });
+
+    suite('with display names with accent', () => {
+      const portugueseDisplayName = 'Português (Brasil)';
+
+      setup(() => {
+        availableVoices = [
+          createSpeechSynthesisVoice(
+              {name: portugueseDisplayName, lang: 'pt-br'}),
+        ];
+        languageMenu.localeToDisplayName = {
+          'pt-br': portugueseDisplayName,
+        };
+        languageMenu.availableVoices = availableVoices;
+        return drawLanguageMenu();
+      });
+
+      test('it matches search with accent', async () => {
+        getLanguageSearchField().value = 'português';
+        await microtasksFinished();
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            portugueseDisplayName, getLanguageLineItems()[0]!);
+        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+      });
+
+      test('it matches search with no accent', async () => {
+        getLanguageSearchField().value = 'portugues';
+        await microtasksFinished();
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            portugueseDisplayName, getLanguageLineItems()[0]!);
+        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+      });
+
+      test('it matches the language code', async () => {
+        getLanguageSearchField().value = 'pt-';
+        await microtasksFinished();
+
+        assertEquals(1, getLanguageLineItems().length);
+        assertLanguageLineWithTextAndSwitch(
+            portugueseDisplayName, getLanguageLineItems()[0]!);
+        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+      });
     });
   });
-
   suite('with multiple languages', () => {
     setup(() => {
       availableVoices = [
