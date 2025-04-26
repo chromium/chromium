@@ -388,24 +388,28 @@ int16_t Range::compareBoundaryPoints(unsigned how,
 
   Node* this_cont = commonAncestorContainer();
   Node* source_cont = source_range->commonAncestorContainer();
-  if (this_cont->GetDocument() != source_cont->GetDocument()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kWrongDocumentError,
-        "The source range is in a different document than this range.");
-    return 0;
-  }
+  if (this_cont && source_cont) {
+    if (this_cont->GetDocument() != source_cont->GetDocument()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kWrongDocumentError,
+          "The source range is in a different document than this range.");
+      return 0;
+    }
 
-  Node* this_top = this_cont;
-  Node* source_top = source_cont;
-  while (this_top->parentNode())
-    this_top = this_top->parentNode();
-  while (source_top->parentNode())
-    source_top = source_top->parentNode();
-  if (this_top != source_top) {  // in different DocumentFragments
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kWrongDocumentError,
-        "The source range is in a different document than this range.");
-    return 0;
+    Node* this_top = this_cont;
+    Node* source_top = source_cont;
+    while (this_top->parentNode()) {
+      this_top = this_top->parentNode();
+    }
+    while (source_top->parentNode()) {
+      source_top = source_top->parentNode();
+    }
+    if (this_top != source_top) {  // in different DocumentFragments
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kWrongDocumentError,
+          "The source range is in a different document than this range.");
+      return 0;
+    }
   }
 
   switch (how) {
@@ -1674,7 +1678,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
 
   // Stores the elements selected by the range.
   HeapHashSet<Member<const Node>> selected_elements;
-  for (Node* node = FirstNode(); node != stop_node;
+  for (Node* node = FirstNode(); node && node != stop_node;
        node = NodeTraversal::Next(*node)) {
     if (!node->IsElementNode())
       continue;
@@ -1687,7 +1691,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
     }
   }
 
-  for (const Node* node = FirstNode(); node != stop_node;
+  for (const Node* node = FirstNode(); node && node != stop_node;
        node = NodeTraversal::Next(*node)) {
     auto* element_node = DynamicTo<Element>(node);
     if (element_node) {
