@@ -73,6 +73,14 @@ constexpr char kServerError[] =
           }
     })";
 
+constexpr char kSetupDemoAccountFailedRetriableResponse[] =
+    R"({
+      "retry_details":{},
+      "status":{
+        "code":8
+      }
+    })";
+
 constexpr char kSetupDemoAccountUrl[] =
     "https://demomode-pa.googleapis.com/v1/accounts";
 
@@ -645,6 +653,33 @@ TEST_F(DemoLoginControllerTest, LogServerError) {
   // Trigger auto sign in:
   ConfigureAutoLoginSetting();
   loop.Run();
+}
+
+TEST_F(DemoLoginControllerTest, SetupDemoAccountErrorRetriable) {
+  SetUpPolicyClient();
+  test_url_loader_factory_.AddResponse(
+      GetSetupUrl().spec(), kSetupDemoAccountFailedRetriableResponse);
+
+  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
+  base::RunLoop loop;
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting([&]() {
+        // Expect the setup request to fail by checking metrics.
+        histogram_tester_.ExpectTotalCount(
+            kSetupDemoAccountRequestResultHistogram, 1);
+        histogram_tester_.ExpectBucketCount(
+            kSetupDemoAccountRequestResultHistogram,
+            DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+                kQuotaExhaustedRetriable,
+            1);
+        EXPECT_EQ(DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+                  DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
+        loop.Quit();
+      }));
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
+  loop.Run();
+  EXPECT_TRUE(demo_mode::GetShouldScheduleLogoutForMGS());
 }
 
 // TODO(crbug.com/372771485): Add more request fail test cases.

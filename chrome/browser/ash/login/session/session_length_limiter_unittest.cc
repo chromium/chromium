@@ -20,7 +20,10 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -825,6 +828,10 @@ class DemoModeSessionLengthLimiterTest : public SessionLengthLimiterTest {
     SessionLengthLimiterTest::SetUp();
     features_.InitAndEnableFeature(features::kDemoModeSignIn);
 
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::FakePowerManagerClient::Get());
+
     settings_helper_.InstallAttributes()->SetDemoMode();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
@@ -837,6 +844,7 @@ class DemoModeSessionLengthLimiterTest : public SessionLengthLimiterTest {
 // Verifies that local state is correctly updated when waiting for initial user
 // activity is toggled and no user activity has occurred yet.
 TEST_F(DemoModeSessionLengthLimiterTest, DemoModeForceNotWaitUserActivity) {
+  demo_mode::SetDoNothingWhenPowerIdle();
   CreateSessionLengthLimiter(false);
 
   // Verify that the pref indicating user activity was not set and the session

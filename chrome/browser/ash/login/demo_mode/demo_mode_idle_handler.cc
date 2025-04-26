@@ -10,13 +10,18 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/rand_util.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/prefs/pref_service.h"
@@ -29,7 +34,12 @@ namespace {
 
 // Amount of idle time for re-launch demo mode swa with demo account login.
 // TODO(crbug.com/380941267): Use a policy to control this the idle duration.
-const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
+constexpr base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
+
+// The range of logout delay for current fallback MGS.
+// TODO(crbugs.com/355727308): Get logout delay from server response.
+constexpr base::TimeDelta kLogoutDelayMin = base::Minutes(60);
+constexpr base::TimeDelta kLogoutDelayMax = base::Minutes(90);
 
 // The list of prefs that are reset on the start of each shopper session.
 const char* const kPrefsPrefixToReset[] = {
@@ -90,6 +100,14 @@ void CleanUpDriveFs(
       FROM_HERE, base::BindOnce(&DeleteAllFilesUnderPath, root));
 }
 
+void LogoutCurrentSession() {
+  if (Shell::HasInstance()) {
+    SYSLOG(INFO)
+        << "Logout current demo mode session for retrying sign in demo account";
+    Shell::Get()->session_controller()->RequestSignOut();
+  }
+}
+
 }  // namespace
 
 DemoModeIdleHandler::DemoModeIdleHandler(
@@ -99,11 +117,34 @@ DemoModeIdleHandler::DemoModeIdleHandler(
       blocking_task_runner_(blocking_task_runner),
       file_cleaner_(blocking_task_runner) {
   user_activity_observer_.Observe(ui::UserActivityDetector::Get());
+
+  // Maybe schedule a logout for current session. The timer will be reset if
+  // there's any user activity.
+  if (demo_mode::GetShouldScheduleLogoutForMGS()) {
+    mgs_logout_timer_.emplace();
+    SYSLOG(INFO) << "Start Logout timer to retry login with demo account.";
+    mgs_logout_timer_->Start(
+        FROM_HERE, base::RandTimeDelta(kLogoutDelayMin, kLogoutDelayMax),
+        base::BindOnce(&LogoutCurrentSession));
+  }
 }
 
 DemoModeIdleHandler::~DemoModeIdleHandler() = default;
 
 void DemoModeIdleHandler::OnUserActivity(const ui::Event* event) {
+  // If there's user activity, no need `mgs_logout_timer_` any more. Device will
+  // auto logout after 90s idle if logout is required.
+  if (mgs_logout_timer_ && mgs_logout_timer_->IsRunning()) {
+    mgs_logout_timer_.reset();
+  }
+
+  // Check whether the power policy has been overridden and a 24 hour session is
+  // enable. If the 24h session is disabled, return early. The power policy will
+  // detect device idle and handle session behaviour.
+  if (!demo_mode::ForceSessionLengthCountFromSessionStarts()) {
+    return;
+  }
+
   // We only start the `idle_detector_` timer on the first user activity. If
   // the user is already active, we don't need to do this again.
   if (is_user_active_) {

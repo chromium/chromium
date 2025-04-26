@@ -115,7 +115,13 @@ class ASH_EXPORT DemoSessionMetricsRecorder
             // policy not connected.
     kEmptyDMToken = 7,   // The DM Token on the device is empty.
     kEmptyClientID = 8,  // The Client ID on the device is empty.
-    kMaxValue = kEmptyClientID,
+
+    // TODO(crbugs.com/355727308): update xml enum.
+    kQuotaExhaustedRetriable =
+        9,  // Server quota exhausted, might be max QPS reached.
+    kQuotaExhaustedNotRetriable =
+        10,  // Server quota exhausted, device might be blocked.
+    kMaxValue = kQuotaExhaustedNotRetriable,
   };
 
   // Types of the current demo session.

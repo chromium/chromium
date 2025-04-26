@@ -14,6 +14,10 @@ namespace ash::demo_mode {
 
 namespace {
 bool g_force_enable_demo_account_sign_in = false;
+
+bool g_should_schedule_logout_for_mgs = false;
+
+bool g_is_24h_session_enabled = false;
 }
 
 bool IsDeviceInDemoMode() {
@@ -57,10 +61,19 @@ bool IsDemoAccountSignInEnabled() {
 void SetDoNothingWhenPowerIdle() {
   chromeos::PowerPolicyController::Get()
       ->SetShouldDoNothingWhenIdleInDemoMode();
+  g_is_24h_session_enabled = true;
 }
 
 bool ForceSessionLengthCountFromSessionStarts() {
-  return IsDemoAccountSignInEnabled();
+  return g_is_24h_session_enabled;
+}
+
+void TurnOnScheduleLogoutForMGS() {
+  g_should_schedule_logout_for_mgs = true;
+}
+
+bool GetShouldScheduleLogoutForMGS() {
+  return g_should_schedule_logout_for_mgs;
 }
 
 }  // namespace ash::demo_mode
