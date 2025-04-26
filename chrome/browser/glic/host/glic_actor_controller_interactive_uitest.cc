@@ -36,9 +36,6 @@ using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::ContentAttributes;
 using ::optimization_guide::proto::ContentNode;
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-
 std::string EncodeActionProto(const BrowserAction& action) {
   return base::Base64Encode(action.SerializeAsString());
 }
@@ -151,6 +148,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     return ExecuteAction(PassthroughProvider(action),
                          std::move(context_options), expected_error);
   }
+  // Starts a new task by executing an initial navigate action to `task_url` to
+  // create a new tab. The new tab can then be referenced by the identifier
+  // passed in `new_tab_id`.
+  auto StartActorTaskInNewTab(const GURL& task_url,
+                              ui::ElementIdentifier new_tab_id) {
+    BrowserAction start_navigate = actor::MakeNavigate(task_url.spec());
+
+    return Steps(InstrumentNextTab(new_tab_id),
+                 ExecuteAction(start_navigate, AnnotationsOnlyContextOptions()),
+                 WaitForWebContentsReady(new_tab_id, task_url));
+  }
 
   // Stops a running task by calling the glic StopActingTask API.
   auto StopActorTask() {
@@ -163,16 +171,6 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         })));
   }
 
-  // Starts a new task by executing an initial navigate action to `task_url` to
-  // create a new tab. The new tab can then be referenced by the identifier
-  // passed in `new_tab_id`.
-  auto StopActorTask(const GURL& task_url, ui::ElementIdentifier new_tab_id) {
-    BrowserAction start_navigate = actor::MakeNavigate(task_url.spec());
-
-    return Steps(InstrumentNextTab(new_tab_id),
-                 ExecuteAction(start_navigate, AnnotationsOnlyContextOptions()),
-                 WaitForWebContentsReady(new_tab_id, task_url));
-  }
 
   // Returns a callback that builds an encoded proto for a click action on a
   // ContentNode that matches the passed in predicate.
@@ -220,21 +218,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         .Set("viewportScreenshot", false);
   }
 
-  // Starts a new task by executing the initial navigate to `task_url` to create
-  // a new tab. The new tab can then be referenced by `kNewActorTabId`.
-  // TODO(crbug.com/409565232): Split out opening a Glic window and starting a
-  // task.
-  auto StartTaskInNewTab(const GURL& task_url) {
+  auto InitializeWithOpenGlicWindow() {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCurrentActiveTabId);
+
+    // Navigate to ensure the initial tab has some valid content loaded that the
+    // Glic window can observe.
     const GURL start_url =
         embedded_test_server()->GetURL("/actor/blank.html?start");
-    BrowserAction start_navigate = actor::MakeNavigate(task_url.spec());
 
-    return Steps(InstrumentTab(kActiveTabId),
-                 NavigateWebContents(kActiveTabId, start_url),
-                 OpenGlicWindow(GlicWindowMode::kAttached),
-                 InstrumentNextTab(kNewActorTabId),
-                 ExecuteAction(start_navigate, AnnotationsOnlyContextOptions()),
-                 WaitForWebContentsReady(kNewActorTabId, task_url));
+    return Steps(InstrumentTab(kCurrentActiveTabId),
+                 NavigateWebContents(kCurrentActiveTabId, start_url),
+                 OpenGlicWindow(GlicWindowMode::kAttached));
   }
 
   // Retrieves AnnotatedPageContent for the currently focused tab (and caches
@@ -299,15 +293,13 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
-  const GURL start_url =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   BrowserAction navigate = actor::MakeNavigate(task_url.spec());
 
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  NavigateWebContents(kActiveTabId, start_url),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
+  RunTestSequence(InitializeWithOpenGlicWindow(),
                   InstrumentNextTab(kNewActorTabId),
                   ExecuteAction(navigate, UpdatedContextOptions()),
                   WaitForWebContentsReady(kNewActorTabId, task_url));
@@ -315,6 +307,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        UsesExistingActorTabOnSubsequentNavigate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   const GURL second_navigate_url =
@@ -322,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
   BrowserAction second_navigate =
       actor::MakeNavigate(second_navigate_url.spec());
 
-  RunTestSequence(StartTaskInNewTab(task_url),
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
                   // Now that the task is started in a new tab, do the
                   // second navigation.
                   ExecuteAction(second_navigate, UpdatedContextOptions()),
@@ -330,12 +324,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
-  RunTestSequence(StartTaskInNewTab(task_url), GetPageContextFromFocusedTab(),
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
                   ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                                 UpdatedContextOptions()),
                   WaitForJsResult(kNewActorTabId, "() => button_clicked"));
@@ -344,17 +341,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionSucceeds) {
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
   std::string encodedProto = base::Base64Encode("invalid serialized bytes");
   RunTestSequence(
-      InstrumentTab(kActiveTabId),
-      NavigateWebContents(kActiveTabId,
-                          embedded_test_server()->GetURL(
-                              "/actor/page_with_clickable_element.html")),
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      InitializeWithOpenGlicWindow(),
       ExecuteAction(
           ArbitraryStringProvider(encodedProto), UpdatedContextOptions(),
           glic::mojom::ActInFocusedTabErrorReason::kInvalidActionProto));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr int32_t kNonExistentContentNodeId =
       std::numeric_limits<int32_t>::max();
   const GURL task_url =
@@ -362,19 +356,22 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
   BrowserAction click = actor::MakeClick(kNonExistentContentNodeId);
 
   RunTestSequence(
-      StartTaskInNewTab(task_url),
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
       ExecuteAction(click, UpdatedContextOptions(),
                     glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL url_1 = embedded_test_server()->GetURL("/actor/blank.html?1");
   const GURL url_2 = embedded_test_server()->GetURL("/actor/blank.html?2");
   BrowserAction navigate_url_2 = actor::MakeNavigate(url_2.spec());
   BrowserAction back = actor::MakeHistoryBack();
   BrowserAction forward = actor::MakeHistoryForward();
 
-  RunTestSequence(StartTaskInNewTab(url_1),
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(url_1, kNewActorTabId),
                   ExecuteAction(navigate_url_2, UpdatedContextOptions()),
                   ExecuteAction(back, UpdatedContextOptions()),
                   WaitForWebContentsReady(kNewActorTabId, url_1),
@@ -384,13 +381,16 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
 
 // Ensure that a task can be stopped and that further actions fail.
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
   RunTestSequence(
-      StartTaskInNewTab(task_url), GetPageContextFromFocusedTab(),
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"), StopActorTask(),
@@ -405,6 +405,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
 // Ensure that a task can be started after a previous task was stopped.
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopThenStartActTask) {
   constexpr std::string_view kClickableButtonLabel = "clickable";
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabId);
 
@@ -412,17 +413,20 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopThenStartActTask) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
   RunTestSequence(
+      InitializeWithOpenGlicWindow(),
       // Start and stop.
-      StartTaskInNewTab(task_url), StopActorTask(),
+      StartActorTaskInNewTab(task_url, kFirstTabId), StopActorTask(),
 
       // Start, click, stop.
-      StopActorTask(task_url, kSecondTabId), GetPageContextFromFocusedTab(),
+      StartActorTaskInNewTab(task_url, kSecondTabId),
+      GetPageContextFromFocusedTab(),
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kSecondTabId, "() => button_clicked"), StopActorTask(),
 
       // Start, click, stop.
-      StopActorTask(task_url, kThirdTabId), GetPageContextFromFocusedTab(),
+      StartActorTaskInNewTab(task_url, kThirdTabId),
+      GetPageContextFromFocusedTab(),
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kThirdTabId, "() => button_clicked"), StopActorTask());
