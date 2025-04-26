@@ -632,6 +632,34 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   rm.SetPreferredExtraRendition(std::nullopt);
 }
 
+TEST_F(HlsRenditionManagerTest, CantSelectRenditionWithNoURI) {
+  {
+    auto rm = GetRenditionManager(
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"A\",URI=\"A.m3u8\"",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"B\",URI=\"B.m3u8\"",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"C\",AUTOSELECT=YES",
+        "#EXT-X-STREAM-INF:BANDWIDTH=100,CODECS=\"audio.codec,video.codec\","
+        "AUDIO=\"G\"",
+        "100.m3u8",
+        "#EXT-X-STREAM-INF:BANDWIDTH=200,CODECS=\"audio.codec,video.codec\","
+        "AUDIO=\"G\"",
+        "200.m3u8");
+
+    // The C rendition is autoselectable, but has no URL
+    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    rm.Reselect(GetVariantCb());
+
+    // The user has selected B explicitly, so we use B as the primary rendition.
+    const auto renditions = rm.GetSelectableExtraRenditions();
+    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "/B.m3u8"));
+    rm.SetPreferredExtraRendition(renditions[1].track_id());
+
+    // The user has selected C explicitly, but too bad, it has no URI.
+    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    rm.SetPreferredExtraRendition(renditions[2].track_id());
+  }
+}
+
 TEST_F(HlsRenditionManagerTest, AudioOnlyRenditionSelectionOverrides) {
   {
     auto rm = GetRenditionManager(
