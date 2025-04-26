@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/webdata/common/web_data_results.h"
 
