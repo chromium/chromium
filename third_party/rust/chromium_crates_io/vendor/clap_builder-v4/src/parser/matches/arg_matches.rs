@@ -1226,6 +1226,18 @@ impl ArgMatches {
         let presence = self.args.contains_key(id);
         Ok(presence)
     }
+
+    /// Clears the values for the given `id`
+    ///
+    /// Alternative to [`try_remove_*`][ArgMatches::try_remove_one] when the type is not known.
+    ///
+    /// Returns `Err([``MatchesError``])` if the given `id` isn't valid for current `ArgMatches` instance.
+    ///
+    /// Returns `Ok(true)` if there were any matches with the given `id`, `Ok(false)` otherwise.
+    pub fn try_clear_id(&mut self, id: &str) -> Result<bool, MatchesError> {
+        ok!(self.verify_arg(id));
+        Ok(self.args.remove_entry(id).is_some())
+    }
 }
 
 // Private methods
@@ -2051,5 +2063,38 @@ mod tests {
         dbg!(&b_value);
         let b = b_index.into_iter().zip(b_value).rev().collect::<Vec<_>>();
         dbg!(b);
+    }
+
+    #[test]
+    fn delete_id_without_returning() {
+        let mut matches = crate::Command::new("myprog")
+            .arg(crate::Arg::new("a").short('a').action(ArgAction::Append))
+            .arg(crate::Arg::new("b").short('b').action(ArgAction::Append))
+            .arg(crate::Arg::new("c").short('c').action(ArgAction::Append))
+            .try_get_matches_from(vec!["myprog", "-b1", "-a1", "-b2"])
+            .unwrap();
+        let matches_ids_count = matches.ids().count();
+        assert_eq!(matches_ids_count, 2);
+
+        let _ = matches
+            .try_clear_id("d")
+            .expect_err("should fail due to there is no arg 'd'");
+
+        let c_was_presented = matches
+            .try_clear_id("c")
+            .expect("doesn't fail because there is no matches for 'c' argument");
+        assert!(!c_was_presented);
+        let matches_ids_count = matches.ids().count();
+        assert_eq!(matches_ids_count, 2);
+
+        let b_was_presented = matches.try_clear_id("b").unwrap();
+        assert!(b_was_presented);
+        let matches_ids_count = matches.ids().count();
+        assert_eq!(matches_ids_count, 1);
+
+        let a_was_presented = matches.try_clear_id("a").unwrap();
+        assert!(a_was_presented);
+        let matches_ids_count = matches.ids().count();
+        assert_eq!(matches_ids_count, 0);
     }
 }
