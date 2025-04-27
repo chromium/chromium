@@ -886,6 +886,12 @@ public class DataSharingTabManager {
                         collaborationId,
                         assumeNonNull(existingGroup.syncId),
                         manageSharingCallback);
+
+        Runnable showFullActivityRunnable =
+                () -> {
+                    mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(
+                            activity, new GURL(ACTIVITY_LOGS_URL));
+                };
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
                         collaborationId,
@@ -895,7 +901,8 @@ public class DataSharingTabManager {
                         tabGroupSyncService,
                         new DataSharingFaviconProvider(activity, mProfile, mBulkFaviconUtil),
                         avatarProvider,
-                        recentActivityActionHandler);
+                        recentActivityActionHandler,
+                        showFullActivityRunnable);
         recentActivityListCoordinator.requestShowUI();
     }
 
