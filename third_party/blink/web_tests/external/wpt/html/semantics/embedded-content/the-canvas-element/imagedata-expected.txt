@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ImageData(buffer, w, opt h), Uint8ClampedArray argument type check
-  assert_throws_js: function "function() {\n        new ImageData(new Int8Array(1), 1);\n    }" threw object "IndexSizeError: Failed to construct 'ImageData': The source width is zero or not a number." ("IndexSizeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-Harness: the test ran to completion.
-

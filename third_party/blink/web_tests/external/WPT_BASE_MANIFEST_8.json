@@ -402175,10 +402175,6 @@
         "2ce9a46f05ee2614aff69c66d621b20bcb93b396",
         []
        ],
-       "imagedata-expected.txt": [
-        "2384386d052c4df2a18bd55ae9eae09ff90d1968",
-        []
-       ],
        "size.attributes.style.png": [
         "eeedd0ff05889ffd4468bf19a2e8e9e0a094201c",
         []
@@ -642432,7 +642428,7 @@
         ]
        ],
        "imagedata.html": [
-        "e124f8ff6ea869d23a7c28418f8435a3d21e2677",
+        "123654a528a4bde858a479d63ee058ac2b9c2c61",
         [
          null,
          {}
@@ -732484,6 +732480,31 @@
        ]
       }
      ]
+    ],
+    "useragentdata.https.tentative.any.js": [
+     "3af48ee416ac217d7c5d488d6874e445bc6edf1e",
+     [
+      "ua-client-hints/useragentdata.https.tentative.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "tests for navigator.userAgentData on Linux"
+        ]
+       ]
+      }
+     ],
+     [
+      "ua-client-hints/useragentdata.https.tentative.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "tests for navigator.userAgentData on Linux"
+        ]
+       ]
+      }
+     ]
     ]
    },
    "uievents": {
@@ -812702,6 +812723,13 @@
     ],
     "WorkerNavigator_userAgentData.https.html": [
      "a46c530cefe3ef1ade047b0016e184060b8c0666",
+     [
+      null,
+      {}
+     ]
+    ],
+    "WorkerNavigator_userAgentData.https.tentative.html": [
+     "e4026e2ff06873c24c37cd59108b0a83dc69fd9a",
      [
       null,
       {}
