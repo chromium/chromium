@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -254,6 +255,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testSnackbar() throws InterruptedException {
         activateFeatureToEdge();
         optOutOfToEdge();

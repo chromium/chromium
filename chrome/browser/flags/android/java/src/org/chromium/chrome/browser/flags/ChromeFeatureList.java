@@ -735,7 +735,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
-    public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, false);
+    public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, true);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
