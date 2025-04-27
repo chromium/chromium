@@ -249,7 +249,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     if (!platform_functions) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
           mojom::Error::Code::kNotSupportedError,
-          "WebNN is not supported in this ONNXRuntime version."));
+          "WebNN is not supported on ONNXRuntime."));
       return;
     }
 

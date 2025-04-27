@@ -45,10 +45,18 @@ inline constexpr char kWebNNOrtUseOVModelCache[] =
 // Usage: --no-sandbox --enable-logging --webnn-ort-logging-level=VERBOSE
 // Other severity levels could be "INFO", "WARNING" (default), "ERROR" and
 // "FATAL".
-// Please note if "--use-redist-ort" switch is used, this logging level
-// setting will be ignored, because an OrtEnv will be created before with
-// WARNING logging level.
 inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
+
+// For testing within GPU sandbox, developers need to copy ONNX Runtime DLLs,
+// OpenVINO EP DLL and OpenVINO DLLs into a folder under "Program Files" and
+// specify it with this switch.
+// Usage: --webnn-ort-library-path="C:\Program Files\ONNXRuntime-OVEP"
+//
+// For testing non-Microsoft-signed DLLs within GPU sandbox, you need also
+// append "--allow-third-party-modules".
+// Usage: --webnn-ort-library-path="C:\Program Files\ONNXRuntime-OVEP"
+// --allow-third-party-modules
+inline constexpr char kWebNNOrtLibraryPath[] = "webnn-ort-library-path";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches

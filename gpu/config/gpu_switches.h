@@ -58,7 +58,6 @@ GPU_EXPORT extern const char kEnableSkiaGraphitePrecompilation[];
 GPU_EXPORT extern const char kUseRedistributableDirectML[];
 GPU_EXPORT extern const char kEnableGpuMainTimeKeeperMetrics[];
 GPU_EXPORT extern const char kSuppressPerformanceLogs[];
-GPU_EXPORT extern const char kUseRedistributableONNXRuntime[];
 
 }  // namespace switches
 

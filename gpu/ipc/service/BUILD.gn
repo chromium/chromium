@@ -9,7 +9,6 @@ import("//testing/test.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
-import("//services/webnn/features.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 import("//ui/gl/features.gni")
 
@@ -89,7 +88,6 @@ component("service") {
     "//gpu/config",
     "//gpu/vulkan:buildflags",
     "//mojo/public/cpp/bindings",
-    "//services/webnn:buildflags",
     "//ui/base:ozone_buildflags",
   ]
   libs = []
@@ -170,9 +168,6 @@ component("service") {
   }
   if (skia_use_dawn) {
     deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
-  }
-  if (webnn_use_ort) {
-    deps += [ "//third_party/onnxruntime_headers" ]
   }
 }
 
