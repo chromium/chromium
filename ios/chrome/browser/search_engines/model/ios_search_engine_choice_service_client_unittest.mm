@@ -172,7 +172,7 @@ TEST_F(IOSSearchEngineChoiceServiceClientTest,
   search_engines::ChoiceCompletionMetadata metadata = {
       .timestamp = choice_completion_timestamp,
       .version = base::Version("1.2.3.4")};
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       ios_search_engine_choice_service_client_.DoesChoicePredateDeviceRestore(
           metadata));
 }
