@@ -426,7 +426,7 @@ EventRouter::GetRenderProcessHostForCurrentReceiver() {
   auto* process = RenderProcessHost::FromID(receivers_.current_context());
 
   // process might be nullptr when IPC race with RenderProcessHost destruction.
-  // This may only happen in scenarios that are already inherently racey, so
+  // This may only happen in scenarios that are already inherently racy, so
   // returning nullptr (and dropping the IPC) is okay and won't lead to any
   // additional risk of data loss.
   return process;
@@ -1211,7 +1211,7 @@ void EventRouter::DispatchEventToProcess(
   mojom::ContextType target_context = process_map->GetMostLikelyContextType(
       extension, process->GetDeprecatedID(), url);
 
-  // Don't dispach an event when target context doesn't match the restricted
+  // Don't dispatch an event when target context doesn't match the restricted
   // context type.
   if (event.restrict_to_context_type.has_value() &&
       event.restrict_to_context_type.value() != target_context) {

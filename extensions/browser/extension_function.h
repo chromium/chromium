@@ -708,7 +708,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // called.
   //
   // SendResponseImpl() moves the results out of |this| through
-  // ResponseCallback, and calling this method avoids that. This is nececessary
+  // ResponseCallback, and calling this method avoids that. This is necessary
   // for tests that use test_utils::RunFunction*(), as those tests typically
   // retrieve the result afterwards through GetResultListForTest().
   // TODO(crbug.com/40803310): Remove this once GetResultListForTest() is
