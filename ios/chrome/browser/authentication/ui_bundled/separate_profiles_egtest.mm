@@ -828,16 +828,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
       @"Profile should not have been switched");
 }
-
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
-  FLAKY_testProfileNotDeletedOnRemovePersonalAccount
-#else
-#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
-  testProfileNotDeletedOnRemovePersonalAccount
-#endif
-- (void)MAYBE_testProfileNotDeletedOnRemovePersonalAccount {
+- (void)testProfileNotDeletedOnRemovePersonalAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -1027,15 +1018,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched back to personal");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testProfileDeletedOnManagedAccountGone \
-  FLAKY_testProfileDeletedOnManagedAccountGone
-#else
-#define MAYBE_testProfileDeletedOnManagedAccountGone \
-  testProfileDeletedOnManagedAccountGone
-#endif
-- (void)MAYBE_testProfileDeletedOnManagedAccountGone {
+- (void)testProfileDeletedOnManagedAccountGone {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
