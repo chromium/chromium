@@ -1087,9 +1087,9 @@ public class CustomTabsConnection {
      * @return The hidden tab, or null.
      */
     public @Nullable HiddenTabHolder.HiddenTab takeHiddenTab(
-            @Nullable SessionHolder<?> session, String url, @Nullable String referrer) {
+            @Nullable SessionHolder<?> session, String url, Intent intent) {
         return mHiddenTabHolder.takeHiddenTab(
-                session, mClientManager.getIgnoreFragmentsForSession(session), url, referrer);
+                session, mClientManager.getIgnoreFragmentsForSession(session), url, intent);
     }
 
     /**
@@ -2291,6 +2291,10 @@ public class CustomTabsConnection {
         boolean success = newSessionInternal(holder);
         logCall("newSession()", success);
         return success;
+    }
+
+    public boolean isSessionValid(SessionHolder<?> session) {
+        return mClientManager.isSessionValid(session);
     }
 
     public static void setInstanceForTesting(CustomTabsConnection connection) {

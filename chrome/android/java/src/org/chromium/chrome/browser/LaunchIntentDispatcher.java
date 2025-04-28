@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
@@ -426,6 +425,8 @@ public class LaunchIntentDispatcher {
             if (handled) return true;
         }
 
+        // Should not be set by external apps, remove if present.
+        mIntent.removeExtra(IntentHandler.EXTRA_CCT_EARLY_NAV);
         boolean startedNavigationEarly = maybeStartNavigation();
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
@@ -443,8 +444,6 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         }
-
-        if (startedNavigationEarly) intent.putExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, true);
 
         // Pass the package name obtained via identity sharing API separately from the one
         // obtained via startActivityForResult.
@@ -473,10 +472,7 @@ public class LaunchIntentDispatcher {
     private boolean maybeStartNavigation() {
         if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
-        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
-                mIntent, /* recordMetrics= */ false)) {
-            return false;
-        }
+        if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
         if (!ProfileManager.isInitialized()) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
                 && SessionDataHolder.getInstance()

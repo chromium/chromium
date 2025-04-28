@@ -494,6 +494,10 @@ class ClientManager {
         return urlsMatch ? PredictionStatus.GOOD : PredictionStatus.BAD;
     }
 
+    public boolean isSessionValid(SessionHolder<?> session) {
+        return mSessionParams.get(session) != null;
+    }
+
     /** Registers that a client has launched a URL inside a Custom Tab. */
     public synchronized void registerLaunch(SessionHolder<?> session, String url) {
         @PredictionStatus int outcome = getPredictionOutcome(session, url);
