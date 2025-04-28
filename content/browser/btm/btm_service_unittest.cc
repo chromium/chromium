@@ -104,24 +104,24 @@ TEST_F(BtmServiceTest, DontCreateServiceIfFeatureDisabled) {
   EXPECT_EQ(BtmServiceImpl::Get(&profile), nullptr);
 }
 
-// Verifies that if database persistence is disabled via Finch, then when the
-// BTM Service is constructed, it deletes any BTM Database files for the
-// associated BrowserContext.
-TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
+// Verifies that if the BTM feature is enabled, BTM database files are created
+// when a (non-OTR) profile is created.
+TEST_F(BtmServiceTest, CreateDbFilesIfBtmEnabled) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
   BtmServiceImpl* service;
   std::unique_ptr<TestBrowserContext> profile;
 
-  // Ensure the BTM feature is enabled and the database is set to be persisted.
+  // Ensure the BTM feature is enabled.
   base::test::ScopedFeatureList feature_list(features::kBtm);
 
   profile = std::make_unique<TestBrowserContext>(data_path);
   service = BtmServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
 
-  // Ensure the database files have been created and are NOT deleted since the
-  // BTM feature is enabled.
+  // Ensure the database files have been created since the BTM feature is
+  // enabled.
   WaitOnStorage(service);
+  BrowserContextImpl::From(profile.get())->WaitForDipsCleanupForTesting();
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
@@ -130,7 +130,7 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
 TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
-  // Ensure the BTM feature is enabled and the database is set to be persisted.
+  // Ensure the BTM feature is enabled.
   base::test::ScopedFeatureList feature_list(features::kBtm);
 
   // Build a regular profile.
@@ -140,8 +140,9 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   ASSERT_NE(service, nullptr);
 
   // Ensure the regular profile's database files have been created since the
-  // BTM feature and persistence are enabled.
+  // BTM feature is enabled.
   WaitOnStorage(service);
+  BrowserContextImpl::From(profile.get())->WaitForDipsCleanupForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 
   // Build an off-the-record profile based on `profile`.
@@ -154,6 +155,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the OTR profile's database has been initialized and any file
   // deletion tasks have finished (although there shouldn't be any).
   WaitOnStorage(otr_service);
+  BrowserContextImpl::From(otr_profile.get())->WaitForDipsCleanupForTesting();
 
   // Ensure the regular profile's database files were NOT deleted.
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
@@ -162,6 +164,45 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // But since `otr_profile` is sharing `profile`'s directory, we don't want it
   // to delete that folder (`profile` will).
   otr_profile->TakePath();
+}
+
+TEST_F(BtmServiceTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
+  base::FilePath user_data_dir;
+  base::FilePath db_path;
+
+  // First, create a browser context while DIPS is enabled, and confirm a
+  // database file is created.
+  {
+    TestBrowserContext browser_context;
+    db_path = GetBtmFilePath(&browser_context);
+    // Wait for the database to be created.
+    BrowserContextImpl::From(&browser_context)
+        ->GetDipsService()
+        ->storage()
+        ->FlushPostedTasksForTesting();
+    ASSERT_TRUE(base::PathExists(db_path));
+
+    // Take ownership of the browser context's directory so we can reuse it.
+    user_data_dir = browser_context.TakePath();
+
+    // Confirm that WaitForDipsCleanupForTesting() returns even if the file is
+    // not deleted.
+    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
+    ASSERT_TRUE(base::PathExists(db_path));
+  }
+
+  // Confirm the file still exists after the browser context is destroyed.
+  ASSERT_TRUE(base::PathExists(db_path));
+
+  // Create another browser context for the same directory, while DIPS is
+  // disabled. Confirm the database file is deleted.
+  {
+    ScopedInitBtmFeature disable_dips(false);
+    TestBrowserContext browser_context(user_data_dir);
+    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetDipsService());
+    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
+    ASSERT_FALSE(base::PathExists(db_path));
+  }
 }
 
 TEST_F(BtmServiceTest, EmptySiteEventsIgnored) {
@@ -1202,47 +1243,6 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
               ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
 
   EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
-}
-
-TEST(BtmCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
-  BrowserTaskEnvironment task_environment;
-
-  base::FilePath user_data_dir;
-  base::FilePath db_path;
-
-  // First, create a browser context while DIPS is enabled, and confirm a
-  // database file is created.
-  {
-    TestBrowserContext browser_context;
-    db_path = GetBtmFilePath(&browser_context);
-    // Wait for the database to be created.
-    BrowserContextImpl::From(&browser_context)
-        ->GetDipsService()
-        ->storage()
-        ->FlushPostedTasksForTesting();
-    ASSERT_TRUE(base::PathExists(db_path));
-
-    // Take ownership of the browser context's directory so we can reuse it.
-    user_data_dir = browser_context.TakePath();
-
-    // Confirm that WaitForDipsCleanupForTesting() returns even if the file is
-    // not deleted.
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
-    ASSERT_TRUE(base::PathExists(db_path));
-  }
-
-  // Confirm the file still exists after the browser context is destroyed.
-  ASSERT_TRUE(base::PathExists(db_path));
-
-  // Create another browser context for the same directory, while DIPS is
-  // disabled. Confirm the database file is deleted.
-  {
-    ScopedInitBtmFeature disable_dips(false);
-    TestBrowserContext browser_context(user_data_dir);
-    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetDipsService());
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
-    ASSERT_FALSE(base::PathExists(db_path));
-  }
 }
 
 }  // namespace content
