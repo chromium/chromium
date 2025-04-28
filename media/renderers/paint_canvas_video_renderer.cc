@@ -1516,8 +1516,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   // If there's no cache hit, perform a copy.
   if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Copy into the shared image backing of the cached copy.
-    canvas_ri->WaitSyncTokenCHROMIUM(
-        video_frame->acquire_sync_token().GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
+        shared_image->BeginRasterAccess(canvas_ri,
+                                        video_frame->acquire_sync_token(),
+                                        /*readonly=*/true);
     canvas_ri->CopySharedImage(
         shared_image->mailbox(), rgb_shared_image->mailbox(), 0, 0, 0, 0,
         video_frame->coded_size().width(), video_frame->coded_size().height());
@@ -1525,7 +1527,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // Ensure that |video_frame| not be deleted until the above copy is
     // completed.
     SynchronizeVideoFrameRead(video_frame, canvas_ri,
-                              raster_context_provider->ContextSupport());
+                              raster_context_provider->ContextSupport(),
+                              std::move(src_ri_access));
   }
 
   // Wait for mailbox creation on canvas context before consuming it and
