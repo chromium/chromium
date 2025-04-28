@@ -14,14 +14,21 @@ namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
+// Lists the different versions of the BookmarkAccountStorageMoveDialog.
+// These values are persisted to UMA. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BookmarkAccountStorageMoveDialogType)
 enum class BookmarkAccountStorageMoveDialogType {
   // Dialog triggered upon a user action where the destination is specified,
   // e.g. from a drag and drop in the bookmarks bar.
-  kDownloadOrUpload,
+  kDownloadOrUpload = 0,
   // Dialog triggered by asking the user to upload the bookmark node (without
   // specifying the destination), e.g. from the bookmark manager.
-  kUpload,
+  kUpload = 1,
+  kMaxValue = kUpload,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarkAccountStorageMoveDialogType)
 
 // IDs for the button dialogs, to allow pressing them in tests.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogOkButton);

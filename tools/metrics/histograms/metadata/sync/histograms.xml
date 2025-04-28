@@ -273,6 +273,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarkAccountStorageMoveDialog.Download.{Action}"
+    enum="BooleanHit" expires_after="2026-01-01">
+  <owner>amelies@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records metrics about the dialog which asks the user whether they want to
+    move a bookmark from account to local storage. {Action} records whether the
+    dialog was shown, and whether it was subsequently accepted, declined, or
+    explicitly closed (e.g. by using the Escape key).
+  </summary>
+  <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="Declined"/>
+    <variant name="ExplicitlyClosed"/>
+    <variant name="Shown"/>
+  </token>
+</histogram>
+
+<histogram name="Sync.BookmarkAccountStorageMoveDialog.Upload.{Action}"
+    enum="BookmarkAccountStorageMoveDialogType" expires_after="2026-01-01">
+  <owner>amelies@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records metrics about the dialog which asks the user whether they want to
+    move a bookmark from local to account storage. {Action} records whether the
+    dialog was shown, and whether it was subsequently accepted, declined, or
+    explicitly closed (e.g. by using the Escape key).
+
+    BookmarkAccountStorageMoveDialogType refers to the type of dialog.
+
+    DownloadOrUpload is the version of the dialog which can be used for either
+    uploading or downloading a bookmark, usually triggered through a drag and
+    drop by the user in a folder of a different storage (account vs. local).
+
+    Upload is the version of the dialog which can only be used for uploading a
+    bookmark without specifying the location, triggered by clicking on a
+    bookmark's cloud upload icon in the bookmark manager.
+  </summary>
+  <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="Declined"/>
+    <variant name="ExplicitlyClosed"/>
+    <variant name="Shown"/>
+  </token>
+</histogram>
+
 <histogram name="Sync.BookmarkEntityReuploadNeeded.On{UpdateType}"
     enum="Boolean" expires_after="2026-02-20">
   <owner>rushans@google.com</owner>
