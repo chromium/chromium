@@ -3043,7 +3043,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.JobCompleteTime.{Result}" units="ms"
+<histogram name="Net.HttpStreamPool.JobCompleteTime2.{Result}" units="ms"
     expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3054,11 +3054,14 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="Job failed"/>
-    <variant name="Success" summary="Job succeeded"/>
+    <variant name="H1" summary="Job succeeded with HTTP/1.1"/>
+    <variant name="H2" summary="Job succeeded with HTTP/2"/>
+    <variant name="H3" summary="Job succeeded with HTTP/3"/>
+    <variant name="Unknown" summary="Job succeeded with unknown next protocol"/>
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.JobCreateToResumeTime.{Result}" units="ms"
+<histogram name="Net.HttpStreamPool.JobCreateToResumeTime2.{Result}" units="ms"
     expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3069,7 +3072,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="Job failed"/>
-    <variant name="Success" summary="Job succeeded"/>
+    <variant name="H1" summary="Job succeeded with HTTP/1.1"/>
+    <variant name="H2" summary="Job succeeded with HTTP/2"/>
+    <variant name="H3" summary="Job succeeded with HTTP/3"/>
+    <variant name="Unknown" summary="Job succeeded with unknown next protocol"/>
   </token>
 </histogram>
 

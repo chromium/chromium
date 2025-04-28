@@ -164,20 +164,6 @@ void RecordWebSocketFallbackResult(int result,
                                        connection_info));
 }
 
-const std::string_view NegotiatedProtocolToHistogramSuffix(
-    NextProto next_proto) {
-  switch (next_proto) {
-    case NextProto::kProtoHTTP11:
-      return "H1";
-    case NextProto::kProtoHTTP2:
-      return "H2";
-    case NextProto::kProtoQUIC:
-      return "H3";
-    case NextProto::kProtoUnknown:
-      return "Unknown";
-  }
-}
-
 }  // namespace
 
 const int HttpNetworkTransaction::kDrainBodyBufferSize;
