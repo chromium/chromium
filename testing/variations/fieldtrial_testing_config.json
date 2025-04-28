@@ -20932,6 +20932,21 @@
             ]
         }
     ],
+    "RunDefaultStatusCheck": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RunDefaultStatusCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "RustyPng": [
         {
             "platforms": [
