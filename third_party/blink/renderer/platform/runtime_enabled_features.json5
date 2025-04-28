@@ -5475,12 +5475,6 @@
       status: "experimental",
       implied_by: ["DesktopPWAsAdditionalWindowingControls"],
     },
-    // Flag guard for change to XML parser to merge adjacent CDATA sections.
-    // See https://crrev.com/c/4790343.
-    {
-      name: "XMLParserMergeAdjacentCDataSections",
-      status: "stable",
-    },
     {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "stable",

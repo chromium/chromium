@@ -402,7 +402,6 @@ void XMLDocumentParser::HandleError(XMLErrors::ErrorType type,
 }
 
 void XMLDocumentParser::CreateLeafTextNodeIfNeeded() {
-  is_start_of_new_chunk_ = false;
   if (leaf_text_node_)
     return;
 
@@ -415,7 +414,6 @@ bool XMLDocumentParser::UpdateLeafTextNode() {
   if (IsStopped())
     return false;
 
-  is_start_of_new_chunk_ = false;
   if (!leaf_text_node_)
     return true;
 
@@ -913,7 +911,6 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
     XMLDocumentParserScope scope(GetDocument());
     base::AutoReset<bool> encoding_scope(&is_currently_parsing8_bit_chunk_,
                                          parse_string.Is8Bit());
-    is_start_of_new_chunk_ = true;
     ParseChunk(context->Context(), parse_string);
 
     // JavaScript (which may be run under the parseChunk callstack) may
@@ -1290,35 +1287,11 @@ void XMLDocumentParser::CdataBlock(const String& text) {
     return;
   }
 
-  // `is_start_of_new_chunk_` is reset by UpdateLeafTextNode(). If it was set
-  // when we entered this method, this CDATA block appears at the beginning of
-  // the current input chunk.
-  const bool is_start_of_new_chunk = is_start_of_new_chunk_;
   if (!UpdateLeafTextNode())
     return;
 
-  // If the most recent child is already a CDATA node *AND* this is the first
-  // parse event emitted from the current input chunk, we append this text to
-  // the existing node. Otherwise we append a new CDATA node.
-  // TODO(https://crbug.com/36431): Unfortunately, when a CDATA straddles
-  // multiple input chunks, libxml starts to emit CDATA nodes in 300 byte
-  // chunks. The MergeAdjacentCDataSections REF is an attempt to keep these
-  // within a single node. However, this will also merge actual adjacent CDATA
-  // sections into a single node, e.g.: `<![CDATA[foo]]><![CDATA[bar]]>` will
-  // now produce one node. The REF is added to easily reverse in case this
-  // isn't web compatible. Otherwise, we can remove `is_start_of_new_chunk_`
-  // and this REF.
-  CDATASection* cdata_tail =
-      current_node_ ? DynamicTo<CDATASection>(current_node_->lastChild())
-                    : nullptr;
-  if (cdata_tail &&
-      (RuntimeEnabledFeatures::XMLParserMergeAdjacentCDataSectionsEnabled() ||
-       is_start_of_new_chunk)) {
-    cdata_tail->ParserAppendData(text);
-  } else {
-    current_node_->ParserAppendChild(
-        CDATASection::Create(current_node_->GetDocument(), text));
-  }
+  current_node_->ParserAppendChild(
+      CDATASection::Create(current_node_->GetDocument(), text));
 }
 
 void XMLDocumentParser::Comment(const String& text) {
