@@ -108,13 +108,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/409349162
   "inputs.PhysicalKeyboardKoreanTyping@jacuzzi",
 
-  # b/413662732
-  "arc.Boot.vm@volteer",
-  "arc.Boot.vm_with_per_vcpu_core_scheduling@volteer",
-  "platform.ResourcedCgroups@volteer",
-  "sched.ChromeQoS@volteer",
-  "sched.SetQoSState@volteer",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
