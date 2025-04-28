@@ -44,6 +44,7 @@ source_set("lens") {
     "lens_overlay_url_builder.h",
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
+    "lens_search_contextualization_controller.h",
     "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
@@ -97,6 +98,7 @@ source_set("impl") {
     "lens_overlay_url_builder.cc",
     "lens_permission_bubble_controller.cc",
     "lens_preselection_bubble.cc",
+    "lens_search_contextualization_controller.cc",
     "lens_search_controller.cc",
     "lens_side_panel_untrusted_ui.cc",
     "page_content_type_conversions.cc",
