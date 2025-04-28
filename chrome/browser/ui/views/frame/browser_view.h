@@ -815,6 +815,7 @@ class BrowserView : public BrowserWindow,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
@@ -1420,6 +1421,9 @@ class BrowserView : public BrowserWindow,
   base::ScopedObservation<webapps::AppBannerManager,
                           webapps::AppBannerManager::Observer>
       app_banner_manager_observation_{this};
+
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
@@ -371,5 +372,22 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 };
 
 }  // namespace views
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<views::FocusManager,
+                               views::FocusChangeListener> {
+  static void AddObserver(views::FocusManager* source,
+                          views::FocusChangeListener* listener) {
+    source->AddFocusChangeListener(listener);
+  }
+  static void RemoveObserver(views::FocusManager* source,
+                             views::FocusChangeListener* listener) {
+    source->RemoveFocusChangeListener(listener);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_VIEWS_FOCUS_FOCUS_MANAGER_H_

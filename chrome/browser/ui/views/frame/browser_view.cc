@@ -1151,7 +1151,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 
   if (GetFocusManager()) {
-    GetFocusManager()->AddFocusChangeListener(this);
+    focus_manager_observation_.Observe(GetFocusManager());
   }
 }
 
@@ -5286,6 +5286,11 @@ void BrowserView::AddedToWidget() {
   }
 
   initialized_ = true;
+}
+
+void BrowserView::RemovedFromWidget() {
+  CHECK(GetFocusManager());
+  focus_manager_observation_.Reset();
 }
 
 void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
