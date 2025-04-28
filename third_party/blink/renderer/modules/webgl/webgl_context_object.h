@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Apple Inc. All rights reserved.
+ * Copyright (C) 2011 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,33 +23,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_OBJECT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_OBJECT_H_
 
-#include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 
 namespace blink {
 
-WebGLBuffer::WebGLBuffer(WebGLRenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx), initial_target_(0), size_(0) {
-  if (!ctx->isContextLost()) {
-    GLuint buffer;
-    ctx->ContextGL()->GenBuffers(1, &buffer);
-    SetObject(buffer);
-  }
-}
+class WebGLRenderingContextBase;
 
-WebGLBuffer::~WebGLBuffer() = default;
+// WebGLContextObject the base class for objects that are owned by a specific
+// WebGLRenderingContextBase.
+class WebGLContextObject : public WebGLObject {
+ public:
+  WebGLRenderingContextBase* Context() const { return context_.Get(); }
 
-void WebGLBuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteBuffers(1, &Object());
-}
+  bool Validate(const WebGLContextGroup*,
+                const WebGLRenderingContextBase*) const final;
 
-void WebGLBuffer::SetInitialTarget(GLenum target) {
-  // WebGL restricts the ability to bind buffers to multiple targets based on
-  // it's initial bind point.
-  DCHECK(!initial_target_);
-  initial_target_ = target;
-}
+  void Trace(Visitor*) const override;
+
+ protected:
+  explicit WebGLContextObject(WebGLRenderingContextBase*);
+
+  bool HasGroupOrContext() const final { return context_ != nullptr; }
+
+  uint32_t CurrentNumberOfContextLosses() const final;
+
+  gpu::gles2::GLES2Interface* GetAGLInterface() const final;
+
+ private:
+  Member<WebGLRenderingContextBase> context_;
+};
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_OBJECT_H_

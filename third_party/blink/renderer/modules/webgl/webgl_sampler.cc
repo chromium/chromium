@@ -9,7 +9,8 @@
 
 namespace blink {
 
-WebGLSampler::WebGLSampler(WebGL2RenderingContextBase* ctx) : WebGLObject(ctx) {
+WebGLSampler::WebGLSampler(WebGL2RenderingContextBase* ctx)
+    : WebGLSharedPlatform3DObject(ctx) {
   GLuint sampler;
   if (!ctx->isContextLost()) {
     ctx->ContextGL()->GenSamplers(1, &sampler);

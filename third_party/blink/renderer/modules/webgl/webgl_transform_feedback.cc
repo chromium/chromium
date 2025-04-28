@@ -13,7 +13,7 @@ WebGLTransformFeedback::WebGLTransformFeedback(
     WebGL2RenderingContextBase* ctx,
     TFType type,
     GLint max_transform_feedback_separate_attribs)
-    : WebGLObject(ctx),
+    : WebGLContextObject(ctx),
       type_(type),
       target_(0),
       program_(nullptr),
@@ -142,7 +142,7 @@ void WebGLTransformFeedback::UnbindBuffer(WebGLBuffer* buffer) {
 void WebGLTransformFeedback::Trace(Visitor* visitor) const {
   visitor->Trace(bound_indexed_transform_feedback_buffers_);
   visitor->Trace(program_);
-  WebGLObject::Trace(visitor);
+  WebGLContextObject::Trace(visitor);
 }
 
 }  // namespace blink

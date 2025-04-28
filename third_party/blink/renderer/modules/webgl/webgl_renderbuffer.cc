@@ -31,7 +31,7 @@
 namespace blink {
 
 WebGLRenderbuffer::WebGLRenderbuffer(WebGLRenderingContextBase* ctx)
-    : WebGLObject(ctx),
+    : WebGLSharedPlatform3DObject(ctx),
       internal_format_(GL_RGBA4),
       width_(0),
       height_(0),
@@ -61,7 +61,7 @@ int WebGLRenderbuffer::UpdateMultisampleState(bool multisampled) {
 }
 
 void WebGLRenderbuffer::Trace(Visitor* visitor) const {
-  WebGLObject::Trace(visitor);
+  WebGLSharedPlatform3DObject::Trace(visitor);
 }
 
 }  // namespace blink

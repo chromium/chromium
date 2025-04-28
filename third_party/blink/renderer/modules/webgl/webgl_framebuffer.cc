@@ -47,8 +47,8 @@ class WebGLRenderbufferAttachment final
   const char* NameInHeapSnapshot() const override { return "WebGLAttachment"; }
 
  private:
-  WebGLObject* Object() const override;
-  bool IsObject(WebGLObject*) const override;
+  WebGLSharedObject* Object() const override;
+  bool IsSharedObject(WebGLSharedObject*) const override;
   bool Valid() const override;
   void OnDetached(gpu::gles2::GLES2Interface*) override;
   void Attach(gpu::gles2::GLES2Interface*,
@@ -70,11 +70,12 @@ WebGLRenderbufferAttachment::WebGLRenderbufferAttachment(
     WebGLRenderbuffer* renderbuffer)
     : renderbuffer_(renderbuffer) {}
 
-WebGLObject* WebGLRenderbufferAttachment::Object() const {
+WebGLSharedObject* WebGLRenderbufferAttachment::Object() const {
   return renderbuffer_->Object() ? renderbuffer_.Get() : nullptr;
 }
 
-bool WebGLRenderbufferAttachment::IsObject(WebGLObject* object) const {
+bool WebGLRenderbufferAttachment::IsSharedObject(
+    WebGLSharedObject* object) const {
   return object == renderbuffer_;
 }
 
@@ -116,8 +117,8 @@ class WebGLTextureAttachment final : public WebGLFramebuffer::WebGLAttachment {
   }
 
  private:
-  WebGLObject* Object() const override;
-  bool IsObject(WebGLObject*) const override;
+  WebGLSharedObject* Object() const override;
+  bool IsSharedObject(WebGLSharedObject*) const override;
   bool Valid() const override;
   void OnDetached(gpu::gles2::GLES2Interface*) override;
   void Attach(gpu::gles2::GLES2Interface*,
@@ -144,11 +145,11 @@ WebGLTextureAttachment::WebGLTextureAttachment(WebGLTexture* texture,
                                                GLint layer)
     : texture_(texture), target_(target), level_(level), layer_(layer) {}
 
-WebGLObject* WebGLTextureAttachment::Object() const {
+WebGLSharedObject* WebGLTextureAttachment::Object() const {
   return texture_->Object() ? texture_.Get() : nullptr;
 }
 
-bool WebGLTextureAttachment::IsObject(WebGLObject* object) const {
+bool WebGLTextureAttachment::IsSharedObject(WebGLSharedObject* object) const {
   return object == texture_;
 }
 
@@ -207,7 +208,7 @@ WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
 }
 
 WebGLFramebuffer::WebGLFramebuffer(WebGLRenderingContextBase* ctx, bool opaque)
-    : WebGLObject(ctx),
+    : WebGLContextObject(ctx),
       has_ever_been_bound_(false),
       web_gl1_depth_stencil_consistent_(true),
       opaque_(opaque),
@@ -323,7 +324,8 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
   }
 }
 
-WebGLObject* WebGLFramebuffer::GetAttachmentObject(GLenum attachment) const {
+WebGLSharedObject* WebGLFramebuffer::GetAttachmentObject(
+    GLenum attachment) const {
   if (!HasObject()) {
     return nullptr;
   }
@@ -339,7 +341,7 @@ WebGLFramebuffer::WebGLAttachment* WebGLFramebuffer::GetAttachment(
 
 void WebGLFramebuffer::RemoveAttachmentFromBoundFramebuffer(
     GLenum target,
-    WebGLObject* attachment) {
+    WebGLSharedObject* attachment) {
   DCHECK(IsBound(target));
   if (!HasObject()) {
     return;
@@ -354,7 +356,7 @@ void WebGLFramebuffer::RemoveAttachmentFromBoundFramebuffer(
     check_more = false;
     for (const auto& it : attachments_) {
       WebGLAttachment* attachment_object = it.value.Get();
-      if (attachment_object->IsObject(attachment)) {
+      if (attachment_object->IsSharedObject(attachment)) {
         GLenum attachment_type = it.key;
         switch (attachment_type) {
           case GL_DEPTH_ATTACHMENT:
@@ -639,7 +641,7 @@ WebGLTexture* WebGLFramebuffer::GetPLSTexture(GLint plane) const {
 void WebGLFramebuffer::Trace(Visitor* visitor) const {
   visitor->Trace(attachments_);
   visitor->Trace(pls_textures_);
-  WebGLObject::Trace(visitor);
+  WebGLContextObject::Trace(visitor);
 }
 
 }  // namespace blink

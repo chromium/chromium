@@ -13,7 +13,7 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
     WebGLRenderingContextBase* ctx,
     VaoType type,
     GLint max_vertex_attribs)
-    : WebGLObject(ctx),
+    : WebGLContextObject(ctx),
       type_(type),
       has_ever_been_bound_(false),
       is_all_enabled_attrib_buffer_bound_(true) {
@@ -128,7 +128,7 @@ void WebGLVertexArrayObjectBase::UnbindBuffer(WebGLBuffer* buffer) {
 void WebGLVertexArrayObjectBase::Trace(Visitor* visitor) const {
   visitor->Trace(bound_element_array_buffer_);
   visitor->Trace(array_buffer_list_);
-  WebGLObject::Trace(visitor);
+  WebGLContextObject::Trace(visitor);
 }
 
 }  // namespace blink

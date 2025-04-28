@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Apple Inc. All rights reserved.
+ * Copyright (C) 2011 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,33 +23,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
 
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
-WebGLBuffer::WebGLBuffer(WebGLRenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx), initial_target_(0), size_(0) {
-  if (!ctx->isContextLost()) {
-    GLuint buffer;
-    ctx->ContextGL()->GenBuffers(1, &buffer);
-    SetObject(buffer);
+WebGLContextObject::WebGLContextObject(WebGLRenderingContextBase* context)
+    : WebGLObject(context), context_(context) {}
+
+bool WebGLContextObject::Validate(
+    const WebGLContextGroup*,
+    const WebGLRenderingContextBase* context) const {
+  // The contexts and context groups no longer maintain references to all
+  // the objects they ever created, so there's no way to invalidate them
+  // eagerly during context loss. The invalidation is discovered lazily.
+  return (context == context_ && context_ != nullptr &&
+          CachedNumberOfContextLosses() == context->NumberOfContextLosses());
+}
+
+uint32_t WebGLContextObject::CurrentNumberOfContextLosses() const {
+  if (!context_) {
+    return 0;
   }
+
+  return context_->NumberOfContextLosses();
 }
 
-WebGLBuffer::~WebGLBuffer() = default;
+gpu::gles2::GLES2Interface* WebGLContextObject::GetAGLInterface() const {
+  if (!context_) {
+    return nullptr;
+  }
 
-void WebGLBuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteBuffers(1, &Object());
+  return context_->ContextGL();
 }
 
-void WebGLBuffer::SetInitialTarget(GLenum target) {
-  // WebGL restricts the ability to bind buffers to multiple targets based on
-  // it's initial bind point.
-  DCHECK(!initial_target_);
-  initial_target_ = target;
+void WebGLContextObject::Trace(Visitor* visitor) const {
+  visitor->Trace(context_);
+  WebGLObject::Trace(visitor);
 }
 
 }  // namespace blink

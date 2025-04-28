@@ -32,22 +32,16 @@
 namespace blink {
 
 WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
-    : context_(context),
-      cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
-  if (context_) {
+    : cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
+  if (context) {
     cached_number_of_context_losses_ = context->NumberOfContextLosses();
   }
 }
 
 WebGLObject::~WebGLObject() = default;
 
-bool WebGLObject::Validate(const WebGLContextGroup*,
-                           const WebGLRenderingContextBase* context) const {
-  // The contexts and context groups no longer maintain references to all
-  // the objects they ever created, so there's no way to invalidate them
-  // eagerly during context loss. The invalidation is discovered lazily.
-  return (context == context_ && context_ != nullptr &&
-          cached_number_of_context_losses_ == context->NumberOfContextLosses());
+uint32_t WebGLObject::CachedNumberOfContextLosses() const {
+  return cached_number_of_context_losses_;
 }
 
 void WebGLObject::SetObject(GLuint object) {
@@ -63,18 +57,17 @@ void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
   if (!HasObject())
     return;
 
-  if (!context_) {
+  if (!HasGroupOrContext())
     return;
-  }
 
-  if (context_->NumberOfContextLosses() != cached_number_of_context_losses_) {
+  if (CurrentNumberOfContextLosses() != cached_number_of_context_losses_) {
     // This object has been invalidated.
     return;
   }
 
   if (!attachment_count_) {
     if (!gl)
-      gl = context_->ContextGL();
+      gl = GetAGLInterface();
     if (gl) {
       DeleteObjectImpl(gl);
       object_ = 0;
@@ -111,11 +104,6 @@ void WebGLObject::OnDetached(gpu::gles2::GLES2Interface* gl) {
     --attachment_count_;
   if (marked_for_deletion_)
     DeleteObject(gl);
-}
-
-void WebGLObject::Trace(Visitor* visitor) const {
-  visitor->Trace(context_);
-  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

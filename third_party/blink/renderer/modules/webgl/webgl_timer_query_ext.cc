@@ -12,7 +12,7 @@
 namespace blink {
 
 WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
-    : WebGLObject(ctx),
+    : WebGLContextObject(ctx),
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),
@@ -23,7 +23,7 @@ WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
   }
 
   GLuint query = 0;
-  ctx->ContextGL()->GenQueriesEXT(1, &query);
+  Context()->ContextGL()->GenQueriesEXT(1, &query);
   SetObject(query);
 }
 
