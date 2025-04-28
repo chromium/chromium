@@ -68,6 +68,7 @@ copy("browser_test_resources") {
   testonly = true
   sources = [
     "resources/basic_test.html",
+    "resources/bigbuck.webm",
     "resources/close_route_with_error_on_send.json",
     "resources/common.js",
     "resources/fail_create_route.json",

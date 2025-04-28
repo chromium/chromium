@@ -4,6 +4,7 @@
 
 #include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -32,6 +33,7 @@ void MediaRouterGmcUiForTest::SetUp() {
 }
 
 void MediaRouterGmcUiForTest::ShowDialog() {
+  CHECK(dialog_ui_.WaitForToolbarIconShown());
   dialog_ui_.ClickToolbarIcon();
   CHECK(dialog_ui_.WaitForDialogOpened());
 }
@@ -60,6 +62,10 @@ void MediaRouterGmcUiForTest::StartCasting(const std::string& sink_name) {
 }
 
 void MediaRouterGmcUiForTest::StopCasting(const std::string& sink_name) {
+  // TODO(issuetracker.google.com/388289776): implement. This is not as simple
+  // as just calling StartCasting() again, because for some reason the device
+  // selector is nullptr once casting starts. Re-evaluate when spare dev cycles
+  // are available.
   NOTIMPLEMENTED();
 }
 
@@ -109,13 +115,19 @@ void MediaRouterGmcUiForTest::WaitForDialogHidden() {
 views::Button* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {
   CHECK(IsDialogShown());
+
+  // Get the device selector associated with the list of cast devices.
+  auto& updated_items =
+      MediaDialogView::GetDialogViewForTesting()->GetUpdatedItemsForTesting();
+  CHECK_GE(updated_items.size(), 1u);
   global_media_controls::MediaItemUIUpdatedView* view =
-      MediaDialogView::GetDialogViewForTesting()
-          ->GetUpdatedItemsForTesting()
-          .begin()
-          ->second;
+      updated_items.begin()->second;
+  CHECK(view);
   auto* device_selector =
       static_cast<CastDeviceSelectorView*>(view->GetDeviceSelectorForTesting());
+  CHECK(device_selector);
+
+  // Then get the device corresponding to `sink_name`.
   for (views::View* child :
        device_selector->GetDeviceContainerViewForTesting()->children()) {
     auto* device_button = static_cast<HoverButton*>(child);
@@ -128,6 +140,10 @@ views::Button* MediaRouterGmcUiForTest::GetSinkButton(
   return nullptr;
 }
 
+// TODO(issuetracker.google.com/388289776): Add support for other types of
+// dialog events. Currently, we only support kDialogShown events -- other types
+// of events are not currently supported, and may hang or just return
+// immediately.
 void MediaRouterGmcUiForTest::ObserveDialog(
     WatchType watch_type,
     std::optional<std::string> sink_name) {
