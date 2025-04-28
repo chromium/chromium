@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -99,13 +101,13 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   // updated policy and FRE completion state.
   GlicEnabling& enabling = service->enabling();
   profile_enabled_subscriptions_.emplace(
-      profile,
-      enabling.RegisterAllowedChanged(base::BindRepeating(
-          &GlicBackgroundModeManager::UpdateState, base::Unretained(this))));
+      profile, enabling.RegisterAllowedChanged(
+                   base::BindRepeating(&GlicBackgroundModeManager::UpdateState,
+                                       weak_ptr_factory_.GetWeakPtr())));
   profile_consent_subscriptions_.emplace(
-      profile,
-      enabling.RegisterOnConsentChanged(base::BindRepeating(
-          &GlicBackgroundModeManager::UpdateState, base::Unretained(this))));
+      profile, enabling.RegisterOnConsentChanged(
+                   base::BindRepeating(&GlicBackgroundModeManager::UpdateState,
+                                       weak_ptr_factory_.GetWeakPtr())));
   auto [it, inserted] = profile_observers_.emplace(profile, this);
   it->second.Observe(profile);
 
@@ -135,7 +137,10 @@ void GlicBackgroundModeManager::Shutdown() {
 }
 
 void GlicBackgroundModeManager::EnterBackgroundMode() {
-  if (!keep_alive_) {
+  KeepAliveRegistry* const keep_alive_registry =
+      KeepAliveRegistry::GetInstance();
+  if (!keep_alive_ && keep_alive_registry &&
+      !keep_alive_registry->IsShuttingDown()) {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::GLIC_LAUNCHER, KeepAliveRestartOption::ENABLED);
   }

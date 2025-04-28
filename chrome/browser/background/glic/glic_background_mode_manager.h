@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -129,6 +130,7 @@ class GlicBackgroundModeManager
   using ScopedProfileObserver =
       base::ScopedObservation<Profile, ProfileObserver>;
   std::map<Profile*, ScopedProfileObserver> profile_observers_;
+  base::WeakPtrFactory<GlicBackgroundModeManager> weak_ptr_factory_{this};
 };
 }  // namespace glic
 
