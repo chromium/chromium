@@ -534,6 +534,23 @@ MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
   return *To<MutableCSSPropertyValueSet>(properties_.Get());
 }
 
+void StyleRule::WrapperInsertRule(CSSStyleSheet* parent_sheet,
+                                  unsigned index,
+                                  StyleRuleBase* rule) {
+  EnsureChildRules();
+  child_rules_->insert(index, rule);
+  if (parent_sheet) {
+    parent_sheet->Contents()->NotifyRuleChanged(rule);
+  }
+}
+
+void StyleRule::WrapperRemoveRule(CSSStyleSheet* parent_sheet, unsigned index) {
+  if (parent_sheet) {
+    parent_sheet->Contents()->NotifyRuleChanged((*child_rules_)[index]);
+  }
+  child_rules_->erase(UNSAFE_TODO(child_rules_->begin() + index));
+}
+
 bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
   return properties_ && properties_->HasFailedOrCanceledSubresources();
 }
