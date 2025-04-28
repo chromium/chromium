@@ -74,4 +74,9 @@ const base::FeatureParam<bool> kUsePerformanceScenario(&kPassageEmbedder,
                                                        "UsePerformanceScenario",
                                                        false);
 
+const base::FeatureParam<bool> kUseBackgroundPassageEmbedder(
+    &kPassageEmbedder,
+    "UseBackgroundPassageEmbedder",
+    false);
+
 }  // namespace passage_embeddings

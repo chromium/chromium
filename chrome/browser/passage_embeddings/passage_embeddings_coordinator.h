@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_COORDINATOR_H_
 #define CHROME_BROWSER_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_COORDINATOR_H_
 
-#include <cstdint>
 #include <map>
+#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/passage_embeddings/omnibox_focus_change_listener.h"
+#include "chrome/browser/passage_embeddings/web_contents_passage_embedder.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -27,7 +28,8 @@ namespace passage_embeddings {
 
 class PassageEmbeddingsCoordinator
     : public KeyedService,
-      public page_content_annotations::PageContentExtractionService::Observer {
+      public page_content_annotations::PageContentExtractionService::Observer,
+      public WebContentsPassageEmbedder::Delegate {
  public:
   explicit PassageEmbeddingsCoordinator(
       page_content_annotations::PageContentExtractionService*
@@ -40,22 +42,23 @@ class PassageEmbeddingsCoordinator
       const optimization_guide::proto::AnnotatedPageContent& page_content)
       override;
 
+  // WebContentsPassageEmbedder::Delegate:
+  Embedder::TaskId ComputePassagesEmbeddings(
+      std::vector<std::string> passages,
+      Embedder::ComputePassagesEmbeddingsCallback callback) override;
+  bool TryCancel(Embedder::TaskId task_id) override;
+  void OnWebContentsDestroyed(content::WebContents* web_contents) override;
+
  private:
-  void OnPassageEmbeddingsComputed(uintptr_t web_contents_id,
-                                   std::vector<std::string> passages,
-                                   std::vector<Embedding> embeddings,
-                                   Embedder::TaskId task_id,
-                                   ComputeEmbeddingsStatus status);
-
   void OnOmniboxFocusChanged(bool is_focused);
-
-  // The key is an id for a WebContents.
-  std::map<uintptr_t, Embedder::TaskId> web_contents_task_ids_;
 
   base::ScopedObservation<
       page_content_annotations::PageContentExtractionService,
       PassageEmbeddingsCoordinator>
       page_content_extraction_observation_{this};
+
+  std::map<content::WebContents*, std::unique_ptr<WebContentsPassageEmbedder>>
+      web_contents_passage_embedders_;
 
   OmniboxFocusChangedListener omnibox_focus_changed_listener_;
 

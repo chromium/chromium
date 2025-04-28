@@ -3964,6 +3964,8 @@ static_library("browser") {
       "passage_embeddings/passage_embeddings_coordinator.h",
       "passage_embeddings/passage_embeddings_coordinator_factory.cc",
       "passage_embeddings/passage_embeddings_coordinator_factory.h",
+      "passage_embeddings/web_contents_passage_embedder.cc",
+      "passage_embeddings/web_contents_passage_embedder.h",
       "password_manager/generated_password_leak_detection_pref.cc",
       "password_manager/generated_password_leak_detection_pref.h",
       "password_manager/web_app_profile_switcher.cc",

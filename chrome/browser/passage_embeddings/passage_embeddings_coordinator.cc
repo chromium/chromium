@@ -23,6 +23,17 @@ namespace passage_embeddings {
 
 namespace {
 
+std::unique_ptr<WebContentsPassageEmbedder> CreateWebContentsPassageEmbedder(
+    content::WebContents* web_contents,
+    WebContentsPassageEmbedder::Delegate& delegate) {
+  if (kUseBackgroundPassageEmbedder.Get()) {
+    return std::make_unique<WebContentsBackgroundPassageEmbedder>(web_contents,
+                                                                  delegate);
+  }
+  return std::make_unique<WebContentsImmediatePassageEmbedder>(web_contents,
+                                                               delegate);
+}
+
 void CollectTextForContentNode(
     const optimization_guide::proto::ContentNode& node,
     std::vector<std::string>& text) {
@@ -170,49 +181,52 @@ void PassageEmbeddingsCoordinator::OnPageContentExtracted(
           << passages.size() << " passages.";
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
-  const uintptr_t web_contents_id = reinterpret_cast<uintptr_t>(web_contents);
-  auto loc = web_contents_task_ids_.find(web_contents_id);
-  if (loc != web_contents_task_ids_.end()) {
-    ChromePassageEmbeddingsServiceController::Get()->GetEmbedder()->TryCancel(
-        loc->second);
+  auto loc = web_contents_passage_embedders_.find(web_contents);
+  if (loc == web_contents_passage_embedders_.end()) {
+    loc = web_contents_passage_embedders_
+              .emplace(web_contents,
+                       CreateWebContentsPassageEmbedder(web_contents, *this))
+              .first;
   }
-  const Embedder::TaskId task_id =
-      ChromePassageEmbeddingsServiceController::Get()
-          ->GetEmbedder()
-          ->ComputePassagesEmbeddings(
-              current_priority_, std::move(passages),
-              base::BindOnce(
-                  &PassageEmbeddingsCoordinator::OnPassageEmbeddingsComputed,
-                  weak_ptr_factory_.GetWeakPtr(), web_contents_id));
-  web_contents_task_ids_[web_contents_id] = task_id;
+  loc->second->AcceptPassages(std::move(passages));
 }
 
-void PassageEmbeddingsCoordinator::OnPassageEmbeddingsComputed(
-    uintptr_t web_contents_id,
+Embedder::TaskId PassageEmbeddingsCoordinator::ComputePassagesEmbeddings(
     std::vector<std::string> passages,
-    std::vector<Embedding> embeddings,
-    Embedder::TaskId task_id,
-    ComputeEmbeddingsStatus status) {
-  VLOG(2) << "Got " << embeddings.size() << " embeddings with status "
-          << static_cast<int>(status) << " for task " << task_id;
-  const auto loc = web_contents_task_ids_.find(web_contents_id);
-  if (loc == web_contents_task_ids_.end() || loc->second != task_id) {
-    if (status == ComputeEmbeddingsStatus::kSuccess) {
-      base::UmaHistogramCounts100("History.Embeddings.StaleComputedEmbeddings",
-                                  embeddings.size());
-    }
-    return;
-  }
+    Embedder::ComputePassagesEmbeddingsCallback callback) {
+  return ChromePassageEmbeddingsServiceController::Get()
+      ->GetEmbedder()
+      ->ComputePassagesEmbeddings(current_priority_, std::move(passages),
+                                  std::move(callback));
+}
 
-  web_contents_task_ids_.erase(loc);
+bool PassageEmbeddingsCoordinator::TryCancel(Embedder::TaskId task_id) {
+  return ChromePassageEmbeddingsServiceController::Get()
+      ->GetEmbedder()
+      ->TryCancel(task_id);
+}
+
+void PassageEmbeddingsCoordinator::OnWebContentsDestroyed(
+    content::WebContents* web_contents) {
+  web_contents_passage_embedders_.erase(web_contents);
 }
 
 void PassageEmbeddingsCoordinator::OnOmniboxFocusChanged(bool is_focused) {
   current_priority_ = is_focused ? kUrgent : kPassive;
 
   std::set<Embedder::TaskId> task_ids;
-  for (const auto [web_contents, task_id] : web_contents_task_ids_) {
-    task_ids.insert(task_id);
+  for (const auto& [web_contents, web_contents_passage_embedder] :
+       web_contents_passage_embedders_) {
+    if (current_priority_ == kUrgent) {
+      web_contents_passage_embedder
+          ->MaybeProcessPendingPassagesOnPriorityIncrease();
+    }
+
+    std::optional<Embedder::TaskId> task_id =
+        web_contents_passage_embedder->current_task_id();
+    if (task_id) {
+      task_ids.insert(*task_id);
+    }
   }
 
   ChromePassageEmbeddingsServiceController::Get()

@@ -76,6 +76,10 @@ extern const base::FeatureParam<int> kSchedulerMaxBatchSize;
 // work to the embedder.
 extern const base::FeatureParam<bool> kUsePerformanceScenario;
 
+// Whether to use the background passage embedder (vs. immediate passage
+// embedder) for computing WebContents passage embeddings.
+extern const base::FeatureParam<bool> kUseBackgroundPassageEmbedder;
+
 }  // namespace passage_embeddings
 
 #endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_
