@@ -97,6 +97,10 @@ class DriverFactory:
         time.sleep(DEFAULT_WAIT_INTERVAL)
     raise RuntimeError('Failed to get window handles.')
 
+  def wait_for_screenshot(self) -> None:
+    """Allows a platform to wait before the website screenshot is taken."""
+    return
+
   @contextmanager
   def create_driver(self,
                     seed_file: Optional[str] = None,
