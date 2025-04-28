@@ -691,6 +691,7 @@ source_set("unit_tests") {
     "manifest_handlers/update_url_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/event_router_mojom_unittest.cc",
     "mojom/extension_id_mojom_traits_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
