@@ -384,3 +384,21 @@ static void JNI_FakeServerHelper_ClearServerData(JNIEnv* env,
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->ClearServerData();
 }
+
+static void JNI_FakeServerHelper_AddCollaboration(
+    JNIEnv* env,
+    jlong fake_server,
+    std::string& collaboration_id) {
+  fake_server::FakeServer* fake_server_ptr =
+      reinterpret_cast<fake_server::FakeServer*>(fake_server);
+  fake_server_ptr->AddCollaboration(collaboration_id);
+}
+
+static void JNI_FakeServerHelper_RemoveCollaboration(
+    JNIEnv* env,
+    jlong fake_server,
+    std::string& collaboration_id) {
+  fake_server::FakeServer* fake_server_ptr =
+      reinterpret_cast<fake_server::FakeServer*>(fake_server);
+  fake_server_ptr->RemoveCollaboration(collaboration_id);
+}
