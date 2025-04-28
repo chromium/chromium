@@ -323,9 +323,6 @@
   /* New Tab Page Colors for Doodle Share Button. */ \
   E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
   E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
-  /* New Tab Footer colors. */ \
-  E_CPONLY(kColorNewTabFooterBackground) \
-  E_CPONLY(kColorNewTabFooterText) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxActionIcon) \
   E_CPONLY(kColorOmniboxActionIconHover) \
