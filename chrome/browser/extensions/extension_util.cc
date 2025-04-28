@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_util.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -59,8 +60,8 @@ namespace extensions::util {
 
 namespace {
 
-const char kCrxUrlPath[] = "/service/update2/crx";
-const char kJsonUrlPath[] = "/service/update2/json";
+constexpr std::string_view kCrxUrlPath = "/service/update2/crx";
+constexpr std::string_view kJsonUrlPath = "/service/update2/json";
 
 // Returns |extension_id|. See note below.
 std::string ReloadExtension(const std::string& extension_id,
