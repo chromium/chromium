@@ -108,6 +108,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private Tab mNewTab;
     @Mock private LayoutTab mLayoutTab;
     @Mock private ToggleTabStackButton mTabSwitcherButton;
+    @Mock private View mToolbar;
 
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
@@ -193,6 +194,7 @@ public class NewTabAnimationLayoutUnitTest {
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
                 .thenReturn(mTabSwitcherButton);
+        when(mAnimationHostView.findViewById(R.id.toolbar)).thenReturn(mToolbar);
         mNewTabAnimationLayout.onFinishNativeInitialization();
     }
 

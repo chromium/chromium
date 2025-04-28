@@ -446,20 +446,6 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     /**
-     * Returns the status bar height if {@link
-     * org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout} is not present.
-     */
-    private int getStatusBarHeightIfNeeded() {
-        // TODO(crbug.com/40282469): Remove this method once EdgeToEdgeBaseLayout is always present.
-        if (mAnimationHostView.getId() == mContentContainer.getId()) {
-            Rect compositorViewRect = new Rect();
-            mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
-            return compositorViewRect.top;
-        }
-        return 0;
-    }
-
-    /**
      * Forces the new tab animation to finish.
      *
      * <p>This method is intended for internal use within {@link NewTabAnimationLayout}. It ensures
@@ -665,14 +651,22 @@ public class NewTabAnimationLayout extends Layout {
                         ? NewTabAnimationUtils.getBackgroundColor(context, isIncognito)
                         : mToolbarManager.getPrimaryColor();
 
-        // TODO(crbug.com/40282469): Make sure we get the proper y-offset.
-        mBackgroundHostView.updateFakeTabSwitcherButton(
+        int[] toolbarPosition = new int[2];
+        mAnimationHostView.findViewById(R.id.toolbar).getLocationInWindow(toolbarPosition);
+        Rect compositorViewRect = new Rect();
+        mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
+        boolean isTopToolbar =
+                isRegularNtp || ToolbarPositionController.shouldShowToolbarOnTop(animationTab);
+
+        mBackgroundHostView.setUpAnimation(
                 tabSwitcherButton,
-                prevTabCount,
-                toolbarColor,
                 isRegularNtp,
                 isIncognito,
-                mBrowserControlsManager.getTopControlsMinHeight(),
+                isTopToolbar,
+                toolbarColor,
+                prevTabCount,
+                toolbarPosition[1],
+                compositorViewRect.top,
                 mToolbarManager.getNtpTransitionPercentage());
 
         // TODO(crbug.com/40282469): Get correct x and y for the NTP.
@@ -704,8 +698,7 @@ public class NewTabAnimationLayout extends Layout {
                                     mScrimVisibilitySupplier,
                                     this::forceNewTabAnimationToFinish);
                     mTabCreatedBackgroundAnimation =
-                            mBackgroundHostView.getAnimatorSet(
-                                    originX, originY, getStatusBarHeightIfNeeded());
+                            mBackgroundHostView.getAnimatorSet(originX, originY);
                     mTabCreatedBackgroundAnimation.addListener(
                             new AnimatorListenerAdapter() {
                                 @Override
