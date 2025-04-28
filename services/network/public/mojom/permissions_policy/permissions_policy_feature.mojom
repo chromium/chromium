@@ -326,6 +326,11 @@ enum PermissionsPolicyFeature {
   // See https://github.com/explainers-by-googlers/local-network-access
   kLocalNetworkAccess = 136,
 
+  // Controls Protected Audience API's view and click functionality.
+  //
+  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#37-view-and-click-data
+  kRecordAdAuctionEvents = 137,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

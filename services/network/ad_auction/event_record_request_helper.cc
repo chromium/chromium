@@ -12,10 +12,12 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/ad_auction/event_record.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/ad_auction.mojom.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -25,7 +27,8 @@
 namespace network {
 
 void AdAuctionEventRecordRequestHelper::HandleResponse(
-    const net::URLRequest& request) {
+    const net::URLRequest& request,
+    base::optional_ref<const network::PermissionsPolicy> permissions_policy) {
   if (!base::FeatureList::IsEnabled(features::kAdAuctionEventRegistration) ||
       !url_loader_network_observer_) {
     return;
@@ -54,6 +57,15 @@ void AdAuctionEventRecordRequestHelper::HandleResponse(
     return;
   }
 
+  url::Origin providing_origin = url::Origin::Create(request.url());
+  if (base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest) &&
+      !permissions_policy->IsFeatureEnabledForOrigin(
+          network::mojom::PermissionsPolicyFeature::kRecordAdAuctionEvents,
+          providing_origin)) {
+    return;
+  }
+
   std::optional<net::structured_headers::Dictionary> dict =
       net::structured_headers::ParseDictionary(*ad_auction_record_event_header);
   if (!dict) {
@@ -63,7 +75,7 @@ void AdAuctionEventRecordRequestHelper::HandleResponse(
   std::optional<AdAuctionEventRecord> maybe_parsed =
       AdAuctionEventRecord::MaybeCreateFromStructuredDict(
           *dict, /*expected_type=*/expected_type,
-          /*providing_origin=*/url::Origin::Create(request.url()));
+          /*providing_origin=*/providing_origin);
   if (!maybe_parsed) {
     return;
   }

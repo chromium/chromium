@@ -1102,7 +1102,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
 
-  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
+  ad_auction_event_record_request_helper_.HandleResponse(
+      *url_request_, GetPermissionsPolicy());
 
   ProcessInboundSharedStorageInterceptorOnReceivedRedirect(redirect_info,
                                                            std::move(response));
@@ -1226,7 +1227,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   response_ = BuildResponseHead();
   DispatchOnRawResponse();
 
-  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
+  ad_auction_event_record_request_helper_.HandleResponse(
+      *url_request_, GetPermissionsPolicy());
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.

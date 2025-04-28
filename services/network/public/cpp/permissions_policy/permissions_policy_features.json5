@@ -459,6 +459,12 @@
       permissions_policy_name: "publickey-credentials-get",
     },
     {
+      name: "RecordAdAuctionEvents",
+      permissions_policy_name: "record-ad-auction-events",
+      feature_default: "EnableForAll",
+      depends_on: ["FledgeClickiness"],
+    },
+    {
       name: "Rewriter",
       permissions_policy_name: "rewriter",
       depends_on: ["AIRewriterAPI", "BuiltInAIAPI"],

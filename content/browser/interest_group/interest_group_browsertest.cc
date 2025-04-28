@@ -795,7 +795,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          // Needed for reliable handling of click ARA (and hence clickiness)
          // events.
          {blink::features::kAttributionReportingInBrowserMigration, {}},
-         {blink::features::kFledgeClickiness, {}}},
+         {blink::features::kFledgeClickiness, {}},
+         {network::features::kPopulatePermissionsPolicyOnRequest, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -5513,18 +5514,7 @@ IN_PROC_BROWSER_TEST_F(
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
-class InterestGroupClickinessBrowserTest : public InterestGroupBrowserTest {
- public:
-  InterestGroupClickinessBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kFledgeClickiness},
-                                   /*disabled_features=*/{});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(InterestGroupClickinessBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupNonOriginViewAndClickCountsProviders) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -8339,6 +8329,106 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_CaptureClick) {
                                  .past_week = 1,
                                  .past_30_days = 1,
                                  .past_90_days = 0});
+}
+
+// Test where permissions policy blocks click reporting. This test uses a
+// page with permission policy that allows reports from c.test.
+// It then triggers an anchor with an attribution source URL that follows a
+// redirect chain that consists of:
+//
+// - An a.test URL that tries to report a click, which should get blocked by
+//   permissions policy.
+//
+// - A b.test URL that tries to report a click, which should get blocked by
+//   permissions policy.
+//
+// - A c.test URL that tries to report a click, which should get allowed by
+//   permissions policy.
+//
+// The test then waits for reporting info from the second request to appear in
+// the Click Info Db, and finally checks that the reporting info from the first
+// request does not appear in the database. Waiting for the second request's
+// info to appear before checking for the first's should avoid any data races,
+// where the first request's info may not have made it to the database yet,
+// since the requests should use the same pipe to pass reporting info to the
+// browser process.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Clickiness_CaptureClickNoPermission) {
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test",
+      "/attribution_reporting/"
+      "page_with_record_ad_auction_events_policy.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"click\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  constexpr char kRecordEventAndRedirectPath[] =
+      "/interest_group/record_event_and_redirect_url.html";
+  GURL record_event_and_redirect_url = embedded_https_test_server().GetURL(
+      "b.test", kRecordEventAndRedirectPath);
+  network_responder_->RegisterNetworkResponse(
+      kRecordEventAndRedirectPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response},
+       {"Location", record_event_url.spec()}},
+      /*code=*/net::HTTP_MOVED_PERMANENTLY);
+
+  constexpr char kRecordEventAndRedirect2xPath[] =
+      "/interest_group/record_event_and_redirect_2x_url.html";
+  GURL record_event_and_redirect_2x_url = embedded_https_test_server().GetURL(
+      "a.test", kRecordEventAndRedirect2xPath);
+  network_responder_->RegisterNetworkResponse(
+      kRecordEventAndRedirect2xPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response},
+       {"Location", record_event_and_redirect_url.spec()}},
+      /*code=*/net::HTTP_MOVED_PERMANENTLY);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  const char kCreateAttributingLink[] = R"(
+    createAttributionSrcAnchor({
+        id: 'link',
+        url: $1,
+        attributionsrc: $2,
+        target: $3
+    });
+  )";
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace(kCreateAttributingLink,
+                         embedded_https_test_server().GetURL("a.test", "/echo"),
+                         record_event_and_redirect_2x_url, "_top")));
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
+
+  // Wait for the write for the destination to show up in the data.
+  while (CheckViewClickInfoInDb(
+             /*provider_origin=*/url::Origin::Create(record_event_url),
+             /*eligible_origin=*/test_origin_a) != true) {
+  }
+
+  // The previous hops should not have anything record, they're blocked by
+  // permissions policy.
+  EXPECT_EQ(false, CheckViewClickInfoInDb(
+                       /*provider_origin=*/url::Origin::Create(
+                           record_event_and_redirect_2x_url),
+                       /*eligible_origin=*/test_origin_a));
+  EXPECT_EQ(false, CheckViewClickInfoInDb(
+                       /*provider_origin=*/url::Origin::Create(
+                           record_event_and_redirect_url),
+                       /*eligible_origin=*/test_origin_a));
 }
 
 // Both the redirect and the redirect destination serve event record headers.
