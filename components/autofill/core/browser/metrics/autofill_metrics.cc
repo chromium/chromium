@@ -1396,11 +1396,6 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 }
 
 // static
-void AutofillMetrics::LogImageFetcherRequestLatency(base::TimeDelta duration) {
-  base::UmaHistogramLongTimes("Autofill.ImageFetcher.RequestLatency", duration);
-}
-
-// static
 void AutofillMetrics::LogAutocompletePredictionCollisionState(
     PredictionState prediction_state,
     AutocompleteState autocomplete_state) {

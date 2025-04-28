@@ -11,7 +11,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 
@@ -78,11 +77,9 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   AutofillImageFetcher();
 
   // Called when an image is fetched. If the fetch was unsuccessful,
-  // `card_art_image` will be an empty gfx::Image(). If the original URL was
-  // invalid, `fetch_image_request_timestamp` will also be null.
+  // `card_art_image` will be an empty gfx::Image().
   void OnCardArtImageFetched(
       const GURL& card_art_url,
-      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 

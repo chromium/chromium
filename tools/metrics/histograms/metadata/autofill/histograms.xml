@@ -3567,17 +3567,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="Autofill.PaymentsSigninState"/>
 </histogram>
 
-<histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"
-    expires_after="2025-10-19">
-  <owner>vishwasuppoor@chromium.org</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs the roundtrip latency for fetching an image in AutofillImageFetcher. It
-    is logged when the fetch request for image is completed.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ImageFetcher.Result" enum="BooleanSuccess"
     expires_after="2025-08-31">
   <owner>siyua@chromium.org</owner>

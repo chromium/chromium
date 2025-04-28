@@ -72,7 +72,7 @@ void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
     FetchImageForURL(
         image_url, ImageType::kCreditCardArtImage,
         base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched,
-                       GetWeakPtr(), image_url, base::TimeTicks::Now()));
+                       GetWeakPtr(), image_url));
   }
 }
 
@@ -118,11 +118,8 @@ AutofillImageFetcher::AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::OnCardArtImageFetched(
     const GURL& card_art_url,
-    const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
-  CHECK(fetch_image_request_timestamp.has_value());
-
   // Allow subclasses to specialize the card art image if desired.
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
 
@@ -143,8 +140,6 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   if (!url_to_image_fetch_result_map_.contains(card_art_url.spec()) ||
       (!url_to_image_fetch_result_map_[card_art_url.spec()] && succeeded)) {
     url_to_image_fetch_result_map_[card_art_url.spec()] = succeeded;
-    AutofillMetrics::LogImageFetcherRequestLatency(
-        base::TimeTicks::Now() - *fetch_image_request_timestamp);
     AutofillMetrics::LogImageFetchResult(succeeded);
   }
 }
