@@ -216,6 +216,10 @@ class PageNode : public TypedNode<PageNode> {
   virtual uint64_t EstimateResidentSetSize() const = 0;
 
   virtual uint64_t EstimatePrivateFootprintSize() const = 0;
+
+  // Returns a weak pointer to this page node.
+  virtual base::WeakPtr<PageNode> GetWeakPtr() = 0;
+  virtual base::WeakPtr<const PageNode> GetWeakPtr() const = 0;
 };
 
 // Observer interface for page nodes.

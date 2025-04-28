@@ -258,7 +258,12 @@ uint64_t PageNodeImpl::EstimatePrivateFootprintSize() const {
   return total;
 }
 
-base::WeakPtr<PageNodeImpl> PageNodeImpl::GetWeakPtr() {
+base::WeakPtr<PageNode> PageNodeImpl::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<const PageNode> PageNodeImpl::GetWeakPtr() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }

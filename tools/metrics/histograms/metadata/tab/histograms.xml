@@ -121,23 +121,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Discarding.DiscardingFocusedTab" enum="BooleanFocusedTab"
+<histogram name="Discarding.DiscardingFocusedTab2" enum="BooleanFocusedTab"
     expires_after="2025-10-12">
   <owner>kalutes@chromium.org</owner>
   <owner>cros-core-systems-perf@google.com</owner>
   <summary>
-    Logged every time a tab is set to be discarded. Tracks the porportion of tab
-    discards that are focused at the time of discard.
+    Logged after a tab is successfully discarded by
+    PageDiscardingHelper::DiscardMultiplePages (includes urgent discards, but
+    not discards by Performance Controls features such as Memory Saver or
+    Performance Detection). Indicates whether the tab was focused at the time of
+    discard.
   </summary>
 </histogram>
 
-<histogram name="Discarding.DiscardingProtectedTab" enum="BooleanProtectedTab"
+<histogram name="Discarding.DiscardingProtectedTab2" enum="BooleanProtectedTab"
     expires_after="2025-10-12">
   <owner>kalutes@chromium.org</owner>
   <owner>cros-core-systems-perf@google.com</owner>
   <summary>
-    Logged every time a tab is set to be discarded. Tracks the porportion of tab
-    discards that are protected at the time of discard.
+    Logged after a tab is successfully discarded by
+    PageDiscardingHelper::DiscardMultiplePages (includes urgent discards, but
+    not discards by Performance Controls features such as Memory Saver or
+    Performance Detection). Indicates whether the tab was protected at the time
+    of discard.
   </summary>
 </histogram>
 

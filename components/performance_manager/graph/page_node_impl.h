@@ -110,6 +110,8 @@ class PageNodeImpl
   base::WeakPtr<content::WebContents> GetWebContents() const override;
   uint64_t EstimateResidentSetSize() const override;
   uint64_t EstimatePrivateFootprintSize() const override;
+  base::WeakPtr<PageNode> GetWeakPtr() override;
+  base::WeakPtr<const PageNode> GetWeakPtr() const override;
 
   // Returns the unique token for the page node. This function can be called
   // from any thread.
@@ -192,8 +194,6 @@ class PageNodeImpl
   void SetHadUserEditsForTesting(bool had_user_edits) {
     SetHadUserEdits(had_user_edits);
   }
-
-  base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Functions meant to be called by a FrameNodeImpl:
   void AddFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);

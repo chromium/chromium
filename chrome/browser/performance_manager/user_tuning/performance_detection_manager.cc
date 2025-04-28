@@ -88,12 +88,11 @@ bool PerformanceDetectionManager::DiscardTabs(
   policies::PageDiscardingHelper* const helper =
       policies::PageDiscardingHelper::GetFromGraph(graph);
   CHECK(helper);
-  std::optional<base::TimeTicks> first_discarded_at =
-      helper->ImmediatelyDiscardMultiplePages(
-          eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED);
+  const bool had_successful_discard = helper->ImmediatelyDiscardMultiplePages(
+      eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   OnDiscardComplete();
-  return first_discarded_at.has_value();
+  return had_successful_discard;
 }
 
 void PerformanceDetectionManager::ForceTabCpuDataRefresh() {

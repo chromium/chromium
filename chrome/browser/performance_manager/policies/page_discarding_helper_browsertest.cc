@@ -270,10 +270,9 @@ class PageDiscardingHelperBrowserTest
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
 
-    std::optional<base::TimeTicks> first_discarded_at =
-        helper->ImmediatelyDiscardMultiplePages({page_node.get()},
-                                                discard_reason);
-    EXPECT_EQ(first_discarded_at.has_value(), expected_result);
+    const bool discard_success = helper->ImmediatelyDiscardMultiplePages(
+        {page_node.get()}, discard_reason);
+    EXPECT_EQ(discard_success, expected_result);
     EXPECT_EQ(
         browser()->tab_strip_model()->GetWebContentsAt(index)->WasDiscarded(),
         expected_result);

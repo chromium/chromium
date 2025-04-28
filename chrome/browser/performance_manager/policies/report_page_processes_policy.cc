@@ -141,8 +141,8 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
         page_node, DiscardEligibilityPolicy::DiscardReason::URGENT);
     bool is_visible = page_node->IsVisible();
     bool is_focused = page_node->IsFocused();
-    candidates.emplace_back(page_node, can_discard_result, is_visible,
-                            is_focused,
+    candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
+                            is_visible, is_focused,
                             page_node->GetTimeSinceLastVisibilityChange());
   }
 
@@ -161,14 +161,14 @@ void ReportPageProcessesPolicy::ListPageProcesses(
 
   base::TimeTicks report_time = base::TimeTicks::Now();
 
-  for (auto candidate : candidates) {
+  for (auto& candidate : candidates) {
     // Only list candidates that could be discarded.
     if (candidate.is_disallowed()) {
       continue;
     }
 
     base::flat_set<const ProcessNode*> processes =
-        GraphOperations::GetAssociatedProcessNodes(candidate.page_node());
+        GraphOperations::GetAssociatedProcessNodes(candidate.page_node().get());
     for (auto* process : processes) {
       base::ProcessId pid = process->GetProcessId();
       if (pid == base::kNullProcessId) {
