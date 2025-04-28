@@ -253,6 +253,41 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image download successful"/>
 </enum>
 
+<enum name="NavigationCapturingRedirectionResult">
+  <int value="0" label="Browser tab reparented into tab"/>
+  <int value="1" label="Browser tab reparented into app window"/>
+  <int value="2" label="App window reparented into browser tab"/>
+  <int value="3" label="App window reparented into app"/>
+  <int value="4" label="New app window opened"/>
+  <int value="5" label="New tab belonging to an app opened"/>
+  <int value="6" label="Navigated existing app tab"/>
+  <int value="7" label="Navigated existing app window"/>
+  <int value="8" label="Focused existing app tab"/>
+  <int value="9" label="Focused existing app window"/>
+  <int value="10"
+      label="Redirection happening in same context as triggered in"/>
+  <int value="11" label="Final url not capturable"/>
+  <int value="12" label="Redirection not handled"/>
+</enum>
+
+<enum name="NavigationCapturingResult">
+  <int value="0" label="New app tab opened"/>
+  <int value="1" label="New app window opened"/>
+  <int value="2" label="Focused existing app tab"/>
+  <int value="3" label="Focused existing app window"/>
+  <int value="4" label="Navigated existing app tab"/>
+  <int value="5" label="Navigated existing app window"/>
+  <int value="6" label="Opened new app tab from user modified click"/>
+  <int value="7" label="Opened new app window from user modified click"/>
+  <int value="8" label="Opened new app tab from auxiliary context"/>
+  <int value="9" label="Opened new app window from auxiliary context"/>
+  <int value="10" label="Navigation canceled"/>
+  <int value="11" label="Override browser for navigation"/>
+  <int value="12"
+      label="Intermediary tab opened, possible for redirection to be captured"/>
+  <int value="13" label="Not handled"/>
+</enum>
+
 <enum name="PreinstalledAppDisabledReason">
   <int value="0" label="kNotDisabled"/>
   <int value="1" label="kUninstallPreinstalledAppsNotEnabled"/>

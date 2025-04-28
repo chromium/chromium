@@ -229,6 +229,8 @@ source_set("web_applications") {
     "manifest_update_utils.h",
     "navigation_capturing_log.cc",
     "navigation_capturing_log.h",
+    "navigation_capturing_metrics.cc",
+    "navigation_capturing_metrics.h",
     "navigation_capturing_settings.cc",
     "navigation_capturing_settings.h",
     "os_integration/file_handling_sub_manager.cc",

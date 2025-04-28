@@ -1662,6 +1662,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.NavigationCapturing.Redirection.FinalResult"
+    enum="NavigationCapturingRedirectionResult" expires_after="2026-04-29">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Recorded the outcome of navigation capturing by the web app system whenever
+    a navigation redirects.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.NavigationCapturing.Result"
+    enum="NavigationCapturingResult" expires_after="2026-04-29">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Recorded whenever a new navigation is triggered via a link click which is
+    user modified (middle/shift) or a left click to determine if the web app
+    system captured that navigation, and if so, what the chosen outcome was of
+    capturing. This is measured regardless of whether a redirection happens for
+    the navigation or not.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.NewCraftedAppInstalled.ByUser" enum="BooleanSuccess"
     expires_after="2026-03-21">
   <owner>dibyapal@chromium.org</owner>
