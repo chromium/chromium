@@ -493,11 +493,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   bool IsResolvableLength() const;
 
  private:
-  template <typename T>
-  inline T GetValue() const {
-    return ClampTo<T>(GetDoubleValue());
-  }
-
   bool InvolvesLayout() const;
   const CSSMathExpressionNode* ToMathExpressionNode() const;
 };
