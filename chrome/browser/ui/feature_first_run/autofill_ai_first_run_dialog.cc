@@ -79,8 +79,8 @@ void ShowAutofillAiFirstRunDialog(content::WebContents* web_contents) {
       autofill_ai::AutofillAiOptInFunnelEvents::kFFRDialogShown);
   ShowFeatureFirstRunDialog(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE),
-      ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT),
-      ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT_DARK),
+      ui::ImageModel::FromResourceId(IDR_AUTOFILL_AI_FFR_BANNER),
+      ui::ImageModel::FromResourceId(IDR_AUTOFILL_AI_FFR_BANNER_DARK),
       CreateDialogContentView(web_contents),
       base::BindOnce(&OnDialogAccepted, web_contents),
       base::BindOnce(&OnDialogCancelled), web_contents);
