@@ -4219,7 +4219,7 @@ enum WebFeature {
   kV8Animation_OverallProgress_AttributeGetter = 4926,
   kOBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method = 4927,
   kQuirksModeCursorHandApplied = 4928,
-  kSkippedPreloadScanning = 4929,
+  kOBSOLETE_SkippedPreloadScanning = 4929,
   kCSSColor_SpaceRGB = 4930,
   kCSSColor_SpaceRGB_outOfRec2020 = 4931,
   kCSSColor_SpaceOkLxx = 4932,

@@ -3074,25 +3074,6 @@
     "owners": ["abotella@igalia.com"]
   },
   {
-    "prefix": "skip-preload-scanning",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/skip-preload-scanning"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=SkipPreloadScanning"
-    ],
-    "expires": "Jan 14, 2025",
-    "owners": [
-      "alexnj@chromium.org"
-    ]
-  },
-  {
     "prefix": "expect-no-linked-resources",
     "platforms": [
       "Linux",

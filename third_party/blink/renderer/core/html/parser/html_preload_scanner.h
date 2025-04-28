@@ -222,8 +222,7 @@ class CORE_EXPORT HTMLPreloadScanner final {
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,
                      TakePreloadFn take_preload = TakePreloadFn(),
-                     Vector<ElementLocator> locators = {},
-                     bool disable_preload_scanning = false);
+                     Vector<ElementLocator> locators = {});
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
@@ -237,8 +236,6 @@ class CORE_EXPORT HTMLPreloadScanner final {
   void ScanInBackground(const String& source,
                         const KURL& document_base_element_url);
 
-  static bool IsSkipPreloadScanEnabled(const Document* document);
-
   base::WeakPtr<HTMLPreloadScanner> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -250,7 +247,6 @@ class CORE_EXPORT HTMLPreloadScanner final {
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;
   TakePreloadFn take_preload_;
-  bool skip_preload_scanning_;
   base::WeakPtrFactory<HTMLPreloadScanner> weak_ptr_factory_{this};
 };
 
