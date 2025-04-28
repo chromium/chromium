@@ -185,9 +185,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     case ItemIdentifierKeepBrowsingDataSeparate: {
       auto title = l10n_util::GetNSString(
           IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_TITLE);
-      auto details = l10n_util::GetNSStringF(
-          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_SUBTITLE,
-          base::SysNSStringToUTF16(_userEmail));
+      auto details = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_SUBTITLE);
       return [self
           createBrowsingDataMigrationCellItem:title
                                       details:details
