@@ -32,7 +32,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -795,17 +794,6 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
 void SigninViewController::ShowSignoutConfirmationPrompt(
     ChromeSignoutConfirmationPromptVariant prompt_variant,
     SignoutConfirmationCallback callback) {
-  if (!switches::IsImprovedSigninUIOnDesktopEnabled() &&
-      prompt_variant ==
-          ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData &&
-      !ShowAccountExtensionsOnSignout(browser_->profile())) {
-    // This variant is not enabled and there are no account extensions. Skip the
-    // UI and sign out immediately.
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
-                            /*uninstall_account_extensions_on_signout=*/false);
-    return;
-  }
-
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(

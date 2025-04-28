@@ -367,9 +367,6 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
-extern const char kImprovedSigninUIOnDesktopName[];
-extern const char kImprovedSigninUIOnDesktopDescription[];
-
 extern const char kImprovedSettingsUIOnDesktopName[];
 extern const char kImprovedSettingsUIOnDesktopDescription[];
 

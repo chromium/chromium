@@ -80,11 +80,6 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
                 base::BindRepeating(&BubbleSignInPromoInteractiveUITest::
                                         OnWillCreateBrowserContextServices,
                                     base::Unretained(this)));
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {switches::kImprovedSigninUIOnDesktop,
-         switches::kSyncEnableBookmarksInTransportMode},
-        /*disabled_features=*/{});
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -161,7 +156,8 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSyncEnableBookmarksInTransportMode};
 
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::CallbackListSubscription create_services_subscription_;

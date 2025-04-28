@@ -374,16 +374,13 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     // Note the condition checked is not IsInitialSyncFeatureSetupComplete(),
     // because the setup incomplete case is treated separately below. See the
     // comment in ShouldRequestSyncConfirmation() about dashboard resets.
+    if (service->RequiresClientUpgrade()) {
+      return AvatarSyncErrorType::kUpgradeClientError;
+    }
 
-    if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-      if (service->RequiresClientUpgrade()) {
-        return AvatarSyncErrorType::kUpgradeClientError;
-      }
-
-      if (service->GetUserSettings()
-              ->IsPassphraseRequiredForPreferredDataTypes()) {
-        return AvatarSyncErrorType::kPassphraseError;
-      }
+    if (service->GetUserSettings()
+            ->IsPassphraseRequiredForPreferredDataTypes()) {
+      return AvatarSyncErrorType::kPassphraseError;
     }
 
     return GetTrustedVaultError(service);
@@ -434,54 +431,31 @@ std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
     case AvatarSyncErrorType::kSyncPaused:
       return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(
-          is_sync_feature_enabled
-              ? IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE
-              : IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForEverythingError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::kPassphraseError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::kUpgradeClientError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringFUTF16(
-            IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
-            base::UTF8ToUTF16(user_email));
-      }
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+      return l10n_util::GetStringFUTF16(
+          IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
+          base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
     case AvatarSyncErrorType::kManagedUserUnrecoverableError:
     case AvatarSyncErrorType::kUnrecoverableError:

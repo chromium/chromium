@@ -187,14 +187,6 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedSigninUIOnDesktop,
-             "ImprovedSigninUIOnDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsImprovedSigninUIOnDesktopEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
-}
-
 BASE_FEATURE(kImprovedSettingsUIOnDesktop,
              "ImprovedSettingsUIOnDesktop",
 #if BUILDFLAG(IS_CHROMEOS)

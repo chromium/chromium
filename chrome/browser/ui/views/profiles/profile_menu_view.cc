@@ -554,8 +554,6 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 ProfileMenuViewBase::IdentitySectionParams
 ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
-  CHECK(switches::IsImprovedSigninUIOnDesktopEnabled());
-
   Profile* profile = browser()->profile();
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile);

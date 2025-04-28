@@ -1213,16 +1213,14 @@ class StateManager : public StateObserver,
           std::make_unique<ShowIdentityNameStateProvider>(
               /*state_observer=*/*this, *profile, avatar_toolbar_button_.get());
 
-      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        states_[ButtonState::kUpgradeClientError] =
-            std::make_unique<SyncErrorStateProvider>(
-                /*state_observer=*/*this, *profile,
-                AvatarSyncErrorType::kUpgradeClientError);
-        states_[ButtonState::kPassphraseError] =
-            std::make_unique<SyncErrorStateProvider>(
-                /*state_observer=*/*this, *profile,
-                AvatarSyncErrorType::kPassphraseError);
-      }
+      states_[ButtonState::kUpgradeClientError] =
+          std::make_unique<SyncErrorStateProvider>(
+              /*state_observer=*/*this, *profile,
+              AvatarSyncErrorType::kUpgradeClientError);
+      states_[ButtonState::kPassphraseError] =
+          std::make_unique<SyncErrorStateProvider>(
+              /*state_observer=*/*this, *profile,
+              AvatarSyncErrorType::kPassphraseError);
 
       if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
         states_[ButtonState::kSyncPaused] =
@@ -1620,8 +1618,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     case ButtonState::kSyncError:
       if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-              signin::ConsentLevel::kSync) &&
-          switches::IsImprovedSigninUIOnDesktopEnabled()) {
+              signin::ConsentLevel::kSync)) {
         color =
             color_provider->GetColor(kColorAvatarButtonHighlightSigninPaused);
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
@@ -1743,8 +1740,7 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
           kColorAvatarButtonHighlightIncognitoForeground);
     case ButtonState::kSyncError:
       if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-              signin::ConsentLevel::kSync) ||
-          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+              signin::ConsentLevel::kSync)) {
         return color_provider->GetColor(
             kColorAvatarButtonHighlightSyncErrorForeground);
       }
@@ -1827,8 +1823,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
         break;
       case ButtonState::kSyncError:
         if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-                signin::ConsentLevel::kSync) ||
-            !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+                signin::ConsentLevel::kSync)) {
           break;
         }
         [[fallthrough]];
@@ -1870,8 +1865,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
           profiles::SHAPE_CIRCLE));
     case ButtonState::kSyncError:
       if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-              signin::ConsentLevel::kSync) ||
-          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+              signin::ConsentLevel::kSync)) {
         return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
             GetProfileAvatarImage(icon_size), icon_size, icon_size,
             profiles::SHAPE_CIRCLE));
