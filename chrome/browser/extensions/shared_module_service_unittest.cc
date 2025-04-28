@@ -202,7 +202,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
           "1.1");
   EXPECT_TRUE(InstallExtension(importing_extension_2.get(), true));
 
-  // Since the extension v1.1 depends the module 2 insteand module 1.
+  // Since the extension v1.1 depends the module 2 instead module 1.
   // So the module 1 should be uninstalled.
   EXPECT_FALSE(registry()->GetExtensionById(shared_module_1->id(),
                                             ExtensionRegistry::EVERYTHING));
