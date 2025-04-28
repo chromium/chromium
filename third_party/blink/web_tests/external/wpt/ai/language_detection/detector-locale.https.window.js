@@ -63,7 +63,7 @@ function uniqueCount(array) {
 promise_test(async t => {
   for (const [languageSubtag, variations] of Object.entries(
            valid_language_tags)) {
-    if (await getAvailability(languageSubtag) === 'unavailable') {
+    if (await getAvailability([languageSubtag]) === 'unavailable') {
       continue;
     }
 
