@@ -2970,6 +2970,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PRE_ComparisonMetrics) {
   // Sanity-check the existence of a few comparison metrics.
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
+      "ConsideringAllBookmarks.ByUrl",
+      /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison.MatchesPreviousGaiaId."
       "ConsideringAllBookmarks.ByUrlAndUuid",
       /*sample=*/4 /*kLocalDataIsStrictSubsetOfAccountData*/,
       /*expected_bucket_count=*/1);

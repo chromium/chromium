@@ -66,12 +66,16 @@ std::string_view SubtreeSelectionToInfix(SubtreeSelection value) {
 std::string_view GroupingKeyInfixToString(GroupingKeyInfix value) {
   // LINT.IfChange(BookmarkComparisonGroupingKey)
   switch (value) {
+    case GroupingKeyInfix::kByUrl:
+      return "ByUrl";
     case GroupingKeyInfix::kByUrlAndTitle:
       return "ByUrlAndTitle";
     case GroupingKeyInfix::kByUrlAndUuid:
       return "ByUrlAndUuid";
     case GroupingKeyInfix::kByUrlAndTitleAndPath:
       return "ByUrlAndTitleAndPath";
+    case GroupingKeyInfix::kByUrlAndTitleAndPathAndUuid:
+      return "ByUrlAndTitleAndPathAndUuid";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonGroupingKey)
   NOTREACHED();
@@ -230,6 +234,24 @@ Key GroupingKeyFromAccountData(const sync_pb::BookmarkSpecifics& specifics,
                                std::u16string path);
 
 template <>
+UrlOnly GroupingKeyFromLocalData(const bookmarks::BookmarkNode* node,
+                                 std::u16string path) {
+  UrlOnly key;
+  key.url = node->url();
+  // `path` ignored but required in signture for template code.
+  return key;
+}
+
+template <>
+UrlOnly GroupingKeyFromAccountData(const sync_pb::BookmarkSpecifics& specifics,
+                                   std::u16string path) {
+  UrlOnly key;
+  key.url = GURL(specifics.url());
+  // `path` ignored but required in signture for template code.
+  return key;
+}
+
+template <>
 UrlAndTitle GroupingKeyFromLocalData(const bookmarks::BookmarkNode* node,
                                      std::u16string path) {
   UrlAndTitle key;
@@ -289,6 +311,30 @@ UrlAndTitleAndPath GroupingKeyFromAccountData(
   key.url = GURL(specifics.url());
   key.title = NodeTitleFromSpecifics(specifics);
   key.path = std::move(path);
+  return key;
+}
+
+template <>
+UrlAndTitleAndPathAndUuid GroupingKeyFromLocalData(
+    const bookmarks::BookmarkNode* node,
+    std::u16string path) {
+  UrlAndTitleAndPathAndUuid key;
+  key.url = node->url();
+  key.title = node->GetTitle();
+  key.path = std::move(path);
+  key.uuid = node->uuid();
+  return key;
+}
+
+template <>
+UrlAndTitleAndPathAndUuid GroupingKeyFromAccountData(
+    const sync_pb::BookmarkSpecifics& specifics,
+    std::u16string path) {
+  UrlAndTitleAndPathAndUuid key;
+  key.url = GURL(specifics.url());
+  key.title = NodeTitleFromSpecifics(specifics);
+  key.path = std::move(path);
+  key.uuid = base::Uuid::ParseLowercase(specifics.guid());
   return key;
 }
 
@@ -470,6 +516,36 @@ void CompareAndLogHistogramsWithKey(
 
 }  // namespace
 
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid() = default;
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    const GURL& url,
+    const std::u16string& title,
+    const std::u16string& path,
+    const base::Uuid& uuid)
+    : url(url), title(title), path(path), uuid(uuid) {}
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    const UrlAndTitleAndPathAndUuid&) = default;
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    UrlAndTitleAndPathAndUuid&&) = default;
+
+UrlAndTitleAndPathAndUuid::~UrlAndTitleAndPathAndUuid() = default;
+
+UrlAndTitleAndPathAndUuid& UrlAndTitleAndPathAndUuid::operator=(
+    const UrlAndTitleAndPathAndUuid&) = default;
+
+UrlAndTitleAndPathAndUuid& UrlAndTitleAndPathAndUuid::operator=(
+    UrlAndTitleAndPathAndUuid&&) = default;
+
+base::flat_set<UrlOnly> ExtractUniqueLocalNodesByUrlForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractLocalDataSet<UrlOnly>(
+      GetRelevantLocalSubtrees(all_local_data, subtree_selection));
+}
+
 base::flat_set<UrlAndTitle> ExtractUniqueLocalNodesByUrlAndTitleForTesting(
     const BookmarkModelView& all_local_data,
     SubtreeSelection subtree_selection) {
@@ -492,6 +568,21 @@ ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
       GetRelevantLocalSubtrees(all_local_data, subtree_selection));
 }
 
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueLocalNodesByUrlAndTitleAndPathAndUuidForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractLocalDataSet<UrlAndTitleAndPathAndUuid>(
+      GetRelevantLocalSubtrees(all_local_data, subtree_selection));
+}
+
+base::flat_set<UrlOnly> ExtractUniqueAccountNodesByUrlForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractAccountDataSet<UrlOnly>(
+      GetRelevantAccountSubtrees(all_account_data, subtree_selection));
+}
+
 base::flat_set<UrlAndTitle> ExtractUniqueAccountNodesByUrlAndTitleForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection) {
@@ -511,6 +602,14 @@ ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection) {
   return ExtractAccountDataSet<UrlAndTitleAndPath>(
+      GetRelevantAccountSubtrees(all_account_data, subtree_selection));
+}
+
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueAccountNodesByUrlAndTitleAndPathAndUuidForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractAccountDataSet<UrlAndTitleAndPathAndUuid>(
       GetRelevantAccountSubtrees(all_account_data, subtree_selection));
 }
 
@@ -539,6 +638,10 @@ void CompareBookmarkModelAndLogHistograms(
     const BookmarkCountSuffix bookmark_count_suffix =
         CountLocalBookmarks(relevant_local_subtrees);
 
+    CompareAndLogHistogramsWithKey<UrlOnly>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
     CompareAndLogHistogramsWithKey<UrlAndTitle>(
         subtree_selection, previously_syncing_gaia_id_info,
         bookmark_count_suffix, relevant_local_subtrees,
@@ -548,6 +651,10 @@ void CompareBookmarkModelAndLogHistograms(
         bookmark_count_suffix, relevant_local_subtrees,
         relevant_account_subtrees);
     CompareAndLogHistogramsWithKey<UrlAndTitleAndPath>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndTitleAndPathAndUuid>(
         subtree_selection, previously_syncing_gaia_id_info,
         bookmark_count_suffix, relevant_local_subtrees,
         relevant_account_subtrees);

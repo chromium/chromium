@@ -392,10 +392,14 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(BookmarkComparisonGroupingKey) -->
 
   <token key="GroupingKey">
+    <variant name="ByUrl" summary="the bookmark's URL"/>
     <variant name="ByUrlAndTitle" summary="&lt;URL, title&gt;"/>
     <variant name="ByUrlAndTitleAndPath"
         summary="&lt;URL, title, path&gt; (where the path contains ancestor's
                  titles)"/>
+    <variant name="ByUrlAndTitleAndPathAndUuid"
+        summary="&lt;URL, title, path, UUID&gt; (where the path contains
+                 ancestor's titles)"/>
     <variant name="ByUrlAndUuid" summary="&lt;URL, UUID&gt;"/>
   </token>
 <!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonGroupingKey) -->

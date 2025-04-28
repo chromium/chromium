@@ -29,9 +29,11 @@ enum class SubtreeSelection {
 // comparing local bookmarks with account bookmarks. This enum is used as
 // infix when recording metrics.
 enum class GroupingKeyInfix {
+  kByUrl,
   kByUrlAndTitle,
   kByUrlAndUuid,
   kByUrlAndTitleAndPath,
+  kByUrlAndTitleAndPathAndUuid,
 };
 
 // Result of comparing two datasets for the purpose of logging metrics. Note
@@ -58,6 +60,15 @@ enum class SetComparisonOutcome {
   kMaxValue = kIntersectionEmpty
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarkSetComparisonOutcome)
+
+struct UrlOnly {
+  static constexpr GroupingKeyInfix kGroupingKeyInfix =
+      GroupingKeyInfix::kByUrl;
+
+  auto operator<=>(const UrlOnly&) const = default;
+
+  GURL url;
+};
 
 struct UrlAndTitle {
   static constexpr GroupingKeyInfix kGroupingKeyInfix =
@@ -91,7 +102,35 @@ struct UrlAndTitleAndPath {
   std::u16string path;
 };
 
+struct UrlAndTitleAndPathAndUuid {
+  static constexpr GroupingKeyInfix kGroupingKeyInfix =
+      GroupingKeyInfix::kByUrlAndTitleAndPathAndUuid;
+
+  UrlAndTitleAndPathAndUuid();
+  UrlAndTitleAndPathAndUuid(const GURL& url,
+                            const std::u16string& title,
+                            const std::u16string& path,
+                            const base::Uuid& uuid);
+  UrlAndTitleAndPathAndUuid(const UrlAndTitleAndPathAndUuid&);
+  UrlAndTitleAndPathAndUuid(UrlAndTitleAndPathAndUuid&&);
+  ~UrlAndTitleAndPathAndUuid();
+
+  UrlAndTitleAndPathAndUuid& operator=(const UrlAndTitleAndPathAndUuid&);
+  UrlAndTitleAndPathAndUuid& operator=(UrlAndTitleAndPathAndUuid&&);
+
+  auto operator<=>(const UrlAndTitleAndPathAndUuid&) const = default;
+
+  GURL url;
+  std::u16string title;
+  // Ancestor folder titles concatenated with '/'.
+  std::u16string path;
+  base::Uuid uuid;
+};
+
 // Test-only functions to verify the logic related to extracting local data.
+base::flat_set<UrlOnly> ExtractUniqueLocalNodesByUrlForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection);
 base::flat_set<UrlAndTitle> ExtractUniqueLocalNodesByUrlAndTitleForTesting(
     const BookmarkModelView& all_local_data,
     SubtreeSelection subtree_selection);
@@ -102,8 +141,15 @@ base::flat_set<UrlAndTitleAndPath>
 ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
     const BookmarkModelView& all_local_data,
     SubtreeSelection subtree_selection);
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueLocalNodesByUrlAndTitleAndPathAndUuidForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection);
 
 // Test-only functions to verify the logic related to extracting account data.
+base::flat_set<UrlOnly> ExtractUniqueAccountNodesByUrlForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection);
 base::flat_set<UrlAndTitle> ExtractUniqueAccountNodesByUrlAndTitleForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection);
@@ -112,6 +158,10 @@ base::flat_set<UrlAndUuid> ExtractUniqueAccountNodesByUrlAndUuidForTesting(
     SubtreeSelection subtree_selection);
 base::flat_set<UrlAndTitleAndPath>
 ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection);
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueAccountNodesByUrlAndTitleAndPathAndUuidForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection);
 
