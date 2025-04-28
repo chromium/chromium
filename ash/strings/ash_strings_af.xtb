@@ -163,7 +163,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1501946871587957338">Wissel oudiobron?</translation>
 <translation id="1505542291183484463">Verander grootte van geteëlde venster afwaarts</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n app}other{Wys kennisgewinginstellings. Kennisgewings is af vir # apps}}</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
 <translation id="1525508553941733066">MAAK TOE</translation>
 <translation id="1526448108126799339">Maak nuwe oortjie in nuwe venster oop</translation>
@@ -900,7 +900,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4054070260844648638">Sigbaar vir almal</translation>
 <translation id="4057003836560082631">Blaaieroortjie <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Druk die Oorsig-sleutel om gepersonaliseerde voorstelle te sien vir dinge om volgende te doen</translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Af vir program}other{Af vir # prog.'e}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Af vir app}other{Af vir # prog.'e}}</translation>
 <translation id="4066027111132117168">Aan, <ph name="REMAINING_TIME" /></translation>
 <translation id="4067635609339702874">ChromeOS-instellings wil bevestig dat dit jy is</translation>
 <translation id="4069532248403319695">Maak aflaaiebladsy oop</translation>
@@ -2351,7 +2351,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8858369206579825206">Privaatheidkontroles</translation>
 <translation id="8860366331836346216">Voeg e-SIM by</translation>
 <translation id="8869149849311827122">Is jy seker jy wil kontrole vir muisskermpyltjie afskakel?</translation>
-<translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
+<translation id="8870509716567206129">App steun nie verdeelde skerm nie.</translation>
 <translation id="8873203135446552888">Bevestig dat jy die ingeboude raakpaneel wil deaktiveer</translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8875021410787719674">Beweeg tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
