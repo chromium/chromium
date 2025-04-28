@@ -660,7 +660,7 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
       ExtensionSystem::Get(browser_context_)->user_script_manager();
   if (user_script_manager) {  // Not created in some unit tests.
     info.user_scripts_access.is_active =
-        user_script_manager->AreUserScriptsAllowed(extension, browser_context_);
+        user_script_manager->AreUserScriptsAllowed(extension);
   }
 
   // Install warnings, but only if unpacked, the error console isn't enabled

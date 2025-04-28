@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/user_scripts/user_scripts_apitest.h"
 
 #include "base/feature_list.h"
+#include "base/one_shot_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -18,7 +19,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/user_scripts_allowed_state.h"
@@ -563,7 +568,8 @@ IN_PROC_BROWSER_TEST_P(UserScriptsAPITestWithoutAPIAllowed,
   // userScripts should remain disallowed after browser restart.
   if (GetParam()) {
     EXPECT_FALSE(GetCurrentUserScriptAllowedState(
-        util::GetBrowserContextId(profile()), extension_id));
+                     util::GetBrowserContextId(profile()), extension_id)
+                     .value_or(false));
   } else {
     EXPECT_FALSE(GetCurrentDeveloperMode(util::GetBrowserContextId(profile())));
   }
@@ -593,5 +599,184 @@ INSTANTIATE_TEST_SUITE_P(All,
 // for an extension in one profile doesn't enable it for the same extension in
 // another profile. Also write tests to confirm incognito split/span mode
 // behavior.
+
+class MigrateUserScriptsAPITest : public ExtensionApiTest {
+ public:
+  MigrateUserScriptsAPITest() {
+    // Tests the migration capability by disabling the feature in only the
+    // PRE_<test_name> setup methods so the extension can be installed without
+    // the migration. Then the primary test method restarts the browser with the
+    // migration enabled.
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::kUserScriptUserExtensionToggle,
+        /*enabled=*/!GetTestPreCount());
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  bool ExtensionPrefEnabled(const ExtensionId& extension_id,
+                            const PrefMap& pref) {
+    bool user_scripts_allowed = false;
+    ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(extension_id, pref,
+                                                      &user_scripts_allowed);
+    return user_scripts_allowed;
+  }
+
+  bool PrefEnabled(const PrefMap& pref) {
+    return ExtensionPrefs::Get(profile())->GetPrefAsBoolean(pref);
+  }
+
+  void WaitForAllExtensionsToLoad() {
+    // Wait for all extensions to load.
+    SCOPED_TRACE("waiting for all extensions to load");
+    ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+    ASSERT_TRUE(extension_system);
+    base::RunLoop run_loop;
+    extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  const ExtensionId GetTestExtensionId(const char* extension_name) {
+    ExtensionId extension_id;
+    const auto extensions =
+        ExtensionRegistry::Get(profile())->GenerateInstalledExtensionsSet();
+    for (const auto& extension : extensions) {
+      if (extension->name() == extension_name) {
+        extension_id = extension->id();
+        break;
+      }
+    }
+    return extension_id;
+  }
+
+  void SetDevMode(bool enabled) {
+    util::SetDeveloperModeForProfile(profile(),
+                                     /*in_developer_mode=*/enabled);
+
+    // Wait for the above IPC(s) to send.
+    RendererStartupHelper* renderer_startup_helper =
+        RendererStartupHelperFactory::GetForBrowserContext(profile());
+    renderer_startup_helper->FlushAllForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Installs an extension without the user script permission prior to the
+// migration.
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       PRE_ExtensionWithoutPermission_Allowed_AfterMigration) {
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "user_scripts/migration_tests/extension_without_userscript_permission"));
+  ASSERT_TRUE(extension);
+
+  // Confirm no migration has occurred.
+  ASSERT_FALSE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+}
+
+// Tests that extensions that do not have permission to use the user scripts API
+// have the allowed preference set to false after migration.
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       ExtensionWithoutPermission_Allowed_AfterMigration) {
+  WaitForAllExtensionsToLoad();
+
+  // Find the extension's ID so we can make some assertions.
+  ExtensionId extension_id =
+      GetTestExtensionId("extension_without_userscript_permission");
+  ASSERT_FALSE(extension_id.empty());
+
+  // Confirm migration occurred and extension disallowed.
+  EXPECT_TRUE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+  EXPECT_FALSE(ExtensionPrefEnabled(
+      extension_id, UserScriptManager::kUserScriptsAllowedPref));
+}
+
+// Installs two extensions (one enabled and one disabled) and disables dev mode
+// prior to the migration.
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       PRE_DevModeOff_Disallowed_AfterMigration) {
+  const Extension* enabled_extension = LoadExtension(test_data_dir_.AppendASCII(
+      "user_scripts/migration_tests/extension_with_userscript_permission"));
+  ASSERT_TRUE(enabled_extension);
+  const Extension* disabled_extension =
+      LoadExtension(test_data_dir_.AppendASCII("user_scripts/allowed_tests"));
+  ASSERT_TRUE(disabled_extension);
+  // Confirm no migration has occurred.
+  ASSERT_FALSE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+
+  // Disable dev mode so it is off during the migration.
+  SetDevMode(/*enabled=*/false);
+
+  DisableExtension(disabled_extension->id());
+}
+
+// Tests that user script API extensions where dev mode is off have the allowed
+// preference set to false after restart (regardless if the extension is enabled
+// or disabled).
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       DevModeOff_Disallowed_AfterMigration) {
+  WaitForAllExtensionsToLoad();
+
+  // Find the extension's ID so we can make some assertions.
+  ExtensionId enabled_extension_id =
+      GetTestExtensionId("extension_with_userscript_permission");
+  ASSERT_FALSE(enabled_extension_id.empty());
+  ExtensionId disabled_extension_id = GetTestExtensionId("Test");
+  ASSERT_FALSE(disabled_extension_id.empty());
+
+  // Confirm extension is migrated and disallowed.
+  EXPECT_TRUE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+  EXPECT_FALSE(ExtensionPrefEnabled(
+      enabled_extension_id, UserScriptManager::kUserScriptsAllowedPref));
+  EXPECT_FALSE(ExtensionPrefEnabled(
+      disabled_extension_id, UserScriptManager::kUserScriptsAllowedPref));
+}
+
+// Installs two extensions (one enabled and one disabled) and enables dev mode
+// prior to the migration.
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       PRE_DevModeOn_Allowed_AfterMigration) {
+  const Extension* enabled_extension = LoadExtension(test_data_dir_.AppendASCII(
+      "user_scripts/migration_tests/extension_with_userscript_permission"));
+  ASSERT_TRUE(enabled_extension);
+  const Extension* disabled_extension =
+      LoadExtension(test_data_dir_.AppendASCII("user_scripts/allowed_tests"));
+  ASSERT_TRUE(disabled_extension);
+
+  // Confirm no migration has occurred.
+  ASSERT_FALSE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+
+  // Enable dev mode so it is on during the migration.
+  SetDevMode(/*enabled=*/true);
+
+  DisableExtension(disabled_extension->id());
+}
+
+// Tests that user script API extensions where dev mode is on have the allowed
+// preference set to true after restart (regardless if the extension is enabled
+// or disabled).
+IN_PROC_BROWSER_TEST_F(MigrateUserScriptsAPITest,
+                       DevModeOn_Allowed_AfterMigration) {
+  WaitForAllExtensionsToLoad();
+
+  // Find the extension's ID so we can make some assertions.
+  ExtensionId enabled_extension_id =
+      GetTestExtensionId("extension_with_userscript_permission");
+  ASSERT_FALSE(enabled_extension_id.empty());
+  ExtensionId disabled_extension_id = GetTestExtensionId("Test");
+  ASSERT_FALSE(disabled_extension_id.empty());
+
+  // Confirm extension is migrated and disallowed.
+  EXPECT_TRUE(PrefEnabled(UserScriptManager::kUserScriptsToggleMigratedPref));
+  EXPECT_TRUE(ExtensionPrefEnabled(enabled_extension_id,
+                                   UserScriptManager::kUserScriptsAllowedPref));
+  EXPECT_TRUE(ExtensionPrefEnabled(disabled_extension_id,
+                                   UserScriptManager::kUserScriptsAllowedPref));
+}
 
 }  // namespace extensions

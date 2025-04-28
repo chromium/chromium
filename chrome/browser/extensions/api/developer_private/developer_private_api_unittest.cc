@@ -493,8 +493,9 @@ const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
       R"({
            "name": "foo",
            "version": "1.0",
-           "manifest_version": 2,
-           "permissions": ["*://*/*"]
+           "manifest_version": 3,
+           "permissions": ["userScripts"],
+           "host_permissions": ["*://*/*"]
          })";
 
   test_extension_dirs_.emplace_back();

@@ -54,7 +54,8 @@ bool AreUserScriptsFeaturesAvailable(
     return false;
   }
 
-  return GetCurrentUserScriptAllowedState(context_id, extension->id());
+  return GetCurrentUserScriptAllowedState(context_id, extension->id())
+      .value_or(false);
 }
 
 }  // namespace

@@ -49,6 +49,7 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -2293,6 +2294,10 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name, false);
   registry->RegisterStringPref(pref_names::kGlobalShortcutsUuid, std::string());
+
+  registry->RegisterBooleanPref(
+      UserScriptManager::kUserScriptsToggleMigratedPref.name,
+      /*default_value=*/false);
 }
 
 template <class ExtensionIdContainer>
