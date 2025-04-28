@@ -32,7 +32,7 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
 
 const StyleScope* StyleScope::Renest(StyleRule* new_parent) const {
   StyleRule* reparented_from =
-      from_ ? To<StyleRule>(from_->Renest(new_parent)) : nullptr;
+      from_ ? blink::To<StyleRule>(from_->Renest(new_parent)) : nullptr;
   if (from_ == reparented_from) {
     return this;
   }
