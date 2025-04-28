@@ -171,12 +171,12 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
   // Migrate actions without shown.
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken",
-                               static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken_time",
-                               base::TimeToValue(TimeFromMs(200)));
+  SetNoticeStateFromJSON("Notice1StorageName", R"({
+    "schema_version": 1,
+    "notice_action_taken": 1,
+    "notice_action_taken_time": "200"
+    })");
+
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
   notice_storage()->RecordStartupHistograms();
@@ -415,14 +415,13 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   scoped_feature_list.Reset();
   scoped_feature_list.InitAndDisableFeature(
       kPrivacySandboxMigratePrefsToSchemaV2);
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_last_shown",
-                               base::TimeToValue(TimeFromMs(100)));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken",
-                               static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken_time",
-                               base::TimeToValue(TimeFromMs(200)));
+
+  SetNoticeStateFromJSON("Notice1StorageName", R"({
+    "schema_version": 1,
+    "notice_last_shown": "100",
+    "notice_action_taken": 1,
+    "notice_action_taken_time": "200"
+    })");
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -434,14 +433,12 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        AllEventsPopulatedMigrateSuccessfully) {
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_last_shown",
-                               base::TimeToValue(TimeFromMs(100)));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken",
-                               static_cast<int>(NoticeActionTaken::kAck));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken_time",
-                               base::TimeToValue(TimeFromMs(200)));
+  SetNoticeStateFromJSON("Notice1StorageName", R"({
+    "schema_version": 1,
+    "notice_last_shown": "100",
+    "notice_action_taken": 1,
+    "notice_action_taken_time": "200"
+    })");
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -457,10 +454,10 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        NoticeShownPopulatedMigrateSuccessfully) {
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_last_shown",
-                               base::TimeToValue(TimeFromMs(500)));
+  SetNoticeStateFromJSON("Notice1StorageName", R"({
+    "schema_version": 1,
+    "notice_last_shown": "500"
+    })");
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -473,8 +470,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 }
 
 TEST_F(PrivacySandboxNoticeStorageV2Test, SchemaAlreadyUpToDateDoesNotMigrate) {
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 2);
+  SetNoticeStateFromJSON("Notice1StorageName", R"({"schema_version": 2})");
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
   const NoticeEvents& events =
@@ -490,12 +486,16 @@ class PrivacySandboxNoticeStorageV2ActionsTest
 
 TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
        NoticeActionWithoutShownPopulatedMigrateSuccessfully) {
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken",
-                               static_cast<int>(std::get<0>(GetParam())));
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken_time",
-                               base::TimeToValue(TimeFromMs(200)));
+  const auto& [action, notice_event] = GetParam();
+
+  auto json = absl::StrFormat(R"({
+                                "schema_version": 1,
+                                "notice_action_taken": %d,
+                                "notice_action_taken_time": "200"
+                              })",
+                              static_cast<int>(action));
+  SetNoticeStateFromJSON("Notice1StorageName", std::move(json));
+
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
   auto notice_data = notice_storage()->ReadNoticeData("Notice1StorageName");
@@ -503,7 +503,6 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
   EXPECT_EQ(notice_data->schema_version, 2);
 
   const NoticeEvents& events = notice_data->notice_events;
-  auto notice_event = std::get<1>(GetParam());
   if (notice_event) {
     EXPECT_THAT(events, ElementsAre(Pointee(Eq(
                             EventTimePair{*notice_event, TimeFromMs(200)}))));
@@ -514,10 +513,11 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
 
 TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
        NoticeActionPopulatedWithoutTimestampMigrateSuccessfully) {
-  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
-  update.Get().SetByDottedPath("Notice1StorageName.schema_version", 1);
-  update.Get().SetByDottedPath("Notice1StorageName.notice_action_taken",
-                               static_cast<int>(std::get<0>(GetParam())));
+  const auto& [action, notice_event] = GetParam();
+  auto json =
+      absl::StrFormat(R"({"schema_version": 1,"notice_action_taken": %d})",
+                      static_cast<int>(action));
+  SetNoticeStateFromJSON("Notice1StorageName", std::move(json));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -526,7 +526,6 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
   EXPECT_EQ(notice_data->schema_version, 2);
 
   const NoticeEvents& events = notice_data->notice_events;
-  auto notice_event = std::get<1>(GetParam());
   if (notice_event) {
     EXPECT_THAT(
         events,
