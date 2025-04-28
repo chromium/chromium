@@ -10,9 +10,9 @@
 #include "base/containers/map_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 
 namespace web_app {
 

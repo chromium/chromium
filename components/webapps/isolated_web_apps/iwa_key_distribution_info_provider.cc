@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 
 #include <memory>
 
@@ -16,11 +16,8 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
-#include "chrome/common/chrome_switches.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
 namespace web_app {
 
@@ -92,16 +89,6 @@ base::TaskPriority GetLoadTaskPriority() {
 #endif
 }
 
-bool IsOnDemandUpdateSupported() {
-  // `switches::kDisableComponentUpdate` is set by default in
-  // browsertests.
-  return component_updater::IwaKeyDistributionComponentInstallerPolicy::
-             IsSupported() &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableComponentUpdate) &&
-         g_browser_process && g_browser_process->component_updater();
-}
-
 }  // namespace
 
 BASE_FEATURE(kIwaKeyDistributionDevMode,
@@ -154,6 +141,11 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
   base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
                                 KeyRotationInfoSource::kNone);
   return nullptr;
+}
+
+void IwaKeyDistributionInfoProvider::SetUp(
+    QueueOnDemandUpdateCallback callback) {
+  queue_on_demand_update_ = callback;
 }
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
@@ -221,7 +213,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
-  if (!IsOnDemandUpdateSupported()) {
+  if (!queue_on_demand_update_) {
     return AlreadySignalled();
   }
 
@@ -314,10 +306,11 @@ void IwaKeyDistributionInfoProvider::
 void IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate() {
   CHECK(maybe_queue_component_update_posted_);
   CHECK(any_data_ready_.is_signaled());
+  CHECK(queue_on_demand_update_);
 
   if (!data_ || data_->is_preloaded) {
-    component_updater::IwaKeyDistributionComponentInstallerPolicy::
-        QueueOnDemandUpdate(base::PassKey<IwaKeyDistributionInfoProvider>());
+    queue_on_demand_update_.Run(
+        base::PassKey<IwaKeyDistributionInfoProvider>());
     //  Schedule a fallback signaller.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

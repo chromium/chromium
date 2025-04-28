@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
 
 #include <optional>
 #include <string>
@@ -13,15 +13,17 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
 namespace base {
 class FilePath;
@@ -51,7 +53,8 @@ class IwaKeyDistributionInfoProvider {
   };
 
   using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
-
+  using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
+      base::PassKey<IwaKeyDistributionInfoProvider>)>;
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnComponentUpdateSuccess(const base::Version& version,
@@ -72,6 +75,10 @@ class IwaKeyDistributionInfoProvider {
 
   const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const;
+
+  // Sets up the `IwaKeyDistributionInfoProvider`, i.e. adds the capability to
+  // schedule on demand callbacks.
+  void SetUp(QueueOnDemandUpdateCallback callback);
 
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
@@ -161,10 +168,12 @@ class IwaKeyDistributionInfoProvider {
 
   bool maybe_queue_component_update_posted_ = false;
 
+  QueueOnDemandUpdateCallback queue_on_demand_update_;
+
   std::optional<ComponentData> data_;
   base::ObserverList<Observer> observers_;
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IWA_KEY_DISTRIBUTION_INFO_PROVIDER_H_

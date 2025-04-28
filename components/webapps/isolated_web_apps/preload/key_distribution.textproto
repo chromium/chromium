@@ -1,4 +1,4 @@
-# proto-file: chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.proto
+# proto-file: components/webapps/isolated_web_apps/proto/key_distribution.proto
 # proto-message: IwaKeyDistribution
 
 key_rotation_data {

@@ -164,9 +164,6 @@ source_set("web_applications") {
     "isolated_web_apps/jobs/get_isolated_web_app_size_job.h",
     "isolated_web_apps/jobs/prepare_install_info_job.cc",
     "isolated_web_apps/jobs/prepare_install_info_job.h",
-    "isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h",
-    "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.cc",
-    "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h",
     "isolated_web_apps/pending_install_info.cc",
     "isolated_web_apps/pending_install_info.h",
     "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
@@ -536,6 +533,8 @@ source_set("web_applications") {
     "//components/webapps/browser",
     "//components/webapps/common:common",
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/isolated_web_apps",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//components/webapps/services/web_app_origin_association:lib",
     "//components/webapps/services/web_app_origin_association:service",
     "//content/browser/background_fetch:background_fetch_proto",
@@ -638,12 +637,12 @@ source_set("web_applications") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//chrome/browser/web_applications/proto:proto_helpers",
     "//components/permissions:permissions",
     "//components/services/app_service",
+    "//components/webapps/isolated_web_apps/proto",
   ]
 }
 
@@ -750,8 +749,8 @@ source_set("web_applications_test_support") {
   ]
 
   public_deps = [
-    "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/isolated_web_apps/proto",
   ]
 
   deps = [
@@ -775,6 +774,7 @@ source_set("web_applications_test_support") {
     "//components/web_package/test_support",
     "//components/webapps/browser",
     "//components/webapps/common",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",
@@ -1006,6 +1006,7 @@ source_set("web_applications_unit_tests") {
     "//components/webapps/browser:test_support",
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
@@ -1183,6 +1184,7 @@ source_set("web_applications_browser_tests") {
     "//components/webapps/browser",
     "//components/webapps/browser:test_support",
     "//components/webapps/common",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//content/public/browser",
     "//ui/color",

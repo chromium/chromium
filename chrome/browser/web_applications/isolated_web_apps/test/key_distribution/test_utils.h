@@ -11,8 +11,8 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
 namespace web_app::test {
 
