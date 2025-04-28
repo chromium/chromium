@@ -30,7 +30,6 @@ blink::WebMouseEvent CreateMouseEvent(blink::WebInputEvent::Type event_type,
   // No button for move
   mouse_event.button = blink::WebMouseEvent::Button::kNoButton;
   mouse_event.SetPositionInWidget(position);
-  // TODO(crbug.com/402082828): Set screen position if possible/needed.
   return mouse_event;
 }
 }  // namespace

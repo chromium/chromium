@@ -63,12 +63,11 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // page navigates before it's done loading. Common with client-side redirects.
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
-    CHECK(invoke_callback_);
 
     bool success =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
 
-    if (!success || navigation_handle->IsSameDocument()) {
+    if ((!success || navigation_handle->IsSameDocument()) && invoke_callback_) {
       PostResponseTask(std::move(invoke_callback_), success);
       return;
     }
@@ -98,7 +97,7 @@ void NavigateTool::DidStopLoading() {
   }
 
   post_navigation_state_->waiting_for_load = false;
-  if (post_navigation_state_->Done()) {
+  if (post_navigation_state_->Done() && invoke_callback_) {
     PostResponseTask(std::move(invoke_callback_), /*response=*/true);
   }
 }
@@ -109,7 +108,7 @@ void NavigateTool::OnFirstContentfulPaintInPrimaryMainFrame() {
   }
 
   post_navigation_state_->waiting_for_fcp = false;
-  if (post_navigation_state_->Done()) {
+  if (post_navigation_state_->Done() && invoke_callback_) {
     PostResponseTask(std::move(invoke_callback_), /*response=*/true);
   }
 }
