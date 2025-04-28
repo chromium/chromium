@@ -20,8 +20,8 @@ import androidx.credentials.exceptions.GetCredentialException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -31,13 +31,10 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("credential_management")
 @NullMarked
 class ThirdPartyCredentialManagerBridge {
-    private final long mReceiverBridge;
     private static @Nullable CredentialManager sCredentialManagerForTesting;
 
     @CalledByNative
-    ThirdPartyCredentialManagerBridge(long receiverBridge) {
-        mReceiverBridge = receiverBridge;
-    }
+    ThirdPartyCredentialManagerBridge() {}
 
     void setCredentialManagerForTesting(CredentialManager credentialManager) {
         sCredentialManagerForTesting = credentialManager;
@@ -45,7 +42,7 @@ class ThirdPartyCredentialManagerBridge {
     }
 
     @CalledByNative
-    void get(String origin) {
+    void get(String origin, Callback<PasswordCredentialResponse> callback) {
         Context context = ContextUtils.getApplicationContext();
         CredentialManager credentialManager =
                 sCredentialManagerForTesting == null
@@ -63,12 +60,12 @@ class ThirdPartyCredentialManagerBridge {
                         new CredentialManagerCallback<>() {
                             @Override
                             public void onError(GetCredentialException e) {
-                                onGetCredentialError();
+                                callback.onResult(new PasswordCredentialResponse(false, "", ""));
                             }
 
                             @Override
                             public void onResult(GetCredentialResponse result) {
-                                onGetCredentialResponse(result, origin);
+                                onGetCredentialResponse(result, callback);
                             }
                         };
         credentialManager.getCredentialAsync(
@@ -76,7 +73,7 @@ class ThirdPartyCredentialManagerBridge {
     }
 
     @CalledByNative
-    void store(String username, String password, String origin) {
+    void store(String username, String password, String origin, Callback<Boolean> callback) {
         Context context = ContextUtils.getApplicationContext();
         CredentialManager credentialManager =
                 sCredentialManagerForTesting == null
@@ -90,50 +87,27 @@ class ThirdPartyCredentialManagerBridge {
                         new CredentialManagerCallback<>() {
                             @Override
                             public void onError(CreateCredentialException e) {
-                                onCreateCredentialResponse(false);
+                                callback.onResult(false);
                             }
 
                             @Override
                             public void onResult(CreateCredentialResponse response) {
-                                onCreateCredentialResponse(true);
+                                callback.onResult(true);
                             }
                         };
         credentialManager.createCredentialAsync(
                 context, createPasswordRequest, null, Runnable::run, credentialCallback);
     }
 
-    private void onGetCredentialResponse(GetCredentialResponse result, String origin) {
+    private void onGetCredentialResponse(
+            GetCredentialResponse result, Callback<PasswordCredentialResponse> callback) {
         Credential credential = result.getCredential();
         assert credential instanceof PasswordCredential;
         PasswordCredential passwordCredential = (PasswordCredential) credential;
         String username = passwordCredential.getId();
         String password = passwordCredential.getPassword();
-        if (username != null && password != null) {
-            ThirdPartyCredentialManagerBridgeJni.get()
-                    .onPasswordCredentialReceived(mReceiverBridge, username, password, origin);
-        }
-    }
-
-    private void onCreateCredentialResponse(boolean success) {
-        ThirdPartyCredentialManagerBridgeJni.get()
-                .onCreateCredentialResponse(mReceiverBridge, success);
-    }
-
-    private void onGetCredentialError() {
-        ThirdPartyCredentialManagerBridgeJni.get().onGetPasswordCredentialError(mReceiverBridge);
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onPasswordCredentialReceived(
-                long nativeThirdPartyCredentialManagerBridge,
-                String username,
-                String password,
-                String origin);
-
-        void onCreateCredentialResponse(
-                long nativeThirdPartyCredentialManagerBridge, boolean success);
-
-        void onGetPasswordCredentialError(long nativeThirdPartyCredentialManagerBridge);
+        PasswordCredentialResponse response =
+                new PasswordCredentialResponse(true, username, password);
+        callback.onResult(response);
     }
 }
