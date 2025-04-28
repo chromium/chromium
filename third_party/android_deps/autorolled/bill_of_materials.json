@@ -942,12 +942,12 @@
     {
         "name": "espresso-core",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha02"
+        "version": "3.7.0-alpha03"
     },
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-alpha02"
+        "version": "3.7.0-alpha03"
     },
     {
         "name": "espresso-intents",
@@ -962,12 +962,12 @@
     {
         "name": "junit",
         "group": "androidx.test.ext",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "storage",
         "group": "androidx.test.services",
-        "version": "1.6.0-alpha03"
+        "version": "1.6.0-alpha04"
     },
     {
         "name": "uiautomator",
@@ -982,22 +982,22 @@
     {
         "name": "core",
         "group": "androidx.test",
-        "version": "1.7.0-alpha02"
+        "version": "1.7.0-alpha03"
     },
     {
         "name": "monitor",
         "group": "androidx.test",
-        "version": "1.8.0-alpha02"
+        "version": "1.8.0-alpha03"
     },
     {
         "name": "rules",
         "group": "androidx.test",
-        "version": "1.7.0-alpha02"
+        "version": "1.7.0-alpha03"
     },
     {
         "name": "runner",
         "group": "androidx.test",
-        "version": "1.7.0-alpha02"
+        "version": "1.7.0-alpha03"
     },
     {
         "name": "tracing",
@@ -1647,7 +1647,7 @@
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-guava",

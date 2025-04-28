@@ -1138,7 +1138,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.7.3.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.8.1.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro

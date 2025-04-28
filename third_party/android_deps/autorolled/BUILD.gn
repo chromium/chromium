@@ -373,7 +373,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
-      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.7.3.jar"
+      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.8.1.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
       supports_android = true
       requires_android = true
