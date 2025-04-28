@@ -2905,6 +2905,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-cros-ime-manifest-v3",
+    "owners": [ "jopalmer@chromium.org", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-cros-ime-switch-check-connection-status",
     "owners": [ "zacpartridge@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 135

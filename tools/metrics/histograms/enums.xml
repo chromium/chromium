@@ -14383,6 +14383,7 @@ from previous Chrome versions.
   <int value="16804822" label="SpeakOnMuteEnabled:disabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
   <int value="20023271" label="AllowApnModificationPolicy:disabled"/>
+  <int value="20095909" label="ImeManifestV3:enabled"/>
   <int value="20238651" label="DeprecatedExternalPickerFunction:enabled"/>
   <int value="20946908" label="CanvasOopRasterization:disabled"/>
   <int value="21055794" label="OpenXR:enabled"/>
@@ -19521,6 +19522,7 @@ from previous Chrome versions.
   <int value="1961425320" label="force-qtkit"/>
   <int value="1961717207" label="PageInfoAboutThisSite:enabled"/>
   <int value="1962485086" label="DesktopPWAsLocalUpdating:enabled"/>
+  <int value="1962591232" label="ImeManifestV3:disabled"/>
   <int value="1963766060"
       label="AutofillEnableFixedPaymentsBubbleLogging:enabled"/>
   <int value="1964036852" label="AuxiliarySearchThirdParty:disabled"/>
