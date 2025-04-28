@@ -2229,6 +2229,10 @@ if (!is_android) {
       "//chrome/browser/preloading/search_preload:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
+
+      # TODO(413315837): Remove this dep when privacy_sandbox_countries_browsertest.cc
+      # gets build off of c/b/privacy_sandbox/BUILD.gn.
+      "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/promos:utils",
@@ -6619,6 +6623,10 @@ test("unit_tests") {
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:unit_tests",
+
+    # TODO(413315837): Remove this dep when privacy_sandbox_service_impl_unittest.cc
+    # gets build off of c/b/privacy_sandbox/BUILD.gn.
+    "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profiles_extra_parts",
@@ -10526,6 +10534,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/omnibox",
+      "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/search",
@@ -10986,6 +10995,10 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
+
+      # TODO(413315837): Remove this dep when browsing_topics_settings_interactive_uitest.cc
+      # gets build off of c/b/privacy_sandbox/BUILD.gn.
+      "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",

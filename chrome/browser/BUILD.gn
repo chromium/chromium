@@ -1252,13 +1252,11 @@ static_library("browser") {
     "privacy/privacy_metrics_service_factory.h",
     "privacy_sandbox/notice/notice_service_factory.cc",
     "privacy_sandbox/notice/notice_service_factory.h",
-    "privacy_sandbox/privacy_sandbox_countries.h",
     "privacy_sandbox/privacy_sandbox_countries_impl.cc",
     "privacy_sandbox/privacy_sandbox_notice_confirmation.cc",
     "privacy_sandbox/privacy_sandbox_notice_confirmation.h",
     "privacy_sandbox/privacy_sandbox_policy_handler.cc",
     "privacy_sandbox/privacy_sandbox_policy_handler.h",
-    "privacy_sandbox/privacy_sandbox_service.h",
     "privacy_sandbox/privacy_sandbox_service_factory.cc",
     "privacy_sandbox/privacy_sandbox_service_factory.h",
     "privacy_sandbox/privacy_sandbox_service_impl.cc",
@@ -1961,6 +1959,7 @@ static_library("browser") {
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/privacy_sandbox",
+    "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",
@@ -9072,6 +9071,8 @@ static_library("test_support") {
       "hid/mock_hid_device_observer.h",
       "notifications/notification_test_util.cc",
       "notifications/notification_test_util.h",
+
+      # TODO(413315837): move the declarations below to c/b/privacy_sandbox/BUILD.gn.
       "privacy_sandbox/mock_privacy_sandbox_service.cc",
       "privacy_sandbox/mock_privacy_sandbox_service.h",
       "privacy_sandbox/mock_queue_manager.cc",
@@ -9106,6 +9107,9 @@ static_library("test_support") {
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/services/app_service",
+
+      # TODO(413315837): remove this dep when c/b/privacy_sandbox/BUILD.gn is complete.
+      "//chrome/browser/privacy_sandbox:headers",
     ]
   }
 

@@ -13,6 +13,10 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/user_education/common/product_messaging_controller.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 DEFINE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
 
 namespace privacy_sandbox {

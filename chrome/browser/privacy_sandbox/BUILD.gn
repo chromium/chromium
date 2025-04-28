@@ -4,6 +4,28 @@
 
 assert(!is_ios)
 
+source_set("headers") {
+  sources = [
+    "privacy_sandbox_countries.h",
+    "privacy_sandbox_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/first_party_sets",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/privacy_sandbox",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/profile_metrics",
+    "//components/user_education/common",
+    "//content/public/browser",
+    "//net",
+  ]
+}
+
 group("privacy_sandbox") {
   public_deps = [
     "notice",
