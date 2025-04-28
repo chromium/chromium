@@ -1280,8 +1280,6 @@ void ViewTransitionStyleTracker::EndTransition() {
   set_element_sequence_id_ = 0;
   view_transition_names_.clear();
   is_root_transitioning_ = false;
-  if (auto* page = document_->GetPage())
-    page->Animator().SetHasViewTransition(false);
 }
 
 viz::ViewTransitionElementResourceId ViewTransitionStyleTracker::GetSnapshotId(

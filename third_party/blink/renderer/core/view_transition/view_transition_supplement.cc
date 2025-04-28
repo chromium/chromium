@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
@@ -257,6 +259,14 @@ void ViewTransitionSupplement::OnTransitionFinished(
     document_transition_ = nullptr;
   } else {
     element_transitions_.erase(transition->Scope());
+  }
+
+  // Notify the animator if the set of active view transitions is empty.
+  if (!document_transition_ && element_transitions_.empty()) {
+    Document* document = To<Document>(GetSupplementable());
+    if (auto* page = document->GetPage()) {
+      page->Animator().SetHasViewTransition(false);
+    }
   }
 }
 
