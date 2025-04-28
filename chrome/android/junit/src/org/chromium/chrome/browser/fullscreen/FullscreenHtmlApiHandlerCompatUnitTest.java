@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.fullscreen;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -13,6 +14,8 @@ import static org.mockito.Mockito.verify;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Build;
+import android.os.OutcomeReceiver;
 import android.view.View.OnLayoutChangeListener;
 
 import androidx.core.graphics.Insets;
@@ -29,23 +32,35 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.HashMap;
+
 /**
  * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/40525786): Can be
  * parametrized with a parametrized Robolectric test runner.
  */
+@Features.EnableFeatures({ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN})
 @RunWith(BaseRobolectricTestRunner.class)
 public class FullscreenHtmlApiHandlerCompatUnitTest {
     private static final int DEVICE_WIDTH = 900;
@@ -60,6 +75,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private ContentView mContentView;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
+    private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
@@ -78,6 +94,43 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                     .setInsets(WindowInsetsCompat.Type.systemBars(), SYSTEM_BAR_INSETS)
                     .build();
 
+    @Implements(Activity.class)
+    public static class FullscreenShadowActivity extends ShadowActivity {
+        public HashMap<Integer, Integer> counters = new HashMap<>();
+
+        public FullscreenShadowActivity() {}
+
+        @Implementation(minSdk = 34)
+        protected void requestFullscreenMode(
+                int request, OutcomeReceiver<Void, Throwable> approvalCallback) {
+            if (approvalCallback != null) {
+                approvalCallback.onResult(null);
+            }
+            if (counters.containsKey(request)) {
+                counters.put(request, counters.get(request) + 1);
+            } else {
+                counters.put(request, 1);
+            }
+        }
+    }
+
+    private void assertEqualNumberOfEnterAndExitActivityFullscreenMode(int numberOfEnters) {
+        FullscreenShadowActivity shadow = (FullscreenShadowActivity) Shadows.shadowOf(mActivity);
+        if (numberOfEnters == 0) {
+            assertFalse(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertFalse(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+        } else {
+            assertTrue(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertEquals(
+                    numberOfEnters,
+                    (int) shadow.counters.get(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertTrue(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+            assertEquals(
+                    numberOfEnters,
+                    (int) shadow.counters.get(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+        }
+    }
+
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -85,8 +138,10 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mHost).when(mTab).getUserDataHost();
 
         mAreControlsHidden = new ObservableSupplierImpl<Boolean>();
+        mMultiWindowModeStateDispatcher = new MultiWindowModeStateDispatcherImpl(mActivity);
         mFullscreenHtmlApiHandlerCompat =
-                new FullscreenHtmlApiHandlerCompat(mActivity, mAreControlsHidden, false) {
+                new FullscreenHtmlApiHandlerCompat(
+                        mActivity, mAreControlsHidden, false, mMultiWindowModeStateDispatcher) {
                     // This needs a PopupController, which isn't available in the test since we
                     // can't mock statics in this version of mockito.  Even if we could mock it, it
                     // casts to WebContentsImpl and other things that we can't reference due to
@@ -100,6 +155,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenRequestCanceledAtPendingStateBeforeControlsDisappear() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -127,9 +185,15 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         // The fullscreen request was canceled. Verify the controls are restored.
         verify(mTabBrowserControlsConstraintsHelper).update(BrowserControlsState.SHOWN, true);
         assertEquals(null, mFullscreenHtmlApiHandlerCompat.getPendingFullscreenOptionsForTesting());
+
+        // Verify that fullscreen mode was exited properly
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenRequestCanceledAtPendingStateAfterControlsDisappear() {
         // Avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -150,9 +214,15 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         // Verify the browser controls are restored.
         verify(mTabBrowserControlsConstraintsHelper).update(BrowserControlsState.SHOWN, true);
         assertEquals(null, mFullscreenHtmlApiHandlerCompat.getPendingFullscreenOptionsForTesting());
+
+        // Verify that fullscreen mode was exited properly
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenAddAndRemoveObserver() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -184,6 +254,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOncePerSession() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -214,9 +287,14 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         verify(observer, times(3)).onEnterFullscreen(mTab, fullscreenOptions);
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         verify(observer, times(3)).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(3);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOncePerSessionWhenWebContentsNotNull() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
@@ -252,9 +330,14 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         verify(observer, times(3)).onEnterFullscreen(mTab, fullscreenOptions);
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         verify(observer, times(3)).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(3);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testNoObserverWhenCanceledBeforeBeingInteractable() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable();
@@ -271,9 +354,14 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         verify(observer, never()).onEnterFullscreen(mTab, fullscreenOptions);
         verify(observer, never()).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(0);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverInTabNonInteractableState() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable(); // Tab not interactable at first.
@@ -297,6 +385,8 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         verify(observer, times(1)).onExitFullscreen(mTab);
 
         mFullscreenHtmlApiHandlerCompat.destroy();
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 
     @Test
@@ -401,9 +491,13 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverNotifiedWhenActivityStopped() {
         mFullscreenHtmlApiHandlerCompat =
-                new FullscreenHtmlApiHandlerCompat(mActivity, mAreControlsHidden, true) {
+                new FullscreenHtmlApiHandlerCompat(
+                        mActivity, mAreControlsHidden, true, mMultiWindowModeStateDispatcher) {
                     @Override
                     public void destroySelectActionMode(Tab tab) {}
                 };
@@ -430,9 +524,14 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.STOPPED);
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         verify(observer, times(1)).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 
     @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOnceWhenExitPersistentFullscreenModeCalled() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
@@ -461,5 +560,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         verify(observer, times(1)).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 }

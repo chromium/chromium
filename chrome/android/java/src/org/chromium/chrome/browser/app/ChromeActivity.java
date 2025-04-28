@@ -577,7 +577,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // BrowserControlsManager is ready immediately.
         mBrowserControlsManagerSupplier.set(
                 new BrowserControlsManager(
-                        this, BrowserControlsStateProvider.ControlsPosition.TOP));
+                        this,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        getMultiWindowModeStateDispatcher()));
     }
 
     /** Subclasses must create a {@link RootUiCoordinator}. */
@@ -2247,7 +2249,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         MultiWindowUtils.getInstance().isInMultiWindowMode(this));
             }
         }
-
         super.onMultiWindowModeChanged(isInMultiWindowMode);
     }
 

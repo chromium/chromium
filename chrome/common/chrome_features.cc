@@ -256,6 +256,13 @@ BASE_FEATURE(kDesktopPWAsTabStripSettings,
              "DesktopPWAsTabStripSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows fullscreen to claim whole display area when in windowing mode
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kDisplayEdgeToEdgeFullscreen,
+             "DisplayEdgeToEdgeFullscreen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Controls whether Chrome Apps are supported. See https://crbug.com/1221251.
 // If the feature is disabled, Chrome Apps continue to work. If enabled, Chrome

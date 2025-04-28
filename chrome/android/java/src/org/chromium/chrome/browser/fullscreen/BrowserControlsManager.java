@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -167,30 +168,43 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     /**
      * Creates an instance of the browser controls manager.
+     *
      * @param activity The activity that supports browser controls.
      * @param controlsPosition Where the browser controls are.
-     */
-    public BrowserControlsManager(Activity activity, @ControlsPosition int controlsPosition) {
-        this(activity, controlsPosition, true);
-    }
-
-    /**
-     * Creates an instance of the browser controls manager.
-     * @param activity The activity that supports browser controls.
-     * @param controlsPosition Where the browser controls are.
-     * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be
-     *                             true for Activities that are not always fullscreen.
+     * @param multiWindowDispatcher The multi-window mode observer for exiting fullscreen when the
+     *     user drags the window out of edge-to-edge fullscreen
      */
     public BrowserControlsManager(
             Activity activity,
             @ControlsPosition int controlsPosition,
-            boolean exitFullscreenOnStop) {
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
+        this(activity, controlsPosition, true, multiWindowDispatcher);
+    }
+
+    /**
+     * Creates an instance of the browser controls manager.
+     *
+     * @param activity The activity that supports browser controls.
+     * @param controlsPosition Where the browser controls are.
+     * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be true for
+     *     Activities that are not always fullscreen.
+     * @param multiWindowDispatcher The multi-window mode observer for exiting fullscreen when the
+     *     user drags the window out of edge-to-edge fullscreen
+     */
+    public BrowserControlsManager(
+            Activity activity,
+            @ControlsPosition int controlsPosition,
+            boolean exitFullscreenOnStop,
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
         mActivity = activity;
         mControlsPosition = controlsPosition;
         mControlsAtMinHeight.set(false);
         mHtmlApiHandler =
                 FullscreenHtmlApiHandlerFactory.createInstance(
-                        activity, mControlsAtMinHeight, exitFullscreenOnStop);
+                        activity,
+                        mControlsAtMinHeight,
+                        exitFullscreenOnStop,
+                        multiWindowDispatcher);
         mBrowserVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         mHtmlApiHandler.getPersistentFullscreenModeSupplier());

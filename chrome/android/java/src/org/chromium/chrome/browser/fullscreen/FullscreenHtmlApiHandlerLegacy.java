@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.components.embedder_support.view.ContentView;
 
 public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
@@ -34,12 +35,15 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
      * @param areControlsHidden Supplier of a flag indicating if browser controls are hidden.
      * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be true for
      *     Activities that are not always fullscreen.
+     * @param multiWindowDispatcher multi window mode observer allows to exit fullscreen when user
+     *     drag the window out of edge-to-edge fullscreen
      */
     public FullscreenHtmlApiHandlerLegacy(
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
-            boolean exitFullscreenOnStop) {
-        super(activity, areControlsHidden, exitFullscreenOnStop);
+            boolean exitFullscreenOnStop,
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
+        super(activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);
     }
 
     // View.OnSystemUiVisibilityChangeListener

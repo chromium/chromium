@@ -12151,6 +12151,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-theme-module", flag_descriptions::kAndroidThemeModuleName,
      flag_descriptions::kAndroidThemeModuleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeModule)},
+    {"display-edge-to-edge-fullscreen",
+     flag_descriptions::kDisplayEdgeToEdgeFullscreenName,
+     flag_descriptions::kDisplayEdgeToEdgeFullscreenDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kDisplayEdgeToEdgeFullscreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

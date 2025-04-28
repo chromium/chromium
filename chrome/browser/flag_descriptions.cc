@@ -469,6 +469,12 @@ const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =
     "Disable limit on number of app instances allowed (current limit is 5).";
 
+const char kDisplayEdgeToEdgeFullscreenName[] =
+    "Enable Display Edge to Edge Fullscreen";
+const char kDisplayEdgeToEdgeFullscreenDescription[] =
+    "Enable Display Edge to Edge Fullscreen when Chrome on Android is running "
+    "in a windowing mode.";
+
 const char kClearInstanceInfoWhenClosedIntentionallyName[] =
     "Clear Instance Info When Closed Intentionally";
 const char kClearInstanceInfoWhenClosedIntentionallyDescription[] =

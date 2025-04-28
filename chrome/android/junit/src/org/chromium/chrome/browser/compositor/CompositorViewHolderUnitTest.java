@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -175,6 +176,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private OnscreenContentProvider.Natives mOnscreenContentProviderJni;
     @Mock private ContentCaptureFeatures.Natives mContentCaptureFeaturesJni;
     @Mock private InputHintChecker.Natives mInputHintCheckerJni;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -229,7 +231,9 @@ public class CompositorViewHolderUnitTest {
 
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        mMultiWindowModeStateDispatcher);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,

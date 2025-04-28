@@ -2245,6 +2245,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "display-edge-to-edge-fullscreen",
+    "owners": [ "wzwonarz@google.com", "cros-web-apps-krk@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "document-picture-in-picture-animate-resize",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 150

@@ -297,6 +297,9 @@ extern const char kDevToolsCSSValueTracingDescription[];
 extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
 
+extern const char kDisplayEdgeToEdgeFullscreenName[];
+extern const char kDisplayEdgeToEdgeFullscreenDescription[];
+
 extern const char kClearInstanceInfoWhenClosedIntentionallyName[];
 extern const char kClearInstanceInfoWhenClosedIntentionallyDescription[];
 #endif
