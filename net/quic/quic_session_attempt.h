@@ -129,10 +129,13 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   void OnCreateSessionComplete(base::expected<CreateSessionResult, int> result);
   void OnCryptoConnectComplete(int rv);
 
+  void MaybeInvokeCallback(int rv);
+
   void ResetSession();
 
   const raw_ptr<Delegate> delegate_;
 
+  const base::TimeTicks start_time_;
   const IPEndPoint ip_endpoint_;
   const ConnectionEndpointMetadata metadata_;
   const quic::ParsedQuicVersion quic_version_;

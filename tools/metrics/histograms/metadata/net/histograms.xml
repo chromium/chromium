@@ -5950,6 +5950,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.QuicSessionAttempt.CompleteTime.{SuccessOrFailure}"
+    units="ms" expires_after="2025-07-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the time that a QuicSessionAttempt takes to invoke the completion
+    callback. Recorded when a QuicSessionAttempt called the completion callback.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
+<histogram name="Net.QuicSessionAttempt.CreateSessionTime.{SuccessOrFailure}"
+    units="ms" expires_after="2025-07-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the time that a QuicSessionAttempt takes to create a session.
+    Recorded when a QuicSessionAttempt created a session asynchronously.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
+<histogram name="Net.QuicSessionAttempt.CryptoConnectTime.{SuccessOrFailure}"
+    units="ms" expires_after="2025-07-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the time that a QuicSessionAttempt takes to perform a crypto
+    handshake. Recorded when a QuicSessionAttempt performed a crypto handshake
+    asynchronously.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
     enum="BooleanAttempted" expires_after="2025-07-01">
   <owner>dschinazi@chromium.org</owner>
