@@ -95,6 +95,12 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   const service: FakeShimlessRmaService = new FakeShimlessRmaService();
 
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      'dynamicDeviceInfoInputsEnabled': true,
+    });
+  });
+
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setShimlessRmaServiceForTesting(service);
@@ -146,6 +152,22 @@ suite('reimagingDeviceInformationPageTest', function() {
     await waitAfterNextRender(component);
     return flushTasks();
   }
+
+  // Helper function to set all modifiability for device info inputs.
+  const setAllInputModifiable = (isModifiable: boolean) => {
+    service.setGetStatePropertiesResult({
+      property: {
+        updateDeviceInfoStateProperty: {
+          serialNumberModifiable: isModifiable,
+          regionModifiable: isModifiable,
+          skuModifiable: isModifiable,
+          customLabelModifiable: isModifiable,
+          dramPartNumberModifiable: isModifiable,
+          featureLevelModifiable: isModifiable,
+        },
+      },
+    });
+  };
 
   // Verify the page initializes with the expected components.
   test('PageInitializes', async () => {
@@ -347,6 +369,80 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertTrue(customLabelSelect.disabled);
     assertTrue(skuSelect.disabled);
     assertTrue(dramPartNumberSelect.disabled);
+  });
+
+  // Test case: All inputs enabled when all are modifiable
+  test('AllInputsEnabled_WhenAllModifiable', async () => {
+    setAllInputModifiable(true);
+
+    await initializeReimagingDeviceInformationPage();
+    assert(component);
+
+    const serialNumberSelect =
+        strictQuery(serialNumberSelector, component.shadowRoot, CrInputElement);
+    const regionSelect = strictQuery(
+        regionSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const customLabelSelect = strictQuery(
+        customLabelSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const skuSelect =
+        strictQuery(skuSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const dramPartNumberSelect = strictQuery(
+        dramPartNumberSelector, component.shadowRoot, CrInputElement);
+    const hwComplianceVersionElement = strictQuery(
+        meetRequirementsSelector, component.shadowRoot, HTMLSelectElement);
+    const isChassisBrandedElement = strictQuery(
+        chassisBrandedSelector, component.shadowRoot, HTMLSelectElement);
+
+    assertFalse(
+        serialNumberSelect.disabled, 'Serial Number should be enabled.');
+    assertFalse(regionSelect.disabled, 'Region should be enabled.');
+    assertFalse(customLabelSelect.disabled, 'Custom Label should be enabled.');
+    assertFalse(skuSelect.disabled, 'SKU should be enabled.');
+    assertFalse(
+        dramPartNumberSelect.disabled, 'DRAM Part Number should be enabled.');
+    assertFalse(
+        hwComplianceVersionElement.disabled,
+        'HW Compliance Version should be enabled.');
+    assertFalse(
+        isChassisBrandedElement.disabled,
+        'Is Chassis Branded should be enabled.');
+  });
+
+  // Test case: All inputs disabled when none are modifiable
+  test('AllInputsDisabled_WhenNonModifiable', async () => {
+    setAllInputModifiable(false);
+
+    await initializeReimagingDeviceInformationPage();
+    assert(component);
+
+    const serialNumberSelect =
+        strictQuery(serialNumberSelector, component.shadowRoot, CrInputElement);
+    const regionSelect = strictQuery(
+        regionSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const customLabelSelect = strictQuery(
+        customLabelSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const skuSelect =
+        strictQuery(skuSelectSelector, component.shadowRoot, HTMLSelectElement);
+    const dramPartNumberSelect = strictQuery(
+        dramPartNumberSelector, component.shadowRoot, CrInputElement);
+    const hwComplianceVersionElement = strictQuery(
+        meetRequirementsSelector, component.shadowRoot, HTMLSelectElement);
+    const isChassisBrandedElement = strictQuery(
+        chassisBrandedSelector, component.shadowRoot, HTMLSelectElement);
+
+    assertTrue(
+        serialNumberSelect.disabled, 'Serial Number should be disabled.');
+    assertTrue(regionSelect.disabled, 'Region should be disabled.');
+    assertTrue(customLabelSelect.disabled, 'Custom Label should be disabled.');
+    assertTrue(skuSelect.disabled, 'SKU should be disabled.');
+    assertTrue(
+        dramPartNumberSelect.disabled, 'DRAM Part Number should be disabled.');
+    assertTrue(
+        hwComplianceVersionElement.disabled,
+        'HW Compliance Version should be disabled.');
+    assertTrue(
+        isChassisBrandedElement.disabled,
+        'Is Chassis Branded should be disabled.');
   });
 
   // Verify the next button gets disabled when the inputs has invalid values.

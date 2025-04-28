@@ -125,6 +125,39 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), kGetCurrentState));
 }
 
+void ShimlessRmaService::GetStateProperties(
+    GetStatePropertiesCallback callback) {
+  switch (state_proto_.state_case()) {
+    case rmad::RmadState::kUpdateDeviceInfo:
+      std::move(callback).Run(CreateUpdateDeviceInfoStateProperty());
+      return;
+    default:
+      std::move(callback).Run(mojom::StatePropertyResult::NewError(
+          mojom::StatePropertyError::kUnsupported));
+      return;
+  }
+  NOTREACHED();
+}
+
+mojom::StatePropertyResultPtr
+ShimlessRmaService::CreateUpdateDeviceInfoStateProperty() {
+  return mojom::StatePropertyResult::NewProperty(
+      mojom::StateProperty::NewUpdateDeviceInfoStateProperty(
+          mojom::UpdateDeviceInfoStateProperty::New(
+              /*serial_number_modifiable=*/state_proto_.update_device_info()
+                  .serial_number_modifiable(),
+              /*region_modifiable=*/
+              state_proto_.update_device_info().region_modifiable(),
+              /*sku_modifiable=*/
+              state_proto_.update_device_info().sku_modifiable(),
+              /*custom_label_modifiable=*/
+              state_proto_.update_device_info().custom_label_modifiable(),
+              /*dram_part_number_modifiable=*/
+              state_proto_.update_device_info().dram_part_number_modifiable(),
+              /*feature_level_modifiable=*/
+              state_proto_.update_device_info().feature_level_modifiable())));
+}
+
 mojom::StateResultPtr ShimlessRmaService::CreateStateResult(
     mojom::State state,
     bool can_exit,

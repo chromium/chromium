@@ -7,7 +7,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import type {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, Component, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationObserverRemote, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, StateResult, UpdateRoFirmwareObserverRemote, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, Component, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationObserverRemote, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, StatePropertyResult, StateResult, UpdateRoFirmwareObserverRemote, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 import {CalibrationOverallStatus, CalibrationStatus, ComponentType, FinalizationError, FinalizationStatus, HardwareVerificationResult, OsUpdateOperation, ProvisioningError, ProvisioningStatus, RmadErrorCode, State, UpdateErrorCode, UpdateRoFirmwareStatus} from './shimless_rma.mojom-webui.js';
 
 
@@ -63,6 +63,7 @@ export type FakeShimlessRmaServiceInterface = ShimlessRmaServiceInterface&{
   setGetOriginalFeatureLevelResult(featureLevel: FeatureLevel): void,
   setGetCalibrationSetupInstructionsResult(
       instructions: CalibrationSetupInstruction): void,
+  setGetStatePropertiesResult(statePropertyResult: StatePropertyResult): void,
 };
 
 
@@ -202,6 +203,15 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     }
     return this.methods.resolveMethodWithDelay(
         'getCurrentState', this.resolveMethodDelayMs);
+  }
+
+  getStateProperties(): Promise<{statePropertyResult: StatePropertyResult}> {
+    return this.methods.resolveMethod('getStateProperties');
+  }
+
+  setGetStatePropertiesResult(statePropertyResult: StatePropertyResult): void {
+    this.methods.setResult(
+        'getStateProperties', {statePropertyResult: statePropertyResult});
   }
 
   transitionPreviousState(): Promise<{stateResult: StateResult}> {
@@ -1148,6 +1158,7 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.methods = new FakeMethodResolver();
 
     this.methods.register('getCurrentState');
+    this.methods.register('getStateProperties');
     this.methods.register('transitionPreviousState');
 
     this.methods.register('abortRma');

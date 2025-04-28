@@ -459,6 +459,48 @@ union HardwareVerificationResult {
   SkipHardwareVerificationResult skip_result;
 };
 
+// Errors that can occur when retrieving state-specific properties.
+enum StatePropertyError {
+  kUnsupported = 0,
+};
+
+// Defines the properties specific to the kUpdateDeviceInformation state.
+// These boolean flags indicate whether a particular piece of device
+// information can be modified in the current RMA flow.
+struct UpdateDeviceInfoStateProperty {
+  // True if the serial number can be modified.
+  bool serial_number_modifiable;
+  // True if the region can be modified.
+  bool region_modifiable;
+  // True if the SKU can be modified.
+  bool sku_modifiable;
+  // True if the custom label can be modified.
+  bool custom_label_modifiable;
+  // True if the DRAM part number can be modified.
+  bool dram_part_number_modifiable;
+  // True if the feature level can be modified.
+  bool feature_level_modifiable;
+};
+
+// A union to hold different sets of state-specific properties.
+// This allows for a generic way to retrieve properties that are only relevant
+// to certain RMA states. More property types can be added here as needed
+// for other states.
+union StateProperty {
+  // Properties specific to the kUpdateDeviceInformation state.
+  UpdateDeviceInfoStateProperty update_device_info_state_property;
+};
+
+// Represents the result of a request to get state-specific properties.
+// It will contain either the properties of the current state or an error if
+// the properties could not be retrieved or are not applicable.
+union StatePropertyResult {
+  // The successfully retrieved state-specific properties.
+  StateProperty property;
+  // An error code if the properties could not be retrieved.
+  StatePropertyError error;
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -553,6 +595,11 @@ interface ShimlessRmaService {
   // Used on application start to determine the location in the RMA flow.
   // Due to reboots it may not always be the welcome screen.
   GetCurrentState() => (StateResult state_result);
+
+  // Returns the state properties of current RMA state.
+  // Used to safely access the properties that only belong to the current
+  // RMA state.
+  GetStateProperties() => (StatePropertyResult state_property_result);
 
   // Attempt to roll back to the previous RMA state.
   // Returns the updated state to display and an error code.
