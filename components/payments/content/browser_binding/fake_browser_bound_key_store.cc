@@ -11,7 +11,6 @@
 namespace payments {
 
 FakeBrowserBoundKeyStore::FakeBrowserBoundKeyStore() = default;
-FakeBrowserBoundKeyStore::~FakeBrowserBoundKeyStore() = default;
 
 std::unique_ptr<BrowserBoundKey>
 FakeBrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId(
@@ -31,14 +30,21 @@ FakeBrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId(
   return nullptr;
 }
 
-void FakeBrowserBoundKeyStore::PutFakeKey(
-    const std::vector<uint8_t>& credential_id,
-    FakeBrowserBoundKey bbk) {
-  key_map_.insert(std::make_pair(credential_id, std::move(bbk)));
+void FakeBrowserBoundKeyStore::DeleteBrowserBoundKey(
+    std::vector<uint8_t> bbk_id) {
+  key_map_.erase(bbk_id);
 }
 
-base::WeakPtr<FakeBrowserBoundKeyStore> FakeBrowserBoundKeyStore::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+void FakeBrowserBoundKeyStore::PutFakeKey(
+    FakeBrowserBoundKey bbk) {
+  key_map_.insert(std::make_pair(bbk.GetIdentifier(), std::move(bbk)));
 }
+
+bool FakeBrowserBoundKeyStore::ContainsFakeKey(
+    std::vector<uint8_t> bbk_id) const {
+  return key_map_.contains(bbk_id);
+}
+
+FakeBrowserBoundKeyStore::~FakeBrowserBoundKeyStore() = default;
 
 }  // namespace payments

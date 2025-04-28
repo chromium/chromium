@@ -5,6 +5,7 @@
 #include "components/payments/content/secure_payment_confirmation_service.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -259,10 +260,10 @@ class SecurePaymentConfirmationServiceCredentialTest
   void SetUp() override {
     InitializeSecurePaymentConfirmationService();
     auto passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
-        CreateFakeBrowserBoundKeyStore(), mock_web_data_service_);
+        fake_browser_bound_key_store_, mock_web_data_service_);
     passkey_browser_binder->SetRandomBytesAsVectorCallbackForTesting(
-        base::BindLambdaForTesting(
-            [this](size_t length) { return fake_browser_bound_key_id_; }));
+        base::BindRepeating(
+            [](size_t length) { return GetParam().fake_key.GetIdentifier(); }));
     spc_service_->SetPasskeyBrowserBinderForTesting(
         std::move(passkey_browser_binder));
   }
@@ -271,23 +272,15 @@ class SecurePaymentConfirmationServiceCredentialTest
   const std::vector<uint8_t> fake_challenge_ = {0x01, 0x02, 0x03, 0x04};
   const std::vector<uint8_t> fake_credential_id_ = {0x10, 0x11, 0x12, 0x13};
   const std::vector<uint8_t> fake_client_data_json_ = {0x30, 0x31, 0x32, 0x33};
-  const std::vector<uint8_t> fake_browser_bound_key_id_ = {0x40, 0x41, 0x42,
-                                                           0x43};
   const std::string fake_relying_party_id_ = "relying-party.example";
 
-  base::WeakPtr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_;
+  scoped_refptr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_ =
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
   base::MockCallback<
       mojom::SecurePaymentConfirmationService::MakePaymentCredentialCallback>
       mock_payment_credential_callback_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  std::unique_ptr<BrowserBoundKeyStore> CreateFakeBrowserBoundKeyStore() {
-    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
-    fake_browser_bound_key_store_ = key_store->GetWeakPtr();
-    return base::WrapUnique<BrowserBoundKeyStore>(key_store.release());
-  }
 };
 
 static ::testing::Matcher<
@@ -307,6 +300,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values<CredentialTestParams>(
         CredentialTestParams{
             .fake_key = FakeBrowserBoundKey(
+                /*browser_bound_key_id=*/{0x60, 0x61, 0x62, 0x63},
                 /*public_key_as_cose_key=*/{0x50, 0x51, 0x52, 0x53},
                 /*signature=*/{0x20, 0x21, 0x22, 0x23},
                 kAlgorithmIdentifier,
@@ -325,6 +319,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         CredentialTestParams{
             .fake_key = FakeBrowserBoundKey(
+                /*browser_bound_key_id=*/{0x60, 0x61, 0x62, 0x63},
                 /*public_key_as_cose_key=*/{0x50, 0x51, 0x52, 0x53},
                 /*signature=*/{0x20, 0x21, 0x22, 0x23},
                 kAlgorithmIdentifier,
@@ -344,8 +339,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SecurePaymentConfirmationServiceCredentialTest,
        MakePaymentCredentialAddsBrowserBoundKey) {
-  fake_browser_bound_key_store_->PutFakeKey(fake_browser_bound_key_id_,
-                                            GetParam().fake_key);
+  fake_browser_bound_key_store_->PutFakeKey(GetParam().fake_key);
   auto creation_options =
       blink::mojom::PublicKeyCredentialCreationOptions::New();
   creation_options->relying_party.id = fake_relying_party_id_;
@@ -363,7 +357,7 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
 
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_id_,
-                                 fake_browser_bound_key_id_, _));
+                                 GetParam().fake_key.GetIdentifier(), _));
   ::blink::mojom::PaymentOptionsPtr actual_payment_options;
   EXPECT_CALL(*mock_internal_authenticator_, SetPaymentOptions(_))
       .Times(1)

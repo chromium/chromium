@@ -17,12 +17,16 @@ class BrowserBoundKeyStoreAndroid : public BrowserBoundKeyStore {
  public:
   explicit BrowserBoundKeyStoreAndroid(
       jni_zero::ScopedJavaLocalRef<jobject> java_object);
-  ~BrowserBoundKeyStoreAndroid() override;
 
   std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
       const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
           allowed_credentials) override;
+
+  void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
+
+ protected:
+  ~BrowserBoundKeyStoreAndroid() override;
 
  private:
   // The implementation Java object.

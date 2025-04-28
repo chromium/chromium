@@ -17,6 +17,9 @@ class BrowserBoundKey {
   BrowserBoundKey& operator=(const BrowserBoundKey&) = delete;
   virtual ~BrowserBoundKey() = default;
 
+  // Returns the identifier of this browser bound key as a new vector.
+  virtual std::vector<uint8_t> GetIdentifier() const = 0;
+
   // Signs the provided clientDataJson and return the signature.
   virtual std::vector<uint8_t> Sign(
       const std::vector<uint8_t>& client_data) = 0;

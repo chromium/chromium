@@ -17,6 +17,11 @@ BrowserBoundKeyAndroid::BrowserBoundKeyAndroid(
 
 BrowserBoundKeyAndroid::~BrowserBoundKeyAndroid() = default;
 
+std::vector<uint8_t> BrowserBoundKeyAndroid::GetIdentifier() const {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_BrowserBoundKey_getIdentifier(env, impl_);
+}
+
 std::vector<uint8_t> BrowserBoundKeyAndroid::Sign(
     const std::vector<uint8_t>& client_data) {
   JNIEnv* env = jni_zero::AttachCurrentThread();

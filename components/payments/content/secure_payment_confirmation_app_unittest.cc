@@ -96,12 +96,6 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     return request;
   }
 
-  std::unique_ptr<BrowserBoundKeyStore> MakeFakeBrowserBoundKeyStore() {
-    FakeBrowserBoundKeyStore* key_store = new FakeBrowserBoundKeyStore();
-    browser_bound_key_store_ = key_store->GetWeakPtr();
-    return base::WrapUnique(static_cast<BrowserBoundKeyStore*>(key_store));
-  }
-
   // PaymentApp::Delegate:
   void OnInstrumentDetailsReady(const std::string& method_name,
                                 const std::string& stringified_details,
@@ -132,7 +126,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   bool on_instrument_details_ready_called_ = false;
   bool on_instrument_details_error_called_ = false;
 
-  base::WeakPtr<FakeBrowserBoundKeyStore> browser_bound_key_store_;
+  scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -249,24 +244,20 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   const std::vector<uint8_t> public_key_as_cose_key({0x05, 0x06, 0x07, 0x08});
   const std::vector<uint8_t> signature({0x09, 0x0a, 0x0b, 0x0c});
   const std::vector<uint8_t> browser_bound_key_id({0x0d, 0x0e, 0x0f, 0x10});
-  FakeBrowserBoundKey browser_bound_key(public_key_as_cose_key, signature,
-                                        GetParam().algorithm_identifier,
-                                        client_data_json);
   scoped_refptr<MockPaymentManifestWebDataService> mock_service =
       base::MakeRefCounted<MockPaymentManifestWebDataService>();
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
-      std::make_unique<PasskeyBrowserBinder>(MakeFakeBrowserBoundKeyStore(),
+      std::make_unique<PasskeyBrowserBinder>(browser_bound_key_store_,
                                              mock_service),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
       /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
-  browser_bound_key_store_->PutFakeKey(
-      browser_bound_key_id,
-      FakeBrowserBoundKey(public_key_as_cose_key, signature,
-                          GetParam().algorithm_identifier, client_data_json));
+  browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
+      browser_bound_key_id, public_key_as_cose_key, signature,
+      GetParam().algorithm_identifier, client_data_json));
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_id),

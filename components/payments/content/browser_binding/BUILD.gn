@@ -14,7 +14,10 @@ source_set("interface") {
     "browser_bound_key.h",
     "browser_bound_key_store.h",
   ]
-  public_deps = [ "//device/fido" ]
+  public_deps = [
+    "//base",
+    "//device/fido",
+  ]
 }
 
 source_set("passkey_browser_binder") {
