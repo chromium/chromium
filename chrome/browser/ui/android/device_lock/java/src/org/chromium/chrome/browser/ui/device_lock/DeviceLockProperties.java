@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.device_lock;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 public class DeviceLockProperties {
     static final WritableBooleanPropertyKey PREEXISTING_DEVICE_LOCK =
             new WritableBooleanPropertyKey();

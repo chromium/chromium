@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless Device Lock page view binder. */
+@NullMarked
 public class DeviceLockViewBinder {
     public static void bind(PropertyModel model, DeviceLockView view, PropertyKey propertyKey) {
         if (propertyKey == DeviceLockProperties.PREEXISTING_DEVICE_LOCK) {

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
@@ -26,6 +27,7 @@ import org.chromium.components.signin.SigninFeatures;
  * View that displays the device lock page to users and prompts them to create one if none are
  * present on the device.
  */
+@NullMarked
 public class DeviceLockView extends LinearLayout {
     private MaterialProgressBar mProgressBar;
     private TextView mTitle;

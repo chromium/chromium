@@ -23,10 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
@@ -38,11 +38,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * The mediator handles which design the device lock UI displays and interacts through the
  * coordinator delegate.
  */
+@NullMarked
 public class DeviceLockMediator {
     static final int ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_MINUTES = 10;
 

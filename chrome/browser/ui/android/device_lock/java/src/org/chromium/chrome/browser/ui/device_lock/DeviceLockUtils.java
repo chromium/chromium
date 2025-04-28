@@ -10,6 +10,9 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class DeviceLockUtils {
     static boolean isDeviceLockCreationIntentSupported(Context context) {
         return new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
