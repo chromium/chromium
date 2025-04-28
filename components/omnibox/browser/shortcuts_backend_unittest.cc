@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
@@ -236,9 +237,9 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
        "0,1,4,0", "0,1", AutocompleteMatchType::HISTORY_URL},
       {"0,3,5,1", "0,2,5,0", AutocompleteMatchType::NAVSUGGEST, "0,1", "0,0",
        AutocompleteMatchType::HISTORY_URL},
-      {"0,1", "0,0,11,2,15,0", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-       "0,1", "0,0", AutocompleteMatchType::SEARCH_HISTORY},
-      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST, "0,1", "0,0",
+      {"0,1", "0,0,11,2,15,0", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "",
+       "", AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST, "", "",
        AutocompleteMatchType::SEARCH_HISTORY},
       {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "", "",
        AutocompleteMatchType::SEARCH_HISTORY},
@@ -263,29 +264,167 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
   }
 }
 
-TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
-  SetSearchProvider();
-  AutocompleteMatch match;
-  match.fill_into_edit = u"franklin d roosevelt";
-  match.type = AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
-  match.contents = u"roosevelt";
-  match.contents_class =
-      AutocompleteMatch::ClassificationsFromString("0,0,5,2");
-  match.description = u"Franklin D. Roosevelt";
-  match.description_class = AutocompleteMatch::ClassificationsFromString("0,4");
-  match.destination_url =
-      GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
-  match.keyword = u"foo";
-  match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(match.fill_into_edit);
+// Verifies that creating MatchCores strips keywords and sanitizes match types.
+TEST_F(ShortcutsBackendTest, SanitizeMatchCore_Keyword) {
+  struct Cases {
+    std::u16string input_fill_into_edit;
+    AutocompleteMatch::Type input_type;
+    std::u16string input_keyword;
+    ui::PageTransition input_page_transition;
+    std::u16string output_fill_into_edit;
+    AutocompleteMatch::Type output_type;
+    std::u16string output_keyword;
+    ui::PageTransition output_page_transition;
+  };
+  auto cases = std::to_array<Cases>({
+      {u"foo http://foo.com/search?bar=franklin+d+roosevelt",
+       AutocompleteMatchType::NAVSUGGEST, u"foo", ui::PAGE_TRANSITION_KEYWORD,
+       u"http://foo.com/search?bar=franklin+d+roosevelt",
+       AutocompleteMatchType::HISTORY_URL, u"", ui::PAGE_TRANSITION_GENERATED},
+      {u"http://foo.com/search?bar=franklin+d+roosevelt",
+       AutocompleteMatchType::NAVSUGGEST, u"foo", ui::PAGE_TRANSITION_GENERATED,
+       u"http://foo.com/search?bar=franklin+d+roosevelt",
+       AutocompleteMatchType::HISTORY_URL, u"", ui::PAGE_TRANSITION_GENERATED},
+      {u"foo franklin d roosevelt", AutocompleteMatchType::SEARCH_SUGGEST,
+       u"foo", ui::PAGE_TRANSITION_KEYWORD, u"franklin d roosevelt",
+       AutocompleteMatchType::SEARCH_HISTORY, u"foo",
+       ui::PAGE_TRANSITION_GENERATED},
+      {u"franklin d roosevelt", AutocompleteMatchType::SEARCH_SUGGEST, u"foo",
+       ui::PAGE_TRANSITION_GENERATED, u"franklin d roosevelt",
+       AutocompleteMatchType::SEARCH_HISTORY, u"foo",
+       ui::PAGE_TRANSITION_GENERATED},
+  });
 
-  ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
-  EXPECT_EQ(match_core.destination_url.spec(),
-            "http://foo.com/search?bar=franklin+d+roosevelt");
-  EXPECT_EQ(match_core.contents, match.fill_into_edit);
-  EXPECT_EQ(match_core.contents_class, "0,0");
-  EXPECT_EQ(match_core.description, std::u16string());
-  EXPECT_TRUE(match_core.description_class.empty());
+  SetSearchProvider();
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    AutocompleteMatch match;
+    match.keyword = cases[i].input_keyword;
+    match.fill_into_edit = cases[i].input_fill_into_edit;
+    match.type = cases[i].input_type;
+    match.transition = cases[i].input_page_transition;
+    match.search_terms_args =
+        AutocompleteMatch::IsSearchType(match.type)
+            ? std::make_unique<TemplateURLRef::SearchTermsArgs>(
+                  u"franklin d roosevelt")
+            : nullptr;
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+    EXPECT_EQ(match_core.fill_into_edit, cases[i].output_fill_into_edit)
+        << ":i:" << i;
+    EXPECT_EQ(match_core.type, cases[i].output_type) << ":i:" << i;
+    EXPECT_EQ(match_core.keyword, cases[i].output_keyword) << ":i:" << i;
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(cases[i].output_page_transition,
+                                             match_core.transition))
+        << ":i:" << i;
+  }
+}
+
+TEST_F(ShortcutsBackendTest, SearchSuggestionTest) {
+  SetSearchProvider();
+  {
+    AutocompleteMatch match;
+    match.fill_into_edit = u"franklin d roosevelt";
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST;
+    match.contents = u"franklin d roosevelt";
+    match.contents_class =
+        AutocompleteMatch::ClassificationsFromString("0,0,5,2");
+    match.description = u"";
+    match.destination_url =
+        GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
+    match.keyword = u"foo";
+    match.from_keyword = false;
+    match.transition = ui::PAGE_TRANSITION_GENERATED;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        u"franklin d roosevelt");
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+    EXPECT_EQ(match_core.destination_url.spec(),
+              "http://foo.com/search?bar=franklin+d+roosevelt");
+    EXPECT_EQ(match_core.contents, u"franklin d roosevelt");
+    EXPECT_EQ(match_core.contents_class, "0,0");
+    EXPECT_EQ(match_core.description, std::u16string());
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_GENERATED,
+                                             match_core.transition));
+  }
+  {
+    AutocompleteMatch match;
+    match.fill_into_edit = u"foo franklin d roosevelt";
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST;
+    match.contents = u"franklin d roosevelt";
+    match.contents_class =
+        AutocompleteMatch::ClassificationsFromString("0,0,5,2");
+    match.description = u"";
+    match.destination_url =
+        GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
+    match.keyword = u"foo";
+    match.from_keyword = true;
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        u"franklin d roosevelt");
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+    EXPECT_EQ(match_core.destination_url.spec(),
+              "http://foo.com/search?bar=franklin+d+roosevelt");
+    EXPECT_EQ(match_core.contents, u"franklin d roosevelt");
+    EXPECT_EQ(match_core.contents_class, "0,0");
+    EXPECT_EQ(match_core.description, std::u16string());
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_GENERATED,
+                                             match_core.transition));
+  }
+  {
+    AutocompleteMatch match;
+    match.fill_into_edit = u"franklin d roosevelt";
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+    match.contents = u"roosevelt";
+    match.contents_class =
+        AutocompleteMatch::ClassificationsFromString("0,0,5,2");
+    match.description = u"Franklin D. Roosevelt";
+    match.description_class =
+        AutocompleteMatch::ClassificationsFromString("0,4");
+    match.destination_url =
+        GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
+    match.keyword = u"foo";
+    match.from_keyword = false;
+    match.transition = ui::PAGE_TRANSITION_GENERATED;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        u"franklin d roosevelt");
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+    EXPECT_EQ(match_core.destination_url.spec(),
+              "http://foo.com/search?bar=franklin+d+roosevelt");
+    EXPECT_EQ(match_core.contents, u"franklin d roosevelt");
+    EXPECT_EQ(match_core.contents_class, "0,0");
+    EXPECT_EQ(match_core.description, std::u16string());
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_GENERATED,
+                                             match_core.transition));
+  }
+  {
+    AutocompleteMatch match;
+    match.fill_into_edit = u"foo franklin d roosevelt";
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+    match.contents = u"roosevelt";
+    match.contents_class =
+        AutocompleteMatch::ClassificationsFromString("0,0,5,2");
+    match.description = u"Franklin D. Roosevelt";
+    match.description_class =
+        AutocompleteMatch::ClassificationsFromString("0,4");
+    match.destination_url =
+        GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
+    match.keyword = u"foo";
+    match.from_keyword = true;
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        u"franklin d roosevelt");
+
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+    EXPECT_EQ(match_core.destination_url.spec(),
+              "http://foo.com/search?bar=franklin+d+roosevelt");
+    EXPECT_EQ(match_core.contents, u"franklin d roosevelt");
+    EXPECT_EQ(match_core.contents_class, "0,0");
+    EXPECT_EQ(match_core.description, std::u16string());
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_GENERATED,
+                                             match_core.transition));
+  }
 }
 
 TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
@@ -293,6 +432,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // match.description.
   {
     AutocompleteMatch match;
+    match.type = AutocompleteMatchType::NAVSUGGEST;
     match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
@@ -308,6 +448,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // instead of match.description.
   {
     AutocompleteMatch match;
+    match.type = AutocompleteMatchType::NAVSUGGEST;
     match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
@@ -552,6 +693,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
   InitBackend();
 
   AutocompleteMatch match;
+  match.type = AutocompleteMatchType::NAVSUGGEST;
   match.destination_url = GURL("https://www.google.com");
 
   // Should not have a shortcut initially.
@@ -605,6 +747,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   InitBackend();
 
   AutocompleteMatch match;
+  match.type = AutocompleteMatchType::NAVSUGGEST;
   match.destination_url = GURL("https://www.host-sharedB.com/path");
   match.description = u"https://www.description.com";
   match.contents = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯ sharedA";
@@ -721,6 +864,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
 
   // Should not expand when match contents is empty.
   AutocompleteMatch match_without_contents;
+  match_without_contents.type = AutocompleteMatchType::NAVSUGGEST;
   match_without_contents.destination_url = GURL("https://www.host.com/google");
   match_without_contents.description = u"google";
   match_without_contents.description_class.emplace_back(0, 0);
@@ -731,6 +875,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   // Should expand with description when `swap_contents_and_description` is
   // true.
   AutocompleteMatch swapped_match;
+  swapped_match.type = AutocompleteMatchType::NAVSUGGEST;
   swapped_match.swap_contents_and_description = true;
   swapped_match.destination_url = GURL("https://www.google.com");
   swapped_match.contents = u"https://www.googlecontents.com";
@@ -752,6 +897,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
                         const std::string& expected_expanded_text) {
     SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
     AutocompleteMatch match;
+    match.type = AutocompleteMatchType::NAVSUGGEST;
     match.contents = base::UTF8ToUTF16(match_text);
     match.contents_class.emplace_back(0, 0);
 
@@ -800,6 +946,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Case) {
                         const std::string& expected_expanded_text) {
     SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
     AutocompleteMatch match;
+    match.type = AutocompleteMatchType::NAVSUGGEST;
     match.contents = base::UTF8ToUTF16(match_text);
     match.contents_class.emplace_back(0, 0);
 
@@ -838,6 +985,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Case) {
                                const std::string& expected_expanded_text) {
     SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
     AutocompleteMatch match;
+    match.type = AutocompleteMatchType::NAVSUGGEST;
     match.contents = base::UTF8ToUTF16(match_text);
     match.contents_class.emplace_back(0, 0);
     match.destination_url = GURL("http://www.url.com");

@@ -535,20 +535,21 @@ void ChromeOmniboxClient::OnResultChanged(
       request_ids_.push_back(bitmap_fetcher_service->RequestImage(
           match.icon_url,
           base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
-    } else if (match.associated_keyword) {
-      // - Fetch the favicon here for non-featured matches that have the search
-      // aggregator keyword hint attached to them (e.g., verbatim match when
-      // user types 'aggregator') use the policy favicon only in location bar
-      // keyword UI.
-      // - Featured search aggregator matches (e.g., when user types
-      // '@aggregator') use the match icon_url in both the popup keyword row UI
-      // and the location bar keyword UI.
-      // - Site search matches do not use the policy favicon so do not fetch the
-      // favicon here.
-      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          GetTemplateURLService(), false);
-      if (turl && turl->policy_origin() ==
-                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+    } else {
+      const TemplateURL* turl = nullptr;
+      if (match.associated_keyword) {
+        turl = match.associated_keyword->GetTemplateURL(GetTemplateURLService(),
+                                                        false);
+      } else if (!match.keyword.empty()) {
+        turl = match.GetTemplateURL(GetTemplateURLService(), false);
+      }
+      // Fetch the favicon if the `TemplateURL` is from the enterprise search
+      // aggregator policy. This covers both cases:
+      // 1. Non-featured matches with an associated keyword hint (e.g.,
+      //    verbatim match when typing 'aggregator').
+      // 2. Matches originating from the aggregator keyword mode itself (e.g.
+      //    shortcut suggestions in default mode).
+      if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
             turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
                                                 turl->favicon_url())));

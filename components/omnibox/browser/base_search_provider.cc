@@ -292,23 +292,21 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
 AutocompleteMatch BaseSearchProvider::CreateShortcutSearchSuggestion(
     const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
-    bool from_keyword,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data) {
-  // These calls use a number of default values.  For instance, they assume
-  // that if this match is from a keyword provider, then the user is in keyword
-  // mode.  They also assume the caller knows what it's doing and we set
-  // this match to look as if it was received/created synchronously.
+  // These calls use a number of default values.  For instance, they assume the
+  // caller knows what it's doing and we set this match to look as if it was
+  // received/created synchronously.
   SearchSuggestionParser::SuggestResult suggest_result(
       suggestion, type, /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
-      /*subtypes=*/{}, from_keyword,
+      /*subtypes=*/{}, /*from_keyword=*/false,
       /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/0, /*relevance_from_server=*/false,
       /*input_text=*/std::u16string());
   suggest_result.set_received_after_last_keystroke(false);
-  return CreateSearchSuggestion(nullptr, AutocompleteInput(), from_keyword,
-                                suggest_result, template_url, search_terms_data,
-                                0, false);
+  return CreateSearchSuggestion(nullptr, AutocompleteInput(),
+                                /*in_keyword_mode=*/false, suggest_result,
+                                template_url, search_terms_data, 0, false);
 }
 
 // static

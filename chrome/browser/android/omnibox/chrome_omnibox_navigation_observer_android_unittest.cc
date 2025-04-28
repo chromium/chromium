@@ -223,6 +223,8 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest, ShortcutReport) {
   CreateBackend();
   AutocompleteMatch match;
   match.keyword = kTestKeyword;
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(u"text");
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://www.google.com"), web_contents());
@@ -240,6 +242,8 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest, ShortcutReport) {
 TEST_F(ChromeOmniboxNavigationObserverAndroidTest, NoBackend) {
   AutocompleteMatch match;
   match.keyword = kTestKeyword;
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(u"text");
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://www.google.com"), web_contents());

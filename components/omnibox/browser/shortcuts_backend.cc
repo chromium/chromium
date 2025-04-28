@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -413,13 +414,32 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
   const AutocompleteMatch* normalized_match = &match;
   AutocompleteMatch temp;
 
-  if (AutocompleteMatch::IsSpecializedSearchType(match.type)) {
+  // TODO(crbug.com/410023142): Remove `CreateShortcutSearchSuggestion()` and
+  // stop storing match classifications.
+  if (AutocompleteMatch::IsSearchType(match.type)) {
     DCHECK(match.search_terms_args);
     temp = BaseSearchProvider::CreateShortcutSearchSuggestion(
         match.search_terms_args->search_terms, match_type,
-        ui::PageTransitionCoreTypeIs(match.transition,
-                                     ui::PAGE_TRANSITION_KEYWORD),
         match.GetTemplateURL(template_url_service, false), *search_terms_data);
+    normalized_match = &temp;
+  } else if (!match.keyword.empty()) {
+    // Remove the keyword from `fill_into_edit` and `transition` since
+    // suggestions should not use scoped UI in default mode.
+    temp = match;
+    if (ui::PageTransitionCoreTypeIs(match.transition,
+                                     ui::PAGE_TRANSITION_KEYWORD)) {
+      std::u16string keyword_plus_space = temp.keyword + u" ";
+      if (base::StartsWith(temp.fill_into_edit, keyword_plus_space,
+                           base::CompareCase::SENSITIVE)) {
+        temp.fill_into_edit.erase(0, keyword_plus_space.length());
+      }
+    }
+    // `AutocompleteController::UpdateKeywordDescriptions` expects search types
+    // (but not navigation types) to have a keyword.
+    if (!AutocompleteMatch::IsSearchType(match_type)) {
+      temp.keyword = u"";
+    }
+    temp.transition = ui::PAGE_TRANSITION_GENERATED;
     normalized_match = &temp;
   }
 

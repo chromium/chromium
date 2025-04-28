@@ -513,14 +513,14 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
       base::StartsWith(base::UTF16ToUTF8(input.text()),
                        base::StrCat({base::UTF16ToUTF8(match.keyword), " "}),
                        base::CompareCase::INSENSITIVE_ASCII);
+  const TemplateURL* default_search_provider =
+      client_->GetTemplateURLService()->GetDefaultSearchProvider();
   if (is_search_type) {
-    const TemplateURL* template_url =
-        client_->GetTemplateURLService()->GetDefaultSearchProvider();
     match.from_keyword =
         // Either the default search provider is disabled,
-        !template_url ||
+        !default_search_provider ||
         // or the match is not from the default search provider,
-        match.keyword != template_url->keyword() ||
+        match.keyword != default_search_provider->keyword() ||
         // or keyword mode was invoked explicitly and the keyword in the input
         // is also of the default search provider.
         (input.prefer_keyword() && keyword_matches);
@@ -533,13 +533,16 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
            .GetSubstitutingExplicitlyInvokedKeyword(
                client_->GetTemplateURLService())
            .empty();
+  bool match_from_dsp = default_search_provider &&
+                        match.keyword == default_search_provider->keyword();
 
   // If the input is in keyword mode, don't inline a match without or with a
   // different keyword. Otherwise, if the input is not in keyword mode, don't
-  // inline a match with a keyword.
+  // inline a match with a keyword that is not from the default search provider.
   if (input.prefer_keyword()
           ? is_search_type && keyword_matches && match_has_explicit_keyword
-          : !match_has_explicit_keyword) {
+          : !match_has_explicit_keyword &&
+                (match.keyword.empty() || match_from_dsp)) {
     if (is_search_type) {
       if (match.fill_into_edit.size() >= input.text().size() &&
           std::equal(match.fill_into_edit.begin(),
