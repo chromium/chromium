@@ -16,7 +16,7 @@ class GURL;
 @interface BackgroundCustomizationConfiguration : NSObject
 
 // A unique identifier for the background configuration.
-@property(nonatomic, strong) NSString* configurationID;
+@property(nonatomic, copy) NSString* configurationID;
 
 // A pointer to a GURL that points to the low-resolution version (thumbnail)
 // of the background image.

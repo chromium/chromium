@@ -28,7 +28,7 @@
 // specific styling is applied.
 @property(nonatomic, assign) BOOL destructiveAction;
 // Additional label. Read after `title` if not nil.
-@property(nonatomic, strong) NSString* additionalAccessibilityLabel;
+@property(nonatomic, copy) NSString* additionalAccessibilityLabel;
 
 @end
 
@@ -46,7 +46,7 @@
 @property(nonatomic, assign) BOOL destructiveAction;
 
 // Additional label. Read after `title` if not nil.
-@property(nonatomic, strong) NSString* additionalAccessibilityLabel;
+@property(nonatomic, copy) NSString* additionalAccessibilityLabel;
 
 // Sets the number on the badge number.
 - (void)setBadgeNumber:(NSInteger)badgeNumber;

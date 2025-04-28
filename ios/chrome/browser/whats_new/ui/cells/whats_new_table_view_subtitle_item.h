@@ -14,7 +14,7 @@
 @interface WhatsNewTableViewSubtitleItem : TableViewHeaderFooterItem
 
 // The title text string.
-@property(nonatomic, strong) NSString* title;
+@property(nonatomic, copy) NSString* title;
 
 @end
 
