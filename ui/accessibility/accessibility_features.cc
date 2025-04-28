@@ -241,7 +241,7 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 BASE_FEATURE(kAccessibilityCaptionsOnBrailleDisplay,
              "CaptionsOnBrailleDisplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityCaptionsOnBrailleDisplayEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityCaptionsOnBrailleDisplay);
