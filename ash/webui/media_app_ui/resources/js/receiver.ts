@@ -12,6 +12,7 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
+import {TouchPoint} from './mantis_processor.mojom-webui.js';
 import {InitializeResult} from './mantis_service.mojom-webui.js';
 import type {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
 import type {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
@@ -476,6 +477,11 @@ const DELEGATE: ClientApiDelegate = {
     const response =
         await mantisUntrustedService?.outpaintImage(image, mask, seed);
     return response.result;
+  },
+  async inferSegmentationMode(gesture: TouchPoint[]) {
+    const response =
+        await mantisUntrustedService?.inferSegmentationMode(gesture);
+    return response.mode;
   },
 };
 
