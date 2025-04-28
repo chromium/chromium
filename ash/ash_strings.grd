@@ -387,7 +387,7 @@ Style notes:
         Settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SETTINGS_DISABLED" desc="The tooltip text for a settings button when disabled.">
-        This setting is managed by your administrator.
+        This setting is managed by your administrator
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SPOKEN_FEEDBACK_ENABLED" desc="The message shown on a notification when spoken feedback is enabled">
         Press Ctrl + Alt + Z to disable spoken feedback.
