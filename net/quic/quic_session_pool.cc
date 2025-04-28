@@ -1947,7 +1947,6 @@ QuicSessionPool::CreateSessionHelper(
       ToQuicSocketAddress(peer_address), helper_.get(), alarm_factory_.get(),
       writer, true /* owns_writer */, quic::Perspective::IS_CLIENT,
       {quic_version}, connection_id_generator_);
-  connection->set_keep_alive_ping_timeout(ping_timeout_);
 
   // Calculate the max packet length for this connection. If the session is
   // carrying proxy traffic, add the `additional_proxy_packet_length`.
@@ -1967,6 +1966,22 @@ QuicSessionPool::CreateSessionHelper(
   quic::QuicConfig config = config_;
   ConfigureInitialRttEstimate(
       server_id, key.session_key().network_anonymization_key(), &config);
+
+  auto keep_alive_timeout = ping_timeout_;
+  bool enabled_connection_keep_alive = false;
+  if (connection_management_config.has_value() &&
+      connection_management_config->keep_alive_config.has_value()) {
+    config.SetIdleNetworkTimeout(quic::QuicTime::Delta::FromSeconds(
+        connection_management_config->keep_alive_config
+            ->idle_timeout_in_seconds));
+    keep_alive_timeout = quic::QuicTime::Delta::FromSeconds(
+        connection_management_config->keep_alive_config
+            ->ping_interval_in_seconds);
+    enabled_connection_keep_alive =
+        connection_management_config->keep_alive_config
+            ->enable_connection_keep_alive;
+  }
+  connection->set_keep_alive_ping_timeout(keep_alive_timeout);
 
   // Use the factory to create a new socket performance watcher, and pass the
   // ownership to QuicChromiumClientSession.
@@ -2014,6 +2029,10 @@ QuicSessionPool::CreateSessionHelper(
       session->net_log().source());
 
   session->Initialize();
+
+  if (enabled_connection_keep_alive) {
+    session->SetPeriodicConnectionKeepAlive(true);
+  }
   bool closed_during_initialize = !base::Contains(all_sessions_, session) ||
                                   !session->connection()->connected();
   UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.ClosedDuringInitializeSession",
