@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import android.graphics.Rect;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.List;
 
 /** Properties of the {@link PropertyModel} that reflect the state of webapp header */
+@NullMarked
 class WebAppHeaderLayoutProperties {
 
     /** The paddings rect that indicates how much to offset children. */

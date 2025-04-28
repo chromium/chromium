@@ -10,10 +10,12 @@ import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binder that reflects model updates on the {@link WebAppHeaderLayout}. */
+@NullMarked
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 class WebAppHeaderLayoutViewBinder {
 
