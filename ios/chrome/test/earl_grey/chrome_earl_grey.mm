@@ -1411,10 +1411,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];
 }
 
-- (BOOL)isWebChannelsEnabled {
-  return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
-}
-
 - (BOOL)isTabGroupSyncEnabled {
   return [ChromeEarlGreyAppInterface isTabGroupSyncEnabled];
 }

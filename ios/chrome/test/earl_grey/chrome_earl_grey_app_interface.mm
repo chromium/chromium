@@ -1206,10 +1206,6 @@ NSString* SerializedValue(const base::Value* value) {
          search_engines::SupportsSearchImageWithLens(service);
 }
 
-+ (BOOL)isWebChannelsEnabled {
-  return base::FeatureList::IsEnabled(kEnableWebChannels);
-}
-
 + (BOOL)isTabGroupSyncEnabled {
   return IsTabGroupSyncEnabled();
 }
