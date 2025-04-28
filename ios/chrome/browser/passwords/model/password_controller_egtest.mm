@@ -173,7 +173,7 @@ void LoginOnUff() {
 }
 
 - (void)setUp {
-  if ([self isRunningTest:@selector(FLAKY_testLoginEventReported)]) {
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
     // Start the servers before calling the superclass's `-setUp` so that their
     // addresses can be added to the app launch config. `GREYAssertTrue` can
     // only be used after calling the superclass's `-setUp`, so use `CHECK()`
@@ -188,6 +188,8 @@ void LoginOnUff() {
     CHECK(_reportingServer->Start());
   }
 
+  // This call launches the application and will wait for the profile to be
+  // initialized correctly (possibly with Enterprise policies).
   [super setUp];
 
   // Set up server.
@@ -225,8 +227,9 @@ void LoginOnUff() {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
 
-  // Set Enterprise features for testing password-related event reporting.
-  if ([self isRunningTest:@selector(FLAKY_testLoginEventReported)]) {
+  // Set Enterprise features for testing password-related event reporting. The
+  // policy and reporting servers must be started by this point.
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
     CHECK(_policyServer);
     CHECK(_reportingServer);
     config.additional_args.push_back(
@@ -244,6 +247,7 @@ void LoginOnUff() {
                       _reportingServer->GetServiceURL().spec()}));
     config.features_enabled.push_back(
         enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS);
+    config.relaunch_policy = ForceRelaunchByKilling;
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
@@ -752,9 +756,8 @@ void LoginOnUff() {
                                 password:passwordValue];
 }
 
-// TODO(crbug.com/413658473): Test fails with the app crashing.
 // Tests that log in events are reported to an enterprise connector.
-- (void)FLAKY_testLoginEventReported {
+- (void)testLoginEventReported {
   [self loadLoginPage];
 
   // Simulate login.

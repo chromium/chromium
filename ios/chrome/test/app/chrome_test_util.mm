@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
@@ -61,9 +62,17 @@
 
 namespace {
 
+inline constexpr base::TimeDelta kProfileCreationTimeout = base::Seconds(10);
+
 // Returns the original ProfileIOS if `incognito` is false. If
 // `incognito` is true, returns an off-the-record ProfileIOS.
 ProfileIOS* GetProfile(bool incognito) {
+  // The profile can take time to initialize when the app starts (e.g.,
+  // enterprise registration blocking pref initialization).
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(kProfileCreationTimeout, ^{
+    return chrome_test_util::GetForegroundActiveScene().profileState.profile !=
+           nil;
+  }));
   ProfileIOS* profile =
       chrome_test_util::GetForegroundActiveScene().profileState.profile;
   CHECK(profile);
