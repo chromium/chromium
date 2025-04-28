@@ -102,25 +102,7 @@ void OmniboxViewIOS::RevertAll() {
 }
 
 void OmniboxViewIOS::UpdatePopup() {
-  if (model()) {
-    model()->SetInputInProgress(true);
-  }
-
-  if (model() && !model()->has_focus()) {
-    return;
-  }
-
-  // Prevent inline-autocomplete if the IME is currently composing or if the
-  // cursor is not at the end of the text.
-  bool prevent_inline_autocomplete =
-      IsImeComposing() ||
-      NSMaxRange(current_selection_) != [field_.text length];
-  if (model()) {
-    model()->StartAutocomplete(current_selection_.length != 0,
-                               prevent_inline_autocomplete);
-  }
-
-  [omnibox_text_controller_ updatePopupLayoutDirection];
+  [omnibox_text_controller_ startAutocompleteAfterEdit];
 }
 
 void OmniboxViewIOS::OnTemporaryTextMaybeChanged(

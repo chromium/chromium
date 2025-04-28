@@ -131,9 +131,9 @@ class OmniboxViewIOS;
 // (crbug.com/390409559). Since these methods should be private, comments are in
 // the implementation file.
 
-- (void)updatePopupLayoutDirection;
-
 - (void)setCaretPos:(NSUInteger)caretPos;
+
+- (void)startAutocompleteAfterEdit;
 
 @end
 

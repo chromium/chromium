@@ -467,6 +467,31 @@
                                                       toPosition:newPosition];
 }
 
+/// Updates the autocomplete popup and other state after the text has been
+/// changed by the user.
+- (void)startAutocompleteAfterEdit {
+  if (_omniboxEditModel) {
+    _omniboxEditModel->SetInputInProgress(true);
+  }
+
+  if (!_omniboxEditModel || !_omniboxEditModel->has_focus() ||
+      !_omniboxViewIOS) {
+    return;
+  }
+
+  OmniboxTextFieldIOS* textField = self.textField;
+  // Prevent inline-autocomplete if the IME is currently composing or if the
+  // cursor is not at the end of the text.
+  const BOOL IMEComposing = [textField markedTextRange] != nil;
+  NSRange currentSelection = _omniboxViewIOS->GetCurrentSelection();
+  BOOL preventInlineAutocomplete =
+      IMEComposing || NSMaxRange(currentSelection) != [textField.text length];
+  _omniboxEditModel->StartAutocomplete(currentSelection.length != 0,
+                                       preventInlineAutocomplete);
+
+  [self updatePopupLayoutDirection];
+}
+
 /// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;

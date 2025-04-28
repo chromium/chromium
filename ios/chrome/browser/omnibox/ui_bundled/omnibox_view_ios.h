@@ -93,6 +93,9 @@ class OmniboxViewIOS : public OmniboxView {
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
 
+  // Returns the current selection.
+  NSRange GetCurrentSelection() const { return current_selection_; }
+
  protected:
   int GetOmniboxTextLength() const override;
   void EmphasizeURLComponents() override {}
