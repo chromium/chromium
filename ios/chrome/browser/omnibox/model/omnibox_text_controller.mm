@@ -93,7 +93,7 @@
   if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
     return;
   }
-  [self.omniboxAutocompleteController endEditing];
+  [self.omniboxAutocompleteController closeOmniboxPopup];
 
   if (OmniboxClient* client = self.client) {
     RecordSuggestionsListScrolled(
@@ -169,9 +169,7 @@
                                      /*prevent_inline_autocomplete=*/true);
     }
   } else {
-    if (_omniboxViewIOS) {
-      _omniboxViewIOS->CloseOmniboxPopup();
-    }
+    [self.omniboxAutocompleteController closeOmniboxPopup];
   }
 }
 
@@ -457,6 +455,7 @@
       setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
 }
 
+/// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
 }

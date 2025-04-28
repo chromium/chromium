@@ -227,7 +227,7 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxText events
 
-- (void)endEditing {
+- (void)closeOmniboxPopup {
   if (_omniboxController) {
     _omniboxController->StopAutocomplete(/*clear_result=*/true);
   }

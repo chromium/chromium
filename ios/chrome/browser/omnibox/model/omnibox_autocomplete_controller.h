@@ -83,8 +83,8 @@ class OmniboxController;
 
 #pragma mark - OmniboxText events
 
-/// Ends omnibox edit. Closes the omnibox popup.
-- (void)endEditing;
+/// Closes the omnibox popup.
+- (void)closeOmniboxPopup;
 
 /// Updates the popup text alignment.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
