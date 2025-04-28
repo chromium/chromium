@@ -24,13 +24,12 @@ namespace privacy_sandbox {
 namespace {
 
 using notice::mojom::PrivacySandboxNotice;
-using notice::mojom::PrivacySandboxNoticeEvent;
+using Event = notice::mojom::PrivacySandboxNoticeEvent;
+using enum Event;
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Pointee;
-
-using enum notice::mojom::PrivacySandboxNoticeEvent;
 
 using EventTimePair = NoticeEventTimestampPair;
 
@@ -63,8 +62,7 @@ void ParseDict(base::Value::Dict* dict, std::string&& json_string) {
 }
 
 std::vector<std::unique_ptr<EventTimePair>> BuildEvents(
-    std::initializer_list<std::pair<PrivacySandboxNoticeEvent, int64_t>>
-        raw_events) {
+    std::initializer_list<std::pair<Event, int64_t>> raw_events) {
   std::vector<std::unique_ptr<EventTimePair>> events;
   events.reserve(raw_events.size());
   for (const auto& raw_event : raw_events) {
@@ -188,20 +186,19 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
       NoticeStartupState::kUnknownState, 1);
 }
 
-const auto kStartupTestValues = std::vector<
-    std::tuple<std::vector<PrivacySandboxNoticeEvent>, NoticeStartupState>>{
-    {{kShown, kClosed}, NoticeStartupState::kFlowCompleted},
-    {{kShown, kSettings, kShown, kOptIn},
-     NoticeStartupState::kFlowCompletedWithOptIn},
-    {{kShown, kOptOut}, NoticeStartupState::kFlowCompletedWithOptOut},
-    {{kShown, kAck}, NoticeStartupState::kFlowCompleted},
-    {{kShown, kClosed, kShown}, NoticeStartupState::kPromptWaiting}};
+const auto kStartupTestValues =
+    std::vector<std::tuple<std::vector<Event>, NoticeStartupState>>{
+        {{kShown, kClosed}, NoticeStartupState::kFlowCompleted},
+        {{kShown, kSettings, kShown, kOptIn},
+         NoticeStartupState::kFlowCompletedWithOptIn},
+        {{kShown, kOptOut}, NoticeStartupState::kFlowCompletedWithOptOut},
+        {{kShown, kAck}, NoticeStartupState::kFlowCompleted},
+        {{kShown, kClosed, kShown}, NoticeStartupState::kPromptWaiting}};
 
 class PrivacySandboxNoticeStorageStartupTest
     : public PrivacySandboxNoticeStorageTest,
       public testing::WithParamInterface<
-          std::tuple<std::vector<PrivacySandboxNoticeEvent>,
-                     NoticeStartupState>> {};
+          std::tuple<std::vector<Event>, NoticeStartupState>> {};
 
 TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
   for (auto event : std::get<0>(GetParam())) {
@@ -481,8 +478,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test, SchemaAlreadyUpToDateDoesNotMigrate) {
 class PrivacySandboxNoticeStorageV2ActionsTest
     : public PrivacySandboxNoticeStorageTest,
       public testing::WithParamInterface<
-          std::tuple<NoticeActionTaken,
-                     std::optional<PrivacySandboxNoticeEvent>>> {};
+          std::tuple<NoticeActionTaken, std::optional<Event>>> {};
 
 TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
        NoticeActionWithoutShownPopulatedMigrateSuccessfully) {
@@ -539,8 +535,7 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxNoticeStorageV2ActionsTest,
     PrivacySandboxNoticeStorageV2ActionsTest,
     testing::ValuesIn(
-        std::vector<std::tuple<NoticeActionTaken,
-                               std::optional<PrivacySandboxNoticeEvent>>>{
+        std::vector<std::tuple<NoticeActionTaken, std::optional<Event>>>{
             {NoticeActionTaken::kNotSet, std::nullopt},
             {NoticeActionTaken::kAck, kAck},
             {NoticeActionTaken::kClosed, kClosed},

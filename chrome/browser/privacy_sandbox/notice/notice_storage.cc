@@ -23,8 +23,9 @@
 
 namespace privacy_sandbox {
 namespace {
-using notice::mojom::PrivacySandboxNotice;
-using notice::mojom::PrivacySandboxNoticeEvent;
+
+using Event = notice::mojom::PrivacySandboxNoticeEvent;
+using enum Event;
 
 constexpr int kCurrentSchemaVersion = 2;
 
@@ -84,17 +85,17 @@ void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
                                 base::Days(10), 100);
 }
 
-NoticeActionTaken NoticeEventToNoticeAction(PrivacySandboxNoticeEvent action) {
+NoticeActionTaken NoticeEventToNoticeAction(Event action) {
   switch (action) {
-    case PrivacySandboxNoticeEvent::kAck:
+    case kAck:
       return NoticeActionTaken::kAck;
-    case PrivacySandboxNoticeEvent::kClosed:
+    case kClosed:
       return NoticeActionTaken::kClosed;
-    case PrivacySandboxNoticeEvent::kOptIn:
+    case kOptIn:
       return NoticeActionTaken::kOptIn;
-    case PrivacySandboxNoticeEvent::kOptOut:
+    case kOptOut:
       return NoticeActionTaken::kOptOut;
-    case PrivacySandboxNoticeEvent::kSettings:
+    case kSettings:
       return NoticeActionTaken::kSettings;
     default:
       return NoticeActionTaken::kNotSet;
@@ -107,8 +108,7 @@ void SetSchemaVersion(PrefService* pref_service, std::string_view notice) {
                                kCurrentSchemaVersion);
 }
 
-base::Value::Dict BuildDictEntryEvent(PrivacySandboxNoticeEvent event,
-                                      base::Time event_time) {
+base::Value::Dict BuildDictEntryEvent(Event event, base::Time event_time) {
   base::Value::Dict params;
   params.Set(kEventKey, static_cast<int>(event));
   params.Set(kTimestampKey, base::TimeToValue(event_time));
@@ -184,7 +184,7 @@ void MaybeEraseV1Fields(PrefService* pref_service, std::string_view notice) {
 std::optional<base::Time> GetNoticeFirstShownFromEvents(
     const NoticeStorageData& notice_data) {
   for (const auto& notice_event : notice_data.notice_events) {
-    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+    if (notice_event->event == kShown) {
       return notice_event->timestamp;
     }
   }
@@ -194,7 +194,7 @@ std::optional<base::Time> GetNoticeFirstShownFromEvents(
 std::optional<base::Time> GetNoticeLastShownFromEvents(
     const NoticeStorageData& notice_data) {
   for (const auto& notice_event : base::Reversed(notice_data.notice_events)) {
-    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+    if (notice_event->event == kShown) {
       return notice_event->timestamp;
     }
   }
@@ -208,7 +208,7 @@ GetNoticeActionTakenForFirstShownFromEvents(
   int last_shown_idx = 0;
   int first_notice_idx = 0;
   for (const auto& event_data : notice_data.notice_events) {
-    if (event_data->event == PrivacySandboxNoticeEvent::kShown) {
+    if (event_data->event == kShown) {
       last_shown_idx++;
     } else if (!notice_event_data.has_value() ||
                first_notice_idx == last_shown_idx) {
@@ -221,9 +221,8 @@ GetNoticeActionTakenForFirstShownFromEvents(
 
 void NoticeEventTimestampPair::RegisterJSONConverter(
     base::JSONValueConverter<NoticeEventTimestampPair>* converter) {
-  converter->RegisterCustomValueField<PrivacySandboxNoticeEvent>(
-      kEventKey, &NoticeEventTimestampPair::event,
-      &MaybeValueToEnum<PrivacySandboxNoticeEvent>);
+  converter->RegisterCustomValueField<Event>(
+      kEventKey, &NoticeEventTimestampPair::event, &MaybeValueToEnum<Event>);
   converter->RegisterCustomValueField<base::Time>(
       kTimestampKey, &NoticeEventTimestampPair::timestamp, &MaybeValueToTime);
 }
@@ -291,38 +290,37 @@ void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
 
 // static
 std::string PrivacySandboxNoticeStorage::GetNoticeActionStringFromEvent(
-    PrivacySandboxNoticeEvent event) {
+    Event event) {
   switch (event) {
-    case PrivacySandboxNoticeEvent::kShown:
+    case kShown:
       return "";
-    case PrivacySandboxNoticeEvent::kAck:
+    case kAck:
       return "Ack";
-    case PrivacySandboxNoticeEvent::kClosed:
+    case kClosed:
       return "Closed";
-    case PrivacySandboxNoticeEvent::kOptIn:
+    case kOptIn:
       return "OptIn";
-    case PrivacySandboxNoticeEvent::kOptOut:
+    case kOptOut:
       return "OptOut";
-    case PrivacySandboxNoticeEvent::kSettings:
+    case kSettings:
       return "Settings";
   }
 }
 
 // static
-std::optional<PrivacySandboxNoticeEvent>
-PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
+std::optional<Event> PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
     NoticeActionTaken action) {
   switch (action) {
     case NoticeActionTaken::kAck:
-      return PrivacySandboxNoticeEvent::kAck;
+      return kAck;
     case NoticeActionTaken::kClosed:
-      return PrivacySandboxNoticeEvent::kClosed;
+      return kClosed;
     case NoticeActionTaken::kOptIn:
-      return PrivacySandboxNoticeEvent::kOptIn;
+      return kOptIn;
     case NoticeActionTaken::kOptOut:
-      return PrivacySandboxNoticeEvent::kOptOut;
+      return kOptOut;
     case NoticeActionTaken::kSettings:
-      return PrivacySandboxNoticeEvent::kSettings;
+      return kSettings;
     default:
       return std::nullopt;
   }
@@ -334,9 +332,8 @@ NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
   std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
 
   if (data_v1.notice_last_shown != base::Time()) {
-    notice_events.emplace_back(
-        std::make_unique<NoticeEventTimestampPair>(NoticeEventTimestampPair{
-            PrivacySandboxNoticeEvent::kShown, data_v1.notice_last_shown}));
+    notice_events.emplace_back(std::make_unique<NoticeEventTimestampPair>(
+        NoticeEventTimestampPair{kShown, data_v1.notice_last_shown}));
   }
 
   auto notice_event = NoticeActionToNoticeEvent(data_v1.notice_action_taken);
@@ -416,18 +413,18 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
       startup_state = NoticeStartupState::kUnknownState;
     } else {  // Notice has been shown, action handling below.
       switch (notice_data->notice_events.back().get()->event) {
-        case PrivacySandboxNoticeEvent::kShown:
+        case kShown:
           startup_state = NoticeStartupState::kPromptWaiting;
           break;
-        case PrivacySandboxNoticeEvent::kOptIn:
+        case kOptIn:
           startup_state = NoticeStartupState::kFlowCompletedWithOptIn;
           break;
-        case PrivacySandboxNoticeEvent::kOptOut:
+        case kOptOut:
           startup_state = NoticeStartupState::kFlowCompletedWithOptOut;
           break;
-        case PrivacySandboxNoticeEvent::kAck:
-        case PrivacySandboxNoticeEvent::kClosed:
-        case PrivacySandboxNoticeEvent::kSettings:
+        case kAck:
+        case kClosed:
+        case kSettings:
           startup_state = NoticeStartupState::kFlowCompleted;
           break;
       }
@@ -448,12 +445,10 @@ std::optional<NoticeStorageData> PrivacySandboxNoticeStorage::ReadNoticeData(
   return ConvertTo<NoticeStorageData>(pref_data.FindDict(notice));
 }
 
-void PrivacySandboxNoticeStorage::RecordEvent(
-    NoticeId notice_id,
-    notice::mojom::PrivacySandboxNoticeEvent event) {
+void PrivacySandboxNoticeStorage::RecordEvent(NoticeId notice_id, Event event) {
   const Notice& notice = FindNotice(notice_id, catalog_);
 
-  if (event == PrivacySandboxNoticeEvent::kShown) {
+  if (event == kShown) {
     SetNoticeShown(notice.GetStorageName(), base::Time::Now());
     return;
   }
@@ -462,9 +457,9 @@ void PrivacySandboxNoticeStorage::RecordEvent(
 
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     std::string_view notice,
-    PrivacySandboxNoticeEvent notice_action_taken,
+    Event notice_action_taken,
     base::Time notice_action_taken_time) {
-  CHECK(notice_action_taken != PrivacySandboxNoticeEvent::kShown)
+  CHECK(notice_action_taken != kShown)
       << "Use `SetNoticeShown` to set a kShown PrivacySandboxNoticeEvent "
          "instead.";
   ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
@@ -481,8 +476,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   }
 
   // Performing multiple actions on an existing notice is unexpected.
-  if (notice_data->notice_events.back().get()->event !=
-      PrivacySandboxNoticeEvent::kShown) {
+  if (notice_data->notice_events.back().get()->event != kShown) {
     base::UmaHistogramEnumeration(
         base::StrCat(
             {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
@@ -545,8 +539,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
   SetSchemaVersion(pref_service_, notice);
   SetChromeVersion(pref_service_, notice);
 
-  base::Value::Dict entry =
-      BuildDictEntryEvent(PrivacySandboxNoticeEvent::kShown, notice_shown_time);
+  base::Value::Dict entry = BuildDictEntryEvent(kShown, notice_shown_time);
   update->EnsureDict(notice)->EnsureList(kEventsKey)->Append(std::move(entry));
 
   // TODO(chrstne): Deprecate NoticeShown histogram once it is no longer used
@@ -554,8 +547,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
   base::UmaHistogramBoolean(
       base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
   base::UmaHistogramEnumeration(
-      base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}),
-      PrivacySandboxNoticeEvent::kShown);
+      base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}), kShown);
 
   auto notice_data = ReadNoticeData(notice);
   CHECK(notice_data.has_value());
