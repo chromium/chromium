@@ -72,8 +72,6 @@ std::vector<std::unique_ptr<EventTimePair>> BuildEvents(
   return events;
 }
 
-// TODO(crbug.com/333406690): Make a test notice name list injectable so tests
-// don't have to use actual notice names.
 class PrivacySandboxNoticeStorageTest : public testing::Test {
  public:
   PrivacySandboxNoticeStorageTest()
