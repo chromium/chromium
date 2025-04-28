@@ -41,4 +41,14 @@ PasswordChanges GetPasswordChangesOrNulloptOnFailure(
   return std::move(std::get<PasswordChanges>(result));
 }
 
+std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(
+    std::vector<PasswordForm> forms) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.reserve(forms.size());
+  for (auto& form : forms) {
+    result.push_back(std::make_unique<PasswordForm>(std::move(form)));
+  }
+  return result;
+}
+
 }  // namespace password_manager

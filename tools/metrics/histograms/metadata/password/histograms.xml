@@ -158,6 +158,12 @@ chromium-metrics-reviews@google.com.
   <variant name="ProfileStore." summary="for profile-scoped store"/>
 </variants>
 
+<variants name="StoreErrorStatus">
+  <variant name=""/>
+  <variant name=".ExcludingStoreErrors"
+      summary="errors returned from the underlying store are not reported."/>
+</variants>
+
 <variants name="UserSyncingType">
   <variant name="" summary="all users."/>
   <variant name=".SignedInAccountStoreUser"
@@ -4979,7 +4985,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="PasswordManager.{Store}{Metric3}.{PasswordType}{CustomPassphraseStatus}"
+    name="PasswordManager.{Store}{Metric3}.{PasswordType}{CustomPassphraseStatus}{StoreErrorStatus}"
     units="units" expires_after="2025-09-14">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
@@ -4999,6 +5005,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
   <token key="PasswordType" variants="PasswordType"/>
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+  <token key="StoreErrorStatus" variants="StoreErrorStatus"/>
 </histogram>
 
 <histogram

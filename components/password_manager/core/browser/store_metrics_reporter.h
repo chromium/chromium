@@ -23,6 +23,16 @@ namespace password_manager {
 
 class PasswordManagerSettingsService;
 class PasswordReuseManager;
+struct PasswordStoreResults {
+  PasswordStoreResults(std::vector<std::unique_ptr<PasswordForm>> store_results,
+                       bool has_error);
+  ~PasswordStoreResults();
+  PasswordStoreResults(PasswordStoreResults&& other);
+  PasswordStoreResults& operator=(PasswordStoreResults&& other);
+
+  std::vector<std::unique_ptr<PasswordForm>> store_results;
+  bool has_error;
+};
 
 // Instantiate this object to report metrics about the contents of the password
 // store.
@@ -60,6 +70,11 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
+  void ProcessPasswordResults(PasswordStoreInterface* store,
+                              PasswordStoreResults results);
 
   void OnBackgroundMetricsReportingCompleted(
       CredentialsCount credentials_count);
@@ -82,10 +97,9 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // Temporarily holds the credentials stored in the profile and account stores
   // till the actual metric computation starts. They don't have a value until
   // the credentials are loaded from the storage.
-  std::optional<std::vector<std::unique_ptr<PasswordForm>>>
-      profile_store_results_;
-  std::optional<std::vector<std::unique_ptr<PasswordForm>>>
-      account_store_results_;
+  std::optional<PasswordStoreResults> profile_store_results_;
+
+  std::optional<PasswordStoreResults> account_store_results_;
 
   base::OnceClosure done_callback_;
   base::WeakPtrFactory<StoreMetricsReporter> weak_ptr_factory_{this};

@@ -53,6 +53,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void Clear();
   void TriggerOnLoginsRetainedForAndroid(
       const std::vector<PasswordForm>& password_forms);
+  void ReturnErrorOnRequest(
+      PasswordStoreBackendError password_store_backend_error);
 
   const PasswordMap& stored_passwords() const { return stored_passwords_; }
   IsAccountStore is_account_store() const { return is_account_store_; }
@@ -126,6 +128,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   PasswordMap stored_passwords_;
   PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::optional<PasswordStoreBackendError> password_store_backend_error_;
   base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
 };
 

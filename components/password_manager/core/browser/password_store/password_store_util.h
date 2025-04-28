@@ -27,6 +27,10 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
 PasswordChanges GetPasswordChangesOrNulloptOnFailure(
     PasswordChangesOrError result);
 
+// Wraps all password forms in the provided vector in a unique pointer.
+std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(
+    std::vector<PasswordForm> forms);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_UTIL_H_
