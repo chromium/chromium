@@ -143,7 +143,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
         setOnDismissListener(this);
 
         mContainerView =
-                LayoutInflater.from(mActivity).inflate(R.layout.payment_request_editor, null);
+                LayoutInflater.from(mActivity).inflate(R.layout.autofill_editor_dialog, null);
         setContentView(mContainerView);
 
         prepareToolbar();

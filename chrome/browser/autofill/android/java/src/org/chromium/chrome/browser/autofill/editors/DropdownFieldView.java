@@ -67,7 +67,7 @@ class DropdownFieldView implements FieldView {
 
         mLayout =
                 LayoutInflater.from(context)
-                        .inflate(R.layout.payment_request_editor_dropdown, root, false);
+                        .inflate(R.layout.autofill_editor_dialog_dropdown, root, false);
 
         mLabel = (TextView) mLayout.findViewById(R.id.spinner_label);
         setShowRequiredIndicator(/* showRequiredIndicator= */ false);

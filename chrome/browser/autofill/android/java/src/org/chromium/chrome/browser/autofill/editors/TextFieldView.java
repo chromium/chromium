@@ -80,7 +80,7 @@ class TextFieldView extends FrameLayout implements FieldView {
         super(context);
         mEditorFieldModel = fieldModel;
 
-        LayoutInflater.from(context).inflate(R.layout.payments_request_editor_textview, this, true);
+        LayoutInflater.from(context).inflate(R.layout.autofill_editor_dialog_textview, this, true);
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
 
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);

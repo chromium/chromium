@@ -18,11 +18,9 @@ found in the LICENSE file.
         android:id="@+id/text_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
-
-        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
+        app:errorTextAppearance="@style/TextAppearance.ErrorCaption"
+        android:labelFor="@+id/text_view">
         <AutoCompleteTextView
-            tools:ignore="LabelFor"
             android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,7 +43,7 @@ found in the LICENSE file.
             android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:adjustViewBounds="true"
-            tools:ignore="ContentDescription"
+            android:importantForAccessibility="no"
             android:clickable="false"
             android:visibility="gone"/>
 
@@ -54,7 +52,7 @@ found in the LICENSE file.
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
-            tools:ignore="ContentDescription"
+            android:importantForAccessibility="no"
             android:visibility="gone"/>
     </LinearLayout>
 </FrameLayout>
