@@ -2078,8 +2078,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    # TODO(crbug.com/406838181): Promote when stable.
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "16",
