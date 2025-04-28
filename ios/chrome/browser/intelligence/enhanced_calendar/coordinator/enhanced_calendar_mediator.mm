@@ -211,7 +211,7 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
 
 // Get description URL field.
 - (NSString*)descriptionURL {
-  CHECK(_enhancedCalendarConfig.URL.empty());
+  CHECK(!_enhancedCalendarConfig.URL.empty());
 
   return base::SysUTF8ToNSString(std::format(
       kCalendarEventSummaryAdditionalInfoTemplate,
