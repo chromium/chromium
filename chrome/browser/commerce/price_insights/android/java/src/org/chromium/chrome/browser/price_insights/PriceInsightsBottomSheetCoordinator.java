@@ -10,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -33,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * <p>This component shows bottom sheet content including the price history, price tracking, and
  * jackpot url links of the product.
  */
+@NullMarked
 public class PriceInsightsBottomSheetCoordinator {
 
     /** Delegate interface for price insights feature. */
@@ -66,11 +66,11 @@ public class PriceInsightsBottomSheetCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
 
-    private PriceInsightsBottomSheetContent mBottomSheetContent;
+    private @Nullable PriceInsightsBottomSheetContent mBottomSheetContent;
     private PriceInsightsBottomSheetMediator mBottomSheetMediator;
     private BottomSheetObserver mBottomSheetObserver;
     private View mPriceInsightsView;
-    private Long mSheetOpenTimeMs;
+    private @Nullable Long mSheetOpenTimeMs;
 
     /**
      * @param context The {@link Context} associated with this coordinator.
@@ -78,12 +78,12 @@ public class PriceInsightsBottomSheetCoordinator {
      * @param shoppingService Network service for fetching price insights and price tracking info.
      */
     public PriceInsightsBottomSheetCoordinator(
-            @NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull Tab tab,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ShoppingService shoppingService,
-            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Tab tab,
+            TabModelSelector tabModelSelector,
+            ShoppingService shoppingService,
+            PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         PropertyModel propertyModel =

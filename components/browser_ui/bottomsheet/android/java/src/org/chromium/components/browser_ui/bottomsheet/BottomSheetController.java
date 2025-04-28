@@ -108,7 +108,7 @@ public interface BottomSheetController {
     void hideContent(
             BottomSheetContent content, boolean animate, @StateChangeReason int hideReason);
 
-    void hideContent(BottomSheetContent content, boolean animate);
+    void hideContent(@Nullable BottomSheetContent content, boolean animate);
 
     /** @param observer The observer to add. */
     void addObserver(BottomSheetObserver observer);

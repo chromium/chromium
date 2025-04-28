@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.price_insights;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for price insights bottom sheet. */
+@NullMarked
 public class PriceInsightsBottomSheetProperties {
     public static final WritableObjectPropertyKey<String> PRICE_TRACKING_TITLE =
             new WritableObjectPropertyKey<>();

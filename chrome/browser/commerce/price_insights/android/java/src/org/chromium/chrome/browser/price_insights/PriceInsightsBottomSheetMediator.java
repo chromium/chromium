@@ -20,12 +20,13 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import android.content.Context;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +44,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 /** Mediator for price insights bottom sheet responsible for model update. */
+@NullMarked
 public class PriceInsightsBottomSheetMediator {
     private final Context mContext;
     private final Tab mTab;
@@ -56,12 +58,12 @@ public class PriceInsightsBottomSheetMediator {
     private @PriceBucket int mPriceBucket;
 
     public PriceInsightsBottomSheetMediator(
-            @NonNull Context context,
-            @NonNull Tab tab,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ShoppingService shoppingService,
-            @NonNull PriceInsightsDelegate priceInsightsDelegate,
-            @NonNull PropertyModel propertyModel) {
+            Context context,
+            Tab tab,
+            TabModelSelector tabModelSelector,
+            ShoppingService shoppingService,
+            PriceInsightsDelegate priceInsightsDelegate,
+            PropertyModel propertyModel) {
         mContext = context;
         mTab = tab;
         mTabModelSelector = tabModelSelector;
@@ -188,7 +190,7 @@ public class PriceInsightsBottomSheetMediator {
         Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
     }
 
-    private void updatePriceInsightsInfo(PriceInsightsInfo info) {
+    private void updatePriceInsightsInfo(@Nullable PriceInsightsInfo info) {
         if (info == null
                 || info.currencyCode.isEmpty()
                 || info.catalogHistoryPrices == null

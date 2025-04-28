@@ -9,14 +9,15 @@ import android.content.res.Resources;
 import android.view.View;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** An implementation of {@link BottomSheetContent} for the price insights bottom sheet content. */
+@NullMarked
 public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final ScrollView mScrollView;
@@ -32,9 +33,8 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -75,7 +75,7 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.price_insights_bottom_sheet_content_description);
     }
 
