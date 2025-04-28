@@ -1,5 +1,7 @@
 caption: Enable <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding support
 desc: |-
+  This policy is temporary and will no longer work starting in M137.
+
   This feature enables the use of "zstd" in the Accept-Encoding request header,
   and support for decompressing
   <ph name="ZSTANDARD_SHORTNAME">zstd</ph>-compressed web content.
@@ -9,8 +11,6 @@ desc: |-
   compressed with <ph name="ZSTANDARD_SHORTNAME">zstd</ph>.
   Setting the policy to Disabled turns off the
   <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding feature.
-
-  This policy is intended to be temporary and will be removed in the future.
 default: true
 example_value: true
 features:
@@ -29,8 +29,8 @@ future_on:
 schema:
   type: boolean
 supported_on:
-- android:119-
-- chrome.*:119-
-- chrome_os:119-
+- android:119-136
+- chrome.*:119-136
+- chrome_os:119-136
 tags: []
 type: main

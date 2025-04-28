@@ -4115,10 +4115,6 @@ inline constexpr char kHoverCardMemoryUsageEnabled[] =
 inline constexpr char kCompressionDictionaryTransportEnabled[] =
     "net.compression_dictionary_transport_enabled";
 
-// Boolean that specifies whether Zstd Content-Encoding is enabled.
-inline constexpr char kZstdContentEncodingEnabled[] =
-    "net.zstd_content_encoding_enabled";
-
 // Boolean that specifies whether Happy Eyeballs V3 is enabled.
 inline constexpr char kHappyEyeballsV3Enabled[] =
     "net.happy_eyeballs_v3_enabled";
