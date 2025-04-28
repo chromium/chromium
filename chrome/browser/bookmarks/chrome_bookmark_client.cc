@@ -28,6 +28,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -252,4 +253,16 @@ void ChromeBookmarkClient::OnBookmarkNodeRemovedUndoable(
     std::unique_ptr<bookmarks::BookmarkNode> node) {
   bookmark_undo_service_->AddUndoEntryForRemovedNode(parent, index,
                                                      std::move(node));
+}
+
+void ChromeBookmarkClient::SchedulePersistentTimerForDailyMetrics(
+    base::RepeatingClosure metrics_callback) {
+  if (PrefService* prefs = profile_->GetPrefs()) {
+    // Periodically records the metrics for local and/or account bookmarks
+    // availability in permanent nodes.
+    repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
+        prefs, bookmarks::prefs::kBookmarkStorageComputationLastUpdatePref,
+        base::Hours(24), metrics_callback);
+    repeating_timer_->Start();
+  }
 }

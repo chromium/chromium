@@ -14,6 +14,20 @@ struct UserFolderLoadStats;
 
 namespace metrics {
 
+// LINT.IfChange(BookmarksExistInStorageType)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used to know in which storages permanent nodes have bookmarks.
+enum class BookmarksExistInStorageType {
+  kLocalOnly = 0,
+  kAccountOnly = 1,
+  kLocalAndAccount = 2,
+
+  kMaxValue = kLocalAndAccount,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarksExistInStorageType)
+
 // Enum for folder categories, reported through UMA. Present in enums.xml as
 // BookmarkFolderType. New values should be added at the end and things should
 // not be renumbered.
@@ -120,6 +134,13 @@ void RecordAverageNodeSizeAtStartup(size_t size_in_bytes);
 // JSON file representing local-or-syncable bookmarks.
 void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
                                       bool ids_reassigned);
+
+// Records the storage type of the permanent nodes. If `bookmark_bar_only` is
+// set, only records considering the bookmark bar, otherwise consider all
+// permanent nodes (without the Managed nodes).
+void RecordBookmarksExistInStorageType(
+    bool bookmark_bar_only,
+    BookmarksExistInStorageType storage_type);
 
 }  // namespace metrics
 

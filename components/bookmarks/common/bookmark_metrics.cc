@@ -202,4 +202,13 @@ void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
       ids_reassigned);
 }
 
+void RecordBookmarksExistInStorageType(
+    bool bookmark_bar_only,
+    BookmarksExistInStorageType storage_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Bookmarks.BookmarksExistInStorageType.",
+                    bookmark_bar_only ? "BookmarkBar" : "AllBookmarks"}),
+      storage_type);
+}
+
 }  // namespace bookmarks::metrics

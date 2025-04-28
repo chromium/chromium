@@ -206,6 +206,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarksExistInStorageType.{SubtreeSelection}"
+    enum="BookmarksExistInStorageType" expires_after="2025-10-23">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the storage in which the bookmarks {SubtreeSelection} are stored in.
+    Recorded every 24 hours or on the next startup. Recorded only if there exist
+    at least one item (folder or URL) and account bookmark nodes exists (B4B
+    enabled and active).
+  </summary>
+  <token key="SubtreeSelection">
+    <variant name="ConsideringAllBookmarks" summary="for all bookmarks"/>
+    <variant name="UnderBookmarksBar" summary="in the bookmark bar"/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.Clone.NumCloned" units="bookmarks"
     expires_after="2025-03-02">
   <owner>wylieb@google.com</owner>

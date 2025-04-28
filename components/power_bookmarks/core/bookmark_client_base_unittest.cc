@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/power_bookmarks/core/bookmark_client_base.h"
+
 #include <memory>
 #include <set>
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -16,7 +19,6 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/power_bookmarks/core/bookmark_client_base.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,6 +71,9 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override {}
+
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override {}
 };
 
 class MockSuggestionProvider : public SuggestedSaveLocationProvider {

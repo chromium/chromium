@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -158,6 +159,15 @@ std::unique_ptr<BookmarkPermanentNode> TestBookmarkClient::LoadManagedNode(
     std::unique_ptr<BookmarkPermanentNode> managed_node,
     int64_t* next_id) {
   return managed_node;
+}
+
+void TestBookmarkClient::SchedulePersistentTimerForDailyMetrics(
+    base::RepeatingClosure metrics_callback) {
+  metrics_callback_ = metrics_callback;
+}
+
+void TestBookmarkClient::TriggerPersistentLogInterval() {
+  metrics_callback_.Run();
 }
 
 }  // namespace bookmarks

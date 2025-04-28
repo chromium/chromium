@@ -162,3 +162,8 @@ void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
   bookmark_undo_service_->AddUndoEntryForRemovedNode(parent, index,
                                                      std::move(node));
 }
+
+void BookmarkClientImpl::SchedulePersistentTimerForDailyMetrics(
+    base::RepeatingClosure metrics_callback) {
+  // Nothing to record on iOS.
+}

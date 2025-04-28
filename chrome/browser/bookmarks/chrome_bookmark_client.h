@@ -43,6 +43,10 @@ namespace power_bookmarks {
 class SuggestedSaveLocationProvider;
 }
 
+namespace signin {
+class PersistentRepeatingTimer;
+}  // namespace signin
+
 class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
  public:
   ChromeBookmarkClient(
@@ -83,6 +87,8 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override;
 
  private:
   // Pointer to the associated Profile. Must outlive ChromeBookmarkClient.
@@ -106,6 +112,8 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
 
   std::unique_ptr<power_bookmarks::SuggestedSaveLocationProvider>
       shopping_save_location_provider_;
+
+  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Owns the observer used by Offline Page listening to Bookmark Model events.

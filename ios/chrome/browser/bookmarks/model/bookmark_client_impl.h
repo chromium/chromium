@@ -69,6 +69,8 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override;
 
  private:
   // Pointer to the associated ProfileIOS. Must outlive

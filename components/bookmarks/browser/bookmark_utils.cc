@@ -469,6 +469,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kShowManagedBookmarksInBookmarkBar, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(prefs::kBookmarkStorageComputationLastUpdatePref,
+                             base::Time());
   RegisterManagedBookmarksPrefs(registry);
 }
 

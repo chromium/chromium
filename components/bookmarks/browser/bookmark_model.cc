@@ -142,6 +142,62 @@ class SortComparator {
   raw_ptr<icu::Collator> collator_;
 };
 
+// Returns std::nullopt if there are no bookmarks in the input nodes.
+std::optional<metrics::BookmarksExistInStorageType> ComputeCombinedStorageType(
+    const std::vector<const BookmarkPermanentNode*>& local_permanent_nodes,
+    const std::vector<const BookmarkPermanentNode*>& account_permanent_nodes) {
+  auto has_children = [](const BookmarkPermanentNode* node) {
+    return !node->children().empty();
+  };
+  const bool has_local_nodes =
+      std::ranges::any_of(local_permanent_nodes, has_children);
+  const bool has_account_nodes =
+      std::ranges::any_of(account_permanent_nodes, has_children);
+
+  if (has_local_nodes && has_account_nodes) {
+    return metrics::BookmarksExistInStorageType::kLocalAndAccount;
+  } else if (has_local_nodes) {
+    return metrics::BookmarksExistInStorageType::kLocalOnly;
+  } else if (has_account_nodes) {
+    return metrics::BookmarksExistInStorageType::kAccountOnly;
+  }
+
+  return std::nullopt;
+}
+
+// Records whether there are local and/or account bookmarks in Bookmark Bar and
+// All Bookmkarks.
+void RecordPermanentNodesLocalAndAccountStoragesMetrics(BookmarkModel* model) {
+  // Do not log any data if the account nodes do not exist - only checking one
+  // of the permanent nodes.
+  if (!model->account_bookmark_bar_node()) {
+    return;
+  }
+
+  // Bookmarks Bar:
+  std::optional<metrics::BookmarksExistInStorageType> bookmark_bar_storages =
+      ComputeCombinedStorageType(
+          /*local_permanent_nodes=*/{model->bookmark_bar_node()},
+          /*account_permanent_nodes=*/{model->account_bookmark_bar_node()});
+  if (bookmark_bar_storages.has_value()) {
+    metrics::RecordBookmarksExistInStorageType(
+        /*bookmark_bar_only=*/true, bookmark_bar_storages.value());
+  }
+
+  // All Bookmarks (without Managed Bookmarks)
+  std::optional<metrics::BookmarksExistInStorageType> all_bookmarks_storages =
+      ComputeCombinedStorageType(
+          /*local_permanent_nodes=*/{model->bookmark_bar_node(),
+                                     model->other_node(), model->mobile_node()},
+          /*account_permanent_nodes=*/{model->account_bookmark_bar_node(),
+                                       model->account_other_node(),
+                                       model->account_mobile_node()});
+  if (all_bookmarks_storages.has_value()) {
+    metrics::RecordBookmarksExistInStorageType(
+        /*bookmark_bar_only=*/false, all_bookmarks_storages.value());
+  }
+}
+
 }  // namespace
 
 // BookmarkModel --------------------------------------------------------------
@@ -1235,6 +1291,11 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   metrics::RecordTimeToLoadAtStartup(load_duration);
 
   loaded_ = true;
+
+  client_->SchedulePersistentTimerForDailyMetrics(base::BindRepeating(
+      &RecordPermanentNodesLocalAndAccountStoragesMetrics,
+      // Unretained is safe here because this owns `client_`.
+      base::Unretained(this)));
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_) {
