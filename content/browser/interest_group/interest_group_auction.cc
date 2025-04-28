@@ -898,6 +898,46 @@ void TakeDebugReportUrlsForLosingBidState(
   }
 }
 
+void TakeServerFilteredDebugReportUrls(
+    std::map<url::Origin, std::vector<GURL>>&
+        server_filtered_debugging_only_reports,
+    std::optional<DebugReportLockoutAndCooldowns>&
+        debug_report_lockout_and_cooldowns,
+    DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns,
+    std::vector<GURL>& debug_loss_report_urls) {
+  base::Time now = base::Time::Now();
+  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
+      now.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  // For server filtered fDO reports from a B&A auction.
+  for (const auto& [origin, reportUrls] :
+       server_filtered_debugging_only_reports) {
+    if (reportUrls.empty()) {
+      if (!IsOriginInDebugReportCooldownOrLockout(
+              origin, debug_report_lockout_and_cooldowns, now) &&
+          !IsOriginInDebugReportCooldownOrLockout(
+              origin, new_debug_report_lockout_and_cooldowns, now)) {
+        UpdateDebugReportCooldown(origin,
+                                  new_debug_report_lockout_and_cooldowns,
+                                  now_nearest_next_hour);
+      }
+      continue;
+    }
+    for (const auto& report : reportUrls) {
+      // Server filtered debug reports have been sampled on B&A servers already,
+      // so do not run sampling on client again for these reports.
+      if (KeepDebugReport(origin, /*is_from_server_response=*/true,
+                          debug_report_lockout_and_cooldowns,
+                          new_debug_report_lockout_and_cooldowns)) {
+        // For server filtered ones, post auction signals should have been
+        // filled on the server side. And as a result, for server filtered ones,
+        // there's no difference if they go to loss or win lists, since the
+        // difference was post auction signals.
+        debug_loss_report_urls.emplace_back(report);
+      }
+    }
+  }
+}
+
 // Adds debug reporting URLs for `bid_state` to `debug_win_report_urls` and
 // `debug_loss_report_urls`, if there are any, filling in report URL template
 // parameters as needed. The URLs are moved away from `bid_state`.
@@ -936,9 +976,6 @@ void TakeDebugReportUrlsForBidState(
     DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns,
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
-  base::Time now = base::Time::Now();
-  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
-      now.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
   // TODO(qingxinwu): Give bidder's and seller's debug report the same chance to
   // be kept after sampling. Bidder's debug report is sampled before seller's,
   // giving bidder's report a higher chance to be kept (especially when the
@@ -955,34 +992,10 @@ void TakeDebugReportUrlsForBidState(
         new_debug_report_lockout_and_cooldowns, debug_loss_report_urls);
   }
 
-  // For server filtered fDO reports from a B&A auction.
-  for (const auto& [origin, reportUrls] :
-       bid_state->server_filtered_debugging_only_reports) {
-    if (reportUrls.empty()) {
-      if (!IsOriginInDebugReportCooldownOrLockout(
-              origin, debug_report_lockout_and_cooldowns, now) &&
-          !IsOriginInDebugReportCooldownOrLockout(
-              origin, new_debug_report_lockout_and_cooldowns, now)) {
-        UpdateDebugReportCooldown(origin,
-                                  new_debug_report_lockout_and_cooldowns,
-                                  now_nearest_next_hour);
-      }
-      continue;
-    }
-    for (const auto& report : reportUrls) {
-      // Server filtered debug reports have been sampled on B&A servers already,
-      // so do not run sampling on client again for these reports.
-      if (KeepDebugReport(origin, /*is_from_server_response=*/true,
-                          debug_report_lockout_and_cooldowns,
-                          new_debug_report_lockout_and_cooldowns)) {
-        // For server filtered ones, post auction signals should have been
-        // filled on the server side. And as a result, for server filtered ones,
-        // there's no difference if they go to loss or win lists, since the
-        // difference was post auction signals.
-        debug_loss_report_urls.emplace_back(report);
-      }
-    }
-  }
+  TakeServerFilteredDebugReportUrls(
+      bid_state->server_filtered_debugging_only_reports,
+      debug_report_lockout_and_cooldowns,
+      new_debug_report_lockout_and_cooldowns, debug_loss_report_urls);
 }
 
 // Retrieves the timeout from `buyer_timeouts` associated with `buyer`, if any.
@@ -6568,7 +6581,7 @@ void InterestGroupAuction::OnLoadedGhostWinnerGroupImpl(
 }
 
 void InterestGroupAuction::MaybeLoadDebugReportLockoutAndCooldowns() {
-  if (saved_response_->result == AuctionResult::kSuccess &&
+  if (saved_response_->result != AuctionResult::kInvalidServerResponse &&
       base::FeatureList::IsEnabled(
           blink::features::kFledgeSampleDebugReports) &&
       !server_auction_debug_report_lockout_loaded_) {
@@ -6754,6 +6767,26 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
                          /*bid_in_seller_currency=*/std::nullopt,
                          /*scoring_signals_data_version=*/std::nullopt,
                          non_kanon_enforced_auction_leader_);
+  }
+
+  if (buyer_helpers_.empty() &&
+      saved_response_->result != AuctionResult::kInvalidServerResponse) {
+    // When there's no winner, we still need to collect loss forDebuggingOnly
+    // reports, and private aggregation contributions.
+    TakeServerFilteredDebugReportUrls(
+        saved_response_->server_filtered_debugging_only_reports,
+        debug_report_lockout_and_cooldowns_,
+        new_debug_report_lockout_and_cooldowns_, debug_loss_report_urls_);
+    saved_response_->server_filtered_debugging_only_reports.clear();
+
+    for (auto& [key, requests] :
+         saved_response_->server_filtered_pagg_requests_reserved) {
+      FinalizedPrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_reserved_[key];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
   }
 }
 
