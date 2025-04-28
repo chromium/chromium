@@ -31,7 +31,7 @@ namespace {
 // legacy XKB key events, using information from XI2 key events, for
 // consumption by GTK.
 uint32_t XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent) {
-  uint32_t mods = xievent.mods.effective & 0xf;
+  uint32_t mods = xievent.mods.effective & 0xff;
   uint8_t buttons = std::reduce(xievent.button_mask.begin(),
                                 xievent.button_mask.end(), 0, std::bit_or<>());
   // For some reason, the XInput2 button mask needs to be right-shifted by one
